@@ -15,6 +15,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Events\AlbumSaved;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoMoved;
+use App\Events\PhotoSaved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -76,6 +77,17 @@ class MoveOrDuplicate
 			AlbumSaved::dispatch([$to_album->id], [$to_album->parent_id]);
 		}
 
+		// Dispatch PhotoSaved whenever a photo's album links were mutated in
+		// any way (link gained, lost, or both). This covers cross-album
+		// moves, the same-album "copy" case (CopyPhotosRequest, where
+		// $from_album === $to_album and PhotoMoved below never fires), and
+		// the move-to-root-album case ($to_album === null, no link gained),
+		// so listeners depending on a photo's containing albums (e.g. the
+		// TagAlbum/PersonAlbum "matching albums" cache) are notified either way.
+		if ($from_album !== null || $to_album !== null) {
+			PhotoSaved::dispatch($photos_ids);
+		}
+
 		// In case of move, we need to remove the header_id of said photos.
 		if ($from_album !== null && $from_album->get_id() !== $to_album?->id) {
 			Album::query()
@@ -87,11 +99,9 @@ class MoveOrDuplicate
 				$this->applyToPurchasable($photo->id, $from_album->get_id(), $to_album?->get_id());
 			}
 
-			// Dispatch PhotoMoved for each moved photo (cross-album move only; not duplication).
+			// Dispatch a single batched PhotoMoved for the moved photos (cross-album move only; not duplication).
 			if ($to_album !== null) {
-				foreach ($photos as $photo) {
-					PhotoMoved::dispatch($photo->id, $from_album->get_id(), $to_album->id);
-				}
+				PhotoMoved::dispatch($photos_ids, $from_album->get_id(), $to_album->id);
 			}
 		}
 

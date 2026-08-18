@@ -115,6 +115,21 @@ class CacheKeyProvider
 		return array_map($this->albumTagTag(...), $tag_ids);
 	}
 
+	public function albumPersonTag(string $person_id): string
+	{
+		return "person:{$person_id}";
+	}
+
+	/**
+	 * @param string[] $person_ids
+	 *
+	 * @return string[]
+	 */
+	public function albumPersonTags(array $person_ids): array
+	{
+		return array_map($this->albumPersonTag(...), $person_ids);
+	}
+
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
 
@@ -168,5 +183,31 @@ class CacheKeyProvider
 		$user_tag = $this->userTag($user_id);
 
 		return "tag-albums:{$tag_id}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for one page of "real Albums carrying (as metadata) the tags
+	 * referenced by this TagAlbum's criteria" ({@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}).
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked album ids
+	 */
+	public function tagAlbumMatchingAlbumsPageKey(string $tag_album_id, int|string|null $user_id, int $page, int $per_page, string $unlocked_digest): string
+	{
+		$user_tag = $this->userTag($user_id);
+
+		return "tag-album-matching-albums:{$tag_album_id}:{$user_tag}:page:{$page}:per_page:{$per_page}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for one page of "real Albums containing a photo matching this
+	 * PersonAlbum's face/person criteria" ({@see \App\Repositories\AlbumRepository::getMatchingAlbumsForPersonPaginated()}).
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked album ids
+	 */
+	public function personAlbumMatchingAlbumsPageKey(string $person_album_id, int|string|null $user_id, int $page, int $per_page, string $unlocked_digest): string
+	{
+		$user_tag = $this->userTag($user_id);
+
+		return "person-album-matching-albums:{$person_album_id}:{$user_tag}:page:{$page}:per_page:{$per_page}:unlocked:{$unlocked_digest}";
 	}
 }

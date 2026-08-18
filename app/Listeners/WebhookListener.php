@@ -54,10 +54,12 @@ class WebhookListener
 			return;
 		}
 
-		$this->dispatchForEvent(
-			PhotoWebhookEvent::MOVE,
-			$event->photo_id,
-		);
+		foreach ($event->photo_ids as $photo_id) {
+			$this->dispatchForEvent(
+				PhotoWebhookEvent::MOVE,
+				$photo_id,
+			);
+		}
 	}
 
 	/**

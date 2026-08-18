@@ -575,6 +575,10 @@ export const useAlbumStore = defineStore("album-store", {
 						} else {
 							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
 						}
+						// TagAlbum/PersonAlbum also expose "matching albums" (real albums
+						// carrying the tag as metadata / containing a matching face) via the
+						// same paginated /Album::albums endpoint used for real Album children.
+						loader.push(this.loadAlbums(1, false));
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 					}

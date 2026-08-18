@@ -26,18 +26,23 @@ class RecomputeAlbumStatsOnPhotoChange
 	 */
 	public function handlePhotoSaved(PhotoSaved $event): void
 	{
-		// Get all albums this photo belongs to
+		if (count($event->photo_ids) === 0) {
+			return;
+		}
+
+		// Get all albums these photos belong to
 		$album_ids = DB::table(PA::PHOTO_ALBUM)
-			->where('photo_id', '=', $event->photo_id)
+			->whereIn('photo_id', $event->photo_ids)
+			->distinct()
 			->pluck('album_id')
 			->all();
 
 		if (count($album_ids) === 0) {
-			// Photo not in any album, nothing to recompute
+			// Photos not in any album, nothing to recompute
 			return;
 		}
 
-		Log::info("Photo {$event->photo_id} saved, dispatching recompute jobs for " . count($album_ids) . ' album(s)');
+		Log::info(count($event->photo_ids) . ' photo(s) saved, dispatching recompute jobs for ' . count($album_ids) . ' album(s)');
 		foreach ($album_ids as $album_id) {
 			RecomputeAlbumStatsJob::dispatch($album_id);
 		}

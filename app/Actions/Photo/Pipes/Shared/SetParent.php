@@ -49,7 +49,7 @@ class SetParent implements SharedPipe
 
 			// Dispatch event for album stats recomputation
 			// This must be done after SetParent so the photo_album relationship exists
-			PhotoSaved::dispatch($state->photo->id);
+			PhotoSaved::dispatch([$state->photo->id]);
 
 			// Dispatch PhotoAdded for new photo records only (upload, import, duplication).
 			// Existing records that were re-saved into a different album are handled by PhotoMoved.

@@ -37,6 +37,7 @@ class FaceController extends Controller
 	public function assign(AssignFaceRequest $request, string $id, PersonFactory $person_factory): FaceResource
 	{
 		$face = $request->face();
+		$old_person_id = $face->person_id;
 
 		if ($request->person_id === null && trim($request->new_person_name ?? '') === '') {
 			// Unassign: return face to unassigned pool
@@ -46,7 +47,8 @@ class FaceController extends Controller
 			$face->person_id = $person->id;
 		}
 		$face->save();
-		PhotoPersonsChanged::dispatch([$face->photo_id]);
+		$affected_person_ids = array_values(array_unique(array_filter([$old_person_id, $face->person_id], fn ($id) => $id !== null)));
+		PhotoPersonsChanged::dispatch([$face->photo_id], $affected_person_ids);
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
 	}
@@ -68,7 +70,8 @@ class FaceController extends Controller
 			$face->person_id = null;
 		}
 		$face->save();
-		PhotoPersonsChanged::dispatch([$face->photo_id]);
+		$affected_person_ids = array_values(array_unique(array_filter([$old_person_id, $face->person_id], fn ($id) => $id !== null)));
+		PhotoPersonsChanged::dispatch([$face->photo_id], $affected_person_ids);
 
 		if ($old_person_id !== null) {
 			$this->recountOrDeletePersons([$old_person_id]);
@@ -102,7 +105,7 @@ class FaceController extends Controller
 			$query->update(['person_id' => null]);
 
 			$this->recountOrDeletePersons($affected_person_ids);
-			PhotoPersonsChanged::dispatchIf($affected_photo_ids !== [], $affected_photo_ids);
+			PhotoPersonsChanged::dispatchIf($affected_photo_ids !== [], $affected_photo_ids, $affected_person_ids);
 
 			return ['affected_count' => $count, 'person_id' => null];
 		}
@@ -125,7 +128,8 @@ class FaceController extends Controller
 
 		$this->recountOrDeletePersons($old_person_ids);
 		if ($affected_photo_ids !== []) {
-			PhotoPersonsChanged::dispatch($affected_photo_ids);
+			$affected_person_ids = array_values(array_unique([...$old_person_ids, $person->id]));
+			PhotoPersonsChanged::dispatch($affected_photo_ids, $affected_person_ids);
 		}
 
 		return ['affected_count' => $count, 'person_id' => $person->id];

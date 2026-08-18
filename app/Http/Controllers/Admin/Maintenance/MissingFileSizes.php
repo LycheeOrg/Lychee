@@ -40,6 +40,7 @@ class MissingFileSizes extends Controller
 		$variants = $variants_query->limit($request->configs()->getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
+		$saved_photo_ids = [];
 
 		foreach ($variants as $variant) {
 			// @codeCoverageIgnoreStart
@@ -51,7 +52,7 @@ class MissingFileSizes extends Controller
 						Log::error('Failed to update filesize for ' . $variant_file->getRelativePath() . '.');
 					} else {
 						$generated++;
-						PhotoSaved::dispatch($variant->photo_id);
+						$saved_photo_ids[] = $variant->photo_id;
 					}
 				} catch (UnableToRetrieveMetadata) {
 					Log::error($variant->id . ' : Failed to get filesize for ' . $variant_file->getRelativePath() . '.');
@@ -62,6 +63,7 @@ class MissingFileSizes extends Controller
 			// @codeCoverageIgnoreEnd
 		}
 
+		PhotoSaved::dispatchIf($saved_photo_ids !== [], $saved_photo_ids);
 		AlbumRouteCacheUpdated::dispatch();
 	}
 
