@@ -59,8 +59,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_album_border_enabled: false,
 		is_selection_border_enabled: false,
 		is_selection_overlay_enabled: true,
-		is_photo_highlight_on_hover: true,
-		is_photo_zoom_on_hover: true,
+		is_photo_ken_burns_on_hover: true,
 
 		// Enhanced Album Display
 		is_album_enhanced_display_enabled: false,
@@ -229,8 +228,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_album_border_enabled = data.is_album_border_enabled;
 					this.is_selection_border_enabled = data.is_selection_border_enabled;
 					this.is_selection_overlay_enabled = data.is_selection_overlay_enabled;
-					this.is_photo_highlight_on_hover = data.is_photo_highlight_on_hover;
-					this.is_photo_zoom_on_hover = data.is_photo_zoom_on_hover;
+					this.is_photo_ken_burns_on_hover = data.is_photo_ken_burns_on_hover;
 					this.album_view_mode = data.album_layout;
 
 					this.is_raw_download_enabled = data.is_raw_download_enabled;

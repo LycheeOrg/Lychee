@@ -2,7 +2,7 @@
 	<div
 		:id="'photoListing' + props.groupIdx"
 		class="relative flex flex-wrap flex-row shrink w-full justify-start align-top"
-		:class="{ 'photo-highlight-on-hover': is_photo_highlight_on_hover, 'photo-zoom-on-hover': is_photo_zoom_on_hover }"
+		:class="{ 'photo-ken-burns-on-hover': is_photo_ken_burns_on_hover }"
 	>
 		<!-- List view -->
 		<PhotoListView
@@ -60,7 +60,7 @@ const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
-const { is_timeline_left_border_visible, is_photo_highlight_on_hover, is_photo_zoom_on_hover } = storeToRefs(lycheeStore);
+const { is_timeline_left_border_visible, is_photo_ken_burns_on_hover } = storeToRefs(lycheeStore);
 
 const route = useRoute();
 

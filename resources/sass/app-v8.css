@@ -14,6 +14,9 @@
 
 html {
 	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
 	/*
 	  Defensive: some `position: fixed` elements with a `scale()`/`translate()` entrance
 	  animation (e.g. the landing page's animate-landingIntroPopIn) briefly overflow the
@@ -23,6 +26,14 @@ html {
 	  every landing page load. Every intentional horizontal scroll in this app is already
 	  scoped to its own `overflow-x-auto` container, so nothing relies on document-level
 	  horizontal scroll.
+
+	  Kept on `body`, not `html`: the CSS Overflow spec propagates `body`'s overflow to the
+	  viewport only while the root (`html`) element's own computed overflow is `visible` on
+	  both axes. Modal/dialog libraries (Reka UI's `useBodyScrollLock`, used by every v8
+	  modal) lock background scroll by setting `document.body.style.overflow = "hidden"` -
+	  that only works *because* of this propagation. Setting `overflow-x: hidden` on `html`
+	  instead breaks the propagation (root's overflow is no longer `visible`), so the body
+	  lock stops affecting the viewport and the page keeps scrolling behind an open modal.
 	*/
 	overflow-x: hidden;
 }
@@ -54,62 +65,30 @@ html {
 	--svh75: 75svh;
 
 	/*
-	  Photo grid hover effects, see the `photo_highlight_on_hover` and
-	  `photo_zoom_on_hover` settings and PhotoThumbPanelList.vue.
+	  Ken-Burns-on-hover, see the `photo_ken_burns_on_hover_enabled` setting and
+	  PhotoThumbPanelList.vue.
 	*/
-	--photo-hover-base-brightness: 0.9;
-	--photo-hover-dim-brightness: 0.8;
-	--photo-hover-active-brightness: 1;
-	--photo-hover-zoom-scale: 1.04;
-	--photo-hover-zoom-duration: 200ms;
-	--photo-hover-dim-duration: 300ms;
+	--photo-ken-burns-scale: 1.5;
+	--photo-ken-burns-duration: 30s;
 }
 
 /*
-  Highlight-on-hover: photos sit slightly dimmed by default; hovering an actual
-  photo dims the other photos further while the hovered one brightens back up.
-  Gated on `:has(.photo:hover)` rather than a plain `:hover` on the grid so that
-  the gaps between tiles (still inside the grid's hover area) don't trigger the
-  dim - only an actual `.photo` being hovered does.
+  Ken-Burns-on-hover: slowly zoom into a photo's image while hovering it, unlike
+  the old whole-tile zoom this replaced - `.thumb-image` scales up inside
+  `.thumbimg`'s `overflow-hidden` clip (see PhotoThumb.vue), so the effect stays
+  inside the thumbnail's own bounds instead of growing the tile over its
+  neighbours.
 
-  The `transition` is declared once below, covering both `filter` and `scale`,
-  rather than split between this block and the zoom-on-hover block further down:
-  `photo-highlight-on-hover` and `photo-zoom-on-hover` are independent settings
-  that can both land on the same `.photo`, and since they'd otherwise have equal
-  selector specificity, whichever block's `transition` shorthand came later in
-  the file would silently wipe out the other's (a bare `transition:` replaces
-  every sub-property, it doesn't merge across rules).
+  Forward-only: the `transition` lives on the `:hover` rule itself, not on the
+  bare `.thumb-image`, so it only applies to the hover-in direction. Leaving
+  hover falls back to the base rule's implicit `transition: none` and snaps
+  straight back to scale 1 instead of playing the same slow zoom in reverse,
+  which would read as sluggish every time the cursor moves on to another photo.
 */
-.photo-highlight-on-hover .photo,
-.photo-zoom-on-hover .photo {
-	transition:
-		filter var(--photo-hover-dim-duration) ease,
-		scale var(--photo-hover-zoom-duration) ease;
-}
-.photo-highlight-on-hover .photo {
-	filter: brightness(var(--photo-hover-base-brightness));
-}
-.photo-highlight-on-hover:has(.photo:hover) .photo:not(:hover) {
-	filter: brightness(var(--photo-hover-dim-brightness));
-}
-.photo-highlight-on-hover .photo:hover {
-	filter: brightness(var(--photo-hover-active-brightness));
-}
-
-/*
-  Zoom-on-hover: scale the whole `.photo` tile, not just the image inside its
-  clipped `.thumbimg` viewport, so the entire thumbnail grows instead of a
-  cropped-in slice of it. `.photo` is absolutely positioned by the masonry
-  layout, so scaling it doesn't reflow neighbours; the `z-index` bump keeps it
-  painted above them instead of tucked behind while enlarged.
-  We animate the standalone `scale` property rather than `transform` because
-  `.photo` also carries the `animate-zoomIn` entrance animation, whose held
-  `forwards` end state would otherwise block a `:hover` transition on `transform`
-  (the two are independent CSS properties, so they don't conflict).
-*/
-.photo-zoom-on-hover .photo:hover {
-	scale: var(--photo-hover-zoom-scale);
-	z-index: 1;
+.photo-ken-burns-on-hover .photo:hover .thumb-image {
+	scale: var(--photo-ken-burns-scale);
+	transition: scale var(--photo-ken-burns-duration) cubic-bezier(0.2, 0, 0.47, 0.84);
+	/* ease-out; */
 }
 
 /*
