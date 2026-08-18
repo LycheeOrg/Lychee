@@ -20,9 +20,10 @@
 				'h-[calc(100vh-3.5rem)]': !is_full_screen,
 			}"
 		>
-			<SearchPanel :no-data="noData" @clear="searchStore.clear" @search="onSearch" @clear-scope="clearScope" />
+			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" @clear-scope="clearScope" />
 			<div ref="resultsMarkerRef" aria-hidden="true" class="w-full h-0" data-search-results></div>
 			<ResultPanel
+				v-if="!isInitialSearchLoading"
 				v-model:first="searchStore.from"
 				:total="searchStore.total"
 				v-model:rows="searchStore.perPage"
@@ -194,16 +195,56 @@ const userStore = useUserStore();
 const searchStore = useSearchStore();
 const layoutStore = useLayoutStore();
 
+// Pre-fill the store from a bookmarked/shared URL before children (e.g. SearchBox)
+// mount, since SearchBox only reads searchStore.searchTerm once, on its own mount.
+const hasInitialQuery = typeof route.query.q === "string" && route.query.q.length > 0;
+if (hasInitialQuery) {
+	searchStore.searchTerm = route.query.q as string;
+}
+
+// True while a bookmarked/shared URL's search is still in flight. Keeps ResultPanel hidden
+// so the scoped album's own browsing data -- an unrelated side effect of the albumStore.load()
+// call in load() below (needed just for the header/title) -- never flashes on screen before
+// the real search results replace it.
+const isInitialSearchLoading = ref(hasInitialQuery);
+
 const resultsMarkerRef = ref<HTMLElement | null>(null);
 
-function onSearch(terms: string) {
-	searchStore.search(terms).then(() => {
+/**
+ * Read the ?page=N query parameter from the current route.
+ * Returns 1 (first page) when the param is absent or invalid.
+ */
+function getStartPage(): number {
+	const p = route.query.page;
+	if (typeof p === "string") {
+		const parsed = parseInt(p, 10);
+		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+	}
+	return 1;
+}
+
+function onSearch(terms: string, updateQuery = true, startPage = 1): Promise<void> {
+	const promise = searchStore.search(terms, startPage).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
 			});
 		}
 	});
+	if (updateQuery && route.query.q !== terms) {
+		router.replace({ query: { ...route.query, q: terms } });
+	}
+	return promise;
+}
+
+function onClear() {
+	searchStore.clear();
+	searchStore.searchTerm = undefined;
+	if (route.query.q !== undefined) {
+		const query = { ...route.query };
+		delete query.q;
+		router.replace({ query });
+	}
 }
 
 // eslint-disable-next-line vue/no-dupe-keys
@@ -250,9 +291,13 @@ function clearScope() {
 	}
 	albumId.value = ALL;
 	albumStore.reset();
-	router.replace({ name: "search", params: { albumId: undefined, photoId: photoId.value } });
+	// Preserve q (and any other query params) in this same navigation: onSearch() only
+	// updates the query when it differs from route.query.q, but route.query wouldn't
+	// reflect a preceding q-less replace() until that navigation resolves, so a separate
+	// replace() here would race with onSearch()'s check and could drop q.
+	router.replace({ name: "search", params: { albumId: undefined, photoId: photoId.value }, query: route.query });
 	if (searchStore.searchTerm !== undefined) {
-		onSearch(searchStore.searchTerm);
+		onSearch(searchStore.searchTerm, false);
 	}
 }
 
@@ -447,7 +492,11 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoStore.reset();
 
-		router.push({ name: "search", params: { albumId: albumId.value } });
+		router.push({
+			name: "search",
+			params: { albumId: albumId.value },
+			query: searchStore.searchTerm ? { q: searchStore.searchTerm } : {},
+		});
 		return;
 	}
 
@@ -549,7 +598,18 @@ onMounted(async () => {
 	// fresh search entry (no search performed yet) that leftover browsing data must not be
 	// shown as if it were search results. Must run *after* load(), not before, since load()
 	// is what (re)populates it.
-	if (searchStore.searchTerm === undefined) {
+	if (hasInitialQuery) {
+		// Bookmarked/shared URL: run the search that the query string encodes, jumping
+		// straight to ?page=N so a direct link to a photo opens on the page it came from.
+		// Awaited (unlike onSearch's usual fire-and-forget use) so photoStore.load() below
+		// sees the actual search results -- not the scoped album's own browsing data that
+		// load() incidentally populated -- and can open the requested photo straight away.
+		// isInitialSearchLoading keeps ResultPanel hidden for that same reason until then.
+		await onSearch(searchStore.searchTerm as string, true, getStartPage());
+		isInitialSearchLoading.value = false;
+		photoStore.photoId = photoId.value;
+		photoStore.load();
+	} else if (searchStore.searchTerm === undefined) {
 		searchStore.clear();
 	}
 

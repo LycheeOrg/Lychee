@@ -13,7 +13,7 @@
 				'h-[calc(100vh-3.5rem)]': !is_full_screen,
 			}"
 		>
-			<SearchPanel :no-data="noData" @clear="searchStore.clear" @search="onSearch" />
+			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" />
 			<div ref="resultsMarkerRef" aria-hidden="true" class="w-full h-0" data-search-results></div>
 			<ResultPanel
 				v-model:first="searchStore.from"
@@ -194,16 +194,48 @@ const userStore = useUserStore();
 const searchStore = useSearchStore();
 const layoutStore = useLayoutStore();
 
+// Pre-fill the store from a bookmarked/shared URL before children (e.g. SearchBox)
+// mount, since SearchBox only reads searchStore.searchTerm once, on its own mount.
+if (typeof route.query.q === "string" && route.query.q.length > 0) {
+	searchStore.searchTerm = route.query.q;
+}
+
 const resultsMarkerRef = ref<HTMLElement | null>(null);
 
-function onSearch(terms: string) {
-	searchStore.search(terms).then(() => {
+/**
+ * Read the ?page=N query parameter from the current route.
+ * Returns 1 (first page) when the param is absent or invalid.
+ */
+function getStartPage(): number {
+	const p = route.query.page;
+	if (typeof p === "string") {
+		const parsed = parseInt(p, 10);
+		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+	}
+	return 1;
+}
+
+function onSearch(terms: string, startPage = 1) {
+	searchStore.search(terms, startPage).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
 			});
 		}
 	});
+	if (route.query.q !== terms) {
+		router.replace({ query: { ...route.query, q: terms } });
+	}
+}
+
+function onClear() {
+	searchStore.clear();
+	searchStore.searchTerm = undefined;
+	if (route.query.q !== undefined) {
+		const query = { ...route.query };
+		delete query.q;
+		router.replace({ query });
+	}
 }
 
 // eslint-disable-next-line vue/no-dupe-keys
@@ -432,7 +464,11 @@ function goBack() {
 	if (photoId.value !== undefined) {
 		photoStore.reset();
 
-		router.push({ name: "search", params: { albumId: albumId.value } });
+		router.push({
+			name: "search",
+			params: { albumId: albumId.value },
+			query: searchStore.searchTerm ? { q: searchStore.searchTerm } : {},
+		});
 		return;
 	}
 
@@ -535,6 +571,13 @@ onMounted(async () => {
 	photoId.value = props.photoId;
 
 	await load();
+
+	if (typeof route.query.q === "string" && route.query.q.length > 0) {
+		// Bookmarked/shared URL: run the search that the query string encodes, jumping
+		// straight to ?page=N so a direct link to a photo opens on the page it came from.
+		onSearch(route.query.q, getStartPage());
+	}
+
 	setScroll();
 
 	// if (photoId.value !== undefined) {
