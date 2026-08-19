@@ -1,4 +1,21 @@
-<div class="hidden" style="font-size: 24px; height: 100vh;" dir="ltr">
+<style>
+	#lychee_misconfiguration_warning {
+		visibility: hidden;
+		position: fixed;
+		inset: 0;
+		overflow: auto;
+		background: #fff;
+		color: #000;
+		z-index: 2147483647;
+		animation: lychee_misconfiguration_reveal 1ms linear 3s forwards;
+	}
+	@keyframes lychee_misconfiguration_reveal {
+		to {
+			visibility: visible;
+		}
+	}
+</style>
+<div id="lychee_misconfiguration_warning" class="hidden" style="font-size: 24px; height: 100vh;" dir="ltr">
 @if(Features::active('white_label_enabled'))
 	<h1>If you can read me, it means that you misconfigured your-application.</h1>
 	<p style="font-size: 20px;">Please check that:
