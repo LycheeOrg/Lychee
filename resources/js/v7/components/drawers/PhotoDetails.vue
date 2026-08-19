@@ -234,9 +234,7 @@
 					/>
 
 					<!-- People in this photo -->
-					<template
-						v-if="initData?.modules.is_face_recognition_enabled && initData?.modules.is_face_overlay_enabled && photoFaces.length > 0"
-					>
+					<template v-if="areFacesVisible && photoFaces.length > 0">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-2">
 							{{ $t("people.people_in_photo") }}
 						</h2>
@@ -394,6 +392,13 @@ const isFaceAssignmentOpen = ref(false);
 const ctrlHeld = ref(false);
 const facesStore = usePhotoFacesStore();
 const photoFaces = computed(() => facesStore.get(photoStore.photo?.id ?? "").faces);
+// Single source of truth for "may this viewer have face overlays at all": the template
+// guard above and the fetch watcher must not drift apart, or we request
+// `Photo/{id}/faces` without the permission and the 401 surfaces as a global error
+// toast on top of the photo (anonymous visitors on a link-shared album).
+const areFacesVisible = computed(
+	() => (initData.value?.modules.is_face_recognition_enabled ?? false) && (initData.value?.modules.is_face_overlay_enabled ?? false),
+);
 
 function onKeyDown(e: KeyboardEvent) {
 	if (e.key === "Control" || e.key === "Meta") {
@@ -470,9 +475,9 @@ function onFaceUpdated() {
 }
 
 watch(
-	() => photoStore.photo?.id,
-	(photo_id) => {
-		if (photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, areFacesVisible],
+	([photo_id, facesVisible]) => {
+		if (!facesVisible || photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
 			return;
 		}
 
