@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'گرد کردن گوشه‌های تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
         'album_border_enabled' => 'نمایش حاشیه دور تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'مجوز پیش فرض برای آلبوم‌ها',
         'license_help' => 'در انتخاب نیاز به راهنمایی دارید؟',
     ],

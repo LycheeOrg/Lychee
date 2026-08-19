@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Zaokrąglaj rogi miniatur zdjęć i albumów',
         'album_border_enabled' => 'Pokaż obramowanie wokół miniatur zdjęć i albumów',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Domyślna licencja używana dla albumów',
         'license_help' => 'Potrzebujesz pomocy w wyborze?',
     ],

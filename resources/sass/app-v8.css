@@ -65,11 +65,12 @@ body {
 	--svh75: 75svh;
 
 	/*
-	  Ken-Burns-on-hover, see the `photo_ken_burns_on_hover_enabled` setting and
-	  PhotoThumbPanelList.vue.
+	  Ken-Burns-on-hover defaults, overridden inline per the
+	  `photo_ken_burns_on_hover_scale`/`_duration` settings, see
+	  PhotoThumbPanelList.vue's `kenBurnsStyle`.
 	*/
 	--photo-ken-burns-scale: 1.5;
-	--photo-ken-burns-duration: 30s;
+	--photo-ken-burns-duration: 15s;
 }
 
 /*

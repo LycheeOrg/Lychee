@@ -58,6 +58,8 @@ return [
         'rounded_corners_enabled' => 'Redondear las esquinas de las miniaturas de fotos y álbumes',
         'album_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos y álbumes',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Licencia predeterminada utilizada para álbumes',
         'license_help' => '¿Necesitas ayuda para elegir?',
     ],
