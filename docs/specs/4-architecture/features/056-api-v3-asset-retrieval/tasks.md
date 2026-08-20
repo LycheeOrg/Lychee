@@ -63,15 +63,15 @@ _Last updated: 2026-08-20_
   _Verification commands:_
   - `php artisan test --filter=PhotoAssetV3Test`
 
-- [ ] T-056-08 – Wire `X-Timestamp`/`X-Mac` header validation into `GetPhotoAssetRequest::authorize()` (F-056-04).
-  _Intent:_ Read both headers; both-or-neither validation (422 via `rules()`/`processValidatedValues()` if only one present); call `TemporaryLinkSigner::verify()`; expiry/future-timestamp checks against `temporary_image_link_life_in_seconds`. Confirm how a genuine 401 (vs. Laravel's default 403 for `authorize() === false`) is produced — likely an explicit `abort(401, ...)` or thrown `AuthenticationException` inside `authorize()` for the signature-failure branch specifically, distinct from the `PhotoPolicy`-denial branch (403).
+- [ ] T-056-08 – Wire `X-Timestamp`/`X-Mac` header validation into `GetPhotoAssetRequest::authorize()`, with correct 401-vs-403 (F-056-04, F-056-05).
+  _Intent:_ Read both headers; both-or-neither validation (422 via `rules()` if only one present); call `TemporaryLinkSigner::verify()`; expiry/future-timestamp checks against `temporary_image_link_life_in_seconds`. Add `private bool $signature_check_failed = false;` on `GetPhotoAssetRequest`; set it `true` and `return false` immediately from `authorize()` on any signature failure (skipping the `PhotoPolicy` check). Override `failedAuthorization()`: `throw $this->signature_check_failed ? new UnauthenticatedException() : new UnauthorizedException();` — the inherited `BaseApiRequest::failedAuthorization()` keys off `Auth::check()` (session state), which gives the *wrong* status code for this endpoint (see spec.md FR-056-05); this override is required, not optional.
   _Verification commands:_
   - `php artisan test --filter=PhotoAssetV3Test`
   - `make phpstan`
   _Notes:_ S-056-02, 04, 05, 06, 07, 08, 09 should now pass. S-056-03 needs T-056-09 too (guest + valid signature still gated by `PhotoPolicy`).
 
 - [ ] T-056-09 – Implement `signatureRequired()` predicate + tests for S-056-03, S-056-10, S-056-11 (F-056-05, S-056-03, S-056-10, S-056-11).
-  _Intent:_ Implement the config-driven predicate from ADR-0008 (reusing `temporary_image_link_enabled`/`_when_logged_in`/`_when_admin` via `ConfigManager`), wire into `authorize()` so authenticated sessions can bypass the header requirement per config, then add/pass tests: guest with valid signature but private album → 403 (PhotoPolicy still enforced); logged-in user required to still sign per config → 401 without headers; admin exempted per config → 200 without headers.
+  _Intent:_ Implement the config-driven predicate from ADR-0008 (reusing `temporary_image_link_enabled`/`_when_logged_in`/`_when_admin` via `ConfigManager`), wire into `authorize()` so authenticated sessions can bypass the header requirement per config, then add/pass tests: guest with valid signature but private album → 403 (`$signature_check_failed` stays `false`, `PhotoPolicy` denial drives the 403 via T-056-08's override); logged-in user required to still sign per config, no headers → 401 (`$signature_check_failed = true`); admin exempted per config → 200 without headers.
   _Verification commands:_
   - `php artisan test --filter=PhotoAssetV3Test`
   - `make phpstan`
@@ -133,5 +133,4 @@ _Last updated: 2026-08-20_
   - `make phpstan`
 
 ## Notes / TODOs
-- T-056-08's exact mechanism for producing a 401 (vs. Laravel's default 403 for `FormRequest::authorize() === false`) needs to be confirmed against this codebase's existing exception-handling convention during implementation — flagged in plan.md's Assumptions & Risks, not a blocking open question.
 - T-056-10's S3 test-fixture pattern (fake disk) should be reused from an existing S3-aware test (e.g. around `UploadSizeVariantToS3Job`) rather than reinvented — confirm the exact fixture during implementation.
