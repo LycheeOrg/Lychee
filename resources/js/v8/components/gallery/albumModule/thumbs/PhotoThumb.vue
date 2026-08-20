@@ -1,9 +1,9 @@
 <template>
 	<a
 		:class="{
-			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer': true,
+			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer overflow-hidden': true,
 			'outline-2 outline-primary-500': props.isSelected && is_selection_border_enabled,
-			'rounded-lg overflow-hidden': is_rounded_corners_enabled,
+			'rounded-lg': is_rounded_corners_enabled,
 			'border-solid border border-accented': is_album_border_enabled,
 		}"
 		:data-width="props.photo.size_variants.original?.width"
