@@ -2,7 +2,7 @@
 	<UModal v-model:open="is_create_tag_album_visible" :dismissible="true">
 		<template #body>
 			<p class="mb-5">{{ $t("dialogs.new_tag_album.info") }}</p>
-			<div class="inline-flex flex-col gap-3">
+			<div class="inline-flex flex-col gap-3 w-full">
 				<UFormField :label="$t('dialogs.new_tag_album.title')">
 					<UInput id="title" v-model="title" class="w-full" />
 				</UFormField>
