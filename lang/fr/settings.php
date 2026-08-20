@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Arrondir les coins des vignettes de photos et d’albums',
         'album_border_enabled' => 'Afficher une bordure autour des vignettes de photos et d’albums',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Licence par défaut utilisée pour les albums',
         'license_help' => 'Besoin d’aide pour choisir ?',
     ],

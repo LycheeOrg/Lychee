@@ -3,6 +3,7 @@
 		:id="'photoListing' + props.groupIdx"
 		class="relative flex flex-wrap flex-row shrink w-full justify-start align-top"
 		:class="{ 'photo-ken-burns-on-hover': is_photo_ken_burns_on_hover }"
+		:style="kenBurnsStyle"
 	>
 		<!-- List view -->
 		<PhotoListView
@@ -60,7 +61,13 @@ const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
-const { is_timeline_left_border_visible, is_photo_ken_burns_on_hover } = storeToRefs(lycheeStore);
+const { is_timeline_left_border_visible, is_photo_ken_burns_on_hover, photo_ken_burns_on_hover_scale, photo_ken_burns_on_hover_duration } =
+	storeToRefs(lycheeStore);
+
+const kenBurnsStyle = computed(() => ({
+	"--photo-ken-burns-scale": `${photo_ken_burns_on_hover_scale.value / 100 + 1}`,
+	"--photo-ken-burns-duration": `${photo_ken_burns_on_hover_duration.value}s`,
+}));
 
 const route = useRoute();
 

@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => '圆角化照片和相册缩略图',
         'album_border_enabled' => '在照片和相册缩略图周围显示边框',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => '相册默认许可证',
         'license_help' => '需要帮助选择？',
     ],

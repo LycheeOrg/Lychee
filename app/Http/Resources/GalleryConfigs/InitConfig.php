@@ -75,6 +75,8 @@ class InitConfig extends Data
 	public bool $is_selection_border_enabled;
 	public bool $is_selection_overlay_enabled;
 	public bool $is_photo_ken_burns_on_hover;
+	public int $photo_ken_burns_on_hover_scale;
+	public int $photo_ken_burns_on_hover_duration;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -230,6 +232,8 @@ class InitConfig extends Data
 		$this->is_selection_border_enabled = request()->configs()->getValueAsBool('selection_border_enabled');
 		$this->is_selection_overlay_enabled = request()->configs()->getValueAsBool('selection_overlay_enabled');
 		$this->is_photo_ken_burns_on_hover = request()->configs()->getValueAsBool('photo_ken_burns_on_hover_enabled');
+		$this->photo_ken_burns_on_hover_scale = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_scale');
+		$this->photo_ken_burns_on_hover_duration = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_duration');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration

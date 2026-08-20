@@ -65,6 +65,8 @@ return [
         'rounded_corners_enabled' => 'Заоблете ъглите на миниатюрите на снимки и албуми',
         'album_border_enabled' => 'Показване на рамка около миниатюрите на снимки и албуми',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Лиценз по подразбиране за албуми',
         'license_help' => 'Нужна помощ при избора?',
     ],

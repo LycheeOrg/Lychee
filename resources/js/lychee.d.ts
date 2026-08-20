@@ -620,6 +620,8 @@ declare namespace App {
 					is_selection_border_enabled: boolean;
 					is_selection_overlay_enabled: boolean;
 					is_photo_ken_burns_on_hover: boolean;
+					photo_ken_burns_on_hover_scale: number;
+					photo_ken_burns_on_hover_duration: number;
 					album_layout: App.Enum.AlbumLayoutType;
 					is_raw_download_enabled: boolean;
 					is_thumb_download_enabled: boolean;

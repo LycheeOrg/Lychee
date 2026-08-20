@@ -64,6 +64,8 @@ class SettingsController extends Controller
 		'selection_border_enabled',
 		'selection_overlay_enabled',
 		'photo_ken_burns_on_hover_enabled',
+		'photo_ken_burns_on_hover_scale',
+		'photo_ken_burns_on_hover_duration',
 		'photo_share_card_enabled',
 		'flags_enabled',
 		'photo_flags_enabled',

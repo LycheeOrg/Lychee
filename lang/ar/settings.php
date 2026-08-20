@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'تدوير زوايا الصور المصغرة للصور والألبومات',
         'album_border_enabled' => 'إظهار حد حول الصور المصغرة للصور والألبومات',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'الترخيص الافتراضي المستخدم للألبومات',
         'license_help' => 'تحتاج مساعدة في الاختيار؟',
     ],

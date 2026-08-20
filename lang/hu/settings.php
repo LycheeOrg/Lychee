@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Round the corners of photo and album thumbnails',
         'album_border_enabled' => 'Show a border around photo and album thumbnails',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Default license used for albums',
         'license_help' => 'Need help choosing?',
     ],

@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Zaoblit rohy miniatur fotografií a alb',
         'album_border_enabled' => 'Zobrazit okraj kolem miniatur fotografií a alb',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Výchozí licence používaná pro alba',
         'license_help' => 'Potřebujete pomoc s výběrem?',
     ],
