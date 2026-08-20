@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 056 | API v3 Asset Retrieval | Planning | P2 | ildyria | 2026-08-20 | 2026-08-20 | Spec/plan/tasks drafted; Q-056-01..06 resolved (ADR-0008, ADR-0009); analysis gate pending |
 
 ## Paused Features
 
