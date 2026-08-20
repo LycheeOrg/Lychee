@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Rond de hoeken van foto- en albumminiaturen af',
         'album_border_enabled' => 'Toon een rand rond foto- en albumminiaturen',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Standaardlicentie gebruikt voor albums',
         'license_help' => 'Hulp nodig bij het kiezen?',
     ],

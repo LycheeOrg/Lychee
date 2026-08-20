@@ -59,6 +59,8 @@ return [
         'rounded_corners_enabled' => 'Скруглять углы миниатюр фотографий и альбомов',
         'album_border_enabled' => 'Показывать рамку вокруг миниатюр фотографий и альбомов',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Лицензия по умолчанию для альбомов',
         'license_help' => 'Нужна помощь в выборе?',
     ],
