@@ -18,7 +18,6 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Album;
 use App\Models\PersonAlbum;
-use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\TagAlbum;
 use App\Models\User;
@@ -33,27 +32,36 @@ use Illuminate\Validation\Rules\Enum;
 /**
  * Request for GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant} (Feature 056).
  *
- * Resolves the target Photo, SizeVariant and the album the caller claims to
- * be viewing the photo through, validates the optional temporary-link
- * signature (FR-056-04/05), then authorizes against
- * PhotoPolicy::CAN_SEE (thumbnail-class variants) or
- * PhotoPolicy::CAN_ACCESS_FULL_PHOTO (full-resolution variants).
+ * Resolves the SizeVariant and the album the caller claims to be viewing the
+ * photo through, validates the optional temporary-link signature
+ * (FR-056-04/05), then authorizes via {@link AlbumPolicy::CAN_ACCESS} on
+ * that album plus {@link self::isPhotoOfAlbum()} confirming the photo is
+ * actually part of it. `size_variant` is restricted to thumbnail-class
+ * tokens (see {@link \App\Enum\SizeVariantAssetType}), so — unlike a plain
+ * {@link \App\Policies\PhotoPolicy} check — there is no thumb-vs-full-photo
+ * access split to make here.
  *
  * The caller-supplied album_id lets us resolve the album-level access check
- * through {@link AlbumFactory::findAbstractAlbumOrFail()} and
- * {@link AlbumPolicy}, which already handle regular albums, tag albums and
- * smart albums uniformly. Photo-level membership is then checked separately
- * (see {@link self::isPhotoOfAlbum()}) with a raw, unfiltered query — it
- * deliberately does not reuse Album::photos()/all_photos(), since those bake
- * in NSFW/visibility filtering that would incorrectly hide a photo that has
- * been set (explicitly or automatically) as an album's cover.
+ * through {@link \App\Factories\AlbumFactory::findAbstractAlbumOrFail()} and
+ * {@link AlbumPolicy}, which already handle regular albums, tag albums,
+ * person albums and smart albums uniformly. Photo-level membership
+ * ({@link self::isPhotoOfAlbum()}) is then checked separately: for a real
+ * {@link Album} via a raw `photo_album` pivot query, deliberately bypassing
+ * the NSFW/visibility filtering that `Album::photos()`/`all_photos()` bake
+ * in — that filtering would incorrectly hide a photo that has been set
+ * (explicitly or automatically) as the album's cover.
+ * {@link \App\Models\TagAlbum}/{@link \App\Models\PersonAlbum} get the same
+ * cover exception (their own `cover_id` and/or the current viewer's cached
+ * computed thumb in `album_user_thumbs`), but otherwise still fall back to
+ * their own (filtered) `photos()` relation — reimplementing their
+ * tag-match/person-match logic raw, to strip that filtering too, was out of
+ * scope.
  *
- * This is a hot, high-frequency endpoint (one request per rendered image),
- * so it deliberately avoids hydrating full Eloquent models where a raw,
- * base query-builder read is enough: no `Photo` model is ever built (only
- * `id`/`owner_id` are read via {@link \Illuminate\Database\Eloquent\Builder::toBase()}),
- * and nothing here implements {@link \App\Contracts\Http\Requests\HasPhoto}
- * since no caller needs the full model.
+ * This is a hot, high-frequency endpoint (one request per rendered image):
+ * `photo_id` is taken straight from the validated route parameter with no
+ * extra Photo lookup, and {@link self::sizeVariant()}'s query is narrowed to
+ * only the columns {@link \App\Image\Watermarker::get_path()} and the
+ * controller actually read.
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
