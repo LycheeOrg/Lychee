@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Редактиране на снимка',
+            'edit_title_with_name' => 'Редактиране на снимка: :title',
             'set_title' => 'Задай заглавие',
             'set_description' => 'Задай описание',
             'set_license' => 'Задай лиценз',

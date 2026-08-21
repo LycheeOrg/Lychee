@@ -140,6 +140,16 @@ const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const uploadTz = ref<string | undefined>(undefined);
 const takenAtTz = ref<string | undefined>(undefined);
 
+// Mirrors the wall-clock value shown/edited in the DatePicker (which reads/writes Date via local
+// getters), so saving doesn't re-derive it through toISOString()'s UTC conversion - that would
+// shift the time by the browser's UTC offset before the separately-tracked uploadTz/takenAtTz
+// suffix is appended, corrupting the saved value whenever the browser isn't in UTC.
+function dateToLocalIsoValue(d: Date | undefined): string {
+	if (d === undefined) return "";
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 function load(photoToEdit: App.Http.Resources.Models.PhotoResource) {
 	photo_id.value = photoToEdit.id;
 	title.value = photoToEdit.title;
@@ -170,7 +180,7 @@ function save() {
 
 	let takenDate = null;
 	if (takenAtDate.value !== undefined) {
-		takenDate = takenAtDate.value.toISOString().slice(0, 19) + (takenAtTz.value ?? "");
+		takenDate = dateToLocalIsoValue(takenAtDate.value) + (takenAtTz.value ?? "");
 	}
 
 	PhotoService.update(photo_id.value, getParentId() ?? null, {
@@ -178,7 +188,7 @@ function save() {
 		description: description.value ?? "",
 		tags: tags.value ?? [],
 		license: license.value?.value ?? "none",
-		upload_date: uploadDate.value?.toISOString().slice(0, 19) + uploadTz.value,
+		upload_date: dateToLocalIsoValue(uploadDate.value) + uploadTz.value,
 		taken_at: is_taken_at_modified.value ? takenDate : null,
 	}).then((response) => {
 		toast.add({ severity: "success", summary: "Success", life: 3000 });

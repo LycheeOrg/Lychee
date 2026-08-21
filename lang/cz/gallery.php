@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Upravit fotografii',
+            'edit_title_with_name' => 'Upravit fotografii: :title',
             'set_title' => 'Nastavit název',
             'set_description' => 'Nastavit popis',
             'set_license' => 'Nastavit licenci',
