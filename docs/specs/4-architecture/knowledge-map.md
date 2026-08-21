@@ -7,9 +7,12 @@ This document tracks modules, dependencies, and architectural relationships acro
 ### Backend (Laravel/PHP)
 
 #### Application Layer
+- **API v3** (`routes/api_v3.php`, Feature 056) - Greenfield `/api/v3/...` surface, registered alongside `routes/api_v2.php` in `RouteServiceProvider` (`Route::middleware('api')->prefix('api/v3')->group(...)`); additive only, v2 untouched. Establishes the convention that per-route binary-passthrough endpoints opt out of the `api` group's `accept_content_type:json`/`content_type:json` middleware via `->withoutMiddleware(...)` and instead apply the new `json_errors` middleware (`App\Http\Middleware\EnsureJsonErrorResponses`) so error responses still render as JSON.
 - **Controllers** (`app/Http/Controllers/`) - Handle HTTP requests and route to services
   - **AdminDashboardController** (`app/Http/Controllers/Admin/AdminDashboardController.php`) - `GET /api/v2/Admin/Stats`; delegates to `AdminStatsService`, wraps result in `AdminStatsResource`.
+  - **PhotoAssetController** (`app/Http/Controllers/Gallery/PhotoAssetController.php`, Feature 056) - `GET /api/v3/Photo/{photo_id}/Asset/{size_variant}`; resolves the watermark-aware path via `Watermarker::get_path()`, then either streams the local file (`FlysystemFile`/`response()->file()`) or redirects (302) to a native S3 temporary URL for S3-backed size variants (mirrors `UrlGenerator::getAwsUrl()`'s `AwsS3V3Adapter` detection).
 - **Requests** (`app/Http/Requests/`) - Validate and sanitize incoming requests
+  - **GetPhotoAssetRequest** (`app/Http/Requests/Photo/GetPhotoAssetRequest.php`, Feature 056) - Resolves `Photo`/`SizeVariant` from route params; authorizes via `PhotoPolicy::CAN_SEE`/`CAN_ACCESS_FULL_PHOTO` depending on the size-variant class. Validates an optional paired `X-Timestamp`/`X-Mac` temporary-link signature (via `TemporaryLinkSigner`) ahead of the policy check; `signatureRequired()` (ADR-0008) decides per-caller whether a session alone suffices. Overrides `failedAuthorization()` to key 401-vs-403 off *which* check failed rather than session state (`Auth::check()`), since a signature-valid guest denied by policy needs 403 while a signature-required session missing its signature needs 401.
 - **Resources** (`app/Http/Resources/`) - Transform models to API responses (use Spatie Data)
 - **Middleware** (`app/Http/Middleware/`) - Request/response filtering and authentication
 
@@ -32,6 +35,7 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `auto_cover_id_max_privilege` - Cover photo for admin/owner view (ignores access control)
     - `auto_cover_id_least_privilege` - Cover photo for public view (respects PhotoQueryPolicy + AlbumQueryPolicy)
 - **Services** (`app/Services/`) - Business logic and orchestration
+  - **TemporaryLinkSigner** (`app/Services/TemporaryLinkSigner.php`, Feature 056) - `sign(int $timestamp): string`/`verify(int $timestamp, string $mac): bool`; stateless HMAC-SHA256 of the timestamp only (not `photo_id`/`size_variant`-scoped), keyed by `config('app.key')`, `hash_equals()` comparison. TTL/future-timestamp checks live in the caller (`GetPhotoAssetRequest`), not here.
   - **AdminStatsService** (`app/Services/AdminStatsService.php`) - Aggregates system-wide metrics (photos, albums, users, storage, jobs) with 5-minute cache under key `admin.stats`. Supports forced refresh via `$force = true`. Returns `AdminStatsOverview` DTO; partial failures captured in `errors[]` and suppress caching.
   - **LDAP Service** (`app/Services/Auth/LdapService.php`) - Enterprise directory integration (wrapper over LdapRecord)
     - Search-first authentication pattern: searches for user by username → gets DN → binds with DN + password

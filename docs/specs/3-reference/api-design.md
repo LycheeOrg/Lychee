@@ -162,8 +162,45 @@ For comprehensive documentation about custom validation rules, see [app/Rules/RE
 
 Lychee uses route-based versioning:
 
-- **v2 API**: Current version (`/api/v2/...`)
-- Future versions can be added without breaking existing integrations
+- **v2 API**: Current version (`/api/v2/...`), Array-of-Structs (AoS) response convention — collection endpoints return arrays of self-contained objects (see `PaginatedPhotosResource`/`PaginatedAlbumsResource` below).
+- **v3 API**: Greenfield surface (`/api/v3/...`), additive and coexisting with v2 — nothing in v2 is deprecated or changed by v3's introduction. v3 establishes a Struct-of-Arrays (SoA) response convention for future *collection* endpoints (ADR-0009), though the first v3 endpoint below is single-item and doesn't need it.
+- Future versions can be added without breaking existing integrations.
+
+### API v3: Photo Asset Retrieval
+
+**GET** `/api/v3/Photo/{photo_id}/Asset/{size_variant}`
+
+Retrieves a single photo size-variant's binary file (thumbnail through original), watermark-aware. Registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\PhotoAssetController::show()`, `App\Http\Requests\Photo\GetPhotoAssetRequest`), under the `api` middleware group but with `accept_content_type:json`/`content_type:json` opted out of on this route specifically (binary passthrough, not JSON) — a `json_errors` middleware (`App\Http\Middleware\EnsureJsonErrorResponses`) still forces every *error* response to render as Lychee's standard JSON error body regardless of the caller's actual `Accept` header.
+
+**Path parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|--------------|
+| `photo_id` | string | The photo's ID (`RandomIDRule`) |
+| `size_variant` | string | A `SizeVariantType` case name, case-insensitive (`raw`, `original`, `medium2x`, `medium`, `small2x`, `small`, `thumb2x`, `thumb`, `placeholder`) |
+
+**Headers (temporary-link mode, optional but paired):**
+
+| Header | Type | Description |
+|--------|------|-------------|
+| `X-Timestamp` | integer | Unix seconds the link was signed at |
+| `X-Mac` | string | Hex HMAC-SHA256 of `X-Timestamp`, keyed by `config('app.key')` (`App\Services\TemporaryLinkSigner`) |
+
+Two access modes, both always gated by `PhotoPolicy` (`CAN_SEE` for thumbnail-class variants, `CAN_ACCESS_FULL_PHOTO` for full-resolution variants) — a deliberate strengthening over v2's `SecurePathController`, which enforces no application-level policy at all:
+
+1. **Authenticated (session)**: no headers needed, unless `signatureRequired()` (config-driven, see below) says otherwise for this caller.
+2. **Unauthenticated (temporary link)**: guests are only ever authorized via a valid, unexpired `X-Timestamp`/`X-Mac` pair; reuses `temporary_image_link_enabled`/`_when_logged_in`/`_when_admin`/`_life_in_seconds` (no new config keys).
+
+**Response codes:**
+
+| Code | Meaning |
+|------|---------|
+| 200 | Binary file streamed directly (local-disk size variant) |
+| 302 | Redirect to a native S3 temporary URL (S3-backed size variant, no proxying through Lychee) |
+| 401 | No/invalid/expired/future-dated temporary-link signature, or session insufficient per config |
+| 403 | `PhotoPolicy` denies the resolved caller |
+| 404 | Unknown `photo_id`, or the photo has no `SizeVariant` row of the requested type |
+| 422 | Unrecognized `size_variant` token, or only one of `X-Timestamp`/`X-Mac` present |
 
 ## Pagination Endpoints
 
