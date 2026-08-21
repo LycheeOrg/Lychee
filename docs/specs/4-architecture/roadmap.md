@@ -6,7 +6,8 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 057 | Album Listing v3 | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-22 | 2026-08-22 | Spec/plan/tasks drafted, all 5 open questions (Q-057-01..05) resolved. Implementation not started. |
+| 058 | Album Listing v3 Adoption | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-22 | 2026-08-22 | Spec/plan/tasks drafted, both open questions (Q-058-01..02) resolved. Depends on Feature 057 being implemented first. Implementation not started. |
 
 ## Paused Features
 
