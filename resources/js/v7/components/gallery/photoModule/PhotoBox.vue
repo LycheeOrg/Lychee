@@ -74,6 +74,7 @@
 		<!-- This is a livephoto : medium -->
 		<div
 			v-if="photoStore.imageViewMode == ImageViewMode.LivePhotoMedium"
+			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
 			data-proactively-loads-video="true"
@@ -86,6 +87,7 @@
 		<!-- This is a livephoto : full -->
 		<div
 			v-if="photoStore.imageViewMode == ImageViewMode.LivePhotoOriginal"
+			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
 			data-proactively-loads-video="true"
@@ -116,6 +118,7 @@ import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
+import * as LivePhotosKit from "livephotoskit";
 import { storeToRefs } from "pinia";
 import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
@@ -127,6 +130,7 @@ const { isLTR } = useLtRorRtL();
 
 const swipe = ref<HTMLElement | null>(null);
 const videoElement = ref<HTMLVideoElement | null>(null);
+const livePhotoEl = ref<HTMLElement | null>(null);
 const togglableStore = useTogglablesStateStore();
 
 const lycheeStore = useLycheeStateStore();
@@ -197,6 +201,22 @@ watchEffect(
 );
 
 onUnmounted(() => imageResizeObserver?.disconnect());
+
+// Live Photos aren't scanned for automatically past initial page load (LivePhotosKit only
+// auto-augments `[data-live-photo]` elements present at DOMContentLoaded), and the div here
+// is destroyed/recreated by v-if on every mode switch, so it must be augmented explicitly
+// each time it (re)appears. flush:'post' ensures the data-photo-src/data-video-src attribute
+// bindings have already been applied to the element before LivePhotosKit reads them.
+watchEffect(
+	() => {
+		const el = livePhotoEl.value;
+		if (!el) {
+			return;
+		}
+		LivePhotosKit.augmentElementAsPlayer(el);
+	},
+	{ flush: "post" },
+);
 
 watch(
 	[() => photoStore.photo?.id, isFaceEnabled],
