@@ -6,6 +6,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-059-01~~ | 059 – Resolve Desktop UX Findings | Medium | Audit finding D4 claimed right-click on a photo thumbnail doesn't open a real context menu — codebase investigation found the menu system is fully implemented and correctly wired; the "single item" observation was the correct outcome for an album/context without edit rights. Should D4 still be treated as a bug to fix? | Resolved (no — dropped from scope entirely, corrected in spec.md Overview) | 2026-08-22 | 2026-08-22 |
+| ~~Q-059-02~~ | 059 – Resolve Desktop UX Findings | Low | The "use a larger screen" banner (`settings.small_screen`) is shared by `Settings.vue`, `PrintPixelSizesAdmin.vue`, `OrderList.vue`, `admin/Purchasables.vue`, `webshop/PurchasablesList.vue` — once Orders/Purchasables tables become responsive (FR-059-05), should the banner be removed from all five, or only where the underlying page actually becomes responsive in this feature? | Resolved (A — narrow scope: remove only from `OrderList.vue`/`admin/Purchasables.vue`, the two this feature makes responsive; `Settings.vue` keeps its banner, needs its own larger effort, tracked as a Follow-up) | 2026-08-22 | 2026-08-22 |
+| ~~Q-059-03~~ | 059 – Resolve Desktop UX Findings | Medium | `LycheeState.ts`'s `is_debug_enabled` defaults to `true` for every visitor and is force-reset to `true` on any load error, so any user (not just admins) sees `Error.vue`'s full debug-detail block whenever the backend happens to be in debug mode. Should this default/reset be gated behind a permission, and if so, which one? | Resolved (A — reuse the existing `can_see_diagnostics` permission already gating the "Diagnostics" left-menu link, rather than inventing a new one) | 2026-08-22 | 2026-08-22 |
 | ~~Q-057-05~~ | 057 – Album Listing v3 | High | Discovered while scoping Feature 058: the move-target picker consumer needs a per-album thumbnail, which the original minimal shape (id/title/_lft/_rgt) didn't carry | Resolved (add `cover_ids` to the base/default response — resolved server-side via the same 3-column priority `HasAlbumThumb::getCoverTypeForAlbum()` already uses, zero extra joins since all 3 columns live on `albums`; frontend resolves actual thumbnail bytes via the separate Feature 056 v3 Asset endpoint) | 2026-08-22 | 2026-08-22 |
 | ~~Q-058-01~~ | 058 – Album Listing v3 Adoption | High | Scope & approach for migrating the 3 v2 consumers, given real UX mismatches (move-picker loses thumbnail/breadcrumb/self-exclusion; bulk-edit loses server pagination+search) — migrate all 3 with client-side compensation vs. a narrower scope | Resolved (all 3, client-side compensation, thumbnails preserved via a new `<Thumb>` component) | 2026-08-22 | 2026-08-22 |
 | ~~Q-058-02~~ | 058 – Album Listing v3 Adoption | Medium | Feature-flag granularity in `config/features.php` — one combined flag vs. one independent flag per consumer | Resolved (A — one combined flag) | 2026-08-22 | 2026-08-22 |
@@ -4931,3 +4934,39 @@ Default value: `skip`. This gives the admin explicit control over the trade-off 
 **Resolved:** 2026-06-28
 
 **Resolution:** Question no longer applies since `cover_id` stays per-model (Q-046-01 → B). `TagAlbum` defines its own `cover()` HasOne relationship and eager-loads it via `$with`. `Album` is unchanged. Encoded in FR-046-02, NFR-046-04.
+
+---
+
+### ~~Q-059-01~~ · Drop D4 (right-click context menu) from scope ✅ RESOLVED
+
+**Status:** Resolved — no fix, dropped from scope
+**Feature:** F-059 – Resolve Desktop UX Findings
+**Priority:** Medium
+**Opened:** 2026-08-22
+**Resolved:** 2026-08-22
+
+**Resolution:** A codebase investigation traced right-click's wiring end to end: `PhotoThumbPanelList.vue`'s `@contextmenu` handler bubbles through `AlbumPanel.vue` to a `UContextMenu` wrapping the whole gallery panel, which opens `contextMenu.ts`'s `photoMenu()` — a real ~10-item menu (approve, highlight, set cover/header, tag, license, apply renamer, scan faces, rename, copy, move, delete, download). What the audit observed (only a "Highlight" item) was that same menu correctly rendering after its per-item `access` filter removed every entry gated on `albumStore.rights?.can_edit`, because the tested album/context lacked edit rights — not a broken or unimplemented menu. Encoded as a correction in spec.md's Overview; no FR created for D4.
+
+---
+
+### ~~Q-059-02~~ · Scope boundary for removing the "use a larger screen" banner ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (narrow scope, tied to which tables actually become responsive)
+**Feature:** F-059 – Resolve Desktop UX Findings
+**Priority:** Low
+**Opened:** 2026-08-22
+**Resolved:** 2026-08-22
+
+**Resolution:** Option A chosen. The shared `settings.small_screen` banner is removed only from `OrderList.vue` and `admin/Purchasables.vue` — the two tables FR-059-05 makes genuinely responsive in this feature. `Settings.vue` (and `PrintPixelSizesAdmin.vue`/`webshop/PurchasablesList.vue`) keep the banner unchanged, since Settings has a structurally denser per-row-control layout that the `UTable` column-hiding fix doesn't address; fixing it is tracked as a plan.md Follow-up, not this feature. Encoded in FR-059-06.
+
+---
+
+### ~~Q-059-03~~ · `is_debug_enabled` default/reset gating ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (reuse the existing `can_see_diagnostics` permission)
+**Feature:** F-059 – Resolve Desktop UX Findings
+**Priority:** Medium
+**Opened:** 2026-08-22
+**Resolved:** 2026-08-22
+
+**Resolution:** Option A chosen. `resources/js/stores/LycheeState.ts`'s `is_debug_enabled` — currently hardcoded `true` by default and force-reset to `true` on every load error, so any visitor sees `Error.vue`'s full exception/trace block whenever the backend is in debug mode — now defaults to, and resets to, `initData.value?.settings.can_see_diagnostics ?? false`, the same permission already gating the "Diagnostics" left-menu link (`leftMenu.ts`). Reuses an existing, already-understood permission rather than inventing a new one. Non-permitted users still see `Error.vue`'s user-facing message, just without the raw trace/file-path detail. Encoded in FR-059-11.
