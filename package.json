@@ -68,6 +68,7 @@
 		"leaflet-gpx": "^2.2.0",
 		"leaflet-rotatedmarker": "^0.2.0",
 		"leaflet.markercluster": "^1.5.3",
+		"livephotoskit": "^1.5.6",
 		"pinia": "^4.0.3",
 		"pinia-plugin-persistedstate": "^4.7.1",
 		"playwright": "^1.62.1",
