@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => '编辑照片',
+            'edit_title_with_name' => '编辑照片：:title',
             'set_title' => '设置标题',
             'set_description' => '设置描述',
             'set_license' => '设置许可证',
