@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 059 | Resolve Desktop UX Findings | Planning | P2 | LycheeOrg | 2026-08-22 | 2026-08-22 | Spec, plan, tasks drafted (24 tasks across 10 increments). Analysis gate passed — 4 parallel codebase investigations re-grounded all 8 actionable findings (D1, D2, D3, D5, D6, D7, D8, D9) against actual source before drafting; D4 dropped as not-a-bug. Not yet implemented. |
 
 ## Paused Features
 

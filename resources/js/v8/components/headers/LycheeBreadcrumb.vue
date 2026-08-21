@@ -27,7 +27,6 @@
 	</nav>
 	<div class="flex sm:hidden">
 		<GoBack @go-back="emits('goBack')" />
-		<span>{{ currentTitle }}</span>
 	</div>
 </template>
 <script setup lang="ts">
