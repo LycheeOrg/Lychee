@@ -21,10 +21,10 @@ use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
  */
 class PhotoAssetController extends Controller
 {
-	public function show(GetPhotoAssetRequest $request)
+	public function show(GetPhotoAssetRequest $request, Watermarker $watermarker)
 	{
 		$size_variant = $request->sizeVariant();
-		$path = resolve(Watermarker::class)->get_path($size_variant);
+		$path = $watermarker->get_path($size_variant);
 		$disk = Storage::disk($size_variant->storage_disk->value);
 
 		/** @disregard P1013 */

@@ -34,6 +34,20 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
  * Covers Feature 056 Branch & Scenario Matrix S-056-01..17.
+ *
+ * The route is `Asset/{album_id}/{photo_id}/{size_variant}`: every request
+ * carries the album the caller claims to be viewing the photo through
+ * (see {@link \App\Http\Requests\Photo\GetPhotoAssetRequest}). `album_id` is
+ * always a real album's ID here (`album1`/`album4`) since photo1/photo4 are
+ * directly cataloged in them.
+ *
+ * `size_variant` is restricted to thumbnail-class tokens
+ * (small2x/small/thumb2x/thumb/placeholder,
+ * see {@link \App\Enum\SizeVariantAssetType}) — medium/original/raw are not
+ * served through this endpoint, so there is no thumb-vs-full-photo access
+ * split to test here (unlike a plain {@see \App\Policies\PhotoPolicy}
+ * check): album-level access via
+ * {@see \App\Policies\AlbumPolicy::CAN_ACCESS} is the only gate.
  */
 class PhotoAssetV3Test extends BaseApiWithDataTest
 {
@@ -48,6 +62,14 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		return SizeVariant::query()
 			->where('photo_id', '=', $photo->id)
 			->where('type', '=', SizeVariantType::THUMB)
+			->firstOrFail();
+	}
+
+	private function smallVariantOf(Photo $photo): SizeVariant
+	{
+		return SizeVariant::query()
+			->where('photo_id', '=', $photo->id)
+			->where('type', '=', SizeVariantType::SMALL)
 			->firstOrFail();
 	}
 
@@ -79,7 +101,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo1);
 		$this->putBytes($variant);
 
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 
 		$response->assertOk();
 		self::assertSame('thumb-bytes', $response->streamedContent());
@@ -95,7 +117,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp));
 
 		$response->assertOk();
 	}
@@ -110,7 +132,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo1);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo1->id}/Asset/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb", $this->signedHeaders(now()->timestamp));
 
 		$response->assertForbidden();
 	}
@@ -125,7 +147,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb");
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb");
 
 		$response->assertUnauthorized();
 	}
@@ -140,7 +162,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp));
 
 		$response->assertUnauthorized();
 	}
@@ -157,7 +179,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$headers = $this->signedHeaders(now()->timestamp);
 		$headers['X-Mac'] = substr($headers['X-Mac'], 0, -1) . (str_ends_with($headers['X-Mac'], 'a') ? 'b' : 'a');
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", $headers);
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $headers);
 
 		$response->assertUnauthorized();
 	}
@@ -173,7 +195,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", $this->signedHeaders(now()->timestamp - $life - 60));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp - $life - 60));
 
 		$response->assertUnauthorized();
 	}
@@ -187,7 +209,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", $this->signedHeaders(now()->timestamp + 60));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp + 60));
 
 		$response->assertUnauthorized();
 	}
@@ -201,7 +223,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb", ['X-Timestamp' => (string) now()->timestamp]);
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", ['X-Timestamp' => (string) now()->timestamp]);
 
 		$response->assertUnprocessable();
 	}
@@ -218,7 +240,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo1);
 		$this->putBytes($variant);
 
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 
 		$response->assertUnauthorized();
 	}
@@ -234,18 +256,19 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo1);
 		$this->putBytes($variant);
 
-		$response = $this->actingAs($this->admin)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
+		$response = $this->actingAs($this->admin)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 
 		$response->assertOk();
 	}
 
 	/**
-	 * S-056-12: Request for size_variant=RAW on a photo with no stored RAW
-	 * variant → 404 (photo1's factory-created variants never include RAW).
+	 * S-056-12: Request for size_variant=PLACEHOLDER on a photo with no
+	 * stored PLACEHOLDER variant → 404 (photo1's factory-created variants
+	 * never include PLACEHOLDER).
 	 */
 	public function testMissingSizeVariantRowReturnsNotFound(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/raw");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/placeholder");
 
 		$response->assertNotFound();
 	}
@@ -255,7 +278,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 */
 	public function testUnrecognizedSizeVariantTokenReturnsUnprocessable(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/huge");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/huge");
 
 		$response->assertUnprocessable();
 	}
@@ -265,7 +288,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 */
 	public function testUnknownPhotoIdReturnsNotFound(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getV3('Photo/000000000000000000000000/Asset/thumb');
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/000000000000000000000000/thumb");
 
 		$response->assertNotFound();
 	}
@@ -277,10 +300,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 */
 	public function testS3BackedVariantRedirectsToTemporaryUrl(): void
 	{
-		$variant = SizeVariant::query()
-			->where('photo_id', '=', $this->photo1->id)
-			->where('type', '=', SizeVariantType::MEDIUM)
-			->firstOrFail();
+		$variant = $this->smallVariantOf($this->photo1);
 		$variant->storage_disk = StorageDiskType::S3;
 		$variant->save();
 
@@ -291,6 +311,11 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 				->once()
 				->with($variant->short_path, \Mockery::any())
 				->andReturn('https://example-bucket.s3.amazonaws.com/signed-url');
+			// Resolving album1 also eagerly loads its cover/thumb (Album::$with),
+			// which may compute a URL for whichever photo/variant was picked as
+			// the album's thumbnail — incidental to what this test asserts, but
+			// still needs a stub since it can land on the S3 disk too.
+			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
 		});
 
 		// Only the 's3' disk is faked; every other disk name (e.g. the
@@ -303,13 +328,13 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
 		);
 
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/medium");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small");
 
 		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/signed-url');
 	}
 
 	/**
-	 * S-056-16: Authorized request for size_variant=MEDIUM where the
+	 * S-056-16: Authorized request for size_variant=SMALL where the
 	 * requesting viewer meets watermark conditions → served file is the
 	 * watermarked path, not the plain stored path.
 	 */
@@ -318,17 +343,14 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		Configs::set('watermark_enabled', '1');
 		Configs::set('watermark_logged_in_users_enabled', '1');
 
-		$variant = SizeVariant::query()
-			->where('photo_id', '=', $this->photo1->id)
-			->where('type', '=', SizeVariantType::MEDIUM)
-			->firstOrFail();
+		$variant = $this->smallVariantOf($this->photo1);
 		$variant->short_path_watermarked = 'watermarked/' . $variant->short_path;
 		$variant->save();
 
 		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path, 'plain-bytes');
 		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path_watermarked, 'watermarked-bytes');
 
-		$response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/medium");
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small");
 
 		$response->assertOk();
 		self::assertSame('watermarked-bytes', $response->streamedContent());
@@ -349,7 +371,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 * - Logged-in non-admin: 401 iff (enabled && when_logged_in), else 200
 	 *   (session alone suffices). `when_admin` is irrelevant to this caller.
 	 * - Admin: 401 iff (enabled && when_admin), else 200 (session alone
-	 *   suffices, admin bypasses PhotoPolicy too). `when_logged_in` is
+	 *   suffices, admin bypasses AlbumPolicy too). `when_logged_in` is
 	 *   irrelevant to this caller.
 	 */
 	public function testSignatureRequiredConfigCallerStateMatrix(): void
@@ -368,14 +390,14 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 					$case = 'enabled=' . var_export($enabled, true) . ' when_logged_in=' . var_export($when_logged_in, true) . ' when_admin=' . var_export($when_admin, true);
 
 					Auth::logout();
-					$guest_response = $this->getV3("Photo/{$this->photo4->id}/Asset/thumb");
+					$guest_response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb");
 					self::assertSame(401, $guest_response->getStatusCode(), "guest, {$case}");
 
-					$non_admin_response = $this->actingAs($this->userMayUpload1)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
+					$non_admin_response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 					$expected_non_admin = ($enabled && $when_logged_in) ? 401 : 200;
 					self::assertSame($expected_non_admin, $non_admin_response->getStatusCode(), "non-admin, {$case}");
 
-					$admin_response = $this->actingAs($this->admin)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
+					$admin_response = $this->actingAs($this->admin)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 					$expected_admin = ($enabled && $when_admin) ? 401 : 200;
 					self::assertSame($expected_admin, $admin_response->getStatusCode(), "admin, {$case}");
 				}
@@ -384,26 +406,28 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-056-17: The same photo/session returns 200 for THUMB (CAN_SEE) but
-	 * 403 for ORIGINAL (CAN_ACCESS_FULL_PHOTO) when the album disables
-	 * full-resolution access.
+	 * album_id must actually contain photo_id: a real album/photo pair that
+	 * exist independently, but where the photo isn't cataloged in the given
+	 * album (nor is it that album's cover), is forbidden even though both
+	 * IDs individually resolve and the caller can access the album itself.
 	 */
-	public function testCanSeeVsCanAccessFullPhotoSplit(): void
+	public function testPhotoNotInGivenAlbumIsForbidden(): void
 	{
-		$this->putBytes($this->thumbVariantOf($this->photo1));
-		$original = SizeVariant::query()
-			->where('photo_id', '=', $this->photo1->id)
-			->where('type', '=', SizeVariantType::ORIGINAL)
-			->firstOrFail();
-		$this->putBytes($original, 'original-bytes');
+		$variant = $this->thumbVariantOf($this->photo2);
+		$this->putBytes($variant);
 
-		// perm1 grants userMayUpload2 view access to album1 but not full-photo access.
-		$this->perm1->update(['grants_full_photo_access' => false]);
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb");
 
-		$thumb_response = $this->actingAs($this->userMayUpload2)->getV3("Photo/{$this->photo1->id}/Asset/thumb");
-		$thumb_response->assertOk();
+		$response->assertForbidden();
+	}
 
-		$original_response = $this->actingAs($this->userMayUpload2)->getV3("Photo/{$this->photo1->id}/Asset/original");
-		$original_response->assertForbidden();
+	/**
+	 * Unknown album_id → 404, same as an unknown photo_id.
+	 */
+	public function testUnknownAlbumIdReturnsNotFound(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/000000000000000000000000/' . $this->photo1->id . '/thumb');
+
+		$response->assertNotFound();
 	}
 }

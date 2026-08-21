@@ -8,36 +8,55 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Contracts\Http\Requests\HasPhoto;
+use App\Constants\PhotoAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
+use App\Enum\SizeVariantAssetType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Models\Album;
+use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Models\TagAlbum;
 use App\Models\User;
-use App\Policies\PhotoPolicy;
-use App\Repositories\ConfigManager;
+use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
-use App\Rules\SizeVariantTypeNameRule;
 use App\Services\TemporaryLinkSigner;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 
 /**
- * Request for GET /api/v3/Photo/{photo_id}/Asset/{size_variant} (Feature 056).
+ * Request for GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant} (Feature 056).
  *
- * Resolves the target Photo and SizeVariant, validates the optional
- * temporary-link signature (FR-056-04/05), then authorizes against
+ * Resolves the target Photo, SizeVariant and the album the caller claims to
+ * be viewing the photo through, validates the optional temporary-link
+ * signature (FR-056-04/05), then authorizes against
  * PhotoPolicy::CAN_SEE (thumbnail-class variants) or
  * PhotoPolicy::CAN_ACCESS_FULL_PHOTO (full-resolution variants).
+ *
+ * The caller-supplied album_id lets us resolve the album-level access check
+ * through {@link AlbumFactory::findAbstractAlbumOrFail()} and
+ * {@link AlbumPolicy}, which already handle regular albums, tag albums and
+ * smart albums uniformly. Photo-level membership is then checked separately
+ * (see {@link self::isPhotoOfAlbum()}) with a raw, unfiltered query — it
+ * deliberately does not reuse Album::photos()/all_photos(), since those bake
+ * in NSFW/visibility filtering that would incorrectly hide a photo that has
+ * been set (explicitly or automatically) as an album's cover.
+ *
+ * This is a hot, high-frequency endpoint (one request per rendered image),
+ * so it deliberately avoids hydrating full Eloquent models where a raw,
+ * base query-builder read is enough: no `Photo` model is ever built (only
+ * `id`/`owner_id` are read via {@link \Illuminate\Database\Eloquent\Builder::toBase()}),
+ * and nothing here implements {@link \App\Contracts\Http\Requests\HasPhoto}
+ * since no caller needs the full model.
  */
-class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
+class GetPhotoAssetRequest extends BaseApiRequest
 {
-	use HasPhotoTrait;
-
 	private const TIMESTAMP_HEADER = 'X-Timestamp';
 	private const MAC_HEADER = 'X-Mac';
 
@@ -45,15 +64,8 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	private const TIMESTAMP_ATTRIBUTE = 'temporary_link_timestamp';
 	private const MAC_ATTRIBUTE = 'temporary_link_mac';
 
-	/** @var SizeVariantType[] Variants gated by PhotoPolicy::CAN_SEE rather than CAN_ACCESS_FULL_PHOTO. */
-	private const THUMBNAIL_CLASS = [
-		SizeVariantType::THUMB,
-		SizeVariantType::THUMB2X,
-		SizeVariantType::SMALL,
-		SizeVariantType::SMALL2X,
-		SizeVariantType::PLACEHOLDER,
-	];
-
+	private AbstractAlbum $album;
+	private string $photo_id;
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
 
@@ -81,20 +93,84 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
+		/** @var User|null $user */
 		$user = Auth::user();
-		$config_manager = resolve(ConfigManager::class);
 
-		if ($this->signatureRequired($user, $config_manager) && !$this->hasValidSignature($config_manager)) {
+		if ($this->signatureRequired($user) && !$this->isSignatureValid()) {
 			$this->signature_check_failed = true;
 
 			return false;
 		}
 
-		$ability = in_array($this->size_variant_type, self::THUMBNAIL_CLASS, true)
-			? PhotoPolicy::CAN_SEE
-			: PhotoPolicy::CAN_ACCESS_FULL_PHOTO;
+		// The album must itself be accessible to the caller (owner, shared
+		// permission, or public); membership is then checked separately,
+		// deliberately bypassing the NSFW/visibility filtering that
+		// Album::photos()/all_photos() bake in — that filtering answers a
+		// different question ("should this photo surface in a listing?")
+		// than the one we're asking here ("is this photo part of what
+		// album_id legitimately represents?").
+		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]) &&
+			$this->isPhotoOfAlbum($this->album);
+	}
 
-		return Gate::check($ability, [Photo::class, $this->photo]);
+	/**
+	 * Whether `$this->photo_id` is part of `$album`, without any
+	 * visibility/searchability filtering (see {@link self::authorize()}).
+	 *
+	 * For a regular {@link Album}, this also allows the photo through if it
+	 * is that album's cover — hardcoded (`cover_id`) or automatically
+	 * selected (`auto_cover_id_max_privilege`/`auto_cover_id_least_privilege`)
+	 * — since a cover photo legitimately represents the album even when it
+	 * physically lives in a descendant album, without needing to walk the
+	 * `_lft`/`_rgt` subtree to find it. {@link TagAlbum} and
+	 * {@link PersonAlbum} have no descendants, but the same cover exception
+	 * applies: TagAlbum's own hardcoded `cover_id`, and — for both — the
+	 * current viewer's cached computed thumb (`album_user_thumbs`, the
+	 * tag/person equivalent of `auto_cover_id_*`; see
+	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}).
+	 */
+	private function isPhotoOfAlbum(AbstractAlbum $album): bool
+	{
+		if ($album instanceof Album) {
+			if (in_array($this->photo_id, [
+				$album->cover_id,
+				$album->auto_cover_id_max_privilege,
+				$album->auto_cover_id_least_privilege,
+			], true)) {
+				return true;
+			}
+
+			return DB::table(PhotoAlbum::PHOTO_ALBUM)
+				->where(PhotoAlbum::ALBUM_ID, $album->id)
+				->where(PhotoAlbum::PHOTO_ID, $this->photo_id)
+				->exists();
+		}
+
+		if ($album instanceof TagAlbum && $album->cover_id === $this->photo_id) {
+			return true;
+		}
+
+		if (($album instanceof TagAlbum || $album instanceof PersonAlbum) && $this->isComputedAlbumThumb($album->id)) {
+			return true;
+		}
+
+		return $album->photos()->whereKey($this->photo_id)->exists();
+	}
+
+	/**
+	 * Whether `$this->photo_id` is the current viewer's cached computed
+	 * thumb for `$album_id` — the tag/person-album equivalent of Album's
+	 * `auto_cover_id_*` fields (see {@link \App\Models\AlbumUserThumb}).
+	 * `Auth::id()` is `null` for a guest, matching the cache's convention
+	 * for the public/guest view of the album.
+	 */
+	private function isComputedAlbumThumb(string $album_id): bool
+	{
+		return DB::table('album_user_thumbs')
+			->where('album_id', $album_id)
+			->where('user_id', Auth::id())
+			->where('photo_id', $this->photo_id)
+			->exists();
 	}
 
 	/**
@@ -117,8 +193,9 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	public function rules(): array
 	{
 		return [
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => ['required', 'string', new SizeVariantTypeNameRule()],
+			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => ['required', 'string', new Enum(SizeVariantAssetType::class)],
 			self::TIMESTAMP_ATTRIBUTE => ['nullable', 'integer', 'required_with:' . self::MAC_ATTRIBUTE],
 			self::MAC_ATTRIBUTE => ['nullable', 'string', 'required_with:' . self::TIMESTAMP_ATTRIBUTE],
 		];
@@ -132,6 +209,7 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	{
 		/** @disregard */
 		$this->merge([
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => $this->route(RequestAttribute::ALBUM_ID_ATTRIBUTE),
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => $this->route(RequestAttribute::PHOTO_ID_ATTRIBUTE),
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => $this->route(RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE),
 			self::TIMESTAMP_ATTRIBUTE => $this->header(self::TIMESTAMP_HEADER),
@@ -144,27 +222,26 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var string $photo_id */
-		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
+		/** @var string $album_id */
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		$this->photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		/** @var string $size_variant_token */
 		$size_variant_token = $values[RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE];
 
-		$this->photo = Photo::query()->with(['albums'])->findOrFail($photo_id);
-		/** @var SizeVariantType $size_variant_type the token already passed rules()'s SizeVariantTypeNameRule */
-		$size_variant_type = SizeVariantTypeNameRule::resolve($size_variant_token);
-		$this->size_variant_type = $size_variant_type;
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
+		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
+		// SizeVariant must stay a real model: Watermarker::get_path() and the
+		// controller rely on its enum casts (type, storage_disk). We still
+		// limit the hydrated columns to only what those two call sites read.
 		$this->size_variant = SizeVariant::query()
-			->where('photo_id', '=', $this->photo->id)
+			->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
+			->where('photo_id', '=', $this->photo_id)
 			->where('type', '=', $this->size_variant_type)
 			->firstOrFail();
 
-		/** @var int|null $timestamp */
-		$timestamp = $values[self::TIMESTAMP_ATTRIBUTE] ?? null;
-		/** @var string|null $mac */
-		$mac = $values[self::MAC_ATTRIBUTE] ?? null;
-		$this->timestamp = $timestamp;
-		$this->mac = $mac;
+		$this->timestamp = $values[self::TIMESTAMP_ATTRIBUTE] ?? null;
+		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
 	}
 
 	/**
@@ -172,27 +249,27 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	 * temporary-link signature to be authorized (ADR-0008).
 	 *
 	 * Guests are only ever authorized via a valid temporary link (FR-056-05)
-	 * — always `true`, regardless of config; {@link self::hasValidSignature()}
+	 * — always `true`, regardless of config; {@link self::isSignatureValid()}
 	 * separately rejects them outright when the feature is globally
 	 * disabled. For authenticated users, this mirrors
 	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
 	 * generation-time predicate, re-purposed for validation.
 	 */
-	private function signatureRequired(?User $user, ConfigManager $config_manager): bool
+	private function signatureRequired(?User $user): bool
 	{
 		if ($user === null) {
 			return true;
 		}
 
-		if (!$config_manager->getValueAsBool('temporary_image_link_enabled')) {
+		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
 			return false;
 		}
 
 		if ($user->may_administrate) {
-			return $config_manager->getValueAsBool('temporary_image_link_when_admin');
+			return $this->configs()->getValueAsBool('temporary_image_link_when_admin');
 		}
 
-		return $config_manager->getValueAsBool('temporary_image_link_when_logged_in');
+		return $this->configs()->getValueAsBool('temporary_image_link_when_logged_in');
 	}
 
 	/**
@@ -202,9 +279,9 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 	 * failure here, not a pass), the MAC must verify, and the timestamp must
 	 * be neither expired nor in the future (FR-056-04).
 	 */
-	private function hasValidSignature(ConfigManager $config_manager): bool
+	public function isSignatureValid(): bool
 	{
-		if (!$config_manager->getValueAsBool('temporary_image_link_enabled')) {
+		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
 			return false;
 		}
 
@@ -221,7 +298,7 @@ class GetPhotoAssetRequest extends BaseApiRequest implements HasPhoto
 			return false;
 		}
 
-		$life_in_seconds = $config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
+		$life_in_seconds = $this->configs()->getValueAsInt('temporary_image_link_life_in_seconds');
 
 		return ($now - $this->timestamp) <= $life_in_seconds;
 	}

@@ -26,6 +26,6 @@ use Illuminate\Support\Facades\Route;
 // `json_errors` still forces every *error* response (404/401/403/422) to
 // render as Lychee's standard JSON error body (FR-056-02), independent of
 // what the client actually sent as its Accept header.
-Route::get('/Photo/{photo_id}/Asset/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
+Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
 	->withoutMiddleware(['accept_content_type:json', 'content_type:json'])
 	->middleware('json_errors');
