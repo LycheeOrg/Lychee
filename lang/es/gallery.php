@@ -289,6 +289,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Editar foto',
+            'edit_title_with_name' => 'Editar foto: :title',
             'set_title' => 'Título del conjunto',
             'set_description' => 'Descripción del conjunto',
             'set_license' => 'Establecer licencia',

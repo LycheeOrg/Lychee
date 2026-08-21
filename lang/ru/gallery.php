@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Редактировать фото',
+            'edit_title_with_name' => 'Редактировать фото: :title',
             'set_title' => 'Установить название',
             'set_description' => 'Установить описание',
             'set_license' => 'Установить лицензию',

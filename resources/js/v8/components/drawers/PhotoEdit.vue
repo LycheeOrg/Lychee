@@ -1,8 +1,8 @@
 <template>
-	<USlideover v-model:open="isEditOpen" :dismissible="false" side="right" class="w-full max-w-4xl">
+	<UModal v-model:open="isEditOpen" fullscreen :dismissible="false" :title="modalTitle" :close="{ icon: 'lucide:x' }">
 		<template #body>
-			<UCard v-if="photo" id="lychee_sidebar" class="h-full wrap-break-word">
-				<form class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,1fr)] justify-center">
+			<div class="w-full max-w-4xl mx-auto">
+				<form v-if="photo" class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,1fr)] justify-center">
 					<label for="title" class="font-bold self-center">{{ $t("gallery.photo.edit.set_title") }}</label>
 					<UInput id="title" v-model="title" :color="!title ? 'error' : undefined" />
 
@@ -67,9 +67,9 @@
 						{{ $t("dialogs.button.save") }}
 					</UButton>
 				</form>
-			</UCard>
+			</div>
 		</template>
-	</USlideover>
+	</UModal>
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref, Ref, watch } from "vue";
@@ -94,6 +94,11 @@ const toast = useAppToast();
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const isEditOpen = defineModel("isEditOpen", { default: false }) as Ref<boolean>;
+
+// "Edit Photo: <title>", falling back to the plain title while the photo is still loading.
+const modalTitle = computed(() =>
+	photo.value?.title ? trans("gallery.photo.edit.edit_title_with_name", { title: photo.value.title }) : trans("gallery.photo.edit.edit_title"),
+);
 
 const photo_id = ref<string | undefined>(undefined);
 const title = ref<string | undefined>(undefined);
@@ -178,7 +183,7 @@ function save() {
 
 	let takenDate = null;
 	if (takenAtDate.value !== undefined) {
-		takenDate = takenAtDate.value.toISOString().slice(0, 19) + (takenAtTz.value ?? "");
+		takenDate = dateToLocalInputValue(takenAtDate.value) + (takenAtTz.value ?? "");
 	}
 
 	PhotoService.update(photo_id.value, getParentId() ?? null, {
@@ -186,7 +191,7 @@ function save() {
 		description: description.value ?? "",
 		tags: tags.value ?? [],
 		license: license.value?.value ?? "none",
-		upload_date: uploadDate.value?.toISOString().slice(0, 19) + uploadTz.value,
+		upload_date: dateToLocalInputValue(uploadDate.value) + uploadTz.value,
 		taken_at: is_taken_at_modified.value ? takenDate : null,
 	}).then((response) => {
 		toast.add({ severity: "success", summary: "Success", life: 3000 });

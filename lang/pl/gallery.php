@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Edytuj zdjęcie',
+            'edit_title_with_name' => 'Edytuj zdjęcie: :title',
             'set_title' => 'Ustaw tytuł',
             'set_description' => 'Ustaw opis',
             'set_license' => 'Ustaw licencję',

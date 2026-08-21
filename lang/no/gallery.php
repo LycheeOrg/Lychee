@@ -289,6 +289,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'Rediger bilde',
+            'edit_title_with_name' => 'Rediger bilde: :title',
             'set_title' => 'Sett Tittel',
             'set_description' => 'Angi beskrivelse',
             'set_license' => 'Angi lisens',
