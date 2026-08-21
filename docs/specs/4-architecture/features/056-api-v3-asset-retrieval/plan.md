@@ -1,8 +1,8 @@
 # Feature Plan 056 – API v3 Asset Retrieval
 
 _Linked specification:_ `docs/specs/4-architecture/features/056-api-v3-asset-retrieval/spec.md`
-_Status:_ Draft
-_Last updated:_ 2026-08-20
+_Status:_ Completed
+_Last updated:_ 2026-08-21
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -39,7 +39,12 @@ Establish API v3 as a real, working, additive REST surface with one correct, ful
 ## Implementation Drift Gate
 Before I5 (final quality gate), diff `routes/api_v2.php`, `routes/web_v2.php`, `app/Http/Controllers/SecurePathController.php`, and `app/Services/UrlGenerator.php` against `master` — must be empty (NFR-056-03). Record the `git diff --stat` output (or confirmation of zero changes) in this section once run. Any unplanned deviation discovered during implementation (e.g. a needed change to a shared file) must be logged here with rationale before proceeding, per this repo's Implementation Drift Gate convention.
 
-_Not yet run — pending implementation start._
+**Run 2026-08-20 (T-056-17):** `git diff master -- routes/api_v2.php routes/web_v2.php app/Http/Controllers/SecurePathController.php app/Services/UrlGenerator.php` — empty. Confirmed zero changes to all four protected v2 files.
+
+**Deviations discovered during implementation (none touch the four protected files above, logged for completeness per Q-056-07 in open-questions.md):**
+- `app/Http/Kernel.php` — added one new `json_errors` middleware alias entry (additive; no existing alias/group entries modified).
+- `app/Providers/RouteServiceProvider.php` — added one new `Route::middleware('api')->prefix('api/v3')->group(...)` registration line (additive; the existing v2 registration lines are unchanged).
+- `app/Contracts/Http/Requests/RequestAttribute.php` — added one new `SIZE_VARIANT_TOKEN_ATTRIBUTE` constant (additive; general-purpose contract shared across versions, not v2-specific).
 
 ## Increment Map
 
