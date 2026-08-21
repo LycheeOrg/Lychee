@@ -17,6 +17,10 @@
       <exclude>./tests/Feature_v2/Base/BaseApiWithDataTest.php</exclude>
       <exclude>./tests/Feature_v2/ImageHandlers/BaseImageHandler.php</exclude>
     </testsuite>
+    <testsuite name="Feature_v3">
+      <directory suffix="Test.php">./tests/Feature_v3</directory>
+      <exclude>./tests/Feature_v3/Base/BaseApiWithDataTest.php</exclude>
+    </testsuite>
     <testsuite name="Install">
       <directory suffix="Test.php">./tests/Install</directory>
     </testsuite>

@@ -29,6 +29,7 @@ jobs:
         test-suite:
           - Unit
           - Feature_v2
+          - Feature_v3
           - Install
           - Webshop
           - ImageProcessing
@@ -40,6 +41,8 @@ jobs:
             test-suite: Unit
           - php-version: 8.4
             test-suite: Feature_v2
+          - php-version: 8.4
+            test-suite: Feature_v3
           - php-version: 8.4
             test-suite: Webshop
           - php-version: 8.4

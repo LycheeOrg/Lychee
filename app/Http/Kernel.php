@@ -97,6 +97,7 @@ class Kernel extends HttpKernel
 		'migration' => \App\Http\Middleware\MigrationStatus::class,
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
+		'json_errors' => \App\Http\Middleware\EnsureJsonErrorResponses::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
