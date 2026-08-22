@@ -1,9 +1,11 @@
 # Current Session
 
-_Last updated: 2026-08-11_
+_Last updated: 2026-08-22_
 
 ## Active Features
 
+- Feature 057 – Album Listing v3: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Not yet implemented.
+- Feature 058 – Album Listing v3 Adoption: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Depends on Feature 057 being implemented first. Not yet implemented.
 - Feature 054 – Configurable Landing Page: **Completed** (T-054-01..63 all `[x]`, incl. T-054-15a). Q-054-01 resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 049 – Migration to Nuxt UI: spec, plan, and tasks drafted (Draft status), analysis gate passed. Not yet implemented.
@@ -12,6 +14,30 @@ _Last updated: 2026-08-11_
 Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` (commit `fab22c04`), not on this branch — intentionally skipped per user instruction; not tracked here.
 
 ## Session Summary
+
+### Features 057/058 – Album Listing v3 + Adoption — Spec/Plan/Tasks Drafted (new session, 2026-08-22)
+
+**Request:** Implement a v3 album listing endpoint using a Struct-of-Arrays (SoA) response shape, leveraging `toBase()` for lightness, serving 3 consumers (move-target dropdown, admin Fix Tree page, admin Bulk Album Edit page) curated by the visitor's/user's access rights, cached via the existing `ManagedCacheService`. Followed immediately (mid-turn) by a request for Feature 058: migrate the frontend to actually consume the new endpoint, gated by a new `.env`-driven flag in `config/features.php`.
+
+**Codebase inventory before drafting:** Confirmed no `StructsOfArrays` implementation exists yet — only ADR-0009 (Feature 056) establishing the SoA-for-v3-collections convention as forward-looking; this is the first realization of it. Found the closest existing precedent for the query shape at `Admin\Maintenance\FullTree::check()` (`toBase()`, `join('base_albums',...)`, ordered by `_lft`). Read `AlbumQueryPolicy` in full (`applyVisibilityFilter`/`applyReachabilityFilter`/`applyBrowsabilityFilter`, the `computed_access_permissions` join machinery) and Feature 052/053's `ManagedCacheService`/`CacheKeyProvider`/`ManagedCacheAlbumListingInvalidator`. Precisely mapped every bulk-edit field (from today's `BulkAlbumResource`) back to its real column/table via direct migration reads (e.g. `sorting_col`/`copyright`/`photo_layout`/`photo_timeline` on `base_albums`; `album_sorting_col`/`album_thumb_aspect_ratio`/`album_timeline`/`license`/`_lft`/`_rgt` on `albums`) rather than guessing.
+
+**4 open questions resolved same-day for Feature 057 (Q-057-01..04, all via `AskUserQuestion`, all recommended options chosen):**
+- Q-057-01: rights filter = `applyVisibilityFilter()` only (not reachability/password-aware) — lighter, matches Feature 053's root-listing cache-key shape.
+- Q-057-02: two independent boolean query params (`with_parent_id` for fixTree, `for_bulk_edit` for the joins), both admin-gated, combinable — not a single `mode` enum.
+- Q-057-03: bulk-edit flag returns **full parity** with today's `BulkAlbumResource` (~19 fields) — user chose this over the lighter minimal-subset option.
+- Q-057-04: **never paginate**, any mode — always the complete curated list in one response, since the client needs the whole set to build a tree from `_lft`/`_rgt`.
+
+**A 5th question (Q-057-05) surfaced only while scoping Feature 058:** the move-target picker's current UX shows a thumbnail, which the original 4-field minimal shape had no room for. Rather than let 058 work around the gap, fixed it at the source — confirmed via `app/Relations/HasAlbumThumb.php:71-109` that `cover_id`/`auto_cover_id_max_privilege`/`auto_cover_id_least_privilege` all already live on `albums` with a pure column+session-check resolution rule (zero extra joins/queries), so Feature 057's spec/plan/tasks were amended in place to add a resolved `cover_ids` array to the *base* response (FR-057-09, S-057-15..18) — exposing only a photo ID, with actual thumbnail bytes resolved by the caller via the separate Feature 056 v3 Asset endpoint.
+
+**2 open questions resolved for Feature 058 (Q-058-01/02):**
+- Q-058-01: migrate **all 3** consumers, with client-side compensation (pagination/search/breadcrumb/subtree-exclusion moved to the frontend) — **and explicitly preserve thumbnails** (user directly corrected the initially-proposed "drop thumbnails" default: "for the thumbs, don't forget that we now have a new endpoint on v3 assets").
+- Q-058-02: **one combined feature flag** (`album-listing-v3` / `ALBUM_LISTING_V3_ENABLED`), not per-consumer flags — exposed via `ModulesRightsResource::$is_album_listing_v3_enabled`, mirroring the exact existing `is_mod_webshop_enabled`-style pattern (`app/Http/Resources/Rights/ModulesRightsResource.php`).
+
+**Frontend investigation (background `Explore` agent) for Feature 058:** found the move-picker (`SearchTargetAlbum.vue`, shared by `AlbumMove.vue`/`MoveDialog.vue`/`PhotoCopyDialog.vue`/`AlbumMergeDialog.vue` — one shared component, single point of change) calls `album-service.ts`'s `getTargetListAlbums`; Fix Tree (`FixTree.vue`) feeds a **Rust/WASM module** (`treeOperations.ts`) requiring array-of-structs shape, so Feature 058 adds a thin SoA→AoS adapter rather than touching the WASM bridge; Bulk Album Edit (`BulkAlbumEdit.vue`) genuinely relies on server-side pagination (both "numbered" and "infinite-scroll" modes) and debounced search — Feature 058 reimplements both client-side over a single fetched in-memory list, an accepted scale trade-off (NFR-058-04) inherited from Q-057-04.
+
+**Spec/plan/tasks fully drafted for both features** (`docs/specs/4-architecture/features/057-album-listing-v3/`, `058-album-listing-v3-adoption/`), `open-questions.md` updated (Q-057-01..05, Q-058-01..02 all resolved/struck), `roadmap.md` Active Features table updated with both entries.
+
+**Not yet done:** Analysis gate not run for either feature. Implementation not started for either. Feature 058 explicitly depends on Feature 057 being implemented first (T-058-01 is a dependency-gate task, not real work).
 
 ### Feature 054 – Configurable Landing Page — Fully Implemented (new session, 2026-08-11)
 

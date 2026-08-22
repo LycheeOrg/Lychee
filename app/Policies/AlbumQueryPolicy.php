@@ -651,6 +651,51 @@ class AlbumQueryPolicy
 	}
 
 	/**
+	 * Join BaseAlbum for the field set the Bulk Album Edit admin page (and
+	 * Feature 057's `for_bulk_edit=true` v3 listing mode) needs beyond what
+	 * {@see self::joinBaseAlbumOwnerId()} already carries.
+	 * This aim to give lighter sub selection to make the queries run faster.
+	 *
+	 * **Attention:** `$prefix` must be non-empty (and distinct from any other
+	 * join's prefix already present on the query) to avoid a SQL alias
+	 * collision with the policy's own default `base_albums` join
+	 * ({@see self::joinBaseAlbumOwnerId()}, prefix `''`) that
+	 * {@see self::applyVisibilityFilter()} always adds.
+	 *
+	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|BaseBuilder $query
+	 * @param string                                                                        $second
+	 * @param string                                                                        $prefix
+	 *
+	 * @return void
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function joinBaseAlbumBulkEditFields(
+		AlbumBuilder|FixedQueryBuilder|BaseBuilder $query,
+		string $second = 'inner.id',
+		string $prefix = '',
+	): void {
+		$columns = [
+			$prefix . 'base_albums.id',
+			$prefix . 'base_albums.copyright',
+			$prefix . 'base_albums.photo_layout',
+			$prefix . 'base_albums.sorting_col',
+			$prefix . 'base_albums.sorting_order',
+			$prefix . 'base_albums.photo_timeline',
+		];
+
+		$query->joinSub(
+			query: DB::table('base_albums', $prefix . 'base_albums')
+				->select($columns),
+			as: $prefix . 'base_albums',
+			first: $prefix . 'base_albums.id',
+			operator: '=',
+			second: $second,
+			type: 'left'
+		);
+	}
+
+	/**
 	 * Join BaseAlbum for sensitivity only.
 	 * This aim to give lighter sub selection to make the queries run faster.
 	 *
