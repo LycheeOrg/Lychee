@@ -8,13 +8,12 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Image\StreamStat;
 
-class SetChecksum implements StandalonePipe
+class SetChecksum extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		/** @var StreamStat $stat */
 		$stat = $state->stream_stat;
@@ -25,5 +24,10 @@ class SetChecksum implements StandalonePipe
 		$state->photo->checksum = $stat->checksum;
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.set_checksum';
 	}
 }
