@@ -27,6 +27,10 @@ use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
 use App\Events\PersonAlbumSaved;
+use App\Events\PhotoMoved;
+use App\Events\PhotoPersonsChanged;
+use App\Events\PhotoSaved;
+use App\Events\PhotoWillBeDeleted;
 use App\Events\TagAlbumSaved;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
 use App\Models\Album;
@@ -343,5 +347,49 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->assertEvicted('k:tag1');
 		$this->assertEvicted('k:tag2');
 		$this->assertNotEvicted('k:tag3');
+	}
+
+	// ── Feature 057: album-listing-v3 tag (FR-057-06) ────────────
+	//
+	// Every handler in this listener must also evict the v3 listing cache,
+	// regardless of how narrowly it otherwise scopes its own eviction.
+
+	public function testEveryHandlerEvictsTheAlbumListingV3Tag(): void
+	{
+		$user = User::factory()->create();
+		$parent = Album::factory()->as_root()->owned_by($user)->create();
+		$album = Album::factory()->children_of($parent)->owned_by($user)->create();
+		$tag_album = TagAlbum::factory()->owned_by($user)->create();
+		$person_album = new PersonAlbum();
+		$person_album->title = 'Test';
+		$person_album->owner_id = $user->id;
+		$person_album->is_and = true;
+		$person_album->save();
+
+		$v3_tag = $this->cache_key_provider->albumListingV3Tag();
+
+		$cases = [
+			'AlbumSaved' => fn () => $this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id])),
+			'AlbumDeleted' => fn () => $this->listener->handleAlbumDeleted(new AlbumDeleted($parent->id)),
+			'AlbumChildrenChanged' => fn () => $this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged([$parent->id])),
+			'TagAlbumSaved' => fn () => $this->listener->handleTagAlbumSaved(new TagAlbumSaved([$tag_album->id])),
+			'PersonAlbumSaved' => fn () => $this->listener->handlePersonAlbumSaved(new PersonAlbumSaved($person_album)),
+			'BaseAlbumRemoved' => fn () => $this->listener->handleBaseAlbumRemoved(new BaseAlbumRemoved([$album->id])),
+			'AccessPermissionChanged' => fn () => $this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($album->id)),
+			'AlbumComputedDataUpdated' => fn () => $this->listener->handleAlbumComputedDataUpdated(new AlbumComputedDataUpdated($album->id)),
+			'AlbumListingCacheFlushRequested' => fn () => $this->listener->handleAlbumListingCacheFlushRequested(new AlbumListingCacheFlushRequested()),
+			'AlbumTagsChanged' => fn () => $this->listener->handleAlbumTagsChanged(new AlbumTagsChanged([1])),
+			'PhotoPersonsChanged' => fn () => $this->listener->handlePhotoPersonsChanged(new PhotoPersonsChanged(['some-photo-id'], [])),
+			'PhotoMoved' => fn () => $this->listener->handlePhotoMoved(new PhotoMoved(['some-photo-id'], 'from-album-id', 'to-album-id')),
+			'PhotoSaved' => fn () => $this->listener->handlePhotoSaved(new PhotoSaved(['some-photo-id'])),
+			'PhotoWillBeDeleted' => fn () => $this->listener->handlePhotoWillBeDeleted(new PhotoWillBeDeleted('some-photo-id', $album->id, 'title', [])),
+		];
+
+		foreach ($cases as $event_name => $trigger) {
+			$this->seedCache('k:v3', [$v3_tag]);
+			$trigger();
+			$this->assertEvicted('k:v3');
+			// Re-seed for the next iteration; assertEvicted already confirmed eviction above.
+		}
 	}
 }

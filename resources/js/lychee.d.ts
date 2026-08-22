@@ -195,6 +195,7 @@ declare namespace App {
 		export type ShiftType = "relative" | "absolute";
 		export type ShiftX = "left" | "right";
 		export type ShiftY = "up" | "down";
+		export type SizeVariantAssetType = "small2x" | "small" | "thumb2x" | "thumb" | "placeholder";
 		export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 		export type SmallLargeType = "small" | "large";
 		export type SmartAlbumType =
@@ -1694,6 +1695,39 @@ declare namespace App {
 					per_page: number;
 					to: number;
 					total: number;
+				};
+			}
+			namespace V3 {
+				export type AlbumListBulkEditFieldsResource = {
+					owner_ids: number[];
+					owner_names: string[];
+					descriptions: (string | null)[];
+					copyrights: (string | null)[];
+					licenses: string[];
+					photo_layouts: (string | null)[];
+					photo_sorting_cols: (string | null)[];
+					photo_sorting_orders: (string | null)[];
+					album_sorting_cols: (string | null)[];
+					album_sorting_orders: (string | null)[];
+					album_thumb_aspect_ratios: (string | null)[];
+					album_timelines: (string | null)[];
+					photo_timelines: (string | null)[];
+					is_nsfws: boolean[];
+					is_publics: boolean[];
+					is_link_requireds: boolean[];
+					grants_full_photo_accesses: boolean[];
+					grants_downloads: boolean[];
+					grants_uploads: boolean[];
+					created_ats: string[];
+				};
+				export type AlbumListResource = {
+					ids: string[];
+					titles: string[];
+					lft: number[];
+					rgt: number[];
+					cover_ids: (string | null)[];
+					parent_ids: (string | null)[] | null;
+					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
 				};
 			}
 		}

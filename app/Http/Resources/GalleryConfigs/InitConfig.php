@@ -174,6 +174,9 @@ class InitConfig extends Data
 	public bool $use_admin_dashboard;
 	public bool $is_person_album_enabled;
 
+	// Struct-of-Arrays (SoA) v3 endpoints. Pure client-behavior switch: no DB config layer, no auth-gating. See Feature 058.
+	public bool $is_struct_of_array_enabled;
+
 	// Flags visibility settings
 	public bool $is_cover_id_flag_enabled;
 	public bool $is_header_id_flag_enabled;
@@ -312,6 +315,7 @@ class InitConfig extends Data
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
+		$this->is_struct_of_array_enabled = Features::active('struct-of-array');
 
 		// Flags visibility settings
 		$flags_enabled = request()->configs()->getValueAsBool('flags_enabled');

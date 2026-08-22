@@ -202,6 +202,42 @@ Two access modes, both always gated by `PhotoPolicy` (`CAN_SEE` for thumbnail-cl
 | 404 | Unknown `photo_id`, or the photo has no `SizeVariant` row of the requested type |
 | 422 | Unrecognized `size_variant` token, or only one of `X-Timestamp`/`X-Mac` present |
 
+### API v3: Album Listing
+
+**GET** `/api/v3/Albums`
+
+The first v3 endpoint to realize the Struct-of-Arrays (SoA) collection convention (ADR-0009): a single, cacheable, rights-curated, flat, unpaginated album listing, registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\AlbumListController::index()`, `App\Http\Requests\Gallery\AlbumListV3Request`). Built for three future (separately-scoped) frontend consumers — the Move-target dropdown, the Fix Tree admin page, and the Bulk Album Edit admin page — none of which are wired up by this endpoint itself (backend contract only). Result set is curated via `AlbumQueryPolicy::applyVisibilityFilter()` (visibility, not reachability — a password-protected-but-not-unlocked album still appears if otherwise visible), ordered by `albums._lft` ascending, queried via `Illuminate\Database\Eloquent\Builder::toBase()` for zero Eloquent hydration overhead, and cached through `App\Services\Cache\ManagedCacheService` keyed by user identity and the exact flag combination requested (`managed_cache_enabled`/`managed_cache_albums_enabled`/`managed_cache_ttl`, no new config).
+
+**Query parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|--------------|
+| `with_parent_id` | boolean | `false` | Adds `parent_ids` to the response. Requires `may_administrate === true`. |
+| `for_bulk_edit` | boolean | `false` | Adds the `bulk_edit` block (full `BulkAlbumResource` field parity). Requires `may_administrate === true`. |
+
+**Response:** `AlbumListResource` (Struct-of-Arrays, all arrays index-aligned, never paginated)
+```json
+{
+  "ids": ["abc123", "def456"],
+  "titles": ["Vacation 2025", "Sub-album"],
+  "lft": [1, 2],
+  "rgt": [4, 3],
+  "cover_ids": ["photo123", null],
+  "parent_ids": null,
+  "bulk_edit": null
+}
+```
+
+`cover_ids[i]` resolves per the same priority rule as `App\Relations\HasAlbumThumb::getCoverTypeForAlbum()`: explicit `cover_id`, else `auto_cover_id_max_privilege` for an admin/owner viewer, else `auto_cover_id_least_privilege`, else `null` (no live legacy-fallback query). `parent_ids` is `null` (the whole array, not just entries) when `with_parent_id=false`; when `true`, it is index-aligned with a per-entry `null` for a root album (never omitted). `bulk_edit` is `null` when `for_bulk_edit=false`; when `true`, it is an `AlbumListBulkEditFieldsResource` — its own SoA block, index-aligned to the outer arrays, with full `BulkAlbumResource` field parity (owner, license, sorting, timelines, NSFW/public/link-required/grants flags, `created_at`).
+
+**Response codes:**
+
+| Code | Meaning |
+|------|---------|
+| 200 | Curated listing returned (empty arrays, not an error, when nothing is visible) |
+| 403 | `with_parent_id=true` or `for_bulk_edit=true` requested by a non-admin caller |
+| 422 | `with_parent_id`/`for_bulk_edit` present but not boolean-parseable |
+
 ## Pagination Endpoints
 
 Lychee implements offset-based pagination for albums and photos to efficiently handle large collections. Three dedicated endpoints allow incremental data loading:

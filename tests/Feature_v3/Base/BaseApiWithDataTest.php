@@ -52,4 +52,25 @@ abstract class BaseApiWithDataTest extends \Tests\Feature_v2\Base\BaseApiWithDat
 	{
 		return $this->withCredentials()->get(self::API_V3_PREFIX . ltrim($uri, '/'), $headers);
 	}
+
+	/**
+	 * Visit the given v3 URI with a GET request expecting a JSON response.
+	 *
+	 * Unlike {@see self::getV3()} (used for Feature 056's binary passthrough
+	 * endpoint), this sets the `Accept: application/json` header the `api`
+	 * middleware group's `accept_content_type:json` gate requires (Feature 057
+	 * and any future JSON-returning v3 endpoint).
+	 *
+	 * @param string               $uri
+	 * @param array<string,mixed>  $data
+	 * @param array<string,string> $headers
+	 *
+	 * @return TestResponse
+	 */
+	public function getJsonV3(string $uri, array $data = [], array $headers = []): TestResponse
+	{
+		$query = count($data) > 0 ? ('?' . http_build_query($data)) : '';
+
+		return $this->withCredentials()->json('GET', self::API_V3_PREFIX . ltrim($uri, '/') . $query, [], $headers);
+	}
 }
