@@ -53,6 +53,7 @@ import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const props = defineProps<{
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
@@ -62,6 +63,7 @@ const props = defineProps<{
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const visible = defineModel<boolean>("open", { default: false });
+const albumListStore = useAlbumListStore();
 
 const emits = defineEmits<{
 	merged: [];
@@ -118,6 +120,7 @@ function execute() {
 		} else {
 			AlbumService.clearCache(getParentId());
 		}
+		albumListStore.invalidate();
 
 		// RESET !
 		destination_id.value = undefined;

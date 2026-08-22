@@ -30,6 +30,7 @@ import SearchTargetAlbum from "@/v8/components/forms/album/SearchTargetAlbum.vue
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 defineProps<{
 	legendIcon: string;
@@ -39,6 +40,7 @@ defineProps<{
 const toast = useAppToast();
 const router = useRouter();
 const albumStore = useAlbumStore();
+const albumListStore = useAlbumListStore();
 const titleMovedTo = ref<string | undefined>(undefined);
 const destination_id = ref<string | undefined | null>(undefined);
 const error_no_target = ref(false);
@@ -61,6 +63,7 @@ function execute() {
 	AlbumService.move(destination_id.value, [albumId]).then(() => {
 		AlbumService.clearCache(destination_id.value);
 		AlbumService.clearCache(parentId);
+		albumListStore.invalidate();
 		albumStore.reset();
 		toast.add({
 			severity: "success",

@@ -93,6 +93,7 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 
@@ -103,6 +104,7 @@ const photosStore = usePhotosStore();
 const albumsStore = useAlbumsStore();
 const albumStore = useAlbumStore();
 const photoStore = usePhotoStore();
+const albumListStore = useAlbumListStore();
 
 const lycheeStore = useLycheeStateStore();
 const { is_white_label_enabled, use_admin_dashboard } = storeToRefs(lycheeStore);
@@ -168,6 +170,7 @@ function logout() {
 		albumStore.reset();
 		userStore.setUser(undefined);
 		AlbumService.clearCache();
+		albumListStore.invalidate();
 		window.location.href = Constants.BASE_URL + "/home";
 	});
 }

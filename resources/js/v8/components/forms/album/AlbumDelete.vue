@@ -21,11 +21,13 @@ import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { computed, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 
 const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
+const albumListStore = useAlbumListStore();
 
 const router = useRouter();
 
@@ -50,6 +52,7 @@ function execute() {
 	}
 
 	AlbumService.delete([albumStore.album.id]).then(() => {
+		albumListStore.invalidate();
 		emits("deleted");
 		const isModelAlbum = albumStore.config?.is_model_album ?? false;
 		const modelAlbum = albumStore.modelAlbum;
