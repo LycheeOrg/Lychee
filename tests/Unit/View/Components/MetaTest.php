@@ -518,6 +518,9 @@ class MetaTest extends AbstractTestCase
 		$meta->shouldReceive('getHeaderUrl')
 			->once()
 			->andReturn('https://example.com/header.jpg');
+		// Mockery 1.6.14 no-ops explicit magic-method calls (__construct/__clone) unless an
+		// expectation is registered for them; passthru() makes this call run the real constructor.
+		$meta->shouldReceive('__construct')->passthru();
 		$meta->__construct();
 
 		self::assertSame('https://example.com/header.jpg', $meta->image_url);

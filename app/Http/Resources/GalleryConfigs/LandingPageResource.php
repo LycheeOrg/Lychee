@@ -25,6 +25,7 @@ use App\Models\LandingLink;
 use App\Models\Photo;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use Illuminate\Support\Facades\Log;
 use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -168,7 +169,7 @@ class LandingPageResource extends Data
 				LandingFeaturedItemsMode::MANUAL => $this->resolveManualFeaturedItems(),
 			};
 		} catch (\Throwable $e) {
-			\Log::notice('Landing featured-items resolution failed', [
+			Log::notice('Landing featured-items resolution failed', [
 				'mode' => $mode->value,
 				'error' => $e->getMessage(),
 			]);
@@ -252,7 +253,7 @@ class LandingPageResource extends Data
 			};
 		} catch (\Throwable $e) {
 			// Graceful fallback - log error but don't break landing page
-			\Log::notice('Landing background resolution failed', [
+			Log::notice('Landing background resolution failed', [
 				'mode' => $mode?->value,
 				'value' => $value,
 				'error' => $e->getMessage(),
