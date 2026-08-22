@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Completed |
 | Last updated | 2026-08-22 |
 | Owners | ildyria |
 | Linked plan | `docs/specs/4-architecture/features/057-album-listing-v3/plan.md` |

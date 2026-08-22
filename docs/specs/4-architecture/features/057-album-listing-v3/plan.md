@@ -1,7 +1,7 @@
 # Feature Plan 057 – Album Listing v3
 
 _Linked specification:_ `docs/specs/4-architecture/features/057-album-listing-v3/spec.md`
-_Status:_ Draft
+_Status:_ Completed
 _Last updated:_ 2026-08-22
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.

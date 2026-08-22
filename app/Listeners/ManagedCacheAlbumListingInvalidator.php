@@ -48,6 +48,7 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTags($this->cache_key_provider->albumChildrenTags($event->parent_ids));
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleAlbumDeleted(AlbumDeleted $event): void
@@ -55,23 +56,27 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($event->parent_id));
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleAlbumChildrenChanged(AlbumChildrenChanged $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumChildrenTags($event->parent_ids));
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleTagAlbumSaved(TagAlbumSaved $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumTags($event->tag_album_ids));
 		$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handlePersonAlbumSaved(PersonAlbumSaved $event): void
 	{
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->person_album->id));
 		$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleBaseAlbumRemoved(BaseAlbumRemoved $event): void
@@ -80,11 +85,13 @@ class ManagedCacheAlbumListingInvalidator
 		// Cheap, rare operation — not worth a type lookup, evict both.
 		$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleAccessPermissionChanged(AccessPermissionChanged $event): void
 	{
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->base_album_id));
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 
 		// The event payload only carries the id; resolve which of the three
 		// album types it is via a lightweight, non-Eloquent lookup.
@@ -111,6 +118,7 @@ class ManagedCacheAlbumListingInvalidator
 	public function handleAlbumComputedDataUpdated(AlbumComputedDataUpdated $event): void
 	{
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->album_id));
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleAlbumListingCacheFlushRequested(AlbumListingCacheFlushRequested $event): void
@@ -118,11 +126,15 @@ class ManagedCacheAlbumListingInvalidator
 		// Sufficient alone: every cached entry across all six query types
 		// carries this tag in addition to its own specific tag(s).
 		$this->cache->forgetTag($this->cache_key_provider->albumListingGlobalTag());
+		// Feature 057's v3 listing cache is not tagged with the coarse global
+		// tag above, so it must be evicted explicitly here too (FR-057-06).
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	public function handleAlbumTagsChanged(AlbumTagsChanged $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumTagTags($event->tag_ids));
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	/**
@@ -134,6 +146,7 @@ class ManagedCacheAlbumListingInvalidator
 	public function handlePhotoPersonsChanged(PhotoPersonsChanged $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumPersonTags($event->person_ids));
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	/**
@@ -144,6 +157,7 @@ class ManagedCacheAlbumListingInvalidator
 	public function handlePhotoMoved(PhotoMoved $event): void
 	{
 		$this->evictPersonTagsForPhotos($event->photo_ids);
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	/**
@@ -156,6 +170,7 @@ class ManagedCacheAlbumListingInvalidator
 	public function handlePhotoSaved(PhotoSaved $event): void
 	{
 		$this->evictPersonTagsForPhotos($event->photo_ids);
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	/**
@@ -166,6 +181,7 @@ class ManagedCacheAlbumListingInvalidator
 	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
 	{
 		$this->evictPersonTagsForPhotos([$event->photo_id]);
+		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 	}
 
 	/**
