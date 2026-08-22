@@ -34,19 +34,22 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { trans } from "laravel-vue-i18n";
+import { trans, loadLanguageAsync } from "laravel-vue-i18n";
 import { useDebounceFn } from "@vueuse/core";
 import type { CommandPaletteGroup, CommandPaletteItem } from "@nuxt/ui";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import PiMiniIcon from "@/v8/components/icons/PiMiniIcon.vue";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useUserStore } from "@/stores/UserState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenu } from "@/v8/composables/contextMenus/leftMenu";
 import { useAdminTiles } from "@/v8/composables/useAdminTiles";
+import { useDarkMode } from "@/v8/composables/useDarkMode";
 import SearchService from "@/services/search-service";
+import SettingsService from "@/services/settings-service";
 import { ALL } from "@/config/constants";
 
 type SpotlightItem = CommandPaletteItem & {
@@ -66,10 +69,11 @@ const lycheeStore = useLycheeStateStore();
 const leftMenuState = useLeftMenuStateStore();
 const userStore = useUserStore();
 const favouritesStore = useFavouriteStore();
-const albumListStore = useAlbumListStore();
 
-const { items: menuItems, profileItems } = useLeftMenu(lycheeStore, leftMenuState, userStore, favouritesStore, route);
+const albumListStore = useAlbumListStore();
+const { items: menuItems, profileItems, initData } = useLeftMenu(lycheeStore, leftMenuState, userStore, favouritesStore, route);
 const adminTiles = useAdminTiles(lycheeStore, leftMenuState);
+const { isDark, toggle: toggleDarkMode, toggleGlobal: toggleDarkModeGlobal } = useDarkMode();
 
 defineShortcuts({
 	meta_k: () => {
@@ -96,8 +100,31 @@ function ensureSearchMinLength() {
 	});
 }
 
+// Cached across opens, same rationale as ensureSearchMinLength - and only worth fetching
+// for admins, since only they can change the (instance-wide) language config.
+const availableLanguages = ref<string[]>([]);
+let languagesRequested = false;
+
+function ensureLanguages() {
+	if (languagesRequested || !initData.value?.settings.can_edit) {
+		return;
+	}
+	languagesRequested = true;
+	SettingsService.getLanguages().then((response) => {
+		availableLanguages.value = response.data;
+	});
+}
+
+function setLanguage(code: string) {
+	SettingsService.setConfigs({ configs: [{ key: "lang", value: code }] }).then(() => {
+		loadLanguageAsync(code).then(() => {
+			document.documentElement.lang = code;
+			document.documentElement.dir = ["ar", "fa"].includes(code) ? "rtl" : "ltr";
+		});
+	});
+}
+
 const isRemoteSearching = ref(false);
-const remoteAlbums = ref<App.Http.Resources.Models.ThumbAlbumResource[]>([]);
 const remotePhotos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 
 const runRemoteSearch = useDebounceFn((term: string) => {
@@ -111,7 +138,6 @@ const runRemoteSearch = useDebounceFn((term: string) => {
 			if (term !== searchTerm.value) {
 				return;
 			}
-			remoteAlbums.value = response.data.albums;
 			remotePhotos.value = response.data.photos;
 		})
 		.finally(() => {
@@ -123,7 +149,6 @@ const runRemoteSearch = useDebounceFn((term: string) => {
 
 watch(searchTerm, (term) => {
 	if (term.trim().length < searchMinLength.value) {
-		remoteAlbums.value = [];
 		remotePhotos.value = [];
 		isRemoteSearching.value = false;
 		return;
@@ -135,21 +160,23 @@ watch(open, (isOpen) => {
 	if (isOpen) {
 		albumListStore.ensureLoaded();
 		ensureSearchMinLength();
+		ensureLanguages();
 	} else {
 		searchTerm.value = "";
-		remoteAlbums.value = [];
 		remotePhotos.value = [];
 		isRemoteSearching.value = false;
 	}
 });
 
-const navGroupItems = computed<SpotlightItem[]>(() => {
-	const fromMenu: SpotlightItem[] = [...menuItems.value, ...profileItems.value]
-		.filter((item) => item.label !== undefined)
+const navGroupItems = computed<SpotlightItem[]>(() =>
+	[...menuItems.value, ...profileItems.value]
+		// The "Admin panel" link only leads to a page of tiles; the spotlight lists those
+		// tiles directly (see actionsGroupItems below), so the link itself would be redundant here.
+		.filter((item) => item.label !== undefined && item.to !== "/admin")
 		.map((item) => ({
 			label: item.label as string,
 			icon: item.icon,
-			kind: "nav",
+			kind: "nav" as const,
 			onSelect: () => {
 				close();
 				if (item.onSelect) {
@@ -158,14 +185,16 @@ const navGroupItems = computed<SpotlightItem[]>(() => {
 					router.push(item.to);
 				}
 			},
-		}));
+		})),
+);
 
+const actionsGroupItems = computed<SpotlightItem[]>(() => {
 	const fromAdmin: SpotlightItem[] = adminTiles
 		.filter((tile) => tile.visible.value)
 		.map((tile) => ({
 			label: trans(tile.label),
 			icon: tile.icon,
-			kind: "nav",
+			kind: "nav" as const,
 			onSelect: () => {
 				close();
 				if (tile.isExternal) {
@@ -176,14 +205,46 @@ const navGroupItems = computed<SpotlightItem[]>(() => {
 			},
 		}));
 
-	return [...fromMenu, ...fromAdmin];
+	// Admins persist the choice as the instance-wide default (see General.vue's own dark
+	// mode setting); everyone else only gets a browser-local override.
+	const themeItem: SpotlightItem = {
+		label: isDark.value ? trans("search-palette.light_mode") : trans("search-palette.dark_mode"),
+		icon: isDark.value ? "lucide:sun" : "lucide:moon",
+		kind: "nav",
+		onSelect: () => {
+			close();
+			if (initData.value?.settings.can_edit) {
+				toggleDarkModeGlobal();
+			} else {
+				toggleDarkMode();
+			}
+		},
+	};
+
+	return [themeItem, ...fromAdmin];
+});
+
+const languageGroupItems = computed<SpotlightItem[]>(() => {
+	if (!initData.value?.settings.can_edit) {
+		return [];
+	}
+	return availableLanguages.value.map((code) => ({
+		label: code,
+		description: trans("search-palette.language"),
+		icon: "lucide:languages",
+		kind: "nav",
+		onSelect: () => {
+			close();
+			setLanguage(code);
+		},
+	}));
 });
 
 const albumsGroupItems = computed<SpotlightItem[]>(() =>
 	albumListStore.rows.map((row) => ({
 		label: row.title,
 		description: albumListStore.buildBreadcrumb(row.id),
-		kind: "album",
+		kind: "album" as const,
 		albumId: row.id,
 		photoId: row.coverId,
 		onSelect: () => {
@@ -194,15 +255,6 @@ const albumsGroupItems = computed<SpotlightItem[]>(() =>
 );
 
 const remoteGroupItems = computed<SpotlightItem[]>(() => [
-	...remoteAlbums.value.map((album): SpotlightItem => ({
-		label: album.title,
-		kind: "remote-album",
-		thumbUrl: album.thumb?.thumb ?? null,
-		onSelect: () => {
-			close();
-			router.push({ name: "album", params: { albumId: album.id } });
-		},
-	})),
 	...remotePhotos.value.map((photo): SpotlightItem => ({
 		label: photo.title,
 		kind: "remote-photo",
@@ -225,6 +277,23 @@ const groups = computed<CommandPaletteGroup[]>(() => {
 	if (navGroupItems.value.length > 0) {
 		result.push({ id: "navigation", label: trans("search-palette.navigation"), items: navGroupItems.value as CommandPaletteItem[] });
 	}
+	if (actionsGroupItems.value.length > 0) {
+		result.push({
+			id: "actions",
+			label: trans("search-palette.actions"),
+			items: actionsGroupItems.value as CommandPaletteItem[],
+			ignoreFilter: true,
+			postFilter: (term: string, items: CommandPaletteItem[]) => {
+				if (!term) return items;
+				const t = term.toLowerCase();
+				return items.filter(
+					(item) =>
+						(item.label as string | undefined)?.toLowerCase().includes(t) ||
+						(item.description as string | undefined)?.toLowerCase().includes(t),
+				);
+			},
+		});
+	}
 
 	if (albumsGroupItems.value.length > 0) {
 		result.push({
@@ -234,6 +303,24 @@ const groups = computed<CommandPaletteGroup[]>(() => {
 			// Only show once the user has actually typed something -- otherwise the whole album
 			// tree would dump onto screen the instant the palette opens.
 			postFilter: (term, items) => (term ? items : []),
+		});
+	}
+
+	if (languageGroupItems.value.length > 0) {
+		result.push({
+			id: "language",
+			label: trans("search-palette.language"),
+			items: languageGroupItems.value as CommandPaletteItem[],
+			ignoreFilter: true,
+			postFilter: (term: string, items: CommandPaletteItem[]) => {
+				if (!term) return [];
+				const t = term.toLowerCase();
+				return items.filter(
+					(item) =>
+						(item.label as string | undefined)?.toLowerCase().includes(t) ||
+						(item.description as string | undefined)?.toLowerCase().includes(t),
+				);
+			},
 		});
 	}
 

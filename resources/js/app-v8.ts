@@ -13,6 +13,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import AppComponent from "@/v8/views/App.vue";
 import ui from "@nuxt/ui/vue-plugin";
 import { registerIconCollections } from "@/v8/icons";
+import { applyStoredDarkModePreference } from "@/v8/composables/useDarkMode";
 import "../sass/app-v8.css";
 
 declare global {
@@ -45,6 +46,7 @@ app.use(i18nVue, {
 });
 
 registerIconCollections();
+applyStoredDarkModePreference();
 
 app.mount("#app");
 
