@@ -29,3 +29,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
 	->withoutMiddleware(['accept_content_type:json', 'content_type:json'])
 	->middleware('json_errors');
+
+// Struct-of-Arrays JSON collection endpoint (Feature 057, ADR-0009).
+Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
