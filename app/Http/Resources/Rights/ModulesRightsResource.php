@@ -39,7 +39,6 @@ class ModulesRightsResource extends Data
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
 	public bool $is_design_system_enabled = false;
-	public bool $is_struct_of_array_enabled = false;
 
 	public function __construct()
 	{
@@ -59,7 +58,6 @@ class ModulesRightsResource extends Data
 		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->is_face_recognition_warning_enabled = request()->configs()->getValueAsBool('ai_vision_face_recognition_warning');
 		$this->is_design_system_enabled = request()->configs()->getValueAsBool('enable_design_system');
-		$this->is_struct_of_array_enabled = $this->isStructOfArrayEnabled();
 		$this->isContactEnabled();
 	}
 
@@ -292,18 +290,6 @@ class ModulesRightsResource extends Data
 
 		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
 			request()->configs()->getValueAsBool('ai_vision_nsfw_enabled');
-	}
-
-	/**
-	 * Check if the Struct-of-Arrays (SoA) v3 endpoints are enabled for the frontend.
-	 *
-	 * Pure client-behavior switch: no DB config layer, no auth-gating. See Feature 058.
-	 *
-	 * @return bool true if the SoA v3 endpoints should be used by the frontend, false otherwise
-	 */
-	private function isStructOfArrayEnabled(): bool
-	{
-		return config('features.struct-of-array') === true;
 	}
 
 	/**

@@ -679,6 +679,7 @@ declare namespace App {
 					is_album_header_landing_title_enabled: boolean;
 					use_admin_dashboard: boolean;
 					is_person_album_enabled: boolean;
+					is_struct_of_array_enabled: boolean;
 					is_cover_id_flag_enabled: boolean;
 					is_header_id_flag_enabled: boolean;
 					is_highlighted_flag_enabled: boolean;
@@ -1410,7 +1411,6 @@ declare namespace App {
 					is_contact_enabled: boolean;
 					messages_count: number;
 					is_design_system_enabled: boolean;
-					is_struct_of_array_enabled: boolean;
 				};
 				export type PhotoRightsResource = {
 					can_edit: boolean;

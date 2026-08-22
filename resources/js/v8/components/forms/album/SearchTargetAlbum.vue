@@ -25,12 +25,12 @@
 	</USelectMenu>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { trans } from "laravel-vue-i18n";
 import AlbumService from "@/services/album-service";
 import { useAlbumListStore } from "@/stores/AlbumListState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import { useImageHelpers } from "@/utils/Helpers";
 
@@ -46,8 +46,7 @@ const emits = defineEmits<{
 	"no-target": [];
 }>();
 
-const { initData } = storeToRefs(useLeftMenuStateStore());
-const isStructOfArrayEnabled = computed(() => initData.value?.modules.is_struct_of_array_enabled ?? false);
+const { is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
 
 const albumListStore = useAlbumListStore();
 const { getNoImageIcon } = useImageHelpers();

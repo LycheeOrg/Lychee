@@ -310,14 +310,15 @@ import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import type { TableColumn } from "@nuxt/ui";
 
 const toast = useAppToast();
 
-const { is_se_enabled, is_se_preview_enabled } = storeToRefs(useLycheeStateStore());
-const { initData } = storeToRefs(useLeftMenuStateStore());
-const isStructOfArrayEnabled = computed(() => initData.value?.modules.is_struct_of_array_enabled ?? false);
+const {
+	is_se_enabled,
+	is_se_preview_enabled,
+	is_struct_of_array_enabled: isStructOfArrayEnabled,
+} = storeToRefs(useLycheeStateStore());
 
 const numUsers = ref(0);
 UsersService.count().then((data) => {

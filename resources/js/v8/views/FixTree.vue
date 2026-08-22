@@ -86,14 +86,14 @@
 	<ScrollTop />
 </template>
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import AlbumService from "@/services/album-service";
 import AlbumListV3Service from "@/services/album-list-v3-service";
 import { useAlbumListStore } from "@/stores/AlbumListState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { AugmentedAlbum, useTreeOperations } from "@/v8/composables/album/treeOperations";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/v8/components/maintenance/FixTreeLine.vue";
@@ -109,8 +109,7 @@ const toast = useAppToast();
 const albumIds = ref<string[]>([]);
 const isLoading = ref(true);
 
-const { initData } = storeToRefs(useLeftMenuStateStore());
-const isStructOfArrayEnabled = computed(() => initData.value?.modules.is_struct_of_array_enabled ?? false);
+const { is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
 const albumListStore = useAlbumListStore();
 
 const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt, getModifiedAlbums } = useTreeOperations(

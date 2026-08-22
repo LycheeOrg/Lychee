@@ -26,12 +26,10 @@ class StructOfArrayInitTest extends BaseApiWithDataTest
 	{
 		config(['features.struct-of-array' => false]);
 
-		$response = $this->getJson('Auth::rights');
+		$response = $this->getJson('Gallery::Init');
 		$this->assertOk($response);
 		$response->assertJson([
-			'modules' => [
-				'is_struct_of_array_enabled' => false,
-			],
+			'is_struct_of_array_enabled' => false,
 		]);
 	}
 
@@ -39,12 +37,10 @@ class StructOfArrayInitTest extends BaseApiWithDataTest
 	{
 		config(['features.struct-of-array' => true]);
 
-		$response = $this->getJson('Auth::rights');
+		$response = $this->getJson('Gallery::Init');
 		$this->assertOk($response);
 		$response->assertJson([
-			'modules' => [
-				'is_struct_of_array_enabled' => true,
-			],
+			'is_struct_of_array_enabled' => true,
 		]);
 
 		config(['features.struct-of-array' => false]);
