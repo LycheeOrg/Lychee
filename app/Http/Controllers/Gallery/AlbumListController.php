@@ -31,8 +31,7 @@ class AlbumListController extends Controller
 		protected AlbumQueryPolicy $album_query_policy,
 		protected ManagedCacheService $managed_cache_service,
 		protected CacheKeyProvider $cache_key_provider,
-	)
-	{
+	) {
 	}
 
 	public function index(
@@ -51,7 +50,7 @@ class AlbumListController extends Controller
 			$enabled,
 			$key,
 			[$this->cache_key_provider->albumListingV3Tag()],
-			fn (): AlbumListResource => $this->queryAlbumList( $user, $with_parent_id, $for_bulk_edit),
+			fn (): AlbumListResource => $this->queryAlbumList($user, $with_parent_id, $for_bulk_edit),
 			ttl: $ttl,
 		);
 	}
@@ -59,6 +58,7 @@ class AlbumListController extends Controller
 	private function queryAlbumList(?User $user, bool $with_parent_id, bool $for_bulk_edit): AlbumListResource
 	{
 		$rows = $this->queryAlbums($user, $with_parent_id, $for_bulk_edit);
+
 		return $this->buildAlbumListResource($rows, $user, $with_parent_id, $for_bulk_edit);
 	}
 
@@ -119,20 +119,22 @@ class AlbumListController extends Controller
 		bool $with_parent_id,
 		bool $for_bulk_edit,
 	): AlbumListResource {
-
 		$resource = $this->toAlbumListResource($rows, $user);
 		$resource->parent_ids = $with_parent_id ? $this->toParentIds($rows) : null;
 		$resource->bulk_edit = $for_bulk_edit ? $this->toBulkEditResource($rows) : null;
+
 		return $resource;
 	}
 
 	/**
-	 * Create the light object
+	 * Create the light object.
 	 *
 	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string}> $rows
+	 *
 	 * @return AlbumListResource
 	 */
-	private function toAlbumListResource(Collection &$rows, ?User $user): AlbumListResource {
+	private function toAlbumListResource(Collection &$rows, ?User $user): AlbumListResource
+	{
 		$ids = [];
 		$titles = [];
 		$lft = [];
@@ -159,16 +161,19 @@ class AlbumListController extends Controller
 	}
 
 	/**
-	 * Create the light object
+	 * Create the light object.
 	 *
 	 * @param Collection<object{parent_id:?string}> $rows
+	 *
 	 * @return array<int,?string>
 	 */
-	private function toParentIds(Collection &$rows): array {
+	private function toParentIds(Collection &$rows): array
+	{
 		$parent_ids = [];
 		foreach ($rows as $row) {
 			$parent_ids[] = $row->parent_id;
 		}
+
 		return $parent_ids;
 	}
 
@@ -176,9 +181,11 @@ class AlbumListController extends Controller
 	 * Map to the Bulk edit resources.
 	 *
 	 * @param Collection<object{owner_id:string,owner_name:string,description:string,copyright:string,license:string,photo_layout:string,photo_sorting_col:string,photo_sorting_order:string,album_sorting_col:string,album_sorting_order:string,album_thumb_aspect_ratio:string,album_timeline:string,photo_timeline:string,is_nsfw:string,public_base_album_id:string,public_is_link_required:string,public_grants_full_photo_access:string,public_grants_download:string,public_grants_upload:string,created_at:string}> &$rows
+	 *
 	 * @return AlbumListBulkEditFieldsResource
 	 */
-	private function toBulkEditResource(Collection &$rows): AlbumListBulkEditFieldsResource {
+	private function toBulkEditResource(Collection &$rows): AlbumListBulkEditFieldsResource
+	{
 		$owner_ids = [];
 		$owner_names = [];
 		$descriptions = [];
