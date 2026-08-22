@@ -20,7 +20,7 @@ final class BooleanRule implements ValidationRule
 	 */
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
-		$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+		$value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
 		if (is_bool($value)) {
 			return;

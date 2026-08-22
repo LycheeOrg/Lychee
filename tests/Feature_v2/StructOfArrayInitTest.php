@@ -22,7 +22,7 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class StructOfArrayInitTest extends BaseApiWithDataTest
 {
-	public function testDisabledByDefault(): void
+	public function testDisabled(): void
 	{
 		config(['features.struct-of-array' => false]);
 
@@ -33,7 +33,7 @@ class StructOfArrayInitTest extends BaseApiWithDataTest
 		]);
 	}
 
-	public function testEnabledReflectsConfig(): void
+	public function testEnabled(): void
 	{
 		config(['features.struct-of-array' => true]);
 
