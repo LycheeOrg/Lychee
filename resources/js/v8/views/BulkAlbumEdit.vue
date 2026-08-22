@@ -314,11 +314,7 @@ import type { TableColumn } from "@nuxt/ui";
 
 const toast = useAppToast();
 
-const {
-	is_se_enabled,
-	is_se_preview_enabled,
-	is_struct_of_array_enabled: isStructOfArrayEnabled,
-} = storeToRefs(useLycheeStateStore());
+const { is_se_enabled, is_se_preview_enabled, is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
 
 const numUsers = ref(0);
 UsersService.count().then((data) => {

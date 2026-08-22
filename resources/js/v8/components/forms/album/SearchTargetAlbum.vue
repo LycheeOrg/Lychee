@@ -6,12 +6,13 @@
 		:placeholder="$t('dialogs.target_album.placeholder')"
 		:loading="options === undefined"
 		:items="options"
+		:virtualize="{ estimateSize: 32, overscan: 50 }"
 		label-key="original"
 		@update:model-value="selected"
 	>
 		<template #item-leading="{ item }">
 			<Thumb
-				v-if="isStructOfArrayEnabled && item.id !== null"
+				v-if="is_struct_of_array_enabled && item.id !== null"
 				:album-id="item.id"
 				:photo-id="item.coverId ?? null"
 				type="thumb"
@@ -19,7 +20,7 @@
 			/>
 			<img v-else :src="item.thumb" alt="poster" class="w-4 rounded-sm" />
 		</template>
-		<template v-if="isStructOfArrayEnabled" #item-label="{ item }">
+		<template v-if="is_struct_of_array_enabled" #item-label="{ item }">
 			{{ item.title }}
 		</template>
 	</USelectMenu>
@@ -46,7 +47,7 @@ const emits = defineEmits<{
 	"no-target": [];
 }>();
 
-const { is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
+const { is_struct_of_array_enabled } = storeToRefs(useLycheeStateStore());
 
 const albumListStore = useAlbumListStore();
 const { getNoImageIcon } = useImageHelpers();
@@ -103,7 +104,7 @@ function loadV3() {
 }
 
 function load() {
-	if (isStructOfArrayEnabled.value) {
+	if (is_struct_of_array_enabled.value) {
 		loadV3();
 	} else {
 		loadV2();
