@@ -183,7 +183,7 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		$response->assertOk();
 		$json = $response->json();
 
-		self::assertEqualsCanonicalizing(['ids', 'titles', '_lft', '_rgt', 'cover_ids', 'parent_ids', 'bulk_edit'], array_keys($json));
+		self::assertEqualsCanonicalizing(['_lft', '_rgt', 'bulk_edit', 'cover_ids', 'ids', 'parent_ids', 'titles'], array_keys($json));
 	}
 
 	// ── cover_ids resolution (FR-057-09) ─────────────────────────
