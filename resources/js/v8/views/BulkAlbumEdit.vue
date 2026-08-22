@@ -305,6 +305,7 @@ import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue
 import BulkSetOwnerDialog from "@/v8/components/forms/bulk-album-edit/BulkSetOwnerDialog.vue";
 import BulkEditFieldsDialog from "@/v8/components/forms/bulk-album-edit/BulkEditFieldsDialog.vue";
 import BulkAlbumEditService, { type BulkAlbumResource } from "@/services/bulk-album-edit-service";
+import AlbumListV3Service from "@/services/album-list-v3-service";
 import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
@@ -313,7 +314,7 @@ import type { TableColumn } from "@nuxt/ui";
 
 const toast = useAppToast();
 
-const { is_se_enabled, is_se_preview_enabled } = storeToRefs(useLycheeStateStore());
+const { is_se_enabled, is_se_preview_enabled, is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
 
 const numUsers = ref(0);
 UsersService.count().then((data) => {
@@ -415,9 +416,9 @@ function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-// ── Data Loading ──────────────────────────────────────────────────────────────
+// ── Data Loading (v2: paginated/searchable server calls) ────────────────────
 
-function load(page?: number): void {
+function loadV2(page?: number): void {
 	if (page !== undefined) {
 		currentPage.value = page;
 	}
@@ -442,6 +443,102 @@ function load(page?: number): void {
 		.finally(() => {
 			loading.value = false;
 		});
+}
+
+// ── Data Loading (v3: single unpaginated fetch, client-side page/search) ────
+// `fullAlbums` holds the complete curated set once fetched; `albums.value` for a
+// given page/search is always a *filter+slice* over it (never a clone), so the
+// existing inline-edit handlers below, which mutate a displayed row in place,
+// automatically keep `fullAlbums` in sync without any extra bookkeeping.
+
+const fullAlbums = ref<BulkAlbumResource[] | undefined>(undefined);
+
+function adaptBulkEditRow(
+	data: App.Http.Resources.V3.AlbumListResource,
+	bulk: App.Http.Resources.V3.AlbumListBulkEditFieldsResource,
+	i: number,
+): BulkAlbumResource {
+	return {
+		id: data.ids[i],
+		title: data.titles[i],
+		owner_id: bulk.owner_ids[i],
+		owner_name: bulk.owner_names[i],
+		description: bulk.descriptions[i],
+		copyright: bulk.copyrights[i],
+		license: bulk.licenses[i],
+		photo_layout: bulk.photo_layouts[i],
+		photo_sorting_col: bulk.photo_sorting_cols[i],
+		photo_sorting_order: bulk.photo_sorting_orders[i],
+		album_sorting_col: bulk.album_sorting_cols[i],
+		album_sorting_order: bulk.album_sorting_orders[i],
+		album_thumb_aspect_ratio: bulk.album_thumb_aspect_ratios[i],
+		album_timeline: bulk.album_timelines[i],
+		photo_timeline: bulk.photo_timelines[i],
+		is_nsfw: bulk.is_nsfws[i],
+		_lft: data.lft[i],
+		_rgt: data.rgt[i],
+		is_public: bulk.is_publics[i],
+		is_link_required: bulk.is_link_requireds[i],
+		grants_full_photo_access: bulk.grants_full_photo_accesses[i],
+		grants_download: bulk.grants_downloads[i],
+		grants_upload: bulk.grants_uploads[i],
+		created_at: bulk.created_ats[i],
+	};
+}
+
+function ensureFullAlbumsLoaded(): Promise<BulkAlbumResource[]> {
+	if (fullAlbums.value !== undefined) {
+		return Promise.resolve(fullAlbums.value);
+	}
+	return AlbumListV3Service.getAlbums({ for_bulk_edit: true }).then((response) => {
+		const data = response.data;
+		const bulk = data.bulk_edit as App.Http.Resources.V3.AlbumListBulkEditFieldsResource;
+		const rows = data.ids.map((_, i) => adaptBulkEditRow(data, bulk, i));
+		fullAlbums.value = rows;
+		return rows;
+	});
+}
+
+function filterFullAlbums(rows: BulkAlbumResource[]): BulkAlbumResource[] {
+	const term = search.value.trim().toLowerCase();
+	if (term === "") {
+		return rows;
+	}
+	return rows.filter((a) => a.title.toLowerCase().includes(term));
+}
+
+function loadV3(page?: number): void {
+	if (page !== undefined) {
+		currentPage.value = page;
+	}
+	loading.value = true;
+	ensureFullAlbumsLoaded()
+		.then((rows) => {
+			const filtered = filterFullAlbums(rows);
+			total.value = filtered.length;
+			const start = (currentPage.value - 1) * perPage.value;
+			const pageRows = filtered.slice(start, start + perPage.value);
+
+			if (paginationMode.value === "infinite" && page !== undefined && page > 1) {
+				albums.value = [...albums.value, ...pageRows];
+			} else {
+				albums.value = pageRows;
+			}
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_load"), life: 3000 });
+		})
+		.finally(() => {
+			loading.value = false;
+		});
+}
+
+function load(page?: number): void {
+	if (isStructOfArrayEnabled.value) {
+		loadV3(page);
+	} else {
+		loadV2(page);
+	}
 }
 
 function onSearchInput(): void {
@@ -477,6 +574,15 @@ function toggleSelectPage(selectAll: boolean): void {
 }
 
 function selectAllMatching(): void {
+	if (isStructOfArrayEnabled.value) {
+		ensureFullAlbumsLoaded().then((rows) => {
+			const newIds = new Set(selectedIds.value);
+			filterFullAlbums(rows).forEach((a) => newIds.add(a.id));
+			selectedIds.value = Array.from(newIds);
+		});
+		return;
+	}
+
 	BulkAlbumEditService.getIds(search.value || null)
 		.then((response) => {
 			const newIds = new Set(selectedIds.value);
@@ -630,6 +736,7 @@ watch([paginationMode, sentinel], ([mode, el]) => {
 
 function onTransferred(): void {
 	selectedIds.value = [];
+	fullAlbums.value = undefined;
 	load();
 }
 
@@ -637,12 +744,14 @@ function onTransferred(): void {
 
 function onDeleted(): void {
 	selectedIds.value = [];
+	fullAlbums.value = undefined;
 	load(1);
 }
 
 // ── Edit Fields ───────────────────────────────────────────────────────────────
 
 function onPatched(): void {
+	fullAlbums.value = undefined;
 	load();
 }
 

@@ -62,9 +62,11 @@ import { trans } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useUserStore } from "@/stores/UserState";
 import AlbumService from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const router = useRouter();
 const userStore = useUserStore();
+const albumListStore = useAlbumListStore();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const { title } = storeToRefs(lycheeStore);
@@ -123,6 +125,7 @@ function register() {
 			// Clear the cache to trigger reload of user data
 			userStore.setUser(undefined);
 			AlbumService.clearCache();
+			albumListStore.invalidate();
 			router.push({ name: "gallery" }); // Redirect to gallery
 		})
 		.catch((error) => {
