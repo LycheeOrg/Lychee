@@ -28,9 +28,9 @@ class AlbumListResource extends Data
 	/** @var string[] */
 	public array $titles;
 	/** @var int[] */
-	public array $lft;
+	public array $_lft;
 	/** @var int[] */
-	public array $rgt;
+	public array $_rgt;
 	/** @var (string|null)[] */
 	public array $cover_ids;
 	/** @var (string|null)[]|null `null` when `with_parent_id=false`; otherwise index-aligned, `null` per-entry for a root album (never omitted). */
@@ -56,8 +56,8 @@ class AlbumListResource extends Data
 	) {
 		$this->ids = $ids;
 		$this->titles = $titles;
-		$this->lft = $lft;
-		$this->rgt = $rgt;
+		$this->_lft = $lft;
+		$this->_rgt = $rgt;
 		$this->cover_ids = $cover_ids;
 		$this->parent_ids = $parent_ids;
 		$this->bulk_edit = $bulk_edit;

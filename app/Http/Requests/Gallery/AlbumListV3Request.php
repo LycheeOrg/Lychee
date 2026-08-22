@@ -10,6 +10,7 @@ namespace App\Http\Requests\Gallery;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
+use App\Rules\BooleanRule;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -57,8 +58,8 @@ class AlbumListV3Request extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'with_parent_id' => ['sometimes', 'boolean'],
-			'for_bulk_edit' => ['sometimes', 'boolean'],
+			'with_parent_id' => ['sometimes', new BooleanRule()],
+			'for_bulk_edit' => ['sometimes', new BooleanRule()],
 		];
 	}
 
