@@ -89,8 +89,8 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		self::assertNull($json['parent_ids']);
 		self::assertNull($json['bulk_edit']);
 		self::assertCount(count($json['ids']), $json['titles']);
-		self::assertCount(count($json['ids']), $json['lft']);
-		self::assertCount(count($json['ids']), $json['rgt']);
+		self::assertCount(count($json['ids']), $json['_lft']);
+		self::assertCount(count($json['ids']), $json['_rgt']);
 		self::assertCount(count($json['ids']), $json['cover_ids']);
 	}
 
@@ -150,8 +150,8 @@ class AlbumListV3Test extends BaseApiWithDataTest
 
 		self::assertSame([], $json['ids']);
 		self::assertSame([], $json['titles']);
-		self::assertSame([], $json['lft']);
-		self::assertSame([], $json['rgt']);
+		self::assertSame([], $json['_lft']);
+		self::assertSame([], $json['_rgt']);
 		self::assertSame([], $json['cover_ids']);
 	}
 
@@ -183,7 +183,7 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		$response->assertOk();
 		$json = $response->json();
 
-		self::assertEqualsCanonicalizing(['ids', 'titles', 'lft', 'rgt', 'cover_ids', 'parent_ids', 'bulk_edit'], array_keys($json));
+		self::assertEqualsCanonicalizing(['ids', 'titles', '_lft', '_rgt', 'cover_ids', 'parent_ids', 'bulk_edit'], array_keys($json));
 	}
 
 	// ── cover_ids resolution (FR-057-09) ─────────────────────────
