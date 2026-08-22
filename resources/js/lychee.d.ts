@@ -1724,8 +1724,8 @@ declare namespace App {
 				export type AlbumListResource = {
 					ids: string[];
 					titles: string[];
-					lft: number[];
-					rgt: number[];
+					_lft: number[];
+					_rgt: number[];
 					cover_ids: (string | null)[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;

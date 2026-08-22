@@ -60,7 +60,7 @@
 				<div class="w-full ltr:text-right rtl:text-left">{{ $t("fix-tree.table.parent") }}</div>
 			</div>
 		</div>
-		<UScrollArea
+		<!-- <UScrollArea
 			:items="albums ?? []"
 			:virtualize="{ estimateSize: 32, overscan: 50 }"
 			class="h-[calc(100vh-var(--ui-header-height)-var(--ui-main-padding))"
@@ -81,7 +81,7 @@
 					@increment-rgt="incrementRgt(item.id)"
 				/>
 			</template>
-		</UScrollArea>
+		</UScrollArea> -->
 	</UMain>
 	<ScrollTop />
 </template>
@@ -109,7 +109,7 @@ const toast = useAppToast();
 const albumIds = ref<string[]>([]);
 const isLoading = ref(true);
 
-const { is_struct_of_array_enabled: isStructOfArrayEnabled } = storeToRefs(useLycheeStateStore());
+const { is_struct_of_array_enabled } = storeToRefs(useLycheeStateStore());
 const albumListStore = useAlbumListStore();
 
 const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt, getModifiedAlbums } = useTreeOperations(
@@ -125,8 +125,8 @@ function adaptAlbumListToTree(data: App.Http.Resources.V3.AlbumListResource): Ap
 		id,
 		title: data.titles[i],
 		parent_id: data.parent_ids?.[i] ?? null,
-		_lft: data.lft[i],
-		_rgt: data.rgt[i],
+		_lft: data._lft[i],
+		_rgt: data._rgt[i],
 	}));
 }
 
@@ -134,7 +134,7 @@ function fetch() {
 	albums.value = undefined;
 	isLoading.value = true;
 
-	const request = isStructOfArrayEnabled.value
+	const request = is_struct_of_array_enabled.value
 		? AlbumListV3Service.getAlbums({ with_parent_id: true }).then((response) => adaptAlbumListToTree(response.data))
 		: MaintenanceService.fullTreeGet().then((response) => response.data);
 
