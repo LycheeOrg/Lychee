@@ -86,10 +86,14 @@
 	<ScrollTop />
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import AlbumService from "@/services/album-service";
+import AlbumListV3Service from "@/services/album-list-v3-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { AugmentedAlbum, useTreeOperations } from "@/v8/composables/album/treeOperations";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/v8/components/maintenance/FixTreeLine.vue";
@@ -105,17 +109,38 @@ const toast = useAppToast();
 const albumIds = ref<string[]>([]);
 const isLoading = ref(true);
 
+const { initData } = storeToRefs(useLeftMenuStateStore());
+const isStructOfArrayEnabled = computed(() => initData.value?.modules.is_struct_of_array_enabled ?? false);
+const albumListStore = useAlbumListStore();
+
 const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt, getModifiedAlbums } = useTreeOperations(
 	originalAlbums,
 	albums,
 	toast,
 );
 
+// SoA (with `parent_ids`, admin-gated) -> AoS, feeding the existing WASM `prepareAlbums()`
+// pipeline unchanged.
+function adaptAlbumListToTree(data: App.Http.Resources.V3.AlbumListResource): App.Http.Resources.Diagnostics.AlbumTree[] {
+	return data.ids.map((id, i) => ({
+		id,
+		title: data.titles[i],
+		parent_id: data.parent_ids?.[i] ?? null,
+		_lft: data.lft[i],
+		_rgt: data.rgt[i],
+	}));
+}
+
 function fetch() {
 	albums.value = undefined;
 	isLoading.value = true;
-	MaintenanceService.fullTreeGet().then((data) => {
-		originalAlbums.value = data.data;
+
+	const request = isStructOfArrayEnabled.value
+		? AlbumListV3Service.getAlbums({ with_parent_id: true }).then((response) => adaptAlbumListToTree(response.data))
+		: MaintenanceService.fullTreeGet().then((response) => response.data);
+
+	request.then((tree) => {
+		originalAlbums.value = tree;
 		albumIds.value = originalAlbums.value.map((a) => a.id);
 		isLoading.value = false;
 		void prepareAlbums();
@@ -154,6 +179,7 @@ function apply() {
 
 	MaintenanceService.updateFullTree(data).then(() => {
 		AlbumService.clearCache();
+		albumListStore.invalidate();
 		fetch();
 	});
 }

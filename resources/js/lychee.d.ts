@@ -1410,6 +1410,7 @@ declare namespace App {
 					is_contact_enabled: boolean;
 					messages_count: number;
 					is_design_system_enabled: boolean;
+					is_struct_of_array_enabled: boolean;
 				};
 				export type PhotoRightsResource = {
 					can_edit: boolean;
