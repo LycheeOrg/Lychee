@@ -1,81 +1,70 @@
 <template>
 	<UButton
+		v-if="!isNavOpen"
 		icon="lucide:folder-tree"
 		color="neutral"
-		variant="solid"
+		variant="soft"
 		size="lg"
-		class="lg:hidden fixed bottom-4 start-4 z-40 rounded-full shadow-lg"
+		class="fixed bottom-4 inset-s-4 z-40 rounded-full shadow-lg"
 		square
-		@click="open = true"
+		@click="isNavOpen = true"
 	/>
-	<UDashboardSidebar v-model:open="open" :toggle="false" :resizable="false" class="sticky top-0 h-svh">
-		<UNavigationMenu
-			orientation="vertical"
-			:items="items"
-			highlight
-			:dir="isLTR() ? 'ltr' : 'rtl'"
-			:ui="{ link: 'text-xs', childLink: 'text-xs' }"
-		>
-			<template #item-leading="{ item }">
-				<Thumb :album-id="item.albumId" :photo-id="item.coverId" class="w-5 h-5 rounded object-cover shrink-0" />
-			</template>
-			<template #item-label="{ item }">
-				<RouterLink
-					v-if="item.children && item.children.length > 0"
-					:to="{ name: 'album', params: { albumId: item.albumId } }"
-					class="truncate hover:underline"
-					:title="item.label"
-					@click.stop
-				>
-					{{ item.label }}
-				</RouterLink>
-				<span v-else class="truncate" :title="item.label">{{ item.label }}</span>
-			</template>
-		</UNavigationMenu>
-	</UDashboardSidebar>
+
+	<div
+		v-if="isDesktop"
+		class="sticky top-(--ui-header-height) h-[calc(100svh-var(--ui-header-height))] overflow-hidden shrink-0 transition-[width] duration-200"
+		:class="isNavOpen ? 'w-(--nav-bar-width)' : 'w-0'"
+	>
+		<div class="w-(--nav-bar-width) h-full flex flex-col border-e border-default">
+			<div class="flex justify-end p-2 shrink-0">
+				<UButton icon="lucide:panel-left-close" color="neutral" variant="ghost" size="sm" square @click="isNavOpen = false" />
+			</div>
+			<AlbumNavTree class="flex-1 min-h-0" />
+		</div>
+	</div>
+
+	<USlideover v-else v-model:open="isNavOpen" side="left">
+		<template #content>
+			<AlbumNavTree class="h-full" />
+		</template>
+	</USlideover>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { useAlbumListStore, type AlbumTreeNode } from "@/stores/AlbumListState";
-import { useLtRorRtL } from "@/utils/Helpers";
-import Thumb from "@/v8/components/thumbs/Thumb.vue";
-import type { NavigationMenuItem } from "@nuxt/ui";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import { useAlbumListStore } from "@/stores/AlbumListState";
+import AlbumNavTree from "@/v8/components/gallery/albumModule/AlbumNavTree.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { storeToRefs } from "pinia";
 
-type AlbumNavItem = NavigationMenuItem & { albumId: string; coverId: string | null };
-
-const open = defineModel<boolean>("open", { default: false });
-
-const { isLTR } = useLtRorRtL();
 const route = useRoute();
 const albumListStore = useAlbumListStore();
+const togglablesStateStore = useTogglablesStateStore();
 
-onMounted(() => {
-	albumListStore.ensureLoaded();
-});
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isDesktop = breakpoints.greaterOrEqual("lg");
+const { isNavOpen } = storeToRefs(togglablesStateStore);
 
-// Items with children render as a pure accordion trigger (`to` omitted) so clicking anywhere
-// on the row expands/collapses it instead of navigating - only the title, rendered as its own
-// RouterLink in the `item-label` slot below, navigates. Leaf items keep `to` set, so the whole
-// row navigates as usual since there's nothing to expand.
-function toItem(node: AlbumTreeNode, activeId: string | undefined, activeLft: number | undefined, activeRgt: number | undefined): AlbumNavItem {
-	const hasChildren = node.children.length > 0;
-	const isAncestorOfActive = activeLft !== undefined && activeRgt !== undefined && node._lft < activeLft && node._rgt > activeRgt;
-	return {
-		label: node.title,
-		to: hasChildren ? undefined : { name: "album", params: { albumId: node.id } },
-		active: node.id === activeId,
-		albumId: node.id,
-		coverId: node.coverId,
-		defaultOpen: hasChildren && isAncestorOfActive,
-		children: hasChildren ? node.children.map((child) => toItem(child, activeId, activeLft, activeRgt)) : undefined,
-	};
-}
+// Matches `UDashboardSidebar`'s own default `autoClose` behavior it replaces: close the mobile
+// off-canvas drawer on any navigation, not just an album change.
+watch(
+	() => route.fullPath,
+	() => {
+		if (!isDesktop.value) {
+			isNavOpen.value = false;
+		}
+	},
+);
 
-const items = computed<AlbumNavItem[]>(() => {
-	const activeId = route.params.albumId as string | undefined;
-	const activeRow = activeId !== undefined ? albumListStore.rows.find((r) => r.id === activeId) : undefined;
-	return albumListStore.tree.map((node) => toItem(node, activeId, activeRow?._lft, activeRow?._rgt));
+// A plain one-shot `onMounted` call would be orphaned by an `invalidate()` (e.g. `Albums.vue`'s
+// own mount-time `refresh()`) landing while this component's initial load is still in flight -
+// the response gets discarded via the store's generation guard and nothing re-fetches it.
+// Watching keeps re-triggering `ensureLoaded()` whenever the store drops back to unloaded.
+watchEffect(() => {
+	if (!albumListStore.isLoaded && !albumListStore.isLoading) {
+		albumListStore.ensureLoaded();
+	}
 });
 </script>

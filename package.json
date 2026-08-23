@@ -55,6 +55,7 @@
 		"@stripe/stripe-js": "^9.13.0",
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.3",
+		"@tanstack/vue-virtual": "^3.13.36",
 		"@vitejs/plugin-vue": "^6.0.8",
 		"@vueuse/components": "^14.4.0",
 		"@vueuse/core": "^14.4.0",

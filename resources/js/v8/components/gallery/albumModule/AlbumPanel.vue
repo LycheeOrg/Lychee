@@ -12,10 +12,10 @@
 		@open-context-menu="openContextMenuFromHeader"
 	/>
 	<UMain>
-		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
-			<div class="flex">
-				<AlbumNavPanel v-model:open="isNavOpen" />
-				<div class="flex-1 min-w-0">
+		<div class="flex">
+			<AlbumNavPanel />
+			<div class="flex-1 flex-col min-w-0">
+				<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 					<UContextMenu :items="menuSections" :disabled="noData" class="contents">
 						<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start select-none">
 							<SelectDrag :with-scroll="true" />
@@ -114,22 +114,25 @@
 							/>
 						</div>
 					</UContextMenu>
-				</div>
+					<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
+					<ApplyRenamerDialog
+						v-model:open="is_apply_renamer_visible"
+						:album-id="albumStore.album.id"
+						:photo-ids="selectedPhotosIds"
+						:album-ids="selectedAlbumsIds"
+						@applied="emits('refresh')"
+					/>
+					<WatermarkConfirmDialog
+						v-model:open="is_watermark_confirm_visible"
+						:album-id="albumStore.album.id"
+						@watermarked="emits('refresh')"
+					/>
+					<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
+					<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
+				</template>
+				<GalleryFooter v-once context="album" />
 			</div>
-			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
-			<ApplyRenamerDialog
-				v-model:open="is_apply_renamer_visible"
-				:album-id="albumStore.album.id"
-				:photo-ids="selectedPhotosIds"
-				:album-ids="selectedAlbumsIds"
-				@applied="emits('refresh')"
-			/>
-			<WatermarkConfirmDialog v-model:open="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
-			<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
-			<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
-		</template>
-		<!-- </div> -->
-		<GalleryFooter v-once context="album" />
+		</div>
 	</UMain>
 </template>
 <script setup lang="ts">
@@ -205,7 +208,6 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
-const isNavOpen = ref(false);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
 });
