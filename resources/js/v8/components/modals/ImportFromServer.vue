@@ -89,6 +89,7 @@ import AlbumService from "@/services/album-service";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useImportState } from "@/stores/ImportState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const open = defineModel<boolean>("open", { default: false });
 const emits = defineEmits<{ refresh: [] }>();
@@ -98,6 +99,7 @@ const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 
 const importState = useImportState();
+const albumListStore = useAlbumListStore();
 const directory = ref<string>("");
 const importing = ref<boolean>(false);
 
@@ -168,6 +170,7 @@ function submit() {
 		toast.add({ severity: "success", summary: "Success", detail: "Import started successfully", life: 3000 });
 		// Clear cache for the parent album to ensure the new photos are displayed
 		AlbumService.clearCache();
+		albumListStore.invalidate();
 		importing.value = false;
 		emits("refresh");
 	});

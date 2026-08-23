@@ -69,6 +69,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_album_header_landing_title_enabled: false,
 
 		use_admin_dashboard: true,
+		is_struct_of_array_enabled: false,
 
 		// Download settings
 		is_raw_download_enabled: false,
@@ -287,6 +288,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.default_album_protection = data.default_album_protection;
 					this.expert_album_settings = data.expert_album_settings;
 					this.use_admin_dashboard = data.use_admin_dashboard;
+					this.is_struct_of_array_enabled = data.is_struct_of_array_enabled;
 
 					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;
 					this.is_header_id_flag_enabled = data.is_header_id_flag_enabled;
