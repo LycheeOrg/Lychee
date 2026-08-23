@@ -228,8 +228,7 @@ export function useLeftMenu(
 									label: "maintenance.face_quality.title",
 									icon: "pi pi-face-smile",
 									route: "/admin/maintenance/faces",
-									access:
-										(initData.value.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false),
+									access: (initData.value.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false),
 								},
 								{
 									label: "left-menu.logs",

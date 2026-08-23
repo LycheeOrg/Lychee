@@ -40,7 +40,7 @@
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
 		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
 		<template v-if="lycheeStore.is_face_recognition_enabled">
-			<MaintenanceBulkScanFaces  />
+			<MaintenanceBulkScanFaces />
 			<MaintenanceRunClustering />
 			<MaintenanceDestroyDismissedFaces />
 			<MaintenanceSyncFaceEmbeddings ref="syncFaceEmbeddingsRef" />
