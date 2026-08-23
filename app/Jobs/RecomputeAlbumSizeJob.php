@@ -13,7 +13,6 @@ use App\Enum\SizeVariantType;
 use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\Album;
-use App\Models\AlbumSizeStatistics;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -89,11 +88,19 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 			// Exclude PLACEHOLDER (type 7) from all size calculations
 			$sizes = $this->computeSizes($album);
 
-			// Update or create statistics row
-			AlbumSizeStatistics::updateOrCreate(
-				['album_id' => $album->id],
-				$sizes
-			);
+			try {
+				$data = DB::table('album_size_statistics')->where('album_id', '=', $album->id)->first();
+				// Update or create statistics row
+				if ($data === null) {
+					DB::table('album_size_statistics')->insert(array_merge(['album_id' => $album->id], $sizes));
+				} else {
+					DB::table('album_size_statistics')->where('album_id', '=', $album->id)->update($sizes);
+				}
+			} catch (\Exception $e) {
+				// Do not fail anymore. Just eat the exception silently and log it.
+				// This might be usefule to have those data when someone has it again.
+				Log::error("Failed to update album_size_statistics for album {$album->id}: " . $e->getMessage(), ['sizes' => $sizes]);
+			}
 
 			Log::channel('jobs')->debug("Updated size statistics for album {$album->id}");
 
@@ -153,7 +160,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 			$type = SizeVariantType::from($row->type);
 			$column_name = 'size_' . $type->name();
 			if (isset($sizes[$column_name])) {
-				$sizes[$column_name] = (int) $row->total_size;
+				$sizes[$column_name] = $row->total_size;
 			}
 		}
 
