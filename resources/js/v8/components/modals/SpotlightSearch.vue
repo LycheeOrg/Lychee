@@ -107,33 +107,43 @@ const { availableLanguages, setLanguage } = useLanguageSwitcher(canEditSettings)
 const isRemoteSearching = ref(false);
 const remotePhotos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
 
-const runRemoteSearch = useDebounceFn((term: string) => {
+// Identifies a search request rather than its text: re-searching the same term (e.g. "cat",
+// then something else, then "cat" again) would make a plain term comparison mistake the first
+// (stale) request's response for the second's, since both share the same `searchTerm.value`.
+let remoteSearchGeneration = 0;
+
+const runRemoteSearch = useDebounceFn((term: string, generation: number) => {
 	// Guards against a stale response landing after the user kept typing (or cleared the box).
-	if (term !== searchTerm.value || term.length < searchMinLength.value) {
+	if (generation !== remoteSearchGeneration || term.length < searchMinLength.value) {
 		return;
 	}
 	isRemoteSearching.value = true;
 	SearchService.search(ALL, term)
 		.then((response) => {
-			if (term !== searchTerm.value) {
+			if (generation !== remoteSearchGeneration) {
 				return;
 			}
 			remotePhotos.value = response.data.photos;
 		})
 		.finally(() => {
-			if (term === searchTerm.value) {
+			if (generation === remoteSearchGeneration) {
 				isRemoteSearching.value = false;
 			}
 		});
 }, 300);
 
 watch(searchTerm, (term) => {
+	remoteSearchGeneration++;
 	if (term.trim().length < searchMinLength.value) {
 		remotePhotos.value = [];
 		isRemoteSearching.value = false;
 		return;
 	}
-	runRemoteSearch(term);
+	// Cleared here (not just once the new response lands) so the "remote" group - which sets
+	// `ignoreFilter: true` in `groups` below - doesn't keep showing the previous term's results
+	// while this one is still debouncing/in flight.
+	remotePhotos.value = [];
+	runRemoteSearch(term, remoteSearchGeneration);
 });
 
 watch(open, (isOpen) => {
@@ -251,7 +261,22 @@ const groups = computed<CommandPaletteGroup[]>(() => {
 	const result: CommandPaletteGroup[] = [];
 
 	if (navGroupItems.value.length > 0) {
-		result.push({ id: "navigation", label: trans("search-palette.navigation"), items: navGroupItems.value as CommandPaletteItem[] });
+		result.push({
+			id: "navigation",
+			label: trans("search-palette.navigation"),
+			items: navGroupItems.value as CommandPaletteItem[],
+			// `ignoreFilter` + a local postFilter (as "actions"/"language" already do) keeps this
+			// small, fixed list out of the shared Fuse pool: `useFuse` forwards `fuse.resultLimit`
+			// straight into Fuse's own `.search(pattern, { limit })`, which caps the *combined*
+			// cross-group result set before any per-group split - with enough albums matching, that
+			// silently starves out this group's own matches (e.g. typing "st" hiding "Statistics").
+			ignoreFilter: true,
+			postFilter: (term: string, items: CommandPaletteItem[]) => {
+				if (!term) return items;
+				const t = term.toLowerCase();
+				return items.filter((item) => (item.label as string | undefined)?.toLowerCase().includes(t));
+			},
+		});
 	}
 	if (actionsGroupItems.value.length > 0) {
 		result.push({
@@ -271,17 +296,6 @@ const groups = computed<CommandPaletteGroup[]>(() => {
 		});
 	}
 
-	if (albumsGroupItems.value.length > 0) {
-		result.push({
-			id: "albums",
-			label: trans("search-palette.albums"),
-			items: albumsGroupItems.value as CommandPaletteItem[],
-			// Only show once the user has actually typed something -- otherwise the whole album
-			// tree would dump onto screen the instant the palette opens.
-			postFilter: (term, items) => (term ? items : []),
-		});
-	}
-
 	if (languageGroupItems.value.length > 0) {
 		result.push({
 			id: "language",
@@ -297,6 +311,20 @@ const groups = computed<CommandPaletteGroup[]>(() => {
 						(item.description as string | undefined)?.toLowerCase().includes(t),
 				);
 			},
+		});
+	}
+
+	if (albumsGroupItems.value.length > 0) {
+		result.push({
+			id: "albums",
+			label: trans("search-palette.albums"),
+			items: albumsGroupItems.value as CommandPaletteItem[],
+			// Stays on the shared Fuse pool (unlike "navigation"/"actions"/"language") so a large,
+			// freeform album collection still gets fuzzy/typo-tolerant matching rather than plain
+			// substring matching.
+			// Only show once the user has actually typed something -- otherwise the whole album
+			// tree would dump onto screen the instant the palette opens.
+			postFilter: (term, items) => (term ? items : []),
 		});
 	}
 
