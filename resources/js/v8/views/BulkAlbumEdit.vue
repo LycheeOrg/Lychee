@@ -29,17 +29,6 @@
 				class="flex-1 min-w-48"
 				@update:model-value="onSearchInput"
 			/>
-
-			<USelectMenu v-model="perPage" :items="perPageOptions" class="w-24" size="sm" @update:model-value="load(1)" />
-
-			<UButton
-				size="sm"
-				color="neutral"
-				variant="soft"
-				:icon="paginationMode === 'numbered' ? 'lucide:list' : 'lucide:align-justify'"
-				:label="$t(paginationMode === 'numbered' ? 'bulk_album_edit.mode_infinite' : 'bulk_album_edit.mode_paginated')"
-				@click="togglePaginationMode"
-			/>
 		</div>
 
 		<!-- Selection + action bar -->
@@ -112,7 +101,7 @@
 				sticky
 				:ui="{ base: 'table-fixed', td: 'px-4 py-0', tr: 'hover:bg-primary/5 border-none' }"
 				:virtualize="{ estimateSize: 28, overscan: 50 }"
-				class="max-h-[65vh] text-sm"
+				class="max-h-[calc(100vh-var(--ui-header-height))] text-sm"
 			>
 				<template #select-header>
 					<UCheckbox
@@ -126,6 +115,15 @@
 				<template #title-cell="{ row }">
 					<span :style="`padding-left: ${(albumDepths[row.index] - 1) * 1.25}rem`" class="inline-flex items-center gap-1">
 						<span v-if="albumDepths[row.index] > 0" class="text-muted mr-1">└─</span>
+						<UButton
+							:to="{ name: 'album', params: { albumId: row.original.id } }"
+							target="_blank"
+							size="xs"
+							variant="ghost"
+							color="neutral"
+							icon="lucide:external-link"
+							class="shrink-0"
+						/>
 						<UInput
 							v-if="editingTitleId === row.original.id"
 							v-model="editingTitleValue"
@@ -277,25 +275,13 @@
 				<template #actions-cell="{ row }">
 					<UButton size="sm" variant="ghost" color="neutral" icon="lucide:pencil" @click="quickEditAlbum(row.original.id)" />
 				</template>
-				<template v-if="paginationMode === 'infinite'" #body-bottom>
-					<tr>
-						<td colspan="100">
-							<div ref="sentinel" class="h-4" />
-						</td>
-					</tr>
-				</template>
 			</UTable>
-
-			<!-- Pagination (numbered mode) -->
-			<div v-if="paginationMode === 'numbered'" class="flex justify-center mt-2">
-				<UPagination v-model:page="currentPage" :total="total" :items-per-page="perPage" @update:page="() => load()" />
-			</div>
 		</div>
 	</UMain>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { trans, trans_choice } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -305,6 +291,7 @@ import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue
 import BulkSetOwnerDialog from "@/v8/components/forms/bulk-album-edit/BulkSetOwnerDialog.vue";
 import BulkEditFieldsDialog from "@/v8/components/forms/bulk-album-edit/BulkEditFieldsDialog.vue";
 import BulkAlbumEditService, { type BulkAlbumResource } from "@/services/bulk-album-edit-service";
+import AlbumListV3Service from "@/services/album-list-v3-service";
 import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
@@ -325,16 +312,8 @@ UsersService.count().then((data) => {
 const albums = ref<BulkAlbumResource[]>([]);
 const loading = ref(false);
 const search = ref("");
-const currentPage = ref(1);
-const perPage = ref(100);
-const total = ref(0);
-const perPageOptions = [100, 200, 500];
 
 const selectedIds = ref<string[]>([]);
-
-const paginationMode = ref<"numbered" | "infinite">("numbered");
-const sentinel = ref<HTMLElement | null>(null);
-let intersectionObserver: IntersectionObserver | null = null;
 
 // -- dialogs --
 const isSetOwnerVisible = ref(false);
@@ -368,34 +347,77 @@ const isPageAllSelected = computed<boolean>(() => {
 	return albums.value.length > 0 && albums.value.every((a) => selectedIds.value.includes(a.id));
 });
 
-const centered = { class: { th: "text-center", td: "text-center" } };
+// Fixed per-column widths keep the (table-fixed) layout stable under virtualized
+// scrolling. Every column needs one, including `title` — leaving any column's width
+// unset lets the browser keep re-deriving it from whichever row is currently mounted
+// at the top of the viewport, so it visibly jumps as virtualized rows swap in/out.
+// `min-w-*`/`max-w-*` (not just `w-*`) are needed to actually pin it — Nuxt UI's
+// cell content can still push a plain `width` wider otherwise.
+//
+// The three classes for a given column must be written out in full below (not built
+// via `` `min-${width}` `` etc.) — Tailwind's build-time scanner only picks up complete
+// literal class-name tokens from the source text, it never evaluates template literals.
+function centeredCol(widthClasses: string): { class: { th: string; td: string } } {
+	return { class: { th: `text-center ${widthClasses} truncate`, td: `text-center ${widthClasses} truncate` } };
+}
+
+function widthCol(widthClasses: string): { class: { th: string; td: string } } {
+	return { class: { th: widthClasses, td: `${widthClasses} truncate` } };
+}
 
 const columns = computed<TableColumn<BulkAlbumResource>[]>(() => {
 	const cols: TableColumn<BulkAlbumResource>[] = [
-		{ id: "select", meta: centered },
-		{ id: "title", header: trans("bulk_album_edit.col_title") },
-		{ id: "owner", accessorKey: "owner_name", header: trans("bulk_album_edit.col_owner") },
-		{ id: "license", header: trans("bulk_album_edit.col_license"), cell: ({ row }) => row.original.license ?? "—", meta: centered },
-		{ id: "is_nsfw", header: trans("bulk_album_edit.col_is_nsfw"), meta: centered },
-		{ id: "is_public", header: trans("bulk_album_edit.col_is_public"), meta: centered },
-		{ id: "is_link_required", header: trans("bulk_album_edit.col_is_link_required"), meta: centered },
-		{ id: "grants_download", header: trans("bulk_album_edit.col_grants_download"), meta: centered },
-		{ id: "grants_full_photo_access", header: trans("bulk_album_edit.col_grants_full_photo_access"), meta: centered },
+		{ id: "select", meta: centeredCol("w-16 min-w-16 max-w-16") },
+		{ id: "title", header: trans("bulk_album_edit.col_title"), meta: widthCol("w-96 min-w-96 max-w-96") },
+		{
+			id: "owner",
+			accessorKey: "owner_name",
+			header: trans("bulk_album_edit.col_owner"),
+			meta: widthCol("w-32 min-w-32 max-w-32"),
+		},
+		{
+			id: "license",
+			header: trans("bulk_album_edit.col_license"),
+			cell: ({ row }) => row.original.license ?? "—",
+			meta: centeredCol("w-24 min-w-24 max-w-24"),
+		},
+		{ id: "is_nsfw", header: trans("bulk_album_edit.col_is_nsfw"), meta: centeredCol("w-16 min-w-16 max-w-16") },
+		{ id: "is_public", header: trans("bulk_album_edit.col_is_public"), meta: centeredCol("w-16 min-w-16 max-w-16") },
+		{
+			id: "is_link_required",
+			header: trans("bulk_album_edit.col_is_link_required"),
+			meta: centeredCol("w-16 min-w-16 max-w-16"),
+		},
+		{
+			id: "grants_download",
+			header: trans("bulk_album_edit.col_grants_download"),
+			meta: centeredCol("w-16 min-w-16 max-w-16"),
+		},
+		{
+			id: "grants_full_photo_access",
+			header: trans("bulk_album_edit.col_grants_full_photo_access"),
+			meta: centeredCol("w-16 min-w-16 max-w-16"),
+		},
 	];
 
 	if (is_se_enabled.value || is_se_preview_enabled.value) {
-		cols.push({ id: "grants_upload", header: trans("bulk_album_edit.col_grants_upload"), meta: centered });
+		cols.push({
+			id: "grants_upload",
+			header: trans("bulk_album_edit.col_grants_upload"),
+			meta: centeredCol("w-16 min-w-16 max-w-16"),
+		});
 	}
 
 	cols.push(
-		{ id: "photo_sorting", header: trans("bulk_album_edit.col_photo_sorting"), meta: centered },
-		{ id: "album_sorting", header: trans("bulk_album_edit.col_album_sorting"), meta: centered },
+		{ id: "photo_sorting", header: trans("bulk_album_edit.col_photo_sorting"), meta: centeredCol("w-48 min-w-48 max-w-48") },
+		{ id: "album_sorting", header: trans("bulk_album_edit.col_album_sorting"), meta: centeredCol("w-48 min-w-48 max-w-48") },
 		{
 			id: "created_at",
 			header: trans("bulk_album_edit.col_created_at"),
 			cell: ({ row }) => formatDate(row.original.created_at),
+			meta: widthCol("w-28 min-w-28 max-w-28"),
 		},
-		{ id: "actions", meta: centered },
+		{ id: "actions", meta: centeredCol("w-20 min-w-20 max-w-20") },
 	);
 
 	return cols;
@@ -415,26 +437,74 @@ function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-// ── Data Loading ──────────────────────────────────────────────────────────────
+// ── Data Loading (single unpaginated fetch, client-side search, rendering left
+// to the table's own virtualization) ─────────────────────────────────────────
+// `fullAlbums` holds the complete curated set once fetched; `albums.value` for a
+// given search is always a *filter* over it (never a clone), so the existing
+// inline-edit handlers below, which mutate a displayed row in place,
+// automatically keep `fullAlbums` in sync without any extra bookkeeping.
 
-function load(page?: number): void {
-	if (page !== undefined) {
-		currentPage.value = page;
+const fullAlbums = ref<BulkAlbumResource[] | undefined>(undefined);
+
+function adaptBulkEditRow(
+	data: App.Http.Resources.V3.AlbumListResource,
+	bulk: App.Http.Resources.V3.AlbumListBulkEditFieldsResource,
+	i: number,
+): BulkAlbumResource {
+	return {
+		id: data.ids[i],
+		title: data.titles[i],
+		owner_id: bulk.owner_ids[i],
+		owner_name: bulk.owner_names[i],
+		description: bulk.descriptions[i],
+		copyright: bulk.copyrights[i],
+		license: bulk.licenses[i],
+		photo_layout: bulk.photo_layouts[i],
+		photo_sorting_col: bulk.photo_sorting_cols[i],
+		photo_sorting_order: bulk.photo_sorting_orders[i],
+		album_sorting_col: bulk.album_sorting_cols[i],
+		album_sorting_order: bulk.album_sorting_orders[i],
+		album_thumb_aspect_ratio: bulk.album_thumb_aspect_ratios[i],
+		album_timeline: bulk.album_timelines[i],
+		photo_timeline: bulk.photo_timelines[i],
+		is_nsfw: bulk.is_nsfws[i],
+		_lft: data._lft[i],
+		_rgt: data._rgt[i],
+		is_public: bulk.is_publics[i],
+		is_link_required: bulk.is_link_requireds[i],
+		grants_full_photo_access: bulk.grants_full_photo_accesses[i],
+		grants_download: bulk.grants_downloads[i],
+		grants_upload: bulk.grants_uploads[i],
+		created_at: bulk.created_ats[i],
+	};
+}
+
+function ensureFullAlbumsLoaded(): Promise<BulkAlbumResource[]> {
+	if (fullAlbums.value !== undefined) {
+		return Promise.resolve(fullAlbums.value);
 	}
+	return AlbumListV3Service.getAlbums({ for_bulk_edit: true }).then((response) => {
+		const data = response.data;
+		const bulk = data.bulk_edit as App.Http.Resources.V3.AlbumListBulkEditFieldsResource;
+		const rows = data.ids.map((_, i) => adaptBulkEditRow(data, bulk, i));
+		fullAlbums.value = rows;
+		return rows;
+	});
+}
+
+function filterFullAlbums(rows: BulkAlbumResource[]): BulkAlbumResource[] {
+	const term = search.value.trim().toLowerCase();
+	if (term === "") {
+		return rows;
+	}
+	return rows.filter((a) => a.title.toLowerCase().includes(term));
+}
+
+function load(): void {
 	loading.value = true;
-	BulkAlbumEditService.getAlbums({
-		search: search.value || undefined,
-		page: currentPage.value,
-		per_page: perPage.value,
-	})
-		.then((response) => {
-			if (paginationMode.value === "infinite" && page !== undefined && page > 1) {
-				albums.value = [...albums.value, ...response.data.data];
-			} else {
-				albums.value = response.data.data;
-			}
-			total.value = response.data.total;
-			currentPage.value = response.data.current_page;
+	ensureFullAlbumsLoaded()
+		.then((rows) => {
+			albums.value = filterFullAlbums(rows);
 		})
 		.catch(() => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_load"), life: 3000 });
@@ -451,7 +521,7 @@ function onSearchInput(): void {
 	searchTimeout = setTimeout(() => {
 		selectedIds.value = [];
 		albums.value = [];
-		load(1);
+		load();
 	}, 350);
 }
 
@@ -477,18 +547,11 @@ function toggleSelectPage(selectAll: boolean): void {
 }
 
 function selectAllMatching(): void {
-	BulkAlbumEditService.getIds(search.value || null)
-		.then((response) => {
-			const newIds = new Set(selectedIds.value);
-			response.data.ids.forEach((id) => newIds.add(id));
-			selectedIds.value = Array.from(newIds);
-			if (response.data.capped) {
-				toast.add({ severity: "warn", summary: trans("toasts.warning"), detail: trans("bulk_album_edit.cap_warning"), life: 5000 });
-			}
-		})
-		.catch(() => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_load"), life: 3000 });
-		});
+	ensureFullAlbumsLoaded().then((rows) => {
+		const newIds = new Set(selectedIds.value);
+		filterFullAlbums(rows).forEach((a) => newIds.add(a.id));
+		selectedIds.value = Array.from(newIds);
+	});
 }
 
 // ── Inline title editing ─────────────────────────────────────────────────────
@@ -588,48 +651,11 @@ function onInlineSortingChange(
 	});
 }
 
-// ── Pagination ────────────────────────────────────────────────────────────────
-
-function togglePaginationMode(): void {
-	if (paginationMode.value === "numbered") {
-		paginationMode.value = "infinite";
-	} else {
-		paginationMode.value = "numbered";
-		if (intersectionObserver !== null) {
-			intersectionObserver.disconnect();
-			intersectionObserver = null;
-		}
-		albums.value = [];
-		load(1);
-	}
-}
-
-function setupInfiniteScroll(): void {
-	if (sentinel.value === null) {
-		return;
-	}
-	intersectionObserver = new IntersectionObserver((entries) => {
-		if (entries[0].isIntersecting && !loading.value && currentPage.value * perPage.value < total.value) {
-			load(currentPage.value + 1);
-		}
-	});
-	intersectionObserver.observe(sentinel.value);
-}
-
-watch([paginationMode, sentinel], ([mode, el]) => {
-	if (intersectionObserver !== null) {
-		intersectionObserver.disconnect();
-		intersectionObserver = null;
-	}
-	if (mode === "infinite" && el !== null) {
-		setupInfiniteScroll();
-	}
-});
-
 // ── Set Owner ─────────────────────────────────────────────────────────────────
 
 function onTransferred(): void {
 	selectedIds.value = [];
+	fullAlbums.value = undefined;
 	load();
 }
 
@@ -637,24 +663,20 @@ function onTransferred(): void {
 
 function onDeleted(): void {
 	selectedIds.value = [];
-	load(1);
+	fullAlbums.value = undefined;
+	load();
 }
 
 // ── Edit Fields ───────────────────────────────────────────────────────────────
 
 function onPatched(): void {
+	fullAlbums.value = undefined;
 	load();
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 onMounted(() => {
-	load(1);
-});
-
-onUnmounted(() => {
-	if (intersectionObserver !== null) {
-		intersectionObserver.disconnect();
-	}
+	load();
 });
 </script>

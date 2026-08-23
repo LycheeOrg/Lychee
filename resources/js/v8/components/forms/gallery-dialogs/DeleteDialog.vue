@@ -39,6 +39,7 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const toast = useAppToast();
 const props = defineProps<{
@@ -51,6 +52,7 @@ const props = defineProps<{
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const photoStore = usePhotoStore();
+const albumListStore = useAlbumListStore();
 
 const visible = defineModel<boolean>("open", { default: false });
 const emits = defineEmits<{
@@ -106,6 +108,7 @@ function executeDeleteAlbum() {
 		} else {
 			AlbumService.clearCache(getParentId());
 		}
+		albumListStore.invalidate();
 		emits("deleted");
 	});
 }

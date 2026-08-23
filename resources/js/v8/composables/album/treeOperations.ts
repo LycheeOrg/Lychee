@@ -10,21 +10,13 @@ import init, {
 	decrementRgt as wasmDecrementRgt,
 	getModifiedAlbums as wasmGetModifiedAlbums,
 	setPanicHook,
-	type AlbumTree as WasmAlbumTree,
-	type AugmentedAlbum as WasmAugmentedAlbum,
+	type AlbumTree,
+	type AugmentedAlbumTree,
+	type ModifiedAlbums,
 	type ErrorDescriptor,
 } from "@lychee-org/nested-set-checker-wasm";
 
-export type Augmented = {
-	prefix: string;
-	trimmedId: string;
-	trimmedParentId: string;
-	isDuplicate_rgt: boolean;
-	isDuplicate_lft: boolean;
-	isExpectedParentId: boolean;
-};
-
-export type AugmentedAlbum = App.Http.Resources.Diagnostics.AlbumTree & Augmented;
+export type { AlbumTree, AugmentedAlbumTree, ModifiedAlbums };
 
 let wasmReady: Promise<void> | null = null;
 
@@ -57,15 +49,25 @@ function formatError(e: ErrorDescriptor): string {
 	return sprintf(trans(`fix-tree.errors.${e.kind}`), ...ERROR_TRANS_ARGS[e.kind](e));
 }
 
-export function useTreeOperations(
-	originalAlbums: Ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>,
-	albums: Ref<AugmentedAlbum[] | undefined>,
-	toast: ToastLike,
-) {
+// Builds the struct-of-arrays source `prepareAlbums` expects, sorted by `_lft`, from the
+// current (possibly user-edited) `albums`. Only the per-field arrays are permuted by index
+// here — no per-album object is ever materialized.
+function sortedByLft(current: AugmentedAlbumTree): AlbumTree {
+	const order = Array.from(current.id.keys()).sort((a, b) => current._lft[a] - current._lft[b]);
+	return {
+		id: order.map((i) => current.id[i]),
+		title: order.map((i) => current.title[i]),
+		parent_id: order.map((i) => current.parent_id[i]),
+		_lft: Int32Array.from(order, (i) => current._lft[i]),
+		_rgt: Int32Array.from(order, (i) => current._rgt[i]),
+	};
+}
+
+export function useTreeOperations(originalAlbums: Ref<AlbumTree | undefined>, albums: Ref<AugmentedAlbumTree | undefined>, toast: ToastLike) {
 	const isValidated = ref(false);
 	const errors = ref<string[]>([]);
 
-	async function prepareAlbums(sourceAlbums?: App.Http.Resources.Diagnostics.AlbumTree[]) {
+	async function prepareAlbums(sourceAlbums?: AlbumTree) {
 		// Use provided source, or fall back to originalAlbums for initial load
 		const source = sourceAlbums ?? originalAlbums.value;
 		if (source === undefined) {
@@ -73,9 +75,9 @@ export function useTreeOperations(
 		}
 
 		await ensureWasm();
-		const result = wasmPrepareAlbums(source as WasmAlbumTree[]);
+		const result = wasmPrepareAlbums(source);
 
-		albums.value = result.albums as AugmentedAlbum[];
+		albums.value = result.albums;
 		errors.value = result.errors.map(formatError);
 		isValidated.value = result.isValid;
 	}
@@ -89,8 +91,7 @@ export function useTreeOperations(
 			return;
 		}
 		// Sort current albums and revalidate without overwriting the baseline
-		const sortedAlbums = albums.value.slice().sort((a, b) => a._lft - b._lft);
-		void prepareAlbums(sortedAlbums).then(() => {
+		void prepareAlbums(sortedByLft(albums.value)).then(() => {
 			errors.value.forEach((e) => toast.add({ severity: "error", summary: trans("toasts.error"), detail: e, life: 3000 }));
 		});
 	}
@@ -99,40 +100,35 @@ export function useTreeOperations(
 		if (albums.value === undefined) {
 			return;
 		}
-		albums.value = wasmIncrementLft(albums.value as WasmAugmentedAlbum[], id) as AugmentedAlbum[];
+		albums.value = wasmIncrementLft(albums.value, id);
 	}
 
 	function incrementRgt(id: string) {
 		if (albums.value === undefined) {
 			return;
 		}
-		albums.value = wasmIncrementRgt(albums.value as WasmAugmentedAlbum[], id) as AugmentedAlbum[];
+		albums.value = wasmIncrementRgt(albums.value, id);
 	}
 
 	function decrementLft(id: string) {
 		if (albums.value === undefined) {
 			return;
 		}
-		albums.value = wasmDecrementLft(albums.value as WasmAugmentedAlbum[], id) as AugmentedAlbum[];
+		albums.value = wasmDecrementLft(albums.value, id);
 	}
 
 	function decrementRgt(id: string) {
 		if (albums.value === undefined) {
 			return;
 		}
-		albums.value = wasmDecrementRgt(albums.value as WasmAugmentedAlbum[], id) as AugmentedAlbum[];
+		albums.value = wasmDecrementRgt(albums.value, id);
 	}
 
-	function getModifiedAlbums(): { id: string; _lft: number; _rgt: number; parent_id: string | null }[] {
+	function getModifiedAlbums(): ModifiedAlbums {
 		if (albums.value === undefined || originalAlbums.value === undefined) {
-			return [];
+			return { id: [], _lft: new Int32Array(), _rgt: new Int32Array(), parent_id: [] };
 		}
-		return wasmGetModifiedAlbums(albums.value as WasmAlbumTree[], originalAlbums.value as WasmAlbumTree[]) as {
-			id: string;
-			_lft: number;
-			_rgt: number;
-			parent_id: string | null;
-		}[];
+		return wasmGetModifiedAlbums(albums.value, originalAlbums.value);
 	}
 
 	return {

@@ -103,6 +103,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/v8/components/icons/SETag.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 defineProps<{
 	legendIcon: string;
@@ -110,6 +111,7 @@ defineProps<{
 }>();
 
 const albumStore = useAlbumStore();
+const albumListStore = useAlbumListStore();
 
 const toast = useAppToast();
 
@@ -143,6 +145,7 @@ function save() {
 	AlbumService.updateProtectionPolicy(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("dialogs.visibility.visibility_updated"), life: 3000 });
 		AlbumService.clearCache(albumStore.albumId);
+		albumListStore.invalidate();
 		if (albumStore.config?.is_model_album) {
 			AlbumService.clearCache(albumStore.modelAlbum?.parent_id);
 		} else {

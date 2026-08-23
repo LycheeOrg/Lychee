@@ -74,34 +74,13 @@
 				<h2 class="text-xl font-semibold">{{ $t("admin-dashboard.overview") }}</h2>
 			</template>
 			<div v-if="stats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ stats.photos_count.toLocaleString() }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.photos_count") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ stats.albums_count.toLocaleString() }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.albums_count") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ stats.users_count.toLocaleString() }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.users_count") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold" dir="ltr">{{ formatBytes(stats.storage_bytes) }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.storage_bytes") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ stats.queued_jobs }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.queued_jobs") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ stats.failed_jobs_24h }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.failed_jobs_24h") }}</div>
-				</div>
-				<div class="bg-elevated rounded p-4 text-center col-span-2">
-					<div class="text-lg font-bold">{{ stats.last_successful_job_at ?? "—" }}</div>
-					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.last_successful_job_at") }}</div>
-				</div>
+				<AdminStatTile label="admin-dashboard.metrics.photos_count" :value="stats.photos_count.toLocaleString()" />
+				<AdminStatTile label="admin-dashboard.metrics.albums_count" :value="stats.albums_count.toLocaleString()" />
+				<AdminStatTile label="admin-dashboard.metrics.users_count" :value="stats.users_count.toLocaleString()" />
+				<AdminStatTile label="admin-dashboard.metrics.storage_bytes" :value="formatBytes(stats.storage_bytes)" ltr />
+				<AdminStatTile label="admin-dashboard.metrics.queued_jobs" :value="stats.queued_jobs" />
+				<AdminStatTile label="admin-dashboard.metrics.failed_jobs_24h" :value="stats.failed_jobs_24h" />
+				<AdminStatTile label="admin-dashboard.metrics.last_successful_job_at" :value="stats.last_successful_job_at ?? '—'" small wide />
 			</div>
 			<div v-if="stats && stats.errors.length > 0" class="mt-2 text-orange-500 text-sm">
 				{{ $t("admin-dashboard.errors.partial") }}
@@ -120,24 +99,7 @@
 				<div v-for="section in tileSections" :key="section.key" v-show="section.tiles.length > 0">
 					<h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">{{ $t(section.label) }}</h3>
 					<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-						<template v-for="tile in section.tiles" :key="tile.key">
-							<component
-								:is="tile.isExternal ? 'a' : RouterLink"
-								:to="tile.isExternal ? undefined : tile.to"
-								:href="tile.isExternal ? tile.to : undefined"
-								:target="tile.isExternal ? '_blank' : undefined"
-								class="bg-elevated hover:bg-accented rounded p-4 text-center flex flex-col items-center gap-2 cursor-pointer no-underline text-default"
-								tabindex="0"
-								@keydown.enter="navigateTile(tile)"
-								@keydown.space.prevent="navigateTile(tile)"
-							>
-								<UChip v-if="tile.num && tile.num.value > 0" :text="tile.num.value" color="primary">
-									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
-								</UChip>
-								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
-								<span class="text-sm">{{ $t(tile.label) }}</span>
-							</component>
-						</template>
+						<AdminTileLink v-for="tile in section.tiles" :key="tile.key" :tile="tile" />
 					</div>
 				</div>
 			</div>
@@ -162,13 +124,14 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
-import PiMiniIcon from "@/v8/components/icons/PiMiniIcon.vue";
+import AdminTileLink from "@/v8/components/admin/AdminTileLink.vue";
+import AdminStatTile from "@/v8/components/admin/AdminStatTile.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import Constants from "@/services/constants";
@@ -179,7 +142,6 @@ import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/v8/composa
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const toast = useAppToast();
-const router = useRouter();
 
 const { initData } = storeToRefs(leftMenuStore);
 const stats = ref<App.Http.Resources.Models.AdminStatsResource | null>(null);
@@ -241,14 +203,6 @@ function formatBytes(bytes: number): string {
 	const sizes = ["B", "KB", "MB", "GB", "TB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-}
-
-function navigateTile(tile: AdminTile) {
-	if (tile.isExternal) {
-		window.open(tile.to, "_blank");
-	} else {
-		router.push(tile.to);
-	}
 }
 
 function loadAdvisories() {

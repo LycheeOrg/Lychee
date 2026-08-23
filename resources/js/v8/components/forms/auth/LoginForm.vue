@@ -87,6 +87,7 @@ import { onMounted } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import { useUserStore } from "@/stores/UserState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const emits = defineEmits<{
 	"logged-in": [];
@@ -108,6 +109,7 @@ const username = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const userStore = useUserStore();
+const albumListStore = useAlbumListStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const { is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
@@ -123,6 +125,7 @@ function login() {
 			userStore.setUser(undefined);
 			invalidPassword.value = false;
 			AlbumService.clearCache();
+			albumListStore.invalidate();
 			emits("logged-in");
 		})
 		.catch((e) => {

@@ -52,6 +52,7 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 
 const props = defineProps<{
 	album?: App.Http.Resources.Models.ThumbAlbumResource;
@@ -64,6 +65,7 @@ const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const visible = defineModel<boolean>("open", { default: false });
 const photoStore = usePhotoStore();
+const albumListStore = useAlbumListStore();
 
 const emits = defineEmits<{
 	moved: [];
@@ -165,6 +167,7 @@ function executeMoveAlbum() {
 		} else {
 			AlbumService.clearCache(getParentId());
 		}
+		albumListStore.invalidate();
 		close();
 		emits("moved");
 	});

@@ -679,6 +679,7 @@ declare namespace App {
 					is_album_header_landing_title_enabled: boolean;
 					use_admin_dashboard: boolean;
 					is_person_album_enabled: boolean;
+					is_struct_of_array_enabled: boolean;
 					is_cover_id_flag_enabled: boolean;
 					is_header_id_flag_enabled: boolean;
 					is_highlighted_flag_enabled: boolean;
@@ -1723,8 +1724,8 @@ declare namespace App {
 				export type AlbumListResource = {
 					ids: string[];
 					titles: string[];
-					lft: number[];
-					rgt: number[];
+					_lft: number[];
+					_rgt: number[];
 					cover_ids: (string | null)[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
