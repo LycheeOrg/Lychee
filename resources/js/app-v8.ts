@@ -14,6 +14,7 @@ import AppComponent from "@/v8/views/App.vue";
 import ui from "@nuxt/ui/vue-plugin";
 import { registerIconCollections } from "@/v8/icons";
 import { applyStoredDarkModePreference } from "@/v8/composables/useDarkMode";
+import { resolveLocale } from "@/v8/i18n";
 import "../sass/app-v8.css";
 
 declare global {
@@ -28,22 +29,12 @@ const router = createRouter({
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
-const langs = import.meta.glob("../../lang/*.json");
-
 const app = createApp(AppComponent);
 app.config.globalProperties.window = window;
 app.use(pinia);
 app.use(router);
 app.use(ui);
-app.use(i18nVue, {
-	resolve: async (lang: string) => {
-		const loader = langs[`../../lang/php_${lang}.json`];
-		if (!loader) {
-			throw new Error(`Missing locale: ${lang}`);
-		}
-		return await loader();
-	},
-});
+app.use(i18nVue, { resolve: resolveLocale });
 
 registerIconCollections();
 applyStoredDarkModePreference();

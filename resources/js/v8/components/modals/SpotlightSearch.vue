@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { trans, loadLanguageAsync } from "laravel-vue-i18n";
+import { trans } from "laravel-vue-i18n";
 import { useDebounceFn } from "@vueuse/core";
 import type { CommandPaletteGroup, CommandPaletteItem } from "@nuxt/ui";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
@@ -48,8 +48,8 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenu } from "@/v8/composables/contextMenus/leftMenu";
 import { useAdminTiles } from "@/v8/composables/useAdminTiles";
 import { useDarkMode } from "@/v8/composables/useDarkMode";
+import { useLanguageSwitcher } from "@/v8/composables/useLanguageSwitcher";
 import SearchService from "@/services/search-service";
-import SettingsService from "@/services/settings-service";
 import { ALL } from "@/config/constants";
 
 type SpotlightItem = CommandPaletteItem & {
@@ -100,29 +100,9 @@ function ensureSearchMinLength() {
 	});
 }
 
-// Cached across opens, same rationale as ensureSearchMinLength - and only worth fetching
-// for admins, since only they can change the (instance-wide) language config.
-const availableLanguages = ref<string[]>([]);
-let languagesRequested = false;
-
-function ensureLanguages() {
-	if (languagesRequested || !initData.value?.settings.can_edit) {
-		return;
-	}
-	languagesRequested = true;
-	SettingsService.getLanguages().then((response) => {
-		availableLanguages.value = response.data;
-	});
-}
-
-function setLanguage(code: string) {
-	SettingsService.setConfigs({ configs: [{ key: "lang", value: code }] }).then(() => {
-		loadLanguageAsync(code).then(() => {
-			document.documentElement.lang = code;
-			document.documentElement.dir = ["ar", "fa"].includes(code) ? "rtl" : "ltr";
-		});
-	});
-}
+// Only admins can change the (instance-wide) language config.
+const canEditSettings = computed(() => initData.value?.settings.can_edit ?? false);
+const { availableLanguages, setLanguage } = useLanguageSwitcher(canEditSettings);
 
 const isRemoteSearching = ref(false);
 const remotePhotos = ref<App.Http.Resources.Models.PhotoResource[]>([]);
@@ -160,7 +140,6 @@ watch(open, (isOpen) => {
 	if (isOpen) {
 		albumListStore.ensureLoaded();
 		ensureSearchMinLength();
-		ensureLanguages();
 	} else {
 		searchTerm.value = "";
 		remotePhotos.value = [];
@@ -224,11 +203,8 @@ const actionsGroupItems = computed<SpotlightItem[]>(() => {
 	return [themeItem, ...fromAdmin];
 });
 
-const languageGroupItems = computed<SpotlightItem[]>(() => {
-	if (!initData.value?.settings.can_edit) {
-		return [];
-	}
-	return availableLanguages.value.map((code) => ({
+const languageGroupItems = computed<SpotlightItem[]>(() =>
+	availableLanguages.value.map((code) => ({
 		label: code,
 		description: trans("search-palette.language"),
 		icon: "lucide:languages",
@@ -237,8 +213,8 @@ const languageGroupItems = computed<SpotlightItem[]>(() => {
 			close();
 			setLanguage(code);
 		},
-	}));
-});
+	})),
+);
 
 const albumsGroupItems = computed<SpotlightItem[]>(() =>
 	albumListStore.rows.map((row) => ({
