@@ -29,7 +29,7 @@
 						</span>
 					</span>
 					<span
-						v-if="isFaceRecognitionEnabled && albumStore.album_people_total > 0"
+						v-if="is_face_recognition_enabled && albumStore.album_people_total > 0"
 						class="block text-muted-color text-sm cursor-pointer hover:text-color transition-colors duration-150"
 						@click="isPeopleOpen = !isPeopleOpen"
 					>
@@ -172,7 +172,7 @@
 				class="w-full max-w-full my-4 text-justify text-muted-color text-base/5 prose dark:prose-invert prose-sm"
 				v-html="albumStore.album.preFormattedData.description"
 			/>
-			<AlbumPeopleFilter v-if="isFaceRecognitionEnabled && isPeopleOpen && albumStore.album_people.length > 0" class="mt-2" />
+			<AlbumPeopleFilter v-if="is_face_recognition_enabled && isPeopleOpen && albumStore.album_people.length > 0" class="mt-2" />
 		</template>
 	</Card>
 </template>
@@ -200,8 +200,15 @@ const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size, is_embed_enabled } =
-	storeToRefs(lycheeStore);
+const {
+	is_se_enabled,
+	is_se_preview_enabled,
+	are_nsfw_visible,
+	is_slideshow_enabled,
+	album_header_size,
+	is_embed_enabled,
+	is_face_recognition_enabled,
+} = storeToRefs(lycheeStore);
 
 function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;
@@ -220,15 +227,13 @@ const isWatermarkerEnabled = computed(
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
 
-const isFaceRecognitionEnabled = computed(() => leftMenu.initData?.modules.is_face_recognition_enabled === true);
-
 const isPeopleOpen = ref(false);
 
 // Load people whenever the album changes (and AI vision is on)
 watch(
 	() => albumStore.albumId,
 	(id) => {
-		if (id && isFaceRecognitionEnabled.value) {
+		if (id && is_face_recognition_enabled.value) {
 			isPeopleOpen.value = false;
 			albumStore.loadAlbumPeople();
 		}
@@ -236,7 +241,7 @@ watch(
 	{ immediate: true },
 );
 
-const isFaceScanEnabled = computed(() => isFaceRecognitionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
+const isFaceScanEnabled = computed(() => is_face_recognition_enabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
 	return (

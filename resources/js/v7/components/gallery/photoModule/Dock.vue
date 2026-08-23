@@ -105,9 +105,7 @@ const isWatermarkerEnabled = computed(
 		needSizeVariantsWatermark(photoStore.photo.size_variants),
 );
 
-const isFaceRecognitionEnabled = computed(
-	() => leftMenu.initData?.modules.is_face_recognition_enabled && photoStore.photo && albumStore.rights?.can_edit,
-);
+const isFaceRecognitionEnabled = computed(() => lycheeStore.is_face_recognition_enabled && photoStore.photo && albumStore.rights?.can_edit);
 
 function watermark() {
 	if (!photoStore.photo) {

@@ -234,9 +234,7 @@
 					/>
 
 					<!-- People in this photo -->
-					<template
-						v-if="initData?.modules.is_face_recognition_enabled && initData?.modules.is_face_overlay_enabled && photoFaces.length > 0"
-					>
+					<template v-if="is_face_recognition_enabled && photoFaces.length > 0">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-2">
 							{{ $t("people.people_in_photo") }}
 						</h2>
@@ -302,7 +300,6 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { useRouter } from "vue-router";
 import PhotoService from "@/services/photo-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import FaceDetectionService from "@/services/face-detection-service";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
@@ -312,8 +309,6 @@ import { useUserStore } from "@/stores/UserState";
 const photoStore = usePhotoStore();
 const router = useRouter();
 const togglableStore = useTogglablesStateStore();
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
 const toast = useToast();
 const isTouchDev = isTouchDevice();
 const userStore = useUserStore();
@@ -325,7 +320,7 @@ const props = defineProps<{
 const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<boolean>;
 
 const lycheeState = useLycheeStateStore();
-const { is_details_links_enabled } = storeToRefs(lycheeState);
+const { is_details_links_enabled, is_face_recognition_enabled } = storeToRefs(lycheeState);
 
 // Albums section state
 const albums = ref<App.Http.Resources.Models.PhotoAlbumResource[]>([]);

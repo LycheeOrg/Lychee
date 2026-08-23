@@ -23,7 +23,7 @@ export type AdminTile = {
 };
 
 export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
-	const { clockwork_url, is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_face_recognition_enabled } = storeToRefs(lycheeStore);
 	const { initData } = storeToRefs(leftMenuStore);
 
 	return [
@@ -124,7 +124,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:smile",
 			to: "/admin/maintenance/faces",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_face_recognition_enabled ?? false)),
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false)),
 		},
 		{
 			key: "nsfw-config",
