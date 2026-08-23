@@ -75,6 +75,8 @@ class InitConfig extends Data
 	public bool $is_selection_border_enabled;
 	public bool $is_selection_overlay_enabled;
 	public bool $is_photo_ken_burns_on_hover;
+	public int $photo_ken_burns_on_hover_scale;
+	public int $photo_ken_burns_on_hover_duration;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -172,6 +174,9 @@ class InitConfig extends Data
 	public bool $use_admin_dashboard;
 	public bool $is_person_album_enabled;
 
+	// Struct-of-Arrays (SoA) v3 endpoints. Pure client-behavior switch: no DB config layer, no auth-gating. See Feature 058.
+	public bool $is_struct_of_array_enabled;
+
 	// Flags visibility settings
 	public bool $is_cover_id_flag_enabled;
 	public bool $is_header_id_flag_enabled;
@@ -230,6 +235,8 @@ class InitConfig extends Data
 		$this->is_selection_border_enabled = request()->configs()->getValueAsBool('selection_border_enabled');
 		$this->is_selection_overlay_enabled = request()->configs()->getValueAsBool('selection_overlay_enabled');
 		$this->is_photo_ken_burns_on_hover = request()->configs()->getValueAsBool('photo_ken_burns_on_hover_enabled');
+		$this->photo_ken_burns_on_hover_scale = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_scale');
+		$this->photo_ken_burns_on_hover_duration = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_duration');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
@@ -308,6 +315,7 @@ class InitConfig extends Data
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
+		$this->is_struct_of_array_enabled = Features::active('struct-of-array');
 
 		// Flags visibility settings
 		$flags_enabled = request()->configs()->getValueAsBool('flags_enabled');

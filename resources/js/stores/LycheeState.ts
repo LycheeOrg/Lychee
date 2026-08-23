@@ -60,6 +60,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_selection_border_enabled: false,
 		is_selection_overlay_enabled: true,
 		is_photo_ken_burns_on_hover: true,
+		photo_ken_burns_on_hover_scale: 50,
+		photo_ken_burns_on_hover_duration: 15,
 
 		// Enhanced Album Display
 		is_album_enhanced_display_enabled: false,
@@ -67,6 +69,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_album_header_landing_title_enabled: false,
 
 		use_admin_dashboard: true,
+		is_struct_of_array_enabled: false,
 
 		// Download settings
 		is_raw_download_enabled: false,
@@ -229,6 +232,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_selection_border_enabled = data.is_selection_border_enabled;
 					this.is_selection_overlay_enabled = data.is_selection_overlay_enabled;
 					this.is_photo_ken_burns_on_hover = data.is_photo_ken_burns_on_hover;
+					this.photo_ken_burns_on_hover_scale = data.photo_ken_burns_on_hover_scale;
+					this.photo_ken_burns_on_hover_duration = data.photo_ken_burns_on_hover_duration;
 					this.album_view_mode = data.album_layout;
 
 					this.is_raw_download_enabled = data.is_raw_download_enabled;
@@ -283,6 +288,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.default_album_protection = data.default_album_protection;
 					this.expert_album_settings = data.expert_album_settings;
 					this.use_admin_dashboard = data.use_admin_dashboard;
+					this.is_struct_of_array_enabled = data.is_struct_of_array_enabled;
 
 					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;
 					this.is_header_id_flag_enabled = data.is_header_id_flag_enabled;

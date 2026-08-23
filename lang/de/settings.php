@@ -58,6 +58,8 @@ return [
         'rounded_corners_enabled' => 'Ecken der Foto- und Albumvorschaubilder abrunden',
         'album_border_enabled' => 'Rahmen um Foto- und Albumvorschaubilder anzeigen',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
+        'photo_ken_burns_on_hover_scale' => 'Ken Burns hover zoom amount (%)',
+        'photo_ken_burns_on_hover_duration' => 'Ken Burns hover zoom duration (seconds)',
         'license_default' => 'Standardlizenz für Alben',
         'license_help' => 'Brauchen Sie Hilfe bei der Auswahl?',
     ],

@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'تعديل الصورة',
+            'edit_title_with_name' => 'تعديل الصورة: :title',
             'set_title' => 'تعيين العنوان',
             'set_description' => 'تعيين الوصف',
             'set_license' => 'تعيين الرخصة',

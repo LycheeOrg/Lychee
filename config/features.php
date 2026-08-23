@@ -287,4 +287,18 @@ return [
 	 | v8 tree is being built out.
 	 */
 	'nuxt_ui' => (bool) env('NUXT_UI_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable Struct-of-Arrays (SoA) v3 endpoints in the frontend (v8)
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, v8's album-listing consumers (Move-target picker, Fix
+	 | Tree, Bulk Album Edit) call the v3 Struct-of-Arrays `GET /api/v3/Albums`
+	 | endpoint instead of their v2 equivalents. Named generally (not
+	 | album-specific) since it is intended to also gate a future Photos SoA
+	 | v3 endpoint. Disabled by default; the v2 paths remain fully functional
+	 | either way. See Feature 058.
+	 */
+	'struct-of-array' => (bool) env('STRUCT_OF_ARRAY_ENABLED', false),
 ];

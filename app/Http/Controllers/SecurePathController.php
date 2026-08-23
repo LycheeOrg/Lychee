@@ -25,6 +25,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Safe\Exceptions\FilesystemException;
 use function Safe\realpath;
 
@@ -101,7 +102,7 @@ class SecurePathController extends Controller
 
 		$query_string = '';
 		$query_string = (new Collection(explode('&', (string) $request->server->get('QUERY_STRING'))))
-			->reject(fn ($parameter) => in_array(\Str::before($parameter, '='), $ignore_query, true))
+			->reject(fn ($parameter) => in_array(Str::before($parameter, '='), $ignore_query, true))
 			->join('&');
 
 		return rtrim($request->url() . '?' . $query_string, '?');

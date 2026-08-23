@@ -290,6 +290,8 @@ return [
             ],
         ],
         'edit' => [
+            'edit_title' => 'ویرایش عکس',
+            'edit_title_with_name' => 'ویرایش عکس: :title',
             'set_title' => 'تنظیم عنوان',
             'set_description' => 'تنظیم توضیحات',
             'set_license' => 'تنظیم مجوز',

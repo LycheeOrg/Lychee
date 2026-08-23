@@ -14,104 +14,116 @@
 	<ImportFromServer v-if="albumsStore.rootRights?.can_import_from_server" v-model:open="is_import_from_server_open" @refresh="refresh" />
 	<DropBox v-if="albumsStore.rootRights?.can_upload" v-model:open="is_import_from_dropbox_open" @refresh="refresh" />
 
-	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
-		<div v-if="albumsStore.rootConfig && albumsStore.rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
-			<SelectDrag :with-scroll="false" />
-			<AlbumsHeader v-if="userStore.isLoaded" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
+	<AlbumsHeader v-if="userStore.isLoaded && albumsStore.rootConfig" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
+	<UMain>
+		<div class="flex">
+			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
+			<div class="flex-1 flex-col min-w-0">
+				<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
+					<div
+						v-if="albumsStore.rootConfig && albumsStore.rootRights"
+						id="galleryView"
+						class="relative w-full h-full select-none"
+						@scroll="onScroll"
+					>
+						<SelectDrag :with-scroll="false" />
+						<!-- Smart Albums (always visible, above tabs per spec) -->
+						<AlbumThumbPanel
+							v-if="albumsStore.smartAlbums.length > 0"
+							header="gallery.smart_albums"
+							:albums="albumsStore.smartAlbums"
+							:is-alone="!albumsStore.albums.length"
+							:selected-albums="[]"
+							:is-timeline="false"
+						/>
 
-			<!-- Smart Albums (always visible, above tabs per spec) -->
-			<AlbumThumbPanel
-				v-if="albumsStore.smartAlbums.length > 0"
-				header="gallery.smart_albums"
-				:albums="albumsStore.smartAlbums"
-				:is-alone="!albumsStore.albums.length"
-				:selected-albums="[]"
-				:is-timeline="false"
-			/>
+						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
+						<template v-if="shouldShowTabs">
+							<UTabs v-model="activeTab" :items="tabItems" class="w-full">
+								<template #my-albums>
+									<template v-if="albumsStore.pinnedAlbums.length > 0">
+										<AlbumThumbPanel
+											:is-timeline="false"
+											header="gallery.pinned_albums"
+											:albums="albumsStore.pinnedAlbums"
+											:is-alone="!displayAlbums.length"
+											:selected-albums="selectedAlbumsIds"
+											@clicked="albumSelect"
+											@contexted="contextMenuAlbumOpen"
+										/>
+									</template>
+									<template v-if="displayAlbums.length > 0">
+										<AlbumThumbPanel
+											:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+											header="gallery.albums"
+											:albums="displayAlbums"
+											:is-alone="!albumsStore.pinnedAlbums.length"
+											:selected-albums="selectedAlbumsIds"
+											@clicked="albumSelect"
+											@contexted="contextMenuAlbumOpen"
+										/>
+									</template>
+								</template>
+								<template #shared>
+									<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+										<AlbumThumbPanel
+											:header="sharedAlbum.header"
+											:albums="sharedAlbum.data"
+											:is-alone="displaySharedAlbums.length === 1"
+											:selected-albums="selectedAlbumsIds"
+											:is-timeline="false"
+											@clicked="albumSelect"
+											@contexted="contextMenuAlbumOpen"
+										/>
+									</template>
+								</template>
+							</UTabs>
+						</template>
 
-			<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
-			<template v-if="shouldShowTabs">
-				<UTabs v-model="activeTab" :items="tabItems" class="w-full">
-					<template #my-albums>
-						<template v-if="albumsStore.pinnedAlbums.length > 0">
-							<AlbumThumbPanel
-								:is-timeline="false"
-								header="gallery.pinned_albums"
-								:albums="albumsStore.pinnedAlbums"
-								:is-alone="!displayAlbums.length"
-								:selected-albums="selectedAlbumsIds"
-								@clicked="albumSelect"
-								@contexted="contextMenuAlbumOpen"
-							/>
+						<!-- Non-tabbed view for SHOW and HIDE modes (or when no shared albums) -->
+						<template v-else>
+							<template v-if="albumsStore.pinnedAlbums.length > 0">
+								<AlbumThumbPanel
+									:is-timeline="false"
+									header="gallery.pinned_albums"
+									:albums="albumsStore.pinnedAlbums"
+									:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !displayAlbums.length"
+									:selected-albums="selectedAlbumsIds"
+									@clicked="albumSelect"
+									@contexted="contextMenuAlbumOpen"
+								/>
+							</template>
+							<template v-if="displayAlbums.length > 0">
+								<AlbumThumbPanel
+									:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+									header="gallery.albums"
+									:albums="displayAlbums"
+									:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
+									:selected-albums="selectedAlbumsIds"
+									@clicked="albumSelect"
+									@contexted="contextMenuAlbumOpen"
+								/>
+							</template>
+							<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+								<AlbumThumbPanel
+									v-if="shouldShowSharedAlbums"
+									:header="sharedAlbum.header"
+									:albums="sharedAlbum.data"
+									:is-alone="!displayAlbums.length"
+									:selected-albums="selectedAlbumsIds"
+									:is-timeline="false"
+									@clicked="albumSelect"
+									@contexted="contextMenuAlbumOpen"
+								/>
+							</template>
 						</template>
-						<template v-if="displayAlbums.length > 0">
-							<AlbumThumbPanel
-								:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
-								header="gallery.albums"
-								:albums="displayAlbums"
-								:is-alone="!albumsStore.pinnedAlbums.length"
-								:selected-albums="selectedAlbumsIds"
-								@clicked="albumSelect"
-								@contexted="contextMenuAlbumOpen"
-							/>
-						</template>
-					</template>
-					<template #shared>
-						<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-							<AlbumThumbPanel
-								:header="sharedAlbum.header"
-								:albums="sharedAlbum.data"
-								:is-alone="displaySharedAlbums.length === 1"
-								:selected-albums="selectedAlbumsIds"
-								:is-timeline="false"
-								@clicked="albumSelect"
-								@contexted="contextMenuAlbumOpen"
-							/>
-						</template>
-					</template>
-				</UTabs>
-			</template>
-
-			<!-- Non-tabbed view for SHOW and HIDE modes (or when no shared albums) -->
-			<template v-else>
-				<template v-if="albumsStore.pinnedAlbums.length > 0">
-					<AlbumThumbPanel
-						:is-timeline="false"
-						header="gallery.pinned_albums"
-						:albums="albumsStore.pinnedAlbums"
-						:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !displayAlbums.length"
-						:selected-albums="selectedAlbumsIds"
-						@clicked="albumSelect"
-						@contexted="contextMenuAlbumOpen"
-					/>
-				</template>
-				<template v-if="displayAlbums.length > 0">
-					<AlbumThumbPanel
-						:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
-						header="gallery.albums"
-						:albums="displayAlbums"
-						:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
-						:selected-albums="selectedAlbumsIds"
-						@clicked="albumSelect"
-						@contexted="contextMenuAlbumOpen"
-					/>
-				</template>
-				<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-					<AlbumThumbPanel
-						v-if="shouldShowSharedAlbums"
-						:header="sharedAlbum.header"
-						:albums="sharedAlbum.data"
-						:is-alone="!displayAlbums.length"
-						:selected-albums="selectedAlbumsIds"
-						:is-timeline="false"
-						@clicked="albumSelect"
-						@contexted="contextMenuAlbumOpen"
-					/>
-				</template>
-			</template>
-			<GalleryFooter v-once context="gallery" />
+						<!-- </div> -->
+					</div>
+				</UContextMenu>
+				<GalleryFooter v-once context="gallery" />
+			</div>
 		</div>
-	</UContextMenu>
+	</UMain>
 	<!-- Dialogs for albums -->
 	<MoveDialog
 		v-model:open="is_move_visible"
@@ -198,7 +210,9 @@ import ImportFromLink from "@/v8/components/modals/ImportFromLink.vue";
 import DropBox from "@/v8/components/modals/DropBox.vue";
 import ImportFromServer from "@/v8/components/modals/ImportFromServer.vue";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import AlbumNavPanel from "@/v8/components/gallery/albumModule/AlbumNavPanel.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
@@ -211,6 +225,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const albumsStore = useAlbumsStore();
+const albumListStore = useAlbumListStore();
 const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
 const photoStore = usePhotoStore();
@@ -228,6 +243,7 @@ async function refresh() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	AlbumService.clearAlbums();
 	albumsStore.load(router);
+	albumListStore.invalidate();
 	orderManagementStore.refresh();
 }
 
@@ -243,7 +259,7 @@ const albumId = ref("gallery");
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const { is_login_open, is_upload_visible, list_upload_files, upload_config, is_webauthn_open, is_import_from_server_open, is_keybindings_help_open } =
 	storeToRefs(togglableStore);
-const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, title, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,

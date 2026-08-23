@@ -130,6 +130,16 @@ class CacheKeyProvider
 		return array_map($this->albumPersonTag(...), $person_ids);
 	}
 
+	/**
+	 * Coarse tag carried by every `GET /api/v3/Albums` (Feature 057) cache
+	 * entry, across every user identity and flag combination; evicting it
+	 * alone flushes the entire v3 listing cache.
+	 */
+	public function albumListingV3Tag(): string
+	{
+		return 'album-listing-v3';
+	}
+
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
 
@@ -209,5 +219,21 @@ class CacheKeyProvider
 		$user_tag = $this->userTag($user_id);
 
 		return "person-album-matching-albums:{$person_album_id}:{$user_tag}:page:{$page}:per_page:{$per_page}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums` (Feature 057): a pure function of
+	 * user identity plus the exact `(with_parent_id, for_bulk_edit)` flag
+	 * combination requested, so no two distinct combinations or users ever
+	 * collide (NFR-057-04).
+	 */
+	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit): string
+	{
+		$album_listing_v3_tag = $this->albumListingV3Tag();
+		$user_tag = $this->userTag($user_id);
+		$with_parent_id_value = $with_parent_id ? '1' : '0';
+		$for_bulk_edit_value = $for_bulk_edit ? '1' : '0';
+
+		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}";
 	}
 }
