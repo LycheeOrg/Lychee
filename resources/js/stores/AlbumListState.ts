@@ -60,10 +60,12 @@ export const useAlbumListStore = defineStore("album-list-store", {
 		_lft: [] as number[],
 		_rgt: [] as number[],
 		coverIds: [] as (string | null)[],
-		isLoading: false as boolean,
 		isLoaded: false as boolean,
 		error: undefined as unknown,
 		_loadPromise: undefined as Promise<void> | undefined,
+		// Bumped by `invalidate()` so a request started before it can't commit stale data
+		// or leave `_loadPromise` pointing at a promise nobody will re-fetch through.
+		_loadGeneration: 0 as number,
 	}),
 	actions: {
 		/**
@@ -78,10 +80,13 @@ export const useAlbumListStore = defineStore("album-list-store", {
 				return this._loadPromise;
 			}
 
-			this.isLoading = true;
+			const generation = this._loadGeneration;
 			this.error = undefined;
 			const promise = AlbumListV3Service.getAlbums()
 				.then((response) => {
+					if (this._loadGeneration !== generation) {
+						return;
+					}
 					this.ids = response.data.ids;
 					this.titles = response.data.titles;
 					this._lft = response.data._lft;
@@ -90,10 +95,15 @@ export const useAlbumListStore = defineStore("album-list-store", {
 					this.isLoaded = true;
 				})
 				.catch((error: unknown) => {
+					if (this._loadGeneration !== generation) {
+						return;
+					}
 					this.error = error;
 				})
 				.finally(() => {
-					this.isLoading = false;
+					if (this._loadGeneration !== generation) {
+						return;
+					}
 					this._loadPromise = undefined;
 				});
 
@@ -103,9 +113,15 @@ export const useAlbumListStore = defineStore("album-list-store", {
 
 		invalidate() {
 			this.isLoaded = false;
+			this._loadGeneration++;
+			this._loadPromise = undefined;
 		},
 	},
 	getters: {
+		isLoading(state): boolean {
+			return state._loadPromise !== undefined;
+		},
+
 		rows(state): AlbumListRow[] {
 			return toRows(state.ids, state.titles, state._lft, state._rgt, state.coverIds);
 		},

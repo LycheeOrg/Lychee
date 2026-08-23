@@ -2,10 +2,11 @@
 	<a
 		:href="href"
 		:target="tile.isExternal ? '_blank' : undefined"
+		:rel="tile.isExternal ? 'noopener noreferrer' : undefined"
 		class="bg-elevated hover:bg-accented rounded p-4 text-center flex flex-col items-center gap-2 cursor-pointer no-underline text-default"
 		tabindex="0"
 		@click="onClick"
-		@keydown.enter="navigate"
+		@keydown.enter.prevent="navigate"
 		@keydown.space.prevent="navigate"
 	>
 		<UChip v-if="tile.num && tile.num.value > 0" :text="tile.num.value" color="primary">
@@ -29,7 +30,7 @@ const href = computed(() => (props.tile.isExternal ? props.tile.to : router.reso
 
 function navigate() {
 	if (props.tile.isExternal) {
-		window.open(props.tile.to, "_blank");
+		window.open(props.tile.to, "_blank", "noopener,noreferrer");
 	} else {
 		router.push(props.tile.to);
 	}
