@@ -3,6 +3,25 @@ import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
 
+/**
+ * Requests made with `responseType: "blob"` (thumb assets, zip/photo downloads) still get their
+ * error bodies parsed as a `Blob` by axios, even though the server actually sent a JSON error
+ * payload - so `error.response.data` is a `Blob`, not the `{ message }` object callers expect.
+ * Read it back out as text/JSON before anything tries to use it, otherwise a raw `Blob` ends up
+ * in the global `"error"` CustomEvent's `detail` and gets rendered as the literal string
+ * "[object Blob]" by Error.vue's `v-html` fallback.
+ */
+async function extractErrorData(data: unknown): Promise<{ message?: string } & Record<string, unknown>> {
+	if (typeof Blob !== "undefined" && data instanceof Blob) {
+		try {
+			return JSON.parse(await data.text()) as { message?: string };
+		} catch (_error) {
+			return {};
+		}
+	}
+	return (data ?? {}) as { message?: string };
+}
+
 const AxiosConfig = {
 	axiosSetUp() {
 		setupCache(axios);
@@ -32,15 +51,16 @@ const AxiosConfig = {
 			function (response: AxiosResponse): AxiosResponse {
 				return response;
 			},
-			function (error: AxiosError<{ message: string }>): Promise<never> {
+			async function (error: AxiosError): Promise<never> {
 				if (!error.response) {
 					return Promise.reject(error);
 				}
 
-				const message = error.response.data.message || "An error occurred";
+				const data = await extractErrorData(error.response.data);
+				const message = data.message || "An error occurred";
 
 				if (
-					error.response.data.message &&
+					data.message &&
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(
 						(e) => e === message,
 					) !== undefined
@@ -54,8 +74,14 @@ const AxiosConfig = {
 					return Promise.reject(error);
 				}
 
-				if (error.response.status && !isNaN(error.response.status) && error.response.status !== 404) {
-					const event = new CustomEvent("error", { detail: error.response.data });
+				// Blob-typed requests (thumb assets, zip/photo downloads) degrade gracefully on
+				// their own (e.g. Thumb.vue falls back to a placeholder icon) - surfacing a
+				// global error overlay on top of that would just be noise for something the
+				// caller already handles silently.
+				const isBlobRequest = error.config?.responseType === "blob";
+
+				if (error.response.status && !isNaN(error.response.status) && error.response.status !== 404 && !isBlobRequest) {
+					const event = new CustomEvent("error", { detail: data });
 					window.dispatchEvent(event);
 				}
 
