@@ -13,7 +13,7 @@
 	/>
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel />
+			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
 			<div class="flex-1 flex-col min-w-0">
 				<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 					<UContextMenu :items="menuSections" :disabled="noData" class="contents">
@@ -207,7 +207,7 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const { is_se_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
 });

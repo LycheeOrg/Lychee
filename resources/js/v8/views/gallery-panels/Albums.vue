@@ -17,7 +17,7 @@
 	<AlbumsHeader v-if="userStore.isLoaded && albumsStore.rootConfig" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel />
+			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
 			<div class="flex-1 flex-col min-w-0">
 				<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
 					<div
@@ -259,7 +259,7 @@ const albumId = ref("gallery");
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
 const { is_login_open, is_upload_visible, list_upload_files, upload_config, is_webauthn_open, is_import_from_server_open, is_keybindings_help_open } =
 	storeToRefs(togglableStore);
-const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, title, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,
