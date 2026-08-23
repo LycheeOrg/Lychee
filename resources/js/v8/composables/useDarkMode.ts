@@ -29,6 +29,12 @@ function apply(dark: boolean) {
 	isDark.value = dark;
 }
 
+// Serializes toggleGlobal() calls so a setConfigs request is never sent before the
+// previous one has settled - the endpoint applies each update independently, so
+// concurrent requests could be processed out of order and leave `dark_mode_enabled`
+// mismatched with the final `isDark` state.
+let globalTogglePending: Promise<void> = Promise.resolve();
+
 /**
  * Applied once at bootstrap (before mount) so a stored browser-local preference wins
  * over the server-rendered default. No-op when the user has never overridden it.
@@ -62,20 +68,34 @@ export function useDarkMode() {
 		const next = !previous;
 		apply(next);
 
-		return SettingsService.setConfigs({ configs: [{ key: "dark_mode_enabled", value: next ? "1" : "0" }] }).then(
-			() => {
-				// Only now, since it persisted server-side, does this browser stop shadowing the default.
-				try {
-					localStorage.removeItem(STORAGE_KEY);
-				} catch {
-					// localStorage unavailable (private browsing, etc.) - the class change still applies.
-				}
-			},
-			(error: unknown) => {
-				apply(previous);
-				throw error;
-			},
-		);
+		// Chain onto the in-flight request (if any) instead of firing immediately, so
+		// setConfigs calls always reach the server in the order they were made.
+		// `globalTogglePending` is always a non-rejecting promise (see below), so no
+		// rejection branch is needed here.
+		const run = globalTogglePending
+			.then(() => SettingsService.setConfigs({ configs: [{ key: "dark_mode_enabled", value: next ? "1" : "0" }] }))
+			.then(
+				() => {
+					// Only clear the override if `next` is still the current state - a later
+					// queued toggle may have already applied a different value.
+					if (isDark.value === next) {
+						try {
+							localStorage.removeItem(STORAGE_KEY);
+						} catch {
+							// localStorage unavailable (private browsing, etc.) - the class change still applies.
+						}
+					}
+				},
+				(error: unknown) => {
+					if (isDark.value === next) {
+						apply(previous);
+					}
+					throw error;
+				},
+			);
+
+		globalTogglePending = run.catch(() => undefined);
+		return run;
 	}
 
 	return { isDark, toggle, toggleGlobal };
