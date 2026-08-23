@@ -14,7 +14,11 @@ import { setupCache } from "axios-cache-interceptor";
 async function extractErrorData(data: unknown): Promise<{ message?: string } & Record<string, unknown>> {
 	if (typeof Blob !== "undefined" && data instanceof Blob) {
 		try {
-			return JSON.parse(await data.text()) as { message?: string };
+			const parsed: unknown = JSON.parse(await data.text());
+			if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+				return {};
+			}
+			return parsed as { message?: string };
 		} catch (_error) {
 			return {};
 		}
