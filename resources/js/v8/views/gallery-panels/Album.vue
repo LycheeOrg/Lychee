@@ -166,6 +166,7 @@ import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { useRating } from "@/composables/photo/useRating";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
@@ -196,6 +197,7 @@ const orderManagement = useOrderManagementStore();
 const photoStore = usePhotoStore();
 const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const albumsStore = useAlbumsStore();
+const albumListStore = useAlbumListStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
 const catalogStore = useCatalogStore();
@@ -225,6 +227,7 @@ async function load() {
 
 async function refresh(isDelete: boolean = false) {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	albumListStore.invalidate();
 	advisoryCheck();
 	catalogStore.albumId = albumId.value;
 	catalogStore.load();

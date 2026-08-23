@@ -64,6 +64,8 @@ body {
 	--svh50: 50svh;
 	--svh75: 75svh;
 
+	--nav-bar-factor: 80;
+	--nav-bar-width: calc(var(--spacing) * var(--nav-bar-factor));
 	/*
 	  Ken-Burns-on-hover defaults, overridden inline per the
 	  `photo_ken_burns_on_hover_scale`/`_duration` settings, see

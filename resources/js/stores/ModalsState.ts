@@ -67,6 +67,9 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		isDragging: false,
 		nonHoverSelectablePhotosIdx: [] as string[], // contains photos ids that are currently hoved but not selected
 		nonHoverSelectableAlbumsIdx: [] as string[], // contains albums ids that are currently hoved but not selected
+
+		// NavMenu
+		isNavOpen: false,
 	}),
 	actions: {
 		loadUploadConfig() {
