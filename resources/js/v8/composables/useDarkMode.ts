@@ -58,14 +58,24 @@ export function useDarkMode() {
 	 * the default it just set.
 	 */
 	function toggleGlobal(): Promise<void> {
-		const next = !isDark.value;
+		const previous = isDark.value;
+		const next = !previous;
 		apply(next);
-		try {
-			localStorage.removeItem(STORAGE_KEY);
-		} catch {
-			// localStorage unavailable (private browsing, etc.) - the class change still applies.
-		}
-		return SettingsService.setConfigs({ configs: [{ key: "dark_mode_enabled", value: next ? "1" : "0" }] }).then(() => undefined);
+
+		return SettingsService.setConfigs({ configs: [{ key: "dark_mode_enabled", value: next ? "1" : "0" }] }).then(
+			() => {
+				// Only now, since it persisted server-side, does this browser stop shadowing the default.
+				try {
+					localStorage.removeItem(STORAGE_KEY);
+				} catch {
+					// localStorage unavailable (private browsing, etc.) - the class change still applies.
+				}
+			},
+			(error: unknown) => {
+				apply(previous);
+				throw error;
+			},
+		);
 	}
 
 	return { isDark, toggle, toggleGlobal };
