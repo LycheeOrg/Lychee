@@ -85,7 +85,7 @@ const isWatermarkerEnabled = computed(
 );
 
 const isFaceRecognitionEnabled = computed(
-	() => leftMenu.initData?.modules.is_face_recognition_enabled && photoStore.photo && albumStore.rights?.can_edit,
+	() => lycheeStore.is_face_recognition_enabled && photoStore.photo && albumStore.rights?.can_edit,
 );
 
 function watermark() {

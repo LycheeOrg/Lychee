@@ -45,6 +45,7 @@ export function useLeftMenu(
 		use_admin_dashboard,
 		is_embed_enabled,
 		is_white_label_enabled,
+		is_face_recognition_enabled,
 	} = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
@@ -99,7 +100,7 @@ export function useLeftMenu(
 			{
 				label: "people.title",
 				icon: "pi pi-users",
-				access: (initData.value?.modules.is_face_recognition_enabled ?? false) && user.value?.id !== null,
+				access: (is_face_recognition_enabled.value ?? false) && user.value?.id !== null,
 				route: "/people",
 			},
 			{
@@ -228,7 +229,7 @@ export function useLeftMenu(
 									icon: "pi pi-face-smile",
 									route: "/admin/maintenance/faces",
 									access:
-										(initData.value.settings.can_edit ?? false) && (initData.value.modules.is_face_recognition_enabled ?? false),
+										(initData.value.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false),
 								},
 								{
 									label: "left-menu.logs",

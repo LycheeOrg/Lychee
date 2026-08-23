@@ -32,7 +32,6 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
 	public bool $is_mod_webhook_enabled = false;
-	public bool $is_face_recognition_enabled = false;
 	public bool $is_nsfw_classifier_enabled = false;
 	public bool $is_face_overlay_enabled = true;
 	public bool $is_face_recognition_warning_enabled = true;
@@ -53,7 +52,6 @@ class ModulesRightsResource extends Data
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 		$this->is_mod_webhook_enabled = $this->isWebhookEnabled();
-		$this->is_face_recognition_enabled = $this->isFaceRecognitionEnabled($is_logged_in);
 		$this->is_nsfw_classifier_enabled = $this->isNsfwClassifierEnabled($is_logged_in);
 		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->is_face_recognition_warning_enabled = request()->configs()->getValueAsBool('ai_vision_face_recognition_warning');
@@ -240,28 +238,6 @@ class ModulesRightsResource extends Data
 		}
 
 		return Auth::user()?->may_administrate === true;
-	}
-
-	/**
-	 * Check if face recognition is enabled and accessible to the current user.
-	 *
-	 * @param bool $is_logged_in
-	 *
-	 * @return bool true if face recognition is enabled and accessible, false otherwise
-	 */
-	private function isFaceRecognitionEnabled(bool $is_logged_in): bool
-	{
-		// Check feature flag first
-		if (config('features.ai-vision') === false) {
-			return false;
-		}
-
-		if (!$is_logged_in) {
-			return false;
-		}
-
-		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
-			request()->configs()->getValueAsBool('ai_vision_face_enabled');
 	}
 
 	/**
