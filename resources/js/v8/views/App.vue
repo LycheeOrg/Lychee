@@ -5,6 +5,7 @@
 			<Error />
 			<LeftMenu />
 			<EmbedCodeDialog />
+			<SpotlightSearch />
 			<main class="relative">
 				<router-view v-slot="{ Component, route }">
 					<Transition name="lychee-page">
@@ -21,6 +22,7 @@ import ConfirmModalHost from "@/v8/components/modals/ConfirmModalHost.vue";
 import LeftMenu from "@/v8/menus/LeftMenu.vue";
 import Error from "@/v8/views/Error.vue";
 import EmbedCodeDialog from "@/v8/components/forms/album/EmbedCodeDialog.vue";
+import SpotlightSearch from "@/v8/components/modals/SpotlightSearch.vue";
 import { disableCtrlA } from "@/utils/keybindings-utils";
 import { theme } from "@/v8/style/theme";
 
