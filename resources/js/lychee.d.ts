@@ -1404,7 +1404,6 @@ declare namespace App {
 					is_mod_renamer_enabled: boolean;
 					is_mod_webshop_enabled: boolean;
 					is_mod_webhook_enabled: boolean;
-					is_face_recognition_enabled: boolean;
 					is_nsfw_classifier_enabled: boolean;
 					is_face_overlay_enabled: boolean;
 					is_face_recognition_warning_enabled: boolean;

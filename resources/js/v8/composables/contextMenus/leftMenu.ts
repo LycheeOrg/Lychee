@@ -116,7 +116,7 @@ export function useLeftMenu(
 			{
 				label: "people.title",
 				icon: "lucide:users",
-				access: (initData.value?.modules.is_face_recognition_enabled ?? false) && user.value?.id !== null,
+				access: (lycheeStore.is_face_recognition_enabled ?? false) && user.value?.id !== null,
 				route: "/people",
 			},
 			{
@@ -247,7 +247,7 @@ export function useLeftMenu(
 				label: "maintenance.face_quality.title",
 				icon: "lucide:smile",
 				route: "/admin/maintenance/faces",
-				access: (initData.value.settings.can_edit ?? false) && (initData.value.modules.is_face_recognition_enabled ?? false),
+				access: (initData.value.settings.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
 			},
 			{
 				label: "left-menu.logs",

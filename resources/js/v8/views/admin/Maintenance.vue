@@ -30,13 +30,15 @@
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
-		<MaintenanceBulkScanFaces v-if="initData?.modules.is_face_recognition_enabled" />
 		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
-		<MaintenanceRunClustering v-if="initData?.modules.is_face_recognition_enabled" />
-		<MaintenanceDestroyDismissedFaces v-if="initData?.modules.is_face_recognition_enabled" />
-		<MaintenanceSyncFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" ref="syncFaceEmbeddingsRef" />
-		<MaintenanceResetFaceScanStatus v-if="initData?.modules.is_face_recognition_enabled" />
-		<MaintenancePurgeOrphanFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" @purged="syncFaceEmbeddingsRef?.load()" />
+		<template v-if="is_face_recognition_enabled">
+			<MaintenanceBulkScanFaces />
+			<MaintenanceRunClustering />
+			<MaintenanceDestroyDismissedFaces />
+			<MaintenanceSyncFaceEmbeddings ref="syncFaceEmbeddingsRef" />
+			<MaintenanceResetFaceScanStatus />
+			<MaintenancePurgeOrphanFaceEmbeddings @purged="syncFaceEmbeddingsRef?.load()" />
+		</template>
 	</div>
 </template>
 <script setup lang="ts">
@@ -66,8 +68,11 @@ import MaintenancePurgeOrphanFaceEmbeddings from "@/v8/components/maintenance/Ma
 import { storeToRefs } from "pinia";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useTemplateRef } from "vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const leftMenu = useLeftMenuStateStore();
+const lycheeStore = useLycheeStateStore();
 const { initData } = storeToRefs(leftMenu);
+const { is_face_recognition_enabled } = storeToRefs(lycheeStore);
 const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

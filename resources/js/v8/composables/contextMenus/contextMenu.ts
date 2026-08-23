@@ -1,5 +1,6 @@
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { computed, Ref, ref } from "vue";
 
@@ -100,6 +101,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const albumStore = useAlbumStore();
 		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
+		const lycheeStateStore = useLycheeStateStore();
 
 		menuItems.push({
 			label: "gallery.menus.approve",
@@ -176,7 +178,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces",
 					icon: "lucide:smile",
 					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (lycheeStateStore.is_face_recognition_enabled ?? false),
 				},
 				{
 					is_divider: true,
@@ -231,6 +233,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const albumStore = useAlbumStore();
 		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
+		const lycheeStateStore = useLycheeStateStore();
 
 		menuItems.push({
 			label: "gallery.menus.approve_all",
@@ -280,7 +283,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces_all",
 					icon: "lucide:smile",
 					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (lycheeStateStore.is_face_recognition_enabled ?? false),
 				},
 				{
 					is_divider: true,
@@ -324,6 +327,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
 		const leftMenuStore = useLeftMenuStateStore();
+		const lycheeStateStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
 			menuItems.push({
@@ -352,7 +356,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces",
 					icon: "lucide:smile",
 					callback: albumCallbacks.toggleScanFaces,
-					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
+					access: (selectedAlbum.rights.can_edit ?? false) && (lycheeStateStore.is_face_recognition_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.merge",
