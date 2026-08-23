@@ -89,12 +89,11 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 			$sizes = $this->computeSizes($album);
 
 			try {
-				$data = DB::table('album_size_statistics')->where('album_id', '=', $album->id)->first();
 				// Update or create statistics row
-				if ($data === null) {
-					DB::table('album_size_statistics')->insert(array_merge(['album_id' => $album->id], $sizes));
-				} else {
+				if (DB::table('album_size_statistics')->where('album_id', '=', $album->id)->exists()) {
 					DB::table('album_size_statistics')->where('album_id', '=', $album->id)->update($sizes);
+				} else {
+					DB::table('album_size_statistics')->insert(array_merge(['album_id' => $album->id], $sizes));
 				}
 			} catch (\Exception $e) {
 				// Do not fail anymore. Just eat the exception silently and log it.
