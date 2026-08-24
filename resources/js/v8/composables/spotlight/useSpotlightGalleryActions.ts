@@ -1,4 +1,4 @@
-import { computed, type ComputedRef, type Ref } from "vue";
+import { computed, ref, type ComputedRef, type Ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import type { AlbumStore } from "@/stores/AlbumState";
@@ -9,6 +9,7 @@ import type { TogglablesStateStore } from "@/stores/ModalsState";
 import type { LycheeStateStore } from "@/stores/LycheeState";
 import type { ToastLike } from "@/composables/toast-contract";
 import FaceDetectionService from "@/services/face-detection-service";
+import UsersService from "@/services/users-service";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 import type { SpotlightItem } from "./types";
 
@@ -16,7 +17,6 @@ export type SpotlightGalleryActionToggles = {
 	toggleCreateAlbum: () => void;
 	toggleCreateTagAlbum: () => void;
 	toggleUpload: () => void;
-	toggleShareAlbum: () => void;
 	toggleApplyRenamer: () => void;
 	toggleWatermarkConfirm: () => void;
 };
@@ -46,10 +46,17 @@ export function useSpotlightGalleryActions(
 	const insideAlbum = computed(() => (route.name === "album" || route.name === "flow-album") && albumStore.isLoaded);
 	const atGalleryRoot = computed(() => route.name === "gallery");
 
+	// Mirrors AlbumEdit.vue's own `canShare` gate exactly, since the share action opens that
+	// same drawer/section rather than its own dialog. `UsersService.count()` is cached, so this
+	// costs nothing extra once AlbumEdit.vue (or another instance of this composable) has fetched it.
+	const numUsers = ref(0);
+	UsersService.count().then((data) => {
+		numUsers.value = data.data;
+	});
+
 	return computed(() => {
 		const items: SpotlightItem[] = [];
 		const album = albumStore.album;
-		const albumTitle = insideAlbum.value ? album?.title : undefined;
 
 		if (
 			(atGalleryRoot.value && albumsStore.rootRights?.can_upload) ||
@@ -57,7 +64,6 @@ export function useSpotlightGalleryActions(
 		) {
 			items.push({
 				label: trans("gallery.menus.new_album"),
-				description: albumTitle,
 				icon: "lucide:folder",
 				kind: "nav",
 				onSelect: () => {
@@ -85,7 +91,6 @@ export function useSpotlightGalleryActions(
 		if (insideAlbum.value && !photoStore.isLoaded && albumStore.rights?.can_move && albumStore.config?.is_model_album && album !== undefined) {
 			items.push({
 				label: trans("gallery.menus.move"),
-				description: albumTitle,
 				icon: "lucide:folder",
 				kind: "nav",
 				onSelect: () => {
@@ -98,8 +103,7 @@ export function useSpotlightGalleryActions(
 
 		if (insideAlbum.value && albumStore.rights?.can_edit) {
 			items.push({
-				label: trans("gallery.hero.edit"),
-				description: albumTitle,
+				label: trans("gallery.album.hero.edit"),
 				icon: "lucide:settings",
 				kind: "nav",
 				onSelect: () => {
@@ -109,15 +113,15 @@ export function useSpotlightGalleryActions(
 			});
 		}
 
-		if (insideAlbum.value && albumStore.rights?.can_share) {
+		if (insideAlbum.value && albumStore.rights?.can_share_with_users && numUsers.value > 1 && albumStore.config?.is_base_album) {
 			items.push({
-				label: trans("gallery.hero.share"),
-				description: albumTitle,
+				label: trans("gallery.album.hero.share"),
 				icon: "lucide:share-2",
 				kind: "nav",
 				onSelect: () => {
 					close();
-					toggles.toggleShareAlbum();
+					togglableStore.is_share_section_pending = true;
+					togglableStore.is_album_edit_open = true;
 				},
 			});
 		}
@@ -126,8 +130,7 @@ export function useSpotlightGalleryActions(
 		// can_edit-gated section of the edit drawer, not their own dialog.
 		if (insideAlbum.value && albumStore.rights?.can_edit && albumStore.config?.is_model_album) {
 			items.push({
-				label: trans("gallery.tracks.add"),
-				description: albumTitle,
+				label: trans("gallery.album.tracks.add"),
 				icon: "lucide:route",
 				kind: "nav",
 				onSelect: () => {
@@ -141,7 +144,6 @@ export function useSpotlightGalleryActions(
 		if ((atGalleryRoot.value && albumsStore.rootRights?.can_upload) || (insideAlbum.value && albumStore.rights?.can_upload)) {
 			items.push({
 				label: trans("gallery.menus.upload_photo"),
-				description: albumTitle,
 				icon: "lucide:upload",
 				kind: "nav",
 				onSelect: () => {
@@ -158,8 +160,7 @@ export function useSpotlightGalleryActions(
 			photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants))
 		) {
 			items.push({
-				label: trans("gallery.hero.watermark"),
-				description: albumTitle,
+				label: trans("gallery.album.hero.watermark"),
 				icon: "lucide:barcode",
 				kind: "nav",
 				onSelect: () => {
@@ -178,7 +179,6 @@ export function useSpotlightGalleryActions(
 		) {
 			items.push({
 				label: trans("people.scan_faces"),
-				description: albumTitle,
 				icon: "lucide:smile",
 				kind: "nav",
 				onSelect: () => {
@@ -202,7 +202,6 @@ export function useSpotlightGalleryActions(
 		if (insideAlbum.value && albumStore.rights?.can_edit && initData.value?.modules.is_mod_renamer_enabled) {
 			items.push({
 				label: trans("gallery.menus.apply_renamer"),
-				description: albumTitle,
 				icon: "lucide:pencil",
 				kind: "nav",
 				onSelect: () => {

@@ -109,7 +109,7 @@ const { isLTR } = useLtRorRtL();
 
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
-const { is_album_edit_open, is_track_upload_pending } = storeToRefs(togglableStore);
+const { is_album_edit_open, is_track_upload_pending, is_share_section_pending } = storeToRefs(togglableStore);
 const { expert_album_settings } = storeToRefs(useLycheeStateStore());
 
 const is_expert_mode = ref(expert_album_settings.value);
@@ -122,6 +122,7 @@ const is_expert_mode = ref(expert_album_settings.value);
 watch(is_album_edit_open, (isOpen) => {
 	if (!isOpen) {
 		is_track_upload_pending.value = false;
+		is_share_section_pending.value = false;
 	}
 });
 
@@ -207,6 +208,21 @@ function sectionElementId(id: SectionId): string {
 
 function goto(id: SectionId) {
 	document.getElementById(sectionElementId(id))?.scrollIntoView({ behavior: "smooth" });
+}
+
+// Set by the Spotlight "Share" action before opening the drawer. Mirrors setupScrollTracking's
+// own retry loop below: the share section may not exist in the DOM yet on the first tick after
+// the modal opens (transition + portal timing), so poll briefly instead of silently missing it.
+function gotoPendingShareSection(retriesLeft = 20) {
+	const el = document.getElementById(sectionElementId("share"));
+	if (el) {
+		el.scrollIntoView({ behavior: "smooth" });
+		is_share_section_pending.value = false;
+		return;
+	}
+	if (retriesLeft > 0) {
+		setTimeout(() => gotoPendingShareSection(retriesLeft - 1), 50);
+	}
 }
 
 // How close to the top of the scroll container (in px) a section's heading must be before it's
@@ -304,6 +320,9 @@ watch(is_album_edit_open, (open) => {
 	if (open) {
 		activeSection.value = "about";
 		nextTick(() => setupScrollTracking());
+		if (is_share_section_pending.value) {
+			nextTick(() => gotoPendingShareSection());
+		}
 	} else {
 		cleanupScrollTracking();
 	}

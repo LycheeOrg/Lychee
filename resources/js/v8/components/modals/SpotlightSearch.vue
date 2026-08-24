@@ -85,8 +85,7 @@ const photosStore = usePhotosStore();
 const photoStore = usePhotoStore();
 const togglableStore = useTogglablesStateStore();
 const toast = useAppToast();
-const { toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleShareAlbum, toggleApplyRenamer, toggleWatermarkConfirm } =
-	useGalleryModals(togglableStore);
+const { toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleApplyRenamer, toggleWatermarkConfirm } = useGalleryModals(togglableStore);
 
 defineShortcuts({
 	meta_k: () => {
@@ -126,7 +125,7 @@ const galleryActionItems = useSpotlightGalleryActions(
 	lycheeStore,
 	toast,
 	initData,
-	{ toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleShareAlbum, toggleApplyRenamer, toggleWatermarkConfirm },
+	{ toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleApplyRenamer, toggleWatermarkConfirm },
 	close,
 );
 

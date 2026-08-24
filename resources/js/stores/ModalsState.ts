@@ -61,6 +61,10 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// as soon as the edit drawer's tracks section mounts.
 		is_track_upload_pending: false,
 
+		// Set by the Spotlight "Share" action so AlbumEdit scrolls straight to its share
+		// section as soon as the edit drawer opens.
+		is_share_section_pending: false,
+
 		// Help
 		is_keybindings_help_open: false,
 
