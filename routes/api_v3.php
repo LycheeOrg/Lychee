@@ -32,3 +32,6 @@ Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetCon
 
 // Struct-of-Arrays JSON collection endpoint (Feature 057, ADR-0009).
 Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
+
+// Flat Struct-of-Arrays listing of album access permissions for the bulk-share page.
+Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);

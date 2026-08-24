@@ -6,19 +6,17 @@
 		<div class="flex justify-center flex-col">
 			<LycheeLoadingIcon fast v-if="perms === undefined" />
 			<template v-else>
-				<div class="flex text-highlighted">
-					<div class="w-5/12 flex">
-						<span class="w-full">{{ $t("sharing.username") }}</span>
-					</div>
-					<div class="w-1/2 flex justify-around items-center">
+				<div class="flex items-center gap-4 text-highlighted">
+					<div class="flex-1">{{ $t("sharing.username") }}</div>
+					<div class="flex items-center gap-2">
 						<UTooltip :text="$t('sharing.grants.read')"><UIcon name="lucide:eye" /></UTooltip>
 						<UTooltip :text="$t('sharing.grants.original')"><UIcon name="lucide:app-window" /></UTooltip>
 						<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
 						<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
 						<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
 						<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
+						<UTooltip :text="$t('dialogs.button.delete')"><UIcon name="lucide:user-minus" /></UTooltip>
 					</div>
-					<div class="w-1/6"></div>
 				</div>
 				<ShareLine v-for="perm in perms" :perm="perm" :with-album="false" @delete="deletePermission" :key="`perm-${perm.id}`" />
 				<div v-if="perms.length === 0">

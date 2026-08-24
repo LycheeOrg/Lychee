@@ -10,6 +10,10 @@ const AlbumListV3Service = {
 	getAlbums(params: AlbumListV3Params = {}): Promise<AxiosResponse<App.Http.Resources.V3.AlbumListResource>> {
 		return axios.get(`${Constants.getApiUrlV3()}Albums`, { params: params, data: {} });
 	},
+
+	getAccessPermissions(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumAccessPermissionListResource>> {
+		return axios.get(`${Constants.getApiUrlV3()}Albums::accessPermissions`, { data: {} });
+	},
 };
 
 export default AlbumListV3Service;
