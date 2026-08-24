@@ -1698,6 +1698,24 @@ declare namespace App {
 				};
 			}
 			namespace V3 {
+				export type AlbumAccessPermissionListResource = {
+					album_ids: string[];
+					album_titles: string[];
+					_lft: number[];
+					_rgt: number[];
+					owner_ids: number[];
+					owner_names: string[];
+					permission_ids: (number | null)[];
+					user_ids: (number | null)[];
+					user_names: (string | null)[];
+					group_ids: (number | null)[];
+					group_names: (string | null)[];
+					grants_full_photo_accesses: (boolean | null)[];
+					grants_downloads: (boolean | null)[];
+					grants_uploads: (boolean | null)[];
+					grants_edits: (boolean | null)[];
+					grants_deletes: (boolean | null)[];
+				};
 				export type AlbumListBulkEditFieldsResource = {
 					owner_ids: number[];
 					owner_names: string[];

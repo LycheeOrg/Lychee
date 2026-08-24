@@ -1,27 +1,27 @@
 <template>
-	<div class="flex">
-		<div class="w-5/12 flex items-center text-muted">
-			<span v-if="props.withAlbum" class="w-full">
+	<div class="flex items-center gap-4">
+		<div class="flex-1 min-w-0 truncate text-muted">
+			<template v-if="props.withAlbum">
 				<RouterLink :to="{ name: 'album', params: { albumId: props.perm.album_id } }" class="hover:text-highlighted underline">{{
 					props.perm.album_title
 				}}</RouterLink>
-			</span>
-			<span class="w-full">
+			</template>
+			<template v-else>
 				<UIcon v-if="props.perm.user_group_id !== null" name="lucide:users" class="ltr:mr-1 rtl:ml-1" />
 				{{ props.perm.username ?? props.perm.user_group_name }}
-			</span>
+			</template>
 		</div>
-		<div class="w-1/2 flex items-center justify-around">
+		<div class="flex items-center gap-2 shrink-0">
 			<UCheckbox v-model="grantsReadAccess" disabled />
 			<UCheckbox v-model="grantsFullPhotoAccess" @update:model-value="edit" />
 			<UCheckbox v-model="grantsDownload" @update:model-value="edit" />
 			<UCheckbox v-model="grantsUpload" @update:model-value="edit" />
 			<UCheckbox v-model="grantsEdit" @update:model-value="edit" />
 			<UCheckbox v-model="grantsDelete" @update:model-value="edit" />
+			<UTooltip :text="$t('dialogs.button.delete')">
+				<UButton color="error" variant="ghost" size="xs" icon="lucide:user-minus" @click="deletePermission" />
+			</UTooltip>
 		</div>
-		<UButton color="error" variant="ghost" class="w-1/6" @click="deletePermission">
-			<UIcon name="lucide:user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
-		</UButton>
 	</div>
 </template>
 
