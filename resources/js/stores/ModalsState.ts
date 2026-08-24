@@ -53,6 +53,10 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_watermark_confirm_visible: false,
 		is_camera_capture_visible: false,
 
+		// Set by the Spotlight "Move current album" action so MoveDialog targets the
+		// currently-open album instead of whatever child album/photo is checkbox-selected.
+		move_album_override: null as App.Http.Resources.Models.ThumbAlbumResource | null,
+
 		// Help
 		is_keybindings_help_open: false,
 

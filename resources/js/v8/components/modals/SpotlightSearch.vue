@@ -45,11 +45,19 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useUserStore } from "@/stores/UserState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLeftMenu } from "@/v8/composables/contextMenus/leftMenu";
 import { useAdminTiles } from "@/v8/composables/useAdminTiles";
 import { useDarkMode } from "@/v8/composables/useDarkMode";
 import { useLanguageSwitcher } from "@/v8/composables/useLanguageSwitcher";
+import { useAppToast } from "@/v8/composables/useAppToast";
 import SearchService from "@/services/search-service";
+import FaceDetectionService from "@/services/face-detection-service";
 import { ALL } from "@/config/constants";
 
 type SpotlightItem = CommandPaletteItem & {
@@ -74,6 +82,15 @@ const albumListStore = useAlbumListStore();
 const { items: menuItems, profileItems, initData } = useLeftMenu(lycheeStore, leftMenuState, userStore, favouritesStore, route);
 const adminTiles = useAdminTiles(lycheeStore, leftMenuState);
 const { isDark, toggle: toggleDarkMode, toggleGlobal: toggleDarkModeGlobal } = useDarkMode();
+
+const albumStore = useAlbumStore();
+const albumsStore = useAlbumsStore();
+const photosStore = usePhotosStore();
+const photoStore = usePhotoStore();
+const togglableStore = useTogglablesStateStore();
+const toast = useAppToast();
+const { toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleShareAlbum, toggleApplyRenamer, toggleWatermarkConfirm } =
+	useGalleryModals(togglableStore);
 
 defineShortcuts({
 	meta_k: () => {
@@ -177,6 +194,179 @@ const navGroupItems = computed<SpotlightItem[]>(() =>
 		})),
 );
 
+// Mirrors AlbumHero.vue's own `needSizeVariantsWatermark` (duplicated there and in
+// Dock.vue rather than shared, so matching that existing convention here too).
+function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
+	return (
+		(sizeVariants.thumb && !sizeVariants.thumb.is_watermarked) ||
+		(sizeVariants.thumb2x && !sizeVariants.thumb2x.is_watermarked) ||
+		(sizeVariants.small && !sizeVariants.small.is_watermarked) ||
+		(sizeVariants.small2x && !sizeVariants.small2x.is_watermarked) ||
+		(sizeVariants.medium && !sizeVariants.medium.is_watermarked) ||
+		(sizeVariants.medium2x && !sizeVariants.medium2x.is_watermarked) ||
+		false
+	);
+}
+
+// The dialogs these actions open only ever get mounted while the matching route is
+// active (see Album.vue/Albums.vue), so gating visibility on the route is enough -
+// no dialog relocation is needed.
+const insideAlbum = computed(() => (route.name === "album" || route.name === "flow-album") && albumStore.isLoaded);
+const atGalleryRoot = computed(() => route.name === "gallery");
+
+const galleryActionItems = computed<SpotlightItem[]>(() => {
+	const items: SpotlightItem[] = [];
+	const album = albumStore.album;
+	const albumTitle = insideAlbum.value ? album?.title : undefined;
+
+	if (
+		(atGalleryRoot.value && albumsStore.rootRights?.can_upload) ||
+		(insideAlbum.value && albumStore.rights?.can_upload && albumStore.config?.is_model_album)
+	) {
+		items.push({
+			label: trans("gallery.menus.new_album"),
+			description: albumTitle,
+			icon: "lucide:folder",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleCreateAlbum();
+			},
+		});
+	}
+
+	if (atGalleryRoot.value && albumsStore.rootRights?.can_upload) {
+		items.push({
+			label: trans("gallery.menus.new_tag_album"),
+			icon: "lucide:tags",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleCreateTagAlbum();
+			},
+		});
+	}
+
+	// Restricted to model albums with no photo open: MoveDialog's photo-open binding in
+	// Album.vue always targets the current photo, leaving no slot for an album move, and
+	// there's no existing precedent for moving a tag/smart/person album.
+	if (insideAlbum.value && !photoStore.isLoaded && albumStore.rights?.can_move && albumStore.config?.is_model_album && album !== undefined) {
+		items.push({
+			label: trans("gallery.menus.move"),
+			description: albumTitle,
+			icon: "lucide:folder",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				togglableStore.move_album_override = { id: album.id, title: album.title } as App.Http.Resources.Models.ThumbAlbumResource;
+				togglableStore.is_move_visible = true;
+			},
+		});
+	}
+
+	if (insideAlbum.value && albumStore.rights?.can_edit) {
+		items.push({
+			label: trans("gallery.hero.edit"),
+			description: albumTitle,
+			icon: "lucide:settings",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				togglableStore.is_album_edit_open = true;
+			},
+		});
+	}
+
+	if (insideAlbum.value && albumStore.rights?.can_share) {
+		items.push({
+			label: trans("gallery.hero.share"),
+			description: albumTitle,
+			icon: "lucide:share-2",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleShareAlbum();
+			},
+		});
+	}
+
+	if ((atGalleryRoot.value && albumsStore.rootRights?.can_upload) || (insideAlbum.value && albumStore.rights?.can_upload)) {
+		items.push({
+			label: trans("gallery.menus.upload_photo"),
+			description: albumTitle,
+			icon: "lucide:upload",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleUpload();
+			},
+		});
+	}
+
+	if (
+		insideAlbum.value &&
+		albumStore.rights?.can_edit &&
+		initData.value?.modules.is_watermarker_enabled &&
+		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants))
+	) {
+		items.push({
+			label: trans("gallery.hero.watermark"),
+			description: albumTitle,
+			icon: "lucide:barcode",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleWatermarkConfirm();
+			},
+		});
+	}
+
+	if (
+		insideAlbum.value &&
+		albumStore.rights?.can_edit &&
+		lycheeStore.is_face_recognition_enabled &&
+		photosStore.photos.length > 0 &&
+		album !== undefined
+	) {
+		items.push({
+			label: trans("people.scan_faces"),
+			description: albumTitle,
+			icon: "lucide:smile",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				FaceDetectionService.scanAlbum(album.id)
+					.then(() => {
+						toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.scan_success"), life: 3000 });
+					})
+					.catch((e) => {
+						toast.add({
+							severity: "error",
+							summary: trans("toasts.error"),
+							detail: e.response?.data?.message || trans("toasts.error"),
+							life: 3000,
+						});
+					});
+			},
+		});
+	}
+
+	if (insideAlbum.value && albumStore.rights?.can_edit && initData.value?.modules.is_mod_renamer_enabled) {
+		items.push({
+			label: trans("gallery.menus.apply_renamer"),
+			description: albumTitle,
+			icon: "lucide:pencil",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				toggleApplyRenamer();
+			},
+		});
+	}
+
+	return items;
+});
+
 const actionsGroupItems = computed<SpotlightItem[]>(() => {
 	const fromAdmin: SpotlightItem[] = adminTiles
 		.filter((tile) => tile.visible.value)
@@ -210,7 +400,7 @@ const actionsGroupItems = computed<SpotlightItem[]>(() => {
 		},
 	};
 
-	return [themeItem, ...fromAdmin];
+	return [...galleryActionItems.value, themeItem, ...fromAdmin];
 });
 
 const languageGroupItems = computed<SpotlightItem[]>(() =>
