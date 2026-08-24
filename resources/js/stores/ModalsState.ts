@@ -57,6 +57,10 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// currently-open album instead of whatever child album/photo is checkbox-selected.
 		move_album_override: null as App.Http.Resources.Models.ThumbAlbumResource | null,
 
+		// Set by the Spotlight "Upload track" action so AlbumTracks opens its file picker
+		// as soon as the edit drawer's tracks section mounts.
+		is_track_upload_pending: false,
+
 		// Help
 		is_keybindings_help_open: false,
 

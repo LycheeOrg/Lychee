@@ -109,10 +109,21 @@ const { isLTR } = useLtRorRtL();
 
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
-const { is_album_edit_open } = storeToRefs(togglableStore);
+const { is_album_edit_open, is_track_upload_pending } = storeToRefs(togglableStore);
 const { expert_album_settings } = storeToRefs(useLycheeStateStore());
 
 const is_expert_mode = ref(expert_album_settings.value);
+
+// AlbumTracks.vue consumes `is_track_upload_pending` itself (opening its file picker as
+// soon as it mounts), but if the tracks section never renders - e.g. the album isn't a
+// model album, or rights changed - it would otherwise sit stuck true. Whenever the drawer
+// closes, drop it so a later, unrelated "Edit current album" doesn't unexpectedly pop the
+// file picker.
+watch(is_album_edit_open, (isOpen) => {
+	if (!isOpen) {
+		is_track_upload_pending.value = false;
+	}
+});
 
 // Show which album is being edited: "Album Settings: My Album". Separator and word order live in
 // the translation string so locales can differ; falls back to the plain section title while the

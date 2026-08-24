@@ -84,6 +84,7 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useRoute } from "vue-router";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 
 const toast = useToast();
 const lycheeStore = useLycheeStateStore();
@@ -141,18 +142,6 @@ function scanFaces() {
 				life: 3000,
 			});
 		});
-}
-
-function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
-	return (
-		(sizeVariants.thumb && !sizeVariants.thumb.is_watermarked) ||
-		(sizeVariants.thumb2x && !sizeVariants.thumb2x.is_watermarked) ||
-		(sizeVariants.small && !sizeVariants.small.is_watermarked) ||
-		(sizeVariants.small2x && !sizeVariants.small2x.is_watermarked) ||
-		(sizeVariants.medium && !sizeVariants.medium.is_watermarked) ||
-		(sizeVariants.medium2x && !sizeVariants.medium2x.is_watermarked) ||
-		false
-	);
 }
 
 const emits = defineEmits<{
