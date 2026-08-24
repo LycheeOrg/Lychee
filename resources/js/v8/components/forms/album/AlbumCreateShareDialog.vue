@@ -63,10 +63,11 @@ import SearchTargetUser from "./SearchTargetUser.vue";
 import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
 
 const props = defineProps<{
-	album:
-		| App.Http.Resources.Models.HeadAlbumResource
-		| App.Http.Resources.Models.HeadTagAlbumResource
-		| App.Http.Resources.Models.HeadPersonAlbumResource;
+	// Only `.id` is ever read below — kept minimal (rather than the full
+	// Head*AlbumResource union) so any album-identified row (e.g. a
+	// Sharing.vue tree row) can be passed in without adapting to a full
+	// album resource shape.
+	album: { id: string };
 	filteredUsersIds?: UserOrGroupId[];
 }>();
 
