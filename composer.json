@@ -77,6 +77,11 @@
         "omnipay/mollie": "^5.5",
         "omnipay/stripe": "^3.2",
         "opcodesio/log-viewer": "dev-lycheeOrg",
+        "open-telemetry/exporter-otlp": "^1.4",
+        "open-telemetry/opentelemetry-auto-guzzle": "^1.4",
+        "open-telemetry/opentelemetry-auto-laravel": "^1.8",
+        "open-telemetry/opentelemetry-auto-pdo": "^0.5.0",
+        "open-telemetry/sdk": "^1.15",
         "paypal/paypal-server-sdk": "2.3.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
@@ -166,7 +171,8 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "allow-plugins": {
-            "php-http/discovery": false
+            "php-http/discovery": false,
+            "tbachert/spi": true
         }
     },
     "suggest": {

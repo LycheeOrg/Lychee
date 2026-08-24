@@ -8,15 +8,14 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
 
-class ExtractGoogleMotionPictures implements StandalonePipe
+class ExtractGoogleMotionPictures extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->exif_info->micro_video_offset === 0) {
 			return $next($state);
@@ -37,5 +36,10 @@ class ExtractGoogleMotionPictures implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.set_original_checksum';
 	}
 }

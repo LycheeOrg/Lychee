@@ -9,13 +9,12 @@
 namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\Models\SizeVariantFactory;
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 
-class CreateSizeVariants implements StandalonePipe
+class CreateSizeVariants extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create remaining size variants if we were able to successfully
 		// extract a reference image
@@ -36,5 +35,10 @@ class CreateSizeVariants implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.create_size_variants';
 	}
 }

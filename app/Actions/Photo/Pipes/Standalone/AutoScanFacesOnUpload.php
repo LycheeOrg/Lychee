@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Jobs\DispatchFaceScanJob;
 use App\Repositories\ConfigManager;
@@ -18,14 +17,14 @@ use Illuminate\Support\Facades\Log;
  * Automatically trigger face scanning when a photo is uploaded,
  * if the AI Vision face scanning feature is enabled.
  */
-class AutoScanFacesOnUpload implements StandalonePipe
+class AutoScanFacesOnUpload extends AbstractStandalonePipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Process through the rest of the pipeline first
 		$state = $next($state);
@@ -50,5 +49,10 @@ class AutoScanFacesOnUpload implements StandalonePipe
 		DispatchFaceScanJob::dispatch($state->photo->id);
 
 		return $state;
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.auto_scan_faces_on_upload';
 	}
 }

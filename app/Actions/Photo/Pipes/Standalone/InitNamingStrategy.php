@@ -9,13 +9,14 @@
 namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use Illuminate\Support\Facades\Log;
 
-class InitNamingStrategy implements StandalonePipe
+class InitNamingStrategy extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		Log::debug('Executing InitNamingStrategy pipe');
 		$state->naming_strategy = resolve(AbstractSizeVariantNamingStrategy::class);
 		$state->naming_strategy->setPhoto($state->photo);
 		$state->naming_strategy->setExtension(
@@ -23,5 +24,10 @@ class InitNamingStrategy implements StandalonePipe
 		);
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.init_naming_strategy';
 	}
 }

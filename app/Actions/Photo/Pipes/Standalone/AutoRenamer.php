@@ -8,9 +8,9 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Metadata\Renamer\PhotoRenamer;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Apply renaming rules to the photo title.
@@ -20,18 +20,22 @@ use App\Metadata\Renamer\PhotoRenamer;
  *
  * Maybe also consider whether Renaming should be applied at upload time.
  */
-class AutoRenamer implements StandalonePipe
+class AutoRenamer extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Skip if the caller explicitly provided a title at upload time (FR-041-06).
 		// User-supplied titles take precedence and must not be overwritten by renamer rules.
 		if ($state->title !== null) {
+			Log::debug('Photo has a title, we don\'t rename it, skipping');
+
 			return $next($state);
 		}
 
 		// Skip if not enabled.
 		if (!$state->shall_rename_photo_title) {
+			Log::debug('renaming not necessary, skipping');
+
 			return $next($state);
 		}
 
@@ -41,5 +45,10 @@ class AutoRenamer implements StandalonePipe
 		$state->photo->title = $renamer->handle($state->photo->title);
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.auto_renamer';
 	}
 }
