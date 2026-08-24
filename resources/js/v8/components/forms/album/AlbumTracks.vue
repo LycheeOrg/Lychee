@@ -51,13 +51,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
+import { storeToRefs } from "pinia";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import TrackService from "@/v8/services/track-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useConfirmDialog } from "@/v8/composables/useConfirmDialog";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 defineProps<{
 	legendIcon: string;
@@ -67,6 +69,8 @@ defineProps<{
 const toast = useAppToast();
 const { confirm } = useConfirmDialog();
 const albumStore = useAlbumStore();
+const togglableStore = useTogglablesStateStore();
+const { is_track_upload_pending } = storeToRefs(togglableStore);
 
 const tracks = computed<App.Http.Resources.Models.TrackResource[]>(() => albumStore.modelAlbum?.tracks ?? []);
 
@@ -76,6 +80,19 @@ const uploading = ref(false);
 function triggerFileInput() {
 	fileInput.value?.click();
 }
+
+// Set by the Spotlight "Upload track" action: scroll this section into view and pop the
+// file picker as soon as it's mounted, rather than making the user open the edit drawer
+// and find the Tracks section themselves. "album-settings-tracks" is the enclosing
+// section's id, set by AlbumEdit.vue's own SECTION_ID_PREFIX + "tracks".
+onMounted(() => {
+	if (!is_track_upload_pending.value) {
+		return;
+	}
+	is_track_upload_pending.value = false;
+	document.getElementById("album-settings-tracks")?.scrollIntoView({ behavior: "smooth", block: "start" });
+	triggerFileInput();
+});
 
 function onFilesSelected(event: Event) {
 	const input = event.target as HTMLInputElement;

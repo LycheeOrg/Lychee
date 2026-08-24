@@ -68,10 +68,10 @@
 		<PhotoCopyDialog v-model:open="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copy="refreshInPlace" />
 		<MoveDialog
 			v-model:open="is_move_visible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			:album="selectedAlbum"
-			:album-ids="selectedAlbumsIds"
+			:photo="move_album_override ? undefined : selectedPhoto"
+			:photo-ids="move_album_override ? [] : selectedPhotosIds"
+			:album="move_album_override ?? selectedAlbum"
+			:album-ids="move_album_override ? [move_album_override.id] : selectedAlbumsIds"
 			@moved="
 				() => {
 					unselect();
@@ -258,6 +258,7 @@ const {
 	is_create_album_visible,
 	is_album_edit_open,
 	is_import_from_link_open,
+	move_album_override,
 } = storeToRefs(togglableStore);
 
 const { scrollToTop, setScroll } = useScrollable(togglableStore, albumId);
@@ -275,6 +276,16 @@ const {
 	is_import_from_dropbox_open,
 	is_import_from_server_open,
 } = useGalleryModals(togglableStore);
+
+// MoveDialog's own Cancel/backdrop/ESC dismissal only flips `is_move_visible` (it never
+// clears `move_album_override` itself), so the override must be cleared here on any close
+// - not just after a successful move - or a later selection-based Move would incorrectly
+// keep targeting the album from a prior, dismissed Spotlight "Move current album" call.
+watch(is_move_visible, (isOpen) => {
+	if (!isOpen) {
+		move_album_override.value = null;
+	}
+});
 
 const { getParentId } = usePhotoRoute(router);
 

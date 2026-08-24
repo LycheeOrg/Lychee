@@ -192,6 +192,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import AlbumHeaderPanel from "./AlbumHeaderPanel.vue";
+import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 
 const userStore = useUserStore();
 const leftMenu = useLeftMenuStateStore();
@@ -242,18 +243,6 @@ watch(
 );
 
 const isFaceScanEnabled = computed(() => is_face_recognition_enabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
-
-function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
-	return (
-		(sizeVariants.thumb && !sizeVariants.thumb.is_watermarked) ||
-		(sizeVariants.thumb2x && !sizeVariants.thumb2x.is_watermarked) ||
-		(sizeVariants.small && !sizeVariants.small.is_watermarked) ||
-		(sizeVariants.small2x && !sizeVariants.small2x.is_watermarked) ||
-		(sizeVariants.medium && !sizeVariants.medium.is_watermarked) ||
-		(sizeVariants.medium2x && !sizeVariants.medium2x.is_watermarked) ||
-		false
-	);
-}
 
 const emits = defineEmits<{
 	openSharingModal: [];
