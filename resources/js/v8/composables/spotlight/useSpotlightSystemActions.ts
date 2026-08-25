@@ -20,7 +20,7 @@ export function useSpotlightSystemActions(
 ): ComputedRef<SpotlightItem[]> {
 	return computed(() => {
 		const fromAdmin: SpotlightItem[] = adminTiles
-			.filter((tile) => tile.visible.value)
+			.filter((tile) => tile.visible.value && !(tile.disabled?.value ?? false))
 			.map((tile) => ({
 				label: trans(tile.label),
 				icon: tile.icon,
