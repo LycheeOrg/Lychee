@@ -225,6 +225,7 @@ return [
         'password_required' => 'Dette albumet er passordbeskyttet. Skriv inn passordet nedenfor for å se bildene i dette albumet:',
         'password' => 'Passord',
         'unlock' => 'Låse opp',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => 'Skriv inn taggene dine for dette bildet.',

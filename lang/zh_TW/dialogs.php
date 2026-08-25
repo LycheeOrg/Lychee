@@ -225,6 +225,7 @@ return [
         'password_required' => '此相簿被密碼保護。請在下方輸入密碼來瀏覽此相簿中的相片：',
         'password' => '密碼',
         'unlock' => '解鎖',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => '輸入此相片的標籤。',
