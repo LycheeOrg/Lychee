@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed3bb66f667998fee1f2507d7f5d1395",
+    "content-hash": "28402218edb7031ba4706bd2301d37f1",
     "packages": [
         {
             "name": "apimatic/core",
-            "version": "0.3.17",
+            "version": "0.3.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/core-lib-php.git",
-                "reference": "a48a583f686ee3786432b976c795a2817ec095b3"
+                "reference": "7e3d2de97de6df8aa1c66293c92573b6984e3f50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/core-lib-php/zipball/a48a583f686ee3786432b976c795a2817ec095b3",
-                "reference": "a48a583f686ee3786432b976c795a2817ec095b3",
+                "url": "https://api.github.com/repos/apimatic/core-lib-php/zipball/7e3d2de97de6df8aa1c66293c92573b6984e3f50",
+                "reference": "7e3d2de97de6df8aa1c66293c92573b6984e3f50",
                 "shasum": ""
             },
             "require": {
@@ -57,9 +57,9 @@
             ],
             "support": {
                 "issues": "https://github.com/apimatic/core-lib-php/issues",
-                "source": "https://github.com/apimatic/core-lib-php/tree/0.3.17"
+                "source": "https://github.com/apimatic/core-lib-php/tree/0.3.18"
             },
-            "time": "2026-01-27T05:14:10+00:00"
+            "time": "2026-08-20T09:44:05+00:00"
         },
         {
             "name": "apimatic/core-interfaces",
@@ -160,16 +160,16 @@
         },
         {
             "name": "apimatic/unirest-php",
-            "version": "4.0.7",
+            "version": "4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apimatic/unirest-php.git",
-                "reference": "bdfd5f27c105772682c88ed671683f1bd93f4a3c"
+                "reference": "e1828d2f5fa53528b2576775eb1dce824176bf73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apimatic/unirest-php/zipball/bdfd5f27c105772682c88ed671683f1bd93f4a3c",
-                "reference": "bdfd5f27c105772682c88ed671683f1bd93f4a3c",
+                "url": "https://api.github.com/repos/apimatic/unirest-php/zipball/e1828d2f5fa53528b2576775eb1dce824176bf73",
+                "reference": "e1828d2f5fa53528b2576775eb1dce824176bf73",
                 "shasum": ""
             },
             "require": {
@@ -179,6 +179,7 @@
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
+                "ext-zlib": "*",
                 "phan/phan": "5.4.2",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
                 "squizlabs/php_codesniffer": "^3.5"
@@ -219,9 +220,9 @@
             "support": {
                 "email": "opensource@apimatic.io",
                 "issues": "https://github.com/apimatic/unirest-php/issues",
-                "source": "https://github.com/apimatic/unirest-php/tree/4.0.7"
+                "source": "https://github.com/apimatic/unirest-php/tree/4.0.8"
             },
-            "time": "2025-06-17T09:09:48+00:00"
+            "time": "2026-08-20T09:44:17+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -279,16 +280,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.391.1",
+            "version": "3.393.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "90920ce5518aa864e04da0224bb0ba0ee9e31d7f"
+                "reference": "d15e6bceff1ece1c0a6d2bb8fb0a9521a8721eab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/90920ce5518aa864e04da0224bb0ba0ee9e31d7f",
-                "reference": "90920ce5518aa864e04da0224bb0ba0ee9e31d7f",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d15e6bceff1ece1c0a6d2bb8fb0a9521a8721eab",
+                "reference": "d15e6bceff1ece1c0a6d2bb8fb0a9521a8721eab",
                 "shasum": ""
             },
             "require": {
@@ -370,9 +371,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.391.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.393.5"
             },
-            "time": "2026-08-07T20:18:18+00:00"
+            "time": "2026-08-24T18:17:30+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -780,16 +781,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.13.41",
+            "version": "v0.13.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "a2e424a38de8585669a824af0aa9df5724a9988d"
+                "reference": "c5b8ad69dfbe259f822f5ef507d479a55ab790f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/a2e424a38de8585669a824af0aa9df5724a9988d",
-                "reference": "a2e424a38de8585669a824af0aa9df5724a9988d",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/c5b8ad69dfbe259f822f5ef507d479a55ab790f7",
+                "reference": "c5b8ad69dfbe259f822f5ef507d479a55ab790f7",
                 "shasum": ""
             },
             "require": {
@@ -849,7 +850,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.13.41"
+                "source": "https://github.com/dedoc/scramble/tree/v0.13.42"
             },
             "funding": [
                 {
@@ -857,7 +858,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-14T11:31:38+00:00"
+            "time": "2026-08-21T15:17:50+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3740,16 +3741,16 @@
         },
         {
             "name": "league/color-extractor",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/color-extractor.git",
-                "reference": "21fcac6249c5ef7d00eb83e128743ee6678fe505"
+                "reference": "779dab63255f74c7ba2242da0a644c9d857f7980"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/21fcac6249c5ef7d00eb83e128743ee6678fe505",
-                "reference": "21fcac6249c5ef7d00eb83e128743ee6678fe505",
+                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/779dab63255f74c7ba2242da0a644c9d857f7980",
+                "reference": "779dab63255f74c7ba2242da0a644c9d857f7980",
                 "shasum": ""
             },
             "require": {
@@ -3795,9 +3796,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/color-extractor/issues",
-                "source": "https://github.com/thephpleague/color-extractor/tree/0.4.0"
+                "source": "https://github.com/thephpleague/color-extractor/tree/0.5.0"
             },
-            "time": "2022-09-24T15:57:16+00:00"
+            "time": "2026-08-19T17:49:53+00:00"
         },
         {
             "name": "league/commonmark",
@@ -4073,16 +4074,16 @@
         },
         {
             "name": "league/flysystem-aws-s3-v3",
-            "version": "3.35.2",
+            "version": "3.35.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-aws-s3-v3.git",
-                "reference": "8475ef9adfc6498b85469e2abec6fe3118cd08c4"
+                "reference": "b03780cb97585ee7e48977f40ed599b33b751634"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/8475ef9adfc6498b85469e2abec6fe3118cd08c4",
-                "reference": "8475ef9adfc6498b85469e2abec6fe3118cd08c4",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-aws-s3-v3/zipball/b03780cb97585ee7e48977f40ed599b33b751634",
+                "reference": "b03780cb97585ee7e48977f40ed599b33b751634",
                 "shasum": ""
             },
             "require": {
@@ -4122,9 +4123,9 @@
                 "storage"
             ],
             "support": {
-                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.35.2"
+                "source": "https://github.com/thephpleague/flysystem-aws-s3-v3/tree/3.35.3"
             },
-            "time": "2026-07-01T23:25:49+00:00"
+            "time": "2026-08-08T16:19:23+00:00"
         },
         {
             "name": "league/flysystem-local",
@@ -6235,16 +6236,16 @@
         },
         {
             "name": "paypal/paypal-server-sdk",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paypal/PayPal-PHP-Server-SDK.git",
-                "reference": "c54fefd059802b4fde7182d708b4d2dc99f9d2e5"
+                "reference": "b6be767b759ac3e3ad1d32dde7143a0927f5892b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paypal/PayPal-PHP-Server-SDK/zipball/c54fefd059802b4fde7182d708b4d2dc99f9d2e5",
-                "reference": "c54fefd059802b4fde7182d708b4d2dc99f9d2e5",
+                "url": "https://api.github.com/repos/paypal/PayPal-PHP-Server-SDK/zipball/b6be767b759ac3e3ad1d32dde7143a0927f5892b",
+                "reference": "b6be767b759ac3e3ad1d32dde7143a0927f5892b",
                 "shasum": ""
             },
             "require": {
@@ -6272,10 +6273,9 @@
             "description": "PayPal's SDK for interacting with the REST APIs",
             "homepage": "https://github.com/paypal/PayPal-PHP-Server-SDK",
             "support": {
-                "issues": "https://github.com/paypal/PayPal-PHP-Server-SDK/issues",
-                "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/2.3.0"
+                "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/2.4.0"
             },
-            "time": "2026-06-05T21:28:21+00:00"
+            "time": "2026-08-21T15:05:45+00:00"
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
@@ -9322,16 +9322,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v8.1.4",
+            "version": "v8.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "77aaed12441eff519d7028cb851f893d7969f768"
+                "reference": "c12be586c0e4798e649e7501aa9181ddc9d93310"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/77aaed12441eff519d7028cb851f893d7969f768",
-                "reference": "77aaed12441eff519d7028cb851f893d7969f768",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/c12be586c0e4798e649e7501aa9181ddc9d93310",
+                "reference": "c12be586c0e4798e649e7501aa9181ddc9d93310",
                 "shasum": ""
             },
             "require": {
@@ -9352,7 +9352,7 @@
                 "symfony/cache-implementation": "1.1|2.0|3.0"
             },
             "require-dev": {
-                "cache/integration-tests": "dev-master",
+                "cache/integration-tests": "^1.0.3",
                 "doctrine/dbal": "^4.3",
                 "predis/predis": "^1.1|^2.0",
                 "psr/simple-cache": "^1.0|^2.0|^3.0",
@@ -9397,7 +9397,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v8.1.4"
+                "source": "https://github.com/symfony/cache/tree/v8.1.5"
             },
             "funding": [
                 {
@@ -9417,7 +9417,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-01T16:22:31+00:00"
+            "time": "2026-08-19T08:32:28+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -10577,16 +10577,16 @@
         },
         {
             "name": "symfony/polyfill-deepclone",
-            "version": "v1.40.0",
+            "version": "v1.42.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-deepclone.git",
-                "reference": "dca4ccba5f360070b574414dce4c1e7a559844fa"
+                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-deepclone/zipball/dca4ccba5f360070b574414dce4c1e7a559844fa",
-                "reference": "dca4ccba5f360070b574414dce4c1e7a559844fa",
+                "url": "https://api.github.com/repos/symfony/polyfill-deepclone/zipball/70ba0627efc68e97ea392843458a2dd9d6dbd156",
+                "reference": "70ba0627efc68e97ea392843458a2dd9d6dbd156",
                 "shasum": ""
             },
             "require": {
@@ -10640,7 +10640,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-deepclone/tree/v1.40.0"
+                "source": "https://github.com/symfony/polyfill-deepclone/tree/v1.42.0"
             },
             "funding": [
                 {
@@ -10660,7 +10660,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-12T07:27:17+00:00"
+            "time": "2026-08-07T06:33:24+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -11994,16 +11994,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v8.1.4",
+            "version": "v8.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "6efa89335ab6d336643a807fcc89ae4f8a7a17e9"
+                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/6efa89335ab6d336643a807fcc89ae4f8a7a17e9",
-                "reference": "6efa89335ab6d336643a807fcc89ae4f8a7a17e9",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
+                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
                 "shasum": ""
             },
             "require": {
@@ -12053,7 +12053,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v8.1.4"
+                "source": "https://github.com/symfony/var-exporter/tree/v8.1.5"
             },
             "funding": [
                 {
@@ -12073,7 +12073,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-30T12:40:56+00:00"
+            "time": "2026-08-13T16:11:28+00:00"
         },
         {
             "name": "thecodingmachine/safe",
