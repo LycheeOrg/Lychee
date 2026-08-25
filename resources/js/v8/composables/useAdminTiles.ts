@@ -6,6 +6,7 @@
 
 import { computed, type ComputedRef } from "vue";
 import { storeToRefs } from "pinia";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { type LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { type LycheeStateStore } from "@/stores/LycheeState";
 
@@ -20,11 +21,15 @@ export type AdminTile = {
 	isExternal: boolean;
 	visible: ComputedRef<boolean>;
 	num?: ComputedRef<number>;
+	disabled?: ComputedRef<boolean>;
 };
 
 export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
 	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_face_recognition_enabled } = storeToRefs(lycheeStore);
 	const { initData } = storeToRefs(leftMenuStore);
+	const breakpoints = useBreakpoints(breakpointsTailwind);
+	const isSmallScreen = breakpoints.smaller("lg");
+	const isBelowMd = breakpoints.smaller("md");
 
 	return [
 		{
@@ -71,6 +76,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/admin/user-groups",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_acess_user_groups ?? false),
+			disabled: isBelowMd,
 		},
 		{
 			key: "purchasables",
@@ -80,6 +86,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/admin/purchasables",
 			isExternal: false,
 			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			disabled: isBelowMd,
 		},
 		{
 			key: "shop-sizes",
@@ -89,6 +96,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/admin/shop/sizes",
 			isExternal: false,
 			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			disabled: isBelowMd,
 		},
 		{
 			key: "contact-messages",
@@ -166,6 +174,17 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/bulk-album-edit",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			disabled: isSmallScreen,
+		},
+		{
+			key: "sharing",
+			group: "core",
+			label: "sharing.title",
+			icon: "lucide:cloud",
+			to: "/sharing",
+			isExternal: false,
+			visible: computed(() => initData.value?.root_album.can_upload ?? false),
+			disabled: isSmallScreen,
 		},
 		{
 			key: "moderation",
@@ -200,6 +219,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/admin/jobs",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
+			disabled: isBelowMd,
 		},
 
 		{

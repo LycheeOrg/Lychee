@@ -6,7 +6,9 @@
 		{{ $t("jobs.title") }}
 	</UHeader>
 	<UMain class="h-[calc(100vh-var(--ui-header-height))] flex flex-col">
-		<UCard class="max-w-7xl mx-auto w-full flex-1 min-h-0 flex flex-col" :ui="{ body: 'flex-1 min-h-0 flex flex-col' }">
+		<p class="md:hidden text-center text-highlighted mt-12">{{ $t("sharing.screen_too_small") }}</p>
+
+		<UCard class="max-w-7xl mx-auto w-full flex-1 min-h-0 hidden md:flex md:flex-col" :ui="{ body: 'flex-1 min-h-0 flex flex-col' }">
 			<div v-if="jobs.length === 0" class="text-center">{{ $t("jobs.no_data") }}</div>
 			<template v-else>
 				<div class="mb-8 shrink-0">

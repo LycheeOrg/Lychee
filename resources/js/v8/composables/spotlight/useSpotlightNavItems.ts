@@ -4,9 +4,9 @@ import type { LeftMenuItem } from "@/v8/composables/contextMenus/leftMenu";
 import type { SpotlightItem } from "./types";
 
 /**
- * Flattens the left-nav's own `menuItems`/`profileItems` into Spotlight rows. The "Admin
- * panel" link is dropped: it only leads to a page of tiles, and Spotlight lists those
- * tiles directly (see useSpotlightSystemActions), so the link itself would be redundant.
+ * Flattens the left-nav's own `menuItems`/`profileItems` into Spotlight rows, including the
+ * "Admin" dashboard link itself (searching "Admin" should jump straight to it, even though
+ * useSpotlightSystemActions also lists its individual tiles).
  */
 export function useSpotlightNavItems(
 	menuItems: ComputedRef<LeftMenuItem[]>,
@@ -16,7 +16,7 @@ export function useSpotlightNavItems(
 ): ComputedRef<SpotlightItem[]> {
 	return computed(() =>
 		[...menuItems.value, ...profileItems.value]
-			.filter((item) => item.label !== undefined && item.to !== "/admin")
+			.filter((item) => item.label !== undefined)
 			.map((item) => ({
 				label: item.label as string,
 				icon: item.icon,
