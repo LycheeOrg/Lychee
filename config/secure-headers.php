@@ -2,6 +2,24 @@
 
 use function Safe\parse_url;
 
+/**
+ * Given a .env config constant, retrieve the env value and remove any trailing /.
+ *
+ * @param string      $cst     constant to fetch
+ * @param string|null $default default value if does not exists
+ *
+ * @return string trimmed result
+ */
+if (!function_exists('renv')) {
+	function renv(string $cst, ?string $default = null): string
+	{
+		return rtrim((string) (env($cst, $default) ?? ''), '/');
+	}
+}
+
+$aws_csp_origin = renv('AWS_URL') === '' ? []
+	: [ str_replace((string) parse_url(renv('AWS_URL'), PHP_URL_PATH), '', renv('AWS_URL')) ];
+
 return [
 	/**
 	 * Server.
@@ -601,10 +619,7 @@ return [
 					'blob:', // required for "live" photos
 				],
 				// Add the S3 URL to the list of allowed image sources
-				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
-				[
-					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
-				],
+				 $aws_csp_origin,
 				explode(',', (string) env('SECURITY_HEADER_CSP_IMG_SRC', ''))
 			),
 		],
@@ -621,10 +636,7 @@ return [
 					'blob:', // required for "live" photos
 				],
 				// Add the S3 URL to the list of allowed media sources
-				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
-				[
-					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
-				],
+				$aws_csp_origin,
 				explode(',', (string) env('SECURITY_HEADER_CSP_MEDIA_SRC', ''))
 			),
 		],
@@ -642,10 +654,7 @@ return [
 					'blob:', // required for "live" photos
 				],
 				// Add the S3 URL to the list of allowed media sources
-				env('AWS_ACCESS_KEY_ID', '') === '' ? [] :
-				[
-					str_replace(parse_url(env('AWS_URL'), PHP_URL_PATH), '', env('AWS_URL')),
-				],
+				$aws_csp_origin,
 				explode(',', (string) env('SECURITY_HEADER_CSP_MEDIA_SRC', ''))
 			),
 		],
