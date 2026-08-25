@@ -16,86 +16,90 @@
 		{{ $t("user-groups.title") }}
 	</UHeader>
 	<div class="max-w-3xl mx-auto p-4">
-		<div v-if="can_create_user_groups" class="w-full">
-			<p class="text-highlighted">{{ $t("user-groups.explanation") }}</p>
-			<div class="flex justify-end mt-8 mb-8">
-				<UButton variant="solid" color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
-			</div>
-		</div>
-		<div v-if="userGroups === undefined" class="flex justify-center items-center gap-2 text-highlighted mt-4">
-			<LycheeLoadingIcon fast />
-			{{ $t("user-groups.loading") }}
-		</div>
-		<div v-else-if="userGroups.length === 0" class="text-center text-highlighted mt-4">
-			{{ $t("user-groups.empty") }}
-		</div>
-		<template v-else>
-			<div
-				v-for="(group, idx) in userGroups"
-				:key="`G${group.id}`"
-				:class="{
-					'text-left text-highlighted my-8 relative pt-4': true,
-					'border-t border-accented': idx > 0,
-				}"
-			>
-				<div class="flex justify-between items-start">
-					<div>
-						<h2 class="text-xl font-bold capitalize">{{ group.name }}</h2>
-						<p class="text-muted">{{ group.description }}</p>
-					</div>
-					<div class="flex items-center gap-1 relative">
-						<UButton
-							v-if="group.rights.can_edit"
-							variant="ghost"
-							color="primary"
-							:label="$t('user-groups.edit')"
-							icon="lucide:pencil"
-							@click="edit(group)"
-						/>
-						<UButton
-							v-if="can_create_user_groups"
-							:id="`delete-group-${group.id}`"
-							variant="ghost"
-							color="error"
-							:label="$t('user-groups.delete')"
-							icon="lucide:trash"
-							@click="confirmDelete(group)"
-						/>
-						<USelectMenu
-							v-if="group.rights.can_manage"
-							v-model="selectedUserToAdd"
-							:items="availableUsers(group)"
-							label-key="username"
-							:placeholder="$t('user-groups.add_member')"
-							class="w-56"
-							@update:model-value="addMemberToGroup(group)"
-						/>
-					</div>
-				</div>
-				<div v-if="group.members.length > 0" class="flex flex-wrap gap-y-1 gap-x-4 mt-3">
-					<span v-for="member in group.members" :key="`G${group.id}:${member.id}`" class="flex items-center hover:text-highlighted">
-						<button class="mr-1 cursor-pointer flex items-center gap-1" @click="editRole(group, member.id, member.role)">
-							<UIcon v-if="member.role === 'admin'" name="lucide:crown" class="text-orange-400" />
-							{{ member.username }}
-						</button>
-						<button
-							v-if="group.rights.can_manage"
-							class="border-accented rounded-full inline-flex items-center justify-center border p-0.5 text-3xs hover:border-error hover:text-error"
-							@click="deleteMember(group, member)"
-						>
-							<UIcon name="lucide:x" />
-						</button>
-					</span>
-				</div>
-				<div v-else-if="group.rights.can_manage" class="text-muted italic mt-2">
-					{{ $t("user-groups.empty_group") }}
-				</div>
-				<div v-else class="flex items-center gap-2">
-					<UIcon name="lucide:triangle-alert" class="text-orange-500" />
-					{{ $t("user-groups.no_permission_members") }}
+		<p class="md:hidden text-center text-highlighted mt-12">{{ $t("sharing.screen_too_small") }}</p>
+
+		<div class="hidden md:block">
+			<div v-if="can_create_user_groups" class="w-full">
+				<p class="text-highlighted">{{ $t("user-groups.explanation") }}</p>
+				<div class="flex justify-end mt-8 mb-8">
+					<UButton variant="solid" color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
 				</div>
 			</div>
-		</template>
+			<div v-if="userGroups === undefined" class="flex justify-center items-center gap-2 text-highlighted mt-4">
+				<LycheeLoadingIcon fast />
+				{{ $t("user-groups.loading") }}
+			</div>
+			<div v-else-if="userGroups.length === 0" class="text-center text-highlighted mt-4">
+				{{ $t("user-groups.empty") }}
+			</div>
+			<template v-else>
+				<div
+					v-for="(group, idx) in userGroups"
+					:key="`G${group.id}`"
+					:class="{
+						'text-left text-highlighted my-8 relative pt-4': true,
+						'border-t border-accented': idx > 0,
+					}"
+				>
+					<div class="flex justify-between items-start">
+						<div>
+							<h2 class="text-xl font-bold capitalize">{{ group.name }}</h2>
+							<p class="text-muted">{{ group.description }}</p>
+						</div>
+						<div class="flex items-center gap-1 relative">
+							<UButton
+								v-if="group.rights.can_edit"
+								variant="ghost"
+								color="primary"
+								:label="$t('user-groups.edit')"
+								icon="lucide:pencil"
+								@click="edit(group)"
+							/>
+							<UButton
+								v-if="can_create_user_groups"
+								:id="`delete-group-${group.id}`"
+								variant="ghost"
+								color="error"
+								:label="$t('user-groups.delete')"
+								icon="lucide:trash"
+								@click="confirmDelete(group)"
+							/>
+							<USelectMenu
+								v-if="group.rights.can_manage"
+								v-model="selectedUserToAdd"
+								:items="availableUsers(group)"
+								label-key="username"
+								:placeholder="$t('user-groups.add_member')"
+								class="w-56"
+								@update:model-value="addMemberToGroup(group)"
+							/>
+						</div>
+					</div>
+					<div v-if="group.members.length > 0" class="flex flex-wrap gap-y-1 gap-x-4 mt-3">
+						<span v-for="member in group.members" :key="`G${group.id}:${member.id}`" class="flex items-center hover:text-highlighted">
+							<button class="mr-1 cursor-pointer flex items-center gap-1" @click="editRole(group, member.id, member.role)">
+								<UIcon v-if="member.role === 'admin'" name="lucide:crown" class="text-orange-400" />
+								{{ member.username }}
+							</button>
+							<button
+								v-if="group.rights.can_manage"
+								class="border-accented rounded-full inline-flex items-center justify-center border p-0.5 text-3xs hover:border-error hover:text-error"
+								@click="deleteMember(group, member)"
+							>
+								<UIcon name="lucide:x" />
+							</button>
+						</span>
+					</div>
+					<div v-else-if="group.rights.can_manage" class="text-muted italic mt-2">
+						{{ $t("user-groups.empty_group") }}
+					</div>
+					<div v-else class="flex items-center gap-2">
+						<UIcon name="lucide:triangle-alert" class="text-orange-500" />
+						{{ $t("user-groups.no_permission_members") }}
+					</div>
+				</div>
+			</template>
+		</div>
 	</div>
 </template>
 

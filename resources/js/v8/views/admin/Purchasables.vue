@@ -5,8 +5,8 @@
 		</template>
 		{{ $t("webshop.purchasablesList.purchasables") }}
 	</UHeader>
-	<div class="text-center lg:hidden font-bold text-error py-3" v-html="$t('settings.small_screen')"></div>
-	<UCard class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full" :ui="{ header: 'hidden' }">
+	<p class="md:hidden text-center text-highlighted mt-12">{{ $t("sharing.screen_too_small") }}</p>
+	<UCard class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full hidden md:block" :ui="{ header: 'hidden' }">
 		<Disclaimer />
 		<!-- Empty panel to keep the same layout as other settings pages -->
 		<UTable
