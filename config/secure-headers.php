@@ -18,7 +18,7 @@ if (!function_exists('renv')) {
 }
 
 $aws_csp_origin = renv('AWS_URL') === '' ? []
-	: [ str_replace((string) parse_url(renv('AWS_URL'), PHP_URL_PATH), '', renv('AWS_URL')) ];
+	: [str_replace((string) parse_url(renv('AWS_URL'), PHP_URL_PATH), '', renv('AWS_URL'))];
 
 return [
 	/**
@@ -619,7 +619,7 @@ return [
 					'blob:', // required for "live" photos
 				],
 				// Add the S3 URL to the list of allowed image sources
-				 $aws_csp_origin,
+				$aws_csp_origin,
 				explode(',', (string) env('SECURITY_HEADER_CSP_IMG_SRC', ''))
 			),
 		],
