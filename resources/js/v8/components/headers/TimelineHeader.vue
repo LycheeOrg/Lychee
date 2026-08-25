@@ -214,7 +214,7 @@ type Item = {
 	if: boolean;
 	color?: "primary" | "neutral";
 };
-type MenuRight = (Item & Link) | (Item & Callback);
+type MenuRight = (Item & Link & { key: string }) | (Item & Callback & { key: string });
 
 const menu = computed(() =>
 	[
@@ -260,7 +260,7 @@ const menu = computed(() =>
 // Mobile "more" dropdown: mirrors `menu` plus the add-menu (only entry that needs a submenu).
 const mobileMenuSections = computed<DropdownMenuItem[][]>(() => {
 	const items: DropdownMenuItem[] = menu.value.map((item) => ({
-		label: "",
+		label: trans(`gallery.menus.${item.key}`),
 		icon: item.icon,
 		to: item.type === "link" ? item.to : undefined,
 		onSelect: item.type === "fn" ? item.callback : undefined,
