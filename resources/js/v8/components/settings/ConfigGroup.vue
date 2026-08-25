@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col gap-4 w-full">
 		<template v-for="config in props.configs" :key="`config-${config.key}`">
-			<div v-if="show(config)" class="flex gap-2">
+			<div v-if="show(config)" class="flex gap-2" :class="{ 'opacity-50 pointer-events-none': !isConfigActive(config) }">
 				<div class="shrink h-8 w-4 flex items-center">
 					<UIcon v-if="config.is_expert" name="lucide:graduation-cap" class="text-primary-500" />
 				</div>
@@ -233,6 +233,14 @@ function reset(configKey: string) {
 
 function filled(key: string, value: string) {
 	emits("filled", key, value);
+}
+
+function isConfigActive(config: App.Http.Resources.Models.ConfigResource): boolean {
+	if (config.required_keys.length === 0) {
+		return true;
+	}
+
+	return config.required_keys.every((k) => props.configs.find((c) => c.key === k)?.value === "1");
 }
 
 function show(config: App.Http.Resources.Models.ConfigResource) {
