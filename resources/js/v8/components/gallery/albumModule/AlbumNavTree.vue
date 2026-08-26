@@ -1,8 +1,22 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex items-center gap-1 p-2 border-b border-default shrink-0">
-			<UButton icon="lucide:chevrons-down" color="neutral" variant="ghost" size="xs" :label="$t('gallery.nav_tree.expand_all')" @click="expandAll" />
-			<UButton icon="lucide:chevrons-up" color="neutral" variant="ghost" size="xs" :label="$t('gallery.nav_tree.collapse_all')" @click="collapseAll" />
+			<UButton
+				icon="lucide:chevrons-down"
+				color="neutral"
+				variant="ghost"
+				size="xs"
+				:label="$t('gallery.nav_tree.expand_all')"
+				@click="expandAll"
+			/>
+			<UButton
+				icon="lucide:chevrons-up"
+				color="neutral"
+				variant="ghost"
+				size="xs"
+				:label="$t('gallery.nav_tree.collapse_all')"
+				@click="collapseAll"
+			/>
 		</div>
 
 		<div ref="scrollParentRef" class="album-nav-scroll overflow-y-auto flex-1 min-h-0" style="contain: strict">
@@ -20,7 +34,12 @@
 					}"
 					@click="item.row.hasChildren ? toggle(item.row.node.id) : navigate(item.row.node.id)"
 				>
-					<Thumb :album-id="item.row.node.id" :photo-id="item.row.node.coverId" class="w-5 h-5 rounded object-cover shrink-0" type="small" />
+					<Thumb
+						:album-id="item.row.node.id"
+						:photo-id="item.row.node.coverId"
+						class="w-5 h-5 rounded object-cover shrink-0"
+						type="small"
+					/>
 
 					<RouterLink
 						:to="{ name: 'album', params: { albumId: item.row.node.id } }"
