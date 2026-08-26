@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'الألبومات المثبتة',
     'albums' => 'الألبومات',
     'root' => 'الألبومات',
+    'nav_tree' => [
+        'expand_all' => 'توسيع الكل',
+        'collapse_all' => 'طي الكل',
+    ],
     'set_focus' => 'ضبط التركيز',
     'set_header_focus' => 'ضبط تركيز الرأس',
     'done' => 'تم',

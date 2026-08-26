@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Pripnuté albumy',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'Rozbaliť všetko',
+        'collapse_all' => 'Zbaliť všetko',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

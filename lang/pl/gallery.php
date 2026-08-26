@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Przypięte albumy',
     'albums' => 'Albumy',
     'root' => 'Albumy',
+    'nav_tree' => [
+        'expand_all' => 'Rozwiń wszystko',
+        'collapse_all' => 'Zwiń wszystko',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

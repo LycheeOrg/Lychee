@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Album',
+    'nav_tree' => [
+        'expand_all' => 'Fold ut alle',
+        'collapse_all' => 'Fold sammen alle',
+    ],
     'set_focus' => 'Sett fokus',
     'set_header_focus' => 'Angi fokus for overskrift',
     'done' => 'Ferdig',

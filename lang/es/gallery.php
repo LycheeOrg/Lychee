@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Álbumes fijados',
     'albums' => 'Álbumes',
     'root' => 'Álbumes',
+    'nav_tree' => [
+        'expand_all' => 'Expandir todo',
+        'collapse_all' => 'Contraer todo',
+    ],
     'set_focus' => 'Enfoque',
     'set_header_focus' => 'Enfocar encabezado',
     'done' => 'Listo',

@@ -15,6 +15,10 @@ return [
     'done' => 'Done',
     'cancel' => 'Cancel',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'Expand all',
+        'collapse_all' => 'Collapse all',
+    ],
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',

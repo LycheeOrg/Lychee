@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Připnutá alba',
     'albums' => 'Alba',
     'root' => 'Alba',
+    'nav_tree' => [
+        'expand_all' => 'Rozbalit vše',
+        'collapse_all' => 'Sbalit vše',
+    ],
     'set_focus' => 'Zaměřit',
     'set_header_focus' => 'Zaměřit hlavičku',
     'done' => 'Hotovo',

@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Vastgepinde albums',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'Alles uitklappen',
+        'collapse_all' => 'Alles inklappen',
+    ],
     'set_focus' => 'Focus instellen',
     'set_header_focus' => 'Focus van albumkop instellen',
     'done' => 'Klaar',
