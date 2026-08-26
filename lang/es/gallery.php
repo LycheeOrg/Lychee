@@ -381,6 +381,7 @@ return [
         'new_person_album' => 'Nuevo álbum de Person',
         'upload_track' => 'Subir pista',
         'delete_track' => 'Eliminar pista',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Tiempo de carga',

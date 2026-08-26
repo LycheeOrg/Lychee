@@ -382,6 +382,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => 'Загрузить трек',
         'delete_track' => 'Удалить трек',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Время загрузки',

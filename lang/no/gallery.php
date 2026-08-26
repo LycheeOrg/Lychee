@@ -381,6 +381,7 @@ return [
         'new_person_album' => 'Nytt personalbum',
         'upload_track' => 'Last opp spor',
         'delete_track' => 'Slett spor',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Opplastingstidspunkt',

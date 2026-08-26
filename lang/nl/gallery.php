@@ -382,6 +382,7 @@ return [
         'new_person_album' => 'Nieuw persoonsalbum',
         'upload_track' => 'Track uploaden',
         'delete_track' => 'Track verwijderen',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Uploadtijd',

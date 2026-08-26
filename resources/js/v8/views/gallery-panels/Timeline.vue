@@ -1,5 +1,5 @@
 <template>
-	<LoadingProgress v-model:loading="timelineStore.isLoading" />
+	<LoadingProgress v-model:loading="isInitialLoading" />
 	<LoginModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
 	<WebauthnModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
@@ -230,6 +230,11 @@ const { photoRoute } = usePhotoRoute(router);
 const is_download_photo_visible = ref(false);
 const downloadPhotoIds = ref<string[]>([]);
 
+// Only true until the first `refresh()` (mount) completes - stays false afterwards so
+// pagination, date-jump navigation, login, and post-action refreshes never re-trigger the
+// full-screen `LoadingProgress` overlay (they still show `timelineStore.isLoading`'s inline spinners).
+const isInitialLoading = ref(true);
+
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	if (entry.isIntersecting) {
 		timelineStore.loadMore();
@@ -305,6 +310,7 @@ async function refresh() {
 	}
 	await Promise.allSettled([layoutStore.load(), userStore.load(), timelineStore.loadDates()]);
 	await timelineStore.initialLoad(props.date ?? "", props.photoId);
+	isInitialLoading.value = false;
 	await nextTick();
 	scrollToDate(props.date ?? "");
 }

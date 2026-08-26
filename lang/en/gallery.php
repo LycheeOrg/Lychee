@@ -381,6 +381,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => 'Upload track',
         'delete_track' => 'Delete track',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Upload Time',
