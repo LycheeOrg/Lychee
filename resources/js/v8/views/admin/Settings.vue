@@ -65,12 +65,12 @@
 									class="configDescription w-full text-highlighted pl-6 pb-8"
 									v-html="tCatDesc({ key: config.cat, description: config.description })"
 								></div>
-								<ConfigGroup :configs="config.configs" @filled="update" @reset="reset" />
+								<ConfigGroup :configs="config.configs" :modified="modified" @filled="update" @reset="reset" />
 							</Fieldset>
 						</template>
 					</div>
 				</div>
-				<AllSettings v-else :configs="configs" :hash="hash" @filled="update" @reset="reset" />
+				<AllSettings v-else :configs="configs" :hash="hash" :modified="modified" @filled="update" @reset="reset" />
 			</template>
 		</div>
 	</div>
