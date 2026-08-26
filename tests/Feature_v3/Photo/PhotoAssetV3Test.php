@@ -73,6 +73,22 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 			->firstOrFail();
 	}
 
+	private function small2xVariantOf(Photo $photo): SizeVariant
+	{
+		return SizeVariant::query()
+			->where('photo_id', '=', $photo->id)
+			->where('type', '=', SizeVariantType::SMALL2X)
+			->firstOrFail();
+	}
+
+	private function thumb2xVariantOf(Photo $photo): SizeVariant
+	{
+		return SizeVariant::query()
+			->where('photo_id', '=', $photo->id)
+			->where('type', '=', SizeVariantType::THUMB2X)
+			->firstOrFail();
+	}
+
 	private function putBytes(SizeVariant $variant, string $bytes = 'thumb-bytes'): void
 	{
 		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path, $bytes);
@@ -429,5 +445,168 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/000000000000000000000000/' . $this->photo1->id . '/thumb');
 
 		$response->assertNotFound();
+	}
+
+	/**
+	 * PhotoAssetController::fallback() single-step case: the requested
+	 * variant's DB row exists but its file is missing from disk → falls
+	 * back exactly one step (small2x → small) and serves that file instead.
+	 */
+	public function testFallbackServesNextSmallerSizeWhenFileMissing(): void
+	{
+		$this->putBytes($this->smallVariantOf($this->photo1), 'small-bytes');
+		// small2x row exists (factory creates all 7 variants) but no bytes are put for it.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertOk();
+		self::assertSame('small-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * PhotoAssetController::fallback() multi-step case: small2x and small
+	 * both have DB rows but no files, so the chain must walk small2x → small
+	 * → thumb before finding a file.
+	 */
+	public function testFallbackWalksMultipleStepsWhenIntermediateFilesMissing(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1), 'thumb-bytes');
+		// small2x and small rows exist but no bytes are put for either.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * thumb2x falls back to thumb directly (its only fallback target) when
+	 * the thumb2x file is missing.
+	 */
+	public function testFallbackFromThumb2xToThumbWhenFileMissing(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1), 'thumb-bytes');
+		// thumb2x row exists but no bytes are put for it.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb2x");
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * PhotoAssetController::fallback() null-row case: the intermediate
+	 * fallback target (small) has no DB row at all (not merely a missing
+	 * file), so fallback() must recurse straight past it to thumb without
+	 * dereferencing a null SizeVariant.
+	 */
+	public function testFallbackSkipsFallbackTypeWithNoDbRowAtAll(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1), 'thumb-bytes');
+		SizeVariant::query()
+			->where('photo_id', '=', $this->photo1->id)
+			->where('type', '=', SizeVariantType::SMALL)
+			->delete();
+		// small2x row exists but no bytes are put for it; small row is gone entirely.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * PhotoAssetController::fallback() exhausted-chain case: small2x, small
+	 * and thumb all have DB rows but none has a file on disk, and thumb has
+	 * no further fallback target → 404.
+	 */
+	public function testFallbackChainExhaustedReturnsNotFound(): void
+	{
+		// Every relevant row exists (factory default) but no bytes are put for any of them.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertNotFound();
+	}
+
+	/**
+	 * S3-backed variants are redirected unconditionally: PhotoAssetController
+	 * does not check S3 object existence before redirecting, and does not
+	 * fall back to a smaller local variant just because one happens to
+	 * exist — once the selected variant resolves to the S3 disk, serving it
+	 * (or 404ing on a stale/missing object) is left to the client following
+	 * the signed URL, not to Lychee.
+	 */
+	public function testS3PrimaryRedirectsWithoutFallingBackToLocalVariant(): void
+	{
+		$primary = $this->small2xVariantOf($this->photo1);
+		$primary->storage_disk = StorageDiskType::S3;
+		$primary->save();
+
+		// A local fallback variant exists and has bytes, but must not be used.
+		$this->putBytes($this->smallVariantOf($this->photo1), 'small-bytes');
+
+		$aws_adapter = \Mockery::mock(AwsS3V3Adapter::class);
+		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $primary): void {
+			$mock->shouldReceive('getAdapter')->andReturn($aws_adapter);
+			$mock->shouldReceive('temporaryUrl')
+				->once()
+				->with($primary->short_path, \Mockery::any())
+				->andReturn('https://example-bucket.s3.amazonaws.com/primary-signed-url');
+			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
+		});
+
+		// Only the 's3' disk is faked; every other disk name (e.g. the
+		// 'images' local disk, already faked in setUp()) must still resolve
+		// through the real manager, so we capture it before mocking the
+		// facade and delegate non-S3 calls to it directly.
+		$real_manager = Storage::getFacadeRoot();
+		Storage::partialMock();
+		Storage::shouldReceive('disk')->andReturnUsing(
+			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
+		);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/primary-signed-url');
+	}
+
+	/**
+	 * A fallback candidate can be pinned to a different storage disk than
+	 * the primary variant that failed. PhotoAssetController::fallback()
+	 * must resolve that candidate's own disk rather than reusing the
+	 * primary's, so an S3-backed fallback variant is still recognized and
+	 * redirected correctly instead of being checked against the wrong disk.
+	 */
+	public function testFallbackVariantServedFromItsOwnDiskWhenDifferentFromPrimary(): void
+	{
+		// small2x row exists on the local disk (factory default) but no bytes are put for it.
+		$fallback_variant = $this->smallVariantOf($this->photo1);
+		$fallback_variant->storage_disk = StorageDiskType::S3;
+		$fallback_variant->save();
+
+		$aws_adapter = \Mockery::mock(AwsS3V3Adapter::class);
+		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $fallback_variant): void {
+			$mock->shouldReceive('getAdapter')->andReturn($aws_adapter);
+			$mock->shouldReceive('temporaryUrl')
+				->once()
+				->with($fallback_variant->short_path, \Mockery::any())
+				->andReturn('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
+			// Resolving album1 also eagerly loads its cover/thumb (Album::$with),
+			// which may compute a URL for whichever photo/variant was picked as
+			// the album's thumbnail — incidental to what this test asserts, but
+			// still needs a stub since it can land on the S3 disk too.
+			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
+		});
+
+		$real_manager = Storage::getFacadeRoot();
+		Storage::partialMock();
+		Storage::shouldReceive('disk')->andReturnUsing(
+			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
+		);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
 	}
 }
