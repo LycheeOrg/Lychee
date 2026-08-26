@@ -382,6 +382,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => 'Качи трак',
         'delete_track' => 'Изтрий трак',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Време на качване',

@@ -382,6 +382,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => 'Nahrát stopu',
         'delete_track' => 'Odstranit stopu',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Čas nahrání',
