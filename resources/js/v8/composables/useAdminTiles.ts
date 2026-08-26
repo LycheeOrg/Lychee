@@ -81,7 +81,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "purchasables",
 			group: "extensions",
-			label: "Purchasables",
+			label: "webshop.purchasablesList.purchasables",
 			icon: "lucide:shopping-bag",
 			to: "/admin/purchasables",
 			isExternal: false,

@@ -378,6 +378,7 @@ return [
         'new_person_album' => 'Nouvel album de personne',
         'upload_track' => 'Téléverser une trace',
         'delete_track' => 'Supprimer la trace',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Date de téléversement',

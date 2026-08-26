@@ -138,7 +138,7 @@ export function useLeftMenu(
 				route: "/map",
 			},
 			{
-				label: "orders",
+				label: "webshop.orderList.orders",
 				icon: "lucide:shopping-cart",
 				route: "/orders",
 				access: (initData.value.modules.is_mod_webshop_enabled ?? false) && user.value?.id !== null,
@@ -195,7 +195,7 @@ export function useLeftMenu(
 				access: initData.value.settings.can_acess_user_groups ?? false,
 			},
 			{
-				label: "Purchasables",
+				label: "webshop.purchasablesList.purchasables",
 				icon: "lucide:shopping-bag",
 				route: "/admin/purchasables",
 				access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),

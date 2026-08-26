@@ -378,6 +378,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => '上传轨迹',
         'delete_track' => '删除轨迹',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => '上传时间',

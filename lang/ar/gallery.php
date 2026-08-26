@@ -378,6 +378,7 @@ return [
         'new_person_album' => 'ألبوم شخص جديد',
         'upload_track' => 'رفع مقطع',
         'delete_track' => 'حذف المقطع',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'وقت الرفع',

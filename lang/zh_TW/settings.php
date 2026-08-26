@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Settings',
-    'small_screen' => 'For better a experience on the Settings page,<br />we recommend you use a larger screen.',
+    'small_screen' => 'For a better experience on this page,<br />we recommend you use a larger screen.',
     'tabs' => [
         'basic' => 'Basic',
         'all_settings' => 'All settings',

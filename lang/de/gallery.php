@@ -377,6 +377,7 @@ return [
         'new_person_album' => 'Neues Album von Person',
         'upload_track' => 'GPS-Track hochladen',
         'delete_track' => 'GPS-Track löschen',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Zeit des Hochladens',

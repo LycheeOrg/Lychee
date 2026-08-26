@@ -1,5 +1,5 @@
 <template>
-	<LoadingProgress v-model:loading="isLoading" />
+	<LoadingProgress v-model:loading="isInitialLoading" />
 	<div class="h-svh overflow-y-auto">
 		<UHeader :toggle="false" class="mb-8" :ui="{ root: 'bg-transparent border-b-0', center: 'flex' }">
 			<template #left>
@@ -62,6 +62,9 @@ const { title, image_overlay_type } = storeToRefs(lycheeStore);
 const { are_nsfw_blurred, are_nsfw_consented } = storeToRefs(flowState);
 
 const isLoading = ref(true);
+// Only true until the first page of albums arrives - stays false afterwards so infinite-scroll
+// pagination (via `load()` below) never re-triggers the full-screen `LoadingProgress` overlay.
+const isInitialLoading = ref(true);
 const albums = ref<App.Http.Resources.Flow.FlowItemResource[] | undefined>(undefined);
 const config = ref<App.Http.Resources.Flow.InitResource | undefined>(undefined);
 const currentPage = ref(1);
@@ -90,6 +93,7 @@ function load() {
 	isLoading.value = true;
 	FlowService.get(currentPage.value).then((data) => {
 		isLoading.value = false;
+		isInitialLoading.value = false;
 		if (albums.value === undefined) {
 			albums.value = [];
 		}

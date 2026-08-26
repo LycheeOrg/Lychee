@@ -378,6 +378,7 @@ return [
         'new_person_album' => 'New Person Album',
         'upload_track' => 'Prześlij ścieżkę',
         'delete_track' => 'Usuń ścieżkę',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'Czas przesyłania',

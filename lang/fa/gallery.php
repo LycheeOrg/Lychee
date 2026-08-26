@@ -378,6 +378,7 @@ return [
         'new_person_album' => 'آلبوم شخص جدید',
         'upload_track' => 'بارگذاری ترک',
         'delete_track' => 'حذف ترک',
+        'add' => 'Add',
     ],
     'sort' => [
         'photo_select_1' => 'زمان بارگذاری',
