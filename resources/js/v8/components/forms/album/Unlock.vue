@@ -4,6 +4,7 @@
 			<p class="mb-5">{{ $t("dialogs.unlock.password_required") }}</p>
 			<UFormField :label="$t('dialogs.unlock.password')">
 				<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
+				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.unlock.invalid_password')" />
 			</UFormField>
 		</template>
 		<template #footer>
@@ -20,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
@@ -39,6 +40,11 @@ const albumId = computed(() => albumStore.albumId);
 
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);
+const invalidPassword = ref(false);
+
+watch(password, () => {
+	invalidPassword.value = false;
+});
 
 function unlock() {
 	if (albumId.value === undefined || password.value === undefined) {
@@ -50,9 +56,15 @@ function unlock() {
 			AlbumService.clearAlbums();
 			AlbumService.clearCache(albumId.value);
 			albumListStore.invalidate();
+			invalidPassword.value = false;
 			emits("reload");
 		})
-		.catch((_error) => {
+		.catch((error) => {
+			if (error.response && error.response.status === 403) {
+				invalidPassword.value = true;
+				return;
+			}
+
 			visible.value = false;
 			emits("fail");
 		});

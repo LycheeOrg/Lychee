@@ -225,6 +225,7 @@ return [
         'password_required' => 'Този албум е защитен с парола. Въведете паролата по-долу, за да видите снимките:',
         'password' => 'Парола',
         'unlock' => 'Отключи',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => 'Въведете тагове за тази снимка.',
