@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Избрани албуми',
     'albums' => 'Албуми',
     'root' => 'Албуми',
+    'nav_tree' => [
+        'expand_all' => 'Разгъни всички',
+        'collapse_all' => 'Свий всички',
+    ],
     'set_focus' => 'Задай фокус',
     'set_header_focus' => 'Задай фокус на заглавката',
     'done' => 'Готово',

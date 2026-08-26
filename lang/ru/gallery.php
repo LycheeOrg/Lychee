@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
+    'nav_tree' => [
+        'expand_all' => 'Развернуть все',
+        'collapse_all' => 'Свернуть все',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

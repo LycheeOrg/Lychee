@@ -1,37 +1,65 @@
 <template>
-	<div ref="scrollParentRef" class="album-nav-scroll overflow-y-auto h-full" style="contain: strict">
-		<div :style="{ position: 'relative', height: `${totalSize}px`, width: '100%' }">
-			<div
-				v-for="item in virtualRows"
-				:key="item.row.node.id"
-				class="absolute top-0 left-0 w-full flex items-center gap-1.5 pe-2"
-				:class="{ 'cursor-pointer': item.row.hasChildren }"
-				:style="{
-					height: `${item.size}px`,
-					transform: `translate3d(0, ${item.start}px, 0)`,
-					contain: 'layout size paint',
-					paddingInlineStart: `${item.row.depth + 0.5}rem`,
-				}"
-				@click="item.row.hasChildren ? toggle(item.row.node.id) : navigate(item.row.node.id)"
-			>
-				<Thumb :album-id="item.row.node.id" :photo-id="item.row.node.coverId" class="w-5 h-5 rounded object-cover shrink-0" />
+	<div class="flex flex-col h-full">
+		<div class="flex items-center gap-1 p-2 border-b border-default shrink-0">
+			<UButton
+				icon="lucide:chevrons-down"
+				color="neutral"
+				variant="ghost"
+				size="xs"
+				:label="$t('gallery.nav_tree.expand_all')"
+				@click="expandAll"
+			/>
+			<UButton
+				icon="lucide:chevrons-up"
+				color="neutral"
+				variant="ghost"
+				size="xs"
+				:label="$t('gallery.nav_tree.collapse_all')"
+				@click="collapseAll"
+			/>
+		</div>
 
-				<RouterLink
-					:to="{ name: 'album', params: { albumId: item.row.node.id } }"
-					class="truncate min-w-0 text-xs hover:underline"
-					:class="item.row.node.id === activeAlbumId ? 'text-primary font-medium' : 'text-default'"
-					:title="item.row.node.title"
-					@click.stop
+		<div ref="scrollParentRef" class="album-nav-scroll overflow-y-auto flex-1 min-h-0" style="contain: strict">
+			<div :style="{ position: 'relative', height: `${totalSize}px`, width: '100%' }">
+				<div
+					v-for="item in virtualRows"
+					:key="item.row.node.id"
+					class="absolute top-0 left-0 w-full flex items-center gap-1.5 pe-2"
+					:class="{ 'cursor-pointer': item.row.hasChildren }"
+					:style="{
+						height: `${item.size}px`,
+						transform: `translate3d(0, ${item.start}px, 0)`,
+						contain: 'layout size paint',
+						paddingInlineStart: `${item.row.depth + 0.5}rem`,
+					}"
+					@click="item.row.hasChildren ? toggle(item.row.node.id) : navigate(item.row.node.id)"
 				>
-					{{ item.row.node.title }}
-				</RouterLink>
+					<Thumb
+						:album-id="item.row.node.id"
+						:photo-id="item.row.node.coverId"
+						class="w-5 h-5 rounded object-cover shrink-0"
+						type="small"
+					/>
 
-				<MiniIcon
-					v-if="item.row.hasChildren"
-					icon="layers"
-					fill="fill-current"
-					:class="`w-3 h-3 shrink-0 ms-auto ${item.row.node.id === activeAlbumId ? 'text-primary' : 'text-muted'}`"
-				/>
+					<RouterLink
+						:to="{ name: 'album', params: { albumId: item.row.node.id } }"
+						class="truncate min-w-0 text-xs hover:underline"
+						:class="item.row.node.id === activeAlbumId ? 'text-primary font-medium' : 'text-default'"
+						:title="item.row.node.title"
+						@click.stop
+					>
+						{{ item.row.node.title }}
+					</RouterLink>
+
+					<MiniIcon
+						v-if="item.row.hasChildren"
+						icon="layers"
+						fill="fill-current"
+						:class="`w-3 h-3 shrink-0 ms-auto ${item.row.node.id === activeAlbumId ? 'text-primary' : 'text-muted'} ${
+							isExpanded(item.row.node.id) ? 'opacity-50' : 'opacity-100'
+						}`"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -60,7 +88,7 @@ const activeAlbumId = computed(() => route.params.albumId as string | undefined)
 const tree = computed(() => albumListStore.tree);
 const rows = computed(() => albumListStore.rows);
 
-const { flatRows, toggle } = useAlbumNavFlatTree(tree, activeAlbumId, rows);
+const { flatRows, isExpanded, toggle, expandAll, collapseAll } = useAlbumNavFlatTree(tree, activeAlbumId, rows);
 
 const scrollParentRef = ref<HTMLElement | null>(null);
 

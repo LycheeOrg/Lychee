@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Albums épinglés',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'Tout développer',
+        'collapse_all' => 'Tout réduire',
+    ],
     'set_focus' => 'Définir le point focal',
     'set_header_focus' => 'Définir le point focal de l’en-tête',
     'done' => 'Terminé',
