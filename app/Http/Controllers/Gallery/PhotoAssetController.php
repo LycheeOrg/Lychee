@@ -29,35 +29,25 @@ class PhotoAssetController extends Controller
 	public function show(GetPhotoAssetRequest $request, Watermarker $watermarker)
 	{
 		$size_variant = $request->sizeVariant();
-		$path = $watermarker->get_path($size_variant);
-		$disk = Storage::disk($size_variant->storage_disk->value);
 
-		/** @disregard P1013 */
-		if ($disk->getAdapter() instanceof AwsS3V3Adapter) {
-			$life_in_seconds = resolve(ConfigManager::class)->getValueAsInt('temporary_image_link_life_in_seconds');
-
-			/** @disregard P1013 */
-			return redirect()->away($disk->temporaryUrl($path, now()->addSeconds($life_in_seconds)));
+		$response = $this->tryServe($size_variant, $watermarker);
+		if ($response !== null) {
+			return $response;
 		}
 
-		// We make sure the file exists.
-		if ($disk->exists($path)) {
-			return $this->responseFile($disk, $path);
-		}
-
-		return $this->fallback($size_variant->photo_id, $size_variant->type, $watermarker, $disk);
+		return $this->fallback($size_variant->photo_id, $size_variant->type, $watermarker);
 	}
 
 	/**
-	 * Fallback on diferent smaller sizes
+	 * Fallback on diferent smaller sizes.
 	 *
-	 * @param string $photo_id
+	 * @param string          $photo_id
 	 * @param SizeVariantType $type
-	 * @param Watermarker $watermarker
-	 * @param FilesystemAdapter $disk
+	 * @param Watermarker     $watermarker
+	 *
 	 * @return JsonResponse|mixed|BinaryFileResponse
 	 */
-	private function fallback(string $photo_id, SizeVariantType $type, Watermarker $watermarker, FilesystemAdapter $disk)
+	private function fallback(string $photo_id, SizeVariantType $type, Watermarker $watermarker)
 	{
 		$fallback = match ($type) {
 			SizeVariantType::SMALL2X => SizeVariantType::SMALL,
@@ -75,12 +65,41 @@ class PhotoAssetController extends Controller
 			->first();
 
 		if ($size_variant === null) {
-			return $this->fallback($photo_id, $fallback, $watermarker, $disk);
+			return $this->fallback($photo_id, $fallback, $watermarker);
 		}
 
+		$response = $this->tryServe($size_variant, $watermarker);
+		if ($response !== null) {
+			return $response;
+		}
+
+		return $this->fallback($photo_id, $fallback, $watermarker);
+	}
+
+	/**
+	 * Resolve the given size variant's own disk and serve it from there,
+	 * or return null if it isn't actually present on that disk.
+	 *
+	 * @param SizeVariant $size_variant
+	 * @param Watermarker $watermarker
+	 *
+	 * @return JsonResponse|mixed|BinaryFileResponse|null
+	 */
+	private function tryServe(SizeVariant $size_variant, Watermarker $watermarker)
+	{
 		$path = $watermarker->get_path($size_variant);
+		$disk = Storage::disk($size_variant->storage_disk->value);
+
+		/** @disregard P1013 */
+		if ($disk->getAdapter() instanceof AwsS3V3Adapter) {
+			$life_in_seconds = resolve(ConfigManager::class)->getValueAsInt('temporary_image_link_life_in_seconds');
+
+			/** @disregard P1013 */
+			return redirect()->away($disk->temporaryUrl($path, now()->addSeconds($life_in_seconds)));
+		}
+
 		if (!$disk->exists($path)) {
-			return $this->fallback($photo_id, $fallback, $watermarker, $disk);
+			return null;
 		}
 
 		return $this->responseFile($disk, $path);
@@ -90,7 +109,8 @@ class PhotoAssetController extends Controller
 	 * Return the damn file!
 	 *
 	 * @param FilesystemAdapter $disk
-	 * @param string $path
+	 * @param string            $path
+	 *
 	 * @return BinaryFileResponse
 	 */
 	private function responseFile(FilesystemAdapter $disk, string $path): BinaryFileResponse
