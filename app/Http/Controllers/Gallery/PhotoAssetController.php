@@ -41,7 +41,6 @@ class PhotoAssetController extends Controller
 		}
 
 		// We make sure the file exists.
-		$path = $disk->path($path);
 		if ($disk->exists($path)) {
 			return $this->responseFile($disk, $path);
 		}
@@ -80,7 +79,6 @@ class PhotoAssetController extends Controller
 		}
 
 		$path = $watermarker->get_path($size_variant);
-		$path = $disk->path($path);
 		if (!$disk->exists($path)) {
 			return $this->fallback($photo_id, $fallback, $watermarker, $disk);
 		}
