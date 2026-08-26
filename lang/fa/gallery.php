@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'آلبوم‌های سنجاق‌شده',
     'albums' => 'آلبوم‌ها',
     'root' => 'آلبوم‌ها',
+    'nav_tree' => [
+        'expand_all' => 'باز کردن همه',
+        'collapse_all' => 'بستن همه',
+    ],
     'set_focus' => 'تنظیم فوکوس',
     'set_header_focus' => 'تنظیم فوکوس هدر',
     'done' => 'انجام شد',

@@ -26,6 +26,19 @@ function toggle(id: string): void {
 	}
 }
 
+function expandAllNodes(nodes: AlbumTreeNode[]): void {
+	for (const node of nodes) {
+		if (node.children.length > 0) {
+			expandedIds.add(node.id);
+			expandAllNodes(node.children);
+		}
+	}
+}
+
+function collapseAll(): void {
+	expandedIds.clear();
+}
+
 function findAncestorIds(rows: AlbumListRow[], target: AlbumListRow): string[] {
 	return rows.filter((r) => r.id !== target.id && r._lft < target._lft && r._rgt > target._rgt).map((r) => r.id);
 }
@@ -76,5 +89,9 @@ export function useAlbumNavFlatTree(
 		return result;
 	});
 
-	return { flatRows, isExpanded, toggle };
+	function expandAll(): void {
+		expandAllNodes(tree.value);
+	}
+
+	return { flatRows, isExpanded, toggle, expandAll, collapseAll };
 }

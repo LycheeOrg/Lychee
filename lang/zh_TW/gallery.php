@@ -11,6 +11,10 @@ return [
     'pinned_albums' => '釘選相冊',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => '展開全部',
+        'collapse_all' => '摺疊全部',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

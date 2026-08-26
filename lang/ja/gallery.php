@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'ピン留めアルバム',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'すべて展開',
+        'collapse_all' => 'すべて折りたたむ',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

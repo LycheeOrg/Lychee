@@ -11,6 +11,10 @@ return [
     'pinned_albums' => '置顶相册',
     'albums' => '相册',
     'root' => '相册',
+    'nav_tree' => [
+        'expand_all' => '展开全部',
+        'collapse_all' => '折叠全部',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',

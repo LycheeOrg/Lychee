@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Hervorgehobene Alben',
     'albums' => 'Alben',
     'root' => 'Alben',
+    'nav_tree' => [
+        'expand_all' => 'Alle aufklappen',
+        'collapse_all' => 'Alle einklappen',
+    ],
     'set_focus' => 'Fokus setzen',
     'set_header_focus' => 'Header-Fokus setzen',
     'done' => 'Fertig',

@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Rögzített albumok',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'nav_tree' => [
+        'expand_all' => 'Összes kibontása',
+        'collapse_all' => 'Összes összecsukása',
+    ],
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',
     'done' => 'Done',
