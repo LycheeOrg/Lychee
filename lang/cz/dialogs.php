@@ -225,6 +225,7 @@ return [
         'password_required' => 'Toto album je chráněné heslem. Xsdejte heslo, pokud si chcete album prohlédnout:',
         'password' => 'Heslo',
         'unlock' => 'Odemknout',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => 'Zadejte Štítky k této fotografii.',

@@ -225,6 +225,7 @@ return [
         'password_required' => 'Este álbum está protegido con contraseña. Introdúzcala a continuación para ver las fotos de este álbum:',
         'password' => 'Contraseña',
         'unlock' => 'Descubrir',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => 'Introduzca sus etiquetas para esta foto.',

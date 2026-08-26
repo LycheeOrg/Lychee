@@ -225,6 +225,7 @@ return [
         'password_required' => 'Этот альбом защищен паролем. Введите пароль ниже для просмотра фотографий в этом альбоме:',
         'password' => 'Пароль',
         'unlock' => 'Разблокировать',
+        'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
     'photo_tags' => [
         'question' => 'Введите теги для этой фотографии.',
