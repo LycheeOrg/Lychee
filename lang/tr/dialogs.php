@@ -125,6 +125,7 @@ return [
         'drag' => '(Or drag files to the page)',
         'loading' => 'Loading',
         'resume' => 'Resume',
+        'start' => 'Start Upload',
         'uploading' => 'Uploading',
         'finished' => 'Finished',
         'failed_error' => 'Upload failed. The server returned an error!',

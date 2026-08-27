@@ -124,6 +124,7 @@ return [
         'drag' => '(Of sleep bestanden naar de pagina)',
         'loading' => 'Laden',
         'resume' => 'Hervatten',
+        'start' => 'Upload starten',
         'uploading' => 'Uploaden',
         'finished' => 'Klaar',
         'failed_error' => 'Upload mislukt. De server gaf een foutmelding terug!',
