@@ -35,8 +35,8 @@ _Last updated: 2026-08-27_
 
 ### I2 – TitleSplitter + explicit write-site wiring (no hooks)
 
-- [ ] T-060-04 – Unit tests for `TitleSplitter::split()` (F-060-02).
-  _Intent:_ Write tests first: trailing digits, parenthesised fallback, no-digit fallback, case-fold, >19-digit truncation, empty string, unicode title.
+- [ ] T-060-04 – Unit tests for `TitleSplitter::split()` (F-060-02, S-060-16..21).
+  _Intent:_ Write tests first: trailing digits, parenthesised fallback, no-digit fallback, case-fold, >19-digit truncation, empty string, unicode title, and the extension-suffix cases found via user review — `xxx_123.jpg`→(`xxx_`,123), `xxx (123)`→(`xxx `,123), `xxx (123).xts`→(`xxx `,123), `xxx.2`→(`xxx.`,2), `Vol.II`→(`vol.ii`,null) false-positive-extension fallback, and a mixed-extension pair (`photo_5.jpg`/`photo_5.heic`) confirming they do NOT tie (NFR-060-09).
   _Verification commands:_
   - `php artisan test --filter=TitleSplitterTest`
   _Notes:_ Expect red until T-060-05 lands.
