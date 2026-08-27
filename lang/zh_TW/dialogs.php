@@ -124,6 +124,7 @@ return [
         'drag' => '（或將文件拖曳到頁面上）',
         'loading' => '載入中',
         'resume' => '恢復',
+        'start' => 'Start Upload',
         'uploading' => '上傳中',
         'finished' => '已完成',
         'failed_error' => '上傳失敗。伺服器回傳錯誤！',

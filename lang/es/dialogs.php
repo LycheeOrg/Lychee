@@ -124,6 +124,7 @@ return [
         'drag' => '(O arrastrar archivos a la página)',
         'loading' => 'Cargando',
         'resume' => 'Reanudar',
+        'start' => 'Start Upload',
         'uploading' => 'Subiendo',
         'finished' => 'Finalizado',
         'failed_error' => 'Error al subir. El servidor devolvió un error!',

@@ -96,7 +96,7 @@
 					class="w-full font-bold border-none border rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 					@click="() => uploadNext()"
 				>
-					{{ $t("dialogs.upload.resume") }}
+					{{ isFreshQueue ? $t("dialogs.upload.start") : $t("dialogs.upload.resume") }}
 				</Button>
 			</div>
 		</template>
@@ -132,6 +132,7 @@ const shouldScroll = ref(true);
 const isDropping = ref(false);
 const showCancel = computed(() => counts.value.files > 0 && counts.value.completed < counts.value.files);
 const showResume = computed(() => counts.value.waiting > 0 && counts.value.uploading === 0);
+const isFreshQueue = computed(() => counts.value.completed === 0 && counts.value.uploading === 0);
 
 const counts = computed(() => {
 	return {
@@ -222,10 +223,13 @@ function close() {
 	applyWatermark.value = true;
 }
 
+// Auto-start as soon as files are queued, whichever path queued them (window drop,
+// in-modal drop, file picker, paste, folder drop) and regardless of whether the
+// modal was already open — the modal's own visibility isn't a reliable start signal.
 watch(
-	() => is_upload_visible.value,
+	() => list_upload_files.value.length,
 	() => {
-		if (list_upload_files.value.length > 0) {
+		if (counts.value.waiting > 0 && counts.value.uploading === 0) {
 			uploadNext(0, setup.value?.upload_processing_limit);
 		}
 	},

@@ -124,6 +124,7 @@ return [
         'drag' => '(Oder Dateien auf die Seite ziehen)',
         'loading' => 'Laden',
         'resume' => 'Fortfahren',
+        'start' => 'Start Upload',
         'uploading' => 'Hochladen',
         'finished' => 'Fertig',
         'failed_error' => 'Hochladen fehlgeschlagen. Der Server hat einen Fehler zurückgegeben!',

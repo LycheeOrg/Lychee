@@ -125,6 +125,7 @@ return [
         'drag' => '(Ou glissez les fichiers sur la page)',
         'loading' => 'Chargement',
         'resume' => 'Reprendre',
+        'start' => 'Démarrer le téléversement',
         'uploading' => 'Téléversement',
         'finished' => 'Terminé',
         'failed_error' => 'Échec du téléversement. Le serveur a retourné une erreur !',

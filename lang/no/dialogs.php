@@ -124,6 +124,7 @@ return [
         'drag' => '(Eller dra filer hit)',
         'loading' => 'Laster',
         'resume' => 'Fortsett',
+        'start' => 'Start Upload',
         'uploading' => 'Laster opp',
         'finished' => 'Fullført',
         'failed_error' => 'Opplastingen mislyktes. Serveren returnerte en feil!',

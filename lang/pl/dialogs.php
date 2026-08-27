@@ -124,6 +124,7 @@ return [
         'drag' => '(Lub przeciągnij pliki na stronę)',
         'loading' => 'Ładowanie',
         'resume' => 'Wznowienie',
+        'start' => 'Start Upload',
         'uploading' => 'Przesyłanie',
         'finished' => 'Zakończono',
         'failed_error' => 'Przesyłanie nie powiodło się. Serwer zwrócił błąd!',
