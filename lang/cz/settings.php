@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -27,7 +26,7 @@ return [
         'header' => 'Systém',
         'use_dark_mode' => 'Použít tmavý režim pro Lychee',
         'language' => 'Jazyk používaný v Lychee',
-        'nsfw_album_visibility' => 'Zobrazit citlivá alba ve výchozím nastavení.' ,
+        'nsfw_album_visibility' => 'Zobrazit citlivá alba ve výchozím nastavení.',
         'nsfw_album_explanation' => 'Pokud je album veřejné, je stále přístupné, pouze skryté z pohledu a <b>lze jej odhalit stisknutím <kbd>H</kbd></b>.',
         'cache_enabled' => 'Povolit ukládání odpovědí do mezipaměti.',
         'cache_enabled_details' => 'Toto výrazně zrychlí dobu odezvy Lychee. <br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>Pokud používáte alba chráněná heslem, neměli byste tuto možnost povolit.',
