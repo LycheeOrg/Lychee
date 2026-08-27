@@ -124,6 +124,7 @@ return [
         'drag' => '(Nebo přesuňte soubory na tuto stránku)',
         'loading' => 'Načítám',
         'resume' => 'Obnovit',
+        'start' => 'Start Upload',
         'uploading' => 'Nahrávání',
         'finished' => 'Dokončeno',
         'failed_error' => 'Nahrávání se nezdařilo, server vrátil chybu!',
