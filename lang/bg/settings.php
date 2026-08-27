@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -8,12 +7,10 @@ return [
     */
     'title' => 'Настройки',
     'small_screen' => 'За по-добро изживяване на страницата с настройки,<br />препоръчваме да използвате по-голям екран.',
-
     'tabs' => [
         'basic' => 'Основни',
         'all_settings' => 'Всички настройки',
     ],
-
     'toasts' => [
         'change_saved' => 'Промяната е запазена!',
         'details' => 'Настройките са променени според заявката',
@@ -25,7 +22,6 @@ return [
         'thank_you' => 'Благодарим за подкрепата.',
         'reload' => 'Презаредете страницата за пълна функционалност.',
     ],
-
     'system' => [
         'header' => 'Система',
         'use_dark_mode' => 'Използвай тъмен режим за Lychee',
@@ -35,7 +31,6 @@ return [
         'cache_enabled' => 'Разреши кеширане на отговорите.',
         'cache_enabled_details' => 'Това значително ускорява времето за отговор на Lychee.<br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>Ако използвате албуми с парола, не трябва да активирате това.',
     ],
-
     'lychee_se' => [
         'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',
         'call4action' => 'Получете ексклузивни функции и подкрепете развитието на Lychee. Отключете <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 underline">SE издание</a>.',
@@ -43,14 +38,12 @@ return [
         'hide_call4action' => 'Скрий този регистрационен формуляр за Lychee SE. Доволен съм от Lychee така, както е. :)',
         'hide_warning' => 'Ако е активирано, единственият начин да регистрирате лицензионния си ключ ще бъде чрез таба "Още" по-горе. Промените се прилагат след презареждане на страницата.',
     ],
-
     'dropbox' => [
         'header' => 'Dropbox',
         'instruction' => 'За да импортирате снимки от Dropbox, ви е необходим валиден ключ за drop-ins приложение от техния сайт.',
         'api_key' => 'Dropbox API ключ',
         'set_key' => 'Задай Dropbox ключ',
     ],
-
     'gallery' => [
         'header' => 'Галерия',
         'photo_order_column' => 'Колона по подразбиране за сортиране на снимки',
@@ -70,7 +63,6 @@ return [
         'license_default' => 'Лиценз по подразбиране за албуми',
         'license_help' => 'Нужна помощ при избора?',
     ],
-
     'geolocation' => [
         'header' => 'Геолокация',
         'map_display' => 'Показване на карта според GPS координати',
@@ -83,13 +75,11 @@ return [
         'gps_coordinate_display' => 'Показване на GPS координатите',
         'gps_coordinate_display_public' => 'Позволяване на анонимни потребители да имат достъп до GPS координатите',
     ],
-
     'cssjs' => [
         'header' => 'Потребителски CSS & JS',
         'change_css' => 'Промени CSS',
         'change_js' => 'Промени JS',
     ],
-
     'all' => [
         'old_setting_style' => 'Стар стил на настройките',
         'expert_settings' => 'Режим експерт',
@@ -97,13 +87,11 @@ return [
         'save' => 'Запази',
         'back_to_settings' => 'Обратно към групираните настройки',
     ],
-
     'tool_option' => [
         'disabled' => 'деактивирано',
         'enabled' => 'активирано',
         'discover' => 'открий',
     ],
-
     'groups' => [
         'general' => 'Общи',
         'system' => 'Система',

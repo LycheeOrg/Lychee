@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -72,8 +71,10 @@ return [
         'map_include_subalbums' => 'Inclusief foto’s van de subalbums op de kaart',
         'location_decoding' => 'Gebruik GPS-locatiecodering',
         'location_show' => 'Toon locatie geëxtraheerd uit GPS-coördinaten',
-        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',        'gps_coordinate_display' => 'Toon de GPS-coördinaten',
-        'gps_coordinate_display_public' => 'Sta anonieme gebruikers toe de GPS-coördinaten te bekijken',    ],
+        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',
+        'gps_coordinate_display' => 'Toon de GPS-coördinaten',
+        'gps_coordinate_display_public' => 'Sta anonieme gebruikers toe de GPS-coördinaten te bekijken',
+    ],
     'cssjs' => [
         'header' => 'Aangepaste CSS & Js',
         'change_css' => 'CSS wijzigen',
