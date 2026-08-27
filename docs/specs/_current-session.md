@@ -1,9 +1,10 @@
 # Current Session
 
-_Last updated: 2026-08-22_
+_Last updated: 2026-08-27_
 
 ## Active Features
 
+- Feature 059 – Embed Metadata in Original/RAW File: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Not yet implemented.
 - Feature 057 – Album Listing v3: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Not yet implemented.
 - Feature 058 – Album Listing v3 Adoption: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Depends on Feature 057 being implemented first. Not yet implemented.
 - Feature 054 – Configurable Landing Page: **Completed** (T-054-01..63 all `[x]`, incl. T-054-15a). Q-054-01 resolved. Full quality gate green; moved to roadmap.md Completed Features.
@@ -14,6 +15,38 @@ _Last updated: 2026-08-22_
 Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` (commit `fab22c04`), not on this branch — intentionally skipped per user instruction; not tracked here.
 
 ## Session Summary
+
+### Feature 059 – Embed Metadata in Original/RAW File — Spec/Plan/Tasks Drafted (new session, 2026-08-27)
+
+**Request:** When a user edits a photo's tags, or when the photo owner rates their own photo, or edits its title/description, write that metadata back into the Original file's EXIF/IPTC/XMP data. Requires a new boolean config in the Image Processing settings category, disabled by default, with a warning that embedding metadata changes the file's checksum/fingerprint and could cause duplicate-detection issues if the photo is later rescanned/re-imported. Mid-turn addition: also consider writing to the RAW file (Feature 020's preserved camera-original), not just the converted-to-JPEG Original.
+
+**Numbering note:** user asked for "feature 60," but the highest existing feature directory is `058-album-listing-v3-adoption` (confirmed via `roadmap.md`'s Active/Completed tables and a directory listing) — assigned `059` instead, per the numbering convention's "increment sequentially" rule.
+
+**Codebase inventory before drafting (self + one background `Explore` agent):**
+- Confirmed `lychee-org/php-exif` (`composer.json`) is **read-only** — `Reader`/`Adapter`/`Mapper` only, no writer anywhere in the vendor package, and no existing write-back code exists anywhere in this codebase (grepped for `exiftool`, `exif_write`, `writeExif`, `setExif`). `exiftool` itself is already an optional, auto-detected dependency for *reading* (`has_exiftool`/`exiftool_path` configs, `ConfigManager::hasExiftool()`) — the natural write-side tool to reuse, since PHP has no native EXIF-write support.
+- Found the three real edit paths: `PhotoController::update()` (title/description, `CAN_EDIT`-gated via `EditPhotoRequest`), `PhotoController::tags()` (tags, also `CAN_EDIT`-gated via `SetPhotosTagsRequest`), `PhotoController::rate()`→`Rating::do()` (rating — **not** owner-restricted today, any viewer with `CAN_SEE` can rate; Feature 001's Q001-05 explicitly chose this). All three are synchronous, no job dispatch today.
+- Confirmed `Photo::checksum`/`original_checksum` are SHA-1 (not SHA-256 as the reference doc's prose claims — `App\Image\StreamStat::HASH_ALGO_NAME`), and that `original_checksum` is captured *after* RAW→JPEG conversion (`Init\DetectAndStoreRaw` runs before `Standalone\SetOriginalChecksum` in `Photo\Create`'s pipeline) — so there is no separate "RAW checksum" column anywhere to keep in sync, only the Original variant's.
+- Confirmed `App\Actions\Photo\Pipes\Init\FindDuplicate` is exactly the mechanism the admin warning needs to describe: it matches on `checksum`/`original_checksum`/`live_photo_checksum`, so rewriting a file's bytes post-import breaks future duplicate detection against a separate untouched copy of the same source file.
+- Found `App\Jobs\WatermarkerJob` as the closest structural precedent (queued, `ShouldBeUnique`-deduped-per-resource, `JobHistory`-tracked, single-size-variant file mutation dispatched straight from a controller action) and `App\Models\Extensions\SizeVariants::getOriginal()`/`getRaw()` plus `App\Image\Files\FlysystemFile::toLocalFile()` (throws for non-local disks — an existing boundary already accepted elsewhere, e.g. `ExifLens`/`Takedate` CLI commands) as the exact resolution path from `Photo` to an absolute local file path.
+- Confirmed the config-migration/warning-copy convention via `raw_download_enabled` (most recent same-category `Image Processing` precedent, `BaseConfigMigration`) and `Mod Watermarker`'s inline-HTML `pi-exclamation-triangle text-orange-500` warning styling (rendered automatically by the existing generic `BoolField.vue` — no new frontend component needed).
+- Decided on `Illuminate\Support\Facades\Process::run()` (Laravel's bundled Process component, first adopter in this codebase) with **array-form** commands specifically to avoid shell-string interpolation of user-controlled title/description/tag text — the codebase's existing `exec()`/`App\Assets\CommandExecutor` string-command pattern is only safe today because every existing caller uses fixed, non-user-controlled commands (`command -v exiftool`, `composer install`), which does not hold here.
+
+**7 open questions resolved directly (Q-059-01..07, `open-questions.md`), no blocking clarification round** — all traceable either to the user's own request phrasing or to an existing codebase boundary already accepted elsewhere (see spec.md's Appendix "Resolved Decisions" for full rationale on each):
+- Q-059-01: title/description/tags sync triggers for any `CAN_EDIT` user (owner or shared-album editor, matching today's endpoint permission); rating sync is owner-only.
+- Q-059-02: queued job (`EmbedMetadataJob`), not inline.
+- Q-059-03: both Original and RAW files, when present (the mid-turn addition).
+- Q-059-04: write the full EXIF+IPTC+XMP triad per field (Title/ObjectName/XPTitle; ImageDescription/Caption-Abstract/Description; Keywords/Subject/XPKeywords; Rating/RatingPercent/XMP:Rating), not a single tag per field.
+- Q-059-05: refresh `Photo::checksum`/`original_checksum` + `SizeVariant::filesize` after a successful write, to keep Lychee's own duplicate-finder internally consistent (separate from, and not a fix for, the external re-scan risk the admin warning itself is about).
+- Q-059-06: hard-require `exiftool` (no Imagick/native-PHP fallback attempted).
+- Q-059-07: local storage disks only for v1 — non-local variants are skipped with a warning.
+
+**Spec shape (spec.md):** 16 Functional Requirements, 6 Non-Functional Requirements (incl. NFR-059-01, a dedicated command-injection-safety requirement given title/description/tags are arbitrary user text reaching a CLI invocation), 16 Branch & Scenario Matrix rows, full Interface & Contract Catalogue (3 domain objects — `MetadataWritePayload` DTO, `App\Metadata\Writer`, `App\Jobs\EmbedMetadataJob` — 3 existing routes gaining a side effect only, no new routes/OpenAPI changes), an illustrative exact `exiftool` invocation shape in the Appendix.
+
+**Plan shape (plan.md):** 5 increments (I1 config migration + docs → I2 `Writer` service, unit-tested in isolation via `Process::fake()` → I3 `EmbedMetadataJob` incl. RAW-failure isolation, non-local-disk skip, checksum refresh → I4 controller dispatch wiring across all three endpoints, incl. resolving `PhotoPolicy::isOwner()`'s current `private` visibility for the rating gate → I5 full scenario coverage + quality gates). 16 tasks in tasks.md (T-059-01..16).
+
+**Not yet done:** Analysis Gate not run. Implementation not started.
+
+**Post-draft correction (same session, user request, Q-059-08):** the original draft bundled checksum-refresh unconditionally into the main embed feature (old FR-059-15: any successful Original write always updated `Photo::checksum`/`original_checksum`). User asked to split this into its own setting. Split into a new independent config `embed_metadata_update_checksum_enabled` (default **on**, so behaviour is unchanged for anyone who doesn't touch it) — new FR-059-17, with FR-059-15 narrowed to just the unconditional `SizeVariant::filesize` refresh (kept unconditional since a stale byte count is a factual bug, not a policy trade-off, unlike the checksum-identity question). spec.md/plan.md/tasks.md updated in place (Goals #7, UI mock-up, S-059-17/18, Spec DSL, Appendix Q-059-08, plan I3/Scenario Tracking, tasks T-059-01/T-059-09); `docs/specs/3-reference/image-processing.md`'s "Metadata Write-Back" section and `open-questions.md` updated to match.
 
 ### Features 057/058 – Album Listing v3 + Adoption — Spec/Plan/Tasks Drafted (new session, 2026-08-22)
 

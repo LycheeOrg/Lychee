@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 059 | Embed Metadata in Original/RAW File | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-27 | 2026-08-27 | Spec/plan/tasks drafted, Q-059-01..07 resolved directly (no blocking clarification round). New opt-in `embed_metadata_in_files_enabled` config writes title/description/tags/owner-rating into the Original and RAW files via `exiftool`. Implementation not started. |
 | 058 | Album Listing v3 Adoption | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-22 | 2026-08-22 | Spec/plan/tasks drafted, both open questions (Q-058-01..02) resolved. Feature 057 (its dependency) now implemented. Implementation not started. |
 
 ## Paused Features
