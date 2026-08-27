@@ -1,7 +1,7 @@
 # Feature 059 Tasks – Embed Metadata in Original/RAW File
 
 _Status: Draft_
-_Last updated: 2026-08-27_
+_Last updated: 2026-08-28_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -40,23 +40,23 @@ _Last updated: 2026-08-27_
 
 ### I3 – `EmbedMetadataJob`
 
-- [ ] T-059-05 – Implement `App\Jobs\EmbedMetadataJob` skeleton: config/exiftool gating, `ShouldBeUnique`, `JobHistory` lifecycle (FR-059-01, FR-059-02, FR-059-07, FR-059-12, S-059-12, S-059-13).
-  _Intent:_ `handle()` re-checks `embed_metadata_in_files_enabled` + `ConfigManager::hasExiftool()`, refreshes the photo (title/description/tags/owner rating) at execution time, mirrors `WatermarkerJob`'s `JobHistory` READY→STARTED→SUCCESS/FAILURE transitions. `uniqueId()` = `'embed-metadata:' . $photo->id`, `uniqueFor = 60`.
+- [ ] T-059-05 – Implement `App\Jobs\EmbedMetadataJob` skeleton: config/exiftool gating, `ShouldBeUnique`, `JobHistory` lifecycle, top-level exception guarantee (FR-059-01, FR-059-02, FR-059-07, FR-059-12, NFR-059-07, S-059-12, S-059-13, S-059-19).
+  _Intent:_ `handle()`'s **entire body** is wrapped in a top-level try/catch (NFR-059-07) — critical under the default `sync` queue driver, where `dispatch()` runs `handle()` inline, so any escaped exception would break the calling `PhotoController` action. Inside: re-checks `embed_metadata_in_files_enabled` + `ConfigManager::hasExiftool()`, refreshes the photo (title/description/tags/owner rating) at execution time, mirrors `WatermarkerJob`'s `JobHistory` READY→STARTED→SUCCESS/FAILURE transitions (never re-throwing, exactly like `WatermarkerJob::handle()`). `uniqueId()` = `'embed-metadata:' . $photo->id`, `uniqueFor = 60`.
   _Verification commands:_
   - `php artisan test --filter=EmbedMetadataJobTest` (new)
   - `make phpstan`
-  _Notes:_ Test S-059-12 (exiftool unavailable → graceful `FAILURE`, no crash) and S-059-13 (dedup reflects latest state, not dispatch-time snapshot) here.
+  _Notes:_ Test S-059-12 (exiftool unavailable → graceful `FAILURE`, no crash), S-059-13 (dedup reflects latest state, not dispatch-time snapshot), and S-059-19 (force an unexpected exception at a stage outside the per-variant `Writer::embed()` calls — e.g. the photo refresh — and assert it never escapes `handle()`) here.
 
 - [ ] T-059-06 – Wire `Writer` into the job for the Original variant + owner-rating deletion handling (FR-059-06, FR-059-08, S-059-02, S-059-07).
   _Intent:_ Build `MetadataWritePayload` from current DB state (title, description, `tags()->pluck('name')`, owner's `PhotoRating` — `null` when the owner has no rating row), call `Writer::embed()` against `getOriginal()->getFile()->toLocalFile()`.
   _Verification commands:_
   - `php artisan test --filter=EmbedMetadataJobTest`
 
-- [ ] T-059-07 – Extend to the RAW variant with independent failure isolation (FR-059-09, FR-059-10, S-059-08, S-059-09, S-059-10).
-  _Intent:_ Also target `getRaw()` when non-null; wrap each variant's `Writer::embed()` call in its own try/catch so a RAW-format write failure logs a `WARNING` and does not prevent/undo the Original write; job still reports `SUCCESS` in that case.
+- [ ] T-059-07 – Extend to the RAW variant with independent, symmetric failure isolation (FR-059-09, FR-059-10, S-059-08, S-059-09, S-059-10).
+  _Intent:_ Also target `getRaw()` when non-null; wrap each variant's `Writer::embed()` call in its own try/catch, with no ordering dependency between the two, so **either** variant's failure logs a `WARNING` and does not prevent/undo the other's write; job reports `SUCCESS` as long as at least one targeted variant succeeded, `FAILURE` only if all of them did.
   _Verification commands:_
   - `php artisan test --filter=EmbedMetadataJobTest`
-  _Notes:_ Use the existing RAW test fixture (Feature 020's test tree) for S-059-08; simulate a `Writer::embed()` throw for S-059-09.
+  _Notes:_ Use the existing RAW test fixture (Feature 020's test tree) for S-059-08; simulate a `Writer::embed()` throw for S-059-09 (RAW fails, Original succeeds) — also add the reverse case (Original fails, RAW succeeds) to prove the symmetry, since the spec's first draft only described one direction.
 
 - [ ] T-059-08 – Non-local-disk skip handling (FR-059-11, S-059-11).
   _Intent:_ Catch `FlysystemFile`'s non-local-disk exception per variant (from `toLocalFile()`), log a `WARNING`, continue to the next variant instead of failing the job.

@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/059-embed-metadata-in-file/spec.md`
 _Status:_ Draft
-_Last updated:_ 2026-08-27
+_Last updated:_ 2026-08-28
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
 
@@ -44,7 +44,7 @@ A photographer who edits a photo's title, description, or tags in Lychee — or 
   - `PhotoPolicy::isOwner()` can be safely exposed (or wrapped) for use outside the policy class without behavioural change — it is a pure `$photo->owner_id === $user->id` check today (`app/Policies/PhotoPolicy.php:57-59`); re-verify at implementation time in case it has changed.
   - The default `QUEUE_CONNECTION=sync` (`.env.example:133`) means most installs execute `EmbedMetadataJob` inline within the triggering request — acceptable per NFR-059-06, since this matches every other queued job's behaviour in this codebase already.
 - **Risks / Mitigations:**
-  - **Risk:** `exiftool`'s exact CLI tag names/behaviour (e.g. `-charset` flags, list-tag clear-then-append semantics) could differ subtly from the illustrative invocation in spec.md's Appendix once tested against a real binary. **Mitigation:** I3 includes a manual smoke-test step against a real local `exiftool` install (if available in the dev sandbox) to validate the exact argument shape before locking down `App\Metadata\Writer`'s implementation; automated tests still use `Process::fake()` (NFR-059-04) so CI never depends on this.
+  - **Risk:** `exiftool`'s exact CLI tag names/behaviour (e.g. `-charset` flags, list-tag clear-then-append semantics) could differ subtly from the illustrative invocation in spec.md's Appendix once tested against a real binary. Related, and deliberately accepted rather than built around (spec.md FR-059-08, Q-059-10): `exiftool`'s exit code is per-invocation, not per-tag, so a single unsupported/rejected tag for a given format could be silently dropped while the invocation still exits `0` — this feature does not attempt to detect that case, only a full non-zero-exit failure (FR-059-09). The feature's actual reliability boundary is FR-059-01/FR-059-02's gating (off by default; the job never runs unless `hasExiftool()` is true) — once a write is attempted, its exit code is trusted as-is, with no stdout-parsing or per-tag validation layer added on top. **Mitigation:** I3's manual smoke-test step against a real local `exiftool` install (if available in the dev sandbox) validates the exact argument shape before locking down `App\Metadata\Writer`'s implementation; automated tests still use `Process::fake()` (NFR-059-04) so CI never depends on this.
   - **Risk:** Making `EmbedMetadataJob` re-read the photo's live state at execution time (FR-059-07) could race with a *concurrent, later* unrelated edit landing between dispatch and execution, embedding metadata that's already stale by the time the job actually runs. **Mitigation:** accepted as a known, low-probability edge case — `ShouldBeUnique`'s 60s window and the fact every edit re-dispatches the same deduped job means a fast-follow edit will simply trigger its own (or an already-pending) run that catches up; no additional locking is introduced. Documented here rather than in spec.md since it's an implementation-level accepted trade-off, not a new requirement.
   - **Risk:** `PhotoController::update()` currently calls `$photo->save()` unconditionally, even when title/description/etc. are unchanged from their current values — dispatching the job on every save (not just on actual change) means occasional no-op `exiftool` re-writes. **Mitigation:** accepted — NFR-059-05 (idempotency) makes a no-op re-write harmless (same bytes/checksum out), and diffing "did this field actually change" adds complexity for a purely cosmetic efficiency gain; not built for v1.
 
@@ -76,13 +76,13 @@ _Drift Gate status: not yet executed — implementation not started._
    - _Exit:_ `Writer` fully unit-tested; zero wiring into any controller/job yet.
 
 3. **I3 – `EmbedMetadataJob`**
-   - _Goal:_ Wire `Writer` into a queued, deduped, `JobHistory`-tracked job operating on a real `Photo`.
+   - _Goal:_ Wire `Writer` into a queued, deduped, `JobHistory`-tracked job operating on a real `Photo`, with a top-level guarantee that `handle()` never throws (NFR-059-07).
    - _Preconditions:_ I1, I2.
    - _Steps:_
-     - `App\Jobs\EmbedMetadataJob` (`ShouldQueue`, `ShouldBeUnique`), constructor `Photo $photo`, `handle()`: config re-check (FR-059-01/02) → refresh photo (FR-059-07) → build `MetadataWritePayload` from current title/description/tags/owner-rating → for each of `getOriginal()`/`getRaw()` (skip null): local-disk check (FR-059-11) → `Writer::embed()` → on success, re-measure via `StreamStat` and always persist `filesize` (FR-059-15, both variants, unconditional), additionally persisting `Photo::checksum`/`original_checksum` from that same read **only** for the Original variant **and only if** `embed_metadata_update_checksum_enabled` is true (FR-059-17) → per-variant try/catch so a RAW failure doesn't abort the Original write (FR-059-09) → `JobHistory` status transitions mirroring `WatermarkerJob`.
-     - Manual smoke test against a real local `exiftool` binary if available in the dev sandbox (see plan's Risks) to sanity-check the exact tag output with a real file — not part of the automated suite.
+     - `App\Jobs\EmbedMetadataJob` (`ShouldQueue`, `ShouldBeUnique`), constructor `Photo $photo`. `handle()`'s **entire body** wrapped in a top-level try/catch (NFR-059-07) — not just the per-variant `Writer::embed()` calls — so nothing can escape and break the calling HTTP request under the default `sync` queue driver. Inside: config re-check (FR-059-01/02) → refresh photo (FR-059-07) → build `MetadataWritePayload` from current title/description/tags/owner-rating → for each of `getOriginal()`/`getRaw()` (skip null): local-disk check (FR-059-11) → `Writer::embed()` → on success, re-measure via `StreamStat` and always persist `filesize` (FR-059-15, both variants, unconditional), additionally persisting `Photo::checksum`/`original_checksum` from that same read **only** for the Original variant **and only if** `embed_metadata_update_checksum_enabled` is true (FR-059-17) → per-variant try/catch so either variant's failure doesn't abort the other's write, symmetric in both directions (FR-059-09) → `JobHistory` status transitions mirroring `WatermarkerJob`.
+     - Manual smoke test against a real local `exiftool` binary if available in the dev sandbox (see plan's Risks) to sanity-check the exact tag output with a real file, including observing what happens when a tag is rejected for a given format — not part of the automated suite.
    - _Commands:_ `php artisan test --filter=EmbedMetadataJobTest`, `make phpstan`.
-   - _Exit:_ Dispatching the job directly (not yet from a controller) against a fixture photo correctly embeds/clears/skips per S-059-02/06/07/08/09/10/11/12/13.
+   - _Exit:_ Dispatching the job directly (not yet from a controller) against a fixture photo correctly embeds/clears/skips per S-059-02/06/07/08/09/10/11/12/13/17/18/19, and no forced internal exception ever escapes `handle()` (S-059-19).
 
 4. **I4 – Controller dispatch wiring**
    - _Goal:_ Trigger `EmbedMetadataJob` from the three real edit endpoints, with the correct gating per field.
@@ -127,6 +127,7 @@ _Drift Gate status: not yet executed — implementation not started._
 | S-059-16 | Non-Goals, no task | Video files explicitly out of scope — documented, not tested |
 | S-059-17 | I3 / T-059-09 | Checksum-update sub-setting off — filesize still refreshed, checksum columns left untouched |
 | S-059-18 | I3 / T-059-09 | Checksum-update sub-setting has no effect when the parent feature is off |
+| S-059-19 | I3 / T-059-05 | `handle()` never lets an internal exception escape (NFR-059-07) |
 
 ## Analysis Gate
 
@@ -135,7 +136,7 @@ Not yet run — plan/spec just drafted. Must be executed at the start of impleme
 ## Exit Criteria
 
 - All tasks in `tasks.md` marked `[x]`.
-- All 16 Branch & Scenario Matrix rows (S-059-01..16) verified (either by an automated test or, for S-059-16, explicitly as an out-of-scope confirmation).
+- All 19 Branch & Scenario Matrix rows (S-059-01..19) verified (either by an automated test or, for S-059-16, explicitly as an out-of-scope confirmation).
 - `make phpstan`: 0 errors across the full repo (not just touched files).
 - `vendor/bin/php-cs-fixer fix`: clean.
 - Targeted `php artisan test` runs for every touched test file green; full-suite run attempted, any pre-existing/unrelated failures documented (not silently ignored).
