@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 060 | Database-Driven Title Sorting | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-27 | 2026-08-27 | Spec/plan/tasks drafted, both open questions (Q-060-01..02) resolved. Replaces PHP-level natural-sort Title/Title-strict/Description/Description-strict ordering (photos + base_albums) with a pure DB `ORDER BY` on new `title_base`/`title_index` derived columns; Description dropped as a sort criterion entirely. Implementation not started. |
 | 058 | Album Listing v3 Adoption | Draft (spec/plan/tasks complete, analysis gate not yet run) | Medium | ildyria | 2026-08-22 | 2026-08-22 | Spec/plan/tasks drafted, both open questions (Q-058-01..02) resolved. Feature 057 (its dependency) now implemented. Implementation not started. |
 
 ## Paused Features
