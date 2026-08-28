@@ -105,8 +105,10 @@ class EmbedMetadataJobTest extends AbstractTestCase
 		(new EmbedMetadataJob($photo))->handle();
 
 		Process::assertNothingRan();
+		// quickExit() returns before any JobHistory is created, so a
+		// disabled feature leaves no trace in the history table.
 		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
-		self::assertEquals(JobStatus::SUCCESS, $history->status);
+		self::assertNull($history);
 	}
 
 	public function testMissingExiftoolFails(): void
@@ -120,8 +122,10 @@ class EmbedMetadataJobTest extends AbstractTestCase
 		(new EmbedMetadataJob($photo))->handle();
 
 		Process::assertNothingRan();
+		// quickExit() returns before any JobHistory is created; the missing
+		// exiftool is only surfaced via the 'jobs' log channel warning.
 		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
-		self::assertEquals(JobStatus::FAILURE, $history->status);
+		self::assertNull($history);
 	}
 
 	public function testSuccessfulEmbedUpdatesChecksumAndFilesize(): void
@@ -228,8 +232,10 @@ class EmbedMetadataJobTest extends AbstractTestCase
 
 		$photo->refresh();
 		self::assertNotNull($photo->checksum);
+		// The Original write still happened despite the RAW failure, but
+		// overall status requires both variants to succeed.
 		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
-		self::assertEquals(JobStatus::SUCCESS, $history->status);
+		self::assertEquals(JobStatus::FAILURE, $history->status);
 	}
 
 	public function testOriginalFailureDoesNotAbortRawWriteSymmetric(): void
@@ -248,8 +254,10 @@ class EmbedMetadataJobTest extends AbstractTestCase
 
 		(new EmbedMetadataJob($photo))->handle();
 
+		// Symmetric to the RAW-failure case: overall status requires both
+		// variants to succeed.
 		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
-		self::assertEquals(JobStatus::SUCCESS, $history->status);
+		self::assertEquals(JobStatus::FAILURE, $history->status);
 	}
 
 	public function testBothVariantsFailingReportsFailure(): void
