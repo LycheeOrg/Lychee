@@ -27,7 +27,7 @@ return new class() extends Migration {
 	{
 		Schema::table('base_albums', function (Blueprint $table) {
 			$table->string('title_base', 100)->nullable(false)->default('')->after('title');
-			$table->unsignedBigInteger('title_index')->nullable()->after('title_base');
+			$table->unsignedBigInteger('title_index')->nullable(false)->default(0)->after('title_base');
 			$table->index(['title_base', 'title_index'], 'base_albums_title_base_title_index_index');
 		});
 	}

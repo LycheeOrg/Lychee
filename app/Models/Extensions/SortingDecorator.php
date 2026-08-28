@@ -63,7 +63,7 @@ class SortingDecorator
 	public function orderBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
 		$this->order_by[] = [
-			'column' => $column->toColumn(),
+			'column' => $column->value,
 			'direction' => $direction->value,
 			'type' => $column,
 			'prefix' => '',
@@ -86,7 +86,7 @@ class SortingDecorator
 	public function orderPhotosBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
 		$this->order_by[] = [
-			'column' => 'photos.' . $column->toColumn(),
+			'column' => 'photos.' . $column->value,
 			'direction' => $direction->value,
 			'type' => $column,
 			'prefix' => 'photos.',

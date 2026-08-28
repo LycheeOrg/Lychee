@@ -36,12 +36,4 @@ enum ColumnSortingPhotoType: string
 	{
 		return ColumnSortingType::from($this->value);
 	}
-
-	/**
-	 * Convert into actual column name.
-	 */
-	public function toColumn(): string
-	{
-		return $this->value;
-	}
 }

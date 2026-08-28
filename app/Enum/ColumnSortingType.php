@@ -30,14 +30,6 @@ enum ColumnSortingType: string
 	case RATING_AVG = 'rating_avg';
 
 	/**
-	 * Convert into actual column name.
-	 */
-	public function toColumn(): string
-	{
-		return $this->value;
-	}
-
-	/**
 	 * Check if this column requires special raw SQL ordering.
 	 * Used for columns that need COALESCE or other SQL functions.
 	 */
@@ -59,11 +51,13 @@ enum ColumnSortingType: string
 		return match ($this) {
 			// COALESCE pushes NULLs to end by using -1 as sentinel (Q-009-06)
 			self::RATING_AVG => 'COALESCE(' . $prefix . 'rating_avg, -1) ' . $direction->value,
-			// Direction-symmetric: title_index NULL sorts as if -1, i.e.
-			// immediately before any digit-suffixed sibling sharing the same
-			// base, matching prior natural-sort behaviour (FR-060-05).
-			self::TITLE => $prefix . 'title_base ' . $direction->value . ', COALESCE(' . $prefix . 'title_index, -1) ' . $direction->value,
-			default => $prefix . $this->toColumn() . ' ' . $direction->value,
+			// title_index is NEVER NULL (defaults to 0 for titles without a
+			// numeric suffix), so no COALESCE is needed here: a title with
+			// no suffix sorts immediately before any digit-suffixed sibling
+			// sharing the same base, matching prior natural-sort behaviour
+			// (FR-060-05).
+			self::TITLE => $prefix . 'title_base ' . $direction->value . ', ' . $prefix . 'title_index ' . $direction->value,
+			default => $prefix . $this->value . ' ' . $direction->value,
 		};
 	}
 }

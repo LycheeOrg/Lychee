@@ -54,7 +54,7 @@ use function Safe\preg_match;
  * @property string                $id
  * @property string                $title
  * @property string|null           $title_base
- * @property int|null              $title_index
+ * @property int                   $title_index
  * @property string|null           $description
  * @property Collection<int,Tag>   $tags
  * @property int                   $owner_id

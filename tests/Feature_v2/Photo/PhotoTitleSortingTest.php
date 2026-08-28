@@ -90,7 +90,7 @@ class PhotoTitleSortingTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-060-04: a title with no digit suffix (index NULL -> sentinel -1)
+	 * S-060-04: a title with no digit suffix (title_index defaults to 0)
 	 * sorts immediately before a title with the same base plus a digit
 	 * suffix, matching prior natural-sort behaviour.
 	 */

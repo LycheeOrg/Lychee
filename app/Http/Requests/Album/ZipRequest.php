@@ -15,12 +15,15 @@ use App\Contracts\Http\Requests\HasSizeVariant;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ChunkSlice;
+use App\Enum\ColumnSortingType;
 use App\Enum\DownloadVariantType;
+use App\Enum\OrderSortingType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasFromIdTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Http\Requests\Traits\HasSizeVariantTrait;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
@@ -139,7 +142,10 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			return;
 		}
 
-		$photo_query = Photo::query()->with(['albums'])->orderBy('title', 'ASC');
+		$photo_query = Photo::query()->with(['albums']);
+		(new SortingDecorator($photo_query))
+			->orderBy(ColumnSortingType::TITLE, OrderSortingType::ASC)
+			->applyOrdering();
 		// The condition is required, because Lychee also supports to archive
 		// the "live video" as a size variant which is not a proper size variant
 		$variant = $this->size_variant?->getSizeVariantType();

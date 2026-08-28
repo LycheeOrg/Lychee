@@ -12,8 +12,9 @@ use App\DTO\TitleSplitResult;
 use function Safe\preg_match;
 
 /**
- * Splits a `title` string into a case-folded, sortable `base` and an
- * optional trailing numeric `index`, so that a plain `ORDER BY base, index`
+ * Splits a `title` string into a case-folded, sortable `base` and a
+ * trailing numeric `index` (`0` when the title has no numeric suffix), so
+ * that a plain `ORDER BY base, index`
  * reproduces natural-sort-like ordering (`test_0, test_1, test_2, test_10`)
  * purely at the database layer, without regex/locale support in SQL
  * (see spec 060 FR-060-02, NFR-060-01).
@@ -66,8 +67,9 @@ final class TitleSplitter
 		// Stage B, rule 3 (fallback): no index found even after stripping -
 		// fall back to the full ORIGINAL title (extension retained), so a
 		// wrong Stage-A guess (e.g. "Vol.II") never silently drops a token
-		// from a title that has no numeric suffix at all.
-		return new TitleSplitResult(mb_strtolower($title), null);
+		// from a title that has no numeric suffix at all. `title_index` is
+		// never NULL in the database, so titles without a suffix get `0`.
+		return new TitleSplitResult(mb_strtolower($title), 0);
 	}
 
 	private static function toResult(string $base, string $digits, ?string $extension): TitleSplitResult

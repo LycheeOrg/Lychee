@@ -10,10 +10,13 @@ namespace App\Jobs;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
@@ -237,16 +240,20 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$sorting = $album->getEffectivePhotoSorting();
 
-		return $photo_query_policy
+		$query = $photo_query_policy
 			->applySearchabilityFilter(
 				query: Photo::query(),
 				user: $user,
 				unlocked_album_ids: [],
 				origin: $album,
-				include_nsfw: $is_nsfw_context)
-			->orderBy('photos.is_highlighted', 'desc')
-			->orderBy($sorting->column->toColumn(), $sorting->order->value)
-			->select('photos.id')->toBase()->first()?->id;
+				include_nsfw: $is_nsfw_context);
+
+		(new SortingDecorator($query))
+			->orderPhotosBy(ColumnSortingType::IS_HIGHLIGHTED, OrderSortingType::DESC)
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->applyOrdering();
+
+		return $query->select('photos.id')->toBase()->first()?->id;
 	}
 
 	/**

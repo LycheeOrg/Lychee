@@ -41,9 +41,10 @@ class TitleBackfillTest extends BaseApiWithDataTest
 			->create();
 
 		// Factories bypass every explicit write site (FR-060-03), so the
-		// derived columns start out un-backfilled.
+		// derived columns start out un-backfilled. `title_index` is never
+		// NULL in the database, so it starts at its column default (0).
 		$this->assertNull($photo->fresh()->title_base);
-		$this->assertNull($photo->fresh()->title_index);
+		$this->assertSame(0, $photo->fresh()->title_index);
 
 		$this->runPhotoBackfillMigration();
 
@@ -67,7 +68,7 @@ class TitleBackfillTest extends BaseApiWithDataTest
 			->create();
 
 		$this->assertSame('', BaseAlbumImpl::query()->findOrFail($album->id)->title_base);
-		$this->assertNull(BaseAlbumImpl::query()->findOrFail($album->id)->title_index);
+		$this->assertSame(0, BaseAlbumImpl::query()->findOrFail($album->id)->title_index);
 
 		$this->runBaseAlbumBackfillMigration();
 

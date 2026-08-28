@@ -60,7 +60,7 @@ class TitleSplitterTest extends AbstractTestCase
 		// S-060-04
 		$result = TitleSplitter::split('Vacation');
 		$this->assertSame('vacation', $result->base);
-		$this->assertNull($result->index);
+		$this->assertSame(0, $result->index);
 	}
 
 	public function testCaseFold(): void
@@ -91,7 +91,7 @@ class TitleSplitterTest extends AbstractTestCase
 	{
 		$result = TitleSplitter::split('');
 		$this->assertSame('', $result->base);
-		$this->assertNull($result->index);
+		$this->assertSame(0, $result->index);
 	}
 
 	public function testUnicodeTitle(): void
@@ -102,7 +102,7 @@ class TitleSplitterTest extends AbstractTestCase
 
 		$result = TitleSplitter::split('Ünïcödé');
 		$this->assertSame('ünïcödé', $result->base);
-		$this->assertNull($result->index);
+		$this->assertSame(0, $result->index);
 	}
 
 	/**
@@ -158,7 +158,7 @@ class TitleSplitterTest extends AbstractTestCase
 	{
 		$result = TitleSplitter::split('Vol.II');
 		$this->assertSame('vol.ii', $result->base);
-		$this->assertNull($result->index);
+		$this->assertSame(0, $result->index);
 	}
 
 	/**

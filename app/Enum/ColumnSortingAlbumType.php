@@ -32,9 +32,4 @@ enum ColumnSortingAlbumType: string
 	{
 		return ColumnSortingType::from($this->value);
 	}
-
-	public function toColumn(): string
-	{
-		return $this->value;
-	}
 }
