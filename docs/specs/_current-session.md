@@ -1,12 +1,12 @@
 # Current Session
 
-_Last updated: 2026-08-27_
+_Last updated: 2026-08-28_
 
 ## Active Features
 
-- Feature 059 – Embed Metadata in Original/RAW File: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Not yet implemented.
 - Feature 057 – Album Listing v3: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Not yet implemented.
 - Feature 058 – Album Listing v3 Adoption: spec/plan/tasks drafted (Draft status), analysis gate not yet run. Depends on Feature 057 being implemented first. Not yet implemented.
+- Feature 059 – Embed Metadata in Original/RAW File: **Completed** (T-059-01..16 all `[x]` except T-059-02, a manual browser check not performed this session — no browser available, low risk). Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 054 – Configurable Landing Page: **Completed** (T-054-01..63 all `[x]`, incl. T-054-15a). Q-054-01 resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 049 – Migration to Nuxt UI: spec, plan, and tasks drafted (Draft status), analysis gate passed. Not yet implemented.
@@ -16,7 +16,29 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 ## Session Summary
 
-### Feature 059 – Embed Metadata in Original/RAW File — Spec/Plan/Tasks Drafted (new session, 2026-08-27)
+### Feature 059 – Embed Metadata in Original/RAW File — Implemented (new session, 2026-08-28)
+
+**Request:** "Implement feature 59" — build the already-drafted spec/plan/tasks end to end.
+
+**Analysis Gate (start of implementation):** re-read every file cited in spec.md/plan.md in full; all line numbers/signatures still matched. Confirmed `SizeVariants::getOriginal()`/`getRaw()`, `SetPhotosTagsRequest::processValidatedValues()` already eager-loads `size_variants`, and the `Request::macro('configs', ...)` pattern (`app/Providers/AppServiceProvider.php:151`) already used by `RotatePhotoRequest`/`shouldWatermark()` — reused it for all three new dispatch-gate checks instead of resolving `ConfigManager` separately.
+
+**Built:** migration (`2026_08_28_000001_add_embed_metadata_config.php`, two config rows), `App\DTO\MetadataWritePayload`, `App\Metadata\Writer` (builds the exact `exiftool` argument array from spec.md's Appendix, invoked via `Illuminate\Support\Facades\Process::run()` — first adopter of Laravel's Process component in this codebase), `App\Jobs\EmbedMetadataJob` (mirrors `WatermarkerJob`'s shape; `handle()`'s entire body wrapped in one top-level try/catch per NFR-059-07), and three small dispatch-site edits in `PhotoController::update()`/`tags()`/`rate()`.
+
+**One resolved drift from spec.md (documented in plan.md's Analysis Gate, not a design change):** `PhotoPolicy::isOwner()` is `private` — rather than exposing/wrapping it (as the spec's Dependencies section had flagged as an open implementation question), `PhotoController::rate()` does the equivalent `$user->id === $photo->owner_id` comparison inline. Smaller diff, zero risk to `PhotoPolicy`'s other callers.
+
+**One implementation-time correctness finding (fixed, not spec'd):** `FlysystemFile::toLocalFile()`'s documented failure mode is `MediaFileOperationException`, but a misconfigured non-local disk (confirmed directly: `Storage::disk('s3')` with no bucket configured) throws a plain `TypeError` while merely constructing the adapter — happens *before* `toLocalFile()`'s own check ever runs. Broadened `EmbedMetadataJob`'s non-local-disk catch from the single documented exception type to `\Throwable`, since the intent ("don't attempt non-local writes") is identical regardless of the specific exception.
+
+**Tests:** `tests/Unit/Metadata/WriterTest.php` (7 tests — exact-argument-array assertions via `Process::fake()`, including a shell-metacharacter-safety test for NFR-059-01) and `tests/Unit/Jobs/EmbedMetadataJobTest.php` (13 tests — real fake-disk-backed files via `Storage::fake('images')` so the post-write checksum/filesize re-measure runs for real, only `exiftool` itself faked; covers config-off no-op, missing-exiftool failure, successful embed, checksum-toggle-off, no-owner-rating, RAW+Original both written, RAW-fails/Original-succeeds and the reverse (symmetry), both-fail, non-local-disk skip, and NFR-059-07's "unexpected exception mid-`handle()` never escapes" via a genuinely deleted-mid-flight photo forcing `refresh()` to throw). Extended `PhotoEditTest`/`PhotoTagsTest` (`tests/ImageProcessing/Photo/` — not `Feature_v2/Photo/` as the spec had guessed the location) and `PhotoRatingIntegrationTest` with `Bus::fake()` dispatch/non-dispatch assertions, including the owner-vs-non-owner and rating-removal cases.
+
+**Test-infrastructure friction (all resolved, none a real regression):** (1) this sandbox's shared `database/database.sqlite` had an unrelated backlog of ~12 pending migrations from other in-flight features (landing page, tracks table); a plain `migrate --force` dies on the first broken one, so the new config migration was applied via a scoped `migrate --path=...` instead, leaving the backlog untouched. (2) An earlier ad-hoc debug script (run outside a test transaction, used to diagnose an unrelated factory quirk) leaked a stray user/photo/statistics row into that same persistent file, breaking `RequiresEmptyUsers`/`RequiresEmptyPhotos`-based tests until manually cleaned up. (3) `Photo::factory()->without_size_variants()` turned out to be pre-existing, unused-elsewhere, non-functional factory state (its `afterCreating` closure stays bound to the original un-cloned factory instance) — worked around by using the factory's always-created default Original variant instead of trying to fix that unrelated quirk. (4) Config changes (`Configs::set()`) were observed to survive across a multi-class test run despite `DatabaseTransactions` correctly rolling back in isolation (root cause not fully pinned down) — mitigated by making every "config disabled" test set the config explicitly rather than relying on the migration default.
+
+**Translations** (user follow-up mid-session — "don't forget to add the translations... not just in English"): added both new config keys to `lang/en/all_settings.php`'s `documentation`/`details` arrays, then propagated the same English-placeholder text to all 21 other locale files via a small idempotent script (matching Feature 054's established placeholder-until-translated convention). One mistake caught and reverted: running `vendor/bin/php-cs-fixer` against a `lang/*.php` file reformats the *entire* file (these files are space-indented, unlike the tab-indented rest of the codebase, and apparently never normally run through the fixer) — discovered via a 1875-line diff on 4 files, reverted with `git checkout --`, and the minimal 4-line insertions re-applied cleanly. `LangTest::testLanguageConsistency` confirmed green.
+
+**Quality gates:** `vendor/bin/phpstan analyze` (full repo, no path args, 2857 files): 0 errors. `php-cs-fixer fix` on every touched `app`/`tests` file: clean. Full `--testsuite=ImageProcessing` (232 tests) and `--testsuite=Feature_v2 --filter=Photo` (170 tests): both clean except issues traced to the pre-existing `tracks`-table migration gap (hits any test that deletes an album, via `Actions\Album\Delete`'s unconditional query) and the already-known `PhotosAddHandlerImagickTest`/`PhotoAddTest` PDF/Apple-Live-Photo failures documented in Feature 054's own session notes — confirmed none originate from this feature's code.
+
+**Not done:** T-059-02 (manual browser check of the rendered settings toggle) — no browser available this session; left unchecked rather than claimed. Low risk given `BoolField.vue` is an already-proven generic renderer used by every other boolean config.
+
+### Feature 059 – Embed Metadata in Original/RAW File — Spec/Plan/Tasks Drafted (previous session, 2026-08-27)
 
 **Request:** When a user edits a photo's tags, or when the photo owner rates their own photo, or edits its title/description, write that metadata back into the Original file's EXIF/IPTC/XMP data. Requires a new boolean config in the Image Processing settings category, disabled by default, with a warning that embedding metadata changes the file's checksum/fingerprint and could cause duplicate-detection issues if the photo is later rescanned/re-imported. Mid-turn addition: also consider writing to the RAW file (Feature 020's preserved camera-original), not just the converted-to-JPEG Original.
 

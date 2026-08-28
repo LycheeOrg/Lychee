@@ -1,7 +1,7 @@
 # Feature Plan 059 – Embed Metadata in Original/RAW File
 
 _Linked specification:_ `docs/specs/4-architecture/features/059-embed-metadata-in-file/spec.md`
-_Status:_ Draft
+_Status:_ Implemented
 _Last updated:_ 2026-08-28
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
@@ -31,7 +31,7 @@ A photographer who edits a photo's title, description, or tags in Lychee — or 
 - `App\Models\Extensions\SizeVariants::getOriginal()`/`getRaw()` (pre-existing, `app/Models/Extensions/SizeVariants.php:142,147`).
 - `App\Image\Files\FlysystemFile::isLocalFile()`/`toLocalFile()` (pre-existing, `app/Image/Files/FlysystemFile.php`).
 - `App\Image\StreamStat::createFromLocalFile()` (pre-existing, reused for post-write re-hashing).
-- `App\Policies\PhotoPolicy::isOwner()` — currently `private`; needs a small visibility change (or a new small public wrapper) so the rating dispatch site can call it. Confirm exact approach at I2 (Analysis Gate item).
+- `App\Policies\PhotoPolicy::isOwner()` — currently `private`, and left untouched. Since it's a trivial `$photo->owner_id === $user->id` check, `PhotoController::rate()` performs this comparison inline rather than exposing/wrapping the policy method — smaller diff, no risk to `PhotoPolicy`'s other callers.
 - `Illuminate\Support\Facades\Process` (bundled with `laravel/framework: ^12.0`, not currently used anywhere else in this codebase — first adopter).
 - Existing `App\Jobs\WatermarkerJob` / `App\Models\JobHistory` as the structural template for the new job.
 - `docs/specs/4-architecture/features/020-raw-upload-support/spec.md` — RAW dual-variant precedent (`SizeVariantType::RAW`).
@@ -131,7 +131,7 @@ _Drift Gate status: not yet executed — implementation not started._
 
 ## Analysis Gate
 
-Not yet run — plan/spec just drafted. Must be executed at the start of implementation, using the Implementation Drift Gate re-read above as its evidence base, and recorded here (date, reviewer, findings) before any task is marked `[x]`.
+Completed 2026-08-28, at implementation start. Re-read `app/Http/Controllers/Gallery/PhotoController.php` (`update()`/`tags()`/`rate()`), `app/Actions/Photo/Rating.php`, `app/Policies/PhotoPolicy.php`, `app/Models/Extensions/SizeVariants.php`, `app/Repositories/ConfigManager.php`, `app/Jobs/WatermarkerJob.php`, `app/Image/Files/FlysystemFile.php`/`NativeLocalFile.php`, `app/Image/StreamStat.php` in full — all line numbers/signatures cited in spec.md still matched. One drift item found and resolved during implementation (not before): `PhotoController::rate()` is documented in spec.md as reusing `PhotoPolicy::isOwner()`, but that method is `private`; resolved by doing the equivalent `$user->id === $photo->owner_id` comparison inline in the controller rather than modifying the policy class (see Dependencies & Interfaces above, and tasks.md T-059-12).
 
 ## Exit Criteria
 

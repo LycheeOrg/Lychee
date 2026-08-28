@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Implemented |
 | Last updated | 2026-08-28 |
 | Owners | User |
 | Linked plan | `docs/specs/4-architecture/features/059-embed-metadata-in-file/plan.md` |

@@ -18,7 +18,10 @@
 
 namespace Tests\Feature_v2\Photo;
 
+use App\Jobs\EmbedMetadataJob;
+use App\Models\Configs;
 use App\Models\PhotoRating;
+use Illuminate\Support\Facades\Bus;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class PhotoRatingIntegrationTest extends BaseApiWithDataTest
@@ -183,5 +186,82 @@ class PhotoRatingIntegrationTest extends BaseApiWithDataTest
 		$statistics->refresh();
 		$this->assertEquals(8, $statistics->rating_sum); // 5 + 3
 		$this->assertEquals(2, $statistics->rating_count);
+	}
+
+	/**
+	 * Feature 059 (NFR-059-02): with the config at its default (off), rating
+	 * a photo never dispatches EmbedMetadataJob, even for the owner.
+	 */
+	public function testSetRatingDoesNotDispatchEmbedJobWhenConfigDisabled(): void
+	{
+		// Explicit, not relying on the migration default: config state is
+		// not transaction-rolled-back between tests in this suite.
+		Configs::set('embed_metadata_in_files_enabled', false);
+		Bus::fake([EmbedMetadataJob::class]);
+
+		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+			'photo_id' => $this->photo1->id,
+			'rating' => 5,
+		]);
+
+		Bus::assertNotDispatched(EmbedMetadataJob::class);
+	}
+
+	/**
+	 * Feature 059 (FR-059-05): with the config enabled, the photo owner
+	 * rating their own photo dispatches EmbedMetadataJob.
+	 */
+	public function testSetRatingDispatchesEmbedJobForOwner(): void
+	{
+		Configs::set('embed_metadata_in_files_enabled', true);
+		Bus::fake([EmbedMetadataJob::class]);
+
+		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+			'photo_id' => $this->photo1->id,
+			'rating' => 5,
+		]);
+
+		Bus::assertDispatched(EmbedMetadataJob::class);
+	}
+
+	/**
+	 * Feature 059 (FR-059-05): a non-owner rating a photo never dispatches
+	 * EmbedMetadataJob — EXIF/XMP has room for exactly one "Rating" value,
+	 * and only the owner's opinion is authoritative for what gets embedded.
+	 */
+	public function testSetRatingByNonOwnerDoesNotDispatchEmbedJob(): void
+	{
+		Configs::set('embed_metadata_in_files_enabled', true);
+		Bus::fake([EmbedMetadataJob::class]);
+
+		$this->actingAs($this->admin)->postJson('Photo::setRating', [
+			'photo_id' => $this->photo1->id,
+			'rating' => 3,
+		]);
+
+		Bus::assertNotDispatched(EmbedMetadataJob::class);
+	}
+
+	/**
+	 * Feature 059 (FR-059-05/FR-059-06): the owner removing their own
+	 * rating (rating: 0) still dispatches EmbedMetadataJob, so the embedded
+	 * rating tags get cleared from the file.
+	 */
+	public function testOwnerRemovingRatingDispatchesEmbedJob(): void
+	{
+		Configs::set('embed_metadata_in_files_enabled', true);
+		PhotoRating::create([
+			'photo_id' => $this->photo1->id,
+			'user_id' => $this->userMayUpload1->id,
+			'rating' => 4,
+		]);
+		Bus::fake([EmbedMetadataJob::class]);
+
+		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+			'photo_id' => $this->photo1->id,
+			'rating' => 0,
+		]);
+
+		Bus::assertDispatched(EmbedMetadataJob::class);
 	}
 }

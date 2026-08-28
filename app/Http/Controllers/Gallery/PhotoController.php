@@ -42,6 +42,7 @@ use App\Http\Resources\Models\PhotoResource;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
+use App\Jobs\EmbedMetadataJob;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
@@ -177,6 +178,10 @@ class PhotoController extends Controller
 
 		$photo->save();
 
+		if ($request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
+			EmbedMetadataJob::dispatch($photo);
+		}
+
 		return new PhotoResource(
 			photo: $photo,
 			album_id: $request->from_album()?->get_id(),
@@ -218,6 +223,13 @@ class PhotoController extends Controller
 			$user,
 			$request->rating()
 		);
+
+		// Only the photo owner's own rating gets embedded into the file —
+		// EXIF/XMP has room for exactly one "Rating" value, and only the
+		// owner's opinion is authoritative for what gets embedded.
+		if ($user->id === $photo->owner_id && $request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
+			EmbedMetadataJob::dispatch($photo);
+		}
 
 		return new PhotoResource(
 			photo: $photo,
@@ -311,6 +323,10 @@ class PhotoController extends Controller
 			DB::commit();
 		});
 		PhotoTagsChanged::dispatch($photo_ids->all());
+
+		if ($request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
+			$photos->each(fn (Photo $photo) => EmbedMetadataJob::dispatch($photo));
+		}
 	}
 
 	/**
