@@ -178,9 +178,7 @@ class PhotoController extends Controller
 
 		$photo->save();
 
-		if ($request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
-			EmbedMetadataJob::dispatch($photo);
-		}
+		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 
 		return new PhotoResource(
 			photo: $photo,
@@ -227,9 +225,8 @@ class PhotoController extends Controller
 		// Only the photo owner's own rating gets embedded into the file —
 		// EXIF/XMP has room for exactly one "Rating" value, and only the
 		// owner's opinion is authoritative for what gets embedded.
-		if ($user->id === $photo->owner_id && $request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
-			EmbedMetadataJob::dispatch($photo);
-		}
+		$shoud_dispatch = $user->id === $photo->owner_id && $request->configs()->getValueAsBool('embed_metadata_in_files_enabled');
+		EmbedMetadataJob::dispatchIf($shoud_dispatch, $photo);
 
 		return new PhotoResource(
 			photo: $photo,

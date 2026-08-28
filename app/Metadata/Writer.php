@@ -56,8 +56,14 @@ class Writer
 	 */
 	private function buildArguments(NativeLocalFile $file, MetadataWritePayload $payload, string $exiftool_path): array
 	{
+		// The `exiftool_path` config is empty by default (it is only set when
+		// the user overrides it): an empty value means "resolve via $PATH",
+		// the same convention used by ConfigManager::hasExiftool()'s
+		// `command -v exiftool` probe and by the php-exif adapter's own
+		// lazy default. Unlike those, Symfony's Process needs an actual
+		// executable name here, not an empty string.
 		$arguments = [
-			$exiftool_path,
+			$exiftool_path !== '' ? $exiftool_path : 'exiftool',
 			'-overwrite_original',
 			'-P',
 			'-charset', 'iptc=UTF8',

@@ -167,6 +167,32 @@ class WriterTest extends AbstractTestCase
 		});
 	}
 
+	/**
+	 * The `exiftool_path` config is empty by default (see the
+	 * `2024_07_01_231053_path_for_exiftool` migration) and is only ever set
+	 * when an admin overrides it. `ConfigManager::hasExiftool()` detects
+	 * availability separately via `command -v exiftool`, so it's possible to
+	 * reach here with a detected-but-unconfigured exiftool: an empty string
+	 * must resolve to the bare binary name for `$PATH` lookup, never be
+	 * passed straight through as an empty Process argv[0] (which throws a
+	 * Symfony `ValueError`).
+	 */
+	public function testEmptyExiftoolPathFallsBackToBareBinaryName(): void
+	{
+		Process::fake();
+
+		$file = new NativeLocalFile(__FILE__);
+		$payload = new MetadataWritePayload(title: 'x', description: null, tags: [], rating: null);
+
+		(new Writer())->embed($file, $payload, '');
+
+		Process::assertRan(function (PendingProcess $process) {
+			self::assertSame('exiftool', $process->command[0]);
+
+			return true;
+		});
+	}
+
 	public function testNonZeroExitCodeThrows(): void
 	{
 		Process::fake([

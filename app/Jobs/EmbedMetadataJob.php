@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\DTO\MetadataWritePayload;
 use App\Enum\JobStatus;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Metadata\Writer;
@@ -67,6 +68,10 @@ class EmbedMetadataJob implements ShouldQueue, ShouldBeUnique
 
 	public function handle(): void
 	{
+		if ($this->quickExit()) {
+			return;
+		}
+
 		$history = new JobHistory();
 		$history->owner_id = $this->photo->owner_id;
 		$history->job = Str::limit(sprintf('Embed metadata for photo: %s.', $this->photo->id), 200);
@@ -88,92 +93,106 @@ class EmbedMetadataJob implements ShouldQueue, ShouldBeUnique
 		}
 	}
 
-	private function run(JobHistory $history): void
+	private function quickExit(): bool
 	{
 		/** @var ConfigManager $config_manager */
 		$config_manager = resolve(ConfigManager::class);
 
 		if (!$config_manager->getValueAsBool('embed_metadata_in_files_enabled')) {
-			// Disabled between dispatch and execution: nothing to do.
-			$history->status = JobStatus::SUCCESS;
-			$history->save();
-
-			return;
+			return true;
 		}
 
 		if (!$config_manager->hasExiftool()) {
 			Log::channel('jobs')->warning('Embed metadata job skipped: exiftool is not available.', [
 				'photo_id' => $this->photo->id,
 			]);
-			$history->status = JobStatus::FAILURE;
-			$history->save();
 
-			return;
+			return true;
 		}
 
+		return false;
+	}
+
+	private function run(JobHistory $history): void
+	{
+		/** @var ConfigManager $config_manager */
+		$config_manager = resolve(ConfigManager::class);
 		$history->status = JobStatus::STARTED;
 		$history->save();
 
 		// Always re-read the photo's current DB state at execution time,
 		// never a value captured at dispatch time, so a de-duplicated run
 		// still reflects the final, latest field values.
-		$this->photo->refresh();
-		$this->photo->load(['size_variants', 'tags']);
-
 		$payload = $this->buildPayload();
-		$writer = resolve(Writer::class);
+
+		$this->photo->load(['size_variants', 'tags']);
 		$exiftool_path = $config_manager->getValueAsString('exiftool_path');
 		$update_checksum = $config_manager->getValueAsBool('embed_metadata_update_checksum_enabled');
 
-		$attempted = 0;
-		$succeeded = 0;
+		$raw = $this->photo->size_variants->getRaw();
+		$raw_success = $this->writeSizeVariant($raw, $payload, $exiftool_path, $update_checksum);
 
-		foreach ([$this->photo->size_variants->getOriginal(), $this->photo->size_variants->getRaw()] as $variant) {
-			if ($variant === null) {
-				continue;
-			}
+		$original = $this->photo->size_variants->getOriginal();
+		$original_success = $this->writeSizeVariant($original, $payload, $exiftool_path, $update_checksum);
 
-			try {
-				$local_file = $variant->getFile()->toLocalFile();
-			} catch (\Throwable $e) {
-				// Non-local (e.g. S3) disk — MediaFileOperationException is
-				// the documented case (FlysystemFile::toLocalFile()), but a
-				// misconfigured non-local disk adapter (e.g. missing S3
-				// credentials/bucket) can throw other exception types while
-				// merely being constructed. Either way: skipped, not a
-				// failure — this feature never attempts non-local writes.
-				Log::channel('jobs')->warning('Embed metadata job skipped a non-local size variant.', [
-					'photo_id' => $this->photo->id,
-					'size_variant_id' => $variant->id,
-					'exception' => $e,
-				]);
-				continue;
-			}
-
-			$attempted++;
-
-			try {
-				$writer->embed($local_file, $payload, $exiftool_path);
-				$this->refreshVariantStats($variant, $local_file, $update_checksum);
-				$succeeded++;
-			} catch (\Throwable $e) {
-				Log::channel('jobs')->warning('Embed metadata job failed to write a size variant.', [
-					'photo_id' => $this->photo->id,
-					'size_variant_id' => $variant->id,
-					'exception' => $e,
-				]);
-			}
-		}
-
-		// Failure only when every targeted, locally-resolvable variant
-		// failed. A non-local skip never counts against this — if none of
-		// the targeted variants were local, that's a no-op success.
-		$history->status = ($attempted > 0 && $succeeded === 0) ? JobStatus::FAILURE : JobStatus::SUCCESS;
+		$history->status = ($raw_success && $original_success) ? JobStatus::SUCCESS : JobStatus::FAILURE;
 		$history->save();
 	}
 
+	/**
+	 * Write the size variant data.
+	 *
+	 * @param SizeVariant|null             $variant
+	 * @param MetadataWritePayload $payload
+	 * @param string                       $exiftool_path
+	 * @param bool                         $update_checksum
+	 *
+	 * @return bool
+	 */
+	private function writeSizeVariant(?SizeVariant $variant, MetadataWritePayload $payload, string $exiftool_path, bool $update_checksum): bool
+	{
+		// Quick exit
+		if ($variant === null) {
+			return true;
+		}
+
+		// Another quick exit: only local files can be written to, so skip any non-local size variants.
+		if ($variant->storage_disk !== StorageDiskType::LOCAL) {
+			Log::channel('jobs')->warning('Embed metadata job skipped a non-local size variant.', [
+				'photo_id' => $this->photo->id,
+				'size_variant_id' => $variant->id,
+			]);
+
+			return true;
+		}
+
+		try {
+			$local_file = $variant->getFile()->toLocalFile();
+			/** @var Writer $writer */
+			$writer = resolve(Writer::class);
+			$writer->embed($local_file, $payload, $exiftool_path);
+			$this->refreshVariantStats($variant, $local_file, $update_checksum);
+
+			return true;
+		} catch (\Throwable $e) {
+			Log::channel('jobs')->warning('Embed metadata job failed to write a size variant.', [
+				'photo_id' => $this->photo->id,
+				'size_variant_id' => $variant->id,
+				'exception' => $e,
+			]);
+
+			return false;
+		}
+	}
+
+	/**
+	 * Payload from the Photo data.
+	 *
+	 * @return MetadataWritePayload
+	 */
 	private function buildPayload(): MetadataWritePayload
 	{
+		$this->photo->refresh();
 		$owner_rating = PhotoRating::query()
 			->where('photo_id', $this->photo->id)
 			->where('user_id', $this->photo->owner_id)
