@@ -21,12 +21,9 @@ enum ColumnSortingPhotoType: string
 
 	case OWNER_ID = 'owner_id';
 	case CREATED_AT = 'created_at';
-	case TITLE = 'title';
-	case DESCRIPTION = 'description';
 
-	// We sort those at the database level.
-	case TITLE_STRICT = 'title_strict';
-	case DESCRIPTION_STRICT = 'description_strict';
+	// Feature 060: sorted purely at the database level via title_base/title_index.
+	case TITLE = 'title';
 
 	case TAKEN_AT = 'taken_at';
 	case IS_HIGHLIGHTED = 'is_highlighted';
@@ -48,10 +45,6 @@ enum ColumnSortingPhotoType: string
 	 */
 	public function toColumn(): string
 	{
-		return match ($this) {
-			self::TITLE_STRICT => 'title',
-			self::DESCRIPTION_STRICT => 'description',
-			default => $this->value,
-		};
+		return $this->value;
 	}
 }

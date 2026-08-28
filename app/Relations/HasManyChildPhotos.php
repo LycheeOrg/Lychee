@@ -11,7 +11,6 @@ namespace App\Relations;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilder;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -100,6 +99,16 @@ class HasManyChildPhotos extends BelongsToMany
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 		$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user, $unlocked_album_ids);
+
+		// Feature 060 (FR-060-08): order at the SQL layer directly on the
+		// eager-load query builder, since Eloquent's default eager-load path
+		// bypasses `getResults()`/`SortingDecorator::get()`. In practice this
+		// relation is only ever eager-loaded for a single owning album, so
+		// using the first model's effective sorting is sufficient.
+		$album_sorting = $models[0]->getEffectivePhotoSorting();
+		(new SortingDecorator($this->query))
+			->orderPhotosBy($album_sorting->column, $album_sorting->order)
+			->applyOrdering();
 	}
 
 	/**
@@ -131,6 +140,10 @@ class HasManyChildPhotos extends BelongsToMany
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
+	 * The query built in {@link self::addEagerConstraints()} already applies
+	 * the effective sort order at the SQL layer (FR-060-08), so this simply
+	 * preserves the DB-provided order instead of re-sorting in PHP.
+	 *
 	 * @param Album[]               $models   an array of parent models
 	 * @param Collection<int,Photo> $results  the unified collection of all child models of all parent models
 	 * @param string                $relation the name of the relation from the parent to the child models
@@ -152,16 +165,7 @@ class HasManyChildPhotos extends BelongsToMany
 			$key = $this->getDictionaryKey($model->{$this->parentKey}); // @phpstan-ignore property.dynamicName
 
 			if (isset($dictionary[$key])) {
-				$children_of_model = $this->related->newCollection($dictionary[$key]);
-				$sorting = $model->getEffectivePhotoSorting();
-				$children_of_model = $children_of_model
-					->sortBy(
-						$sorting->column->toColumn(),
-						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-						$sorting->order === OrderSortingType::DESC
-					)
-					->values();
-
+				$children_of_model = $this->related->newCollection($dictionary[$key])->values();
 				$model->setRelation(
 					$relation, $children_of_model
 				);

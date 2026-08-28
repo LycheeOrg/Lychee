@@ -11,6 +11,7 @@ namespace App\Actions\Album;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Services\TitleSplitter;
 
 class SetHeader
 {
@@ -37,6 +38,15 @@ class SetHeader
 				$album->header_photo_focus = null;
 			}
 		}
+
+		// Feature 060 (FR-060-03): explicit sync, no model event. This is
+		// the shared save choke-point for the regular-album title edit path
+		// (`AlbumController::updateAlbum()`); recomputing here even when
+		// `title` is unchanged (e.g. the plain `header()` endpoint) is a
+		// harmless no-op.
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->save();
 
 		return $album;

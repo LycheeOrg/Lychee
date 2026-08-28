@@ -18,6 +18,7 @@ use App\Exceptions\UnexpectedException;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Repositories\ConfigManager;
+use App\Services\TitleSplitter;
 
 class Create
 {
@@ -39,6 +40,10 @@ class Create
 	{
 		$album = new Album();
 		$album->title = $title;
+		// Feature 060 (FR-060-03): explicit sync, no model event.
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$this->set_parent($album, $parent_album);
 		$album->save();
 		$this->set_permissions($album, $parent_album);

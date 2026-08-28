@@ -52,6 +52,7 @@ use App\Models\Tag;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\TitleSplitter;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -163,6 +164,10 @@ class PhotoController extends Controller
 	{
 		$photo = $request->photo();
 		$photo->title = $request->title();
+		// Feature 060 (FR-060-03): explicit sync, no model event.
+		$title_split = TitleSplitter::split($photo->title);
+		$photo->title_base = $title_split->base;
+		$photo->title_index = $title_split->index;
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
 
@@ -281,6 +286,10 @@ class PhotoController extends Controller
 	{
 		$photo = $request->photo();
 		$photo->title = $request->title();
+		// Feature 060 (FR-060-03): explicit sync, no model event.
+		$title_split = TitleSplitter::split($photo->title);
+		$photo->title_base = $title_split->base;
+		$photo->title_index = $title_split->index;
 		$photo->save();
 	}
 

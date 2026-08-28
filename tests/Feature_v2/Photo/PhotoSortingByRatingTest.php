@@ -71,11 +71,11 @@ class PhotoSortingByRatingTest extends BaseApiWithDataTest
 	 */
 	public function testRatingAvgRawExpression(): void
 	{
-		$expression = ColumnSortingType::RATING_AVG->getRawOrderExpression('');
-		$this->assertEquals('COALESCE(rating_avg, -1)', $expression);
+		$expression = ColumnSortingType::RATING_AVG->getRawOrderExpression('', OrderSortingType::ASC);
+		$this->assertEquals('COALESCE(rating_avg, -1) ASC', $expression);
 
-		$expressionWithPrefix = ColumnSortingType::RATING_AVG->getRawOrderExpression('photos.');
-		$this->assertEquals('COALESCE(photos.rating_avg, -1)', $expressionWithPrefix);
+		$expressionWithPrefix = ColumnSortingType::RATING_AVG->getRawOrderExpression('photos.', OrderSortingType::DESC);
+		$this->assertEquals('COALESCE(photos.rating_avg, -1) DESC', $expressionWithPrefix);
 	}
 
 	/**

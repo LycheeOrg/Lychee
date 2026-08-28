@@ -21,13 +21,15 @@ enum SearchSortingType: string
 
 	/**
 	 * Convert into the column used to sort photos.
+	 *
+	 * Feature 060: `TITLE` maps directly - search's title sort now uses the
+	 * same unified, DB-driven natural order as every other Title sort
+	 * (intentional behaviour change, FR-060-09).
 	 */
 	public function toPhotoColumn(): ColumnSortingPhotoType
 	{
 		return match ($this) {
-			// Sorted at the database level for true lexicographic (byte) order,
-			// unlike the (PHP-level, natural-sort) plain TITLE column.
-			self::TITLE => ColumnSortingPhotoType::TITLE_STRICT,
+			self::TITLE => ColumnSortingPhotoType::TITLE,
 			self::CREATED_AT => ColumnSortingPhotoType::CREATED_AT,
 			self::TAKEN_AT => ColumnSortingPhotoType::TAKEN_AT,
 		};
@@ -40,11 +42,13 @@ enum SearchSortingType: string
 	 * contain, so the ordering direction picks which bound to sort by
 	 * (descending -> most recent photo first -> `max_taken_at`; ascending ->
 	 * oldest photo first -> `min_taken_at`).
+	 *
+	 * Feature 060: `TITLE` maps directly (FR-060-09), same as {@link self::toPhotoColumn()}.
 	 */
 	public function toAlbumColumn(OrderSortingType $order): ColumnSortingAlbumType
 	{
 		return match ($this) {
-			self::TITLE => ColumnSortingAlbumType::TITLE_STRICT,
+			self::TITLE => ColumnSortingAlbumType::TITLE,
 			self::CREATED_AT => ColumnSortingAlbumType::CREATED_AT,
 			self::TAKEN_AT => $order === OrderSortingType::DESC
 				? ColumnSortingAlbumType::MAX_TAKEN_AT

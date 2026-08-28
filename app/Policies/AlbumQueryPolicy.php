@@ -634,6 +634,8 @@ class AlbumQueryPolicy
 
 		if ($full) {
 			$columns[] = $prefix . 'base_albums.title';
+			$columns[] = $prefix . 'base_albums.title_base';
+			$columns[] = $prefix . 'base_albums.title_index';
 			$columns[] = $prefix . 'base_albums.created_at';
 			$columns[] = $prefix . 'base_albums.description';
 			$columns[] = $prefix . 'base_albums.published_at';

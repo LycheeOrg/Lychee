@@ -11,6 +11,7 @@ namespace App\Actions\Renamer;
 use App\Metadata\Renamer\AlbumRenamer;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Services\TitleSplitter;
 use Illuminate\Support\Collection;
 
 class RenameAlbums
@@ -37,10 +38,20 @@ class RenameAlbums
 			->whereIn('id', $album_ids)
 			// Process by chunks of self::CHUNK_SIZE to avoid memory issues
 			->chunkById(self::CHUNK_SIZE, function (Collection $albums) use ($album_renamer): void {
-				$values = $albums->map(fn (Album $album) => [
-					'id' => $album->id,
-					'title' => $album_renamer->handle($album->title),
-				])->all();
+				// Feature 060 (FR-060-03): explicit sync, no model event.
+				// `batch()->update()` bypasses `save()`/model events entirely,
+				// so `title_base`/`title_index` must be computed inline here.
+				$values = $albums->map(function (Album $album) use ($album_renamer) {
+					$title = $album_renamer->handle($album->title);
+					$title_split = TitleSplitter::split($title);
+
+					return [
+						'id' => $album->id,
+						'title' => $title,
+						'title_base' => $title_split->base,
+						'title_index' => $title_split->index,
+					];
+				})->all();
 
 				// Make a batch update to update all photo titles at once
 				$album_instance = new BaseAlbumImpl();

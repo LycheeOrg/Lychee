@@ -9,7 +9,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -95,6 +94,14 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 				origin: $albums[0],
 				include_nsfw: true
 			);
+
+		// Feature 060 (FR-060-08): order at the SQL layer directly on the
+		// eager-load query builder, since Eloquent's default eager-load path
+		// bypasses `getResults()`/`SortingDecorator::get()`.
+		$sorting = $albums[0]->getEffectivePhotoSorting();
+		(new SortingDecorator($this->getRelationQuery()))
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->applyOrdering();
 	}
 
 	/**
@@ -116,6 +123,9 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 	 *
 	 * This method is called by the framework after the unified result of
 	 * photos has been fetched by {@link HasManyPhotosRecursively::addEagerConstraints()}.
+	 * The query built there already applies the effective sort order at the
+	 * SQL layer (FR-060-08), so this simply preserves the DB-provided order
+	 * instead of re-sorting in PHP.
 	 *
 	 * @param Album[]                           $albums   the list of owning albums
 	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
@@ -136,13 +146,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
-			$sorting = $album->getEffectivePhotoSorting();
-			$photos = $photos->sortBy(
-				$sorting->column->toColumn(),
-				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-				$sorting->order === OrderSortingType::DESC
-			)->values();
-			$album->setRelation($relation, $photos);
+			$album->setRelation($relation, $photos->values());
 		}
 
 		return $albums;

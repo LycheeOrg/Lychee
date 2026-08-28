@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Implemented |
 | Last updated | 2026-08-27 |
 | Owners | Agent |
 | Linked plan | `docs/specs/4-architecture/features/060-database-title-sorting/plan.md` |
@@ -40,7 +40,7 @@ Today, sorting photos/albums by Title or Description offers a "natural" variant 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-060-01 | `photos` and `base_albums` each gain two new columns: `title_base` (string, same length/nullability as `title` on that table) and `title_index` (nullable unsigned big integer). | Both columns exist after migration, indexed together as `(title_base, title_index)`. | Migration runs cleanly on MySQL/MariaDB, PostgreSQL, and SQLite. | Migration `down()` drops both columns and the composite index. | No telemetry. | User direction |
-| FR-060-02 | A single pure PHP function (`TitleSplitter`, e.g. `app/Actions/Utility/TitleSplitter.php` or `app/Services/TitleSplitter.php`) computes `{base, index}` from a raw title string in two stages. **Stage A (extension-aware pre-processing):** if the title ends in `.` followed by 1-5 word characters starting with a letter (`\.([A-Za-z][A-Za-z0-9]{0,4})$` — matches `.jpg`, `.jpeg`, `.xts`, `.gpx`, etc.; deliberately does **not** match a numeric-only suffix like `.2`, since that's a legitimate index, not an extension), that suffix is set aside as `$extension` and the remaining `$stem` is used for Stage B. Otherwise `$stem = $title` and `$extension = null`. **Stage B (rule chain, applied to `$stem`):** (1) trailing digit run — `^(.*?)(\d+)$`, e.g. `test10` → `base="test"`, `index=10`; (2) if rule 1 finds no match, a trailing parenthesised number — `^(.*?)\s*\((\d+)\)$`, e.g. `Photo (2)` → `base="Photo "`, `index=2`; (3) if **neither** rule matches even on the extension-stripped stem, the extension is **not** discarded — fall back to `base=$title` (the full, original, un-stripped string), `index=null`. This makes Stage A's extension guess self-correcting: a wrong guess (e.g. treating `.II` in `Vol.II` as an extension) only ever affects the result when it also produces a false-positive digit match, and even then the "worst case" is a defensible best-effort grouping, never a token silently dropped from a title that has no numeric suffix at all. | Base is stored lower-cased (case-folded) so plain byte-order `ORDER BY` on it reproduces today's case-insensitive comparison across all 3 DB drivers/collations without relying on driver-specific collation config. Index is cast to unsigned big integer; a digit run longer than 19 characters (overflowing 64-bit unsigned range) is truncated to its **last** 19 digits, consistent with the heuristic's "always take the last/trailing digits" rule. `$extension` is discarded (not appended back to `base`) once an index is successfully extracted — see NFR-060-09 for the resulting cross-extension grouping behaviour. | Empty-string title → `base=""`, `index=null`. `xxx_123.jpg` → `base="xxx_"`, `index=123` (Stage A strips `.jpg`, Stage B rule 1 matches the stem `xxx_123`). `xxx (123).xts` → `base="xxx "`, `index=123` (Stage A strips `.xts`, Stage B rule 2 matches the stem `xxx (123)`). `xxx.2` → `base="xxx."`, `index=2` (Stage A does **not** strip `.2` — digit-only suffix — so rule 1 matches the untouched string directly). | N/A (pure function, no failure mode). | No telemetry. | User direction (heuristic), Q-060-02, Q-060-03 (extension-suffix gap found via user review of the draft spec) |
+| FR-060-02 | A single pure PHP function (`TitleSplitter`, e.g. `app/Actions/Utility/TitleSplitter.php` or `app/Services/TitleSplitter.php`) computes `{base, index}` from a raw title string in two stages. **Stage A (extension-aware pre-processing):** if the title ends in `.` followed by 1-5 word characters starting with a letter (`\.([A-Za-z][A-Za-z0-9]{0,4})$` — matches `.jpg`, `.jpeg`, `.xts`, `.gpx`, etc.; deliberately does **not** match a numeric-only suffix like `.2`, since that's a legitimate index, not an extension), that suffix is set aside as `$extension` and the remaining `$stem` is used for Stage B. Otherwise `$stem = $title` and `$extension = null`. **Stage B (rule chain, applied to `$stem`):** (1) trailing digit run — `^(.*?)(\d+)$`, e.g. `test10` → `base="test"`, `index=10`; (2) if rule 1 finds no match, a trailing parenthesised number — `^(.*?)\((\d+)\)$`, e.g. `Photo (2)` → `base="Photo "`, `index=2`; (3) if **neither** rule matches even on the extension-stripped stem, the extension is **not** discarded — fall back to `base=$title` (the full, original, un-stripped string), `index=null`. This makes Stage A's extension guess self-correcting: a wrong guess (e.g. treating `.II` in `Vol.II` as an extension) only ever affects the result when it also produces a false-positive digit match, and even then the "worst case" is a defensible best-effort grouping, never a token silently dropped from a title that has no numeric suffix at all. | Base is stored lower-cased (case-folded) so plain byte-order `ORDER BY` on it reproduces today's case-insensitive comparison across all 3 DB drivers/collations without relying on driver-specific collation config. Index is cast to unsigned big integer; a digit run longer than 19 characters (overflowing 64-bit unsigned range) is truncated to its **last** 19 digits, consistent with the heuristic's "always take the last/trailing digits" rule. `$extension` (Stage A's stripped suffix, if any) is **re-appended to `base`** once an index is successfully extracted from the stripped stem (Q-060-04 correction) — see NFR-060-09 for the resulting cross-extension grouping behaviour. | Empty-string title → `base=""`, `index=null`. `xxx_123.jpg` → `base="xxx_.jpg"`, `index=123` (Stage A strips `.jpg`, Stage B rule 1 matches the stem `xxx_123`, extension re-appended). `xxx (123).xts` → `base="xxx .xts"`, `index=123` (Stage A strips `.xts`, Stage B rule 2 matches the stem `xxx (123)`, extension re-appended). `xxx.2` → `base="xxx."`, `index=2` (Stage A does **not** strip `.2` — digit-only suffix — so rule 1 matches the untouched string directly). | N/A (pure function, no failure mode). | No telemetry. | User direction (heuristic), Q-060-02, Q-060-03/Q-060-04 (extension-suffix gap and cross-extension-tie contradiction found via user review of the draft spec) |
 | FR-060-03 | `title_base`/`title_index` are recomputed **explicitly, at every individual write site**, immediately after `title` is assigned and before `save()`/batch-update — no Eloquent model events (`saving`/`creating` hooks), no mutators, no other implicit/framework-driven mechanism. Each site calls the same pure `TitleSplitter::split(string $title): TitleSplitResult` (FR-060-02) and assigns `title_base`/`title_index` inline, mirroring Feature 009's explicit `$photo->rating_avg = ...;` sync-at-the-point-of-change convention. | All 12 identified write sites are updated: **Photos** — `Pipes/Shared/Save.php` (single choke-point for the whole upload/import pipeline, covers title set earlier by `Pipes/Init/LoadFileMetadata.php`, `Pipes/Shared/HydrateMetadata.php`, `Pipes/Standalone/ApplyUserProvidedMetadata.php`, `Pipes/Standalone/AutoRenamer.php`), `PhotoController::update()`, `PhotoController::rename()`, `Actions/Renamer/RenamePhotos.php` (bulk Renamer Rules — inline in the `batch()->update()` value map, since that call bypasses `save()`/model events entirely). **Albums** — `Actions/Album/Create.php`, `Actions/Album/CreateTagAlbum.php`, `Actions/Album/CreatePersonAlbum.php`, `Actions/Album/SetHeader.php` (regular-album title edit path), `AlbumController::updateTagAlbum()`, `AlbumController::updatePersonAlbum()`, `AlbumController::rename()`, `Actions/Renamer/RenameAlbums.php` (bulk, same `batch()->update()` bypass as photos). | A new data-integrity test iterates all `photos`/`base_albums` rows and asserts `title_base`/`title_index` always equal `TitleSplitter::split(title)` — this is the safety net for a missed call site (in place of relying on a hook to make omission impossible). | A write site that is missed leaves stale derived columns for that row until the next title change through a covered site — this is a known, accepted trade-off of the explicit-call-site approach (NFR-060-07) and is why the integrity test above exists, plus a `phpstan`-visible convention comment at every site. | No telemetry. | User direction — explicit, direct implementation only; no Eloquent lifecycle hooks. Write-path list from repo-wide `grep` enumeration (`grep -rn "->title\s*=" app/`, `grep -rln "'title'\s*=>" app/Actions/ app/Http/Requests/`). |
 | FR-060-04 | A backfill data migration computes `title_base`/`title_index` for every existing row in `photos` and `base_albums`, chunked, using the same `TitleSplitter` function as FR-060-02 (PHP-side, since the split cannot be expressed as a single portable SQL expression — see NFR-060-01). | All pre-existing rows have correct, non-stale derived columns immediately after migration. | Chunked (e.g. 500-1000 rows/batch) to bound memory on large installs. | Migration is transactional per chunk; a failure mid-run can be safely re-run (idempotent — recomputing from `title` always yields the same result). | No telemetry. | User direction |
 | FR-060-05 | `ColumnSortingType::TITLE_STRICT` is removed. `ColumnSortingType::TITLE` becomes the sole title-ordering entry point, resolved via `requiresRawOrdering() === true` and a `getRawOrderExpression()` extended to accept the sort direction, returning `{prefix}title_base {dir}, COALESCE({prefix}title_index, -1) {dir}` (mirrors Feature 009's `COALESCE(rating_avg, -1)` sentinel pattern — a title with no digit suffix sorts as if `index = -1`, i.e. immediately before any digit-suffixed sibling with the same base, matching today's natural-sort behaviour where `"test"` sorts before `"test0"`). | `ORDER BY title ASC/DESC` in `SortingDecorator::applySqlSorting()` becomes `ORDER BY title_base ASC/DESC, title_index ASC/DESC` for both directions symmetrically (not a fixed "NULLs always last" rule — direction-symmetric, since an absent index isn't conceptually "worse" the way an unrated photo is in Feature 009). | Both `photos` and `base_albums` (and the `photos.` relation-prefixed path via `orderPhotosBy()`) use the identical expression shape. | N/A — pure SQL, no runtime failure mode beyond the existing `InvalidOrderDirectionException` handling already in `SortingDecorator`. | No telemetry. | Research: `app/Enum/ColumnSortingType.php`, `app/Models/Extensions/SortingDecorator.php` |
@@ -283,16 +283,25 @@ final class TitleSplitter
     {
         // Stage A: set aside a trailing file-extension-shaped suffix, if any,
         // so it doesn't defeat the digit/paren rules below (e.g. "photo_2.jpg").
-        // The extension itself is discarded — never appended back to base.
-        $stem = preg_replace(self::EXTENSION_PATTERN, '', $title) ?? $title;
+        // The extension is re-appended to base in toResult() once an index is
+        // successfully extracted, so titles which only differ by extension
+        // (e.g. "photo_5.jpg" vs. "photo_5.heic") get different base values
+        // and don't tie/interleave (NFR-060-09, Q-060-04).
+        if (preg_match(self::EXTENSION_PATTERN, $title, $ext) === 1) {
+            $extension = $ext[0];
+            $stem = substr($title, 0, -strlen($extension));
+        } else {
+            $extension = null;
+            $stem = $title;
+        }
 
         // Stage B, rule 1: trailing digit run on the (possibly stripped) stem.
         if (preg_match('/^(.*?)(\d+)$/u', $stem, $m) === 1) {
-            return self::toResult($m[1], $m[2]);
+            return self::toResult($m[1], $m[2], $extension);
         }
         // Stage B, rule 2: trailing parenthesised number on the stem.
-        if (preg_match('/^(.*?)\s*\((\d+)\)$/u', $stem, $m) === 1) {
-            return self::toResult($m[1], $m[2]);
+        if (preg_match('/^(.*?)\((\d+)\)$/u', $stem, $m) === 1) {
+            return self::toResult($m[1], $m[2], $extension);
         }
 
         // Stage B, rule 3 (fallback): no index found even after stripping —
@@ -302,26 +311,28 @@ final class TitleSplitter
         return ['base' => mb_strtolower($title), 'index' => null];
     }
 
-    private static function toResult(string $base, string $digits): array
+    private static function toResult(string $base, string $digits, ?string $extension): array
     {
         if (strlen($digits) > self::MAX_INDEX_DIGITS) {
             $digits = substr($digits, -self::MAX_INDEX_DIGITS);
         }
 
-        return ['base' => mb_strtolower($base), 'index' => (int) $digits];
+        return ['base' => mb_strtolower($base . ($extension ?? '')), 'index' => (int) $digits];
     }
 }
 ```
 
-### Worked examples (Q-060-03)
+### Worked examples (Q-060-03/Q-060-04)
 
 | Title | Stage A stem | Matched rule | `base` | `index` |
 |---|---|---|---|---|
-| `xxx_123.jpg` | `xxx_123` (`.jpg` stripped) | B1 (trailing digits) | `xxx_` | `123` |
+| `xxx_123.jpg` | `xxx_123` (`.jpg` stripped) | B1 (trailing digits) | `xxx_.jpg` (extension re-appended) | `123` |
 | `xxx (123)` | `xxx (123)` (no extension detected) | B2 (parenthesised) | `xxx ` | `123` |
-| `xxx (123).xts` | `xxx (123)` (`.xts` stripped) | B2 (parenthesised) | `xxx ` | `123` |
+| `xxx (123).xts` | `xxx (123)` (`.xts` stripped) | B2 (parenthesised) | `xxx .xts` (extension re-appended) | `123` |
 | `xxx.2` | `xxx.2` (`.2` is digit-only, not stripped) | B1 (trailing digits) | `xxx.` | `2` |
 | `Vol.II` | `Vol` (`.II` incorrectly guessed as an extension) | none — B3 fallback | `vol.ii` (full original title) | `null` |
+| `photo_5.jpg` | `photo_5` (`.jpg` stripped) | B1 (trailing digits) | `photo_.jpg` | `5` |
+| `photo_5.heic` | `photo_5` (`.heic` stripped) | B1 (trailing digits) | `photo_.heic` | `5` |
 
 ### Why not native DB generated columns?
 

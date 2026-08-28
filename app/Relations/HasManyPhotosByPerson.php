@@ -9,7 +9,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
@@ -68,9 +67,23 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		$ids_query = app(PersonAlbumMatcher::class)->buildMatchingPhotoIdsQuery($album, $user, $unlocked_album_ids);
 
 		$this->getRelationQuery()->whereIn('photos.id', $ids_query);
+
+		// Feature 060 (FR-060-08): order at the SQL layer directly on the
+		// eager-load query builder, since Eloquent's default eager-load path
+		// bypasses `getResults()`/`SortingDecorator::get()`.
+		$sorting = $album->getEffectivePhotoSorting();
+		(new SortingDecorator($this->getRelationQuery()))
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->applyOrdering();
 	}
 
 	/**
+	 * Match the eagerly loaded results to their parents.
+	 *
+	 * The query built in {@link self::addEagerConstraints()} already applies
+	 * the effective sort order at the SQL layer (FR-060-08), so this simply
+	 * preserves the DB-provided order instead of re-sorting in PHP.
+	 *
 	 * @param PersonAlbum[]                     $albums
 	 * @param Collection<int,\App\Models\Photo> $photos
 	 * @param string                            $relation
@@ -86,14 +99,7 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		}
 		/** @var PersonAlbum $album */
 		$album = $albums[0];
-		$sorting = $album->getEffectivePhotoSorting();
-
-		$photos = $photos->sortBy(
-			$sorting->column->toColumn(),
-			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-			$sorting->order === OrderSortingType::DESC
-		)->values();
-		$album->setRelation($relation, $photos);
+		$album->setRelation($relation, $photos->values());
 
 		return $albums;
 	}

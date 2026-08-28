@@ -1,7 +1,7 @@
 # Feature Plan 060 – Database-Driven Title Sorting
 
 _Linked specification:_ `docs/specs/4-architecture/features/060-database-title-sorting/spec.md`
-_Status:_ Draft
+_Status:_ Implemented
 _Last updated:_ 2026-08-27
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
@@ -48,6 +48,15 @@ Every title-based sort (`photos` and `base_albums`) resolves in a single SQL `OR
 ## Implementation Drift Gate
 
 Record here, once implementation starts: (1) whether the grep sweep in I2 found any raw-update write path on `title` that needed extra handling, (2) actual chunk size/timing observed backfilling the dev DB, (3) any `EXPLAIN` findings from NFR-060-04's performance check, (4) any locale files found missing the 6 orphaned keys (i.e., already inconsistent before this feature).
+
+**Recorded 2026-08-28:**
+
+1. The T-060-11 grep sweep (`grep -rn -- "->title *=" app/`, `grep -rln "'title'\s*=>" app/Actions/ app/Http/Requests/ app/Models/`) found exactly the 12 write sites enumerated in the spec — no additional raw/mass `Builder::update(['title' => ...])` path on `Photo`/`BaseAlbumImpl` was found. The plan's Assumption is confirmed, not merely assumed.
+2. Dev/test SQLite DB has effectively zero pre-existing rows at migration time in this sandbox, so the backfill migrations' `chunkById(1000, ...)` never exercised more than a single small chunk; timing was sub-2ms in both cases. Chunk size (1000) is unverified at scale in this session — no 100k+-row dataset was available to test against.
+3. Not run in this session — no realistic-sized dataset was available in the sandbox to produce a meaningful `EXPLAIN` comparison. The composite index `(title_base, title_index)` is created on both tables per FR-060-01; a real-install `EXPLAIN QUERY PLAN`/`EXPLAIN` check against a title-sorted, paginated listing is recommended before/at release to confirm the index is actually used by the query planner.
+4. All 22 non-`en` locale `gallery.php` files had all 6 orphaned keys present (verified via `grep` before removal) — none were already inconsistent. Removal script: `sed -i "/^        'photo_select_4' =>/d; /^        'photo_select_3_strict' =>/d; /^        'photo_select_4_strict' =>/d; /^        'album_select_3' =>/d; /^        'album_select_2_strict' =>/d; /^        'album_select_3_strict' =>/d"` applied identically to all 22 files (all shared the exact same key/line format); `php -l` confirmed no syntax errors afterward, and `LangTest::testLanguageConsistency` passed.
+5. **Not in the original gate checklist, but discovered during implementation:** a real contradiction between FR-060-02's drafted wording ("extension discarded, not appended back to base") and NFR-060-09/S-060-21's requirement that `photo_5.jpg`/`photo_5.heic` get *different* `title_base` values. Resolved with the user (re-append the extension to `base` once an index is extracted) — logged as Q-060-04, spec.md's FR-060-02/Appendix corrected accordingly.
+6. **Not in the original gate checklist:** `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s lightweight `base_albums` sub-select (used by every real Album-title-sorting call site via `applyVisibilityFilter()`/`applyReachabilityFilter()`) did not select `title_base`/`title_index`, causing a `no such column: title_base` SQL error the moment `ColumnSortingType::TITLE` became DB-only. Fixed by adding both columns to that join's column list.
 
 ## Increment Map
 
