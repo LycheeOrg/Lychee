@@ -37,7 +37,6 @@ class CreateTagAlbum
 
 		$album = new TagAlbum();
 		$album->title = $title;
-		// Feature 060 (FR-060-03): explicit sync, no model event.
 		$title_split = TitleSplitter::split($album->title);
 		$album->title_base = $title_split->base;
 		$album->title_index = $title_split->index;

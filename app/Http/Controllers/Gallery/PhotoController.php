@@ -164,7 +164,6 @@ class PhotoController extends Controller
 	{
 		$photo = $request->photo();
 		$photo->title = $request->title();
-		// Feature 060 (FR-060-03): explicit sync, no model event.
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
@@ -286,7 +285,6 @@ class PhotoController extends Controller
 	{
 		$photo = $request->photo();
 		$photo->title = $request->title();
-		// Feature 060 (FR-060-03): explicit sync, no model event.
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;

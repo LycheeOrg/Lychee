@@ -76,13 +76,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		parent::addEagerConstraints($models);
 		$user = Auth::user();
 		$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user);
-
-		// Feature 060 (FR-060-08): order at the SQL layer directly on the
-		// eager-load query builder, since Eloquent's default eager-load path
-		// bypasses `getResults()`/`SortingDecorator::get()`. This relation is
-		// eager-loaded for multiple owning albums (e.g. Album Merge), but
-		// order among children is not semantically significant there, so
-		// using the first model's effective sorting is sufficient.
 		$album_sorting = $models[0]->getEffectiveAlbumSorting();
 		(new SortingDecorator($this->getRelationQuery()))
 			->orderBy($album_sorting->column, $album_sorting->order)

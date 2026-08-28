@@ -17,8 +17,6 @@ enum ColumnSortingType: string
 {
 	case OWNER_ID = 'owner_id';
 	case CREATED_AT = 'created_at';
-
-	// Feature 060: sorted purely at the database level via title_base/title_index.
 	case TITLE = 'title';
 
 	// from albums

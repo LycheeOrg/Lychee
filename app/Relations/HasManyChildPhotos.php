@@ -99,12 +99,6 @@ class HasManyChildPhotos extends BelongsToMany
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 		$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user, $unlocked_album_ids);
-
-		// Feature 060 (FR-060-08): order at the SQL layer directly on the
-		// eager-load query builder, since Eloquent's default eager-load path
-		// bypasses `getResults()`/`SortingDecorator::get()`. In practice this
-		// relation is only ever eager-loaded for a single owning album, so
-		// using the first model's effective sorting is sufficient.
 		$album_sorting = $models[0]->getEffectivePhotoSorting();
 		(new SortingDecorator($this->query))
 			->orderPhotosBy($album_sorting->column, $album_sorting->order)

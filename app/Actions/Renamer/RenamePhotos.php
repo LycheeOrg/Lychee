@@ -37,9 +37,6 @@ class RenamePhotos
 			->whereIn('id', $photo_ids)
 			// Process by chunks of self::CHUNK_SIZE to avoid memory issues
 			->chunkById(self::CHUNK_SIZE, function (Collection $photos) use ($photo_renamer): void {
-				// Feature 060 (FR-060-03): explicit sync, no model event.
-				// `batch()->update()` bypasses `save()`/model events entirely,
-				// so `title_base`/`title_index` must be computed inline here.
 				$values = $photos->map(function (Photo $photo) use ($photo_renamer) {
 					$title = $photo_renamer->handle($photo->title);
 					$title_split = TitleSplitter::split($title);

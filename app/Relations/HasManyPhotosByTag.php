@@ -133,10 +133,6 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 
 		$this->getRelationQuery()->whereIn('photos.id', $ids_query);
-
-		// Feature 060 (FR-060-08): order at the SQL layer directly on the
-		// eager-load query builder, since Eloquent's default eager-load path
-		// bypasses `getResults()`/`SortingDecorator::get()`.
 		$sorting = $album->getEffectivePhotoSorting();
 		(new SortingDecorator($this->getRelationQuery()))
 			->orderPhotosBy($sorting->column, $sorting->order)
