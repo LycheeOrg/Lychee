@@ -257,10 +257,12 @@ class PhotoRatingIntegrationTest extends BaseApiWithDataTest
 		]);
 		Bus::fake([EmbedMetadataJob::class]);
 
-		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
 			'photo_id' => $this->photo1->id,
 			'rating' => 0,
 		]);
+
+		$this->assertCreated($response);
 
 		Bus::assertDispatched(EmbedMetadataJob::class);
 	}
