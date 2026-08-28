@@ -142,10 +142,10 @@ class EmbedMetadataJob implements ShouldQueue, ShouldBeUnique
 	/**
 	 * Write the size variant data.
 	 *
-	 * @param SizeVariant|null             $variant
+	 * @param SizeVariant|null     $variant
 	 * @param MetadataWritePayload $payload
-	 * @param string                       $exiftool_path
-	 * @param bool                         $update_checksum
+	 * @param string               $exiftool_path
+	 * @param bool                 $update_checksum
 	 *
 	 * @return bool
 	 */
