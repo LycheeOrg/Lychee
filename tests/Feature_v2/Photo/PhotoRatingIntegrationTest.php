@@ -255,6 +255,20 @@ class PhotoRatingIntegrationTest extends BaseApiWithDataTest
 			'user_id' => $this->userMayUpload1->id,
 			'rating' => 4,
 		]);
+		// Statistics must reflect the rating created above; the controller
+		// only ever adjusts them by delta, it never recomputes from scratch.
+		$this->photo1->statistics()->firstOrCreate(
+			['photo_id' => $this->photo1->id],
+			[
+				'album_id' => null,
+				'visit_count' => 0,
+				'download_count' => 0,
+				'favourite_count' => 0,
+				'shared_count' => 0,
+				'rating_sum' => 4,
+				'rating_count' => 1,
+			]
+		);
 		Bus::fake([EmbedMetadataJob::class]);
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [

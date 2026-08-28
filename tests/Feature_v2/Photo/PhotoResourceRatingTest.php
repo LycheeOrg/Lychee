@@ -141,11 +141,28 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 			'rating' => 4,
 		]);
 
+		// Statistics must reflect the rating created above; the controller
+		// only ever adjusts them by delta, it never recomputes from scratch.
+		$this->photo1->statistics()->firstOrCreate(
+			['photo_id' => $this->photo1->id],
+			[
+				'album_id' => null,
+				'visit_count' => 0,
+				'download_count' => 0,
+				'favourite_count' => 0,
+				'shared_count' => 0,
+				'rating_sum' => 4,
+				'rating_count' => 1,
+			]
+		);
+
 		// Remove rating
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
 			'photo_id' => $this->photo1->id,
 			'rating' => 0,
 		]);
-		$this->assertTrue(in_array($response->status(), [201, 409], true));
+
+		$this->assertCreated($response);
+		$response->assertJsonPath('rating.rating_user', 0);
 	}
 }
