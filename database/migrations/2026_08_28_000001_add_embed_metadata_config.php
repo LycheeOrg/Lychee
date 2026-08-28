@@ -32,7 +32,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'description' => 'Update stored checksum after embedding metadata.',
-				'details' => 'When on (default), the photo\'s recorded checksum is updated to match the rewritten file, keeping the duplicate finder consistent. When off, the recorded checksum keeps pointing at the original pristine upload even after the file has changed — useful if you need the original checksum to stay a permanent fingerprint of what was first uploaded. Only has an effect when "Embed metadata" above is also enabled.',
+				'details' => 'When on, the photo\'s recorded checksum is updated to match the rewritten file, keeping the duplicate finder consistent. When off, the recorded checksum keeps pointing at the original pristine upload even after the file has changed — useful if you need the original checksum to stay a permanent fingerprint of what was first uploaded. Only has an effect when "Embed metadata" above is also enabled.',
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 0,
