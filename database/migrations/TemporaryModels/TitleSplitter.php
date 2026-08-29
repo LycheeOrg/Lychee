@@ -70,11 +70,11 @@ class TitleSplitter
 		// wrong Stage-A guess (e.g. "Vol.II") never silently drops a token
 		// from a title that has no numeric suffix at all. `title_index` is
 		// never NULL in the database, so titles without a suffix get `0`.
-		return new TitleSplitResult(mb_strtolower($title), 0);
+		return new TitleSplitResult(mb_strtolower(mb_strtolower(str_replace("'", '', $title))), 0);
 	}
 
 	private static function toResult(string $base, string $digits, ?string $extension): TitleSplitResult
 	{
-		return new TitleSplitResult(mb_strtolower($base . ($extension ?? '')), (int) $digits);
+		return new TitleSplitResult(mb_strtolower(str_replace("'", '', $base) . ($extension ?? '')), (int) $digits);
 	}
 }
