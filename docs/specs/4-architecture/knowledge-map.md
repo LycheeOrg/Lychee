@@ -261,6 +261,13 @@ Replaces the single nullable `albums.track_short_path` column with a `tracks` ch
 
 **Delete cleanup:** `Actions/Album/Delete` collects all tracks recursively (not just one per album), grouped by `disk`, dispatching one `FileDeleterJob` per distinct disk (previously hardcoded to `StorageDiskType::LOCAL`, silently leaking S3-stored files). The `tracks` row cleanup lives in `AlbumsToBeDeletedDTO::executeDelete()`'s chunked dependents block (where `Schema::disableForeignKeyConstraints()` is active, so the FK cascade never fires during bulk deletes) — mirroring the existing `album_size_statistics` cleanup line there, not in `Delete.php` itself.
 
+### Database-Driven Title Sorting (Feature 060)
+Replaces PHP-level (`SORT_NATURAL | SORT_FLAG_CASE`) title/description sorting with a single SQL `ORDER BY` for both `photos` and `base_albums`. `title` itself is untouched; two new derived, indexed columns — `title_base` (case-folded non-digit prefix) and `title_index` (trailing numeric suffix, nullable) — are computed by the stateless `App\Services\TitleSplitter::split()` and stored alongside it.
+
+`TitleSplitter` is called **explicitly at each of 12 write sites** (photo upload/import pipeline, `PhotoController::update()`/`rename()`, `Actions/Renamer/RenamePhotos.php`; album `Create`/`CreateTagAlbum`/`CreatePersonAlbum`/`SetHeader`, `AlbumController::updateTagAlbum()`/`updatePersonAlbum()`/`rename()`, `Actions/Renamer/RenameAlbums.php`) — deliberately **not** an Eloquent model event/hook, per explicit user direction. `tests/Feature_v2/TitleSplitIntegrityTest.php` is the permanent regression guard for a future write site that forgets the explicit call.
+
+`ColumnSortingType::TITLE` is the sole title-ordering entry point (`TITLE_STRICT`/`DESCRIPTION`/`DESCRIPTION_STRICT` removed); `getRawOrderExpression()` returns `{prefix}title_base {dir}, COALESCE({prefix}title_index, -1) {dir}`. `SortingDecorator::POSTPONE_COLUMNS`/`applyPhpSorting()` are deleted — sorting is 100% SQL now, fixing the previous pagination-reshuffle bug. The 5 relation `match()` methods that re-implemented natural sort for eager-loading were simplified to preserve DB-provided order instead.
+
 ### RAW Upload Pipeline (Feature 020)
 Preserves original camera RAW / HEIC / PSD files as a dedicated size variant while converting to a displayable JPEG for the gallery.
 

@@ -51,32 +51,10 @@ declare namespace App {
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 		export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 		export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
-		export type ColumnSortingAlbumType =
-			"owner_id" | "created_at" | "title" | "description" | "title_strict" | "description_strict" | "min_taken_at" | "max_taken_at";
-		export type ColumnSortingPhotoType =
-			| "owner_id"
-			| "created_at"
-			| "title"
-			| "description"
-			| "title_strict"
-			| "description_strict"
-			| "taken_at"
-			| "is_highlighted"
-			| "type"
-			| "rating_avg";
+		export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at";
+		export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
 		export type ColumnSortingType =
-			| "owner_id"
-			| "created_at"
-			| "title"
-			| "description"
-			| "title_strict"
-			| "description_strict"
-			| "min_taken_at"
-			| "max_taken_at"
-			| "taken_at"
-			| "is_highlighted"
-			| "type"
-			| "rating_avg";
+			"owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
 		export type ConfigType =
 			| "int"
 			| "positive"

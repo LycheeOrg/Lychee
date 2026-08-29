@@ -34,6 +34,7 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Repositories\AlbumRepository;
+use App\Services\TitleSplitter;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
@@ -171,6 +172,14 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$albumA = Album::factory()->children_of($this->parentAlbum)->owned_by($this->user)->create(['title' => 'A Album']);
 		$albumZ = Album::factory()->children_of($this->parentAlbum)->owned_by($this->user)->create(['title' => 'Z Album']);
 		$albumM = Album::factory()->children_of($this->parentAlbum)->owned_by($this->user)->create(['title' => 'M Album']);
+
+		// Feature 060: `title_base` drives the DB-only title sort; factories
+		// bypass the explicit write sites (FR-060-03), so it is set here
+		// explicitly, mirroring what a real write site would do.
+		foreach ([$albumA, $albumZ, $albumM] as $album) {
+			$album->title_base = TitleSplitter::split($album->title)->base;
+			$album->save();
+		}
 
 		$this->actingAs($this->user);
 

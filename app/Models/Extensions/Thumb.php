@@ -9,9 +9,10 @@
 namespace App\Models\Extensions;
 
 use App\DTO\SortingCriterion;
-use App\Enum\ColumnSortingPhotoType;
+use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
@@ -72,17 +73,19 @@ class Thumb
 	public static function createFromQueryable(Relation|Builder $photo_queryable, SortingCriterion $sorting): ?Thumb
 	{
 		try {
+			$photo_queryable = $photo_queryable->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))]);
+
+			(new SortingDecorator($photo_queryable))
+				->orderPhotosBy(ColumnSortingType::IS_HIGHLIGHTED, OrderSortingType::DESC)
+				->orderPhotosBy($sorting->column, $sorting->order)
+				->applyOrdering();
+
 			/** @var Photo|null $cover */
-			$cover = $photo_queryable
-				->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))])
-				->orderBy('photos.' . ColumnSortingPhotoType::IS_HIGHLIGHTED->value, OrderSortingType::DESC->value)
-				->orderBy('photos.' . $sorting->column->toColumn(), $sorting->order->value)
-				->select(['photos.id', 'photos.type'])
-				->first();
+			$cover = $photo_queryable->select(['photos.id', 'photos.type'])->first();
 
 			return self::createFromPhoto($cover);
 			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
+		} catch (InvalidOrderDirectionException $e) {
 			throw new InvalidPropertyException('Sorting order invalid', $e);
 		}
 		// @codeCoverageIgnoreEnd

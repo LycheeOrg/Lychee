@@ -9,7 +9,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
@@ -68,9 +67,15 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		$ids_query = app(PersonAlbumMatcher::class)->buildMatchingPhotoIdsQuery($album, $user, $unlocked_album_ids);
 
 		$this->getRelationQuery()->whereIn('photos.id', $ids_query);
+		$sorting = $album->getEffectivePhotoSorting();
+		(new SortingDecorator($this->getRelationQuery()))
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->applyOrdering();
 	}
 
 	/**
+	 * Match the eagerly loaded results to their parents.
+	 *
 	 * @param PersonAlbum[]                     $albums
 	 * @param Collection<int,\App\Models\Photo> $photos
 	 * @param string                            $relation
@@ -86,14 +91,7 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		}
 		/** @var PersonAlbum $album */
 		$album = $albums[0];
-		$sorting = $album->getEffectivePhotoSorting();
-
-		$photos = $photos->sortBy(
-			$sorting->column->toColumn(),
-			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-			$sorting->order === OrderSortingType::DESC
-		)->values();
-		$album->setRelation($relation, $photos);
+		$album->setRelation($relation, $photos->values());
 
 		return $albums;
 	}

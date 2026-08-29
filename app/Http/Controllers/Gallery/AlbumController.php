@@ -64,6 +64,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
 use App\Models\TagAlbum;
+use App\Services\TitleSplitter;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -164,6 +165,9 @@ class AlbumController extends Controller
 			// @codeCoverageIgnoreEnd
 		}
 		$album->title = $request->title();
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->description = $request->description();
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
@@ -195,6 +199,9 @@ class AlbumController extends Controller
 			// @codeCoverageIgnoreEnd
 		}
 		$album->title = $request->title();
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->description = $request->description();
 		$album->copyright = $request->copyright();
 		$album->photo_sorting = $request->photoSortingCriterion();
@@ -355,6 +362,9 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		$album->title = $request->title();
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->save();
 
 		$this->dispatchSaved($album);

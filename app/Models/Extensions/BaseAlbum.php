@@ -37,6 +37,8 @@ use Illuminate\Support\Carbon;
  *
  * @property string                           $id
  * @property string                           $title
+ * @property string                           $title_base
+ * @property int                              $title_index
  * @property string|null                      $slug
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at

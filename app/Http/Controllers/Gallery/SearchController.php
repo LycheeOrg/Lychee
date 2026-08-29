@@ -19,6 +19,7 @@ use App\Http\Requests\Search\InitSearchRequest;
 use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
@@ -56,9 +57,8 @@ class SearchController extends Controller
 		$photo_sorting = $request->photoSortingCriterion() ?? new PhotoSortingCriterion(ColumnSortingType::TAKEN_AT, OrderSortingType::ASC);
 
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
-		$photo_results = $photo_search
-			->sqlQuery($tokens, $album)
-			->orderBy($photo_sorting->column->toColumn(), $photo_sorting->order->value)
+		$photo_results = (new SortingDecorator($photo_search->sqlQuery($tokens, $album)))
+			->orderBy($photo_sorting->column, $photo_sorting->order)
 			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
 
 		$album_results = $album_search->queryAlbums($tokens, $album, $request->albumSortingCriterion());

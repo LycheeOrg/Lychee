@@ -12,9 +12,6 @@ export const photoSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingPhot
 	{ value: "created_at", label: "gallery.sort.photo_select_1" },
 	{ value: "taken_at", label: "gallery.sort.photo_select_2" },
 	{ value: "title", label: "gallery.sort.photo_select_3" },
-	{ value: "description", label: "gallery.sort.photo_select_4" },
-	{ value: "title_strict", label: "gallery.sort.photo_select_3_strict" },
-	{ value: "description_strict", label: "gallery.sort.photo_select_4_strict" },
 	{ value: "is_highlighted", label: "gallery.sort.photo_select_6" },
 	{ value: "type", label: "gallery.sort.photo_select_7" },
 ];
@@ -27,9 +24,6 @@ export const sortingOrdersOptions: SelectOption<App.Enum.OrderSortingType>[] = [
 export const albumSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingAlbumType>[] = [
 	{ value: "created_at", label: "gallery.sort.album_select_1" },
 	{ value: "title", label: "gallery.sort.album_select_2" },
-	{ value: "description", label: "gallery.sort.album_select_3" },
-	{ value: "title_strict", label: "gallery.sort.album_select_2_strict" },
-	{ value: "description_strict", label: "gallery.sort.album_select_3_strict" },
 	{ value: "min_taken_at", label: "gallery.sort.album_select_6" },
 	{ value: "max_taken_at", label: "gallery.sort.album_select_5" },
 ];

@@ -9,7 +9,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
@@ -77,6 +76,10 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		parent::addEagerConstraints($models);
 		$user = Auth::user();
 		$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user);
+		$album_sorting = $models[0]->getEffectiveAlbumSorting();
+		(new SortingDecorator($this->getRelationQuery()))
+			->orderBy($album_sorting->column, $album_sorting->order)
+			->applyOrdering();
 	}
 
 	/**
@@ -106,6 +109,10 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
+	 * The query built in {@link self::addEagerConstraints()} already applies
+	 * the effective sort order at the SQL layer (FR-060-08), so this simply
+	 * preserves the DB-provided order instead of re-sorting in PHP.
+	 *
 	 * @param Album[]               $models   an array of parent models
 	 * @param Collection<int,Album> $results  the unified collection of all child models of all parent models
 	 * @param string                $relation the name of the relation from the parent to the child models
@@ -122,11 +129,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		foreach ($models as $model) {
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,Album> $children_of_model */
-				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
-				$sorting = $model->getEffectiveAlbumSorting();
-				$children_of_model = $children_of_model
-					->sortBy($sorting->column->toColumn(), SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
-					->values();
+				$children_of_model = $this->getRelationValue($dictionary, $key, 'many')->values();
 				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
