@@ -76,10 +76,6 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * The query built in {@link self::addEagerConstraints()} already applies
-	 * the effective sort order at the SQL layer (FR-060-08), so this simply
-	 * preserves the DB-provided order instead of re-sorting in PHP.
-	 *
 	 * @param PersonAlbum[]                     $albums
 	 * @param Collection<int,\App\Models\Photo> $photos
 	 * @param string                            $relation

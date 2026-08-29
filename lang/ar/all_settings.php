@@ -916,7 +916,7 @@ return [
     'category_description' => [
         'config' => '',
         'lychee SE' => 'افتح كامل إمكانيات Lychee مع <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 font-bold underline">النسخة الداعمة (Supporter Edition)</a>. احصل على ميزات حصرية وادعم تطوير Lychee. قم برعاية LycheeOrg على GitHub واحصل على مفتاح الترخيص الخاص بك <a href="https://github.com/sponsors/LycheeOrg" class="text-primary-500 font-bold underline">من هنا</a>.',
-        'Gallery' => '<span class="text-warning-600 font-bold uppercase">Important:</span> Natural sorting and lexicographical sorting can produce different results.<br><span class="text-muted-color text-muted">Natural: img_1, img_2, img_10.<br>Lexicographical: img_1, img_10, img_2.<br>Lexicographical sorting is performed directly in the database, while natural sorting is performed in PHP after the database query runs. As a result, when natural sorting is combined with pagination, results are fetched from the database in an arbitrary order before being sorted, which can lead to unexpected results when browsing through pages. We recommend using natural sorting for a small number of photos, and lexicographical sorting for a large number of photos. Alternatively, you can prefix your numbers with 0s (e.g. img_01, img_02, img_10) so that both sorting methods produce the same result.</span>',
+        'Gallery' => '',
         'Mod Welcome' => 'تُفعّل هذه الوحدة صفحة هبوط. فبدلاً من الوصول مباشرة إلى عرض المعرض، تضيف هذه الصفحة لمسة من الفخامة إلى مدخل الموقع. أدخل رابط الصورة المراد عرضها وحدد العنوان. نوصي باستخدام إضافة صفحة الهبوط، المتوفرة في لوحة تحكم المسؤول، بدلاً من هذه الخيارات الفردية، حيث توفر معاينة مباشرة للتغييرات.',
         'Footer' => '',
         'Smart Albums' => '',

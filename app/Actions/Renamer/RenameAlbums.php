@@ -38,22 +38,33 @@ class RenameAlbums
 			->whereIn('id', $album_ids)
 			// Process by chunks of self::CHUNK_SIZE to avoid memory issues
 			->chunkById(self::CHUNK_SIZE, function (Collection $albums) use ($album_renamer): void {
-				$values = $albums->map(function (Album $album) use ($album_renamer) {
-					$title = $album_renamer->handle($album->title);
-					$title_split = TitleSplitter::split($title);
-
-					return [
-						'id' => $album->id,
-						'title' => $title,
-						'title_base' => $title_split->base,
-						'title_index' => $title_split->index,
-					];
-				})->all();
+				$values = $albums->map(fn (Album $album) => $this->buildUpdateValues($album, $album_renamer))->all();
 
 				// Make a batch update to update all photo titles at once
 				$album_instance = new BaseAlbumImpl();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($album_instance, $values, 'id');
 			});
+	}
+
+	/**
+	 * Build the update values for a single album, applying the renamer rules and re-splitting the title.
+	 *
+	 * @param Album        $album
+	 * @param AlbumRenamer $album_renamer
+	 *
+	 * @return array{id:string,title:string,title_base:string,title_index:int}
+	 */
+	private function buildUpdateValues(Album $album, AlbumRenamer $album_renamer): array
+	{
+		$title = $album_renamer->handle($album->title);
+		$title_split = TitleSplitter::split($title);
+
+		return [
+			'id' => $album->id,
+			'title' => $title,
+			'title_base' => $title_split->base,
+			'title_index' => $title_split->index,
+		];
 	}
 }

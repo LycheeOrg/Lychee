@@ -42,12 +42,6 @@ class SortingDecorator
 	 * the sorting criterion at index `length-1` is the least significant
 	 * criterion.
 	 *
-	 * Feature 060 (NFR-060-02): every criterion is resolved purely on the
-	 * SQL layer - there is no PHP-level (`Collection::sortBy()`) fallback
-	 * anymore, so the criteria are simply applied in order:
-	 *
-	 *     $query->order_by($orderBy[0])->order_by($orderBy[1])->...->order_by($orderBy[length-1])
-	 *
 	 * @var array<int,array{column:string,direction:string,type:ColumnSortingType,prefix:string}>
 	 */
 	protected array $order_by = [];
@@ -110,20 +104,6 @@ class SortingDecorator
 	 */
 	public function applyOrdering(): self
 	{
-		$this->applySqlSorting();
-
-		return $this;
-	}
-
-	/**
-	 * Apply SQL-level sorting for all criteria.
-	 *
-	 * @return void
-	 *
-	 * @throws InvalidOrderDirectionException
-	 */
-	private function applySqlSorting(): void
-	{
 		try {
 			foreach ($this->order_by as $criterion) {
 				$column_type = $criterion['type'];
@@ -149,6 +129,8 @@ class SortingDecorator
 			throw new InvalidOrderDirectionException();
 		}
 		// @codeCoverageIgnoreEnd
+
+		return $this;
 	}
 
 	/**
@@ -162,12 +144,9 @@ class SortingDecorator
 	 */
 	public function get(array $columns = ['*']): Collection
 	{
-		$this->applySqlSorting();
+		$this->applyOrdering();
 
-		/** @var Collection<int,TModelClass> $result */
-		$result = $this->base_builder->get($columns);
-
-		return $result;
+		return $this->base_builder->get($columns);
 	}
 
 	/**
@@ -184,11 +163,8 @@ class SortingDecorator
 	 */
 	public function paginate($per_page = null, $columns = ['*'], $page_name = 'page', $page = null)
 	{
-		$this->applySqlSorting();
+		$this->applyOrdering();
 
-		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,TModelClass> $result */
-		$result = $this->base_builder->paginate($per_page, $columns, $page_name, $page);
-
-		return $result;
+		return $this->base_builder->paginate($per_page, $columns, $page_name, $page);
 	}
 }

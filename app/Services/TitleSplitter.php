@@ -16,16 +16,15 @@ use function Safe\preg_match;
  * trailing numeric `index` (`0` when the title has no numeric suffix), so
  * that a plain `ORDER BY base, index`
  * reproduces natural-sort-like ordering (`test_0, test_1, test_2, test_10`)
- * purely at the database layer, without regex/locale support in SQL
- * (see spec 060 FR-060-02, NFR-060-01).
+ * purely at the database layer, without regex/locale support in SQL.
  *
- * Deliberately a hardcoded, non-pluggable 2-rule chain (spec Non-Goals) and
- * a pure static function, called explicitly at every write site (FR-060-03)
- * — never wired via an Eloquent model event/hook.
+ * Deliberately a hardcoded, non-pluggable 2-rule chain and a pure static
+ * function, called explicitly at every write site — never wired via an
+ * Eloquent model event/hook.
  */
 final class TitleSplitter
 {
-	private const MAX_INDEX_DIGITS = 19;
+	private const MAX_INDEX_DIGITS = 9;
 
 	/**
 	 * Matches a trailing file-extension-shaped suffix (`.jpg`, `.xts`, ...).
@@ -34,9 +33,17 @@ final class TitleSplitter
 	 */
 	private const EXTENSION_PATTERN = '/\.([A-Za-z][A-Za-z0-9]{0,4})$/u';
 
-	private const TRAILING_DIGITS_PATTERN = '/^(.*?)(\d+)$/u';
+	/**
+	 * Matches a trailing run of digits (up to `MAX_INDEX_DIGITS`), e.g. `test_10`.
+	 * The run of digits is captured in group 2, the rest of the string in group 1.
+	 *
+	 * Note that we capture a maximum of `MAX_INDEX_DIGITS = 9` digits, this has two benefits.
+	 * We ensure that the number fits into a 32-bit signed integer,
+	 * and we avoid the performance penalty of matching arbitrarily long digit runs.
+	 */
+	private const TRAILING_DIGITS_PATTERN = '/^(.*?)(\d{1,' . self::MAX_INDEX_DIGITS . '})$/u';
 
-	private const PARENTHESISED_NUMBER_PATTERN = '/^(.*?)\((\d+)\)$/u';
+	private const PARENTHESISED_NUMBER_PATTERN = '/^(.*?)\((\d{1,' . self::MAX_INDEX_DIGITS . '})\)$/u';
 
 	public static function split(string $title): TitleSplitResult
 	{
@@ -74,10 +81,6 @@ final class TitleSplitter
 
 	private static function toResult(string $base, string $digits, ?string $extension): TitleSplitResult
 	{
-		if (strlen($digits) > self::MAX_INDEX_DIGITS) {
-			$digits = substr($digits, -self::MAX_INDEX_DIGITS);
-		}
-
 		return new TitleSplitResult(mb_strtolower($base . ($extension ?? '')), (int) $digits);
 	}
 }

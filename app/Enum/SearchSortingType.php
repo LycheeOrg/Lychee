@@ -21,10 +21,6 @@ enum SearchSortingType: string
 
 	/**
 	 * Convert into the column used to sort photos.
-	 *
-	 * Feature 060: `TITLE` maps directly - search's title sort now uses the
-	 * same unified, DB-driven natural order as every other Title sort
-	 * (intentional behaviour change, FR-060-09).
 	 */
 	public function toPhotoColumn(): ColumnSortingPhotoType
 	{
@@ -42,8 +38,6 @@ enum SearchSortingType: string
 	 * contain, so the ordering direction picks which bound to sort by
 	 * (descending -> most recent photo first -> `max_taken_at`; ascending ->
 	 * oldest photo first -> `min_taken_at`).
-	 *
-	 * Feature 060: `TITLE` maps directly (FR-060-09), same as {@link self::toPhotoColumn()}.
 	 */
 	public function toAlbumColumn(OrderSortingType $order): ColumnSortingAlbumType
 	{

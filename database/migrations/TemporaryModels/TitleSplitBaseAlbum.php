@@ -17,4 +17,6 @@ use Illuminate\Database\Eloquent\Model;
 class TitleSplitBaseAlbum extends Model
 {
 	protected $table = 'base_albums';
+
+	public $timestamps = false;
 }

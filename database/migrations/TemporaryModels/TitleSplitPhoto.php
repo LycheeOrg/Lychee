@@ -17,4 +17,6 @@ use Illuminate\Database\Eloquent\Model;
 class TitleSplitPhoto extends Model
 {
 	protected $table = 'photos';
+
+	public $timestamps = false;
 }

@@ -134,10 +134,6 @@ class HasManyChildPhotos extends BelongsToMany
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * The query built in {@link self::addEagerConstraints()} already applies
-	 * the effective sort order at the SQL layer (FR-060-08), so this simply
-	 * preserves the DB-provided order instead of re-sorting in PHP.
-	 *
 	 * @param Album[]               $models   an array of parent models
 	 * @param Collection<int,Photo> $results  the unified collection of all child models of all parent models
 	 * @param string                $relation the name of the relation from the parent to the child models

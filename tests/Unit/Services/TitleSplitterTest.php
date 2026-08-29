@@ -75,15 +75,18 @@ class TitleSplitterTest extends AbstractTestCase
 		$this->assertSame('cherry', $cherry->base);
 	}
 
-	public function testDigitRunLongerThan19CharactersIsTruncatedToLast19(): void
+	public function testDigitRunLongerThan9CharactersOverflowsIntoBase(): void
 	{
-		// 25-digit run -> keep only the last 19 digits.
+		// 25-digit run -> only the last 9 digits become the index; the
+		// leading overflow digits fold into `base` instead of being
+		// silently dropped, so distinct overflow prefixes don't collide.
 		$digits = '1234567890123456789012345';
-		$expected = substr($digits, -19);
+		$overflow = substr($digits, 0, -9);
+		$expected = substr($digits, -9);
 
 		$result = TitleSplitter::split('test' . $digits);
 
-		$this->assertSame('test', $result->base);
+		$this->assertSame('test' . $overflow, $result->base);
 		$this->assertSame((int) $expected, $result->index);
 	}
 

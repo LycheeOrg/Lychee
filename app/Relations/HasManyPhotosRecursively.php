@@ -118,12 +118,6 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 	/**
 	 * Maps a collection of eagerly fetched photos to the given owning albums.
 	 *
-	 * This method is called by the framework after the unified result of
-	 * photos has been fetched by {@link HasManyPhotosRecursively::addEagerConstraints()}.
-	 * The query built there already applies the effective sort order at the
-	 * SQL layer (FR-060-08), so this simply preserves the DB-provided order
-	 * instead of re-sorting in PHP.
-	 *
 	 * @param Album[]                           $albums   the list of owning albums
 	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
 	 * @param string                            $relation the name of the relation

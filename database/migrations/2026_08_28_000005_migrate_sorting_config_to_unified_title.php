@@ -46,6 +46,8 @@ return new class() extends Migration {
 		DB::table('configs')
 			->where('key', '=', 'sorting_pinned_albums_col')
 			->update(['type_range' => 'created_at|title|max_taken_at|min_taken_at']);
+
+		DB::table('config_categories')->where('cat', 'Gallery')->update(['description' => '']);
 	}
 
 	/**
@@ -65,7 +67,6 @@ return new class() extends Migration {
 			->where('key', '=', 'sorting_pinned_albums_col')
 			->update(['type_range' => 'created_at|title|description|max_taken_at|min_taken_at|title_strict|description_strict']);
 
-		// Sic! The original per-row value (title_strict/description/description_strict)
-		// that was rewritten to `title` cannot be recovered.
+		DB::table('config_categories')->where('cat', 'Gallery')->update(['description' => '<span class="text-warning-600 font-bold uppercase">Important:</span> Natural sorting and lexicographical sorting can produce different results.<br><span class="text-muted-color text-muted">Natural: img_1, img_2, img_10.<br>Lexicographical: img_1, img_10, img_2.<br>Lexicographical sorting is performed directly in the database, while natural sorting is performed in PHP after the database query runs. As a result, when natural sorting is combined with pagination, results are fetched from the database in an arbitrary order before being sorted, which can lead to unexpected results when browsing through pages. We recommend using natural sorting for a small number of photos, and lexicographical sorting for a large number of photos. Alternatively, you can prefix your numbers with 0s (e.g. img_01, img_02, img_10) so that both sorting methods produce the same result.</span>']);
 	}
 };

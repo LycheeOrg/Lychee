@@ -11,15 +11,12 @@ namespace App\Actions\Album;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ChunkSlice;
 use App\DTO\ZippablePhoto;
-use App\Enum\ColumnSortingType;
 use App\Enum\DownloadVariantType;
-use App\Enum\OrderSortingType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
-use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
@@ -462,8 +459,9 @@ abstract class BaseArchive
 		}
 
 		$used_file_names = [];
-		$photo_collection = (new SortingDecorator($album->photos()))
-			->orderPhotosBy(ColumnSortingType::TITLE, OrderSortingType::ASC)
+		$photo_collection = $album->photos()
+			->orderBy('title_base', 'asc')
+			->orderBy('title_index', 'asc')
 			->get();
 
 		/** @var Photo $photo */

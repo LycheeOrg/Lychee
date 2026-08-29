@@ -18,7 +18,7 @@ require_once __DIR__ . '/TitleSplitResult.php';
  */
 class TitleSplitter
 {
-	private const MAX_INDEX_DIGITS = 19;
+	private const MAX_INDEX_DIGITS = 9;
 
 	/**
 	 * Matches a trailing file-extension-shaped suffix (`.jpg`, `.xts`, ...).
@@ -27,9 +27,17 @@ class TitleSplitter
 	 */
 	private const EXTENSION_PATTERN = '/\.([A-Za-z][A-Za-z0-9]{0,4})$/u';
 
-	private const TRAILING_DIGITS_PATTERN = '/^(.*?)(\d+)$/u';
+	/**
+	 * Matches a trailing run of digits (up to `MAX_INDEX_DIGITS`), e.g. `test_10`.
+	 * The run of digits is captured in group 2, the rest of the string in group 1.
+	 *
+	 * Note that we capture a maximum of `MAX_INDEX_DIGITS = 9` digits, this has two benefits.
+	 * We ensure that the number fits into a 32-bit signed integer,
+	 * and we avoid the performance penalty of matching arbitrarily long digit runs.
+	 */
+	private const TRAILING_DIGITS_PATTERN = '/^(.*?)(\d{1,' . self::MAX_INDEX_DIGITS . '})$/u';
 
-	private const PARENTHESISED_NUMBER_PATTERN = '/^(.*?)\((\d+)\)$/u';
+	private const PARENTHESISED_NUMBER_PATTERN = '/^(.*?)\((\d{1,' . self::MAX_INDEX_DIGITS . '})\)$/u';
 
 	public static function split(string $title): TitleSplitResult
 	{
@@ -67,10 +75,6 @@ class TitleSplitter
 
 	private static function toResult(string $base, string $digits, ?string $extension): TitleSplitResult
 	{
-		if (strlen($digits) > self::MAX_INDEX_DIGITS) {
-			$digits = substr($digits, -self::MAX_INDEX_DIGITS);
-		}
-
 		return new TitleSplitResult(mb_strtolower($base . ($extension ?? '')), (int) $digits);
 	}
 }
