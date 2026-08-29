@@ -6,10 +6,12 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use App\Services\TitleSplitter;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
+require_once 'TemporaryModels/TitleSplitter.php';
 require_once 'TemporaryModels/TitleSplitPhoto.php';
 
 /**
@@ -17,6 +19,9 @@ require_once 'TemporaryModels/TitleSplitPhoto.php';
  * pre-existing `photos` row, chunked to bound memory on large installs.
  * Idempotent: recomputing from `title` (untouched by this feature) always
  * yields the same result, so a re-run is a safe no-op (S-060-11).
+ * Resumable: only rows with `title_base IS NULL` (never written by the app,
+ * which always computes it - see the schema migration) are selected, so a
+ * crash partway through does not force reprocessing already-backfilled rows.
  */
 return new class() extends Migration {
 	private const CHUNK_SIZE = 1000;
@@ -26,10 +31,16 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('photos')
+		$query = DB::table('photos')->whereNull('title_base');
+
+		$progress_bar = new ProgressBar(new ConsoleOutput());
+		$progress_bar->setFormat("Backfilling 'photos' %current%/%max% [%bar%] %percent:3s%%");
+		$progress_bar->start($query->count());
+
+		$query
 			->select(['id', 'title'])
 			->orderBy('id')
-			->chunkById(self::CHUNK_SIZE, function ($photos) {
+			->chunkById(self::CHUNK_SIZE, function ($photos) use ($progress_bar) {
 				$values = $photos->map(function ($photo) {
 					$title_split = TitleSplitter::split($photo->title ?? '');
 
@@ -43,7 +54,11 @@ return new class() extends Migration {
 				$photo_instance = new TitleSplitPhoto();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($photo_instance, $values, 'id');
+
+				$progress_bar->advance($photos->count());
 			});
+
+		$progress_bar->finish();
 	}
 
 	/**

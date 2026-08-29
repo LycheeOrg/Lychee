@@ -6,10 +6,12 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use App\Services\TitleSplitter;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
+require_once 'TemporaryModels/TitleSplitter.php';
 require_once 'TemporaryModels/TitleSplitBaseAlbum.php';
 
 /**
@@ -26,10 +28,16 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('base_albums')
+		$query = DB::table('base_albums');
+
+		$progress_bar = new ProgressBar(new ConsoleOutput());
+		$progress_bar->setFormat("Backfilling 'base_albums' %current%/%max% [%bar%] %percent:3s%%");
+		$progress_bar->start($query->count());
+
+		$query
 			->select(['id', 'title'])
 			->orderBy('id')
-			->chunkById(self::CHUNK_SIZE, function ($albums) {
+			->chunkById(self::CHUNK_SIZE, function ($albums) use ($progress_bar) {
 				$values = $albums->map(function ($album) {
 					$title_split = TitleSplitter::split($album->title);
 
@@ -43,7 +51,11 @@ return new class() extends Migration {
 				$album_instance = new TitleSplitBaseAlbum();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($album_instance, $values, 'id');
+
+				$progress_bar->advance($albums->count());
 			});
+
+		$progress_bar->finish();
 	}
 
 	/**
