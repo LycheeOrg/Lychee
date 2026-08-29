@@ -137,6 +137,25 @@ Extracted metadata includes:
 - **GPS Coordinates**: Latitude, longitude, altitude
 - **Image Properties**: Width, height, orientation
 
+### Metadata Write-Back (Feature 059)
+
+By default, Lychee only ever *reads* EXIF/IPTC/XMP metadata from uploaded files — editing a photo's title, description, or tags, or rating a photo, only updates the database. The opt-in `embed_metadata_in_files_enabled` config (category **Image Processing**, default off) changes this: when enabled, editing title/description/tags (any user with edit rights) or rating a photo as its **owner** additionally embeds the new value into the photo's **Original** file and, when present, its preserved **RAW** camera file (see "RAW Upload Pipeline" above), via a queued `App\Jobs\EmbedMetadataJob`.
+
+**Tag mapping** (each field is written to a cross-application-compatible triad, not a single tag, for maximum compatibility with external tools):
+
+| Lychee field | EXIF | IPTC | XMP |
+|---|---|---|---|
+| Title | `XPTitle` | `ObjectName` | `dc:Title` |
+| Description | `ImageDescription` | `Caption-Abstract` | `dc:Description` |
+| Tags | `XPKeywords` | `Keywords` | `dc:Subject` |
+| Rating (owner's only) | `Rating`, `RatingPercent` | — | `xmp:Rating` |
+
+**Requires `exiftool`** (the existing `has_exiftool`/`exiftool_path` detection, reused unchanged) — `lychee-org/php-exif` is read-only and native PHP has no EXIF-write support, so there is no fallback engine. Writes are invoked via Laravel's `Process` facade in array form (never a shell string), since title/description/tag text is user-controlled.
+
+**Checksum caveat:** writing to a file changes its bytes and therefore its checksum. A second, independent config, `embed_metadata_update_checksum_enabled` (default **on**), controls whether a successful Original-variant write also refreshes `Photo::checksum`/`original_checksum` to match — keeping Lychee's own duplicate-detection (`App\Actions\Photo\Pipes\Init\FindDuplicate`) internally consistent with the file. Turning it off leaves those columns pointing at the pre-edit (or original pristine upload) bytes forever, even though the file itself has changed — useful if `original_checksum` needs to stay a permanent fingerprint of what was first uploaded, at the cost of an internal DB/file mismatch. Either way, a separate, untouched copy of the same source file elsewhere (backup, external drive) keeps its old checksum and will **no longer be recognized as a duplicate** if re-imported — this is why the main embed config is off by default and carries an explicit warning. (`SizeVariant::filesize` is always refreshed regardless of this setting — it's a factual byte count, not a policy choice.)
+
+Local storage disks only in v1 — a non-local (e.g. S3) Original/RAW variant is skipped with a logged warning, not attempted. See [Feature 059 spec](../4-architecture/features/059-embed-metadata-in-file/spec.md) for full detail.
+
 ### Timestamp Handling
 
 Lychee carefully handles timestamps from multiple sources:
@@ -238,7 +257,7 @@ class Palette extends Model
 
 - **Access control**: Files stored outside web root
 - **Private access**: Served through application layer with authorization
-- **Checksums**: SHA-256 checksums for integrity verification
+- **Checksums**: SHA-1 checksums (`App\Image\StreamStat`) for integrity verification and import-time duplicate detection
 
 ## Related Documentation
 
@@ -248,4 +267,4 @@ class Palette extends Model
 
 ---
 
-*Last updated: February 28, 2026*
+*Last updated: August 27, 2026*
