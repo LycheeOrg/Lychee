@@ -40,7 +40,7 @@ class Rating
 		try {
 			DB::transaction(function () use ($photo, $user, $rating): void {
 				// Ensure statistics record exists atomically (Q001-07)
-				$statistics = Statistics::firstOrCreate(
+				Statistics::firstOrCreate(
 					['photo_id' => $photo->id],
 					[
 						'album_id' => null,
@@ -52,6 +52,14 @@ class Rating
 						'rating_count' => 0,
 					]
 				);
+
+				// Lock the statistics row, and re-read it plus any existing
+				// rating below via locking reads, so two concurrent rating
+				// changes for the same photo serialize on committed data
+				// instead of both computing their delta from the same stale
+				// snapshot (which can otherwise double-apply a delta and
+				// drive rating_sum/rating_count negative).
+				$statistics = Statistics::query()->where('photo_id', $photo->id)->lockForUpdate()->firstOrFail();
 
 				if ($rating > 0) {
 					// Find existing rating by this user for this photo
