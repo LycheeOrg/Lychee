@@ -9,9 +9,12 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\OrderSortingType;
 use App\Http\Requests\Album\GetAlbumChildrenDataRequest;
 use App\Http\Resources\V3\AlbumChildrenDataResource;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Models\User;
@@ -33,12 +36,20 @@ use Illuminate\Support\Facades\Auth;
  * `toBase()` query with zero joins beyond {@see AlbumQueryPolicy::applyVisibilityFilter()}'s
  * own (NFR-061-07) — identical scoping/policy to
  * {@see \App\Repositories\AlbumRepository::getChildrenPaginated()} and
- * {@see AlbumBucketController}'s own query (NFR-061-08).
+ * {@see AlbumBucketController}'s own query (NFR-061-08). For a regular
+ * {@see Album}, rows are ordered by bucket_id first (matching
+ * {@see AlbumBucketController}'s own order exactly) then by the parent's
+ * effective sort criterion, so grouping this endpoint's rows by bucket_id and
+ * slicing by the buckets endpoint's per-bucket counts reproduces that
+ * endpoint's own row order (FR-061-26). {@see TagAlbum}/{@see PersonAlbum}
+ * rows are ordered by the instance-wide default sort criterion instead — no
+ * bucket_id concept applies to a dynamically-matched, disparately-parented
+ * result set.
  *
  * For a {@see TagAlbum}/{@see PersonAlbum}, "children" means the same
  * "matching albums" listing {@see AlbumRepository::queryMatchingAlbumsForTag()}/
  * {@see AlbumRepository::queryMatchingAlbumsForPerson()} already build for
- * v2's `AlbumChildrenController` — reused here unsorted/unpaginated,
+ * v2's `AlbumChildrenController` — reused here unpaginated,
  * `toBase()`-queried like the rest of this feature.
  */
 class AlbumChildrenDataController extends Controller
@@ -79,6 +90,19 @@ class AlbumChildrenDataController extends Controller
 			// internally (prepareModelQueryOrFail()) — must not join it again.
 			$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
 
+			$sorting = $album->getEffectiveAlbumSorting();
+			$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
+			// Order by bucket_id first (mirrors AlbumBucketController::queryBuckets()
+			// exactly, "unknown" always last) so grouping these rows by bucket_id
+			// reproduces the buckets endpoint's own row order; this is required, not
+			// redundant with the effective-column order below, because under
+			// title_bucket_mode=date_prefix the parsed-date bucket_id and the
+			// title_base/title_index sort key are unrelated dimensions of the same
+			// string, so same-bucket rows would not otherwise stay contiguous.
+			$query->orderByRaw('(albums.bucket_id IS NULL) ASC')
+				->orderBy('albums.bucket_id', $direction);
+			(new SortingDecorator($query))->orderBy($sorting->column, $sorting->order)->applyOrdering();
+
 			return $this->fetch($query, $user);
 		}
 
@@ -93,6 +117,12 @@ class AlbumChildrenDataController extends Controller
 			// queryMatchingAlbumsForTag()/applyBrowsabilityFilter() do not join
 			// computed_access_permissions on the outer query — add it here.
 			$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', '', false, $user);
+			// No parent-governed bucket_id concept applies to a dynamically-matched,
+			// disparately-parented result set (tier 1 excludes these types entirely) -
+			// order by the same instance-wide default v2's paginated listing already
+			// uses for this type (AlbumChildrenController::get()).
+			$default_sorting = AlbumSortingCriterion::createDefault();
+			(new SortingDecorator($query))->orderBy($default_sorting->column, $default_sorting->order)->applyOrdering();
 
 			return $this->fetch($query, $user);
 		}
@@ -106,6 +136,8 @@ class AlbumChildrenDataController extends Controller
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 		$query = $this->album_repository->queryMatchingAlbumsForPerson($album, $unlocked_album_ids);
 		$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', '', false, $user);
+		$default_sorting = AlbumSortingCriterion::createDefault();
+		(new SortingDecorator($query))->orderBy($default_sorting->column, $default_sorting->order)->applyOrdering();
 
 		return $this->fetch($query, $user);
 	}

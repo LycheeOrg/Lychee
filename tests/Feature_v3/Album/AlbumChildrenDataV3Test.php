@@ -208,6 +208,11 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 		$expected = array_combine($buckets['bucket_ids'], $buckets['counts']);
 		self::assertEquals($expected, $grouped);
+
+		// FR-061-26: the children endpoint's own row order must reproduce
+		// the buckets endpoint's bucket order exactly (first-seen bucket_id
+		// sequence, deduplicated).
+		self::assertSame($buckets['bucket_ids'], array_values(array_unique($children['bucket_ids'])));
 	}
 
 	public function testBucketIdCorrelationIncludingUnknown(): void
@@ -232,10 +237,52 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		self::assertContains('unknown', $children['bucket_ids']);
 		$grouped = array_count_values($children['bucket_ids']);
 		$expected = array_combine($buckets['bucket_ids'], $buckets['counts']);
-		// Same key => count pairs; the two endpoints are not required to
-		// agree on map *order* (the children endpoint has no bucket_id
-		// ordering guarantee of its own, unlike the buckets endpoint).
 		self::assertEquals($expected, $grouped);
+
+		// FR-061-26: "unknown" sorts last in both endpoints' row order,
+		// exactly like the buckets endpoint's own guarantee.
+		self::assertSame($buckets['bucket_ids'], array_values(array_unique($children['bucket_ids'])));
+		self::assertSame('unknown', $children['bucket_ids'][count($children['bucket_ids']) - 1]);
+	}
+
+	/**
+	 * FR-061-26: under `title_bucket_mode=date_prefix`, the parsed-date
+	 * `bucket_id` and the `title_base`/`title_index` sort key are unrelated
+	 * dimensions of the same title string — ordering purely by the effective
+	 * sort column would NOT keep same-bucket rows contiguous. This is the one
+	 * case where ordering by bucket_id first is not just cosmetic.
+	 */
+	public function testChildrenGroupedByBucketEvenWhenTitleOrderInterleavesBuckets(): void
+	{
+		DB::table('configs')->where('key', '=', 'timeline_albums_granularity')->update(['value' => 'year']);
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::TITLE, OrderSortingType::ASC);
+		$parent->save();
+
+		// `parseDateFromTitle()` requires a leading 4-digit year (`^\d{4}`);
+		// a single leading digit does not match, so this title's bucket_id
+		// is null ("unknown") — but '1' sorts *before* '2' character-by-
+		// character, so a plain ascending title sort would place it FIRST,
+		// while the buckets endpoint always places "unknown" LAST regardless
+		// of direction (FR-061-07). This divergence is guaranteed by plain
+		// digit-code-point ordering, not by any driver-specific collation.
+		$undated = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['title' => '1 undated trip']);
+		$early = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['title' => '2020-01 Charlie']);
+		$late = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['title' => '2021-01 Delta']);
+		$this->recompute($undated);
+		$this->recompute($early);
+		$this->recompute($late);
+
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json();
+		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json();
+
+		self::assertSame(['2020', '2021', 'unknown'], $buckets['bucket_ids']);
+		// A plain title-ascending sort would put "1 undated trip" FIRST
+		// (bucket_id join order: unknown, 2020, 2021) — the opposite of what
+		// the buckets endpoint promises. Confirm the children endpoint
+		// matches the buckets endpoint's order instead.
+		self::assertSame($buckets['bucket_ids'], array_values(array_unique($children['bucket_ids'])));
+		self::assertSame($undated->id, $children['ids'][count($children['ids']) - 1]);
 	}
 
 	// ── Managed cache (T-061-25) ──────────────────────────────────
