@@ -65,7 +65,6 @@ class Rating
 					// Find existing rating by this user for this photo
 					$existing_rating = PhotoRating::where('photo_id', $photo->id)
 						->where('user_id', $user->id)
-						->lockForUpdate()
 						->first();
 
 					if ($existing_rating !== null) {
@@ -90,7 +89,6 @@ class Rating
 					// Rating == 0: remove rating (idempotent, Q001-06)
 					$existing_rating = PhotoRating::where('photo_id', $photo->id)
 						->where('user_id', $user->id)
-						->lockForUpdate()
 						->first();
 
 					if ($existing_rating !== null) {

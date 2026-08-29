@@ -257,7 +257,7 @@ class PhotoRatingIntegrationTest extends BaseApiWithDataTest
 		]);
 		// Statistics must reflect the rating created above; the controller
 		// only ever adjusts them by delta, it never recomputes from scratch.
-		$this->photo1->statistics()->firstOrCreate(
+		$this->photo1->statistics()->updateOrCreate(
 			['photo_id' => $this->photo1->id],
 			[
 				'album_id' => null,
