@@ -1,7 +1,7 @@
 # Feature Plan 061 – Album Timeline Bucket Aggregation
 
 _Linked specification:_ `docs/specs/4-architecture/features/061-album-timeline-buckets/spec.md`
-_Status:_ Draft
+_Status:_ Completed
 _Last updated:_ 2026-08-29
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
@@ -167,6 +167,20 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
 6. **Tooling readiness** — PASS. Verification commands present on every task.
 
 No remaining blocking items. Cleared to begin I1.
+
+## Implementation Drift Gate
+
+**I5 (T-061-13), run 2026-08-29** against a disposable 7,000-child sqlite fixture (copy of the test DB, not the shared test database — no test pollution): `EXPLAIN QUERY PLAN` for `AlbumBucketController::queryBuckets()`'s actual query shape (`WHERE parent_id = ? GROUP BY bucket_id ORDER BY (bucket_id IS NULL) ASC, bucket_id ASC`) returns:
+
+```
+QUERY PLAN
+|--SEARCH albums USING COVERING INDEX albums_parent_id_bucket_id_index (parent_id=?)
+`--USE TEMP B-TREE FOR ORDER BY
+```
+
+Confirms NFR-061-01: the `parent_id` filter and `GROUP BY bucket_id` are served entirely by the composite index (`COVERING INDEX`), never a table scan or a per-row date-truncation function. The `TEMP B-TREE FOR ORDER BY` sorts only the already-aggregated result set (bounded by distinct-bucket count, ~24 in this fixture — never by the 7,000-row fixture size), which is expected and outside NFR-061-01's scope. `->toBase()->get()` is used in `AlbumBucketController::queryBuckets()` (`app/Http/Controllers/Gallery/AlbumBucketController.php`), confirmed by code review (NFR-061-02).
+
+**I7 (T-061-24), run 2026-08-29**: query-log capture of a full `GET /Albums/{album_id}/children` request against `AlbumChildrenDataController::queryChildren()` shows exactly one query against `albums` for the endpoint's own data fetch (every other logged query is pre-existing request-pipeline overhead — config bootstrap, the `GetAlbumChildrenDataRequest`'s own album resolution/`Gate::check` authorization, `Auth::user()`'s eager-loaded relations — none of it issued by `queryChildren()` itself). That one query carries exactly the two joins `AlbumQueryPolicy::applyVisibilityFilter()` always adds (`base_albums`, `computed_access_permissions`) and zero joins added by this feature (NFR-061-07). Confirms `is_nsfw` needed widening `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s existing `base_albums` subselect by one column (`app/Policies/AlbumQueryPolicy.php`) rather than adding a third join — verified against the full v2 `AlbumRepository`/`Top`/`Flow`/`AlbumSearch` consumers of that shared method (41 tests, all passing) to confirm no v2 regression from widening a shared join's column list.
 
 ## Exit Criteria
 

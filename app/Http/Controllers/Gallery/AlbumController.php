@@ -56,6 +56,7 @@ use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
+use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
@@ -146,6 +147,15 @@ class AlbumController extends Controller
 			is_compact: $request->is_compact(),
 			photo: $request->photo(),
 			shall_override: true
+		);
+
+		// Feature 061 (FR-061-03): the parent's own sort column/order or
+		// timeline granularity governs its *direct children's* bucket_id,
+		// not its own — so a change to any of the three needs to recompute
+		// every direct child, not just this album.
+		RecomputeChildAlbumBucketsJob::dispatchIf(
+			$album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']),
+			$album->id,
 		);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);

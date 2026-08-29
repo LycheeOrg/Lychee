@@ -263,7 +263,7 @@ class AlbumListController extends Controller
 	 * admin/owner viewer, else `auto_cover_id_least_privilege`. Operates on
 	 * already-selected columns only — no relation load, no extra query.
 	 */
-	private static function resolveCoverId(object $row, ?User $user): ?string
+	public static function resolveCoverId(object $row, ?User $user): ?string
 	{
 		if ($row->cover_id !== null) {
 			return $row->cover_id;

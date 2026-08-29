@@ -51,6 +51,7 @@ Regular photo albums with hierarchical tree structure using nested set model.
 - `is_public`: Public visibility flag
 - `is_nsfw`: NSFW content flag
 - `is_link_required`: Requires direct link flag
+- `bucket_id` (Feature 061): nullable string — the pre-truncated date-bucket label (`Y`/`Y-m`/`Y-m-d`, e.g. `"2024-03"`) or alphabetical `title_base` prefix an album's **own parent's** effective sort column/granularity currently produce for it; `NULL` when the parent's effective sort column is `OWNER_ID` (never computed — every direct child of one album always shares that album's exact `owner_id`, so it can never bucket), or when no data is available for the resolved source (no dated photos under `min_taken_at`/`max_taken_at`, or an unparseable title under `date_prefix`-mode `title` sorting). Populated at write time by `RecomputeAlbumStatsJob`, `RecomputeChildAlbumBucketsJob` (fires when a parent's own `album_sorting_col`/`album_sorting_order`/`album_timeline` changes, since those settings govern its *children's* buckets, not its own), and the `lychee:recompute-album-buckets` backfill command — never computed live at read time. Composite index `(parent_id, bucket_id)` lets `GET /api/v3/Albums/{album_id}/children/buckets` (see `api-design.md`) serve a plain, index-served `GROUP BY bucket_id` even at 7,000+ direct children. Governed instance-wide by two config keys for the `title`-sort case only: `title_bucket_mode` (`date_prefix` default, or `alphabetical`) and `title_bucket_prefix_length`.
 
 **Relationships:**
 - Belongs to `User` (owner)

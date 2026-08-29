@@ -236,4 +236,43 @@ class CacheKeyProvider
 
 		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}";
 	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/buckets`
+	 * (Feature 061, FR-061-08): a pure function of `(album_id, user
+	 * identity)` — no sort-column dimension is needed since it is implied by
+	 * `album_id` (a parent's effective sort column is a property of that
+	 * album, not a per-request choice).
+	 */
+	public function albumBucketsKey(string $album_id, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:buckets:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children` (Feature 061,
+	 * FR-061-15), mirrors {@see self::albumBucketsKey()}.
+	 */
+	public function albumChildrenDataKey(string $album_id, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-data:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`
+	 * (Feature 061, FR-061-22), mirrors {@see self::albumBucketsKey()}.
+	 */
+	public function albumChildrenRightsKey(string $album_id, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-rights:{$user_tag}";
+	}
 }

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Completed |
 | Last updated | 2026-08-29 |
 | Owners | ildyria |
 | Linked plan | `docs/specs/4-architecture/features/061-album-timeline-buckets/plan.md` |

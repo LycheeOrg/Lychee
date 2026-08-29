@@ -244,6 +244,27 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->assertNotEvicted('k:tag-albums');
 	}
 
+	/**
+	 * Feature 061 (FR-061-22/T-061-34): the rights endpoint's cache is keyed
+	 * by the queried album's *own* albumChildrenTag() (since
+	 * can_delete_children/can_move_children are derived from grants on that
+	 * album, not its parent) — a permission change directly against
+	 * `$album->id` must evict `albumChildrenTag($album->id)` too, not just
+	 * `albumChildrenTag($album->parent_id)`.
+	 */
+	public function testAccessPermissionChangedEvictsTheAlbumsOwnChildrenTag(): void
+	{
+		$user = User::factory()->create();
+		$parent = Album::factory()->as_root()->owned_by($user)->create();
+		$album = Album::factory()->children_of($parent)->owned_by($user)->create();
+
+		$this->seedCache('k:own-children', [$this->cache_key_provider->albumChildrenTag($album->id)]);
+
+		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($album->id));
+
+		$this->assertEvicted('k:own-children');
+	}
+
 	public function testAccessPermissionChangedForTagAlbumEvictsTagAlbumsListingOnly(): void
 	{
 		$user = User::factory()->create();

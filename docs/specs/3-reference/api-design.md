@@ -238,6 +238,77 @@ The first v3 endpoint to realize the Struct-of-Arrays (SoA) collection conventio
 | 403 | `with_parent_id=true` or `for_bulk_edit=true` requested by a non-admin caller |
 | 422 | `with_parent_id`/`for_bulk_edit` present but not boolean-parseable |
 
+### API v3: Album Virtual-Scroll Backend (Feature 061)
+
+Three `GET` endpoints, all scoped to one parent `album_id` (a route segment, e.g. `/api/v3/Albums/{album_id}/children`), together forming the backend contract for a future virtual-scrolled album grid — sticky date headers, per-tile render data, and background-fetched right-click permission signals. Backend-contract-only: no v8 frontend consumer exists yet. All three are gated by `modules.is_struct_of_array_enabled` (`STRUCT_OF_ARRAY_ENABLED`, the same flag as `GET /api/v3/Albums` above) checked in each request's own `authorize()` — unlike that endpoint, these three are new backend surface, so the flag gate is enforced server-side (403 when off), not just at the frontend. All three resolve `album_id` to a regular `App\Models\Album` only (a `TagAlbum`/`PersonAlbum` id, or an unresolvable id, is a 404) and reuse `AlbumQueryPolicy::applyVisibilityFilter()` for identical child-scoping/visibility semantics to `AlbumRepository::getChildrenPaginated()` (the v2 paginated children listing this feature is intended to eventually replace, once a frontend-adoption feature exists — v2 is untouched by this feature). All three cache through `ManagedCacheService`, tagged with the same `CacheKeyProvider::albumChildrenTag($album_id)` the v2 listing's cache already uses, so every existing invalidation call site also invalidates these — the sole new invalidation wiring this feature adds is `ManagedCacheAlbumListingInvalidator::handleAccessPermissionChanged()` additionally evicting the *changed album's own* `albumChildrenTag()` (not just its parent's), since the rights endpoint below is the first consumer whose cache depends on grants against the queried album itself.
+
+#### Tier 1 — `GET /api/v3/Albums/{album_id}/children/buckets`
+
+Registered via `App\Http\Controllers\Gallery\AlbumBucketController::index()` / `App\Http\Requests\Album\GetAlbumBucketsRequest`. Returns bucket counts (never per-child data) for the parent's direct children, grouped by a **materialized** `albums.bucket_id` column — populated at write time (see `database-schema.md`), never a live `DATE_FORMAT`/`GROUP BY`-per-row computation — so the query is always a plain, index-served `GROUP BY bucket_id` (composite index `(parent_id, bucket_id)`), confirmed via `EXPLAIN QUERY PLAN` against a 7,000-child fixture. Lets a client size a scrollbar and render sticky headers before fetching a single child row.
+
+**Response:** `AlbumBucketResource` (Struct-of-Arrays)
+```json
+{
+  "bucket_ids": ["2024", "2023", "unknown"],
+  "counts": [12, 8, 3],
+  "labels": ["2024", "2023", "unknown"],
+  "bucketable": true
+}
+```
+- `bucket_ids`/`counts`/`labels` are parallel, index-aligned; ordered by a plain `ORDER BY bucket_id <dir>` (`<dir>` from the parent's own effective sort direction) — never routed through `SortingDecorator`/PHP natural sort, even when the parent sorts by `title`. The `"unknown"` entry (children whose `bucket_id` is `NULL` — no dated photos, or an unparseable title) always sorts last, regardless of `<dir>`.
+- `labels[i]` is a ready-to-render display string for `bucket_ids[i]`, computed at read time (not materialized): `Carbon::parse(bucket_ids[i])->format($timeline_album_date_format_*)` for date-based sources, `bucket_ids[i]` verbatim for `alphabetical`-mode `title` sorting, and the literal string `"unknown"` for that entry (never `Carbon`-parsed).
+- `bucketable: false` (all three arrays empty) when the parent's effective sort column is `OWNER_ID` — every direct child of one album always shares that album's `owner_id`, so grouping by it can never produce more than one bucket; the endpoint short-circuits without ever running a `GROUP BY`.
+
+#### Tier 2 — `GET /api/v3/Albums/{album_id}/children`
+
+Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index()` / `App\Http\Requests\Album\GetAlbumChildrenDataRequest`. Returns the actual per-direct-child tile data, whole-album-at-once (no windowed pagination), as a single flat `toBase()` query with zero joins beyond `applyVisibilityFilter()`'s own baseline (`base_albums`, `computed_access_permissions`) — confirmed via query-log capture (exactly one query against `albums`).
+
+**Response:** `AlbumChildrenDataResource` (Struct-of-Arrays, one entry per visible direct child)
+```json
+{
+  "ids": ["abc123"],
+  "titles": ["Sub-album"],
+  "descriptions": ["First 100 characters…"],
+  "cover_ids": ["photo123"],
+  "bucket_ids": ["2024"],
+  "is_password_requireds": [false],
+  "is_nsfws": [false],
+  "has_subalbums": [false],
+  "num_photos": [12],
+  "num_subalbums": [0],
+  "created_ats": ["2024-01-01T00:00:00Z"],
+  "min_taken_ats": [null],
+  "max_taken_ats": [null]
+}
+```
+- `bucket_ids[i]` is that child's own `bucket_id` (`"unknown"` substituted for `NULL`) — the join key back to Tier 1: grouping this endpoint's children by `bucket_ids` and counting reproduces Tier 1's `{bucket_ids, counts}` exactly, for the same `(album_id, caller)`.
+- `descriptions[i]` is SQL-truncated to 100 characters (`SUBSTR(...)`, not PHP-side).
+- `cover_ids[i]` resolves via the same priority rule as the Feature 057 listing above (`App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()`, reused unchanged). No thumbnail media `type`/blur `placeholder` field — resolving a cover to pixels is the caller's job via the Feature 056 Asset endpoint (`GET /api/v3/Photo/{photo_id}/Asset/{size_variant}` — see above).
+
+#### Tier 3 — pixels
+
+Already served by the Feature 056 Asset endpoint documented above — no new endpoint. A client fetches pixels per mounted tile using Tier 2's `cover_ids[i]`.
+
+#### `GET /api/v3/Albums/{album_id}/children/rights`
+
+Registered via `App\Http\Controllers\Gallery\AlbumChildrenRightsController::index()` / `App\Http\Requests\Album\GetAlbumChildrenRightsRequest`. Meant to be fetched in the background immediately after Tier 2 renders (not on the right-click/selection event itself) — the permission signals a right-click/multi-select context menu on a selection of albums needs, with zero interaction-time latency.
+
+**Response:** `AlbumChildrenRightsResource`
+```json
+{
+  "owner_id": "42",
+  "can_delete_children": false,
+  "can_move_children": false,
+  "ids": ["abc123"],
+  "grants_edit": [false],
+  "grants_download": [true]
+}
+```
+- `owner_id`/`can_delete_children`/`can_move_children` are whole-response (one value, not an array) — uniform across every direct child, since both rights checks key off `parent_id`, which is `album_id` itself for every direct child. `can_delete_children` mirrors `AlbumPolicy::canDelete()`'s parent-scoped `AccessPermission` query verbatim; `can_move_children` reuses the same value (mirrors `AlbumRightsResource::can_move`'s existing reuse of the delete gate).
+- `grants_edit`/`grants_download` are per-child, index-aligned with `ids` — the only rights components that genuinely vary per child (a subalbum can be individually shared independent of its siblings). Computed via one `LEFT JOIN` against `AlbumQueryPolicy::getComputedAccessPermissionSubQuery(full: true, user: $currentUser)` (reused from Feature 057's `AlbumListController.php:88` call site, with the real caller instead of the hardcoded public-only case), `GROUP BY` child id with `MAX()` per `grants_*` column — required, not optional: that subquery applies no internal `GROUP BY` in `full: true` mode, so a caller belonging to multiple groups with separate matching grants on the same child would otherwise produce duplicate joined rows; `MAX()` OR-merges them correctly.
+- `grants_upload`/`grants_full_photo_access` and any combined `can_edit`/`can_download`/`can_upload`/`can_access_original`/`can_share`/`can_share_with_users`/`can_transfer` field are deliberately not transmitted — the client already knows its own identity (for the owner-based component of `can_edit`/`can_download`) and combines it with the transmitted `grants_*` flag itself; neither `can_upload` nor `can_access_original` is offered by the right-click menu this endpoint serves at all.
+- Admin callers (`may_administrate`) short-circuit to every right `true` for every child, without the grants join or the `can_delete_children` `exists()` query ever running.
+
 ## Pagination Endpoints
 
 Lychee implements offset-based pagination for albums and photos to efficiently handle large collections. Three dedicated endpoints allow incremental data loading:

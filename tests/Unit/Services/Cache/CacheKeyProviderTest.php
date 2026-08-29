@@ -73,4 +73,48 @@ class CacheKeyProviderTest extends AbstractTestCase
 
 		self::assertSame($key1, $key2);
 	}
+
+	/**
+	 * @param callable(string,int|string|null):string $key_fn
+	 */
+	private function assertUniqueAcrossIdentityAndAlbumMatrix(callable $key_fn): void
+	{
+		$user_ids = [null, 'user-a', 'user-b'];
+		$album_ids = ['album-1', 'album-2'];
+
+		$keys = [];
+		foreach ($album_ids as $album_id) {
+			foreach ($user_ids as $user_id) {
+				$key = $key_fn($album_id, $user_id);
+				self::assertArrayNotHasKey($key, $keys, 'duplicate key for album_id=' . $album_id . ', user_id=' . var_export($user_id, true));
+				$keys[$key] = true;
+			}
+		}
+
+		self::assertCount(6, $keys);
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumBucketsKey($album_id, $user_id));
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumChildrenDataKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumChildrenDataKey($album_id, $user_id));
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumChildrenRightsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumChildrenRightsKey($album_id, $user_id));
+	}
 }

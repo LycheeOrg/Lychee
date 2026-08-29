@@ -93,6 +93,18 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->base_album_id));
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 
+		// Feature 061 (FR-061-22): the rights endpoint's cache is keyed by
+		// the *queried parent's own* albumChildrenTag(), and
+		// can_delete_children/can_move_children/grants_* all derive from
+		// access_permissions rows on that parent (or its direct children,
+		// covered below via the grandparent's tag). A grant/share change
+		// directly on $event->base_album_id must therefore also evict that
+		// album's own children-tag, not just its parent's — the pre-061
+		// invalidation below only ever evicted the latter, since v2/v3's
+		// other album-listing endpoints have no such "rights of my own
+		// direct children" cache to depend on it.
+		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($event->base_album_id));
+
 		// The event payload only carries the id; resolve which of the three
 		// album types it is via a lightweight, non-Eloquent lookup.
 		$album = DB::table('albums')->where('id', '=', $event->base_album_id)->select('parent_id')->first();
