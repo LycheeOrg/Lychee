@@ -8,13 +8,20 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\Album\GetAlbumChildrenDataRequest;
 use App\Http\Resources\V3\AlbumChildrenDataResource;
 use App\Models\Album;
+use App\Models\PersonAlbum;
+use App\Models\TagAlbum;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
+use App\Repositories\AlbumRepository;
+use App\Repositories\ConfigManager;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +34,21 @@ use Illuminate\Support\Facades\Auth;
  * own (NFR-061-07) — identical scoping/policy to
  * {@see \App\Repositories\AlbumRepository::getChildrenPaginated()} and
  * {@see AlbumBucketController}'s own query (NFR-061-08).
+ *
+ * For a {@see TagAlbum}/{@see PersonAlbum}, "children" means the same
+ * "matching albums" listing {@see AlbumRepository::queryMatchingAlbumsForTag()}/
+ * {@see AlbumRepository::queryMatchingAlbumsForPerson()} already build for
+ * v2's `AlbumChildrenController` — reused here unsorted/unpaginated,
+ * `toBase()`-queried like the rest of this feature.
  */
 class AlbumChildrenDataController extends Controller
 {
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
+		protected AlbumRepository $album_repository,
 		protected ManagedCacheService $managed_cache_service,
 		protected CacheKeyProvider $cache_key_provider,
+		protected ConfigManager $config_manager,
 	) {
 	}
 
@@ -43,24 +58,63 @@ class AlbumChildrenDataController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		$key = $this->cache_key_provider->albumChildrenDataKey($album->id, $user?->id);
+		$key = $this->cache_key_provider->albumChildrenDataKey($album->get_id(), $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
 		return $this->managed_cache_service->rememberIf(
 			$enabled,
 			$key,
-			[$this->cache_key_provider->albumChildrenTag($album->id)],
+			[$this->cache_key_provider->albumChildrenTag($album->get_id())],
 			fn (): AlbumChildrenDataResource => $this->queryChildren($album, $user),
 			ttl: $ttl,
 		);
 	}
 
-	private function queryChildren(Album $album, ?User $user): AlbumChildrenDataResource
+	private function queryChildren(AbstractAlbum $album, ?User $user): AlbumChildrenDataResource
 	{
-		$query = Album::query()->where('parent_id', '=', $album->id);
-		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
+		if ($album instanceof Album) {
+			$query = Album::query()->where('parent_id', '=', $album->id);
+			// applyVisibilityFilter() already joins computed_access_permissions
+			// internally (prepareModelQueryOrFail()) — must not join it again.
+			$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
 
+			return $this->fetch($query, $user);
+		}
+
+		if ($album instanceof TagAlbum) {
+			if (!$this->config_manager->getValueAsBool('TA_albums_listing_enabled')) {
+				return $this->toResource(collect(), $user);
+			}
+
+			$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+			$tag_ids = $album->tags->pluck('id')->all();
+			$query = $this->album_repository->queryMatchingAlbumsForTag($tag_ids, $album->is_and, $unlocked_album_ids);
+			// queryMatchingAlbumsForTag()/applyBrowsabilityFilter() do not join
+			// computed_access_permissions on the outer query — add it here.
+			$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', '', false, $user);
+
+			return $this->fetch($query, $user);
+		}
+
+		// PersonAlbum — the only remaining type GetAlbumChildrenDataRequest resolves.
+		if (!$this->config_manager->getValueAsBool('PA_albums_listing_enabled')) {
+			return $this->toResource(collect(), $user);
+		}
+
+		/** @var PersonAlbum $album */
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+		$query = $this->album_repository->queryMatchingAlbumsForPerson($album, $unlocked_album_ids);
+		$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', '', false, $user);
+
+		return $this->fetch($query, $user);
+	}
+
+	/**
+	 * @param Builder<Album> $query
+	 */
+	private function fetch(Builder $query, ?User $user): AlbumChildrenDataResource
+	{
 		$rows = $query
 			->select([
 				'albums.id',

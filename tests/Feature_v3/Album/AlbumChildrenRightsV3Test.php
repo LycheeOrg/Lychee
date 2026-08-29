@@ -23,6 +23,8 @@ use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\DB;
@@ -274,5 +276,80 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 
 		// Parent itself is private -> a stranger can't even resolve it.
 		$this->assertForbidden($this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights"));
+	}
+
+	// ── TagAlbum / PersonAlbum "matching albums" support ───────────
+
+	/**
+	 * A matching-albums result has no single shared parent whose grants
+	 * could uniformly apply — can_delete_children/can_move_children are
+	 * always false, even for an otherwise-fully-granted caller.
+	 */
+	public function testTagAlbumCanDeleteChildrenIsAlwaysFalse(): void
+	{
+		$this->album1->tags()->sync([$this->tag_test->id]);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+
+		self::assertSame([$this->album1->id], $json['ids']);
+		self::assertFalse($json['can_delete_children']);
+		self::assertFalse($json['can_move_children']);
+		self::assertSame((string) $this->tagAlbum1->owner_id, $json['owner_id']);
+	}
+
+	public function testTagAlbumGrantsEditStillReflectsPerAlbumGrant(): void
+	{
+		$this->album1->tags()->sync([$this->tag_test->id]);
+		// userNoUpload has no pre-existing grant on album1 (unlike
+		// userMayUpload2, which already carries the base fixture's perm1).
+		// Access to tagAlbum1 itself (separate from access to any of its
+		// matching albums) is also required to call this endpoint at all.
+		AccessPermission::factory()->for_user($this->userNoUpload)->visible()->create(['base_album_id' => $this->tagAlbum1->id]);
+		AccessPermission::factory()
+			->for_user($this->userNoUpload)
+			->for_album($this->album1)
+			->visible()
+			->grants_edit()
+			->create();
+
+		$json = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+
+		self::assertSame([$this->album1->id], $json['ids']);
+		self::assertTrue($json['grants_edit'][0]);
+		self::assertFalse($json['grants_download'][0]);
+	}
+
+	public function testTagAlbumAdminCanDeleteChildrenStillFalseButGrantsTrue(): void
+	{
+		$this->album1->tags()->sync([$this->tag_test->id]);
+
+		$json = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+
+		self::assertFalse($json['can_delete_children']);
+		self::assertFalse($json['can_move_children']);
+		self::assertTrue($json['grants_edit'][0]);
+		self::assertTrue($json['grants_download'][0]);
+	}
+
+	public function testPersonAlbumCanDeleteChildrenIsAlwaysFalse(): void
+	{
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		$person = Person::factory()->create(['name' => 'Alice', 'is_searchable' => true]);
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+
+		$create_response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_alice',
+			'persons' => [$person->id],
+			'is_and' => false,
+		]);
+		$this->assertOk($create_response);
+		$person_album_id = $create_response->getOriginalContent();
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/children/rights")->assertOk()->json();
+
+		self::assertSame([$this->album1->id], $json['ids']);
+		self::assertFalse($json['can_delete_children']);
+		self::assertFalse($json['can_move_children']);
 	}
 }

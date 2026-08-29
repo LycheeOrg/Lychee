@@ -185,6 +185,26 @@ _Last updated: 2026-08-29_
   _Verification commands:_ N/A (review only).
   _Notes:_ Done during spec drafting (2026-08-27), ahead of I10 — the correction was made as soon as it was discovered, not deferred.
 
+### I11 – Follow-up: TagAlbum/PersonAlbum support for tiers 2/3 (2026-08-29)
+
+> Requested after I1–I10 shipped: extend `GET .../children` and `GET .../children/rights` to also list a `TagAlbum`/`PersonAlbum`'s matching albums, mirroring `AlbumChildrenController`. Tier 1 (buckets) stays regular-`Album`-only — decided with the user: bucketing has no single governing sort column/granularity for a dynamically-matched, disparately-parented result set (see spec.md Non-Goals amendment).
+
+- [x] T-061-38 – Extract `AlbumRepository::queryMatchingAlbumsForTagPaginated()`/`queryMatchingAlbumsForPersonPaginated()`'s query-building logic into new public, unpaginated `queryMatchingAlbumsForTag()`/`queryMatchingAlbumsForPerson()` methods (behavior-preserving refactor — the two paginated methods now call them) (FR-061-24).
+  _Intent:_ Reuse the exact v2 filtering logic (tag `whereHas`/person `whereExists`, `applyBrowsabilityFilter()`) rather than duplicating it.
+  _Verification commands:_ `php artisan test tests/Unit/Repositories/AlbumRepositoryTest.php`; `make phpstan`
+- [x] T-061-39 – Update `GetAlbumChildrenDataRequest`/`GetAlbumChildrenRightsRequest` to resolve `Album|TagAlbum|PersonAlbum` via `HasAbstractAlbumTrait` (mirrors v2's `GetAlbumChildrenRequest` resolution exactly); `GetAlbumBucketsRequest` unchanged (still `Album`-only) (FR-061-24).
+  _Verification commands:_ `make phpstan`
+- [x] T-061-40 – `AlbumChildrenDataController`: branch on album type — real `Album` unchanged; `TagAlbum`/`PersonAlbum` use the new `AlbumRepository` query methods, config-gated by `TA_albums_listing_enabled`/`PA_albums_listing_enabled`, with `computed_access_permissions` joined explicitly (that query path has no built-in join for it) (FR-061-24).
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`; `make phpstan`
+- [x] T-061-41 – `AlbumChildrenRightsController`: same branch; `can_delete_children`/`can_move_children` always `false` for `TagAlbum`/`PersonAlbum` (including for admin callers — no shared-parent grant concept applies), `grants_edit`/`grants_download` computed identically to the regular-`Album` path (incl. admin short-circuit to `true`) (FR-061-25).
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenRightsV3Test`; `make phpstan`
+- [x] T-061-42 – Feature tests: `TagAlbum`/`PersonAlbum` children/rights return the correct matching-albums set (incl. empty-when-untagged/unmatched, empty-when-listing-config-disabled); rights `can_delete_children`/`can_move_children` always `false` (incl. for admin); `grants_edit`/`grants_download` still per-album-accurate; caller needs access to the `TagAlbum`/`PersonAlbum` itself, separate from access to any one matching album.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`; `php artisan test --filter=AlbumChildrenRightsV3Test`
+- [x] T-061-43 – Regression-check the `AlbumRepository`/`AlbumQueryPolicy` refactors against the existing v2 consumers (`AlbumMatchingAlbumsTest`, `AlbumRepositoryTest`).
+  _Verification commands:_ `php artisan test --filter=AlbumMatchingAlbumsTest`; `php artisan test tests/Unit/Repositories/AlbumRepositoryTest.php`
+- [x] T-061-44 – Update `docs/specs/3-reference/api-design.md` and `docs/specs/4-architecture/knowledge-map.md` for the tier-2/3 `TagAlbum`/`PersonAlbum` support; amend spec.md's Non-Goals (tier-1-only) and add FR-061-24/25.
+  _Verification commands:_ N/A (review only).
+
 ## Notes / TODOs
 
 - Root-scope bucketing, photo-side bucket columns, `bucket_id`-windowed tier-2 pagination, full `AlbumRightsResource` parity on the rights endpoint, and frontend adoption (including the actual background-fetch wiring and client-side rights-combination logic) are explicitly out of scope for this feature's tasks — see plan.md Follow-ups. Do not fold them into any task above.

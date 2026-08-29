@@ -8,29 +8,30 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Album;
+use App\Models\PersonAlbum;
+use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
 /**
  * Request for `GET /api/v3/Albums/{album_id}/children/rights` (Feature 061,
- * DO-061-09). Validates `album_id` identically to
- * {@see \App\Http\Requests\Album\GetAlbumBucketsRequest}/{@see \App\Http\Requests\Album\GetAlbumChildrenDataRequest}
- * (DO-061-01/07): route segment, `required`, `RandomIDRule`, resolves to a
- * regular {@see Album} only.
+ * DO-061-09). `album_id` is bound from the route segment via
+ * {@see self::prepareForValidation()}, resolving to a real {@see Album} *or*
+ * a {@see TagAlbum}/{@see PersonAlbum} — mirrors
+ * {@see \App\Http\Requests\Album\GetAlbumChildrenDataRequest}'s resolution
+ * exactly (smart albums intentionally excluded).
  */
-class GetAlbumChildrenRightsRequest extends BaseApiRequest
+class GetAlbumChildrenRightsRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	private Album $album;
-
-	public function album(): Album
-	{
-		return $this->album;
-	}
+	use HasAbstractAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -69,6 +70,10 @@ class GetAlbumChildrenRightsRequest extends BaseApiRequest
 	{
 		/** @var string $album_id */
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = Album::query()->where('id', '=', $album_id)->firstOrFail();
+
+		$this->album = Album::find($album_id);
+		$this->album ??= TagAlbum::find($album_id);
+		$this->album ??= PersonAlbum::find($album_id);
+		$this->album ??= throw new ModelNotFoundException();
 	}
 }

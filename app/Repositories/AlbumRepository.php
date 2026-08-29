@@ -152,12 +152,19 @@ class AlbumRepository
 	}
 
 	/**
+	 * Builds (without sorting/pagination) the query for the real Albums
+	 * carrying every tag referenced by a TagAlbum's criteria — the same
+	 * `WHERE`/`JOIN` logic {@see self::queryMatchingAlbumsForTagPaginated()}
+	 * paginates, exposed unsorted/unpaginated for Feature 061's v3
+	 * `GET /Albums/{album_id}/children`/`.../rights` endpoints (whole-result,
+	 * `toBase()`-queried).
+	 *
 	 * @param int[]    $tag_ids
 	 * @param string[] $unlocked_album_ids
 	 *
-	 * @return LengthAwarePaginator<Album>
+	 * @return Builder<Album>
 	 */
-	private function queryMatchingAlbumsForTagPaginated(array $tag_ids, bool $is_and, array $unlocked_album_ids, int $per_page): LengthAwarePaginator
+	public function queryMatchingAlbumsForTag(array $tag_ids, bool $is_and, array $unlocked_album_ids): Builder
 	{
 		$query = Album::query()
 			->select(['albums.*'])
@@ -178,6 +185,19 @@ class AlbumRepository
 		/** @var ?User $user */
 		$user = Auth::user();
 		$this->album_query_policy->applyBrowsabilityFilter($query, $user, $unlocked_album_ids);
+
+		return $query;
+	}
+
+	/**
+	 * @param int[]    $tag_ids
+	 * @param string[] $unlocked_album_ids
+	 *
+	 * @return LengthAwarePaginator<Album>
+	 */
+	private function queryMatchingAlbumsForTagPaginated(array $tag_ids, bool $is_and, array $unlocked_album_ids, int $per_page): LengthAwarePaginator
+	{
+		$query = $this->queryMatchingAlbumsForTag($tag_ids, $is_and, $unlocked_album_ids);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 		/** @var SortingDecorator<Album> */
@@ -239,11 +259,18 @@ class AlbumRepository
 	}
 
 	/**
+	 * Builds (without sorting/pagination) the query for the real Albums
+	 * containing at least one photo matching a PersonAlbum's criteria — the
+	 * same logic {@see self::queryMatchingAlbumsForPersonPaginated()}
+	 * paginates, exposed unsorted/unpaginated for Feature 061's v3
+	 * `GET /Albums/{album_id}/children`/`.../rights` endpoints (whole-result,
+	 * `toBase()`-queried).
+	 *
 	 * @param string[] $unlocked_album_ids
 	 *
-	 * @return LengthAwarePaginator<Album>
+	 * @return Builder<Album>
 	 */
-	private function queryMatchingAlbumsForPersonPaginated(PersonAlbum $person_album, array $unlocked_album_ids, int $per_page): LengthAwarePaginator
+	public function queryMatchingAlbumsForPerson(PersonAlbum $person_album, array $unlocked_album_ids): Builder
 	{
 		/** @var ?User $user */
 		$user = Auth::user();
@@ -259,6 +286,18 @@ class AlbumRepository
 				->whereIn('photo_album.photo_id', $matching_photo_ids));
 
 		$this->album_query_policy->applyBrowsabilityFilter($query, $user, $unlocked_album_ids);
+
+		return $query;
+	}
+
+	/**
+	 * @param string[] $unlocked_album_ids
+	 *
+	 * @return LengthAwarePaginator<Album>
+	 */
+	private function queryMatchingAlbumsForPersonPaginated(PersonAlbum $person_album, array $unlocked_album_ids, int $per_page): LengthAwarePaginator
+	{
+		$query = $this->queryMatchingAlbumsForPerson($person_album, $unlocked_album_ids);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 		/** @var SortingDecorator<Album> */

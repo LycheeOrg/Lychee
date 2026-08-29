@@ -24,6 +24,8 @@ use App\Enum\OrderSortingType;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -282,5 +284,53 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json('ids');
 		self::assertCount(2, $after);
+	}
+
+	// ── TagAlbum / PersonAlbum "matching albums" support ───────────
+
+	public function testTagAlbumChildrenReturnsAlbumsCarryingTheTag(): void
+	{
+		$this->album1->tags()->sync([$this->tag_test->id]);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+
+		self::assertSame([$this->album1->id], $json['ids']);
+	}
+
+	public function testTagAlbumChildrenEmptyWhenNoAlbumCarriesTheTag(): void
+	{
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+
+		self::assertSame([], $json['ids']);
+	}
+
+	public function testTagAlbumChildrenEmptyWhenListingConfigDisabled(): void
+	{
+		$this->album1->tags()->sync([$this->tag_test->id]);
+		Configs::set('TA_albums_listing_enabled', '0');
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+
+		self::assertSame([], $json['ids']);
+	}
+
+	public function testPersonAlbumChildrenReturnsAlbumsContainingAMatchingFace(): void
+	{
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		$person = Person::factory()->create(['name' => 'Alice', 'is_searchable' => true]);
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+
+		$create_response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_alice',
+			'persons' => [$person->id],
+			'is_and' => false,
+		]);
+		$this->assertOk($create_response);
+		$person_album_id = $create_response->getOriginalContent();
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/children")->assertOk()->json();
+
+		self::assertSame([$this->album1->id], $json['ids']);
 	}
 }
