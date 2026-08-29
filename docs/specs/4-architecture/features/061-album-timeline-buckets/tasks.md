@@ -205,6 +205,19 @@ _Last updated: 2026-08-29_
 - [x] T-061-44 – Update `docs/specs/3-reference/api-design.md` and `docs/specs/4-architecture/knowledge-map.md` for the tier-2/3 `TagAlbum`/`PersonAlbum` support; amend spec.md's Non-Goals (tier-1-only) and add FR-061-24/25.
   _Verification commands:_ N/A (review only).
 
+### I12 – Follow-up: tier 2 row ordering (2026-08-30)
+
+> Surfaced during Feature 062 spec drafting: `GET .../children` shipped with zero `ORDER BY` clause at all (the shipped test's own comment even said so — "the children endpoint has no bucket_id ordering guarantee of its own"). User chose to fix it at the source rather than have Feature 062 compensate for it client-side (FR-061-26).
+
+- [x] T-061-45 – Feature tests: for a real `Album` parent, the children endpoint's row order (deduplicated `bucket_ids` sequence) matches the buckets endpoint's own `bucket_ids` array exactly (S-061-42); a dedicated `title`/`date_prefix`-mode fixture where an undated child's title starts with a single leading digit (sorts *before* any 4-digit year alphabetically) still lands last, matching the buckets endpoint's mandatory "unknown always last" guarantee, proving the fix isn't cosmetic for the one non-monotonic bucketing mode (S-061-43) (F-061-26).
+  _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php` rather than a new file.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`
+- [x] T-061-46 – Implement the fix in `AlbumChildrenDataController::queryChildren()`: `orderByRaw('(albums.bucket_id IS NULL) ASC')->orderBy('albums.bucket_id', $direction)` then `SortingDecorator`-applied effective-column ordering for a real `Album`; `AlbumSortingCriterion::createDefault()` via `SortingDecorator` for `TagAlbum`/`PersonAlbum` (F-061-26).
+  _Intent:_ Make T-061-45 pass; also strengthened the two existing correlation tests (`testBucketIdCorrelatesExactlyWithBucketsEndpoint`/`testBucketIdCorrelationIncludingUnknown`) to assert row order, not just grouped counts, and removed their now-stale "no ordering guarantee" comment.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`; `php artisan test --filter=AlbumChildrenRightsV3Test`; `php artisan test --filter=AlbumBucketsV3Test`; `make phpstan`; `vendor/bin/php-cs-fixer fix --dry-run`
+- [x] T-061-47 – Update `docs/specs/3-reference/api-design.md` (tier 2 ordering bullet) to reflect FR-061-26.
+  _Verification commands:_ N/A (review only).
+
 ## Notes / TODOs
 
 - Root-scope bucketing, photo-side bucket columns, `bucket_id`-windowed tier-2 pagination, full `AlbumRightsResource` parity on the rights endpoint, and frontend adoption (including the actual background-fetch wiring and client-side rights-combination logic) are explicitly out of scope for this feature's tasks — see plan.md Follow-ups. Do not fold them into any task above.
