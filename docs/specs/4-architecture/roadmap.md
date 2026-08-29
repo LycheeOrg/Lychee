@@ -6,12 +6,12 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 061 | Album Timeline Bucket Aggregation | Draft | Medium | ildyria | 2026-08-27 | 2026-08-29 | Spec/plan/tasks drafted for three backend-contract-only v3 endpoints, scoped to one parent album's direct children: `GET /api/v3/Albums/{album_id}/children/buckets` (materialized `bucket_id` column + composite index, index-served `GROUP BY`, read-time-computed display `labels`); `GET /api/v3/Albums/{album_id}/children` (per-child render data, whole-album-at-once, join-free `toBase()` query); `GET /api/v3/Albums/{album_id}/children/rights` (background-fetched, never per-interaction, permission signals for right-click/multi-select context menus, reusing Feature 057's bulk-permission-join mechanism with `MAX()`-aggregated group-grant handling and explicit admin-bypass replication). `OWNER_ID` is not a bucketable sort column — every direct child of a parent always shares that parent's owner, so grouping by it can never produce more than one bucket. All three endpoints gated by `STRUCT_OF_ARRAY_ENABLED`; together they are the full v3 backend replacement for `AlbumChildrenController`'s v2 paginated listing, with a separate frontend-adoption feature required before v2 can retire. Implementation not started (0/38 tasks, T-061-17 excepted). |
 
 ## Paused Features
 
 | Feature ID | Name | Status | Priority | Reason | Paused Date |
 |------------|------|--------|----------|--------|-------------|
-| - | - | - | - | - | - |
 
 ## Completed Features
 
@@ -131,8 +131,4 @@ features/
 
 ---
 
-<<<<<<< HEAD
-*Last updated: 2026-08-28 (Feature 060 moved to Completed Features)*
-=======
-*Last updated: 2026-08-28 (Feature 059 implemented, moved to Completed Features)*
->>>>>>> master
+*Last updated: 2026-08-29 (Feature 061 rework complete, moved back to Active Features as Draft; Feature 060 moved to Completed Features; Feature 059 implemented, moved to Completed Features)*
