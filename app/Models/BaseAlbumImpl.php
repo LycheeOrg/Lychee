@@ -102,6 +102,8 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $updated_at
  * @property Carbon|null                      $published_at
  * @property string                           $title
+ * @property string                           $title_base
+ * @property int                              $title_index
  * @property string|null                      $slug
  * @property string|null                      $description
  * @property PhotoLayoutType|null             $photo_layout
@@ -182,6 +184,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
+		'title_base' => '',
+		'title_index' => 0,
 		'slug' => null,
 		'description' => null,
 		'owner_id' => 0,

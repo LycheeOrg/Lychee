@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+use function Safe\preg_match;
+
+require_once __DIR__ . '/TitleSplitResult.php';
+
+/**
+ * Standalone copy of {@see \App\Services\TitleSplitter}, frozen for use by
+ * the Feature 060 title-sorting backfill migrations.
+ * Migrations must not depend on live app code, because app code may change
+ * or be removed in the future while old migrations must remain runnable.
+ */
+class TitleSplitter
+{
+	private const MAX_INDEX_DIGITS = 9;
+
+	/**
+	 * Matches a trailing file-extension-shaped suffix (`.jpg`, `.xts`, ...).
+	 * Requires a leading letter so a digit-only suffix (e.g. `xxx.2`) is
+	 * never mistaken for an extension - `.2` is a legitimate index.
+	 */
+	private const EXTENSION_PATTERN = '/\.([A-Za-z][A-Za-z0-9]{0,4})$/u';
+
+	/**
+	 * Matches a trailing run of digits (up to `MAX_INDEX_DIGITS`), e.g. `test_10`.
+	 * The run of digits is captured in group 2, the rest of the string in group 1.
+	 *
+	 * Note that we capture a maximum of `MAX_INDEX_DIGITS = 9` digits, this has two benefits.
+	 * We ensure that the number fits into a 32-bit signed integer,
+	 * and we avoid the performance penalty of matching arbitrarily long digit runs.
+	 */
+	private const TRAILING_DIGITS_PATTERN = '/^(.*?)(\d{1,' . self::MAX_INDEX_DIGITS . '})$/u';
+
+	private const PARENTHESISED_NUMBER_PATTERN = '/^(.*?)\((\d{1,' . self::MAX_INDEX_DIGITS . '})\)$/u';
+
+	public static function split(string $title): TitleSplitResult
+	{
+		// Stage A: set aside a trailing file-extension-shaped suffix, if any,
+		// so it doesn't defeat the digit/paren rules below (e.g. "photo_2.jpg").
+		// The extension is re-appended to `base` once an index is
+		// successfully extracted (toResult()) so that titles which only
+		// differ by extension (e.g. "photo_5.jpg" vs. "photo_5.heic") get
+		// different `base` values and don't tie/interleave (NFR-060-09).
+		if (preg_match(self::EXTENSION_PATTERN, $title, $ext_matches) === 1) {
+			$extension = $ext_matches[0];
+			$stem = substr($title, 0, -strlen($extension));
+		} else {
+			$extension = null;
+			$stem = $title;
+		}
+
+		// Stage B, rule 1: trailing digit run on the (possibly stripped) stem.
+		if (preg_match(self::TRAILING_DIGITS_PATTERN, $stem, $matches) === 1) {
+			return self::toResult($matches[1], $matches[2], $extension);
+		}
+
+		// Stage B, rule 2: trailing parenthesised number on the stem.
+		if (preg_match(self::PARENTHESISED_NUMBER_PATTERN, $stem, $matches) === 1) {
+			return self::toResult($matches[1], $matches[2], $extension);
+		}
+
+		// Stage B, rule 3 (fallback): no index found even after stripping -
+		// fall back to the full ORIGINAL title (extension retained), so a
+		// wrong Stage-A guess (e.g. "Vol.II") never silently drops a token
+		// from a title that has no numeric suffix at all. `title_index` is
+		// never NULL in the database, so titles without a suffix get `0`.
+		return new TitleSplitResult(mb_strtolower(mb_strtolower(str_replace("'", '', $title))), 0);
+	}
+
+	private static function toResult(string $base, string $digits, ?string $extension): TitleSplitResult
+	{
+		return new TitleSplitResult(mb_strtolower(str_replace("'", '', $base) . ($extension ?? '')), (int) $digits);
+	}
+}

@@ -9,7 +9,6 @@
 namespace App\Relations;
 
 use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -95,6 +94,11 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 				origin: $albums[0],
 				include_nsfw: true
 			);
+
+		$sorting = $albums[0]->getEffectivePhotoSorting();
+		(new SortingDecorator($this->getRelationQuery()))
+			->orderPhotosBy($sorting->column, $sorting->order)
+			->applyOrdering();
 	}
 
 	/**
@@ -113,9 +117,6 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 
 	/**
 	 * Maps a collection of eagerly fetched photos to the given owning albums.
-	 *
-	 * This method is called by the framework after the unified result of
-	 * photos has been fetched by {@link HasManyPhotosRecursively::addEagerConstraints()}.
 	 *
 	 * @param Album[]                           $albums   the list of owning albums
 	 * @param Collection<int,\App\Models\Photo> $photos   collection of {@link Photo} models which needs to be mapped to the albums
@@ -136,13 +137,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
-			$sorting = $album->getEffectivePhotoSorting();
-			$photos = $photos->sortBy(
-				$sorting->column->toColumn(),
-				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-				$sorting->order === OrderSortingType::DESC
-			)->values();
-			$album->setRelation($relation, $photos);
+			$album->setRelation($relation, $photos->values());
 		}
 
 		return $albums;

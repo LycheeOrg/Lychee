@@ -18,11 +18,6 @@ enum ColumnSortingType: string
 	case OWNER_ID = 'owner_id';
 	case CREATED_AT = 'created_at';
 	case TITLE = 'title';
-	case DESCRIPTION = 'description';
-
-	// We sort those at the database level.
-	case TITLE_STRICT = 'title_strict';
-	case DESCRIPTION_STRICT = 'description_strict';
 
 	// from albums
 	case MIN_TAKEN_AT = 'min_taken_at';
@@ -35,38 +30,34 @@ enum ColumnSortingType: string
 	case RATING_AVG = 'rating_avg';
 
 	/**
-	 * Convert into actual column name.
-	 */
-	public function toColumn(): string
-	{
-		return match ($this) {
-			self::TITLE_STRICT => 'title',
-			self::DESCRIPTION_STRICT => 'description',
-			default => $this->value,
-		};
-	}
-
-	/**
 	 * Check if this column requires special raw SQL ordering.
 	 * Used for columns that need COALESCE or other SQL functions.
 	 */
 	public function requiresRawOrdering(): bool
 	{
-		return $this === self::RATING_AVG;
+		return $this === self::RATING_AVG || $this === self::TITLE;
 	}
 
 	/**
-	 * Get the raw SQL ordering expression for this column.
+	 * Get the raw SQL ordering expression for this column, including the
+	 * sort direction for every part of the expression.
 	 * Only applicable when requiresRawOrdering() returns true.
 	 *
-	 * @param string $prefix Optional table prefix (e.g., 'photos.')
+	 * @param string           $prefix    Optional table prefix (e.g., 'photos.')
+	 * @param OrderSortingType $direction the order direction
 	 */
-	public function getRawOrderExpression(string $prefix = ''): string
+	public function getRawOrderExpression(string $prefix, OrderSortingType $direction): string
 	{
 		return match ($this) {
 			// COALESCE pushes NULLs to end by using -1 as sentinel (Q-009-06)
-			self::RATING_AVG => 'COALESCE(' . $prefix . 'rating_avg, -1)',
-			default => $prefix . $this->toColumn(),
+			self::RATING_AVG => 'COALESCE(' . $prefix . 'rating_avg, -1) ' . $direction->value,
+			// title_index is NEVER NULL (defaults to 0 for titles without a
+			// numeric suffix), so no COALESCE is needed here: a title with
+			// no suffix sorts immediately before any digit-suffixed sibling
+			// sharing the same base, matching prior natural-sort behaviour
+			// (FR-060-05).
+			self::TITLE => $prefix . 'title_base ' . $direction->value . ', ' . $prefix . 'title_index ' . $direction->value,
+			default => $prefix . $this->value . ' ' . $direction->value,
 		};
 	}
 }

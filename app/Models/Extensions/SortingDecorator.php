@@ -14,19 +14,12 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection as BaseCollection;
 
 /**
  * @template TModelClass of \Illuminate\Database\Eloquent\Model
  */
 class SortingDecorator
 {
-	public const POSTPONE_COLUMNS = [
-		ColumnSortingType::TITLE,
-		ColumnSortingType::DESCRIPTION,
-	];
-
 	/**
 	 * @var Builder<TModelClass>
 	 */
@@ -49,46 +42,9 @@ class SortingDecorator
 	 * the sorting criterion at index `length-1` is the least significant
 	 * criterion.
 	 *
-	 * If everything can be sorted on the SQL layer, then the SQL basically
-	 * has to look like that:
-	 *
-	 *     $query->order_by($orderBy[0])->order_by($orderBy[1])->...->order_by($orderBy[length-1])
-	 *
-	 * For SQL the most significant order criterion has to be put first.
-	 *
-	 * If everything needs to be sorted on the software layer (i.e. with
-	 * Laravel Collections), then the criteria must be applied in reverse
-	 * order like this
-	 *
-	 *     $collection->sortBy($orderBy[length-1])->...->sortBy($orderBy[1])->sortBy($orderBy[0])
-	 *
-	 * The reason is that each `sortBy` immediately executes a _stable_ sort
-	 * and thus the last one "wins".
-	 *
-	 * The mixed case with some pre-sorting on the SQL layer and final sorting
-	 * on the software layer is more complicated.
-	 *
 	 * @var array<int,array{column:string,direction:string,type:ColumnSortingType,prefix:string}>
 	 */
 	protected array $order_by = [];
-
-	/**
-	 * The index for {@link SortingDecorator::$orderBy} at which we must
-	 * switch from SQL sorting to PHP sorting.
-	 *
-	 * Criteria between `0` ... `$pivotIdx` are sorted on the software layer
-	 * (in reverse order).
-	 * Criteria between `$pivotIdx+1` ... `length-1` are sorted on the SQL
-	 * layer.
-	 *
-	 * If `$pivotIdx === -1`, then everything is sorted on the SQL layer.
-	 * `$pivotIdx` is only set to a different value, if a sorting criteria
-	 * which must be postponed (see {@link SortingDecorator::POSTPONE_COLUMNS})
-	 * is added.
-	 * Then `$pivotIdx` points to that with the least priority, because from
-	 * there on everything must be sorted in software.
-	 */
-	protected int $pivot_idx = -1;
 
 	/**
 	 * @param ColumnSortingType $column    the column acc. to which the result shall be sorted
@@ -101,15 +57,11 @@ class SortingDecorator
 	public function orderBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
 		$this->order_by[] = [
-			'column' => $column->toColumn(),
+			'column' => $column->value,
 			'direction' => $direction->value,
 			'type' => $column,
 			'prefix' => '',
 		];
-
-		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivot_idx = count($this->order_by) - 1;
-		}
 
 		return $this;
 	}
@@ -128,42 +80,41 @@ class SortingDecorator
 	public function orderPhotosBy(ColumnSortingType $column, OrderSortingType $direction): SortingDecorator
 	{
 		$this->order_by[] = [
-			'column' => 'photos.' . $column->toColumn(),
+			'column' => 'photos.' . $column->value,
 			'direction' => $direction->value,
 			'type' => $column,
 			'prefix' => 'photos.',
 		];
 
-		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
-			$this->pivot_idx = count($this->order_by) - 1;
-		}
-
 		return $this;
 	}
 
 	/**
-	 * Apply SQL-level sorting for criteria after the pivot index.
+	 * Apply SQL-level sorting for all criteria to the underlying builder,
+	 * without executing the query.
 	 *
-	 * @return void
+	 * Used by eager-loading relation classes (e.g. {@link \App\Relations\HasManyPhotosByTag})
+	 * which must order their own query builder directly, since Eloquent's
+	 * default eager-load path bypasses {@link SortingDecorator::get()}
+	 * (FR-060-08).
+	 *
+	 * @return SortingDecorator<TModelClass>
 	 *
 	 * @throws InvalidOrderDirectionException
 	 */
-	private function applySqlSorting(): void
+	public function applyOrdering(): self
 	{
 		try {
-			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
-				$column = $this->order_by[$i]['column'];
-				$column_sorting_name = str_replace('_strict', '', $column);
-				$column_type = $this->order_by[$i]['type'];
-				$prefix = $this->order_by[$i]['prefix'];
-				$direction = $this->order_by[$i]['direction'];
+			foreach ($this->order_by as $criterion) {
+				$column_type = $criterion['type'];
+				$prefix = $criterion['prefix'];
+				$direction = OrderSortingType::from($criterion['direction']);
 
-				// Check if this column requires raw SQL ordering (e.g., COALESCE for rating)
+				// Check if this column requires raw SQL ordering (e.g., COALESCE for rating, or title_base/title_index for title)
 				if ($column_type->requiresRawOrdering()) {
-					$raw_expression = $column_type->getRawOrderExpression($prefix);
-					$this->base_builder->orderByRaw($raw_expression . ' ' . $direction);
+					$this->base_builder->orderByRaw($column_type->getRawOrderExpression($prefix, $direction));
 				} else {
-					$this->base_builder->orderBy($column_sorting_name, $direction);
+					$this->base_builder->orderBy($criterion['column'], $criterion['direction']);
 				}
 			}
 			// @codeCoverageIgnoreStart
@@ -178,35 +129,8 @@ class SortingDecorator
 			throw new InvalidOrderDirectionException();
 		}
 		// @codeCoverageIgnoreEnd
-	}
 
-	/**
-	 * Apply PHP-level sorting for criteria up to and including the pivot index.
-	 *
-	 * @param BaseCollection<int,TModelClass> $items
-	 *
-	 * @return BaseCollection<int,TModelClass>
-	 */
-	private function applyPhpSorting(BaseCollection $items): BaseCollection
-	{
-		// Sort as much as we can on the SQL layer, i.e. everything with a
-		// lower significance than the least significant criterion which
-		// requires natural sorting.
-		for ($i = $this->pivot_idx; $i >= 0; $i--) {
-			$column = $this->order_by[$i]['column'];
-			$column_sorting_name = str_replace('photos.', '', $column);
-			$column_sorting_name = str_replace('_strict', '', $column_sorting_name);
-			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
-
-			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
-			$items = $items->sortBy(
-				$column_sorting_name,
-				$options,
-				$this->order_by[$i]['direction'] === OrderSortingType::DESC->value
-			)->values();
-		}
-
-		return $items;
+		return $this;
 	}
 
 	/**
@@ -220,16 +144,9 @@ class SortingDecorator
 	 */
 	public function get(array $columns = ['*']): Collection
 	{
-		// Sort as much as we can on the SQL layer, i.e. everything with a
-		// lower significance than the least significant criterion which
-		// requires natural sorting.
-		$this->applySqlSorting();
+		$this->applyOrdering();
 
-		/** @var Collection<int,TModelClass> $result */
-		$result = $this->base_builder->get($columns);
-
-		// Sort with PHP for the remaining criteria in reverse order.
-		return $this->applyPhpSorting($result);
+		return $this->base_builder->get($columns);
 	}
 
 	/**
@@ -246,16 +163,8 @@ class SortingDecorator
 	 */
 	public function paginate($per_page = null, $columns = ['*'], $page_name = 'page', $page = null)
 	{
-		// Sort as much as we can on the SQL layer, i.e. everything with a
-		// lower significance than the least significant criterion which
-		// requires natural sorting.
-		$this->applySqlSorting();
+		$this->applyOrdering();
 
-		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,TModelClass> $result */
-		$result = $this->base_builder->paginate($per_page, $columns, $page_name, $page);
-
-		$items = $this->applyPhpSorting(collect($result->items()));
-
-		return new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage(), $result->getOptions());
+		return $this->base_builder->paginate($per_page, $columns, $page_name, $page);
 	}
 }

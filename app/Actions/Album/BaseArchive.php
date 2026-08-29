@@ -459,7 +459,10 @@ abstract class BaseArchive
 		}
 
 		$used_file_names = [];
-		$photo_collection = $album->photos()->orderBy('title', 'ASC')->get();
+		$photo_collection = $album->photos()
+			->orderBy('photos.title_base', 'asc')
+			->orderBy('photos.title_index', 'asc')
+			->get();
 
 		/** @var Photo $photo */
 		foreach ($photo_collection as $photo) {

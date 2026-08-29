@@ -10,6 +10,7 @@ namespace App\Actions\Renamer;
 
 use App\Metadata\Renamer\PhotoRenamer;
 use App\Models\Photo;
+use App\Services\TitleSplitter;
 use Illuminate\Support\Collection;
 
 class RenamePhotos
@@ -36,15 +37,33 @@ class RenamePhotos
 			->whereIn('id', $photo_ids)
 			// Process by chunks of self::CHUNK_SIZE to avoid memory issues
 			->chunkById(self::CHUNK_SIZE, function (Collection $photos) use ($photo_renamer): void {
-				$values = $photos->map(fn (Photo $photo) => [
-					'id' => $photo->id,
-					'title' => $photo_renamer->handle($photo->title),
-				])->all();
+				$values = $photos->map(fn (Photo $photo) => $this->buildUpdateValues($photo, $photo_renamer))->all();
 
 				// Make a batch update to update all photo titles at once
 				$photo_instance = new Photo();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($photo_instance, $values, 'id');
 			});
+	}
+
+	/**
+	 * Build the update values for a single photo, applying the renamer rules and re-splitting the title.
+	 *
+	 * @param Photo        $photo
+	 * @param PhotoRenamer $photo_renamer
+	 *
+	 * @return array{id:string,title:string,title_base:string,title_index:int}
+	 */
+	private function buildUpdateValues(Photo $photo, PhotoRenamer $photo_renamer): array
+	{
+		$title = $photo_renamer->handle($photo->title);
+		$title_split = TitleSplitter::split($title);
+
+		return [
+			'id' => $photo->id,
+			'title' => $title,
+			'title_base' => $title_split->base,
+			'title_index' => $title_split->index,
+		];
 	}
 }

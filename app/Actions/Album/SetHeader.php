@@ -11,6 +11,7 @@ namespace App\Actions\Album;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Services\TitleSplitter;
 
 class SetHeader
 {
@@ -37,6 +38,10 @@ class SetHeader
 				$album->header_photo_focus = null;
 			}
 		}
+
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->save();
 
 		return $album;

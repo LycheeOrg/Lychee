@@ -20,6 +20,7 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Services\TitleSplitter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -56,6 +57,15 @@ class SearchSortingTest extends BaseApiWithDataTest
 			'created_at' => Carbon::parse('2022-01-01'),
 			'taken_at' => Carbon::parse('2022-06-01'),
 		]);
+
+		// Feature 060: `title_base`/`title_index` drive the DB-only title
+		// sort; factories bypass the explicit write sites (FR-060-03), so
+		// they are set here explicitly, mirroring what a real write site
+		// would do.
+		foreach ([$a, $b, $c] as $photo) {
+			$photo->title_base = TitleSplitter::split($photo->title)->base;
+			$photo->save();
+		}
 
 		return [$a, $b, $c];
 	}
@@ -238,11 +248,18 @@ class SearchSortingTest extends BaseApiWithDataTest
 	{
 		$this->be($this->userMayUpload1);
 
+		// Feature 060: `title_base`/`title_index` drive the DB-only sort;
+		// factories bypass the explicit write sites (FR-060-03), so they are
+		// set here explicitly, mirroring what a real write site would do.
 		$a = Album::factory()->as_root()->with_title('ASort_Alpha')->owned_by($this->userMayUpload1)->create();
+		$a->title_base = TitleSplitter::split($a->title)->base;
+		$a->save();
 		$z = Album::factory()->as_root()->with_title('ASort_Zulu')->owned_by($this->userMayUpload1)->create();
+		$z->title_base = TitleSplitter::split($z->title)->base;
+		$z->save();
 
 		$tokens = SearchTokenParser::parse('ASort_');
-		$sorting = new AlbumSortingCriterion(ColumnSortingType::TITLE_STRICT, OrderSortingType::ASC);
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::TITLE, OrderSortingType::ASC);
 		$ids = app(AlbumSearch::class)->queryAlbums($tokens, null, $sorting)->pluck('id')->toArray();
 
 		$this->assertSame([$a->id, $z->id], array_values(array_intersect($ids, [$a->id, $z->id])));

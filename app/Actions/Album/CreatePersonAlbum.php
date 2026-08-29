@@ -12,6 +12,7 @@ use App\Events\PersonAlbumSaved;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\PersonAlbum;
+use App\Services\TitleSplitter;
 use Illuminate\Support\Facades\Auth;
 
 class CreatePersonAlbum
@@ -35,6 +36,9 @@ class CreatePersonAlbum
 
 		$album = new PersonAlbum();
 		$album->title = $title;
+		$title_split = TitleSplitter::split($album->title);
+		$album->title_base = $title_split->base;
+		$album->title_index = $title_split->index;
 		$album->owner_id = $user_id;
 		$album->is_and = $is_and;
 		$album->save();
