@@ -99,6 +99,60 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
+	// ── Pin / public / link-required (FR-061-27) ──────────────────
+
+	/**
+	 * S-061-44: a fixture spanning a pinned child, an unpinned child, a
+	 * public+no-link-required child, a public+link-required child, and a
+	 * fully private child — `is_pinneds`/`is_publics`/`is_link_requireds`
+	 * match `ThumbAlbumResource`'s own resolution for the same children.
+	 */
+	public function testPinPublicLinkRequiredFieldsMatchThumbAlbumResource(): void
+	{
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+
+		$pinned = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$pinned->is_pinned = true;
+		$pinned->save();
+		$this->recompute($pinned);
+
+		$unpinned = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$this->recompute($unpinned);
+
+		$public_visible = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_visible)->create();
+		$this->recompute($public_visible);
+
+		$public_link_required = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->for_album($public_link_required)->create();
+		$this->recompute($public_link_required);
+
+		$private = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$this->recompute($private);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children");
+		$this->assertOk($response);
+		$json = $response->json();
+
+		$idx_pinned = array_search($pinned->id, $json['ids'], true);
+		$idx_unpinned = array_search($unpinned->id, $json['ids'], true);
+		$idx_public_visible = array_search($public_visible->id, $json['ids'], true);
+		$idx_public_link_required = array_search($public_link_required->id, $json['ids'], true);
+		$idx_private = array_search($private->id, $json['ids'], true);
+
+		self::assertTrue($json['is_pinneds'][$idx_pinned]);
+		self::assertFalse($json['is_pinneds'][$idx_unpinned]);
+
+		self::assertTrue($json['is_publics'][$idx_public_visible]);
+		self::assertFalse($json['is_link_requireds'][$idx_public_visible]);
+
+		self::assertTrue($json['is_publics'][$idx_public_link_required]);
+		self::assertTrue($json['is_link_requireds'][$idx_public_link_required]);
+
+		self::assertFalse($json['is_publics'][$idx_private]);
+		self::assertFalse($json['is_link_requireds'][$idx_private]);
+	}
+
 	// ── Description truncation ───────────────────────────────────
 
 	public function testDescriptionTruncatedToOneHundredCharsBySql(): void
@@ -169,7 +223,8 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertExactJson([
 			'ids' => [], 'titles' => [], 'descriptions' => [], 'cover_ids' => [], 'bucket_ids' => [],
-			'is_password_requireds' => [], 'is_nsfws' => [], 'has_subalbums' => [], 'num_photos' => [],
+			'is_password_requireds' => [], 'is_nsfws' => [], 'is_pinneds' => [], 'is_publics' => [],
+			'is_link_requireds' => [], 'has_subalbums' => [], 'num_photos' => [],
 			'num_subalbums' => [], 'created_ats' => [], 'min_taken_ats' => [], 'max_taken_ats' => [],
 		]);
 	}

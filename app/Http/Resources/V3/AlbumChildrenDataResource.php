@@ -16,12 +16,18 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * DO-061-08).
  *
  * Struct-of-Arrays per ADR-0009: one whole-album-at-once body (no windowed
- * pagination), built from a single flat, join-free `toBase()` query — every
- * field is a plain column already on the `albums`/`base_albums` row
- * (NFR-061-07). `bucket_ids[i]` is each child's own `bucket_id`
- * (`"unknown"` substituted for `null`) — the join key a client uses to
- * place a tile under the buckets endpoint's matching sticky-header section
- * (FR-061-17). No thumbnail media `type`/blur `placeholder` field — those
+ * pagination), built from a single flat `toBase()` query with zero joins
+ * beyond {@see \App\Policies\AlbumQueryPolicy::applyVisibilityFilter()}'s own
+ * plus one small additional left join for the album's public access grant
+ * (FR-061-27) — every field is a plain column already on the
+ * `albums`/`base_albums`/`access_permissions` row (NFR-061-07). `bucket_ids[i]`
+ * is each child's own `bucket_id` (`"unknown"` substituted for `null`) — the
+ * join key a client uses to place a tile under the buckets endpoint's
+ * matching sticky-header section (FR-061-17). `is_publics[i]`/
+ * `is_link_requireds[i]` reflect the album's own public/anonymous grant,
+ * independent of the requesting viewer's identity — not to be confused with
+ * `is_password_requireds[i]`, which reflects the *viewer's* effective access
+ * (FR-061-27). No thumbnail media `type`/blur `placeholder` field — those
  * require a join this endpoint deliberately never adds (Non-Goals).
  */
 #[TypeScript()]
@@ -35,6 +41,9 @@ class AlbumChildrenDataResource extends Data
 	 * @param string[]        $bucket_ids
 	 * @param bool[]          $is_password_requireds
 	 * @param bool[]          $is_nsfws
+	 * @param bool[]          $is_pinneds
+	 * @param bool[]          $is_publics
+	 * @param bool[]          $is_link_requireds
 	 * @param bool[]          $has_subalbums
 	 * @param int[]           $num_photos
 	 * @param int[]           $num_subalbums
@@ -50,6 +59,9 @@ class AlbumChildrenDataResource extends Data
 		public array $bucket_ids,
 		public array $is_password_requireds,
 		public array $is_nsfws,
+		public array $is_pinneds,
+		public array $is_publics,
+		public array $is_link_requireds,
 		public array $has_subalbums,
 		public array $num_photos,
 		public array $num_subalbums,

@@ -644,6 +644,8 @@ class AlbumQueryPolicy
 			// always joins base_albums via this method) — adding it here
 			// avoids that endpoint needing a second, otherwise-redundant join.
 			$columns[] = $prefix . 'base_albums.is_nsfw';
+			// Feature 061 (FR-061-27): same reasoning, for is_pinned.
+			$columns[] = $prefix . 'base_albums.is_pinned';
 		}
 
 		$query->joinSub(

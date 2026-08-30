@@ -266,7 +266,7 @@ Registered via `App\Http\Controllers\Gallery\AlbumBucketController::index()` / `
 
 #### Tier 2 — `GET /api/v3/Albums/{album_id}/children`
 
-Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index()` / `App\Http\Requests\Album\GetAlbumChildrenDataRequest`. Returns the actual per-direct-child tile data, whole-album-at-once (no windowed pagination), as a single flat `toBase()` query with zero joins beyond `applyVisibilityFilter()`'s own baseline (`base_albums`, `computed_access_permissions`) — confirmed via query-log capture (exactly one query against `albums`).
+Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index()` / `App\Http\Requests\Album\GetAlbumChildrenDataRequest`. Returns the actual per-direct-child tile data, whole-album-at-once (no windowed pagination), as a single flat `toBase()` query with zero joins beyond `applyVisibilityFilter()`'s own baseline (`base_albums`, `computed_access_permissions`) plus one small additional left join for the album's own public access grant (FR-061-27, `public_access_permissions` — see below) — confirmed via query-log capture (exactly one query against `albums`).
 
 **Response:** `AlbumChildrenDataResource` (Struct-of-Arrays, one entry per visible direct child)
 ```json
@@ -278,6 +278,9 @@ Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index(
   "bucket_ids": ["2024"],
   "is_password_requireds": [false],
   "is_nsfws": [false],
+  "is_pinneds": [false],
+  "is_publics": [false],
+  "is_link_requireds": [false],
   "has_subalbums": [false],
   "num_photos": [12],
   "num_subalbums": [0],
@@ -290,6 +293,8 @@ Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index(
 - Rows are ordered (2026-08-30 amendment, FR-061-26) by `bucket_id` first — exactly mirroring Tier 1's own `ORDER BY (bucket_id IS NULL) ASC, bucket_id <dir>`, `"unknown"` always last — then by the parent's effective sort criterion within each bucket; for a `TagAlbum`/`PersonAlbum` (no `bucket_id` concept), by the instance-wide default sort criterion instead. A client can therefore slice this endpoint's flat array into sections using Tier 1's own per-bucket `counts`, with zero client-side grouping or sorting.
 - `descriptions[i]` is SQL-truncated to 100 characters (`SUBSTR(...)`, not PHP-side).
 - `cover_ids[i]` resolves via the same priority rule as the Feature 057 listing above (`App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()`, reused unchanged). No thumbnail media `type`/blur `placeholder` field — resolving a cover to pixels is the caller's job via the Feature 056 Asset endpoint (`GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` — see above).
+- `is_pinneds[i]` (2026-08-30 amendment, FR-061-27) is a plain `base_albums.is_pinned` column, added to the same narrow-column subquery `applyVisibilityFilter()`'s `base_albums` join already selects (`AlbumQueryPolicy::joinBaseAlbumOwnerId()`) — zero extra join, same pattern as `is_nsfws`.
+- `is_publics[i]`/`is_link_requireds[i]` (2026-08-30 amendment, FR-061-27) reflect the child album's own public/anonymous access grant, **independent of the requesting viewer** — not to be confused with `is_password_requireds[i]`, which reflects the *viewer's own effective* access via `computed_access_permissions`. Resolved via one additional left join, `public_access_permissions` (a narrow-column subquery over `access_permissions` pre-filtered to `user_id IS NULL AND user_group_id IS NULL` — a unique index on `(base_album_id, user_id_unique_key, user_group_id_unique_key)` guarantees at most one such row per album, so the join can never fan out the result set). `is_publics[i]` is `true` iff that row exists; `is_link_requireds[i]` is that row's own `is_link_required` column (`false` when no public grant exists at all). Matches `ThumbAlbumResource`/`AlbumProtectionPolicy::ofBaseAlbum()`'s existing `is_public`/`is_link_required` resolution exactly, just computed at the query layer instead of per-model. The subquery's column list is deliberately narrow (`base_album_id`, `is_link_required` only) rather than a raw table join — `access_permissions` carries its own `created_at`/`updated_at` timestamps that would otherwise collide with `SortingDecorator`'s unqualified `ORDER BY created_at`.
 
 #### Tier 3 — pixels
 

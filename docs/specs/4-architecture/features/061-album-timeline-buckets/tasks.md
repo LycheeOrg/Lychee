@@ -222,13 +222,13 @@ _Last updated: 2026-08-29_
 
 > Surfaced during Feature 062's ambiguity review (Q-062-05/06 in `docs/specs/4-architecture/open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 062's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
 
-- [ ] T-061-48 – Feature tests: a fixture spanning a pinned child, an unpinned child, a public+no-link-required child, a public+link-required child, and a fully private child — `is_pinneds`/`is_publics`/`is_link_requireds` match `ThumbAlbumResource`'s own resolution for the same children exactly (S-061-44) (F-061-27).
+- [x] T-061-48 – Feature tests: a fixture spanning a pinned child, an unpinned child, a public+no-link-required child, a public+link-required child, and a fully private child — `is_pinneds`/`is_publics`/`is_link_requireds` match `ThumbAlbumResource`'s own resolution for the same children exactly (S-061-44) (F-061-27).
   _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php`.
   _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`
-- [ ] T-061-49 – Implement in `AlbumChildrenDataController`: add `base_albums.is_pinned` to the existing `select()` (zero extra join); add a left join on `access_permissions` scoped to `user_id IS NULL` to resolve `is_public`/`is_link_required` per row; extend `AlbumChildrenDataResource`'s constructor/SoA arrays with the three new fields (F-061-27).
+- [x] T-061-49 – Implement in `AlbumChildrenDataController`: add `base_albums.is_pinned` to `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s existing narrow-column `base_albums` subselect (zero extra join, mirrors the `is_nsfw` precedent); add a new narrow-column subquery left join, `public_access_permissions` (over `access_permissions`, pre-filtered to `user_id IS NULL AND user_group_id IS NULL`, selecting only `base_album_id`/`is_link_required`) to resolve `is_public`/`is_link_required` per row — a raw table join was tried first and rejected: `access_permissions`' own `created_at`/`updated_at` columns collided with `SortingDecorator`'s unqualified `ORDER BY created_at` (`testBucketIdCorrelatesExactlyWithBucketsEndpoint` caught this); extend `AlbumChildrenDataResource`'s constructor/SoA arrays with the three new fields (F-061-27).
   _Intent:_ Make T-061-48 pass.
-  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`; `make phpstan`; `vendor/bin/php-cs-fixer fix --dry-run`
-- [ ] T-061-50 – Update `docs/specs/3-reference/api-design.md` (tier 2 field list) and `docs/specs/4-architecture/knowledge-map.md` to reflect FR-061-27.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test` (20 passed); `make phpstan` (no errors); `vendor/bin/php-cs-fixer fix --dry-run --config=.php-cs-fixer.php` (0 of 4 files needed fixing); `php artisan typescript:transform` (regenerated `lychee.d.ts` — also picked up several other previously-stale Feature 061 v3 types that had never been regenerated).
+- [x] T-061-50 – Update `docs/specs/3-reference/api-design.md` (tier 2 field list) and `docs/specs/4-architecture/knowledge-map.md` to reflect FR-061-27.
   _Verification commands:_ N/A (review only).
 
 ## Notes / TODOs

@@ -196,6 +196,7 @@ declare namespace App {
 			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
+		export type TitleBucketMode = "date_prefix" | "alphabetical";
 		export type UpdateStatus = 0 | 1 | 2 | 3;
 		export type UserGroupRole = "member" | "admin";
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
@@ -1693,6 +1694,38 @@ declare namespace App {
 					grants_uploads: (boolean | null)[];
 					grants_edits: (boolean | null)[];
 					grants_deletes: (boolean | null)[];
+				};
+				export type AlbumBucketResource = {
+					bucket_ids: string[];
+					counts: number[];
+					labels: string[];
+					bucketable: boolean;
+				};
+				export type AlbumChildrenDataResource = {
+					ids: string[];
+					titles: string[];
+					descriptions: string[];
+					cover_ids: (string | null)[];
+					bucket_ids: string[];
+					is_password_requireds: boolean[];
+					is_nsfws: boolean[];
+					is_pinneds: boolean[];
+					is_publics: boolean[];
+					is_link_requireds: boolean[];
+					has_subalbums: boolean[];
+					num_photos: number[];
+					num_subalbums: number[];
+					created_ats: string[];
+					min_taken_ats: (string | null)[];
+					max_taken_ats: (string | null)[];
+				};
+				export type AlbumChildrenRightsResource = {
+					owner_id: string;
+					can_delete_children: boolean;
+					can_move_children: boolean;
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
 				};
 				export type AlbumListBulkEditFieldsResource = {
 					owner_ids: number[];
