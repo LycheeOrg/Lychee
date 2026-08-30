@@ -5,7 +5,7 @@
 		:side="isLTR() ? 'right' : 'left'"
 		:style="{ '--sidebar-width': '25rem' }"
 		:ui="{
-			container: 'border-l-0 bg-neutral-900' + (is_full_screen ? '' : ' top-(--ui-header-height) h-(calc(100%-var(--ui-header-height)))'),
+			container: 'border-l-0 bg-neutral-900' + (is_full_screen ? '' : ' top-(--ui-header-height) h-[calc(100%-var(--ui-header-height))]'),
 			gap: 'h-[calc(100%-var(--ui-header-height))]',
 			body: 'gap-0',
 			header: 'text-center text-2xl font-bold',
