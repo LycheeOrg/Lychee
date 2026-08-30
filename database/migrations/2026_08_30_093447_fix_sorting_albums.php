@@ -16,7 +16,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('configs')
+		DB::table('albums')
 			->whereIn('album_sorting_col', self::REMOVED_VALUES)
 			->update(['album_sorting_col' => 'title']);
 	}
