@@ -289,7 +289,7 @@ Registered via `App\Http\Controllers\Gallery\AlbumChildrenDataController::index(
 - `bucket_ids[i]` is that child's own `bucket_id` (`"unknown"` substituted for `NULL`) — the join key back to Tier 1: grouping this endpoint's children by `bucket_ids` and counting reproduces Tier 1's `{bucket_ids, counts}` exactly, for the same `(album_id, caller)`.
 - Rows are ordered (2026-08-30 amendment, FR-061-26) by `bucket_id` first — exactly mirroring Tier 1's own `ORDER BY (bucket_id IS NULL) ASC, bucket_id <dir>`, `"unknown"` always last — then by the parent's effective sort criterion within each bucket; for a `TagAlbum`/`PersonAlbum` (no `bucket_id` concept), by the instance-wide default sort criterion instead. A client can therefore slice this endpoint's flat array into sections using Tier 1's own per-bucket `counts`, with zero client-side grouping or sorting.
 - `descriptions[i]` is SQL-truncated to 100 characters (`SUBSTR(...)`, not PHP-side).
-- `cover_ids[i]` resolves via the same priority rule as the Feature 057 listing above (`App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()`, reused unchanged). No thumbnail media `type`/blur `placeholder` field — resolving a cover to pixels is the caller's job via the Feature 056 Asset endpoint (`GET /api/v3/Photo/{photo_id}/Asset/{size_variant}` — see above).
+- `cover_ids[i]` resolves via the same priority rule as the Feature 057 listing above (`App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()`, reused unchanged). No thumbnail media `type`/blur `placeholder` field — resolving a cover to pixels is the caller's job via the Feature 056 Asset endpoint (`GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` — see above).
 
 #### Tier 3 — pixels
 
