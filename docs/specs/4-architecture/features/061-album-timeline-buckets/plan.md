@@ -168,6 +168,8 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
 
 No remaining blocking items. Cleared to begin I1.
 
+*(This is the pre-implementation gate result, dated 2026-08-29, kept as the historical record it is — all increments I1–I12 have since completed; see the Implementation Drift Gate section immediately below for the post-implementation verification, and the "Completed" status field at the top of this document.)*
+
 ## Implementation Drift Gate
 
 **I5 (T-061-13), run 2026-08-29** against a disposable 7,000-child sqlite fixture (copy of the test DB, not the shared test database — no test pollution): `EXPLAIN QUERY PLAN` for `AlbumBucketController::queryBuckets()`'s actual query shape (`WHERE parent_id = ? GROUP BY bucket_id ORDER BY (bucket_id IS NULL) ASC, bucket_id ASC`) returns:

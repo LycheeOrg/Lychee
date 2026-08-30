@@ -28,6 +28,7 @@ use App\Models\Person;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\DB;
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -297,6 +298,33 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		self::assertSame((string) $this->tagAlbum1->owner_id, $json['owner_id']);
 	}
 
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: mirrors
+	 * AlbumChildrenDataV3Test::testDifferentUnlockStatesDoNotShareACacheEntry()
+	 * for the rights endpoint - it shares the exact same cache-key gap since
+	 * it also computes its TagAlbum/PersonAlbum branch from the session-scoped
+	 * AlbumPolicy::getUnlockedAlbumIDs() state.
+	 */
+	public function testDifferentUnlockStatesDoNotShareACacheEntry(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$password_album = $this->album2;
+		$password_album->tags()->sync([$this->tag_test->id]);
+		AccessPermission::factory()->public()->visible()->locked()->for_album($password_album)->create();
+
+		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights");
+		$this->assertOk($response_locked);
+		self::assertSame([], $response_locked->json('ids'));
+
+		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $password_album->id);
+		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights");
+		$this->assertOk($response_unlocked);
+		self::assertSame([$password_album->id], $response_unlocked->json('ids'));
+	}
+
 	public function testTagAlbumGrantsEditStillReflectsPerAlbumGrant(): void
 	{
 		$this->album1->tags()->sync([$this->tag_test->id]);
@@ -351,5 +379,44 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		self::assertSame([$this->album1->id], $json['ids']);
 		self::assertFalse($json['can_delete_children']);
 		self::assertFalse($json['can_move_children']);
+	}
+
+	// ── Cache invalidation on group-membership change ──────────────
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: mirrors
+	 * AlbumChildrenDataV3Test::testCacheInvalidatedOnGroupMembershipChange()
+	 * for the rights endpoint.
+	 */
+	public function testCacheInvalidatedOnGroupMembershipChange(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+
+		$hidden_child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$this->recompute($hidden_child);
+		AccessPermission::factory()->for_user_group($this->group1)->for_album($hidden_child)->visible()->grants_edit()->create();
+
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights");
+		$this->assertOk($before);
+		self::assertSame([], $before->json('ids'));
+
+		$add_response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->postJson('UserGroups/Users', [
+			'group_id' => $this->group1->id,
+			'user_id' => $this->userNoUpload->id,
+			'role' => 'member',
+		]);
+		$this->assertCreated($add_response);
+
+		$this->userNoUpload->unsetRelation('user_groups')->refresh();
+
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights");
+		$this->assertOk($after);
+		self::assertSame([$hidden_child->id], $after->json('ids'));
+		self::assertTrue($after->json('grants_edit')[0]);
 	}
 }

@@ -37,7 +37,8 @@ Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
 Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);
 
 // Album virtual-scroll backend (Feature 061), gated by
-// modules.is_struct_of_array_enabled at each request's FormRequest::authorize().
+// features.struct-of-array at each request's FormRequest::authorize()
+// (exposed to the frontend as modules.is_struct_of_array_enabled).
 // Registered parent-then-child so the file reads top-down (declaration order
 // does not affect matching — Laravel routes by segment count).
 Route::get('/Albums/{album_id}/children', [Gallery\AlbumChildrenDataController::class, 'index']);

@@ -18,7 +18,9 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumChildrenChanged;
 use App\Jobs\RecomputeChildAlbumBucketsJob;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
@@ -96,5 +98,39 @@ class AlbumSortingBucketDispatchTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		Queue::assertPushed(RecomputeChildAlbumBucketsJob::class, fn (RecomputeChildAlbumBucketsJob $job) => $job->parent_album_id === $this->album1->id);
+	}
+
+	/**
+	 * {@see RecomputeChildAlbumBucketsJob} bulk-`upsert()`s its writes,
+	 * bypassing Eloquent events entirely - nothing else in this write path
+	 * invalidates `$album`'s own children-listing cache (the one the bucket
+	 * recompute affects) unless {@see AlbumChildrenChanged} is dispatched
+	 * for it explicitly.
+	 */
+	public function testAlbumSortingColumnChangeDispatchesChildrenChangedForCacheInvalidation(): void
+	{
+		Event::fake([AlbumChildrenChanged::class]);
+
+		$payload = $this->basePayload();
+		$payload['album_sorting_column'] = 'title';
+		$payload['album_sorting_order'] = 'DESC';
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', $payload);
+		$this->assertOk($response);
+
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $event) => $event->parent_ids === [$this->album1->id]);
+	}
+
+	public function testUnrelatedAttributeChangeDoesNotDispatchChildrenChanged(): void
+	{
+		Event::fake([AlbumChildrenChanged::class]);
+
+		$payload = $this->basePayload();
+		$payload['title'] = 'a brand new title';
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', $payload);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(AlbumChildrenChanged::class);
 	}
 }

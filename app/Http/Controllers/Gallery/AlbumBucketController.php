@@ -54,7 +54,10 @@ class AlbumBucketController extends Controller
 		return $this->managed_cache_service->rememberIf(
 			$enabled,
 			$key,
-			[$this->cache_key_provider->albumChildrenTag($album->id)],
+			[
+				$this->cache_key_provider->albumChildrenTag($album->id),
+				$this->cache_key_provider->userTag($user?->id),
+			],
 			fn (): AlbumBucketResource => $this->queryBuckets($album, $user),
 			ttl: $ttl,
 		);

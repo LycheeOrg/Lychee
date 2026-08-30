@@ -22,12 +22,14 @@ use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Services\TitleSplitter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -353,5 +355,43 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		);
 
 		self::assertGreaterThan(0, $admin_call_count, 'A different caller must not be served from another identity\'s cached entry.');
+	}
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: this endpoint's cache never
+	 * registered userTag($user_id) as an actual invalidation tag - a caller
+	 * who gains bucket-relevant visibility via a group-based grant would
+	 * keep seeing the pre-change bucket counts until TTL expiry.
+	 */
+	public function testCacheInvalidatedOnGroupMembershipChange(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+		DB::table('configs')->where('key', '=', 'timeline_albums_granularity')->update(['value' => 'year']);
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+
+		$hidden_child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2023-01-01')]);
+		$this->recompute($hidden_child);
+		AccessPermission::factory()->for_user_group($this->group1)->for_album($hidden_child)->visible()->create();
+
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$this->assertOk($before);
+		self::assertSame([], $before->json('bucket_ids'));
+
+		$add_response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->postJson('UserGroups/Users', [
+			'group_id' => $this->group1->id,
+			'user_id' => $this->userNoUpload->id,
+			'role' => 'member',
+		]);
+		$this->assertCreated($add_response);
+
+		$this->userNoUpload->unsetRelation('user_groups')->refresh();
+
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$this->assertOk($after);
+		self::assertSame([1], $after->json('counts'));
 	}
 }

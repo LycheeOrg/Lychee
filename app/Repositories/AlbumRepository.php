@@ -126,7 +126,7 @@ class AlbumRepository
 		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$unlocked_digest = hash('xxh3', implode(',', $unlocked_album_ids));
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 		$tag_ids = $tag_album->tags->pluck('id')->all();
 
 		$key = $this->cache_key_provider->tagAlbumMatchingAlbumsPageKey($tag_album->id, $user_id, $page, $per_page, $unlocked_digest);
@@ -226,7 +226,7 @@ class AlbumRepository
 		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$unlocked_digest = hash('xxh3', implode(',', $unlocked_album_ids));
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
 		// Every person in the album's criteria (not just those visible to the
 		// current user) is used for cache tagging, so the entry is invalidated

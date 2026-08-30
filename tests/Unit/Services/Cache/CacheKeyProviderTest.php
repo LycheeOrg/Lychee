@@ -117,4 +117,35 @@ class CacheKeyProviderTest extends AbstractTestCase
 	{
 		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumChildrenRightsKey($album_id, $user_id));
 	}
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: TagAlbum/PersonAlbum "matching
+	 * albums" results are curated by AlbumPolicy::getUnlockedAlbumIDs()
+	 * (session-scoped), so two requests differing only in that state must
+	 * never collide on the same cache key - otherwise one visitor's unlock
+	 * state could be served to another (guest callers all share a single
+	 * `user_id === null` key dimension, making this a real cross-session
+	 * disclosure risk, not just a staleness nit).
+	 */
+	public function testAlbumChildrenDataKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->albumChildrenDataKey('album1', null, 'digest-a');
+		$key_b = $this->provider->albumChildrenDataKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->albumChildrenDataKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testAlbumChildrenRightsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->albumChildrenRightsKey('album1', null, 'digest-a');
+		$key_b = $this->provider->albumChildrenRightsKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->albumChildrenRightsKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
 }

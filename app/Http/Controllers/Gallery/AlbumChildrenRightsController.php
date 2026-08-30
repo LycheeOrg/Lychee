@@ -58,14 +58,23 @@ class AlbumChildrenRightsController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		$key = $this->cache_key_provider->albumChildrenRightsKey($album->get_id(), $user?->id);
+		// See AlbumChildrenDataController::index() for why the unlocked-album
+		// digest must be part of this key for TagAlbum/PersonAlbum.
+		$unlocked_digest = ($album instanceof TagAlbum || $album instanceof PersonAlbum)
+			? $this->cache_key_provider->unlockedAlbumsDigest()
+			: '';
+
+		$key = $this->cache_key_provider->albumChildrenRightsKey($album->get_id(), $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
 		return $this->managed_cache_service->rememberIf(
 			$enabled,
 			$key,
-			[$this->cache_key_provider->albumChildrenTag($album->get_id())],
+			[
+				$this->cache_key_provider->albumChildrenTag($album->get_id()),
+				$this->cache_key_provider->userTag($user?->id),
+			],
 			fn (): AlbumChildrenRightsResource => $this->queryRights($album, $user),
 			ttl: $ttl,
 		);

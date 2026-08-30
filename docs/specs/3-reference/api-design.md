@@ -168,7 +168,7 @@ Lychee uses route-based versioning:
 
 ### API v3: Photo Asset Retrieval
 
-**GET** `/api/v3/Photo/{photo_id}/Asset/{size_variant}`
+**GET** `/api/v3/Asset/{album_id}/{photo_id}/{size_variant}`
 
 Retrieves a single photo size-variant's binary file (thumbnail through original), watermark-aware. Registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\PhotoAssetController::show()`, `App\Http\Requests\Photo\GetPhotoAssetRequest`), under the `api` middleware group but with `accept_content_type:json`/`content_type:json` opted out of on this route specifically (binary passthrough, not JSON) — a `json_errors` middleware (`App\Http\Middleware\EnsureJsonErrorResponses`) still forces every *error* response to render as Lychee's standard JSON error body regardless of the caller's actual `Accept` header.
 
@@ -176,6 +176,7 @@ Retrieves a single photo size-variant's binary file (thumbnail through original)
 
 | Parameter | Type | Description |
 |-----------|------|--------------|
+| `album_id` | string | The (real/tag/person) album the photo is being viewed through — resolves the album-level access check alongside the photo-level one (`RandomIDRule`) |
 | `photo_id` | string | The photo's ID (`RandomIDRule`) |
 | `size_variant` | string | A `SizeVariantType` case name, case-insensitive (`raw`, `original`, `medium2x`, `medium`, `small2x`, `small`, `thumb2x`, `thumb`, `placeholder`) |
 

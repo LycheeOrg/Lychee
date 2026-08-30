@@ -11,6 +11,7 @@ namespace App\Services\Cache;
 use App\DTO\SortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Policies\AlbumPolicy;
 
 /**
  * Single source of truth for every {@see ManagedCacheService} key and tag
@@ -143,6 +144,20 @@ class CacheKeyProvider
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
 
+	/**
+	 * Digest of the current session's unlocked-album ids
+	 * ({@see AlbumPolicy::getUnlockedAlbumIDs()}), for embedding in a cache
+	 * key whose underlying query depends on that session-scoped state (e.g. a
+	 * TagAlbum/PersonAlbum's "matching albums" curation) - two different
+	 * unlock states must never collide on the same key. No cryptographically
+	 * secure hash is needed here, just a fast one that is unlikely to
+	 * collide.
+	 */
+	public function unlockedAlbumsDigest(): string
+	{
+		return hash('xxh3', implode(',', AlbumPolicy::getUnlockedAlbumIDs()));
+	}
+
 	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, int $per_page, SortingCriterion $sorting): string
 	{
 		$album_children_tag = $this->albumChildrenTag($parent_id);
@@ -255,24 +270,34 @@ class CacheKeyProvider
 	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/children` (Feature 061,
 	 * FR-061-15), mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}) -
+	 *                                only meaningful (non-empty) for a TagAlbum/PersonAlbum,
+	 *                                whose matching-albums result set this state actually
+	 *                                curates; mirrors {@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}'s
+	 *                                own key convention. Empty for a regular Album, whose
+	 *                                own direct-children listing does not depend on it.
 	 */
-	public function albumChildrenDataKey(string $album_id, int|string|null $user_id): string
+	public function albumChildrenDataKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
 	{
 		$album_children_tag = $this->albumChildrenTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$album_children_tag}:children-data:{$user_tag}";
+		return "{$album_children_tag}:children-data:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`
 	 * (Feature 061, FR-061-22), mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()}
 	 */
-	public function albumChildrenRightsKey(string $album_id, int|string|null $user_id): string
+	public function albumChildrenRightsKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
 	{
 		$album_children_tag = $this->albumChildrenTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$album_children_tag}:children-rights:{$user_tag}";
+		return "{$album_children_tag}:children-rights:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 }

@@ -21,14 +21,18 @@ namespace Tests\Feature_v3\Album;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Events\UserGroupMembershipChanged;
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -359,6 +363,89 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
 
 		self::assertSame([], $json['ids']);
+	}
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: the cache key for a TagAlbum's
+	 * "matching albums" response did not vary with
+	 * AlbumPolicy::getUnlockedAlbumIDs() (session-scoped) - a caller who
+	 * unlocked a password-protected matching album could have been served
+	 * (or could have served another caller) a stale, wrong-unlock-state
+	 * response until TTL expiry. Mirrors
+	 * tests/Feature_v2/Tags/GetTagsTest.php's
+	 * testDifferentUnlockStatesDoNotShareACacheEntry() for this new endpoint.
+	 */
+	public function testDifferentUnlockStatesDoNotShareACacheEntry(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$password_album = $this->album2;
+		$password_album->tags()->sync([$this->tag_test->id]);
+		AccessPermission::factory()->public()->visible()->locked()->for_album($password_album)->create();
+
+		// Never unlocked - the password-protected album must not appear.
+		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children");
+		$this->assertOk($response_locked);
+		self::assertSame([], $response_locked->json('ids'));
+
+		// Same identity, now with the album unlocked in session - must not
+		// be served the response cached above for the locked state.
+		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $password_album->id);
+		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children");
+		$this->assertOk($response_unlocked);
+		self::assertSame([$password_album->id], $response_unlocked->json('ids'));
+	}
+
+	// ── Cache invalidation on group-membership change ──────────────
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: none of the three new endpoints
+	 * registered userTag($user_id) as an actual cache invalidation tag (it
+	 * was only ever embedded as text inside the key string) - so
+	 * UserGroupMembershipChanged, whose handler evicts exactly that tag,
+	 * could never reach these caches. A caller who gains (or loses)
+	 * visibility via a group-based grant would keep seeing the pre-change
+	 * set until TTL expiry.
+	 */
+	public function testCacheInvalidatedOnGroupMembershipChange(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+
+		$hidden_child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$this->recompute($hidden_child);
+		AccessPermission::factory()->for_user_group($this->group1)->for_album($hidden_child)->visible()->create();
+
+		// userNoUpload can see the (public) parent, but not yet the child -
+		// they are not a member of group1.
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children");
+		$this->assertOk($before);
+		self::assertSame([], $before->json('ids'));
+
+		// Add them to the group via the real endpoint, which dispatches
+		// UserGroupMembershipChanged.
+		$add_response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->postJson('UserGroups/Users', [
+			'group_id' => $this->group1->id,
+			'user_id' => $this->userNoUpload->id,
+			'role' => 'member',
+		]);
+		$this->assertCreated($add_response);
+
+		// The PHP object held by $this->userNoUpload can carry a stale,
+		// already-loaded `user_groups` relation from the request above;
+		// reload it so the next request's Auth::user()->user_groups
+		// reflects the just-added membership, not a cached empty collection.
+		$this->userNoUpload->unsetRelation('user_groups')->refresh();
+
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children");
+		$this->assertOk($after);
+		self::assertSame([$hidden_child->id], $after->json('ids'));
 	}
 
 	public function testPersonAlbumChildrenReturnsAlbumsContainingAMatchingFace(): void

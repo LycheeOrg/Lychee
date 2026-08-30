@@ -19,6 +19,17 @@ use Illuminate\Support\Facades\Schema;
  * never computed live at read time. The composite index lets the buckets
  * endpoint's `GROUP BY bucket_id` be a plain, index-served aggregate
  * (NFR-061-01) rather than a per-row function evaluation.
+ *
+ * `albums.parent_id` (`albums_parent_id_foreign`) has never had a dedicated
+ * single-column index of its own — only ever whichever index happened to have
+ * `parent_id` as a leftmost column. Adding the composite `(parent_id,
+ * bucket_id)` index below gives InnoDB/MariaDB a second such candidate, and it
+ * can rebind the foreign key to depend on it instead — which then makes
+ * `down()`'s `dropIndex()` fail with "Cannot drop index ...: needed in a
+ * foreign key constraint" (confirmed via CI on mariadb). Fixed by also adding
+ * a plain, permanent `albums_parent_id_index`, kept even after `down()`
+ * reverts this migration, so the foreign key always has a fallback index and
+ * the composite one is always safe to drop.
  */
 return new class() extends Migration {
 	/**
@@ -28,6 +39,7 @@ return new class() extends Migration {
 	{
 		Schema::table('albums', function (Blueprint $table) {
 			$table->string('bucket_id')->nullable()->default(null)->after('parent_id');
+			$table->index('parent_id', 'albums_parent_id_index');
 			$table->index(['parent_id', 'bucket_id'], 'albums_parent_id_bucket_id_index');
 		});
 	}
@@ -38,6 +50,8 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
+			// albums_parent_id_index is intentionally NOT dropped here - it's
+			// the foreign key's permanent fallback index, see the class docblock.
 			$table->dropIndex('albums_parent_id_bucket_id_index');
 			$table->dropColumn('bucket_id');
 		});

@@ -223,4 +223,4 @@ _Last updated: 2026-08-29_
 - Root-scope bucketing, photo-side bucket columns, `bucket_id`-windowed tier-2 pagination, full `AlbumRightsResource` parity on the rights endpoint, and frontend adoption (including the actual background-fetch wiring and client-side rights-combination logic) are explicitly out of scope for this feature's tasks — see plan.md Follow-ups. Do not fold them into any task above.
 - Tier 3 needs no task at all — Feature 056's Asset endpoint already exists and is unchanged by this feature.
 - ~~The `059` feature-number collision~~ — resolved by renumbering this feature to `061` (2026-08-27); no longer relevant.
-- ~~This feature is paused for a rework pass~~ — rework pass complete (2026-08-29 correction pass against Feature 060 staleness); back to Draft, I1 may begin.
+- ~~This feature is paused for a rework pass~~ — rework pass complete (2026-08-29 correction pass against Feature 060 staleness); ~~back to Draft, I1 may begin~~ — superseded the same day: all tasks below were then implemented and this feature moved to Completed (see status field at the top of this document).
