@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex items-center"
+		class="flex items-center pt-2"
 		:class="{
 			'h-3.5 gap-px': props.size === 'small',
 			'h-5 gap-0.5': props.size === 'medium',
@@ -8,7 +8,7 @@
 		}"
 	>
 		<span
-			class="block px-0.5 relative"
+			class="block px-0.5"
 			v-for="index in 5"
 			:key="`avg-star-${index}`"
 			:class="{

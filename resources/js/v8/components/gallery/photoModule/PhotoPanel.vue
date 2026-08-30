@@ -1,47 +1,50 @@
 <template>
 	<UModal v-if="photoStore.photo" :open="true" fullscreen :dismissible="false" :close="false" :ui="{ content: 'bg-black' }">
 		<template #content>
-			<div class="w-full flex h-full overflow-hidden bg-black">
-				<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
-				<div class="w-0 flex-auto relative">
-					<div class="animate-zoomIn w-full h-full">
-						<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
-							<PhotoBox
-								:key="photoStore.photo.id"
-								@go-back="emits('goBack')"
-								@next="emits('next')"
-								@previous="emits('previous')"
-								@rotate-overlay="emits('rotateOverlay')"
-							/>
-						</Transition>
+			<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
+			<UMain class="relative mt-(--ui-header-height)">
+				<UDashboardGroup storageKey="photo-panel" storage="local" :persistent="true" class="relative w-full h-full overflow-hidden bg-black">
+					<PhotoDetails v-if="!is_exif_disabled && !isLeftToRight" :is-map-visible="props.isMapVisible" />
+					<div class="w-0 flex-auto relative">
+						<div class="animate-zoomIn w-full h-full">
+							<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
+								<PhotoBox
+									:key="photoStore.photo.id"
+									@go-back="emits('goBack')"
+									@next="emits('next')"
+									@previous="emits('previous')"
+									@rotate-overlay="emits('rotateOverlay')"
+								/>
+							</Transition>
+						</div>
+						<NextPrevious
+							v-if="photoStore.photo.previous_photo_id !== null && !is_slideshow_active"
+							:photo-id="photoStore.photo.previous_photo_id"
+							:is_next="false"
+							:style="photoStore.previousStyle"
+						/>
+						<NextPrevious
+							v-if="photoStore.photo.next_photo_id !== null && !is_slideshow_active"
+							:photo-id="photoStore.photo.next_photo_id"
+							:is_next="true"
+							:style="photoStore.nextStyle"
+						/>
+						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
+						<PhotoRatingOverlay />
+						<Dock
+							v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
+							:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
+							@toggle-highlight="emits('toggleHighlight')"
+							@set-album-header="emits('setAlbumHeader')"
+							@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
+							@rotate-photo-c-w="emits('rotatePhotoCW')"
+							@toggle-move="emits('toggleMove')"
+							@toggle-delete="emits('toggleDelete')"
+						/>
 					</div>
-					<NextPrevious
-						v-if="photoStore.photo.previous_photo_id !== null && !is_slideshow_active"
-						:photo-id="photoStore.photo.previous_photo_id"
-						:is_next="false"
-						:style="photoStore.previousStyle"
-					/>
-					<NextPrevious
-						v-if="photoStore.photo.next_photo_id !== null && !is_slideshow_active"
-						:photo-id="photoStore.photo.next_photo_id"
-						:is_next="true"
-						:style="photoStore.nextStyle"
-					/>
-					<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
-					<PhotoRatingOverlay />
-					<Dock
-						v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
-						:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
-						@toggle-highlight="emits('toggleHighlight')"
-						@set-album-header="emits('setAlbumHeader')"
-						@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
-						@rotate-photo-c-w="emits('rotatePhotoCW')"
-						@toggle-move="emits('toggleMove')"
-						@toggle-delete="emits('toggleDelete')"
-					/>
-				</div>
-				<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :is-map-visible="props.isMapVisible" />
-			</div>
+					<PhotoDetails v-if="!is_exif_disabled && isLeftToRight" :is-map-visible="props.isMapVisible" />
+				</UDashboardGroup>
+			</UMain>
 		</template>
 	</UModal>
 </template>
@@ -49,7 +52,7 @@
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import NextPrevious from "./NextPrevious.vue";
 import Overlay from "./Overlay.vue";
 import PhotoRatingOverlay from "./PhotoRatingOverlay.vue";
@@ -62,14 +65,18 @@ import { useDebounceFn } from "@vueuse/core";
 import PhotoBox from "./PhotoBox.vue";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useLtRorRtL } from "@/utils/Helpers.js";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
+const { isLTR } = useLtRorRtL();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled, disable_swipe_effect } = storeToRefs(lycheeStore);
-const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
+const { is_photo_edit_open, is_slideshow_active } = storeToRefs(togglableStore);
+
+const isLeftToRight = computed(() => isLTR());
 
 const props = defineProps<{
 	isMapVisible: boolean;

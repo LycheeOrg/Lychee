@@ -1,4 +1,8 @@
 <template>
+	<!-- <UDashboardNavbar
+		class="w-full"
+		v-if="!is_full_screen"
+	> -->
 	<UHeader
 		v-if="photoStore.photo"
 		id="lychee_toolbar_container"
@@ -17,13 +21,13 @@
 		<template #right>
 			<UTooltip
 				v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_highlight"
-				:text="photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')"
+				:text="photoStore.photo!.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')"
 			>
 				<UButton
 					variant="ghost"
 					icon="lucide:flag"
-					:ui="{ leadingIcon: photoStore.photo.is_highlighted ? FILL_OVERRIDE_CLASS : '' }"
-					:class="photoStore.photo.is_highlighted ? 'text-yellow-500' : 'text-white hover:text-yellow-500'"
+					:ui="{ leadingIcon: photoStore.photo!.is_highlighted ? FILL_OVERRIDE_CLASS : '' }"
+					:class="photoStore.photo!.is_highlighted ? 'text-yellow-500' : 'text-white hover:text-yellow-500'"
 					color="neutral"
 					@click="emits('toggleHighlight')"
 				/>
@@ -31,12 +35,12 @@
 			<div class="flex items-center gap-1.5" :class="is_slideshow_active ? 'hidden' : 'flex'">
 				<UButton v-if="is_slideshow_enabled" variant="ghost" icon="lucide:play" color="neutral" @click="emits('toggleSlideShow')" />
 				<UButton
-					v-if="albumStore.rights?.can_access_original && photoStore.photo.size_variants.original?.url"
+					v-if="albumStore.rights?.can_access_original && photoStore.photo!.size_variants.original?.url"
 					variant="ghost"
 					icon="lucide:app-window"
 					class="font-bold"
 					color="neutral"
-					@click="openInNewTab(photoStore.photo.size_variants.original.url)"
+					@click="openInNewTab(photoStore.photo!.size_variants.original.url)"
 				/>
 				<UButton
 					v-if="albumStore.rights?.can_download"
@@ -86,6 +90,7 @@
 			</div>
 		</template>
 	</UHeader>
+	<!-- </UDashboardNavbar> -->
 	<DownloadPhoto v-model:open="isDownloadOpen" />
 	<PhotoShareCard v-model:open="isPhotoShareCardOpen" />
 </template>
