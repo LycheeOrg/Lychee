@@ -8,22 +8,30 @@ _Last updated:_ 2026-08-30
 
 ## Vision & Success Criteria
 
-Let a viewer scroll a 7,000+-direct-child album's subalbum grid as smoothly as a 20-child one — sticky date/title-prefix headers rendered from the server's own bucket aggregation, right-click actions correct the instant they're needed, and drag-select working across the whole list, not just whatever happens to be on screen — all while the flag-off path stays byte-for-byte what it is today. Success is measured by: DOM node count for `<AlbumThumb>` staying bounded (viewport + overscan) regardless of total child count, verified against a 7,000+-child fixture (NFR-062-03); client-side rights combination matching direct `AlbumPolicy` calls exactly across guest/regular/owner/admin/multi-group-overlap callers (NFR-062-04); and every one of Feature 058's and Feature 061's already-shipped pieces (`<Thumb>`, `AlbumListState`, the three v3 endpoints) reused as-is with zero modification beyond Feature 061's own FR-061-26 ordering fix (already applied, see below).
+Let a viewer scroll a 7,000+-direct-child album's subalbum grid as smoothly as a 20-child one — sticky date/title-prefix headers rendered from the server's own bucket aggregation, right-click actions correct the instant they're needed, cover pixels fetched lazily per mounted tile, and drag-select working across the whole list, not just whatever happens to be on screen — all while the flag-off path stays byte-for-byte what it is today. Success is measured by: DOM node count for the new tile component staying bounded (viewport + overscan) regardless of total child count, verified against a 7,000+-child fixture (NFR-062-03); client-side rights combination matching direct `AlbumPolicy` calls exactly across guest/regular/owner/admin/multi-group-overlap callers (NFR-062-04); and every one of Feature 056's, Feature 058's, and Feature 061's already-shipped pieces (`Thumb.vue`/`ThumbAssetService`/the Asset endpoint, `AlbumListState`, the three v3 endpoints) reused as-is with zero modification.
 
 ## Scope Alignment
 
-- **In scope:** `AlbumsState.ts` extended with a tier-1+2 fetch pipeline plus a positional-walk boundary derivation (no join or sort needed — tier 2 already arrives ordered per Feature 061 FR-061-26) and a tier-3 background-fetch/rights-merge pipeline, flag-gated; a new pure row-flattening composable (`virtualAlbumRows.ts`) shared by grid and list rendering; a new virtualized grid component (`AlbumThumbPanelVirtualList.vue`) and virtualized list-view component (`AlbumListViewVirtual.vue`), both built on `@tanstack/vue-virtual` following `AlbumNavTree.vue`'s established conventions; client-side rights-combination logic; adapting joined v3 data into `ThumbAlbumResource`-shaped objects so `AlbumThumb.vue`/`contextMenu.ts` need no changes; `TagAlbum`/`PersonAlbum` parity via 061's existing tier 2/3 support; reimplementing `dragAndSelect.ts`'s album-selection branch against precomputed tile geometry instead of DOM queries, scoped to the flag-on virtualized path; hiding the album `<Pagination>` control and re-fetch-on-mutation wiring for the flag-on path.
-- **Out of scope:** Photo-grid virtualization (any layout mode); root-scope (`Albums.vue`) bucketing/virtualization; any further v2/v3 backend change beyond Feature 061's own already-applied FR-061-26 fix; any change to `dragAndSelect.ts`'s photo-selection branch or its flag-off album branch; a new feature flag; an automated frontend test suite; visual redesign of `AlbumThumb.vue` itself; a windowed/paginated variant of tier 2; any client-side sorting or grouping of tier 2's rows (redundant now that the backend guarantees their order).
+- **In scope:** `AlbumsState.ts` extended with a tier-1+2 fetch pipeline plus a positional-walk boundary derivation (no join or sort needed — tier 2 already arrives ordered per Feature 061 FR-061-26) and a tier-3 background-fetch/rights-merge pipeline, flag-gated, plus a per-`album_id` short-TTL response cache (FR-062-19) and a request-generation stale-response guard (FR-062-18); a new pure row-flattening composable (`virtualAlbumRows.ts`) shared by grid and list rendering, computing grid tile-row heights analytically from the parent album's known `album_thumb_css_aspect_ratio` rather than measuring them; a new analytic `itemsPerRow`/tile-width composable (`albumTileWidth.ts`, FR-062-14) reusing `getWidth.ts`'s container-measurement pattern and `useBreakpoints()`, no probe tile; a new virtualized grid component (`AlbumThumbPanelVirtualList.vue`), virtualized list-view component (`AlbumListViewVirtual.vue`), and two per-child tile components (`AlbumThumbVirtual.vue`/`AlbumListItemVirtual.vue`, forked from `AlbumThumb.vue`/`AlbumListItem.vue` respectively, each resolving its cover image via the existing Feature 056 Asset endpoint instead of a pre-built URL — tier 2 supplies only `cover_id`, no URL), all under a new `.../albumModule/Virtualized/` directory (kept separate from the existing flag-off components so they can be removed as a unit later) and built on `@tanstack/vue-virtual` following `AlbumNavTree.vue`'s general conventions without being bound to its single-column implementation; a new `phpDateFormat.ts` utility reproducing PHP `date()` semantics client-side, feeding the adapter's `formatted_min_max` computation (FR-062-16); client-side rights-combination logic; adapting joined v3 data (now including Feature 061's new `is_pinned`/`is_public`/`is_link_required` fields, FR-061-27) into `ThumbAlbumResource`-shaped metadata/rights objects so `contextMenu.ts` needs no changes; `TagAlbum`/`PersonAlbum` parity via 061's existing tier 2/3 support; reimplementing `dragAndSelect.ts`'s album-selection branch against precomputed tile geometry instead of DOM queries, scoped to the flag-on virtualized path; hiding the album `<Pagination>` control and re-fetch-on-mutation wiring (now including cover-photo changes, FR-062-13) for the flag-on path.
+- **Out of scope:** Photo-grid virtualization (any layout mode); root-scope (`Albums.vue`) bucketing/virtualization; any further v2/v3 backend change beyond FR-061-27; any change to `Thumb.vue`/`ThumbAssetService`/the Feature 056 Asset endpoint itself (reused as-is); any change to `AlbumThumb.vue`/`AlbumThumbImage.vue`/`AlbumListItem.vue` themselves or the flag-off cover-image/date-subtitle path; any change to `dragAndSelect.ts`'s photo-selection branch or its flag-off album branch; a new feature flag; an automated frontend test suite; a windowed/paginated variant of tier 2; any client-side sorting or grouping of tier 2's rows (the backend already guarantees their order); a general-purpose PHP-date-format-to-JS library extracted for reuse elsewhere (`phpDateFormat.ts` is scoped to this feature's own needs).
 
 ## Dependencies & Interfaces
 
-- Feature 061's three endpoints and resources: `AlbumBucketResource`/`AlbumBucketController`, `AlbumChildrenDataResource`/`AlbumChildrenDataController` (now ordering its rows per FR-061-26), `AlbumChildrenRightsResource`/`AlbumChildrenRightsController` (consumed as-is, zero further backend changes).
+- Feature 061's three endpoints and resources: `AlbumBucketResource`/`AlbumBucketController`, `AlbumChildrenDataResource`/`AlbumChildrenDataController` (orders its rows per FR-061-26), `AlbumChildrenRightsResource`/`AlbumChildrenRightsController` (consumed as-is, zero further backend changes).
 - `App\Policies\AlbumPolicy::canEdit()`/`canDownload()`/`canDelete()` (`app/Policies/AlbumPolicy.php:255-269,184-207,281-303`) — reference-only, the ground truth the client-side combination formula (FR-062-04) must match; not called or modified by this feature.
 - `resources/js/stores/AlbumsState.ts` (extend) — existing store backing `AlbumPanel.vue`'s subalbum section.
 - `resources/js/stores/AlbumState.ts` — read-only dependency for `albumId`/navigation state; its v2 `loadAlbums()`/`loadMoreAlbums()` remain the flag-off path, untouched.
 - `resources/js/stores/UserState.ts` (`useUserStore()`) — `user.id`/`user.may_upload`/`isGuest`/`isAdmin`, needed for FR-062-04's combination formula.
-- `resources/js/v8/components/thumbs/Thumb.vue` (Feature 058, reused unchanged) — cover rendering for each virtualized tile.
-- `resources/js/v8/components/gallery/albumModule/AlbumNavTree.vue` — existing `@tanstack/vue-virtual` usage in this codebase; the direct convention/pattern template for DO-062-03/04 (`useVirtualizer` construction, `translate3d` positioning, single spacer sized to `getTotalSize()`, `contain` hints).
+- `resources/js/v8/components/thumbs/Thumb.vue` (Feature 056's Asset endpoint, `ThumbAssetService`-backed, reused unchanged) — cover-image resolution for each mounted tile, consumed by the new `AlbumThumbVirtual.vue` (DO-062-06) the same way `AlbumNavTree.vue` already consumes it for its own tree nodes.
+- `resources/js/services/thumb-asset-service.ts`'s `ThumbAssetService.acquire()`/`release()` (reused unchanged, internal to `Thumb.vue` — not called directly by this feature) — LRU-cached, ref-counted blob-URL fetch against `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` (Feature 056, API-056-01).
+- `resources/js/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue`/`AlbumThumbImage.vue`/`AlbumThumbOverlay.vue`/`AlbumThumbDecorations.vue`/`ThumbBadge.vue` — fork source for `AlbumThumbVirtual.vue` (DO-062-06): the overlay/decoration/badge sub-components are reused unchanged, `AlbumThumbImage.vue`'s pre-built-URL logic is the one piece not reusable (tier 2 has no URL to feed it) and is replaced with `<Thumb>`.
+- `resources/js/v8/components/gallery/albumModule/AlbumNavTree.vue` — existing `@tanstack/vue-virtual` usage in this codebase; a general convention reference for DO-062-03/04 (`useVirtualizer` construction, `translate3d` positioning, single spacer sized to `getTotalSize()`, `contain` hints), not a template whose internals must be replicated exactly — the multi-column/sticky-header/aspect-ratio-height requirements here differ enough to justify their own structure. Also the existing precedent for `<Thumb>` usage that DO-062-06 mirrors.
+- `App\Http\Resources\GalleryConfigs\AlbumConfig`/`RootConfig`'s `album_thumb_css_aspect_ratio` field — already loaded for the currently-browsed album via `AlbumState.ts` before this feature's tier 1/2/3 fetches begin; the input to FR-062-14's row-height math, resolved with the same per-album-override-then-instance-default fallback chain `AlbumThumb.vue` already uses. Extended (FR-062-16) with two new fields, `date_format_album_thumb`/`thumb_min_max_order`, same resolution chain.
+- `resources/js/layouts/getWidth.ts` — existing container-width-measurement pattern (`window.innerWidth` minus real computed padding/scrollbar, no tile involved), used today by the photo-layout composables (`useGrid.ts`/`useSquare.ts`/`useJustify.ts`/`useMasonry.ts`); reused/adapted by FR-062-14's `albumTileWidth.ts` (DO-062-09) instead of inventing a second container-measurement mechanism.
+- `useBreakpoints`/`breakpointsTailwind` (`@vueuse/core`) — existing usage in this codebase (`AlbumNavPanel.vue`, `PhotoShareCard.vue`, `useAdminTiles.ts`); reused by FR-062-14, extended with this project's actual `3xl`/`4xl` breakpoint pixel thresholds (confirmed during implementation — not found in any `@theme` block searched so far; may need sourcing from wherever Tailwind actually resolves them for this project's build).
+- `resources/js/v8/components/gallery/albumModule/AlbumListItem.vue`/`ListBadge.vue` — fork source for `AlbumListItemVirtual.vue` (DO-062-07), same relationship `AlbumThumb.vue` has to `AlbumThumbVirtual.vue` (DO-062-06): badge/layout logic reused unchanged, its own `AlbumThumbImage.vue` usage is the one piece replaced with `<Thumb>`.
+- `ThumbAlbumResource::formatMinMaxDate()` (`app/Http/Resources/Models/ThumbAlbumResource.php:116-132`) — reference-only, the exact logic FR-062-16's `phpDateFormat()`/date-join must reproduce client-side; not called or modified by this feature. A community PHP-date-to-JS format-string conversion function (public gist, adapted) is the starting point for `phpDateFormat.ts` (DO-062-08) rather than writing a PHP `date()` interpreter from scratch.
+- `resources/js/services/album-service.ts`'s `AlbumService` cache — existing v2 caching convention FR-062-19's new per-`album_id` cache mirrors (Q-062-12 Option B).
 - `@tanstack/vue-virtual` (already a direct `package.json` dependency — no new install).
 - `resources/js/v8/components/gallery/albumModule/AlbumThumbPanel.vue`/`AlbumThumbPanelList.vue`/`AlbumListView.vue` — branch point: render the new virtualized components instead of today's plain `v-for` when the flag is on and v3 data is present; otherwise fully unchanged.
 - `resources/js/v8/composables/contextMenus/contextMenu.ts` — read-only dependency; the exact field reads (`selectedAlbum.rights.can_edit`/`can_move`/`can_delete`/`can_download`) this feature's adapted `ThumbAlbumResource` objects must satisfy (FR-062-06).
@@ -37,10 +45,13 @@ Let a viewer scroll a 7,000+-direct-child album's subalbum grid as smoothly as a
 - **Risks / Mitigations:**
   - *Risk:* Reimplementing `dragAndSelect.ts`'s album-selection branch (FR-062-11) against precomputed geometry could silently diverge from the DOM-query branch's exact selection semantics (e.g. edge/corner intersection rules). *Mitigation:* write the geometry-intersection test first against the same fixture/rectangle cases the existing DOM-query branch already handles correctly today (flag-off), confirming byte-for-byte identical selections before extending to the unmounted-tile case DOM-query cannot handle at all.
   - *Risk:* Tier 1 and tier 2 are two separate requests (FR-062-01) — a mutation racing between them (e.g. a subalbum deleted by another session mid-navigation) could produce a `sum(counts) !== children.length` mismatch even though each response is individually correct and correctly ordered. *Mitigation:* FR-062-02's defensive single-unbucketed-section fallback for a count mismatch, plus FR-062-13's re-fetch-on-mutation covers the same-session case; a genuinely concurrent cross-session edit is an accepted, rare staleness window (matches Feature 061's own accepted-staleness precedent for its rights-endpoint cache, FR-061-22).
-  - *Risk:* `itemsPerRow` (FR-062-07) depends on `#galleryView`'s content width, which can change (window resize, nav-panel toggle in `AlbumNavPanel.vue`, browser zoom) — a stale `itemsPerRow` would misplace every tile below the resize point. *Mitigation:* `ResizeObserver` on the scroll container recomputes `itemsPerRow` reactively; `useVirtualizer`'s own `getTotalSize()`/row math is a pure function of the current `itemsPerRow`, so a resize is a cheap recompute, not a data re-fetch.
+  - *Risk:* `itemsPerRow` (FR-062-07/14) depends on the scroll container's content width and the current Tailwind breakpoint, both of which can change (window resize, nav-panel toggle in `AlbumNavPanel.vue`, browser zoom, breakpoint crossing) — a stale `itemsPerRow` would misplace every tile below the resize point. *Mitigation:* `ResizeObserver` on the scroll container plus `useBreakpoints()`'s own reactivity recompute `itemsPerRow`/`tileWidth` reactively (`albumTileWidth.ts`, DO-062-09); `useVirtualizer`'s own `getTotalSize()`/row math is a pure function of the current `itemsPerRow`, so a resize or breakpoint crossing is a cheap recompute, not a data re-fetch.
   - *Risk:* Sticky bucket headers (new UI behavior, not present today) could visually clash with `AlbumHero.vue`'s own sticky/hero elements or the existing sticky toolbar bug already flagged in `STUDY-MOBILE-v8.md` finding #10 (title text sliced by a sticky header on scroll). *Mitigation:* verify the new sticky bucket headers sit correctly relative to any existing sticky ancestor via a manual scroll-through pass on both mobile and desktop viewports before considering S-062-02 done; if the pre-existing #10 clipping bug reproduces with sticky bucket headers too, flag it as a follow-up rather than silently accepting a new visible defect.
-  - *Risk:* `AlbumThumb.vue`'s responsive tile width uses Tailwind breakpoint classes (`sm:w-[calc(25vw-1rem)]` etc., per `virtual-scrolling-study.md`) rather than a single JS-computed value — `itemsPerRow` computation (FR-062-07) needs to read the *actual rendered* tile width (e.g. via a one-time `getBoundingClientRect()` on a mounted probe tile, recomputed on the same `ResizeObserver` callback as the container width) rather than hand-duplicating the Tailwind breakpoint logic in JS, to avoid the two ever drifting out of sync. *Mitigation:* explicit implementation note in the relevant task (T-062-xx) — measure, don't duplicate.
+  - *Risk (resolved, Q-062-10):* `AlbumThumb.vue`'s responsive tile width uses Tailwind breakpoint classes (`sm:w-[calc(25vw-1rem)]` etc., per `virtual-scrolling-study.md`) rather than a single JS-computed value. The original draft proposed a DOM-measured "probe tile" to avoid duplicating the breakpoint→formula mapping in JS; resolved instead in favor of the duplication, extracted into one shared lookup table both `AlbumThumbVirtual.vue`'s width classes and `albumTileWidth.ts`'s JS computation read from (FR-062-14) — the same table also carries each breakpoint's gap value (`AlbumThumbPanel.vue`'s `gap-1 sm:gap-2 md:gap-4`), not just tile width — avoids a probe tile's first-paint circularity and extra DOM node entirely, at the cost of one table to keep in sync if a breakpoint's `calc()`/gap value ever changes (mitigated by the single-shared-source structure: there's one table to update, not two independent copies). Tile *height* is never measured or duplicated — it's derived analytically from the computed width and the parent's own known `album_thumb_css_aspect_ratio` (FR-062-14), which carries no drift risk of its own.
   - *Risk:* Guest/anonymous browsing (no `UserState.user`) must not throw when FR-062-04's formula reads `current_user.id`/`current_user.may_upload`. *Mitigation:* `useUserStore().isGuest`/`user?.id` already returns a defined (non-throwing) shape for a guest per `UserState.ts`'s existing getters; the formula's owner-branch naturally evaluates to `false` when there's no id to match, verified by S-062-09.
+  - *Risk:* `ThumbAssetService`'s shared cache is capped at 6,000 entries — below this feature's own 7,000+-child scale target, if every distinct cover were acquired at once. *Mitigation:* not a new risk this feature introduces — the cache is already ref-counted and only evicts entries with `refCount <= 0`; virtualization's own mount/unmount cycle keeps the number of *simultaneously mounted* (non-zero-refCount) tiles far below 6,000 at all times (NFR-062-03), so eviction only ever targets already-scrolled-past tiles. No change to `ThumbAssetService`'s capacity is needed or in scope.
+  - *Risk:* `date_format_album_thumb`/`date_format_hero_created_at`-style configs are free-text (`type_range: STRING_REQ`, not an enum) — an admin can type any valid PHP `date()` format string, so `phpDateFormat.ts` (FR-062-16) must handle the general case, not a fixed handful of tokens. The adapted community reference implementation covers the common character set (`j d l D w m n F M Y y H h g a i s c`, `\`-escaped literals) but PHP's `date()` supports roughly 40 characters total. *Mitigation:* NFR-062-08's cross-check scenario exercises a representative set, not the full PHP character table; any character `phpDateFormat.ts` doesn't recognize should pass through literally (matching PHP's own behavior for an unrecognized character) rather than throwing — explicit implementation note for T-062-xx.
+  - *Risk:* This project's `3xl`/`4xl` Tailwind breakpoint pixel thresholds weren't found in any `@theme` block during spec-drafting-time investigation (only the Tailwind v4 default `sm`/`md`/`lg`/`xl`/`2xl` were located in `node_modules/tailwindcss`) — `AlbumThumb.vue`/`AlbumThumbVirtual.vue` use `3xl:`/`4xl:` classes regardless. *Mitigation:* source the actual values during implementation (search more thoroughly than the spec-drafting pass did — possibly a Vite plugin config, a PostCSS Tailwind theme extension, or these classes are silently inert and only the `2xl` tier ever really applies at typical viewport widths); FR-062-14's breakpoint lookup table must be complete and correct before `useBreakpoints()` can be extended with them.
 
 ## Implementation Drift Gate
 
@@ -48,12 +59,12 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
 
 ## Increment Map
 
-1. **I1 – Store: tier 1+2 fetch, positional boundary walk**
-   - _Goal:_ `AlbumsState.ts` fetches buckets+children together when the flag is on and derives bucket-section boundaries via a positional walk over tier 1's `counts` — no join or sort, since Feature 061 FR-061-26 already guarantees tier 2's row order matches tier 1's bucket boundaries.
-   - _Preconditions:_ Spec approved (this plan committed); Feature 061 (incl. FR-061-26) already ships tier 1/2 ordered.
-   - _Steps:_ New action(s) + getters on `AlbumsState.ts`; the boundary-walk logic itself factored into a small pure function (`counts[] + flatChildren[] → {bucketId, label, startIndex, count}[]`), including the defensive `sum(counts) !== children.length` fallback; manual verification against Feature 061's existing per-source fixture parents (created_at/min_taken_at/max_taken_at/title-date_prefix/title-alphabetical/owner_id).
+1. **I1 – Store: tier 1+2 fetch, positional boundary walk, stale-response guard, per-album cache**
+   - _Goal:_ `AlbumsState.ts` fetches buckets+children together when the flag is on and derives bucket-section boundaries via a positional walk over tier 1's `counts` — no join or sort, since Feature 061 FR-061-26 already guarantees tier 2's row order matches tier 1's bucket boundaries. Also: a monotonic request-generation guard so a superseded album's late response never overwrites the current one (FR-062-18), and a short-TTL per-`album_id` cache so revisiting a recent album skips the round-trip (FR-062-19).
+   - _Preconditions:_ Spec approved (this plan committed); Feature 061 (incl. FR-061-26/27) ships tier 1/2 ordered with `is_pinned`/`is_public`/`is_link_required`.
+   - _Steps:_ New action(s) + getters on `AlbumsState.ts`; the boundary-walk logic itself factored into a small pure function (`counts[] + flatChildren[] → {bucketId, label, startIndex, count}[]`), including the defensive `sum(counts) !== children.length` fallback; a generation counter incremented per `loadAlbumsV3()` call, captured per in-flight fetch, checked before applying any response; a `Map<albumId, {data, expiresAt}>` cache checked before firing a fetch, populated on resolve, invalidated by FR-062-13's trigger set; manual verification against Feature 061's existing per-source fixture parents (created_at/min_taken_at/max_taken_at/title-date_prefix/title-alphabetical/owner_id).
    - _Commands:_ `npm run check`.
-   - _Exit:_ FR-062-01/02 satisfied; S-062-02/04 pass manually.
+   - _Exit:_ FR-062-01/02/18/19 satisfied; S-062-02/04/25/26 pass manually.
 
 2. **I2 – Store: background rights fetch + client-side combination**
    - _Goal:_ Tier 3 fetched immediately after tier 1+2 resolve; combination formula applied reactively.
@@ -62,33 +73,33 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
    - _Commands:_ `npm run check`.
    - _Exit:_ FR-062-03/04/05 satisfied; NFR-062-04 verified; S-062-05..09/16 pass manually.
 
-3. **I3 – Adapter: joined data → `ThumbAlbumResource` shape**
-   - _Goal:_ `AlbumThumb.vue`/`contextMenu.ts` render/behave identically fed by either data source.
-   - _Preconditions:_ I2 merged.
-   - _Steps:_ Adapter function; manual side-by-side comparison, flag on vs. off, same fixture album.
+3. **I3 – Adapter: joined data → `ThumbAlbumResource` shape, plus the new tile component**
+   - _Goal:_ `contextMenu.ts` renders/behaves identically fed by either data source — including the previously-broken Pin/Unpin label and public/hidden badges (Q-062-05/06) — and a working per-child tile component exists (`AlbumThumbVirtual.vue`) that resolves its own cover image via the existing Feature 056 Asset endpoint, since tier 2 gives it no pre-built URL to consume.
+   - _Preconditions:_ I2 merged; Feature 061 FR-061-27 shipped (`is_pinned`/`is_public`/`is_link_required` on tier 2); I13 merged (`phpDateFormat.ts`, for `formatted_min_max`).
+   - _Steps:_ Adapter function — metadata/rights, `is_pinned`/`is_public`/`is_link_required` mapped straight through from tier 2, `formatted_min_max` computed via I13's `phpDateFormat.ts`, `thumb` left `null` (FR-062-06); new `AlbumThumbVirtual.vue` (DO-062-06) forking `AlbumThumb.vue`'s chrome — `AlbumThumbOverlay.vue`/`AlbumThumbDecorations.vue`/`ThumbBadge.vue` reused unchanged, `AlbumThumbImage.vue` replaced with `<Thumb :album-id="child.id" :photo-id="child.cover_id" type="thumb">` — plus the no-cover fallback (password icon vs. generic no-image icon) from `cover_id`/`is_password_required`; manual side-by-side comparison, flag on vs. off, same fixture album, including a mixed-cover-state fixture (real cover, `null` + password-protected, `null` + not) and the pinned/public fixture (S-061-44).
    - _Commands:_ `npm run check`.
-   - _Exit:_ FR-062-06 satisfied; NFR-062-02 verified.
+   - _Exit:_ FR-062-06/15 satisfied; NFR-062-02 verified; S-062-18/20/21/22/23 pass manually.
 
 4. **I4 – Shared composable: row flattening + tile geometry**
    - _Goal:_ Pure, reusable `virtualAlbumRows.ts` (DO-062-02) — the one piece both virtualized renderers and the reimplemented drag-select depend on.
    - _Preconditions:_ I1 merged (needs bucket-boundary metadata's real shape).
-   - _Steps:_ Implement `(children[], bucketMeta[], itemsPerRow) → {rows, geometryLookup}`; manually verify against a small hand-computed fixture (2 buckets, uneven counts, non-multiple-of-itemsPerRow) before wiring into any renderer.
+   - _Steps:_ Implement `(children[], bucketMeta[], itemsPerRow, tileWidth, aspectRatioNumber) → {rows, geometryLookup}`, with each tile row's height computed as `tileWidth ÷ aspectRatioNumber` (FR-062-14); manually verify against a small hand-computed fixture (2 buckets, uneven counts, non-multiple-of-itemsPerRow, at least two different aspect ratios) before wiring into any renderer.
    - _Commands:_ `npm run check`.
    - _Exit:_ DO-062-02 ready for consumption by I5/I6/I8.
 
 5. **I5 – Grid virtualization**
-   - _Goal:_ `AlbumThumbPanelVirtualList.vue` (DO-062-03), wired into `AlbumThumbPanel.vue`'s branch point.
+   - _Goal:_ `AlbumThumbPanelVirtualList.vue` (DO-062-03), wired into `AlbumThumbPanel.vue`'s branch point, rendering I3's `AlbumThumbVirtual.vue` per child.
    - _Preconditions:_ I3, I4 merged.
-   - _Steps:_ `useVirtualizer` over I4's flattened rows, sticky header rows, `ResizeObserver`-driven `itemsPerRow` (measured, not duplicated — see plan Risks); manual DevTools element-count check against a 7,000+-child fixture.
+   - _Steps:_ `useVirtualizer` over I4's flattened rows, sticky header rows, tile rows rendering `AlbumThumbVirtual.vue`, `ResizeObserver`-driven `itemsPerRow` (width measured, not duplicated — see plan Risks; height computed analytically from that measured width and the parent's `album_thumb_css_aspect_ratio`, FR-062-14 — never measured); manual DevTools element-count check against a 7,000+-child fixture; manual row-height check across all six aspect-ratio values (S-062-17); manual DevTools Network-panel check confirming cover-image requests fire only for mounted tiles and are released on scroll-out (S-062-19).
    - _Commands:_ `npm run check`.
-   - _Exit:_ FR-062-07/08/09 satisfied; NFR-062-03 verified; S-062-02/03/04 pass manually.
+   - _Exit:_ FR-062-07/08/09/14/15 satisfied; NFR-062-03 verified; S-062-02/03/04/17/19 pass manually.
 
 6. **I6 – List-view virtualization**
-   - _Goal:_ `AlbumListViewVirtual.vue` (DO-062-04), degenerate `itemsPerRow = 1` reuse of I4/I5's mechanism.
+   - _Goal:_ `AlbumListViewVirtual.vue` (DO-062-04), degenerate `itemsPerRow = 1` reuse of I4/I5's mechanism, rendering a new `AlbumListItemVirtual.vue` (DO-062-07, forked from `AlbumListItem.vue` the same way `AlbumThumbVirtual.vue` forks `AlbumThumb.vue`) per row.
    - _Preconditions:_ I5 merged.
-   - _Steps:_ Thin wrapper reusing I4's composable; manual verification, flag on, `album_view_mode: 'list'`.
+   - _Steps:_ Thin wrapper reusing I4's composable; `AlbumListItemVirtual.vue` reuses `ListBadge.vue`/layout logic unchanged, replaces `AlbumThumbImage.vue` with `<Thumb>` at the fixed row thumbnail size; manual verification, flag on, `album_view_mode: 'list'`, including the mixed-cover-state fixture (S-062-24).
    - _Commands:_ `npm run check`.
-   - _Exit:_ FR-062-10 satisfied; S-062-11 passes manually.
+   - _Exit:_ FR-062-10/17 satisfied; S-062-11/24 pass manually.
 
 7. **I7 – Pagination control removal for the flag-on path**
    - _Goal:_ Hide `<Pagination>` for the subalbum section when the flag is on.
@@ -105,9 +116,9 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
    - _Exit:_ FR-062-11 satisfied; S-062-12 passes manually.
 
 9. **I9 – Mutation re-fetch wiring**
-   - _Goal:_ Tier 1+2+3 re-fetch after in-panel mutations (FR-062-13).
-   - _Preconditions:_ I2 merged.
-   - _Steps:_ Wire the new store action alongside each existing `AlbumService.clearCache()` call site relevant to this section's own mutations; manual verification per mutation type, confirming scroll-position stability (NFR-062-05).
+   - _Goal:_ Tier 1+2+3 re-fetch — and FR-062-19's per-album cache invalidation — after in-panel mutations (FR-062-13), including cover-photo changes now that tile rendering depends on `cover_id` (Q-062-09).
+   - _Preconditions:_ I1, I2 merged.
+   - _Steps:_ Wire the new store action alongside each existing `AlbumService.clearCache()` call site relevant to this section's own mutations; audit for an existing cover-change call site (manual cover selection, `RecomputeAlbumStatsJob` completion) or add one if none exists; manual verification per mutation type including cover change, confirming scroll-position stability (NFR-062-05).
    - _Commands:_ `npm run check`.
    - _Exit:_ FR-062-13 satisfied; NFR-062-05 verified; S-062-13/14 pass manually.
 
@@ -127,10 +138,17 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
 
 12. **I12 – Documentation**
     - _Goal:_ Satisfy Documentation Deliverables.
-    - _Preconditions:_ I1–I11 merged.
+    - _Preconditions:_ I1–I11, I13 merged.
     - _Steps:_ Update `api-design.md`, `knowledge-map.md`, `roadmap.md`.
     - _Commands:_ N/A (docs only).
     - _Exit:_ All Documentation Deliverables checked off.
+
+13. **I13 – Client-side date formatting (`phpDateFormat.ts`)**
+    - _Goal:_ `formatted_min_max`'s tile-subtitle text matches flag-off (server-formatted) rendering exactly, for any admin-configured `date_format_album_thumb`/`thumb_min_max_order` value — an independent piece I3's adapter depends on.
+    - _Preconditions:_ Spec approved.
+    - _Steps:_ Add `date_format_album_thumb`/`thumb_min_max_order` to `App\Http\Resources\GalleryConfigs\AlbumConfig`/`RootConfig` (this feature's own small backend addition — not a Feature 061 change, these are pre-existing general config resources already read from for `album_thumb_css_aspect_ratio`; regenerate TypeScript types); adapt the reference PHP-date-to-JS format-string conversion (community gist) into `phpDateFormat.ts` (DO-062-08); implement the min/max join+ordering logic mirroring `ThumbAlbumResource::formatMinMaxDate()`'s exact branching — including that "only one of `min_taken_at`/`max_taken_at` present" is *not* a collapse case, it stays `null` the same as "both absent" (FR-062-16); manual cross-check against real `date()` output (via a throwaway PHP script) for a representative format-string set, per NFR-062-08.
+    - _Commands:_ `npm run check`; `make phpstan`; `vendor/bin/php-cs-fixer fix --dry-run` (for the small `AlbumConfig`/`RootConfig` PHP change).
+    - _Exit:_ FR-062-16 satisfied; NFR-062-08 verified; S-062-23 passes manually.
 
 ## Scenario Tracking
 
@@ -152,6 +170,16 @@ Run the Analysis Gate checklist (`docs/specs/5-operations/analysis-gate-checklis
 | S-062-14 | I9 | New subalbum appears correctly placed. |
 | S-062-15 | I1–I12 | Flag toggle is a pure config change. |
 | S-062-16 | I2 | Admin caller, zero explicit grants. |
+| S-062-17 | I4, I5 | Row-height math correctness across all six aspect-ratio values. |
+| S-062-18 | I3 | Cover-image rendering across mixed cover states (real, no-cover, no-cover + password). |
+| S-062-19 | I5 | Cover-image requests fire lazily per mounted tile and release on scroll-out. |
+| S-062-20 | I3 | Video-cover tile shows no play-icon overlay (accepted regression). |
+| S-062-21 | I3 | Pin/Unpin menu label correct for an already-pinned subalbum. |
+| S-062-22 | I3 | Public/hidden and public/visible tile badges correct. |
+| S-062-23 | I13 | Date subtitle matches PHP `date()` output across format-string variants. |
+| S-062-24 | I6 | List view cover images, mixed-cover-state fixture, grid parity. |
+| S-062-25 | I1, I9 | Repeat-navigation cache hit/invalidation-on-mutation. |
+| S-062-26 | I1 | Stale cross-album response discarded on rapid navigation. |
 
 ## Analysis Gate
 
@@ -163,6 +191,7 @@ _Not yet run — record the outcome here once `tasks.md` exists and before I1 be
 - `npm run format`/`npm run check` clean.
 - DevTools element-count evidence attached to the Implementation Drift Gate report confirming NFR-062-03 against a 7,000+-child fixture.
 - Manual rights-combination cross-check evidence (guest/owner/individually-shared/multi-group-overlap/admin) attached confirming NFR-062-04.
+- Manual date-format cross-check evidence (`phpDateFormat.ts` vs. real PHP `date()` output, representative format-string set) attached confirming NFR-062-08.
 - Documentation Deliverables (I12) complete.
 - Implementation Drift Gate report recorded in this plan.
 
@@ -172,7 +201,3 @@ _Not yet run — record the outcome here once `tasks.md` exists and before I1 be
 - **Root-scope (`Albums.vue`) bucketing/virtualization** — blocked on a future backend feature giving `Top::queryRootAlbums()` a v3/bucketed equivalent; out of scope for both 061 and this feature.
 - **`bucket_id`-windowed tier-2 pagination** — if a single parent's whole-album-at-once tier-2 payload ever proves too large in practice, Feature 061's own Follow-ups already earmarks the fix (a `bucket_id` query param); revisit only with real payload numbers, not pre-emptively.
 - **`dragAndSelect.ts`'s photo-selection branch** — left DOM-query-based (Non-Goals); revisit only if/when photo-grid virtualization (see above) makes that branch's own DOM-query assumption a real problem.
-
-## Amendment Log
-
-- **2026-08-30:** the original draft of this plan included a new backend `AlbumConfig::$effective_album_sorting_column`/`_order` field (I1) plus a client-side join/sort step (in what was then I2), because tier 2 shipped with zero row ordering. That gap was fixed at the source instead — Feature 061 spec.md gained FR-061-26, `AlbumChildrenDataController` now orders its own rows — so this plan's I1 became a much smaller positional-walk step and every downstream increment renumbered down by one. No functional scope was lost; this feature's job shrank because Feature 061's contract got stronger.

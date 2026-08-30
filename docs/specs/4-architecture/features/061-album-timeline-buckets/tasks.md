@@ -218,6 +218,19 @@ _Last updated: 2026-08-29_
 - [x] T-061-47 – Update `docs/specs/3-reference/api-design.md` (tier 2 ordering bullet) to reflect FR-061-26.
   _Verification commands:_ N/A (review only).
 
+### I13 – Follow-up: tier 2 pin/public/link-required fields (2026-08-30)
+
+> Surfaced during Feature 062's ambiguity review (Q-062-05/06 in `docs/specs/4-architecture/open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 062's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
+
+- [ ] T-061-48 – Feature tests: a fixture spanning a pinned child, an unpinned child, a public+no-link-required child, a public+link-required child, and a fully private child — `is_pinneds`/`is_publics`/`is_link_requireds` match `ThumbAlbumResource`'s own resolution for the same children exactly (S-061-44) (F-061-27).
+  _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php`.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`
+- [ ] T-061-49 – Implement in `AlbumChildrenDataController`: add `base_albums.is_pinned` to the existing `select()` (zero extra join); add a left join on `access_permissions` scoped to `user_id IS NULL` to resolve `is_public`/`is_link_required` per row; extend `AlbumChildrenDataResource`'s constructor/SoA arrays with the three new fields (F-061-27).
+  _Intent:_ Make T-061-48 pass.
+  _Verification commands:_ `php artisan test --filter=AlbumChildrenDataV3Test`; `make phpstan`; `vendor/bin/php-cs-fixer fix --dry-run`
+- [ ] T-061-50 – Update `docs/specs/3-reference/api-design.md` (tier 2 field list) and `docs/specs/4-architecture/knowledge-map.md` to reflect FR-061-27.
+  _Verification commands:_ N/A (review only).
+
 ## Notes / TODOs
 
 - Root-scope bucketing, photo-side bucket columns, `bucket_id`-windowed tier-2 pagination, full `AlbumRightsResource` parity on the rights endpoint, and frontend adoption (including the actual background-fetch wiring and client-side rights-combination logic) are explicitly out of scope for this feature's tasks — see plan.md Follow-ups. Do not fold them into any task above.
