@@ -314,7 +314,6 @@ const props = defineProps<{
 
 const { are_details_open, is_full_screen } = storeToRefs(togglableStore);
 
-are_details_open.value = false;
 const lycheeState = useLycheeStateStore();
 const { is_details_links_enabled, is_face_recognition_enabled } = storeToRefs(lycheeState);
 
