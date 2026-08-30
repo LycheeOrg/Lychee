@@ -1,284 +1,284 @@
 <template>
-	<aside
+	<USidebar
+		v-model:open="are_details_open"
 		id="lychee_sidebar_container"
-		:class="{
-			'h-full relative transition-all overflow-x-clip overflow-y-scroll bg-elevated': true,
-			'w-95': areDetailsOpen,
-			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
+		:side="isLTR() ? 'right' : 'left'"
+		:style="{ '--sidebar-width': '25rem' }"
+		:ui="{
+			container: 'border-l-0 bg-neutral-900' + (is_full_screen ? '' : ' top-(--ui-header-height) h-(calc(100%-var(--ui-header-height)))'),
+			gap: 'h-[calc(100%-var(--ui-header-height))]',
+			body: 'gap-0',
+			header: 'text-center text-2xl font-bold',
 		}"
+		:title="$t('gallery.photo.details.about')"
 	>
-		<UCard v-if="photoStore.photo" id="lychee_sidebar" class="w-95 h-full ltr:pr-4 rtl:pl-4 wrap-break-word" :ui="{ body: '' }">
-			<div class="flex flex-col mt-8">
-				<h1 class="text-center text-2xl font-bold my-4">
-					{{ $t("gallery.photo.details.about") }}
-				</h1>
-				<!-- Title etc info -->
-				<div class="flex gap-3 mb-2">
-					<div>
-						<MiniIcon icon="image" class="h-12 w-12" />
-					</div>
-					<div class="flex flex-col">
-						<span class="font-bold text-lg">{{ photoStore.photo.title }}</span>
-						<div class="flex gap-3 text-muted text-sm" id="photo-details-resolution-filesize">
-							<span v-if="photoStore.photo.preformatted.resolution" dir="ltr">{{ photoStore.photo.preformatted.resolution }}</span>
-							<span v-if="photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.duration">
-								{{ photoStore.photo.preformatted.duration }}
-							</span>
-							<span v-if="photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.fps">
-								{{ photoStore.photo.preformatted.fps }}
-							</span>
-							<span dir="ltr">{{ photoStore.photo.preformatted.filesize }}</span>
-						</div>
-					</div>
+		<!-- Title etc info -->
+		<div class="flex gap-3 mb-2">
+			<div>
+				<MiniIcon icon="image" class="h-12 w-12" />
+			</div>
+			<div class="flex flex-col">
+				<span class="font-bold text-lg">{{ photoStore.photo!.title }}</span>
+				<div class="flex gap-3 text-muted text-sm" id="photo-details-resolution-filesize">
+					<span v-if="photoStore.photo!.preformatted.resolution" dir="ltr">{{ photoStore.photo!.preformatted.resolution }}</span>
+					<span v-if="photoStore.photo!.precomputed.is_video && photoStore.photo!.preformatted.duration">
+						{{ photoStore.photo!.preformatted.duration }}
+					</span>
+					<span v-if="photoStore.photo!.precomputed.is_video && photoStore.photo!.preformatted.fps">
+						{{ photoStore.photo!.preformatted.fps }}
+					</span>
+					<span dir="ltr">{{ photoStore.photo!.preformatted.filesize }}</span>
 				</div>
-				<div v-if="photoStore.photo.palette" class="flex gap-2 mb-4 ml-15">
-					<ColourSquare :colour="photoStore.photo.palette.colour_1" />
-					<ColourSquare :colour="photoStore.photo.palette.colour_2" />
-					<ColourSquare :colour="photoStore.photo.palette.colour_3" />
-					<ColourSquare :colour="photoStore.photo.palette.colour_4" />
-					<ColourSquare :colour="photoStore.photo.palette.colour_5" />
-				</div>
-				<!-- Dates stuff -->
-				<div class="flex-col text-muted">
-					<div class="flex gap-1 items-center" id="photo-details-created-at">
-						<span class="w-6 inline-block">
-							<UTooltip :text="$t('gallery.photo.details.uploaded')">
-								<UIcon name="lucide:upload" />
-							</UTooltip>
-						</span>
-						<span class="text-sm">{{ photoStore.photo.preformatted.created_at }}</span>
-					</div>
-					<div v-if="photoStore.photo.preformatted.taken_at" class="flex gap-1 items-start" id="photo-details-taken-at">
-						<span class="w-6 inline-block">
-							<UTooltip :text="$t('gallery.photo.details.captured')">
-								<UIcon name="lucide:camera" class="w-6 pt-1 inline-block" />
-							</UTooltip>
-						</span>
-						<span class="text-sm">
-							{{ photoStore.photo.preformatted.taken_at }}
-							<span v-if="photoStore.photo.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
-						</span>
-					</div>
-				</div>
+			</div>
+		</div>
+		<div v-if="photoStore.photo!.palette" class="flex gap-2 mb-4 ml-15">
+			<ColourSquare :colour="photoStore.photo!.palette.colour_1" />
+			<ColourSquare :colour="photoStore.photo!.palette.colour_2" />
+			<ColourSquare :colour="photoStore.photo!.palette.colour_3" />
+			<ColourSquare :colour="photoStore.photo!.palette.colour_4" />
+			<ColourSquare :colour="photoStore.photo!.palette.colour_5" />
+		</div>
+		<!-- Dates stuff -->
+		<div class="flex-col text-muted">
+			<div class="flex gap-1 items-center" id="photo-details-created-at">
+				<span class="w-6 inline-block">
+					<UTooltip :text="$t('gallery.photo.details.uploaded')">
+						<UIcon name="lucide:upload" />
+					</UTooltip>
+				</span>
+				<span class="text-sm">{{ photoStore.photo!.preformatted.created_at }}</span>
+			</div>
+			<div v-if="photoStore.photo!.preformatted.taken_at" class="flex gap-1 items-start" id="photo-details-taken-at">
+				<span class="w-6 inline-block">
+					<UTooltip :text="$t('gallery.photo.details.captured')">
+						<UIcon name="lucide:camera" class="w-6 pt-1 inline-block" />
+					</UTooltip>
+				</span>
+				<span class="text-sm">
+					{{ photoStore.photo!.preformatted.taken_at }}
+					<span v-if="photoStore.photo!.precomputed.is_taken_at_modified" class="text-warning-600">*</span>
+				</span>
+			</div>
+		</div>
 
-				<!-- Description stuff -->
-				<template v-if="photoStore.photo.preformatted.description">
-					<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
-						{{ $t("gallery.photo.details.description") }}
-					</h2>
-					<div class="prose dark:prose-invert prose-sm mb-4" v-html="photoStore.photo.preformatted.description"></div>
+		<!-- Description stuff -->
+		<div v-if="photoStore.photo!.preformatted.description">
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.description") }}
+			</h2>
+			<div class="prose dark:prose-invert prose-sm mb-4" v-html="photoStore.photo!.preformatted.description"></div>
+		</div>
+
+		<!-- Tags stuff -->
+		<div v-if="photoStore.photo!.tags.length > 0">
+			<h2 v-if="photoStore.photo!.tags.length > 0" class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.tags") }}
+			</h2>
+			<span class="pb-2 flex flex-wrap">
+				<template v-if="userStore.isLoggedIn">
+					<RouterLink
+						v-for="tag in photoStore.photo!.tags"
+						:key="`tag-${tag.id}`"
+						class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50 cursor-pointer hover:bg-black/70 transition-colors"
+						:to="{ name: 'tag', params: { tagId: tag.id } }"
+					>
+						{{ tag.name }}
+					</RouterLink>
 				</template>
-
-				<!-- Tags stuff -->
-				<template v-if="photoStore.photo.tags.length > 0">
-					<h2 v-if="photoStore.photo.tags.length > 0" class="text-highlighted text-base font-bold mt-4 mb-1">
-						{{ $t("gallery.photo.details.tags") }}
-					</h2>
-					<span class="pb-2 flex flex-wrap">
-						<template v-if="userStore.isLoggedIn">
-							<RouterLink
-								v-for="tag in photoStore.photo.tags"
-								:key="`tag-${tag.id}`"
-								class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50 cursor-pointer hover:bg-black/70 transition-colors"
-								:to="{ name: 'tag', params: { tagId: tag.id } }"
-							>
-								{{ tag.name }}
-							</RouterLink>
-						</template>
-						<template v-else>
-							<span
-								v-for="tag in photoStore.photo.tags"
-								:key="`tag-${tag.id}`"
-								class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50 cursor-default"
-							>
-								{{ tag.name }}
-							</span>
-						</template>
+				<template v-else>
+					<span
+						v-for="tag in photoStore.photo!.tags"
+						:key="`tag-${tag.id}`"
+						class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50 cursor-default"
+					>
+						{{ tag.name }}
 					</span>
 				</template>
+			</span>
+		</div>
 
-				<!-- Albums stuff -->
-				<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
-					{{ $t("gallery.photo.details.albums") }}
-				</h2>
-				<div v-if="albums_loading" class="flex items-center gap-2 text-muted text-sm">
-					<LycheeLoadingIcon fast class="text-lg" />
-					<span>{{ $t("gallery.photo.details.albums_loading") }}</span>
-				</div>
-				<div v-else-if="albums_error" class="text-sm text-muted">
-					<UIcon name="lucide:triangle-alert" class="mr-1" />
-					{{ $t("gallery.photo.details.albums_loading_error") }}
-				</div>
-				<div v-else-if="albums.length === 0" class="text-sm text-muted">
-					{{ $t("gallery.photo.details.no_albums") }}
-				</div>
-				<ul v-else class="list-none p-0 m-0">
-					<li v-for="album in albums" :key="album.id" class="mb-1">
-						<a class="text-sm text-primary-500 cursor-pointer hover:underline" @click="navigateToAlbum(album.id)">
-							{{ album.title }}
-						</a>
-					</li>
-				</ul>
-
-				<!-- Exif stuff -->
-				<template v-if="photoStore.photo.precomputed.has_exif">
-					<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
-						{{ $t("gallery.photo.details.exif_data") }}
-					</h2>
-					<div class="flex flex-wrap text-muted gap-y-0.5">
-						<div v-if="photoStore.photo.preformatted.model" class="flex w-full gap-2 items-center">
-							<UTooltip :text="$t('gallery.photo.details.type')">
-								<img src="../../../../img/icons/camera.png" class="dark:invert opacity-50 w-6 h-6" />
-							</UTooltip>
-							<span class="text-sm">{{ cameraModel }}</span>
-						</div>
-						<div v-if="photoStore.photo.preformatted.lens" class="flex w-full gap-2 mb-2">
-							<UTooltip :text="$t('gallery.photo.details.lens')">
-								<img src="../../../../img/icons/lens.png" class="dark:invert opacity-50 w-6 h-6" />
-							</UTooltip>
-							<span class="text-sm">{{ photoStore.photo.preformatted.lens }}</span>
-						</div>
-						<div class="flex w-1/2 gap-2 items-center">
-							<UTooltip :text="$t('gallery.photo.details.aperture')">
-								<MiniIcon icon="aperture" class="h-4 w-6" />
-							</UTooltip>
-							<span>ƒ / {{ photoStore.photo.preformatted.aperture }}</span>
-						</div>
-						<div class="flex w-1/2 gap-2 items-center">
-							<UTooltip :text="$t('gallery.photo.details.focal')">
-								<img src="../../../../img/icons/focal.png" class="dark:invert opacity-50 w-6 h-5" />
-							</UTooltip>
-							<span class="text-sm" dir="ltr">{{ photoStore.photo.preformatted.focal }}</span>
-						</div>
-						<div class="flex w-1/2 gap-2 items-center">
-							<UTooltip :text="$t('gallery.photo.details.shutter')">
-								<UIcon name="lucide:timer" class="h-6 w-6 text-base text-center pt-0.5 text-muted" />
-							</UTooltip>
-							<span class="text-sm" dir="ltr">{{ photoStore.photo.preformatted.shutter }}</span>
-						</div>
-						<div class="flex w-1/2 gap-2 items-center">
-							<img src="../../../../img/icons/iso.png" class="dark:invert opacity-50 w-6 h-6" />
-							<span class="text-sm">{{ photoStore.photo.preformatted.iso }}</span>
-						</div>
-					</div>
-				</template>
-
-				<h2 v-if="photoStore.photo.precomputed.has_location" class="col-span-2 text-highlighted text-base font-bold mt-4 mb-1">
-					{{ $t("gallery.photo.details.location") }}
-				</h2>
-				<MapInclude
-					v-if="props.isMapVisible"
-					:latitude="photoStore.photo.precomputed.latitude"
-					:longitude="photoStore.photo.precomputed.longitude"
-				/>
-				<template v-if="photoStore.photo.precomputed.has_location">
-					<div class="flex gap-x-2 text-muted">
-						<span v-if="photoStore.photo.preformatted.latitude" class="w-full text-sm">{{ photoStore.photo.preformatted.latitude }}</span>
-						<span v-if="photoStore.photo.preformatted.longitude" class="w-full text-sm">{{
-							photoStore.photo.preformatted.longitude
-						}}</span>
-						<span v-if="photoStore.photo.preformatted.altitude" class="w-full text-sm">{{ photoStore.photo.preformatted.altitude }}</span>
-					</div>
-					<div v-if="photoStore.photo.preformatted.location" class="text-sm">
-						{{ photoStore.photo.preformatted.location }}
-					</div>
-				</template>
-
-				<template v-if="photoStore.photo.preformatted.license">
-					<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
-						{{ $t("gallery.photo.details.license") }}
-					</h2>
-					<span class="py-0.5 pl-0 text-sm text-muted">{{ photoStore.photo.preformatted.license }}</span>
-				</template>
-
-				<template v-if="photoStore.photo.statistics">
-					<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
-						{{ $t("gallery.photo.details.stats.header") }}
-					</h2>
-					<div class="flex flex-wrap text-muted text-sm gap-y-0.5">
-						<div class="w-1/2">
-							<UTooltip :text="$t('gallery.photo.details.stats.number_of_visits')">
-								<UIcon name="lucide:eye" class="mr-2" />
-							</UTooltip>
-							{{ photoStore.photo.statistics.visit_count }}
-						</div>
-						<div class="w-1/2">
-							<UTooltip :text="$t('gallery.photo.details.stats.number_of_downloads')">
-								<UIcon name="lucide:cloud-download" class="mr-2" />
-							</UTooltip>
-							{{ photoStore.photo.statistics.download_count }}
-						</div>
-						<div class="w-1/2">
-							<UTooltip :text="$t('gallery.photo.details.stats.number_of_shares')">
-								<UIcon name="lucide:share-2" class="mr-2" />
-							</UTooltip>
-							{{ photoStore.photo.statistics.shared_count }}
-						</div>
-						<div class="w-1/2">
-							<UTooltip :text="$t('gallery.photo.details.stats.number_of_favourites')">
-								<UIcon name="lucide:heart" class="mr-2" />
-							</UTooltip>
-							{{ photoStore.photo.statistics.favourite_count }}
-						</div>
-					</div>
-				</template>
-
-				<!-- Photo Rating Widget -->
-				<PhotoRatingWidget
-					v-if="photoStore.photo.rating"
-					:photo-id="photoStore.photo.id"
-					:rating="photoStore.photo.rating"
-					:key="`rating-${photoStore.photo.id}`"
-				/>
-
-				<!-- People in this photo -->
-				<template v-if="is_face_recognition_enabled && photoFaces.length > 0">
-					<h2 class="text-highlighted text-base font-bold mt-4 mb-2">
-						{{ $t("people.people_in_photo") }}
-					</h2>
-					<div class="flex gap-3 overflow-x-auto pb-1">
-						<div
-							v-for="face in photoFaces.filter((f) => !f.is_dismissed)"
-							:key="face.id"
-							class="flex flex-col items-center gap-1 shrink-0 cursor-pointer"
-							@click.exact="openFaceAssignment(face)"
-							@click.ctrl.exact.prevent="dismissFace(face)"
-							@click.meta.exact.prevent="dismissFace(face)"
-						>
-							<img
-								v-if="face.crop_url"
-								:src="face.crop_url"
-								:alt="face.person_name ?? $t('people.unknown')"
-								class="w-12 h-12 rounded-full object-cover border-2"
-								:class="{
-									'border-default': !ctrlHeld || isTouchDev,
-									'border-2 border-dashed border-red-500': ctrlHeld && !isTouchDev,
-								}"
-							/>
-							<div v-else class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border-2 border-default">
-								<UIcon name="lucide:user" class="text-xl text-muted" />
-							</div>
-							<span class="text-xs text-muted text-center max-w-14 truncate">
-								{{ face.person_name ?? "???" }}
-							</span>
-						</div>
-					</div>
-					<FaceAssignmentModal
-						v-if="faceForAssignment"
-						v-model:open="isFaceAssignmentOpen"
-						:face="faceForAssignment"
-						@assigned="onFaceUpdated"
-						@dismissed="onFaceUpdated"
-					/>
-				</template>
-
-				<LinksInclude v-if="is_details_links_enabled" />
+		<!-- Albums stuff -->
+		<div>
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.albums") }}
+			</h2>
+			<div v-if="albums_loading" class="flex items-center gap-2 text-muted text-sm">
+				<LycheeLoadingIcon fast class="text-lg" />
+				<span>{{ $t("gallery.photo.details.albums_loading") }}</span>
 			</div>
-		</UCard>
-	</aside>
+			<div v-else-if="albums_error" class="text-sm text-muted">
+				<UIcon name="lucide:triangle-alert" class="mr-1" />
+				{{ $t("gallery.photo.details.albums_loading_error") }}
+			</div>
+			<div v-else-if="albums.length === 0" class="text-sm text-muted">
+				{{ $t("gallery.photo.details.no_albums") }}
+			</div>
+			<ul v-else class="list-none p-0 m-0">
+				<li v-for="album in albums" :key="album.id" class="mb-1">
+					<a class="text-sm text-primary-500 cursor-pointer hover:underline" @click="navigateToAlbum(album.id)">
+						{{ album.title }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Exif stuff -->
+		<div v-if="photoStore.photo!.precomputed.has_exif">
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.exif_data") }}
+			</h2>
+			<div class="flex flex-wrap text-muted gap-y-0.5">
+				<div v-if="photoStore.photo!.preformatted.model" class="flex w-full gap-2 items-center">
+					<UTooltip :text="$t('gallery.photo.details.type')">
+						<img src="../../../../img/icons/camera.png" class="dark:invert opacity-50 w-6 h-6" />
+					</UTooltip>
+					<span class="text-sm">{{ cameraModel }}</span>
+				</div>
+				<div v-if="photoStore.photo!.preformatted.lens" class="flex w-full gap-2 mb-2">
+					<UTooltip :text="$t('gallery.photo.details.lens')">
+						<img src="../../../../img/icons/lens.png" class="dark:invert opacity-50 w-6 h-6" />
+					</UTooltip>
+					<span class="text-sm">{{ photoStore.photo!.preformatted.lens }}</span>
+				</div>
+				<div class="flex w-1/2 gap-2 items-center">
+					<UTooltip :text="$t('gallery.photo.details.aperture')">
+						<MiniIcon icon="aperture" class="h-4 w-6" />
+					</UTooltip>
+					<span>ƒ / {{ photoStore.photo!.preformatted.aperture }}</span>
+				</div>
+				<div class="flex w-1/2 gap-2 items-center">
+					<UTooltip :text="$t('gallery.photo.details.focal')">
+						<img src="../../../../img/icons/focal.png" class="dark:invert opacity-50 w-6 h-5" />
+					</UTooltip>
+					<span class="text-sm" dir="ltr">{{ photoStore.photo!.preformatted.focal }}</span>
+				</div>
+				<div class="flex w-1/2 gap-2 items-center">
+					<UTooltip :text="$t('gallery.photo.details.shutter')">
+						<UIcon name="lucide:timer" class="h-6 w-6 text-base text-center pt-0.5 text-muted" />
+					</UTooltip>
+					<span class="text-sm" dir="ltr">{{ photoStore.photo!.preformatted.shutter }}</span>
+				</div>
+				<div class="flex w-1/2 gap-2 items-center">
+					<img src="../../../../img/icons/iso.png" class="dark:invert opacity-50 w-6 h-6" />
+					<span class="text-sm">{{ photoStore.photo!.preformatted.iso }}</span>
+				</div>
+			</div>
+		</div>
+
+		<div>
+			<h2 v-if="photoStore.photo!.precomputed.has_location" class="col-span-2 text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.location") }}
+			</h2>
+			<MapInclude
+				v-if="props.isMapVisible"
+				:latitude="photoStore.photo!.precomputed.latitude"
+				:longitude="photoStore.photo!.precomputed.longitude"
+			/>
+			<template v-if="photoStore.photo!.precomputed.has_location">
+				<div class="flex gap-x-2 text-muted">
+					<span v-if="photoStore.photo!.preformatted.latitude" class="w-full text-sm">{{ photoStore.photo!.preformatted.latitude }}</span>
+					<span v-if="photoStore.photo!.preformatted.longitude" class="w-full text-sm">{{ photoStore.photo!.preformatted.longitude }}</span>
+					<span v-if="photoStore.photo!.preformatted.altitude" class="w-full text-sm">{{ photoStore.photo!.preformatted.altitude }}</span>
+				</div>
+				<div v-if="photoStore.photo!.preformatted.location" class="text-sm">
+					{{ photoStore.photo!.preformatted.location }}
+				</div>
+			</template>
+		</div>
+
+		<div v-if="photoStore.photo!.preformatted.license">
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.license") }}
+			</h2>
+			<span class="py-0.5 pl-0 text-sm text-muted">{{ photoStore.photo!.preformatted.license }}</span>
+		</div>
+
+		<div v-if="photoStore.photo!.statistics">
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
+				{{ $t("gallery.photo.details.stats.header") }}
+			</h2>
+			<div class="flex flex-wrap text-muted text-sm gap-y-0.5">
+				<div class="w-1/2">
+					<UTooltip :text="$t('gallery.photo.details.stats.number_of_visits')">
+						<UIcon name="lucide:eye" class="mr-2" />
+					</UTooltip>
+					{{ photoStore.photo!.statistics.visit_count }}
+				</div>
+				<div class="w-1/2">
+					<UTooltip :text="$t('gallery.photo.details.stats.number_of_downloads')">
+						<UIcon name="lucide:cloud-download" class="mr-2" />
+					</UTooltip>
+					{{ photoStore.photo!.statistics.download_count }}
+				</div>
+				<div class="w-1/2">
+					<UTooltip :text="$t('gallery.photo.details.stats.number_of_shares')">
+						<UIcon name="lucide:share-2" class="mr-2" />
+					</UTooltip>
+					{{ photoStore.photo!.statistics.shared_count }}
+				</div>
+				<div class="w-1/2">
+					<UTooltip :text="$t('gallery.photo.details.stats.number_of_favourites')">
+						<UIcon name="lucide:heart" class="mr-2" />
+					</UTooltip>
+					{{ photoStore.photo!.statistics.favourite_count }}
+				</div>
+			</div>
+		</div>
+
+		<!-- Photo Rating Widget -->
+		<PhotoRatingWidget
+			v-if="photoStore.photo!.rating"
+			:photo-id="photoStore.photo!.id"
+			:rating="photoStore.photo!.rating"
+			:key="`rating-${photoStore.photo!.id}`"
+		/>
+
+		<!-- People in this photo -->
+		<div v-if="is_face_recognition_enabled && photoFaces.length > 0">
+			<h2 class="text-highlighted text-base font-bold mt-4 mb-2">
+				{{ $t("people.people_in_photo") }}
+			</h2>
+			<div class="flex gap-3 overflow-x-auto pb-1">
+				<div
+					v-for="face in photoFaces.filter((f) => !f.is_dismissed)"
+					:key="face.id"
+					class="flex flex-col items-center gap-1 shrink-0 cursor-pointer"
+					@click.exact="openFaceAssignment(face)"
+					@click.ctrl.exact.prevent="dismissFace(face)"
+					@click.meta.exact.prevent="dismissFace(face)"
+				>
+					<img
+						v-if="face.crop_url"
+						:src="face.crop_url"
+						:alt="face.person_name ?? $t('people.unknown')"
+						class="w-12 h-12 rounded-full object-cover border-2"
+						:class="{
+							'border-default': !ctrlHeld || isTouchDev,
+							'border-2 border-dashed border-red-500': ctrlHeld && !isTouchDev,
+						}"
+					/>
+					<div v-else class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border-2 border-default">
+						<UIcon name="lucide:user" class="text-xl text-muted" />
+					</div>
+					<span class="text-xs text-muted text-center max-w-14 truncate">
+						{{ face.person_name ?? "???" }}
+					</span>
+				</div>
+			</div>
+			<FaceAssignmentModal
+				v-if="faceForAssignment"
+				v-model:open="isFaceAssignmentOpen"
+				:face="faceForAssignment"
+				@assigned="onFaceUpdated"
+				@dismissed="onFaceUpdated"
+			/>
+		</div>
+
+		<LinksInclude v-if="is_details_links_enabled" />
+	</USidebar>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch, onMounted, computed, onUnmounted } from "vue";
+import { ref, watch, onMounted, computed, onUnmounted } from "vue";
 import MapInclude from "@/v8/components/gallery/photoModule/MapInclude.vue";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
@@ -298,6 +298,7 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useUserStore } from "@/stores/UserState";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 const photoStore = usePhotoStore();
 const router = useRouter();
@@ -305,13 +306,15 @@ const togglableStore = useTogglablesStateStore();
 const toast = useAppToast();
 const isTouchDev = isTouchDevice();
 const userStore = useUserStore();
+const { isLTR } = useLtRorRtL();
 
 const props = defineProps<{
 	isMapVisible: boolean;
 }>();
 
-const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<boolean>;
+const { are_details_open, is_full_screen } = storeToRefs(togglableStore);
 
+are_details_open.value = false;
 const lycheeState = useLycheeStateStore();
 const { is_details_links_enabled, is_face_recognition_enabled } = storeToRefs(lycheeState);
 
@@ -367,7 +370,7 @@ function navigateToAlbum(album_id: string) {
 }
 
 watch(
-	[areDetailsOpen, () => photoStore.photo?.id],
+	[are_details_open, () => photoStore.photo?.id],
 	([is_open, photo_id]) => {
 		if (is_open && photo_id !== undefined && photo_id !== null) {
 			fetchAlbums(photo_id);
