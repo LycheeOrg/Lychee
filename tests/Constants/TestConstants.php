@@ -49,6 +49,7 @@ class TestConstants
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
 	public const SAMPLE_FILE_PDF_OVERSIZED_MEDIABOX = 'tests/Samples/pdf_oversized_mediabox.pdf';
 	public const SAMPLE_FILE_PDF_DISPROPORTIONATE_MEDIABOX = 'tests/Samples/pdf_disproportionate_mediabox.pdf';
+	public const SAMPLE_FILE_PDF_DECOY_MEDIABOX = 'tests/Samples/pdf_decoy_mediabox.pdf';
 	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
 	public const SAMPLE_FILE_SUNSET_IMAGE = 'tests/Samples/fin de journée.jpg';
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
@@ -81,6 +82,7 @@ class TestConstants
 		self::SAMPLE_FILE_PDF => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PDF_OVERSIZED_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PDF_DISPROPORTIONATE_MEDIABOX => self::MIME_TYPE_APP_PDF,
+		self::SAMPLE_FILE_PDF_DECOY_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
 		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
