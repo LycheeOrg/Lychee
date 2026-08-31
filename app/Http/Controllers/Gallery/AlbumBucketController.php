@@ -20,9 +20,9 @@ use App\Policies\AlbumQueryPolicy;
 use App\Services\AlbumBucketComputer;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
-use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use function Safe\mktime;
 
 /**
  * Serves `GET /api/v3/Albums/{album_id}/children/buckets` (Feature 061,
@@ -116,7 +116,7 @@ class AlbumBucketController extends Controller
 			(request()->configs()->getValueAsEnum('title_bucket_mode', TitleBucketMode::class) ?? TitleBucketMode::DATE_PREFIX) === TitleBucketMode::ALPHABETICAL;
 
 		if ($is_alphabetical_title) {
-			// Already human-readable; never Carbon-parsed.
+			// Already human-readable; never date-parsed.
 			return $bucket_ids;
 		}
 
@@ -129,8 +129,30 @@ class AlbumBucketController extends Controller
 		};
 
 		return array_map(
-			fn (string $bucket_id): string => $bucket_id === 'unknown' ? 'unknown' : Carbon::parse($bucket_id)->format($format),
+			fn (string $bucket_id): string => $bucket_id === 'unknown' ? 'unknown' : $this->formatBucketLabel($bucket_id, $format),
 			$bucket_ids,
 		);
+	}
+
+	/**
+	 * Formats one `bucket_id` (`"Y"`/`"Y-m"`/`"Y-m-d"`, the exact truncation
+	 * format {@see AlbumBucketComputer::truncateDate()} writes) against an
+	 * arbitrary admin-configured PHP `date()` format string — via `mktime()` +
+	 * `date()`, not a `Carbon`/`DateTime` object: those two procedural calls
+	 * are the whole job (no object allocation, no timezone-object machinery),
+	 * cheaper at this call volume than instantiating a Carbon instance per
+	 * distinct bucket. `explode('-', ...)` splits the known-fixed format
+	 * directly — no date-parsing ambiguity to worry about (unlike
+	 * `Carbon::parse()`, which misreads a bare 4-digit string as a time, not a
+	 * year), since we already know exactly which components are present.
+	 */
+	private function formatBucketLabel(string $bucket_id, string $format): string
+	{
+		$parts = explode('-', $bucket_id);
+		$year = (int) $parts[0];
+		$month = (int) ($parts[1] ?? 1);
+		$day = (int) ($parts[2] ?? 1);
+
+		return date($format, mktime(0, 0, 0, $month, $day, $year));
 	}
 }

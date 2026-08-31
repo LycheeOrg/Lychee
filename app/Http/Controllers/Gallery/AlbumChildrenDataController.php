@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Serves `GET /api/v3/Albums/{album_id}/children` (Feature 061,
@@ -163,6 +164,29 @@ class AlbumChildrenDataController extends Controller
 	 */
 	private function fetch(Builder $query, ?User $user): AlbumChildrenDataResource
 	{
+		// Feature 061 (FR-061-27): the album's own public/anonymous grant,
+		// independent of the requesting viewer — distinct from
+		// computed_access_permissions above, which reflects the *viewer's*
+		// effective access. A unique index on
+		// (base_album_id, user_id_unique_key, user_group_id_unique_key)
+		// guarantees at most one such row per album, so this left join can
+		// never fan out the result set. Joined via a narrow-column subquery
+		// (mirrors joinBaseAlbumOwnerId()/joinSubComputedAccessPermissions()'s
+		// own convention), not a raw table join — access_permissions carries
+		// its own created_at/updated_at columns that would otherwise collide
+		// with SortingDecorator's unqualified `ORDER BY created_at`.
+		$query->joinSub(
+			query: DB::table('access_permissions')
+				->select(['base_album_id', 'is_link_required'])
+				->whereNull('user_id')
+				->whereNull('user_group_id'),
+			as: 'public_access_permissions',
+			first: 'public_access_permissions.base_album_id',
+			operator: '=',
+			second: 'albums.id',
+			type: 'left'
+		);
+
 		$rows = $query
 			->select([
 				'albums.id',
@@ -174,6 +198,9 @@ class AlbumChildrenDataController extends Controller
 				'albums.bucket_id',
 				'computed_access_permissions.password',
 				'base_albums.is_nsfw',
+				'base_albums.is_pinned',
+				'public_access_permissions.base_album_id as public_grant_id',
+				'public_access_permissions.is_link_required as public_is_link_required',
 				'albums.num_children',
 				'albums.num_photos',
 				'base_albums.created_at',
@@ -188,7 +215,7 @@ class AlbumChildrenDataController extends Controller
 	}
 
 	/**
-	 * @param Collection<int,object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}> $rows
+	 * @param Collection<int,object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}> $rows
 	 */
 	private function toResource(Collection $rows, ?User $user): AlbumChildrenDataResource
 	{
@@ -199,6 +226,9 @@ class AlbumChildrenDataController extends Controller
 		$bucket_ids = [];
 		$is_password_requireds = [];
 		$is_nsfws = [];
+		$is_pinneds = [];
+		$is_publics = [];
+		$is_link_requireds = [];
 		$has_subalbums = [];
 		$num_photos = [];
 		$num_subalbums = [];
@@ -214,6 +244,9 @@ class AlbumChildrenDataController extends Controller
 			$bucket_ids[] = $row->bucket_id ?? 'unknown';
 			$is_password_requireds[] = $row->password !== null;
 			$is_nsfws[] = filter_var($row->is_nsfw, FILTER_VALIDATE_BOOLEAN);
+			$is_pinneds[] = filter_var($row->is_pinned, FILTER_VALIDATE_BOOLEAN);
+			$is_publics[] = $row->public_grant_id !== null;
+			$is_link_requireds[] = filter_var($row->public_is_link_required, FILTER_VALIDATE_BOOLEAN);
 			$has_subalbums[] = ((int) $row->num_children) > 0;
 			$num_photos[] = (int) $row->num_photos;
 			$num_subalbums[] = (int) $row->num_children;
@@ -230,6 +263,9 @@ class AlbumChildrenDataController extends Controller
 			bucket_ids: $bucket_ids,
 			is_password_requireds: $is_password_requireds,
 			is_nsfws: $is_nsfws,
+			is_pinneds: $is_pinneds,
+			is_publics: $is_publics,
+			is_link_requireds: $is_link_requireds,
 			has_subalbums: $has_subalbums,
 			num_photos: $num_photos,
 			num_subalbums: $num_subalbums,
