@@ -21,12 +21,11 @@ use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
-use Imagick;
 use function Safe\fclose;
 use function Safe\filesize;
 use function Safe\fopen;
 use function Safe\fread;
-use function Safe\preg_match_all;
+use function Safe\preg_match;
 use function Safe\rename;
 use function Safe\stream_copy_to_stream;
 use function Safe\tempnam;
@@ -61,6 +60,16 @@ class ImagickHandler extends BaseImageHandler
 
 	/** Number of leading bytes scanned for a `/MediaBox` entry; ample for the first page object of any real-world PDF. */
 	private const MEDIABOX_SCAN_LIMIT = 1_048_576;
+
+	/**
+	 * Maximum number of `/MediaBox` occurrences inspected within the scanned window.
+	 *
+	 * A real-world PDF, however large, has no reason to contain more than a
+	 * handful of raw `/MediaBox` tokens in its first {@see MEDIABOX_SCAN_LIMIT}
+	 * bytes. This bounds the cost of scanning a crafted file that packs the
+	 * pattern back-to-back purely to make this guard itself expensive.
+	 */
+	private const MAX_MEDIABOX_MATCHES = 25;
 
 	/** @var \Imagick|null the internal Imagick image */
 	private ?\Imagick $im_image = null;
@@ -190,15 +199,17 @@ class ImagickHandler extends BaseImageHandler
 			fclose($handle);
 		}
 
-		if (preg_match_all('/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/', $head, $all_matches, PREG_SET_ORDER) === 0) {
-			return;
-		}
-
+		$pattern = '/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/';
 		$filesize = filesize($pdf_path);
+		$offset = 0;
 
-		foreach ($all_matches as $matches) {
-			$width = abs((float) $matches[3] - (float) $matches[1]);
-			$height = abs((float) $matches[4] - (float) $matches[2]);
+		for ($seen = 0; $seen < self::MAX_MEDIABOX_MATCHES; $seen++) {
+			if (preg_match($pattern, $head, $matches, PREG_OFFSET_CAPTURE, $offset) !== 1) {
+				return;
+			}
+
+			$width = abs((float) $matches[3][0] - (float) $matches[1][0]);
+			$height = abs((float) $matches[4][0] - (float) $matches[2][0]);
 
 			if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
 				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
@@ -209,7 +220,12 @@ class ImagickHandler extends BaseImageHandler
 			if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
 				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
 			}
+
+			// Resume scanning right after this match to find the next occurrence.
+			$offset = $matches[0][1] + \strlen($matches[0][0]);
 		}
+
+		throw new MediaFileUnsupportedException(\sprintf('PDF declares more than %d `/MediaBox` occurrences within the first %d bytes', self::MAX_MEDIABOX_MATCHES, self::MEDIABOX_SCAN_LIMIT));
 	}
 
 	/**
