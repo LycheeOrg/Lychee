@@ -224,6 +224,27 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$response->assertJson(['bucket_ids' => ['2024-03'], 'labels' => ['March 2024']]);
 	}
 
+	/**
+	 * A bare 4-digit bucket_id ("2020") is ambiguous to PHP's date parser —
+	 * Carbon::parse('2020') reads it as the time 20:20 on *today's* date, not
+	 * the year 2020, silently returning today's year for every YEAR-granularity
+	 * label. The fixture year is deliberately far from "now" so this doesn't
+	 * pass by coincidence.
+	 */
+	public function testYearGranularityLabelsUseTheBucketsOwnYearNotToday(): void
+	{
+		$this->setInstanceDefaults('year');
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::ASC);
+		$parent->save();
+		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2005-06-01')]);
+		$this->recompute($child);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2005'], 'labels' => ['2005']]);
+	}
+
 	public function testAlphabeticalTitleLabelsAreVerbatim(): void
 	{
 		DB::table('configs')->where('key', '=', 'title_bucket_mode')->update(['value' => 'alphabetical']);
@@ -241,7 +262,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$response->assertJson(['bucket_ids' => ['z'], 'labels' => ['z']]);
 	}
 
-	public function testUnknownEntryLabelIsLiteralStringNotCarbonParsed(): void
+	public function testUnknownEntryLabelIsLiteralStringNotDateParsed(): void
 	{
 		$this->setInstanceDefaults('year');
 		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();

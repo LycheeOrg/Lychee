@@ -529,6 +529,8 @@ declare namespace App {
 					is_nsfw_warning_visible: boolean;
 					is_breadcrumb_enabled: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
+					date_format_album_thumb: string;
+					thumb_min_max_order: App.Enum.DateOrderingType;
 					photo_layout: App.Enum.PhotoLayoutType;
 					is_album_timeline_enabled: boolean;
 					is_photo_timeline_enabled: boolean;
@@ -745,6 +747,8 @@ declare namespace App {
 					is_search_accessible: boolean;
 					show_keybinding_help_button: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
+					date_format_album_thumb: string;
+					thumb_min_max_order: App.Enum.DateOrderingType;
 					back_button_enabled: boolean;
 					back_button_text: string;
 					back_button_url: string;
