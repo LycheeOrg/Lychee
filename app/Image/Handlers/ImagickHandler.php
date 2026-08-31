@@ -26,7 +26,7 @@ use function Safe\fclose;
 use function Safe\filesize;
 use function Safe\fopen;
 use function Safe\fread;
-use function Safe\preg_match;
+use function Safe\preg_match_all;
 use function Safe\rename;
 use function Safe\stream_copy_to_stream;
 use function Safe\tempnam;
@@ -163,8 +163,7 @@ class ImagickHandler extends BaseImageHandler
 	}
 
 	/**
-	 * Rejects PDFs whose first page declares a `/MediaBox` larger than we're willing
-	 * to rasterize.
+	 * Rejects PDFs that declare a `/MediaBox` larger than we're willing to rasterize.
 	 *
 	 * A crafted PDF can declare an enormous page size while remaining tiny on disk
 	 * (a few hundred bytes). Ghostscript will still attempt to rasterize such a page
@@ -174,6 +173,11 @@ class ImagickHandler extends BaseImageHandler
 	 * handing the file to Ghostscript; it does not replace the resource policy
 	 * itself, and legitimate PDFs without a plainly readable `/MediaBox` are passed
 	 * through unchanged.
+	 *
+	 * Every `/MediaBox` occurrence in the scanned window is checked, not just the
+	 * first: a crafted file could otherwise place a small, easily-matched decoy
+	 * `/MediaBox` (e.g. inside a PDF comment) ahead of the real, oversized one used
+	 * to render the first page.
 	 *
 	 * @throws MediaFileUnsupportedException
 	 */
@@ -186,22 +190,25 @@ class ImagickHandler extends BaseImageHandler
 			fclose($handle);
 		}
 
-		if (preg_match('/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/', $head, $matches) !== 1) {
+		if (preg_match_all('/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/', $head, $all_matches, PREG_SET_ORDER) === 0) {
 			return;
 		}
 
-		$width = abs((float) $matches[3] - (float) $matches[1]);
-		$height = abs((float) $matches[4] - (float) $matches[2]);
-
-		if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
-			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
-		}
-
 		$filesize = filesize($pdf_path);
-		$area_per_byte = ($width * $height) / $filesize;
 
-		if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
-			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
+		foreach ($all_matches as $matches) {
+			$width = abs((float) $matches[3] - (float) $matches[1]);
+			$height = abs((float) $matches[4] - (float) $matches[2]);
+
+			if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
+				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
+			}
+
+			$area_per_byte = ($width * $height) / $filesize;
+
+			if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
+				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
+			}
 		}
 	}
 
