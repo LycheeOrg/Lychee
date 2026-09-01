@@ -43,13 +43,13 @@
 	"dependencies": {
 		"@dayflow/blossom-color-picker-vue": "^1.2.1",
 		"@fortawesome/fontawesome-free": "^7.3.1",
-		"@iconify-json/lucide": "^1.2.123",
+		"@iconify-json/lucide": "^1.2.126",
 		"@lychee-org/layouts": "^0.1.0",
 		"@lychee-org/nested-set-checker-wasm": "^2.0.0",
 		"@lychee-org/zxcvbn-wasm": "^1.0.1",
 		"@mollie/api-client": "^4.5.0",
 		"@nuxt/ui": "^4.10.0",
-		"@paypal/paypal-js": "^10.1.0",
+		"@paypal/paypal-js": "^11.0.0",
 		"@primeuix/themes": "^3.0.0",
 		"@sidsbrmnn/scrollspy": "^1.1.0",
 		"@stripe/stripe-js": "^9.13.0",
@@ -59,7 +59,7 @@
 		"@vitejs/plugin-vue": "^6.0.8",
 		"@vueuse/components": "^14.4.0",
 		"@vueuse/core": "^14.4.0",
-		"axios": "^1.19.0",
+		"axios": "^1.20.0",
 		"axios-cache-interceptor": "^1.12.3",
 		"image-focus": "^1.2.1",
 		"justified-layout": "^4.1.0",
@@ -83,10 +83,10 @@
 		"typescript": "^6.0",
 		"vite": "^8.2.1",
 		"vite-plugin-commonjs": "^0.10.4",
-		"vue": "^3.5.41",
+		"vue": "^3.5.42",
 		"vue-collapsed": "^1.3.3",
-		"vue-i18n": "^11.4.8",
-		"vue-router": "^5.2.0"
+		"vue-i18n": "^11.4.10",
+		"vue-router": "^5.3.0"
 	},
 	"optionalDependencies": {
 		"@tailwindcss/oxide-linux-arm64-gnu": "^4.3.3",
