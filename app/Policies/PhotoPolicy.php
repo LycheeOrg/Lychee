@@ -140,11 +140,20 @@ class PhotoPolicy extends BasePolicy
 		// Make IDs unique as otherwise count will fail.
 		$photo_ids = array_unique($photo_ids);
 
+		// If there are any photos which are not validated at this point, we fail.
+		if (
+			Photo::query()
+			->whereIn('id', $photo_ids)
+			->where('is_validated', false)
+			->count() > 0
+		) {
+			return false;
+		}
+
 		if (
 			$user->may_upload &&
 			Photo::query()
 			->whereIn('id', $photo_ids)
-			->where('is_validated', true)
 			->where('owner_id', $user->id)
 			->count() === count($photo_ids)
 		) {
