@@ -51,8 +51,8 @@ class WebAuthnLoginController extends Controller
 		//
 		// Yubikey 4 requires the use of username or passwords.
 		if (
-			($username !== null || $user_id !== null)
-			&& !User::where('id', $user_id)->orWhere('username', $username)->exists()
+			($username !== null || $user_id !== null) &&
+			!User::where('id', $user_id)->orWhere('username', $username)->exists()
 		) {
 			return $this->generateFakeResponse();
 		}
@@ -65,21 +65,22 @@ class WebAuthnLoginController extends Controller
 	 */
 	private function generateFakeResponse(): Responsable
 	{
-		return new class implements Responsable {
-			function toResponse($request): \Symfony\Component\HttpFoundation\Response {
+		return new class() implements Responsable {
+			public function toResponse($request): \Symfony\Component\HttpFoundation\Response
+			{
 				$count = random_int(1, 3);
 				$credentials = [];
 				for ($i = 0; $i < $count; $i++) {
 					$credentials[] = [
-						"id" => strtr(base64_encode(random_bytes(96)), '+/', '-_'),
-						"type" => "public-key",
+						'id' => strtr(base64_encode(random_bytes(96)), '+/', '-_'),
+						'type' => 'public-key',
 					];
 				}
 
 				return response()->json([
-					"timeout" => 60000,
-					"allowCredentials" => $credentials,
-					"challenge" => strtr(base64_encode(random_bytes(18)), '+/', '-_'),
+					'timeout' => 60000,
+					'allowCredentials' => $credentials,
+					'challenge' => strtr(base64_encode(random_bytes(18)), '+/', '-_'),
 				]);
 			}
 		};
