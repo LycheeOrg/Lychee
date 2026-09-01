@@ -127,6 +127,37 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 	}
 
 	/**
+	 * Tests that a PDF is still rejected when its oversized `/MediaBox` is
+	 * preceded by a small, easily-matched decoy `/MediaBox` inside a PDF
+	 * comment.
+	 *
+	 * The guard scans raw bytes rather than parsing PDF structure, so a
+	 * crafted file could place a harmless-looking `/MediaBox` ahead of the
+	 * real one used to render the first page, hoping a scanner that only
+	 * inspects the first occurrence would validate against the decoy and let
+	 * the real, oversized page through to Ghostscript. This confirms every
+	 * `/MediaBox` occurrence in the scanned window is checked, not just the
+	 * first.
+	 *
+	 * @return void
+	 */
+	public function testDecoyMediaBoxIsRejected(): void
+	{
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
+
+		$started_at = microtime(true);
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF_DECOY_MEDIABOX);
+		$elapsed = microtime(true) - $started_at;
+
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertNull($photo['size_variants']['thumb']);
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+		self::assertLessThan(10, $elapsed);
+	}
+
+	/**
 	 * Tests uploading of an accepted TIFF.
 	 *
 	 * As Imagick supports TIFFs, we also expect generated thumbnail.

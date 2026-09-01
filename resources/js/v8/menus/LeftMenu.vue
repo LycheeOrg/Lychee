@@ -1,5 +1,11 @@
 <template>
-	<USlideover v-model:open="left_menu_open" :side="isLTR() ? 'left' : 'right'">
+	<USlideover
+		v-model:open="left_menu_open"
+		:side="isLTR() ? 'left' : 'right'"
+		:ui="{
+			content: 'max-w-xs',
+		}"
+	>
 		<template #header>
 			<div v-if="user?.id === null">
 				<RouterLink :to="{ name: 'login' }" class="flex items-center gap-2 text-muted hover:text-primary">

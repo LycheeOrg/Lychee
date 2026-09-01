@@ -21,7 +21,6 @@ use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
-use Imagick;
 use function Safe\fclose;
 use function Safe\filesize;
 use function Safe\fopen;
@@ -61,6 +60,16 @@ class ImagickHandler extends BaseImageHandler
 
 	/** Number of leading bytes scanned for a `/MediaBox` entry; ample for the first page object of any real-world PDF. */
 	private const MEDIABOX_SCAN_LIMIT = 1_048_576;
+
+	/**
+	 * Maximum number of `/MediaBox` occurrences inspected within the scanned window.
+	 *
+	 * A real-world PDF, however large, has no reason to contain more than a
+	 * handful of raw `/MediaBox` tokens in its first {@see MEDIABOX_SCAN_LIMIT}
+	 * bytes. This bounds the cost of scanning a crafted file that packs the
+	 * pattern back-to-back purely to make this guard itself expensive.
+	 */
+	private const MAX_MEDIABOX_MATCHES = 25;
 
 	/** @var \Imagick|null the internal Imagick image */
 	private ?\Imagick $im_image = null;
@@ -163,8 +172,7 @@ class ImagickHandler extends BaseImageHandler
 	}
 
 	/**
-	 * Rejects PDFs whose first page declares a `/MediaBox` larger than we're willing
-	 * to rasterize.
+	 * Rejects PDFs that declare a `/MediaBox` larger than we're willing to rasterize.
 	 *
 	 * A crafted PDF can declare an enormous page size while remaining tiny on disk
 	 * (a few hundred bytes). Ghostscript will still attempt to rasterize such a page
@@ -174,6 +182,11 @@ class ImagickHandler extends BaseImageHandler
 	 * handing the file to Ghostscript; it does not replace the resource policy
 	 * itself, and legitimate PDFs without a plainly readable `/MediaBox` are passed
 	 * through unchanged.
+	 *
+	 * Every `/MediaBox` occurrence in the scanned window is checked, not just the
+	 * first: a crafted file could otherwise place a small, easily-matched decoy
+	 * `/MediaBox` (e.g. inside a PDF comment) ahead of the real, oversized one used
+	 * to render the first page.
 	 *
 	 * @throws MediaFileUnsupportedException
 	 */
@@ -186,23 +199,33 @@ class ImagickHandler extends BaseImageHandler
 			fclose($handle);
 		}
 
-		if (preg_match('/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/', $head, $matches) !== 1) {
-			return;
-		}
-
-		$width = abs((float) $matches[3] - (float) $matches[1]);
-		$height = abs((float) $matches[4] - (float) $matches[2]);
-
-		if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
-			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
-		}
-
+		$pattern = '/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/';
 		$filesize = filesize($pdf_path);
-		$area_per_byte = ($width * $height) / $filesize;
+		$offset = 0;
 
-		if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
-			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
+		for ($seen = 0; $seen < self::MAX_MEDIABOX_MATCHES; $seen++) {
+			if (preg_match($pattern, $head, $matches, PREG_OFFSET_CAPTURE, $offset) !== 1) {
+				return;
+			}
+
+			$width = abs((float) $matches[3][0] - (float) $matches[1][0]);
+			$height = abs((float) $matches[4][0] - (float) $matches[2][0]);
+
+			if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
+				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
+			}
+
+			$area_per_byte = ($width * $height) / $filesize;
+
+			if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
+				throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
+			}
+
+			// Resume scanning right after this match to find the next occurrence.
+			$offset = $matches[0][1] + \strlen($matches[0][0]);
 		}
+
+		throw new MediaFileUnsupportedException(\sprintf('PDF declares more than %d `/MediaBox` occurrences within the first %d bytes', self::MAX_MEDIABOX_MATCHES, self::MEDIABOX_SCAN_LIMIT));
 	}
 
 	/**
