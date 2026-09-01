@@ -115,6 +115,9 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canEdit(User $user, Photo $photo)
 	{
+		if ($photo->is_validated !== true) {
+			return false;
+		}
 		if ($this->isOwner($user, $photo)) {
 			return true;
 		}
@@ -141,6 +144,7 @@ class PhotoPolicy extends BasePolicy
 			$user->may_upload &&
 			Photo::query()
 			->whereIn('id', $photo_ids)
+			->where('is_validated', true)
 			->where('owner_id', $user->id)
 			->count() === count($photo_ids)
 		) {
