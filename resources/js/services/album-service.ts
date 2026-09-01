@@ -85,6 +85,7 @@ export type UpdateProtectionPolicyData = {
 	is_nsfw: boolean;
 	grants_download: boolean;
 	grants_full_photo_access: boolean;
+	grants_cover_access: boolean;
 	grants_upload: boolean;
 };
 

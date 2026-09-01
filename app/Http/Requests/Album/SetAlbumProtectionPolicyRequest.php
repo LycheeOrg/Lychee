@@ -57,6 +57,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			RequestAttribute::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
+			RequestAttribute::GRANTS_COVER_ACCESS_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 		];
 	}
@@ -74,6 +75,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			is_link_required: static::toBoolean($values[RequestAttribute::IS_LINK_REQUIRED_ATTRIBUTE]),
 			is_nsfw: static::toBoolean($values[RequestAttribute::IS_NSFW_ATTRIBUTE]),
 			grants_full_photo_access: static::toBoolean($values[RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
+			grants_cover_access: static::toBoolean($values[RequestAttribute::GRANTS_COVER_ACCESS_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),
 			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),
 		);

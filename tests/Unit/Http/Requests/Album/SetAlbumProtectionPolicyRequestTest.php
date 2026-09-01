@@ -48,8 +48,9 @@ class SetAlbumProtectionPolicyRequestTest extends BaseRequestTest
 			RequestAttribute::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
+			RequestAttribute::GRANTS_COVER_ACCESS_ATTRIBUTE => 'required|boolean',
 		];
-		$this->assertCount(count($expectedRuleMap) + 1, $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
+		$this->assertCount(count($expectedRuleMap) + 1, $rules); // only validating the first 8 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 
 		foreach ($expectedRuleMap as $key => $value) {
 			$this->assertEquals($value, $rules[$key]);

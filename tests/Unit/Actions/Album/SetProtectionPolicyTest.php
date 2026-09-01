@@ -42,6 +42,7 @@ class SetProtectionPolicyTest extends AbstractTestCase
 			is_link_required: false,
 			is_nsfw: false,
 			grants_full_photo_access: false,
+			grants_cover_access: false,
 			grants_download: false,
 			grants_upload: false,
 		);

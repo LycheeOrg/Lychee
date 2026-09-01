@@ -35,6 +35,7 @@ class AlbumProtectionPolicy extends Data
 		public bool $is_link_required,
 		public bool $is_nsfw,
 		public bool $grants_full_photo_access,
+		public bool $grants_cover_access,
 		public bool $grants_download,
 		public bool $grants_upload,
 		public bool $is_password_required = false, // Only used when sending info to the front-end
@@ -55,6 +56,7 @@ class AlbumProtectionPolicy extends Data
 			is_link_required: $base_album->public_permissions()?->is_link_required === true,
 			is_nsfw: $base_album->is_nsfw,
 			grants_full_photo_access: $base_album->public_permissions()?->grants_full_photo_access === true,
+			grants_cover_access: $base_album->public_permissions()?->grants_cover_access === true,
 			grants_download: $base_album->public_permissions()?->grants_download === true,
 			grants_upload: $base_album->public_permissions()?->grants_upload === true,
 			is_password_required: $base_album->public_permissions()?->password !== null,
@@ -75,6 +77,7 @@ class AlbumProtectionPolicy extends Data
 			is_link_required: false,
 			is_nsfw: false,
 			grants_full_photo_access: $base_smart_album->public_permissions()?->grants_full_photo_access === true,
+			grants_cover_access: $base_smart_album->public_permissions()?->grants_cover_access === true,
 			grants_download: $base_smart_album->public_permissions()?->grants_download === true,
 			grants_upload: false,
 			is_password_required: false,

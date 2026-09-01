@@ -60,8 +60,8 @@
 			<ThumbBadge v-if="showSensitiveFlag" :class="ALBUM_BADGE_BG.nsfw" icon="warning" />
 			<ThumbBadge v-if="showPublicHiddenFlag" :class="ALBUM_BADGE_BG.link" icon="eye" />
 			<ThumbBadge v-if="showPublicVisibleFlag" :class="ALBUM_BADGE_BG.success" icon="eye" />
-			<ThumbBadge v-if="showPasswordFlag && props.album.thumb === null" :class="ALBUM_BADGE_BG.link" icon="lock-locked" />
-			<ThumbBadge v-if="showPasswordFlag && props.album.thumb !== null" :class="ALBUM_BADGE_BG.danger" icon="lock-unlocked" />
+			<ThumbBadge v-if="showPasswordFlag && props.album.is_locked" :class="ALBUM_BADGE_BG.link" icon="lock-locked" />
+			<ThumbBadge v-if="showPasswordFlag && !props.album.is_locked" :class="ALBUM_BADGE_BG.danger" icon="lock-unlocked" />
 			<ThumbBadge v-if="scopeFlagsEnabled && props.album.is_tag_album" :class="ALBUM_BADGE_BG.success" icon="tags" />
 			<ThumbBadge v-if="scopeFlagsEnabled && props.album.is_person_album" :class="ALBUM_BADGE_BG.person" pi="lucide:users" />
 			<ThumbBadge

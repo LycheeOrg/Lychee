@@ -153,6 +153,8 @@ return [
         'password_prot' => 'Password protected',
         'password_prot_expl' => 'Anonymous users need a shared password to access this album.',
         'password_prop_not_compatible' => 'Response cache is conflicting with this setting.<br>Due to response caching, unlocking this album will<br>also reveal its content to other annonymous users.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Sensitive',
         'nsfw_expl' => 'Album contains sensitive content.',
         'visibility_updated' => 'Visibility updated.',
