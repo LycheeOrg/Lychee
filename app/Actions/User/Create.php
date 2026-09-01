@@ -41,6 +41,9 @@ class Create
 		if (User::query()->where('username', '=', $username)->count() !== 0) {
 			throw new ConflictingPropertyException('Username already exists');
 		}
+		if ($email !== null && User::query()->where('email', '=', $email)->count() !== 0) {
+			throw new ConflictingPropertyException('email already exists');
+		}
 		if ($quota_kb === 0) {
 			$default_bytes = $this->config_manager->getValueAsByteSize('default_user_quota');
 			$quota_kb = $default_bytes === 0 ? null : max(1, intdiv($default_bytes, 1024));

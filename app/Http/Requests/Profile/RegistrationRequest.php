@@ -47,7 +47,7 @@ class RegistrationRequest extends BaseApiRequest implements HasUsername, HasPass
 	{
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
-			RequestAttribute::EMAIL_ATTRIBUTE => ['required', 'string', 'email', 'max:255', 'unique:users'],
+			RequestAttribute::EMAIL_ATTRIBUTE => ['required', 'string', 'email', 'max:255'],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', 'confirmed', new PasswordRule(true)],
 		];
 	}
