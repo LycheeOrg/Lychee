@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Passwort geschützt',
         'password_prot_expl' => 'Anonyme Benutzer benötigen ein gemeinsames Kennwort für den Zugriff auf dieses Album.',
         'password_prop_not_compatible' => 'Der Antwort-Cache steht im Widerspruch zu dieser Einstellung.<br>Aufgrund der Zwischenspeicherung von Antworten wird die Freigabe dieses Albums auch anderen anonymen Nutzern den Inhalt offenbaren.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Sensibel',
         'nsfw_expl' => 'Das Album enthält sensible Inhalte.',
         'visibility_updated' => 'Sichtbarkeit aktualisiert.',

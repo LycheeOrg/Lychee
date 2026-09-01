@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Wachtwoord beschermd',
         'password_prot_expl' => 'Anonieme gebruikers hebben een gedeeld wachtwoord nodig om toegang te krijgen tot dit album.',
         'password_prop_not_compatible' => 'Reactie-cache conflicteert met deze instelling.<br>Vanwege reactie-caching, het ontgrendelen van dit album zal<br>ook de inhoud ervan onthullen aan andere anonieme gebruikers.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Gevoelig',
         'nsfw_expl' => 'Album bevat gevoelige inhoud.',
         'visibility_updated' => 'Zichtbaarheid bijgewerkt.',

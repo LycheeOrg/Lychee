@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Защитен с парола',
         'password_prot_expl' => 'Анонимните потребители се нуждаят от споделена парола за достъп до този албум.',
         'password_prop_not_compatible' => 'Кеширането на отговори е в конфликт с тази настройка.<br>Поради кеширането, отключването на този албум<br>ще разкрие съдържанието му и на други анонимни потребители.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Чувствително съдържание',
         'nsfw_expl' => 'Албумът съдържа чувствително съдържание.',
         'visibility_updated' => 'Видимостта е обновена.',

@@ -37,6 +37,8 @@ class ThumbAlbumResource extends Data
 	public bool $is_public;
 	public bool $is_link_required;
 	public bool $is_password_required;
+	public bool $grants_cover_access;
+	public bool $is_locked;
 
 	public bool $is_tag_album;
 	public bool $is_person_album;
@@ -87,7 +89,8 @@ class ThumbAlbumResource extends Data
 		}
 
 		$this->id = $data->get_id();
-		if ($policy->is_password_required === true && !resolve(AlbumPolicy::class)->isUnlocked($data)) {
+		$is_locked = $policy->is_password_required === true && !resolve(AlbumPolicy::class)->isUnlocked($data);
+		if ($is_locked && !$policy->grants_cover_access) {
 			$this->thumb = null;
 		} else {
 			$this->thumb = ThumbResource::fromModel($data->get_thumb());
@@ -97,6 +100,8 @@ class ThumbAlbumResource extends Data
 		$this->is_public = $policy->is_public;
 		$this->is_link_required = $policy->is_link_required;
 		$this->is_password_required = $policy->is_password_required;
+		$this->grants_cover_access = $policy->grants_cover_access;
+		$this->is_locked = $is_locked;
 
 		$this->is_pinned = $data instanceof BaseAlbum ? $data->is_pinned : false;
 

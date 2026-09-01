@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool                            $is_link_required
  * @property string|null                     $password
  * @property bool                            $grants_full_photo_access
+ * @property bool                            $grants_cover_access
  * @property bool                            $grants_download
  * @property bool                            $grants_upload
  * @property bool                            $grants_edit
@@ -51,6 +52,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsDelete($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsDownload($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsEdit($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsCoverAccess($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsFullPhotoAccess($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsUpload($value)
  * @method static AccessPermissionBuilder|AccessPermission whereId($value)
@@ -77,6 +79,7 @@ class AccessPermission extends Model
 		APC::USER_GROUP_ID => 'integer',
 		APC::IS_LINK_REQUIRED => 'boolean',
 		APC::GRANTS_FULL_PHOTO_ACCESS => 'boolean',
+		APC::GRANTS_COVER_ACCESS => 'boolean',
 		APC::GRANTS_DOWNLOAD => 'boolean',
 		APC::GRANTS_UPLOAD => 'boolean',
 		APC::GRANTS_EDIT => 'boolean',
@@ -92,6 +95,7 @@ class AccessPermission extends Model
 		APC::BASE_ALBUM_ID,
 		APC::IS_LINK_REQUIRED,
 		APC::GRANTS_FULL_PHOTO_ACCESS,
+		APC::GRANTS_COVER_ACCESS,
 		APC::GRANTS_DOWNLOAD,
 		APC::GRANTS_UPLOAD,
 		APC::GRANTS_EDIT,
@@ -161,6 +165,7 @@ class AccessPermission extends Model
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => false,
 			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_COVER_ACCESS => false,
 			APC::GRANTS_DOWNLOAD => $config_manager->getValueAsBool('grants_download'),
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,
@@ -181,6 +186,7 @@ class AccessPermission extends Model
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => true,
 			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_COVER_ACCESS => false,
 			APC::GRANTS_DOWNLOAD => $config_manager->getValueAsBool('grants_download'),
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,

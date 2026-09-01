@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Chráněné heslem',
         'password_prot_expl' => 'Nepřihlášení uživatelé musí použít heslo pro přístup.',
         'password_prop_not_compatible' => 'Toto nastavení je v rozporu s Response Cache.<br>Vzhledem k Response Cache bude odemknutí tohoto alba<br>znamenat, že jeho obsah bude viditelný i pro ostatní nepřihlášené uživatele.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Citlivé',
         'nsfw_expl' => 'Album obsahuje citlivý obsah.',
         'visibility_updated' => 'Aktualizována viditelnost.',

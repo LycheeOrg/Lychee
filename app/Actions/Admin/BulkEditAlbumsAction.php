@@ -132,6 +132,8 @@ class BulkEditAlbumsAction
 				$grants_full_photo_access = $data->has('grants_full_photo_access')
 					? ($data->grants_full_photo_access === true)
 					: ($existing?->grants_full_photo_access === true);
+				// Not currently bulk-editable; always carry over the existing value.
+				$grants_cover_access = $existing?->grants_cover_access === true;
 				$grants_download = $data->has('grants_download')
 					? ($data->grants_download === true)
 					: ($existing?->grants_download === true);
@@ -150,6 +152,7 @@ class BulkEditAlbumsAction
 					is_link_required: $is_link_required,
 					is_nsfw: $is_nsfw,
 					grants_full_photo_access: $grants_full_photo_access,
+					grants_cover_access: $grants_cover_access,
 					grants_download: $grants_download,
 					grants_upload: $grants_upload,
 				);

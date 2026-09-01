@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Защищено паролем',
         'password_prot_expl' => 'Анонимные пользователи должны ввести общий пароль для доступа к этому альбому.',
         'password_prop_not_compatible' => 'Кеширование ответа конфликтует с этой настройкой.<br>Из-за кеширования ответа, разблокировка этого альбома также<br>раскроет его контент для других анонимных пользователей.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Чувствительное',
         'nsfw_expl' => 'Альбом содержит чувствительный контент.',
         'visibility_updated' => 'Видимость обновлена.',

@@ -152,6 +152,8 @@ return [
         'password_prot' => '密碼保護',
         'password_prot_expl' => '匿名使用者需要共享密碼才能存取此相簿。',
         'password_prop_not_compatible' => '快取設定與此選項衝突。<br>由於回應快取的緣故，解鎖此相簿時，<br>其內容也會對其他匿名使用者顯示。',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => '敏感的',
         'nsfw_expl' => '相簿包含敏感內容。',
         'visibility_updated' => '顯示狀態已更新。',

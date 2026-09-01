@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Passordbeskyttet',
         'password_prot_expl' => 'Anonyme brukere trenger et delt passord for å få tilgang til dette albumet.',
         'password_prop_not_compatible' => 'Svarbufferen er i konflikt med denne innstillingen<br>På grunn av responsbuffering vil opplåsing av dette albumet<br>også vise innholdet til andre anonyme brukere.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Sensitivt/Støtende',
         'nsfw_expl' => 'Albumet inneholder sensitivt/støtende innhold.',
         'visibility_updated' => 'Synligheten er oppdatert.',

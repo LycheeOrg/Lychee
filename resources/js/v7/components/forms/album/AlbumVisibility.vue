@@ -104,6 +104,16 @@
 							<InputPassword id="password" v-model="password" autocomplete="new-password" @change="save" />
 							<label for="password">{{ $t("dialogs.visibility.password") }}</label>
 						</FloatLabel>
+						<div v-if="is_password_required" class="relative h-12 mt-4 ltr:pl-9 rtl:pr-9 transition-color duration-300">
+							<ToggleSwitch
+								v-model="grants_cover_access"
+								input-id="pp_dialog_cover_access_check"
+								class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
+								@change="save"
+							/>
+							<label class="font-bold" for="pp_dialog_cover_access_check">{{ $t("dialogs.visibility.cover_access") }}</label>
+							<p class="my-1.5">{{ $t("dialogs.visibility.cover_access_expl") }}</p>
+						</div>
 					</div>
 				</Collapse>
 			</form>
@@ -155,6 +165,7 @@ const is_public = ref<boolean>(albumStore.album?.policy.is_public ?? false);
 const is_link_required = ref<boolean>(albumStore.album?.policy.is_link_required ?? false);
 const is_nsfw = ref<boolean>(albumStore.album?.policy.is_nsfw ?? false);
 const grants_full_photo_access = ref<boolean>(albumStore.album?.policy.grants_full_photo_access ?? false);
+const grants_cover_access = ref<boolean>(albumStore.album?.policy.grants_cover_access ?? false);
 const grants_download = ref<boolean>(albumStore.album?.policy.grants_download ?? false);
 const is_password_required = ref<boolean>(albumStore.album?.policy.is_password_required ?? false);
 const password = ref<string>("");
@@ -171,6 +182,7 @@ function save() {
 		is_link_required: is_link_required.value,
 		is_nsfw: is_nsfw.value,
 		grants_full_photo_access: grants_full_photo_access.value,
+		grants_cover_access: grants_cover_access.value,
 		grants_download: grants_download.value,
 		grants_upload: grants_upload.value,
 		password: is_password_required.value ? password.value : undefined,

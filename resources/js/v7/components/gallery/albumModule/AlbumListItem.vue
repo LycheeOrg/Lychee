@@ -77,8 +77,8 @@
 			<ListBadge v-if="album.id === 'on_this_day'" class="fill-green-600" icon="calendar" />
 			<ListBadge v-if="album.id === 'untagged'" class="fill-gray-500" icon="tags" />
 			<ListBadge v-if="album.is_public" :class="album.is_link_required ? 'fill-orange-400' : 'fill-green-600'" icon="eye" />
-			<ListBadge v-if="album.is_password_required && album.thumb === null" class="fill-orange-400" icon="lock-locked" />
-			<ListBadge v-if="album.is_password_required && album.thumb !== null" class="fill-red-700" icon="lock-unlocked" />
+			<ListBadge v-if="album.is_password_required && album.is_locked" class="fill-orange-400" icon="lock-locked" />
+			<ListBadge v-if="album.is_password_required && !album.is_locked" class="fill-red-700" icon="lock-unlocked" />
 			<ListBadge v-if="album.is_tag_album" class="fill-green-600" icon="tags" />
 		</div>
 	</div>

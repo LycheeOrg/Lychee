@@ -152,6 +152,8 @@ return [
         'password_prot' => '密码保护',
         'password_prot_expl' => '匿名用户需要共享密码才能访问此相册。',
         'password_prop_not_compatible' => '此设置与响应缓存机制存在冲突。<br>由于启用了响应缓存，一旦解锁此相册，<br>其他匿名用户也将能够看到相册内容。',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => '敏感内容',
         'nsfw_expl' => '相册包含敏感内容。',
         'visibility_updated' => '可见性已更新。',

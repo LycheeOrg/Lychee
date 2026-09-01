@@ -53,6 +53,7 @@ class SetProtectionPolicy
 		$active_permissions ??= new AccessPermission();
 		$active_permissions->is_link_required = $protection_policy->is_link_required;
 		$active_permissions->grants_full_photo_access = $protection_policy->grants_full_photo_access;
+		$active_permissions->grants_cover_access = $protection_policy->grants_cover_access;
 		$active_permissions->grants_download = $protection_policy->grants_download;
 		$active_permissions->grants_upload = $protection_policy->grants_upload;
 		$active_permissions->base_album_id = $album->get_id();

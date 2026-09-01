@@ -503,6 +503,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertUnauthorized($response);
 
@@ -514,6 +515,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertForbidden($response);
 
@@ -525,6 +527,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -540,6 +543,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 		$response->assertJson([
@@ -550,6 +554,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 
 		$response = $this->actingAs($this->admin)->postJson('Album::updateProtectionPolicy', [
@@ -560,6 +565,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 
@@ -571,6 +577,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 
@@ -593,6 +600,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 		$response->assertJson([
@@ -603,6 +611,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 
 		// Logout.
@@ -635,6 +644,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 		$response->assertJson([
@@ -645,6 +655,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 
 		// Logout.
@@ -667,6 +678,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 		$this->assertCreated($response);
 		$response->assertJson([
@@ -677,6 +689,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 		]);
 
 		// Logout.

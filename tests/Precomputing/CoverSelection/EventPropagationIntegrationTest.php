@@ -219,6 +219,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 			is_link_required: false,
 			is_nsfw: true, // Changed
 			grants_full_photo_access: false,
+			grants_cover_access: false,
 			grants_download: false,
 			grants_upload: false
 		);
@@ -251,6 +252,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 			is_link_required: false,
 			is_nsfw: false, // Same as before
 			grants_full_photo_access: false,
+			grants_cover_access: false,
 			grants_download: false,
 			grants_upload: false
 		);
