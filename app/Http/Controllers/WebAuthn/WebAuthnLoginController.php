@@ -45,45 +45,7 @@ class WebAuthnLoginController extends Controller
 		$user_id = $fields['user_id'] ?? null;
 		$authenticatable = $user_id ?? ($username !== null ? ['username' => $username] : null);
 
-		// If the user does not exist, we generate a fake response to prevent user enumeration.
-		// If there was no username and no user_id, this means that we are dealing quite likely with
-		// a Yubikey 5.
-		//
-		// Yubikey 4 requires the use of username or passwords.
-		if (
-			($username !== null || $user_id !== null) &&
-			!User::where('id', $user_id)->orWhere('username', $username)->exists()
-		) {
-			return $this->generateFakeResponse();
-		}
-
 		return $request->toVerify($authenticatable);
-	}
-
-	/**
-	 * We mask real responses with fake ones to prevent user enumeration.
-	 */
-	private function generateFakeResponse(): Responsable
-	{
-		return new class() implements Responsable {
-			public function toResponse($request): \Symfony\Component\HttpFoundation\Response
-			{
-				$count = random_int(1, 3);
-				$credentials = [];
-				for ($i = 0; $i < $count; $i++) {
-					$credentials[] = [
-						'id' => strtr(base64_encode(random_bytes(96)), '+/', '-_'),
-						'type' => 'public-key',
-					];
-				}
-
-				return response()->json([
-					'timeout' => 60000,
-					'allowCredentials' => $credentials,
-					'challenge' => strtr(base64_encode(random_bytes(18)), '+/', '-_'),
-				]);
-			}
-		};
 	}
 
 	/**
