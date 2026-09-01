@@ -18,11 +18,13 @@ use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\ChunkSequenceRule;
 use App\Rules\DescriptionRule;
 use App\Rules\ExtensionRule;
 use App\Rules\FilenameRule;
 use App\Rules\FileUuidRule;
 use App\Rules\TitleRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
@@ -39,6 +41,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	protected ?bool $apply_watermark = null;
 	protected ?string $title = null;
 	protected ?string $description = null;
+	private ?ChunkSequenceRule $chunk_sequence_rule = null;
 
 	/**
 	 * {@inheritDoc}
@@ -58,7 +61,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => ['required', 'file'],
 			'file_name' => ['required', new FilenameRule()],
-			'uuid_name' => ['present', new FileUuidRule()],
+			'uuid_name' => ['present', new FileUuidRule(), $this->chunkSequenceRule()],
 			'extension' => ['present', new ExtensionRule()],
 			'chunk_number' => 'required|integer|min:1',
 			'total_chunks' => 'required|integer|gte:chunk_number',
@@ -66,6 +69,38 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::TITLE_ATTRIBUTE => ['sometimes', 'nullable', new TitleRule()],
 			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['sometimes', 'nullable', new DescriptionRule()],
 		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * If some other field fails validation after ChunkSequenceRule already
+	 * acquired its mutex, release it immediately instead of leaving it held
+	 * for its full TTL while the controller never runs.
+	 */
+	public function withValidator(Validator $validator): void
+	{
+		$validator->after(function (Validator $validator): void {
+			if ($validator->errors()->isNotEmpty()) {
+				$this->chunkSequenceRule()->releaseWithoutCommit();
+			}
+		});
+	}
+
+	private function chunkSequenceRule(): ChunkSequenceRule
+	{
+		return $this->chunk_sequence_rule ??= new ChunkSequenceRule();
+	}
+
+	/**
+	 * Records that $chunk_number has been durably appended to the staging
+	 * file, releasing the mutex acquired by ChunkSequenceRule during
+	 * validation. Must be called exactly once, immediately after the
+	 * controller has appended the chunk's bytes to the staging file.
+	 */
+	public function completeChunkUpload(string $uuid_name, int $chunk_number, bool $is_last_chunk): void
+	{
+		$this->chunkSequenceRule()->completeAppend($uuid_name, $chunk_number, $is_last_chunk);
 	}
 
 	/**
