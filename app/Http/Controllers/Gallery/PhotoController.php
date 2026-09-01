@@ -50,6 +50,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
@@ -69,6 +70,8 @@ class PhotoController extends Controller
 {
 	/**
 	 * Upload a picture.
+	 *
+	 * @throws ConflictingPropertyException
 	 */
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{
@@ -79,10 +82,13 @@ class PhotoController extends Controller
 		$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
 		$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
 
+		$is_last_chunk = $meta->chunk_number >= $meta->total_chunks;
+
 		$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
 		$final->append($file->read());
+		$request->completeChunkUpload($meta->uuid_name, $meta->chunk_number, $is_last_chunk);
 
-		if ($meta->chunk_number < $meta->total_chunks) {
+		if (!$is_last_chunk) {
 			// Not the last chunk
 			return $meta;
 		}
@@ -217,7 +223,7 @@ class PhotoController extends Controller
 	 */
 	public function rate(SetPhotoRatingRequest $request, Rating $rating): PhotoResource
 	{
-		/** @var \App\Models\User $user */
+		/** @var User $user */
 		$user = Auth::user();
 
 		$photo = $rating->do(
@@ -358,6 +364,7 @@ class PhotoController extends Controller
 	public function albums(GetPhotoAlbumsRequest $request): Collection
 	{
 		$photo = $request->photo();
+		/** @var ?User $user */
 		$user = Auth::user();
 		$album_policy = resolve(AlbumPolicy::class);
 
