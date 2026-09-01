@@ -241,7 +241,7 @@ Route::delete('/WebAuthn', [WebAuthn\WebAuthnManageController::class, 'delete'])
 
 // Special Webauthn operations
 Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController::class, 'options'])
-	->name('webauthn.register.options');
+	->name('webauthn.register.options')->middleware(['throttle:10,1']); // Limit to 10 requests per minute per IP to prevent abuse
 Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
 Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class, 'options'])
