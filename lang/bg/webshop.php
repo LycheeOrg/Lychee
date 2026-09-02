@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Плащането е отменено.',
         'paymentFailed' => 'Плащането е неуспешно',
         'paymentFailedMessage' => 'Не успяхме да потвърдим вашето плащане. Моля, опитайте отново или се свържете с поддръжката, ако проблемът продължава.',
+        'paymentProcessing' => 'Payment being confirmed',
+        'paymentProcessingMessage' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

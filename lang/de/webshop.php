@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Die Zahlung wurde abgebrochen.',
         'paymentFailed' => 'Zahlung fehlgeschlagen',
         'paymentFailedMessage' => 'Wir konnten Ihre Zahlung nicht bestätigen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support, falls das Problem weiterhin besteht.',
+        'paymentProcessing' => 'Payment being confirmed',
+        'paymentProcessingMessage' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Betalingen er kansellert.',
         'paymentFailed' => 'Betaling mislyktes',
         'paymentFailedMessage' => 'Vi kunne ikke bekrefte betalingen din. Vennligst prøv igjen eller kontakt support hvis problemet vedvarer.',
+        'paymentProcessing' => 'Payment being confirmed',
+        'paymentProcessingMessage' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

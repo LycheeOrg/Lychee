@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'De betaling is geannuleerd.',
         'paymentFailed' => 'Betaling mislukt',
         'paymentFailedMessage' => 'We konden uw betaling niet bevestigen. Probeer het opnieuw of neem contact op met de ondersteuning als het probleem aanhoudt.',
+        'paymentProcessing' => 'Payment being confirmed',
+        'paymentProcessingMessage' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

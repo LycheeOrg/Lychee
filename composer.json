@@ -76,6 +76,7 @@
         "omnipay/dummy": "^3.0",
         "omnipay/mollie": "^5.5",
         "omnipay/stripe": "^3.2",
+        "payzum/omnipay-payzum": "^0.1.1",
         "opcodesio/log-viewer": "dev-lycheeOrg",
         "paypal/paypal-server-sdk": "2.4.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
