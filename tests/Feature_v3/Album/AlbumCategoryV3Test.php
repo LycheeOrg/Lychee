@@ -18,8 +18,10 @@
 
 namespace Tests\Feature_v3\Album;
 
+use App\Enum\SmartAlbumType;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Configs;
 use App\Models\Face;
 use App\Models\Person;
@@ -72,6 +74,45 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 		// and no eager photos/size_variants load ever runs.
 		$photo_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b/i', $q['query']) === 1);
 		self::assertCount(0, $photo_queries, 'Smart albums listing must never query photos (with_relations=false).');
+	}
+
+	/**
+	 * 2026-09-02 amendment (Feature 063 FR-062-16, Q-063-15): `cover_ids`
+	 * resolves from the pre-computed `album_user_thumbs` cache — a hit
+	 * returns the cached photo id, a miss stays `null`, and this stays a
+	 * cache-only lookup (no live `photos` query — the assertion above
+	 * already covers that for the whole endpoint, seeded row included).
+	 */
+	public function testSmartResolvesRealCoverFromCacheHitAndNullFromCacheMiss(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => SmartAlbumType::UNSORTED->value,
+			'photo_id' => $this->photoUnsorted->id,
+		]);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+		$log = DB::getQueryLog();
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		$photo_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b/i', $q['query']) === 1);
+		self::assertCount(0, $photo_queries, 'Cover resolution must stay cache-only, never a live photos query.');
+
+		$unsorted_index = array_search(SmartAlbumType::UNSORTED->value, $json['ids'], true);
+		self::assertNotFalse($unsorted_index, 'unsorted must be visible to a may-upload user.');
+		self::assertSame($this->photoUnsorted->id, $json['cover_ids'][$unsorted_index]);
+
+		// Every other visible smart album has no seeded cache row -> null,
+		// not a live-resolved fallback.
+		foreach ($json['ids'] as $i => $id) {
+			if ($id === SmartAlbumType::UNSORTED->value) {
+				continue;
+			}
+			self::assertNull($json['cover_ids'][$i], "cover_ids for '{$id}' must be null on a cache miss.");
+		}
 	}
 
 	// ── tags (S-062-15) ────────────────────────────────────────────────

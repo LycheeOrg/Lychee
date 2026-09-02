@@ -19,7 +19,9 @@
 namespace Tests\Feature_v3\Photo;
 
 use App\Enum\SizeVariantType;
+use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
+use App\Models\AlbumUserThumb;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -433,6 +435,71 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$this->putBytes($variant);
 
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb");
+
+		$response->assertForbidden();
+	}
+
+	/**
+	 * 2026-09-02 amendment (Feature 063 FR-056-08): a smart album's cached
+	 * `album_user_thumbs` cover, still matching its live `smart_photo_condition`
+	 * (`photoUnsorted` genuinely has no album, i.e. is genuinely unsorted),
+	 * resolves via the new `isComputedAlbumThumb()` branch — mirrors
+	 * `TagAlbum`/`PersonAlbum`'s pre-existing (previously untested) behavior.
+	 */
+	public function testSmartAlbumCachedCoverStillMatchingLiveConditionSucceeds(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => SmartAlbumType::UNSORTED->value,
+			'photo_id' => $this->photoUnsorted->id,
+		]);
+		$variant = $this->thumbVariantOf($this->photoUnsorted);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/' . SmartAlbumType::UNSORTED->value . "/{$this->photoUnsorted->id}/thumb");
+
+		$response->assertOk();
+	}
+
+	/**
+	 * 2026-09-02 amendment (Feature 063 FR-056-08, Q-063-15): the actual
+	 * reason this branch exists — a photo cached as a smart album's cover
+	 * (Feature 062 FR-062-16) that has since fallen out of that album's own
+	 * live condition (here: `photo1` is not `is_highlighted`, so it would
+	 * never match `HighlightedAlbum`'s `smart_photo_condition`) must still
+	 * resolve through the Asset endpoint rather than 403 — the cache entry
+	 * itself, not the live query, is what legitimizes the cover exception,
+	 * exactly like the pre-existing `TagAlbum`/`PersonAlbum` branch.
+	 */
+	public function testSmartAlbumCachedCoverNoLongerMatchingLiveConditionStillSucceeds(): void
+	{
+		self::assertFalse($this->photo1->is_highlighted, 'Fixture assumption: photo1 must not be highlighted.');
+
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => SmartAlbumType::HIGHLIGHTED->value,
+			'photo_id' => $this->photo1->id,
+		]);
+		$variant = $this->thumbVariantOf($this->photo1);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/' . SmartAlbumType::HIGHLIGHTED->value . "/{$this->photo1->id}/thumb");
+
+		$response->assertOk();
+	}
+
+	/**
+	 * A photo that is neither the smart album's cached cover nor a live
+	 * match still falls through to the generic membership check → 403 —
+	 * the new branch is a narrow cache exception, not a blanket bypass.
+	 */
+	public function testSmartAlbumUncachedNonMatchingPhotoIsForbidden(): void
+	{
+		self::assertFalse($this->photo1->is_highlighted, 'Fixture assumption: photo1 must not be highlighted.');
+		$variant = $this->thumbVariantOf($this->photo1);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/' . SmartAlbumType::HIGHLIGHTED->value . "/{$this->photo1->id}/thumb");
 
 		$response->assertForbidden();
 	}

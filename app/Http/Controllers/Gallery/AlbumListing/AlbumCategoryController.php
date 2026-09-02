@@ -19,6 +19,7 @@ use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumCategoryListResource;
 use App\Http\Resources\V3\AlbumCategoryRightsResource;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
@@ -58,9 +59,13 @@ class AlbumCategoryController extends Controller
 
 	/**
 	 * Reuses the existing cheap, in-memory, `Gate`-filtered
-	 * `AlbumFactory::getAllBuiltInSmartAlbums(false)` list — no SQL query,
-	 * no caching layer (recomputing an in-memory list is cheaper than a
-	 * cache lookup).
+	 * `AlbumFactory::getAllBuiltInSmartAlbums(false)` list — no live `photos`
+	 * query (Feature 062, FR-062-16 amendment narrowed this from "zero SQL
+	 * queries" to "zero *photo* queries"): cover pixels come from one
+	 * batched, indexed lookup against the pre-computed `album_user_thumbs`
+	 * cache ({@link \App\Models\Extensions\CachesAlbumUserThumb}), the same
+	 * cache `BaseSmartAlbum::getThumbAttribute()`/`RecomputeAlbumUserThumbsJob`
+	 * already read/write for the v2 `Top::get()` path — never resolved live.
 	 */
 	public function smart(GetAlbumCategoryRequest $request): AlbumCategoryListResource
 	{
@@ -70,16 +75,24 @@ class AlbumCategoryController extends Controller
 			->filter(fn (BaseSmartAlbum $smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album))
 			->values();
 
-		$ids = [];
+		$ids = $smart_albums->map(fn (BaseSmartAlbum $smart_album) => $smart_album->get_id())->all();
+
+		/** @var array<string,string> $cached_covers album_id => photo_id */
+		$cached_covers = AlbumUserThumb::query()
+			->whereIn('album_id', $ids)
+			->where('user_id', '=', Auth::id())
+			->pluck('photo_id', 'album_id')
+			->all();
+
 		$titles = [];
 		$cover_ids = [];
 		$owner_ids = [];
 		foreach ($smart_albums as $smart_album) {
-			$ids[] = $smart_album->get_id();
 			$titles[] = $smart_album->get_title();
-			// No live thumb resolution here (would require a photos query,
-			// contradicting this endpoint's zero-SQL-query guarantee).
-			$cover_ids[] = null;
+			// Cache-only: a miss stays null (no live resolution) and
+			// self-heals the next time anything triggers a live resolution
+			// for this (album, viewer) pair elsewhere (e.g. a v2 root load).
+			$cover_ids[] = $cached_covers[$smart_album->get_id()] ?? null;
 			// Smart albums are built-in/system-wide — no real owner.
 			$owner_ids[] = '0';
 		}

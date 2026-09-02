@@ -22,8 +22,10 @@ use App\Models\SizeVariant;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use App\Services\TemporaryLinkSigner;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -135,7 +137,14 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * applies: TagAlbum's own hardcoded `cover_id`, and — for both — the
 	 * current viewer's cached computed thumb (`album_user_thumbs`, the
 	 * tag/person equivalent of `auto_cover_id_*`; see
-	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}).
+	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}). {@link BaseSmartAlbum}
+	 * gets the same cached-computed-thumb exception (2026-09-02 amendment,
+	 * Feature 063 FR-056-08) — it has no hardcoded `cover_id` of its own, but
+	 * its cover, when resolved by `GET /Albums/smart` (Feature 062 FR-062-16),
+	 * comes from this exact cache, and may have since fallen out of the
+	 * smart album's own live `smart_photo_condition` (e.g. a photo was
+	 * unstarred) before the next {@link \App\Jobs\RecomputeAlbumUserThumbsJob}
+	 * run catches up — without this exception that cover would 403 here.
 	 */
 	private function isPhotoOfAlbum(AbstractAlbum $album): bool
 	{
@@ -159,6 +168,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		}
 
 		if (($album instanceof TagAlbum || $album instanceof PersonAlbum) && $this->isComputedAlbumThumb($album->id)) {
+			return true;
+		}
+
+		if ($album instanceof BaseSmartAlbum && $this->isComputedAlbumThumb($album->get_id())) {
 			return true;
 		}
 
@@ -201,7 +214,18 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			// AlbumIDRule, not RandomIDRule (2026-09-02 correction, Feature 063
+			// FR-056-08): this endpoint's own docblock already claimed
+			// AlbumFactory::findAbstractAlbumOrFail() "handle[s] regular albums,
+			// tag albums, person albums and smart albums uniformly" — true for
+			// resolution, but album_id validation was still RandomIDRule, which
+			// only accepts RandomID::ID_LENGTH-character ids. Real Album/TagAlbum/
+			// PersonAlbum ids all happen to be that length, so this went
+			// unnoticed; a SmartAlbumType value (e.g. "unsorted") never is,
+			// so every smart-album request 422'd before ever reaching
+			// isPhotoOfAlbum() — discovered only once a real caller (this
+			// feature's new BaseSmartAlbum branch) needed it to actually work.
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => ['required', 'string', new Enum(SizeVariantAssetType::class)],
 			self::TIMESTAMP_ATTRIBUTE => ['nullable', 'integer', 'required_with:' . self::MAC_ATTRIBUTE],
