@@ -1,6 +1,6 @@
 # Feature 062 Tasks – Root Album Listing Struct-of-Arrays
 
-_Status: Implemented_
+_Status: Implemented — T-062-33 (2026-09-02 amendment, `/Albums/smart` real cover_ids, FR-062-16) implemented, `AlbumCategoryV3Test` 16/16 green._
 _Last updated: 2026-09-02_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -241,6 +241,11 @@ _Last updated: 2026-09-02_
 - [x] T-062-32 – Deployer-facing note about `lychee:recompute-album-buckets` re-run post-migration (F-062-08 note).
   _Intent:_ Ensure this isn't silently lost — surfaced in the migration's own comment at minimum.
   _Verification commands:_ N/A (doc review).
+
+- [x] T-062-33 *(2026-09-02 amendment, precondition for Feature 063's I14)* – `AlbumCategoryController::smart()`: replace the hardcoded `$cover_ids[] = null;` with a batched `AlbumUserThumb::query()->whereIn('album_id', $ids)->where('user_id', '=', Auth::id())->pluck('photo_id', 'album_id')` lookup, mapping each smart album's `get_id()` through it (`null` on a miss) (FR-062-16). Update the method's own docblock — "No live thumb resolution here (would require a photos query, contradicting this endpoint's zero-SQL-query guarantee)" is no longer accurate as written; narrow it to "no *live* resolution" and note the new cache-only lookup.
+  _Intent:_ Feature 063's smart-album root-tile addendum depends on this — Feature 063's own I14 tracks it only as a precondition (T-063-41), this is the actual implementation task.
+  _Note:_ Implemented as specced, one query total (not per-row) via `whereIn`. Existing `testSmartReturnsSameSetAsV2WithZeroQueries`'s "zero queries" assertion is scoped to *photos* queries specifically (its own comment already anticipated `with_relations=false`-style exceptions) — the new query targets `album_user_thumbs`, not `photos`, so it needed no change and still passes.
+  _Verification commands:_ `make phpstan` (0 errors); `vendor/bin/php-cs-fixer fix --dry-run` (clean); `php artisan test --filter=AlbumCategoryV3Test` (16/16 green, includes new `testSmartResolvesRealCoverFromCacheHitAndNullFromCacheMiss`).
 
 ## Notes / TODOs
 
