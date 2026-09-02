@@ -6,6 +6,23 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-062-01~~ | 062 – Root Album Listing Struct-of-Arrays | High | Guest privacy when the effective root sort column is `OWNER_ID` — bucket by owner anyway vs. fall back to `bucketable:false` for guests | Superseded twice — first by Q-062-08 (`OWNER_ID` removed as a config value, original premise gone), then a same-day "guests see names too" follow-up was itself reversed by Q-062-14 (authoritative: guests never see real names, `users` join skipped entirely) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-02~~ | 062 – Root Album Listing Struct-of-Arrays | High | `scope` request shape — required `own`/`shared` split per call vs. one optional combined/unpartitioned list | Resolved (required `own`/`shared` for authenticated callers; guest defaults to, and is limited to, `shared` — `scope=own` for a guest is 422; FR-062-02) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-03~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Route shape for a parent-less "children" concept — literal `/Albums/root/...` path vs. a new `::`-flat route family vs. `?parent_id=root` on the existing sub-album routes | Resolved (literal `/Albums/root`, `/Albums/root/buckets`, `/Albums/root/rights`, registered ahead of `/Albums/{album_id}/...`; dropped the "children" suffix — root is its own top-level listing, not children of a virtual parent; FR-062-01) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-04~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Tag/person/pinned root categories — one combined endpoint vs. separate endpoints per category | Superseded (revised to **separate** routes per category — `/Albums/smart`, `/Albums/persons`, `/Albums/tags` — not one combined endpoint; `pinned` dropped from this feature's scope entirely; FR-062-09) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-05~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should a guest be allowed to request `scope=own`? | Resolved (no — 422; silently returning empty would hide a client bug) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-06~~ | 062 – Root Album Listing Struct-of-Arrays | High | How does `shared`-scope owner-grouping coexist with "we do not want to bucket by `owner_id`"? | Resolved (two independent mechanisms — the persisted `bucket_id` column stays exclusively date/title-derived everywhere, forever; `shared` scope's owner-grouping is a separate, live, read-time `GROUP BY owner_id` that never touches `AlbumBucketComputer`/the `bucket_id` column; the response's `bucket_id` field is repurposed to carry `owner_id` for that scope only, so the client-side "group rows by `bucket_id`" contract stays uniform across scopes; FR-062-04/05) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-07~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Should `ColumnSortingType::OWNER_ID` (the broader, internal enum) also be removed alongside `ColumnSortingAlbumType::OWNER_ID`? | Resolved (no — only the configurable `ColumnSortingAlbumType::OWNER_ID` is removed; `ColumnSortingType::OWNER_ID` stays, needed internally for `Top::queryRootAlbums()`'s existing hardcoded sort and this feature's own `shared`-scope `ORDER BY owner_id`; NG7) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-08~~ | 062 – Root Album Listing Struct-of-Arrays | High | Remove `OWNER_ID` as a selectable `sorting_albums_col`/`album_sorting_col` value entirely, or keep supporting it (with owner-aware bucketing)? | Resolved (remove — user direction; `configs.type_range` already excludes it since Feature 060's dropdown narrowing, so this closes a dead config path rather than opening a new capability; migrate surviving `owner_id` values to `created_at`; FR-062-08) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-09~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | `pinned` albums — dropped from category-endpoint scope (Q-062-04) or reinstated? | Resolved (reinstated — `GET /Albums/pinned`, fifth flat category endpoint, no rights endpoint; per user follow-up "Oh good point, I forgot about the pinned albums. Add it back."; FR-062-09) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-10~~ | 062 – Root Album Listing Struct-of-Arrays | High | Should `/Albums/pinned` also get an own/shared split, and how should `shared` be structured (per-owner buckets like root, or flat)? | Resolved (yes — reuses root's `scope=own\|shared` via the same `GetScopedAlbumsRequest`; `shared` is one flat, ungrouped list, not per-owner buckets, per user follow-up: "the ones not owned... are all grouped" interpreted as one lump, consistent with pinned never being bucketable at all; FR-062-15) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-11~~ | 062 – Root Album Listing Struct-of-Arrays | High | Why is `/Albums/pinned` never bucketable, in either the date/title or owner-grouping sense? | Resolved (a pinned album's real tree position is arbitrary — not necessarily root — so its `bucket_id` is governed by its actual parent's sort settings; mixing values from unrelated parents into one pinned bucket list would be incoherent; per user: "this should solve the potential conflict between the bucket sizes as pinned albums are possibly not as root"; NG3/NG9) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-12~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should Feature 061's already-shipped `/Albums/{album_id}/children[/buckets\|/rights]` paths be renamed to drop `/children`, matching root's naming? | Resolved (yes, per user proposal — safe since Feature 061 shipped with no v8 frontend consumer yet; path-only rename, response shape untouched; existing 061 test files need only their request-URL literals updated, zero assertion changes; FR-062-01/12, NFR-062-06) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-13~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should `/Albums/persons` also get the own/shared split, given `PersonAlbum` rows carry a real `owner_id`? | Resolved (yes, per user proposal — reuses the exact pattern already established for `/Albums/pinned` (flat shared, no buckets); `/Albums/tags`/`/Albums/smart` stay un-scoped, not requested; FR-062-09/15) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-14~~ | 062 – Root Album Listing Struct-of-Arrays | High | Should unauthenticated guests receive real owner display names via `/Albums/root/buckets`'s `shared`-scope labels? | Resolved (Option B — no join/names for guests; grouping stays real, labels become `"unknown"`) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-15~~ | 062 – Root Album Listing Struct-of-Arrays | High | Does `bucketable:false` mean "structurally can't group" (Feature 061's convention) or "zero rows this time" (this spec's current FR-062-05 wording)? | Resolved (Option A — keep 061's meaning; empty shared result is `bucketable:true` with empty arrays) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-16~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Is `/Albums/root/rights`'s `owner_id` field null for `scope=own` too, or only for `scope=shared`? | Resolved (Option A, refined — null unconditionally, both scopes; key omitted from the JSON payload entirely since it's always null for root) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-17~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Does dropping `/children` from `/Albums/{album_id}` (and `/Albums/root`, `/persons`, `/pinned`) read as "fetch one album" when it actually returns a child/collection listing? | Resolved (Option A — keep the rename as specced, no change) | 2026-09-02 | 2026-09-02 |
 | ~~Q-060-01~~ | 060 – Database-Driven Title Sorting | Medium | Does Description get the same title_base/title_index split as Title, or is it dropped as a sort criterion entirely? | Resolved (Description ordering removed completely — no split columns for description; existing Description-based sort configs are migrated to Title, FR-060-10) | 2026-08-27 | 2026-08-27 |
 | ~~Q-060-02~~ | 060 – Database-Driven Title Sorting | Medium | Should the numeric-suffix splitter be a single hardcoded rule or a pluggable/configurable pattern system, given other patterns (e.g. parenthesised numbering) may be wanted later? | Resolved (hardcoded ordered 2-rule chain — trailing digits, then trailing parenthesised number — baked into one `TitleSplitter` function, FR-060-02; a fully pluggable/admin-configurable system explicitly deferred as a Non-Goal/Follow-up) | 2026-08-27 | 2026-08-27 |
 | ~~Q-060-03~~ | 060 – Database-Driven Title Sorting | High | User review of the draft `TitleSplitter` heuristic found both rules only match at the absolute end of the string, so a trailing file extension (e.g. `xxx_123.jpg`, `xxx (123).xts`) silently defeats both the trailing-digit and parenthesised-number rules, falling to the no-index fallback — a real regression for the single most common case (photo filenames as titles). | Resolved (added a Stage-A extension-aware pre-strip — `\.([A-Za-z][A-Za-z0-9]{0,4})$`, deliberately excluding digit-only suffixes like `.2` so those still hit the trailing-digit rule directly — applied before both rules; see Q-060-04 for a correction to how the extension is subsequently handled) | 2026-08-28 | 2026-08-28 |
@@ -137,6 +154,194 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-062-14~~ · Guest exposure of owner display names via root's `shared`-scope bucket labels ✅ RESOLVED
+
+**Status:** Resolved — Option B  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** The `users` join and label resolution are skipped entirely for unauthenticated callers — not just hidden after the fact, the join never executes (defense in depth, and avoids a pointless query). Owner-based grouping/counts are still computed for guests (the mechanism itself is unaffected — a guest still sees "3 buckets" if 3 distinct owners have shared albums), but every label falls back to the literal string `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this endpoint family. Authenticated callers still get real `COALESCE(display_name, username)` labels, unchanged.
+
+**Spec impact:** FR-062-05 gains an explicit guest branch (no join, `labels` hardcoded `'unknown'`); new scenario for guest label anonymization with real grouping intact.
+
+**Preferred option:** 🅱️ (**recommended**) Option B – No names for guests
+
+**Question**  
+FR-062-05 has `/Albums/root/buckets`'s `shared` scope resolve bucket labels via `COALESCE(display_name, username)` joined on `owner_id`, with no authentication gate stated in the FR itself. Since guests default to `shared` scope (FR-062-02) and have no `own` scope available, this means an unauthenticated visitor to the gallery would see the real display names of every user who owns a visible root album, in bucket headers. An earlier draft of this spec had an explicit NFR forbidding this; it was dropped when `OWNER_ID` was removed as a *sort column* option, on the reasoning that "shared is the only thing a guest can request, so there's nothing left to protect." That reasoning conflates two different things (which sort *column* an admin can configure vs. whether label lookups run for anonymous callers) and was decided unilaterally during a fast pivot, not requested by the user. Should guests see real names here?
+
+---
+
+#### 🅰️ Option A – Guests see names (current spec text, unchanged)
+
+- **Idea:** Keep FR-062-05 as written — the `users` join and label resolution run unconditionally for `shared` scope, regardless of caller.
+- **Spec impact:** None — spec already reflects this.
+- **Pros:**  
+  - ✅ Simplest implementation — one code path, no guest branch.  
+  - ✅ Matches the fact that "who shared this album" is arguably already implicit, visible content (the album itself is public).
+- **Cons:**  
+  - ❌ Exposes potentially real names (not usernames) of every contributing user to any anonymous visitor, without them opting in to that exposure.  
+  - ❌ Reverses a more conservative decision from an earlier draft without an explicit product call.  
+  - ❌ Inconsistent with this codebase's general instinct elsewhere (e.g. `AlbumAccessPermissionListController` deliberately narrows columns to avoid over-exposing user data) even though the concrete data here (display name) is lower-sensitivity than a password hash.
+
+---
+
+#### 🅱️ (**recommended**) Option B – No names for guests
+
+- **Idea:** Restrict the `users` join / label resolution to authenticated callers only. A guest's `shared`-scope buckets still group by `owner_id` (the grouping/count mechanism is unaffected) but each label falls back to a neutral placeholder (e.g. `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this same endpoint family) or the response omits `labels` for that scope when unauthenticated.
+- **Spec impact:** FR-062-05 gains an explicit guest branch; NFR list gains back a privacy requirement (mirrors the dropped draft NFR-062-07); new scenario for "guest sees buckets but no names."
+- **Pros:**  
+  - ✅ No new exposure surface introduced by this feature.  
+  - ✅ Matches the spirit of the original (pre-pivot) design intent.
+- **Cons:**  
+  - ❌ One more conditional branch in `AlbumRootController::buckets()`.  
+  - ❌ A guest's bucket headers become less informative ("3 albums" instead of "Alice: 3 albums").
+
+---
+
+**Next action**  
+User to confirm which behavior is intended before FR-062-05/NG9/NFR list are finalized; if Option B, add the guest branch and a dedicated scenario ID.
+
+---
+
+### ~~Q-062-15~~ · Does `bucketable:false` mean "structurally ungroupable" or "zero results this time"? ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** `bucketable` keeps Feature 061's exact meaning — it describes whether the grouping *mechanism* is available, not whether there happens to be data. `shared` scope is unconditionally `bucketable:true` for both guests and authenticated callers (owner-based grouping is always a coherent mechanism for that scope); a zero-shared-albums result returns `bucketable:true` with empty `bucket_ids`/`counts`/`labels` arrays, exactly like 061's own empty-children behavior today. `bucketable:false` remains reserved for genuine structural incapability (there is none left in this scope, since `OWNER_ID` is no longer reachable as a bucket dimension at all per Q-062-08).
+
+**Spec impact:** FR-062-05's "`bucketable:false` only for an empty result" parenthetical is removed; S-062-07 updated to expect `bucketable:true` + empty arrays instead of `bucketable:false`.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Keep Feature 061's meaning; empty ≠ false
+
+**Question**  
+Feature 061's shipped `AlbumBucketController` sets `bucketable:false` in exactly one case — the `OWNER_ID`-configured-column short-circuit, a *structural* incapability to bucket. A normal query that legitimately returns zero children still yields `bucketable:true` with empty arrays. FR-062-05 (this spec) instead says `shared`-scope `bucketable` is "always `true`... `bucketable:false` only for an empty result" — the opposite mapping: `false` now signals "no data," not "can't group." A frontend built against 061's convention (skip rendering sticky headers / virtual-scroll setup when `bucketable:false`, because there's no groupable dimension) would misinterpret a merely-empty `shared` result the same way as a genuinely ungroupable one, or vice versa depending on which convention it was actually written against. Which meaning should `bucketable` carry for the new endpoints?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Keep 061's meaning: `bucketable` describes the mechanism, not the data
+
+- **Idea:** `shared` scope is always `bucketable:true` (owner-grouping is always a valid mechanism for this scope), even when the result set happens to be empty — `bucket_ids`/`counts`/`labels` are just empty arrays in that case, exactly like 061's own empty-children behavior today.
+- **Spec impact:** FR-062-05's parenthetical ("`bucketable:false` only for an empty result") is deleted; add a scenario asserting `bucketable:true` + empty arrays for a zero-shared-albums caller.
+- **Pros:**  
+  - ✅ One consistent meaning for `bucketable` across every endpoint in this family (Feature 061 and 062 alike) — a frontend written once against the field never needs a per-endpoint branch.  
+  - ✅ Matches existing shipped behavior exactly, zero surprise for anyone who already built against 061.
+- **Cons:**  
+  - ❌ None identified — this is the lower-risk, already-proven option.
+
+---
+
+#### 🅱️ Option B – Keep this spec's current wording; `bucketable:false` also covers "empty"
+
+- **Idea:** Accept the dual meaning as written: `false` means either "can't group" or "nothing to group."
+- **Spec impact:** None — spec already reflects this. Would need an explicit callout in Documentation Deliverables so frontend authors don't assume 061's convention.
+- **Pros:**  
+  - ✅ Arguably saves the frontend a round trip in the empty case (no point rendering an empty virtual-scroll container either way).
+- **Cons:**  
+  - ❌ Silently changes the meaning of a field name reused verbatim from a shipped feature, for only one of its two call sites — a subtle trap for anyone extending this family later.  
+  - ❌ No test coverage currently distinguishes the two cases from each other.
+
+---
+
+**Next action**  
+User to pick A or B; if A, remove the parenthetical from FR-062-05 and add the empty-but-bucketable scenario; if B, add an explicit cross-reference note in FR-062-05 warning that this diverges from 061.
+
+---
+
+### ~~Q-062-16~~ · Is `/Albums/root/rights`'s `owner_id` null for `scope=own`, or only for `scope=shared`? ✅ RESOLVED
+
+**Status:** Resolved — Option A, refined  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** `owner_id` stays `null` unconditionally for root's rights response, for both `own` and `shared` scope (Option A, as recommended). Follow-up question during resolution — "if it is always null do we need it?" — is correct: a field that is *always* null on this endpoint carries zero information and is just noise. Refined resolution: the key is **omitted from the JSON payload entirely** for root's rights response (via a conditional resource field, e.g. Laravel's `whenNotNull()`), rather than serialized as a useless `"owner_id": null`. The sub-album tier and the `TagAlbum`/`PersonAlbum` matching-albums tier — where `owner_id` is always a real, meaningful value — are unaffected: the shared `AlbumChildrenRightsResource` class still emits the key there, unchanged, since the same conditional only omits it when the value is actually null.
+
+**Spec impact:** FR-062-06 reworded to state the omission explicitly; DO-062-04 updated (`nullable, omitted from the payload when null` rather than just `nullable`).
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Null unconditionally, both scopes
+
+**Question**  
+FR-062-06 widens `AlbumChildrenRightsResource`'s top-level `owner_id` to nullable "because root has no single owner to report," stated without a scope carve-out. But under `scope=own`, every row genuinely does share one real owner — the caller — the exact fact FR-062-03 relies on to justify its own `own`-scope simplifications for buckets. Should `own`-scope root rights report the caller's real `owner_id`, or stay null like `shared` scope?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Null unconditionally, both scopes
+
+- **Idea:** `owner_id` is always `null` on this resource regardless of `scope`, matching FR-062-06 as currently written.
+- **Spec impact:** None — spec already reflects this; just needs an explicit sentence confirming it's deliberate, not an oversight.
+- **Pros:**  
+  - ✅ One code path, no scope-conditional logic in the rights controller.  
+  - ✅ The field is genuinely not useful here anyway — a caller requesting `own` scope already knows whose albums they are by definition.
+- **Cons:**  
+  - ❌ Slightly inconsistent with the rest of this feature, where `own` scope is treated as meaningfully simpler than `shared` almost everywhere else.
+
+---
+
+#### 🅱️ Option B – Populate with the caller's id for `own` scope
+
+- **Idea:** `owner_id = (string) $user->id` when `scope=own`; stays `null` for `shared`.
+- **Spec impact:** FR-062-06 gains a scope-conditional clause; DO-062-04 updated.
+- **Pros:**  
+  - ✅ More information for "free" — no extra query, `$user->id` is already known.
+- **Cons:**  
+  - ❌ Adds a branch to a resource whose main job (per-row grants) doesn't otherwise vary by scope, for a field of doubtful client value.
+
+---
+
+**Next action**  
+User to confirm; low effort either way, but FR-062-06 should say which explicitly rather than leaving it inferable.
+
+---
+
+### ~~Q-062-17~~ · Does dropping `/children` make `/Albums/{album_id}` read as "fetch one album"? ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** Keep the rename exactly as specced — `/Albums/{album_id}`, `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights` (Q-062-12 stands, reconsideration confirmed no change). The naming tradeoff is accepted knowingly rather than reverted.
+
+**Spec impact:** None — spec already reflects this; Appendix note added confirming the decision was revisited and stands.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Keep the rename, accept the naming tradeoff
+
+**Question**  
+By ordinary REST convention, `GET /resource/{id}` fetches that one resource's own fields. This feature renames `/Albums/{album_id}/children` (self-documenting: "this album's children") to `/Albums/{album_id}` (Q-062-12), which actually returns a Struct-of-Arrays **collection** of that album's children, not the album's own metadata. The same pattern now applies to `/Albums/root`, `/Albums/persons`, `/Albums/pinned` — all singular/scope-shaped paths returning collections. This was an accepted tradeoff for the *new* root-family paths; renaming an *already-shipped* Feature 061 path to match raises the stakes slightly, since it's the first time this ambiguity touches a path that isn't brand new. Is the consistency win worth it, or should the rename be reconsidered now that it's not just new surface?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Keep the rename, accept the naming tradeoff
+
+- **Idea:** Proceed exactly as specified (Q-062-12) — `/Albums/{album_id}`, `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights`.
+- **Spec impact:** None — spec already reflects this.
+- **Pros:**  
+  - ✅ Consistent scheme across every endpoint in this family: `/Albums/<scope-or-id>` = "list what's under this," `/buckets` and `/rights` as siblings.  
+  - ✅ Confirmed zero v8 consumers reference the old path — genuinely free to change.  
+  - ✅ Shorter, cleaner URLs, matching the user's own stated preference.
+- **Cons:**  
+  - ❌ A future API consumer's first instinct reading `GET /Albums/{id}` may be "this returns the album," not "this returns its children" — discoverable only via documentation, not the URL itself.
+
+---
+
+#### 🅱️ Option B – Keep `/children` on the sub-album tier only; only root-level (parent-less) paths drop it
+
+- **Idea:** Revert Q-062-12 — sub-album tier stays `/Albums/{album_id}/children[/buckets|/rights]` (self-documenting, matches real REST expectations for a real resource id). Root/persons/pinned/smart/tags keep the shorter form, since they were never going to collide with a "fetch this resource" reading in the first place (there's no single "smart album" or "pinned album" resource by that name).
+- **Spec impact:** Revert FR-062-01/FR-062-12's rename clause, NFR-062-06's URL-literal caveat, S-062-28, Q-062-12's resolution, and all "8 new + 3 renamed" route-count language back to "8 new, 3 re-pointed, paths unchanged."
+- **Pros:**  
+  - ✅ Removes all rename-related risk and test-file churn (T-062-02, T-062-00) entirely.  
+  - ✅ `/children` after a real `{album_id}` is the one place in this whole route family where the "collection, not the resource" cue is actually load-bearing (elsewhere the segment itself, e.g. `smart`/`pinned`, already isn't a plausible single-resource name).
+- **Cons:**  
+  - ❌ Breaks the "`/Albums/<scope-or-id>` always means list" consistency the rest of the feature establishes.  
+  - ❌ Reintroduces the asymmetry this revision was explicitly trying to remove.
+
+---
+
+**Next action**  
+User to confirm Option A (as currently specced) or revert to Option B; low urgency since either is a small, mechanical spec edit at this stage, before implementation starts.
+
+---
 
 ### ~~Q-056-01~~: MAC/signature mechanism for temporary asset links ✅ RESOLVED
 
