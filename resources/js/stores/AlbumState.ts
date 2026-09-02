@@ -10,7 +10,7 @@ import { useLycheeStateStore } from "./LycheeState";
 import { useLayoutStore } from "./LayoutState";
 import { useUserStore } from "./UserState";
 import { computeBucketBoundaries, type AlbumBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
-import { adaptAlbumChildTile, combineAlbumChildRights, DEFAULT_ALBUM_CHILD_RIGHTS } from "@/v8/utils/adaptAlbumChildTile";
+import { adaptAlbumChildTile, combineAlbumChildRights, isRegularAlbumParentOwner, DEFAULT_ALBUM_CHILD_RIGHTS } from "@/v8/utils/adaptAlbumChildTile";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
 
@@ -547,8 +547,7 @@ export const useAlbumStore = defineStore("album-store", {
 							rights: combineAlbumChildRights(
 								i,
 								rightsV3,
-								isRegularAlbumParent,
-								userStore.user?.id,
+								isRegularAlbumParentOwner(rightsV3, isRegularAlbumParent, userStore.user?.id),
 								albumsStore.rootRights?.can_upload,
 							),
 						};

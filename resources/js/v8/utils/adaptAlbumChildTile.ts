@@ -39,29 +39,22 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
  * `AlbumPolicy::canEdit`/`canDownload`/`canDelete` exactly
  * (`app/Policies/AlbumPolicy.php:255-269,184-207,281-303`).
  *
- * `rightsV3.owner_id` is "the parent `album_id`'s own `owner_id`"
- * (FR-061-20) — for a regular `Album` parent this equals every direct
- * child's own owner too, by Lychee's album-ownership-inheritance rule
- * (FR-061-20's invariant), so the owner-based shortcut below is sound. For
- * a `TagAlbum`/`PersonAlbum` parent (FR-061-25) it is the *tag/person's*
- * owner — unrelated to each dynamically-matched child's real owner — so
- * the shortcut is deliberately **not** applied there: `isRegularAlbumParent`
- * gates it off, leaving `can_edit`/`can_download` to `grants_edit[i]`/
- * `grants_download[i]` alone (still correct, since those are resolved
- * per-child server-side) and `can_delete`/`can_move` to tier 3's
- * unconditionally-`false` `can_delete_children`/`can_move_children` for
- * that case (FR-063-05) — applying the owner shortcut here would have been
- * a real over-granting bug (a caller who merely owns the browsed tag/person
- * grouping is not thereby the owner of every album that happens to match it).
+ * `isOwner` is precomputed by the caller rather than derived here (2026-09-02
+ * root-SoA addendum refactor — originally computed internally from
+ * `rightsV3.owner_id`, moved out once a second call site with a structurally
+ * different notion of "owner" appeared): for the sub-album-children caller
+ * (`AlbumState.ts`), it's `isRegularAlbumParentOwner()` below; for the
+ * root-listing caller (`AlbumsState.ts`), it's simply `scope === 'own'` —
+ * root's `own`/`shared` query already partitions by ownership at the SQL
+ * level (`AlbumRootController::baseQuery()`), so every row in an `own`-scope
+ * response is unconditionally the caller's own, and root's own
+ * `AlbumChildrenRightsResource.owner_id` is `Optional`/omitted entirely
+ * (`AlbumRootController::queryRights()`, FR-062-06) — there is no
+ * per-child/per-response owner id to compare against at root at all.
  *
  * @param i        Index into tier 3's per-child arrays.
  * @param rightsV3 Tier 3 response (`AlbumChildrenRightsResource`).
- * @param isRegularAlbumParent Whether the browsed parent is a real `Album`
- *                 (`albumStore.modelAlbum !== undefined`) as opposed to a
- *                 `TagAlbum`/`PersonAlbum`.
- * @param currentUserId `useUserStore()`'s `user?.id` (`number | null`) —
- *                 `owner_id` is serialized as a `string`, so the comparison
- *                 coerces; `null`/`undefined` for a guest, never matches.
+ * @param isOwner  Whether the caller owns this child (precomputed).
  * @param mayUpload `albumsStore.rootRights?.can_upload` — `UserResource`
  *                 itself never exposes the underlying `User::$may_upload`
  *                 column to the frontend, but `AlbumPolicy::canUpload($user,
@@ -73,12 +66,9 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 export function combineAlbumChildRights(
 	i: number,
 	rightsV3: App.Http.Resources.V3.AlbumChildrenRightsResource,
-	isRegularAlbumParent: boolean,
-	currentUserId: number | null | undefined,
+	isOwner: boolean,
 	mayUpload: boolean | undefined,
 ): App.Http.Resources.Rights.AlbumRightsResource {
-	const isOwner = isRegularAlbumParent && currentUserId !== undefined && currentUserId !== null && String(currentUserId) === rightsV3.owner_id;
-
 	return {
 		can_edit: (isOwner && (mayUpload ?? false)) || rightsV3.grants_edit[i],
 		can_download: isOwner || rightsV3.grants_download[i],
@@ -100,6 +90,33 @@ export function combineAlbumChildRights(
 		can_assign_face: false,
 		can_batch_face_ops: false,
 	};
+}
+
+/**
+ * `isOwner` derivation for the sub-album-children caller (FR-063-04/05):
+ * `rightsV3.owner_id` is "the parent `album_id`'s own `owner_id`"
+ * (FR-061-20) — for a regular `Album` parent this equals every direct
+ * child's own owner too, by Lychee's album-ownership-inheritance rule, so
+ * the shortcut is sound. For a `TagAlbum`/`PersonAlbum` parent (FR-061-25)
+ * it is the *tag/person's* owner — unrelated to each dynamically-matched
+ * child's real owner — so `isRegularAlbumParent` gates the shortcut off
+ * entirely there (applying it would over-grant `can_delete`/`can_move`/
+ * `can_download` to a caller who merely owns the browsed tag/person
+ * grouping).
+ *
+ * @param isRegularAlbumParent Whether the browsed parent is a real `Album`
+ *                 (`albumStore.modelAlbum !== undefined`) as opposed to a
+ *                 `TagAlbum`/`PersonAlbum`.
+ * @param currentUserId `useUserStore()`'s `user?.id` (`number | null`) —
+ *                 `owner_id` is serialized as a `string`, so the comparison
+ *                 coerces; `null`/`undefined` for a guest, never matches.
+ */
+export function isRegularAlbumParentOwner(
+	rightsV3: App.Http.Resources.V3.AlbumChildrenRightsResource,
+	isRegularAlbumParent: boolean,
+	currentUserId: number | null | undefined,
+): boolean {
+	return isRegularAlbumParent && currentUserId !== undefined && currentUserId !== null && String(currentUserId) === rightsV3.owner_id;
 }
 
 /**

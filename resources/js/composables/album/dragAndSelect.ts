@@ -213,75 +213,93 @@ export function useDragAndSelect(
 	 * virtualization only ever mounts the tiles near the viewport, so a DOM
 	 * query would miss every off-screen album a drag rectangle could still
 	 * cover. Instead this reproduces the exact geometry
-	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue lay their tiles out
-	 * with — same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure
-	 * functions, same inputs — and anchors it via `getBounding()` on the
-	 * mounted grid root (`[data-album-grid-root]`, always in the DOM even
-	 * when its tiles aren't), so the result lands in the exact same
-	 * coordinate system `getBoxes()` itself uses, whatever `#galleryView`'s
-	 * own scroll model turns out to be — no need to duplicate that math here.
+	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue (sub-album children)
+	 * or AlbumRootGridVirtual.vue/AlbumRootListViewVirtual.vue (root gallery
+	 * own/shared, 2026-09-02 root-SoA addendum) lay their tiles out with —
+	 * same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure functions,
+	 * same inputs — and anchors it via `getBounding()` on each mounted grid
+	 * root (`[data-album-grid-root]`, always in the DOM even when its tiles
+	 * aren't), so the result lands in the exact same coordinate system
+	 * `getBoxes()` itself uses, whatever `#galleryView`'s own scroll model
+	 * turns out to be — no need to duplicate that math here.
+	 *
+	 * Queries *every* `[data-album-grid-root]`, not just the first: the root
+	 * gallery's non-tabbed SHOW mode can mount two independent grids
+	 * simultaneously (own + shared, `[data-album-grid-scope="own"|"shared"]`)
+	 * — a drag spanning both must select tiles from both. The sub-album path
+	 * never sets `data-album-grid-scope` at all, so it's distinguished from
+	 * either root scope by that attribute's absence.
 	 */
 	function getAlbumBoxesV3(): Bounding[] {
-		const gridRootEl = document.querySelector<HTMLElement>("[data-album-grid-root]");
-		if (gridRootEl === null) {
-			return [];
-		}
+		const gridRootEls = document.querySelectorAll<HTMLElement>("[data-album-grid-root]");
+		const boxes: Bounding[] = [];
 
-		const isListMode = lycheeStore.album_view_mode === "list";
-		const viewportWidth = window.innerWidth;
-		const containerWidth = gridRootEl.getBoundingClientRect().width;
+		gridRootEls.forEach((gridRootEl) => {
+			const scope = gridRootEl.getAttribute("data-album-grid-scope");
+			const tiles = scope === "own" ? albumsStore.albums : scope === "shared" ? albumsStore.sharedAlbumsV3 : albumsStore.albums;
+			const boundariesV3 =
+				scope === "own" ? albumsStore.ownBoundariesV3 : scope === "shared" ? albumsStore.sharedBoundariesV3 : albumStore.boundariesV3;
+			const bucketableV3 =
+				scope === "own" ? albumsStore.ownBucketableV3 : scope === "shared" ? albumsStore.sharedBucketableV3 : albumStore.bucketableV3;
 
-		let itemsPerRow: number;
-		let tileWidth: number;
-		let gap: number;
-		let aspectRatioNumber: number;
-		if (isListMode) {
-			itemsPerRow = 1;
-			tileWidth = LIST_ROW_HEIGHT;
-			gap = 0;
-			aspectRatioNumber = 1;
-		} else {
-			const breakpoint = resolveBreakpoint(viewportWidth);
-			const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
-			itemsPerRow = geometry.itemsPerRow;
-			tileWidth = geometry.tileWidth;
-			gap = geometry.gap;
-			aspectRatioNumber = aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio);
-		}
+			const isListMode = lycheeStore.album_view_mode === "list";
+			const viewportWidth = window.innerWidth;
+			const containerWidth = gridRootEl.getBoundingClientRect().width;
 
-		const boundaries = albumStore.boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }];
+			let itemsPerRow: number;
+			let tileWidth: number;
+			let gap: number;
+			let aspectRatioNumber: number;
+			if (isListMode) {
+				itemsPerRow = 1;
+				tileWidth = LIST_ROW_HEIGHT;
+				gap = 0;
+				aspectRatioNumber = 1;
+			} else {
+				const breakpoint = resolveBreakpoint(viewportWidth);
+				const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
+				itemsPerRow = geometry.itemsPerRow;
+				tileWidth = geometry.tileWidth;
+				gap = geometry.gap;
+				aspectRatioNumber = aspectRatioCssToNumber(
+					scope === null ? albumStore.config?.album_thumb_css_aspect_ratio : albumsStore.rootConfig?.album_thumb_css_aspect_ratio,
+				);
+			}
 
-		const { getTileBox } = buildVirtualAlbumRows(
-			albumsStore.albums.map((a) => a.id),
-			boundaries,
-			albumStore.bucketableV3,
-			itemsPerRow,
-			tileWidth,
-			aspectRatioNumber,
-			gap,
-		);
+			const boundaries = boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
 
-		const gridBox = getBounding(gridRootEl, "root");
+			const { getTileBox } = buildVirtualAlbumRows(
+				tiles.map((a) => a.id),
+				boundaries,
+				bucketableV3,
+				itemsPerRow,
+				tileWidth,
+				aspectRatioNumber,
+				gap,
+			);
 
-		return albumsStore.albums
-			.map((album, i): Bounding | null => {
+			const gridBox = getBounding(gridRootEl, "root");
+
+			tiles.forEach((album, i) => {
 				// NSFW-hidden tiles (FR-063-15) render an empty box, not a
 				// selectable one — matches getBoxes()'s DOM-absence for them.
 				if (album.is_nsfw && !lycheeStore.are_nsfw_visible) {
-					return null;
+					return;
 				}
 				const box = getTileBox(i);
 				const top = gridBox.top + box.top;
 				const left = gridBox.left + box.left;
-				return {
+				boxes.push({
 					id: album.id,
 					top: top,
 					left: left,
 					right: left + box.width,
 					bottom: top + box.height,
-				};
-			})
-			.filter((b): b is Bounding => b !== null);
+				});
+			});
+		});
+
+		return boxes;
 	}
 
 	function applySelection() {

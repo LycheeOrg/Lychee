@@ -116,6 +116,21 @@ const AlbumService = {
 	clearAlbums(): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
 		axiosWithCache.storage.remove("albums");
+		// Clear every v3 root-listing cache entry too (Feature 063,
+		// 2026-09-02 addendum, FR-063-23, extended to the full root SoA
+		// adoption) — this is the same "invalidate the root listing" call
+		// site every mutation that could affect it (create/delete/move/
+		// rename/visibility/unlock/pin) already calls.
+		axiosWithCache.storage.remove("albums_v3_smart");
+		axiosWithCache.storage.remove("albums_v3_tags");
+		axiosWithCache.storage.remove("albums_v3_tags_rights");
+		for (const scope of ["own", "shared"] as const) {
+			axiosWithCache.storage.remove(`albums_v3_persons_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_pinned_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_buckets_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_rights_${scope}`);
+		}
 	},
 
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {

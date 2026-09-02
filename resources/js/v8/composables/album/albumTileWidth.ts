@@ -4,6 +4,25 @@ import { useBreakpoints, useWindowSize, breakpointsTailwind } from "@vueuse/core
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 
+/**
+ * `breakpointsTailwind` (`@vueuse/core`) only carries Tailwind's own
+ * `sm`/`md`/`lg`/`xl`/`2xl` defaults — this project's `@theme` block
+ * (`resources/sass/app-v8.css`) now additionally defines `3xl`/`4xl`/`5xl`/
+ * `6xl` (continuing Tailwind's own `md`→`lg`→`xl`→`2xl` +256px increment),
+ * so this composable's breakpoint resolution needs its own extended table
+ * rather than the stock one — scoped to this file only (not a global
+ * override of vueuse's export) so every *other* `useBreakpoints(breakpointsTailwind)`
+ * consumer in this codebase (`AlbumNavPanel.vue`, `useAdminTiles.ts`, ...)
+ * is unaffected.
+ */
+const ALBUM_TILE_BREAKPOINTS = {
+	...breakpointsTailwind,
+	"3xl": 1792,
+	"4xl": 2048,
+	"5xl": 2304,
+	"6xl": 2560,
+};
+
 // Same fixed guess `getWidth()` (resources/js/layouts/getWidth.ts) uses for
 // the equivalent photo-layout problem. No scrollbar reserves space on touch
 // devices (overlay-style), so the guess is 0 there.
@@ -28,32 +47,51 @@ const WRAPPER_PADDING_PX_MOBILE = 16; // px-4 (below sm)
  * shared source of truth (FR-063-14): `tileWidth = viewportWidth *
  * vwFraction - remOffset * 16px`, exactly reproducing
  * `sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)]
- * xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)]`. Uses `viewportWidth`
- * (not the scroll container's own width) because the original CSS is
- * `vw`-relative, not container-relative — `itemsPerRow` below is what uses
- * the container's own width, to fit that viewport-sized tile as many times
- * as it can.
+ * xl:w-[calc(14vw-1rem)] 2xl:w-[calc(11vw-0.75rem)] 3xl:w-[calc(10vw-0.75rem)]
+ * 4xl:w-[calc(8vw-0.75rem)] 5xl:w-[calc(6vw-0.75rem)] 6xl:w-[calc(4vw-0.75rem)]`.
+ * Uses `viewportWidth` (not the scroll container's own width) because the
+ * original CSS is `vw`-relative, not container-relative — `itemsPerRow`
+ * below is what uses the container's own width, to fit that viewport-sized
+ * tile as many times as it can.
  *
- * `3xl`/`4xl` are deliberately absent: confirmed via the actual production
- * build (`public/build/assets/app-v8-*.css`) that this project has no
- * `--breakpoint-3xl`/`--breakpoint-4xl` custom property anywhere, so
- * Tailwind v4 silently drops every `3xl:`/`4xl:`-prefixed utility at build
- * time (including `AlbumThumb.vue`'s own `3xl:w-[calc(12vw-0.75rem)]
- * 4xl:w-52`) — dead classes, pre-existing, unrelated to this feature.
- * `2xl`'s formula is therefore what actually applies at any viewport width
- * `2xl` and above, with no further breakpoint beyond it.
+ * `2xl`'s `vwFraction` was `0.12` originally; lowered to `0.11` after a
+ * reported case at a 1709px-wide viewport (within the `2xl` tier, now
+ * capped at `3xl`'s 1792px threshold rather than extending unbounded): at
+ * `0.12`, `nominalTileWidth` (193.08px) landed a hair over the width
+ * needed for an 8th column (191.75px), so only 7 fit; `floor()` doesn't
+ * round a near-miss up. `0.11` clears that with margin across the whole
+ * `2xl` range (1536-1792px both give 8 now, not just 1709px), robust to
+ * the actual OS/browser scrollbar width varying from `ASSUMED_SCROLLBAR_WIDTH`'s
+ * guess below.
+ *
+ * `3xl`/`4xl`/`5xl`/`6xl` continue the same diminishing-`vwFraction` idea
+ * (keeping `remOffset` at `2xl`'s already-reduced `0.75`) — this project's
+ * `@theme` block (`resources/sass/app-v8.css`) now defines the matching
+ * `--breakpoint-3xl`/`4xl`/`5xl`/`6xl` custom properties (previously
+ * absent, so every `3xl:`/`4xl:`-prefixed utility, including
+ * `AlbumThumb.vue`'s own then-`3xl:w-[calc(12vw-0.75rem)] 4xl:w-52`,
+ * silently compiled to a dead, dropped class — confirmed via the actual
+ * production build at the time). Keeps tile *pixel* width from scaling
+ * linearly forever on very large/ultra-wide viewports, the same reasoning
+ * `sm`→`2xl`'s own diminishing fractions already apply at smaller sizes.
  */
 const TILE_WIDTH_FORMULA: Record<string, { vwFraction: number; remOffset: number }> = {
 	sm: { vwFraction: 0.25, remOffset: 1 },
 	md: { vwFraction: 0.19, remOffset: 1 },
 	lg: { vwFraction: 0.16, remOffset: 1 },
 	xl: { vwFraction: 0.14, remOffset: 1 },
-	"2xl": { vwFraction: 0.12, remOffset: 0.75 },
+	"2xl": { vwFraction: 0.11, remOffset: 0.75 },
+	"3xl": { vwFraction: 0.1, remOffset: 0.75 },
+	"4xl": { vwFraction: 0.08, remOffset: 0.75 },
+	"5xl": { vwFraction: 0.06, remOffset: 0.75 },
+	"6xl": { vwFraction: 0.04, remOffset: 0.75 },
 };
 
 /**
  * `AlbumThumbPanel.vue`'s existing `gap-1 sm:gap-2 md:gap-4` classes — caps
- * at `md` (16px), no further increase at `lg`/`xl`/`2xl`.
+ * at `md` (16px), no further increase at `lg`/`xl`/`2xl`/`3xl`/`4xl`/`5xl`/
+ * `6xl` either (unchanged by adding those breakpoints — only tile width
+ * needed a new tier per breakpoint, gap didn't).
  */
 const GAP_PX: Record<string, number> = {
 	base: 4,
@@ -62,18 +100,22 @@ const GAP_PX: Record<string, number> = {
 	lg: 16,
 	xl: 16,
 	"2xl": 16,
+	"3xl": 16,
+	"4xl": 16,
+	"5xl": 16,
+	"6xl": 16,
 };
 
 const REM_PX = 16;
 
 /**
- * Imperative, synchronous equivalent of `useBreakpoints(breakpointsTailwind).active()`
+ * Imperative, synchronous equivalent of `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()`
  * (FR-063-11) — same threshold table, but a plain function of a width
  * number rather than a reactive media-query listener, for
  * `dragAndSelect.ts`'s one-shot snapshot at drag-start.
  */
 export function resolveBreakpoint(viewportWidth: number): string {
-	const entries = Object.entries(breakpointsTailwind) as [string, number][];
+	const entries = Object.entries(ALBUM_TILE_BREAKPOINTS) as [string, number][];
 	entries.sort((a, b) => b[1] - a[1]);
 	for (const [name, min] of entries) {
 		if (viewportWidth >= min) {
@@ -98,8 +140,8 @@ export type AlbumTileGeometry = {
  * ResizeObserver-driven updates are asynchronous — unsuitable for a value
  * that must be correct synchronously at drag-start).
  *
- * @param breakpoint Active Tailwind breakpoint key (`""` below `sm`), same
- *                    values `useBreakpoints(breakpointsTailwind).active()` returns.
+ * @param breakpoint Active breakpoint key (`""` below `sm`), same values
+ *                    `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()` returns.
  */
 export function computeAlbumTileGeometry(
 	viewportWidth: number,
@@ -107,7 +149,7 @@ export function computeAlbumTileGeometry(
 	breakpoint: string,
 	numberAlbumsPerRowMobile: number,
 ): AlbumTileGeometry {
-	const gap = breakpoint === "" ? GAP_PX.base : (GAP_PX[breakpoint] ?? GAP_PX["2xl"]);
+	const gap = breakpoint === "" ? GAP_PX.base : (GAP_PX[breakpoint] ?? GAP_PX["6xl"]);
 
 	let itemsPerRow: number;
 	if (breakpoint === "") {
@@ -125,7 +167,7 @@ export function computeAlbumTileGeometry(
 		// choice for the virtualized layout (the legacy non-virtualized grid
 		// uses fixed vw-widths in a flex-wrap and does leave that leftover
 		// space, native to how flex-wrap lays out fixed-size items).
-		const formula = TILE_WIDTH_FORMULA[breakpoint] ?? TILE_WIDTH_FORMULA["2xl"];
+		const formula = TILE_WIDTH_FORMULA[breakpoint] ?? TILE_WIDTH_FORMULA["6xl"];
 		const nominalTileWidth = Math.max(0, viewportWidth * formula.vwFraction - formula.remOffset * REM_PX);
 		if (nominalTileWidth <= 0 || containerWidth <= 0) {
 			itemsPerRow = 1;
@@ -168,7 +210,7 @@ export function useAlbumTileWidth(): AlbumTileWidthResult {
 	const { number_albums_per_row_mobile } = storeToRefs(lycheeStore);
 
 	const { width: viewportWidth } = useWindowSize();
-	const breakpoints = useBreakpoints(breakpointsTailwind);
+	const breakpoints = useBreakpoints(ALBUM_TILE_BREAKPOINTS);
 	const activeBreakpoint = breakpoints.active();
 
 	// containerWidth is derived analytically (viewportWidth minus the

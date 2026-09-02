@@ -46,6 +46,7 @@ declare namespace App {
 		export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
 		export type AlbumHeaderSize = "half_screen" | "full_screen";
 		export type AlbumLayoutType = "list" | "grid";
+		export type AlbumListingScope = "own" | "shared";
 		export type AlbumTitleColor = "white" | "black" | "colour_1" | "colour_2" | "colour_3" | "colour_4" | "colour_5";
 		export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
@@ -746,7 +747,7 @@ declare namespace App {
 					is_album_timeline_enabled: boolean;
 					is_search_accessible: boolean;
 					show_keybinding_help_button: boolean;
-					album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
+					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 					date_format_album_thumb: string;
 					thumb_min_max_order: App.Enum.DateOrderingType;
 					back_button_enabled: boolean;
@@ -1705,12 +1706,25 @@ declare namespace App {
 					labels: string[];
 					bucketable: boolean;
 				};
+				export type AlbumCategoryListResource = {
+					ids: string[];
+					titles: string[];
+					cover_ids: (string | null)[];
+					owner_ids: string[];
+				};
+				export type AlbumCategoryRightsResource = {
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
+					grants_delete: boolean[];
+				};
 				export type AlbumChildrenDataResource = {
 					ids: string[];
 					titles: string[];
 					descriptions: string[];
 					cover_ids: (string | null)[];
 					bucket_ids: string[];
+					owner_ids: string[];
 					is_password_requireds: boolean[];
 					is_nsfws: boolean[];
 					is_pinneds: boolean[];

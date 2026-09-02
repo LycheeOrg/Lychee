@@ -52,7 +52,15 @@
 											@contexted="contextMenuAlbumOpen"
 										/>
 									</template>
-									<template v-if="displayAlbums.length > 0">
+									<AlbumRootPanelVirtual
+										v-if="is_struct_of_array_enabled"
+										scope="own"
+										header="gallery.albums"
+										:selected-albums="selectedAlbumsIds"
+										@clicked="albumSelect"
+										@contexted="contextMenuAlbumOpen"
+									/>
+									<template v-else-if="displayAlbums.length > 0">
 										<AlbumThumbPanel
 											:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
 											header="gallery.albums"
@@ -65,7 +73,14 @@
 									</template>
 								</template>
 								<template #shared>
-									<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+									<AlbumRootPanelVirtual
+										v-if="is_struct_of_array_enabled"
+										scope="shared"
+										:selected-albums="selectedAlbumsIds"
+										@clicked="albumSelect"
+										@contexted="contextMenuAlbumOpen"
+									/>
+									<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
 										<AlbumThumbPanel
 											:header="sharedAlbum.header"
 											:albums="sharedAlbum.data"
@@ -93,7 +108,15 @@
 									@contexted="contextMenuAlbumOpen"
 								/>
 							</template>
-							<template v-if="displayAlbums.length > 0">
+							<AlbumRootPanelVirtual
+								v-if="is_struct_of_array_enabled"
+								scope="own"
+								header="gallery.albums"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
+							<template v-else-if="displayAlbums.length > 0">
 								<AlbumThumbPanel
 									:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
 									header="gallery.albums"
@@ -104,7 +127,14 @@
 									@contexted="contextMenuAlbumOpen"
 								/>
 							</template>
-							<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+							<AlbumRootPanelVirtual
+								v-if="is_struct_of_array_enabled && shouldShowSharedAlbums"
+								scope="shared"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
+							<template v-else-if="!is_struct_of_array_enabled" v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
 								<AlbumThumbPanel
 									v-if="shouldShowSharedAlbums"
 									:header="sharedAlbum.header"
@@ -173,6 +203,7 @@
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import AlbumRootPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumRootPanelVirtual.vue";
 import { useUserStore } from "@/stores/UserState";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/v8/components/headers/AlbumsHeader.vue";
