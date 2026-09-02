@@ -1711,7 +1711,6 @@ declare namespace App {
 					descriptions: string[];
 					cover_ids: (string | null)[];
 					bucket_ids: string[];
-					owner_ids: string[];
 					is_password_requireds: boolean[];
 					is_nsfws: boolean[];
 					is_pinneds: boolean[];

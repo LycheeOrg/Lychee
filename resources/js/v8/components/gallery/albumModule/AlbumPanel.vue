@@ -55,33 +55,42 @@
 									v-model:open="areStatisticsOpen"
 								/>
 							</template>
-							<AlbumThumbPanel
-								v-if="albumsStore.albums.length > 0"
-								header="gallery.album.header_albums"
-								:albums="albumsStore.albums"
-								:config="albumPanelConfig"
-								:is-alone="photosStore.photos.length === 0"
+							<AlbumThumbPanelVirtual
+								v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
 								:selected-albums="selectedAlbumsIds"
-								:is-timeline="albumStore.config.is_album_timeline_enabled"
 								@clicked="albumSelect"
 								@selected="albumSelect"
 								@contexted="contextMenuAlbumOpen"
 							/>
-							<!-- Pagination for albums -->
-							<Pagination
-								v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-								:mode="lycheeStore.albums_pagination_mode"
-								:loading="albumStore.albums_loading"
-								:has-more="albumStore.hasMoreAlbums"
-								:current-page="albumStore.albums_current_page"
-								:last-page="albumStore.albums_last_page"
-								:per-page="albumStore.albums_per_page"
-								:total="albumStore.albums_total"
-								:remaining="albumStore.albumsRemainingCount"
-								resource-type="albums"
-								@load-more="albumStore.loadMoreAlbums()"
-								@go-to-page="goToAlbumsPage"
-							/>
+							<template v-else>
+								<AlbumThumbPanel
+									v-if="albumsStore.albums.length > 0"
+									header="gallery.album.header_albums"
+									:albums="albumsStore.albums"
+									:config="albumPanelConfig"
+									:is-alone="photosStore.photos.length === 0"
+									:selected-albums="selectedAlbumsIds"
+									:is-timeline="albumStore.config.is_album_timeline_enabled"
+									@clicked="albumSelect"
+									@selected="albumSelect"
+									@contexted="contextMenuAlbumOpen"
+								/>
+								<!-- Pagination for albums -->
+								<Pagination
+									v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+									:mode="lycheeStore.albums_pagination_mode"
+									:loading="albumStore.albums_loading"
+									:has-more="albumStore.hasMoreAlbums"
+									:current-page="albumStore.albums_current_page"
+									:last-page="albumStore.albums_last_page"
+									:per-page="albumStore.albums_per_page"
+									:total="albumStore.albums_total"
+									:remaining="albumStore.albumsRemainingCount"
+									resource-type="albums"
+									@load-more="albumStore.loadMoreAlbums()"
+									@go-to-page="goToAlbumsPage"
+								/>
+							</template>
 							<!-- Tag Filter -->
 							<PhotoThumbPanel
 								v-if="layoutStore.config && photosStore.photos.length > 0"
@@ -138,6 +147,7 @@
 <script setup lang="ts">
 import { computed, ref, ComponentPublicInstance } from "vue";
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import ShareAlbum from "@/v8/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/v8/components/gallery/albumModule/AlbumHero.vue";

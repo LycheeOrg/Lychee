@@ -106,6 +106,10 @@ const AlbumService = {
 				axiosWithCache.storage.remove(`album_albums_${album_id}_page${page}`);
 				axiosWithCache.storage.remove(`album_photos_${album_id}_page${page}`);
 			}
+			// Clear v3 subalbum-children caches (Feature 063, FR-063-13/19).
+			axiosWithCache.storage.remove(`album_v3_children_buckets_${album_id}`);
+			axiosWithCache.storage.remove(`album_v3_children_${album_id}`);
+			axiosWithCache.storage.remove(`album_v3_children_rights_${album_id}`);
 		}
 	},
 

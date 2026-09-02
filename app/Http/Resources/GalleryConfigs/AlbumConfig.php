@@ -39,7 +39,7 @@ class AlbumConfig extends Data
 	public bool $is_nsfw_warning_visible;
 	public bool $is_breadcrumb_enabled;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
-	// Feature 062 (FR-062-16): instance-wide only, no per-album override —
+	// Feature 063 (FR-063-16): instance-wide only, no per-album override —
 	// mirrors ThumbAlbumResource::formatMinMaxDate()'s own direct config
 	// reads exactly (no per-album branch exists there either).
 	public string $date_format_album_thumb;

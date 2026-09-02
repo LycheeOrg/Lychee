@@ -5,6 +5,11 @@ import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "./albumActions";
 import { AlbumsStore } from "@/stores/AlbumsState";
 import { PhotosStore } from "@/stores/PhotosState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/album/albumTileWidth";
+import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
+import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
@@ -36,6 +41,9 @@ export function useDragAndSelect(
 ) {
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
 	const position = ref<Position | undefined>(undefined);
+
+	const lycheeStore = useLycheeStateStore();
+	const albumStore = useAlbumStore();
 
 	const cache = {
 		max_height: 0,
@@ -141,7 +149,7 @@ export function useDragAndSelect(
 		cache.max_height = get_max_height();
 		cache.max_width = get_max_width();
 		cache.photo_boxes = getBoxes("data-photo-id");
-		cache.album_boxes = getBoxes("data-album-id");
+		cache.album_boxes = lycheeStore.is_struct_of_array_enabled ? getAlbumBoxesV3() : getBoxes("data-album-id");
 		// We use slice to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
 		// Otherwise that would be a reference to the original array and we would modify it.
 		cache.currentPhotoSelectionIds = togglableStore.selectedPhotosIds.slice();
@@ -198,6 +206,82 @@ export function useDragAndSelect(
 		});
 
 		return ret;
+	}
+
+	/**
+	 * Flag-on replacement for `getBoxes("data-album-id")` (FR-063-11) —
+	 * virtualization only ever mounts the tiles near the viewport, so a DOM
+	 * query would miss every off-screen album a drag rectangle could still
+	 * cover. Instead this reproduces the exact geometry
+	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue lay their tiles out
+	 * with — same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure
+	 * functions, same inputs — and anchors it via `getBounding()` on the
+	 * mounted grid root (`[data-album-grid-root]`, always in the DOM even
+	 * when its tiles aren't), so the result lands in the exact same
+	 * coordinate system `getBoxes()` itself uses, whatever `#galleryView`'s
+	 * own scroll model turns out to be — no need to duplicate that math here.
+	 */
+	function getAlbumBoxesV3(): Bounding[] {
+		const gridRootEl = document.querySelector<HTMLElement>("[data-album-grid-root]");
+		if (gridRootEl === null) {
+			return [];
+		}
+
+		const isListMode = lycheeStore.album_view_mode === "list";
+		const viewportWidth = window.innerWidth;
+		const containerWidth = gridRootEl.getBoundingClientRect().width;
+
+		let itemsPerRow: number;
+		let tileWidth: number;
+		let gap: number;
+		let aspectRatioNumber: number;
+		if (isListMode) {
+			itemsPerRow = 1;
+			tileWidth = LIST_ROW_HEIGHT;
+			gap = 0;
+			aspectRatioNumber = 1;
+		} else {
+			const breakpoint = resolveBreakpoint(viewportWidth);
+			const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
+			itemsPerRow = geometry.itemsPerRow;
+			tileWidth = geometry.tileWidth;
+			gap = geometry.gap;
+			aspectRatioNumber = aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio);
+		}
+
+		const boundaries = albumStore.boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }];
+
+		const { getTileBox } = buildVirtualAlbumRows(
+			albumsStore.albums.map((a) => a.id),
+			boundaries,
+			albumStore.bucketableV3,
+			itemsPerRow,
+			tileWidth,
+			aspectRatioNumber,
+			gap,
+		);
+
+		const gridBox = getBounding(gridRootEl, "root");
+
+		return albumsStore.albums
+			.map((album, i): Bounding | null => {
+				// NSFW-hidden tiles (FR-063-15) render an empty box, not a
+				// selectable one — matches getBoxes()'s DOM-absence for them.
+				if (album.is_nsfw && !lycheeStore.are_nsfw_visible) {
+					return null;
+				}
+				const box = getTileBox(i);
+				const top = gridBox.top + box.top;
+				const left = gridBox.left + box.left;
+				return {
+					id: album.id,
+					top: top,
+					left: left,
+					right: left + box.width,
+					bottom: top + box.height,
+				};
+			})
+			.filter((b): b is Bounding => b !== null);
 	}
 
 	function applySelection() {
