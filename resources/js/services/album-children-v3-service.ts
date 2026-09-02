@@ -3,7 +3,7 @@ import { AxiosCacheInstance } from "axios-cache-interceptor";
 import Constants from "./constants";
 
 /**
- * Consumes Feature 061's three `GET /api/v3/Albums/{album_id}/children*`
+ * Consumes Feature 061's three `GET /api/v3/Albums/{album_id}*`
  * endpoints (FR-063-01/03). Cached the same way `AlbumService`'s v2 calls
  * are — via `axios-cache-interceptor`'s enumerable `id`s (FR-063-19) —
  * rather than a bespoke store-level cache; `AlbumService.clearCache()`
@@ -12,7 +12,7 @@ import Constants from "./constants";
 const AlbumChildrenV3Service = {
 	getBuckets(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumBucketResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/children/buckets`, {
+		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/buckets`, {
 			data: {},
 			id: `album_v3_children_buckets_${album_id}`,
 		});
@@ -20,7 +20,7 @@ const AlbumChildrenV3Service = {
 
 	getChildren(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenDataResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/children`, {
+		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}`, {
 			data: {},
 			id: `album_v3_children_${album_id}`,
 		});
@@ -28,7 +28,7 @@ const AlbumChildrenV3Service = {
 
 	getRights(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenRightsResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/children/rights`, {
+		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/rights`, {
 			data: {},
 			id: `album_v3_children_rights_${album_id}`,
 		});
