@@ -18,23 +18,23 @@
 		<template v-if="props.album.cover_id !== null">
 			<Thumb
 				v-if="!togglableStore.isDragging"
-				class="thumbimg absolute w-full h-full m-0 p-0 border-0 object-cover top-0 left-0 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
-				:class="chromeClass"
+				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
+				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
 				type="thumb"
 			/>
 			<Thumb
 				v-if="!togglableStore.isDragging"
-				class="thumbimg absolute w-full h-full m-0 p-0 border-0 object-cover top-0 left-0 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
-				:class="chromeClass"
+				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
+				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
 				type="thumb"
 			/>
 			<Thumb
-				class="thumbimg absolute w-full h-full m-0 p-0 border-0 object-cover top-0 left-0"
-				:class="[chromeClass, cssClass]"
+				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
+				:class="[chromeClass, cornerClass, cssClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
 				type="thumb"
@@ -45,7 +45,7 @@
 			     the subalbum itself is password-protected, a generic no-image
 			     icon otherwise — the one AlbumThumbImage.vue fallback branch that
 			     doesn't depend on thumb.type/thumb.placeholder (tier 2 has neither). -->
-			<span class="thumbimg absolute w-full h-full m-0 p-0 border-0 top-0 left-0 flex items-center justify-center" :class="chromeClass">
+			<span class="thumbimg absolute w-full h-full m-0 p-0 top-0 left-0 flex items-center justify-center" :class="[chromeClass, cornerClass]">
 				<img class="w-1/3 h-1/3 object-contain opacity-60" :alt="$t('gallery.thumbnail')" :src="noCoverIconSrc" draggable="false" />
 			</span>
 		</template>
@@ -135,7 +135,8 @@ const lycheeStore = useLycheeStateStore();
 
 const togglableStore = useTogglablesStateStore();
 const { getNoImageIcon, getPaswwordIcon } = useImageHelpers();
-const { display_thumb_album_overlay, is_nsfw_background_blurred, is_cover_id_flag_enabled } = storeToRefs(lycheeStore);
+const { display_thumb_album_overlay, is_nsfw_background_blurred, is_cover_id_flag_enabled, is_rounded_corners_enabled, is_album_border_enabled } =
+	storeToRefs(lycheeStore);
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const aspectRatio = computed(
@@ -148,6 +149,13 @@ const cannotInteractWhileDragging = computed(() => togglableStore.isDragging ===
 const noCoverIconSrc = computed(() => (props.album.is_password_required ? getPaswwordIcon() : getNoImageIcon()));
 
 const chromeClass = computed(() => (togglableStore.isDragging && !canInteractAlbum(props.album) ? "" : "group-hover:border-primary"));
+
+// Matches AlbumThumbImage.vue's own root-span classes (FR-062-15 forked this
+// component from AlbumThumb.vue/AlbumThumbImage.vue, but missed these).
+const cornerClass = computed(() => ({
+	"rounded-lg": is_rounded_corners_enabled.value,
+	"border-solid border border-accented": is_album_border_enabled.value,
+}));
 
 const cssClass = computed(() => {
 	if (props.isSelected) {

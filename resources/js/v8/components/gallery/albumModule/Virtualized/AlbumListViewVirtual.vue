@@ -1,43 +1,45 @@
 <template>
-	<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize - scrollMargin}px` }">
-		<!-- Sticky pinned header — see AlbumThumbGridVirtual.vue for the identical mechanism. -->
-		<div
-			v-if="activeHeaderLabel !== null"
-			class="sticky top-(--ui-header-height) z-10 pointer-events-none"
-			:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
-		>
-			<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/95 backdrop-blur">
-				{{ activeHeaderLabel }}
+	<div class="w-full px-4 sm:px-6">
+		<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize}px` }">
+			<!-- Sticky pinned header — see AlbumThumbGridVirtual.vue for the identical mechanism. -->
+			<div
+				v-if="activeHeaderLabel !== null"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
+			>
+				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/95 backdrop-blur">
+					{{ activeHeaderLabel }}
+				</div>
 			</div>
-		</div>
-		<div
-			v-for="item in virtualRows"
-			:key="String(item.key)"
-			class="absolute top-0 left-0 w-full"
-			:style="{
-				height: `${item.size}px`,
-				transform: `translate3d(0, ${item.start - scrollMargin}px, 0)`,
-				contain: 'layout size paint',
-			}"
-		>
-			<div v-if="item.row?.type === 'header'" class="w-full h-full flex items-center font-semibold text-toned text-lg">
-				{{ item.row.label }}
+			<div
+				v-for="item in virtualRows"
+				:key="String(item.key)"
+				class="absolute top-0 left-0 w-full"
+				:style="{
+					height: `${item.size}px`,
+					transform: `translate3d(0, ${item.start - scrollMargin}px, 0)`,
+					contain: 'layout size paint',
+				}"
+			>
+				<div v-if="item.row?.type === 'header'" class="w-full h-full flex items-center font-semibold text-toned text-lg">
+					{{ item.row.label }}
+				</div>
+				<template v-else-if="item.row?.type === 'tiles'">
+					<AlbumListItemVirtual
+						v-for="(tile, idx) in tilesForRow(item.row)"
+						v-show="!tile.is_nsfw || are_nsfw_visible"
+						:key="tile.id"
+						role="listitem"
+						:aria-posinset="item.row.startIndex + idx + 1"
+						:aria-setsize="albumsStore.albums.length"
+						:album="tile"
+						:is-selected="props.selectedAlbums.includes(tile.id)"
+						@clicked="propagateClicked"
+						@selected="(e: MouseEvent, id: string) => emits('selected', e, id)"
+						@contexted="propagateContexted"
+					/>
+				</template>
 			</div>
-			<template v-else-if="item.row?.type === 'tiles'">
-				<AlbumListItemVirtual
-					v-for="(tile, idx) in tilesForRow(item.row)"
-					v-show="!tile.is_nsfw || are_nsfw_visible"
-					:key="tile.id"
-					role="listitem"
-					:aria-posinset="item.row.startIndex + idx + 1"
-					:aria-setsize="albumsStore.albums.length"
-					:album="tile"
-					:is-selected="props.selectedAlbums.includes(tile.id)"
-					@clicked="propagateClicked"
-					@selected="(e: MouseEvent, id: string) => emits('selected', e, id)"
-					@contexted="propagateContexted"
-				/>
-			</template>
 		</div>
 	</div>
 </template>
@@ -63,6 +65,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, LIST_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
+import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumListItemVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 
@@ -87,6 +90,11 @@ const containerRef = ref<HTMLElement>();
 
 const { top: viewportTop } = useElementBounding(containerRef);
 const scrollMargin = computed(() => viewportTop.value + window.scrollY);
+
+// See AlbumThumbGridVirtual.vue's identical constant for why this is needed:
+// the real header row is hidden behind the app's own sticky top bar, not
+// behind the true viewport top (y=0).
+const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
 const showHeaders = computed(() => albumStore.bucketableV3);
 const boundaries = computed(() =>
@@ -140,15 +148,18 @@ const headerTops = computed(() => {
 const activeHeaderLabel = computed<string | null>(() => {
 	const offset = (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value;
 	const tops = headerTops.value;
+	// See AlbumThumbGridVirtual.vue's identical comment: a header becomes
+	// "current" once it reaches the bottom edge of the sticky top bar
+	// (uiHeaderHeightPx), not the true viewport top (0).
 	let current: { top: number; label: string } | null = null;
 	for (const h of tops) {
-		if (h.top <= offset) {
+		if (h.top - uiHeaderHeightPx <= offset) {
 			current = h;
 		} else {
 			break;
 		}
 	}
-	if (current === null || offset < current.top + HEADER_ROW_HEIGHT) {
+	if (current === null || offset < current.top + HEADER_ROW_HEIGHT - uiHeaderHeightPx) {
 		return null;
 	}
 	return current.label;

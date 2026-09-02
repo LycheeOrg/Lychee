@@ -1,51 +1,61 @@
 <template>
-	<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize - scrollMargin}px` }">
-		<!-- Sticky pinned header (FR-062-08): only rendered once the active bucket's own
-		     real header row has scrolled past the top — see activeHeaderLabel below. The
-		     negative bottom margin keeps it from adding extra scroll height of its own.
-		     Docks below the page's own sticky top bar (top-(--ui-header-height), same
-		     variable AlbumNavPanel.vue's sticky sidebar uses) since scrolling here is the
-		     page/window's own scroll, not a nested scroll container. -->
-		<div
-			v-if="activeHeaderLabel !== null"
-			class="sticky top-(--ui-header-height) z-10 pointer-events-none"
-			:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
-		>
-			<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/95 backdrop-blur">
-				{{ activeHeaderLabel }}
+	<div class="w-full px-4 sm:px-6">
+		<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize}px` }">
+			<!-- Sticky pinned header (FR-062-08): only rendered once the active bucket's own
+			     real header row has scrolled past the top — see activeHeaderLabel below. The
+			     negative bottom margin keeps it from adding extra scroll height of its own.
+			     Docks below the page's own sticky top bar (top-(--ui-header-height), same
+			     variable AlbumNavPanel.vue's sticky sidebar uses) since scrolling here is the
+			     page/window's own scroll, not a nested scroll container. -->
+			<div
+				v-if="activeHeaderLabel !== null"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
+			>
+				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
+					{{ activeHeaderLabel }}
+				</div>
 			</div>
-		</div>
-		<div
-			v-for="item in virtualRows"
-			:key="String(item.key)"
-			class="absolute top-0 left-0 w-full"
-			:style="{
-				height: `${item.size}px`,
-				transform: `translate3d(0, ${item.start - scrollMargin}px, 0)`,
-				contain: 'layout size paint',
-			}"
-		>
-			<div v-if="item.row?.type === 'header'" class="w-full h-full flex items-center font-semibold text-toned text-lg">
-				{{ item.row.label }}
-			</div>
-			<div v-else-if="item.row?.type === 'tiles'" class="w-full h-full flex flex-row" :style="{ gap: `${gap}px` }">
+			<div
+				v-for="item in virtualRows"
+				:key="String(item.key)"
+				class="absolute top-0 left-0 w-full"
+				:style="{
+					height: `${item.size}px`,
+					transform: `translate3d(0, ${item.start - scrollMargin}px, 0)`,
+					contain: 'layout size paint',
+				}"
+			>
 				<div
-					v-for="(tile, idx) in tilesForRow(item.row)"
-					:key="tile.id"
-					role="listitem"
-					:aria-posinset="item.row.startIndex + idx + 1"
-					:aria-setsize="albumsStore.albums.length"
-					:style="{ width: `${tileWidth}px`, height: '100%', flexShrink: 0 }"
+					v-if="item.row?.type === 'header'"
+					class="w-full flex items-center font-semibold text-toned text-lg"
+					:style="{ height: `${rowsResult.rowContentHeights[item.index]}px` }"
 				>
-					<AlbumThumbVirtual
-						v-if="!tile.is_nsfw || are_nsfw_visible"
-						:album="tile"
-						:cover_id="null"
-						:is-selected="props.selectedAlbums.includes(tile.id)"
-						@click="propagateClicked($event, tile.id)"
-						@touch-select="(e: MouseEvent) => emits('selected', e, tile.id)"
-						@contextmenu="propagateContexted($event, tile.id)"
-					/>
+					{{ item.row.label }}
+				</div>
+				<div
+					v-else-if="item.row?.type === 'tiles'"
+					class="w-full flex flex-row"
+					:style="{ height: `${rowsResult.rowContentHeights[item.index]}px`, gap: `${gap}px` }"
+				>
+					<div
+						v-for="(tile, idx) in tilesForRow(item.row)"
+						:key="tile.id"
+						role="listitem"
+						:aria-posinset="item.row.startIndex + idx + 1"
+						:aria-setsize="albumsStore.albums.length"
+						:style="{ width: `${tileWidth}px`, height: '100%', flexShrink: 0 }"
+					>
+						<AlbumThumbVirtual
+							v-if="!tile.is_nsfw || are_nsfw_visible"
+							:album="tile"
+							:cover_id="null"
+							:is-selected="props.selectedAlbums.includes(tile.id)"
+							@click="propagateClicked($event, tile.id)"
+							@touch-select="(e: MouseEvent) => emits('selected', e, tile.id)"
+							@contextmenu="propagateContexted($event, tile.id)"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -72,7 +82,7 @@
  * returning a constant — since those heights are exact (not actually
  * estimates), no `measureElement` DOM remeasurement is needed.
  */
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useElementBounding } from "@vueuse/core";
 import { useWindowVirtualizer } from "@tanstack/vue-virtual";
@@ -83,6 +93,7 @@ import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 
@@ -104,7 +115,7 @@ const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const containerRef = ref<HTMLElement>();
-const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth(containerRef);
+const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth();
 
 // Document-relative top of this component's own root element — reactive to
 // both scroll (viewportTop and window.scrollY move in lockstep, so their
@@ -112,6 +123,14 @@ const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth(containerRef);
 // mounted above it (AlbumHero, statistics panel, ...).
 const { top: viewportTop } = useElementBounding(containerRef);
 const scrollMargin = computed(() => viewportTop.value + window.scrollY);
+
+// The app's own sticky top bar (--ui-header-height, app-v8.css) sits above
+// everything on the page, including the pinned bucket label below (which
+// docks right under it via `top-(--ui-header-height)`) — so the real,
+// in-flow header row is actually hidden once it scrolls behind *that* bar,
+// not once it scrolls past the true viewport top (y=0), which is what
+// activeHeaderLabel below needs to account for.
+const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
 const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio));
 
@@ -148,6 +167,23 @@ const virtualizer = useWindowVirtualizer(
 const totalSize = computed(() => virtualizer.value.getTotalSize());
 const virtualRows = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, row: rowsResult.value.rows[item.index] })));
 
+// tanstack-virtual caches each row's measured size by its getItemKey(), not
+// by index — and a row's key (`tiles-${firstChildId}` / `header-${bucketId}`)
+// can survive a change to rowsResult even though what that key now refers to
+// (and thus its true height) has changed: itemsPerRow changing reshapes
+// tileWidth/tileHeight (the fluid-fill stretch in albumTileWidth.ts) without
+// necessarily changing row 0's key, and the boundaries arriving async
+// (flat count-mismatch fallback -> real buckets once /children/buckets
+// resolves, per buildVirtualAlbumRows()'s own doc comment) reshapes which
+// rows exist at all. Either way the cache can keep serving a stale height
+// for a surviving key while other rows get a fresh one, leaving the two out
+// of sync — exactly the kind of drift where a downstream row's start
+// position no longer lines up with its own height within the reported
+// total size. Watching rowsResult itself (not just its geometry inputs)
+// catches both cases; virtualizer.measure() clears that cache outright,
+// forcing every row to be freshly measured against the current rows/sizes.
+watch([rowsResult, scrollMargin], () => virtualizer.value.measure());
+
 function tilesForRow(row: VirtualTileRow): AdaptedAlbumTile[] {
 	return albumsStore.albums.slice(row.startIndex, row.startIndex + row.count) as AdaptedAlbumTile[];
 }
@@ -176,15 +212,24 @@ const activeHeaderLabel = computed<string | null>(() => {
 	// local, container-relative coordinates headerTops is computed in.
 	const offset = (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value;
 	const tops = headerTops.value;
+	// A header becomes "current" once it scrolls up to the bottom edge of the
+	// app's own sticky top bar (viewport position uiHeaderHeightPx) — not
+	// once it reaches the true viewport top (0), which is further scrolling
+	// than necessary and made section switches visibly lag behind the scroll.
 	let current: { top: number; label: string } | null = null;
 	for (const h of tops) {
-		if (h.top <= offset) {
+		if (h.top - uiHeaderHeightPx <= offset) {
 			current = h;
 		} else {
 			break;
 		}
 	}
-	if (current === null || offset < current.top + HEADER_ROW_HEIGHT) {
+	// The real header row is hidden once its bottom edge scrolls behind the
+	// app's own top bar — i.e. once its viewport position (current.top -
+	// offset + HEADER_ROW_HEIGHT) drops to/below uiHeaderHeightPx, not once
+	// it drops below the true viewport top (0). Equivalently: offset must
+	// reach current.top + HEADER_ROW_HEIGHT - uiHeaderHeightPx.
+	if (current === null || offset < current.top + HEADER_ROW_HEIGHT - uiHeaderHeightPx) {
 		return null;
 	}
 	return current.label;
