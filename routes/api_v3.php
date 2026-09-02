@@ -36,11 +36,22 @@ Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
 // Flat Struct-of-Arrays listing of album access permissions for the bulk-share page.
 Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);
 
-// Album virtual-scroll backend (Feature 061), gated by
-// features.struct-of-array at each request's FormRequest::authorize()
-// (exposed to the frontend as modules.is_struct_of_array_enabled).
-// Registered parent-then-child so the file reads top-down (declaration order
-// does not affect matching — Laravel routes by segment count).
-Route::get('/Albums/{album_id}/children', [Gallery\AlbumChildrenDataController::class, 'index']);
-Route::get('/Albums/{album_id}/children/buckets', [Gallery\AlbumBucketController::class, 'index']);
-Route::get('/Albums/{album_id}/children/rights', [Gallery\AlbumChildrenRightsController::class, 'index']);
+// Album virtual-scroll backend (Feature 061; consolidated + renamed by
+// Feature 062, FR-062-01/FR-062-12, Q-062-12 — `/children` dropped, mirrors
+// root's own naming), gated by features.struct-of-array at each request's
+// FormRequest::authorize() (exposed to the frontend as
+// modules.is_struct_of_array_enabled). Feature 062 registers literal
+// segments (`root`, `smart`, `persons`, `tags`, `pinned`) ahead of this
+// `{album_id}` family so Laravel never matches the wildcard first.
+Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
+Route::get('/Albums/root/buckets', [Gallery\AlbumListing\AlbumRootController::class, 'buckets']);
+Route::get('/Albums/root/rights', [Gallery\AlbumListing\AlbumRootController::class, 'rights']);
+Route::get('/Albums/smart', [Gallery\AlbumListing\AlbumCategoryController::class, 'smart']);
+Route::get('/Albums/persons', [Gallery\AlbumListing\AlbumCategoryController::class, 'persons']);
+Route::get('/Albums/tags', [Gallery\AlbumListing\AlbumCategoryController::class, 'tags']);
+Route::get('/Albums/tags/rights', [Gallery\AlbumListing\AlbumCategoryController::class, 'tagsRights']);
+Route::get('/Albums/pinned', [Gallery\AlbumListing\AlbumCategoryController::class, 'pinned']);
+
+Route::get('/Albums/{album_id}', [Gallery\AlbumListing\AlbumChildrenController::class, 'index']);
+Route::get('/Albums/{album_id}/buckets', [Gallery\AlbumListing\AlbumChildrenController::class, 'buckets']);
+Route::get('/Albums/{album_id}/rights', [Gallery\AlbumListing\AlbumChildrenController::class, 'rights']);

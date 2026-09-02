@@ -51,7 +51,7 @@ declare namespace App {
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 		export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 		export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
-		export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at";
+		export type ColumnSortingAlbumType = "created_at" | "title" | "min_taken_at" | "max_taken_at";
 		export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
 		export type ColumnSortingType =
 			"owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
@@ -196,6 +196,7 @@ declare namespace App {
 			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
+		export type TitleBucketMode = "date_prefix" | "alphabetical";
 		export type UpdateStatus = 0 | 1 | 2 | 3;
 		export type UserGroupRole = "member" | "admin";
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
@@ -528,6 +529,8 @@ declare namespace App {
 					is_nsfw_warning_visible: boolean;
 					is_breadcrumb_enabled: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
+					date_format_album_thumb: string;
+					thumb_min_max_order: App.Enum.DateOrderingType;
 					photo_layout: App.Enum.PhotoLayoutType;
 					is_album_timeline_enabled: boolean;
 					is_photo_timeline_enabled: boolean;
@@ -744,6 +747,8 @@ declare namespace App {
 					is_search_accessible: boolean;
 					show_keybinding_help_button: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
+					date_format_album_thumb: string;
+					thumb_min_max_order: App.Enum.DateOrderingType;
 					back_button_enabled: boolean;
 					back_button_text: string;
 					back_button_url: string;
@@ -1693,6 +1698,39 @@ declare namespace App {
 					grants_uploads: (boolean | null)[];
 					grants_edits: (boolean | null)[];
 					grants_deletes: (boolean | null)[];
+				};
+				export type AlbumBucketResource = {
+					bucket_ids: string[];
+					counts: number[];
+					labels: string[];
+					bucketable: boolean;
+				};
+				export type AlbumChildrenDataResource = {
+					ids: string[];
+					titles: string[];
+					descriptions: string[];
+					cover_ids: (string | null)[];
+					bucket_ids: string[];
+					owner_ids: string[];
+					is_password_requireds: boolean[];
+					is_nsfws: boolean[];
+					is_pinneds: boolean[];
+					is_publics: boolean[];
+					is_link_requireds: boolean[];
+					has_subalbums: boolean[];
+					num_photos: number[];
+					num_subalbums: number[];
+					created_ats: string[];
+					min_taken_ats: (string | null)[];
+					max_taken_ats: (string | null)[];
+				};
+				export type AlbumChildrenRightsResource = {
+					owner_id?: string;
+					can_delete_children: boolean;
+					can_move_children: boolean;
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
 				};
 				export type AlbumListBulkEditFieldsResource = {
 					owner_ids: number[];

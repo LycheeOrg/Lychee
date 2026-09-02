@@ -29,6 +29,11 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * `is_password_requireds[i]`, which reflects the *viewer's* effective access
  * (FR-061-27). No thumbnail media `type`/blur `placeholder` field — those
  * require a join this endpoint deliberately never adds (Non-Goals).
+ *
+ * `owner_ids[]` (Feature 062, DO-062-03) is additive — populated for both the
+ * sub-album tier and the root tier; for root's `scope=shared`, `bucket_ids[i]`
+ * additionally carries the row's own `owner_id` rather than a date/title
+ * bucket (FR-062-04).
  */
 #[TypeScript()]
 class AlbumChildrenDataResource extends Data
@@ -39,6 +44,7 @@ class AlbumChildrenDataResource extends Data
 	 * @param string[]        $descriptions
 	 * @param (string|null)[] $cover_ids
 	 * @param string[]        $bucket_ids
+	 * @param string[]        $owner_ids
 	 * @param bool[]          $is_password_requireds
 	 * @param bool[]          $is_nsfws
 	 * @param bool[]          $is_pinneds
@@ -57,6 +63,7 @@ class AlbumChildrenDataResource extends Data
 		public array $descriptions,
 		public array $cover_ids,
 		public array $bucket_ids,
+		public array $owner_ids,
 		public array $is_password_requireds,
 		public array $is_nsfws,
 		public array $is_pinneds,

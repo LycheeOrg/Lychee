@@ -57,7 +57,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 	{
 		config(['features.struct-of-array' => false]);
 
-		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/children");
+		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}");
 		$this->assertForbidden($response);
 	}
 
@@ -65,7 +65,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 	public function testFieldListMatchesFR06112AndVisibilitySetMatchesV2Pagination(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/children");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}");
 		$this->assertOk($response);
 		$json = $response->json();
 
@@ -90,12 +90,12 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->recompute($visible);
 
 		// Owner sees it.
-		$owner_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json('ids');
+		$owner_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json('ids');
 		self::assertContains($visible->id, $owner_ids);
 
 		// Parent itself is private (no grants), so a stranger cannot even
 		// resolve/access the parent to begin with.
-		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children");
+		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}");
 		$this->assertForbidden($response);
 	}
 
@@ -130,7 +130,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$private = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($private);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}");
 		$this->assertOk($response);
 		$json = $response->json();
 
@@ -166,7 +166,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}");
 		$log = DB::getQueryLog();
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -199,7 +199,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$empty = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($empty);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}");
 		$this->assertOk($response);
 		$json = $response->json();
 
@@ -219,10 +219,10 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 	public function testZeroChildrenParentReturnsEmptyArrays(): void
 	{
-		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album5->id}/children");
+		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album5->id}");
 		$this->assertOk($response);
 		$response->assertExactJson([
-			'ids' => [], 'titles' => [], 'descriptions' => [], 'cover_ids' => [], 'bucket_ids' => [],
+			'ids' => [], 'titles' => [], 'descriptions' => [], 'cover_ids' => [], 'bucket_ids' => [], 'owner_ids' => [],
 			'is_password_requireds' => [], 'is_nsfws' => [], 'is_pinneds' => [], 'is_publics' => [],
 			'is_link_requireds' => [], 'has_subalbums' => [], 'num_photos' => [],
 			'num_subalbums' => [], 'created_ats' => [], 'min_taken_ats' => [], 'max_taken_ats' => [],
@@ -231,13 +231,13 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 	public function testUnresolvableAlbumIdReturns404(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/AAAAAAAAAAAAAAAAAAAAAAAA/children');
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/AAAAAAAAAAAAAAAAAAAAAAAA');
 		$this->assertNotFound($response);
 	}
 
 	public function testNoAccessReturns403(): void
 	{
-		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->album1->id}/children");
+		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->album1->id}");
 		$this->assertForbidden($response);
 	}
 
@@ -257,8 +257,8 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->recompute($c2);
 		$this->recompute($c3);
 
-		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json();
-		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json();
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk()->json();
+		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json();
 
 		$grouped = [];
 		foreach ($children['bucket_ids'] as $bucket_id) {
@@ -290,8 +290,8 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$undated = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($undated);
 
-		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json();
-		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json();
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk()->json();
+		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json();
 
 		self::assertContains('unknown', $children['bucket_ids']);
 		$grouped = array_count_values($children['bucket_ids']);
@@ -332,8 +332,8 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->recompute($early);
 		$this->recompute($late);
 
-		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json();
-		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json();
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk()->json();
+		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json();
 
 		self::assertSame(['2020', '2021', 'unknown'], $buckets['bucket_ids']);
 		// A plain title-ascending sort would put "1 undated trip" FIRST
@@ -356,11 +356,11 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk();
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk();
 		$log = DB::getQueryLog();
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -379,7 +379,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json('ids');
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json('ids');
 		self::assertCount(1, $before);
 
 		$create_response = $this->actingAs($this->userMayUpload1)->postJson('Album', [
@@ -388,7 +388,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		]);
 		self::assertSame(200, $create_response->getStatusCode());
 
-		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json('ids');
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json('ids');
 		self::assertCount(2, $after);
 	}
 
@@ -398,14 +398,14 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 	{
 		$this->album1->tags()->sync([$this->tag_test->id]);
 
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}")->assertOk()->json();
 
 		self::assertSame([$this->album1->id], $json['ids']);
 	}
 
 	public function testTagAlbumChildrenEmptyWhenNoAlbumCarriesTheTag(): void
 	{
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}")->assertOk()->json();
 
 		self::assertSame([], $json['ids']);
 	}
@@ -415,7 +415,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->album1->tags()->sync([$this->tag_test->id]);
 		Configs::set('TA_albums_listing_enabled', '0');
 
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}")->assertOk()->json();
 
 		self::assertSame([], $json['ids']);
 	}
@@ -441,14 +441,14 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		AccessPermission::factory()->public()->visible()->locked()->for_album($password_album)->create();
 
 		// Never unlocked - the password-protected album must not appear.
-		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children");
+		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}");
 		$this->assertOk($response_locked);
 		self::assertSame([], $response_locked->json('ids'));
 
 		// Same identity, now with the album unlocked in session - must not
 		// be served the response cached above for the locked state.
 		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $password_album->id);
-		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children");
+		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}");
 		$this->assertOk($response_unlocked);
 		self::assertSame([$password_album->id], $response_unlocked->json('ids'));
 	}
@@ -479,7 +479,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 
 		// userNoUpload can see the (public) parent, but not yet the child -
 		// they are not a member of group1.
-		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children");
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}");
 		$this->assertOk($before);
 		self::assertSame([], $before->json('ids'));
 
@@ -498,7 +498,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		// reflects the just-added membership, not a cached empty collection.
 		$this->userNoUpload->unsetRelation('user_groups')->refresh();
 
-		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children");
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}");
 		$this->assertOk($after);
 		self::assertSame([$hidden_child->id], $after->json('ids'));
 	}
@@ -518,7 +518,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$this->assertOk($create_response);
 		$person_album_id = $create_response->getOriginalContent();
 
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/children")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}")->assertOk()->json();
 
 		self::assertSame([$this->album1->id], $json['ids']);
 	}

@@ -1,7 +1,7 @@
 # Feature Plan 062 – Root Album Listing Struct-of-Arrays
 
 _Linked specification:_ `docs/specs/4-architecture/features/062-root-album-listing-struct-of-arrays/spec.md`
-_Status:_ Draft
+_Status:_ Implemented
 _Last updated:_ 2026-09-02
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md).
@@ -66,6 +66,8 @@ Bring the root gallery view to parity with Feature 061's sub-album virtual-scrol
 ## Implementation Drift Gate
 
 Before merging, re-run: `git diff` on `routes/api_v2.php`, `app/Http/Controllers/Gallery/AlbumsController.php`, `app/Actions/Albums/Top.php`, `app/Http/Resources/Collections/RootAlbumResource.php`, `resources/js/v7/**` — all must be empty (NFR-062-04). Record the confirming command output here once run, plus the file-count tally for NFR-062-09 and the `EXPLAIN`/query-plan evidence for NFR-062-01/02.
+
+**Confirmed 2026-09-02:** `git diff --stat routes/api_v2.php app/Http/Controllers/Gallery/AlbumsController.php app/Actions/Albums/Top.php app/Http/Resources/Collections/RootAlbumResource.php resources/js/v7` — empty. File-count tally (NFR-062-09): 3 net controller files (`AlbumChildrenController` consolidated + `AlbumRootController`/`AlbumCategoryController` new) under `app/Http/Controllers/Gallery/AlbumListing/`; 2 new request files (`GetScopedAlbumsRequest`, `GetAlbumCategoryRequest`); 2 new resource files (`AlbumCategoryListResource`, `AlbumCategoryRightsResource`) plus 2 widened existing ones (`AlbumChildrenDataResource`, `AlbumChildrenRightsResource`) — ceiling met exactly. `own` scope buckets confirmed index-served via the pre-existing `(parent_id, bucket_id)` composite index reused unchanged (root's own-scope query shape mirrors the sub-album tier's exact `GROUP BY` verbatim). All 32 tasks (T-062-00..32, including T-062-19a/23a/23b/23c) implemented and green.
 
 ## Increment Map
 

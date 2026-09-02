@@ -9,6 +9,7 @@
 namespace App\Services\Cache;
 
 use App\DTO\SortingCriterion;
+use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Policies\AlbumPolicy;
@@ -182,22 +183,35 @@ class CacheKeyProvider
 		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
 	}
 
-	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
+	/**
+	 * @param ?AlbumListingScope $scope feature 062 (FR-062-13, FR-062-15) widening: `null`
+	 *                                  (v2's own `Top::get()` call, unchanged) omits the
+	 *                                  scope suffix entirely, keeping v2's cache entries
+	 *                                  byte-identical; a real scope (v3's `/Albums/persons`)
+	 *                                  appends it so `own`/`shared`/different users never
+	 *                                  collide (NFR-062-08)
+	 */
+	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, ?AlbumListingScope $scope = null): string
 	{
 		$person_albums_listing_tag = $this->personAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}{$scope_suffix}";
 	}
 
-	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order): string
+	/**
+	 * @param ?AlbumListingScope $scope see {@see self::personAlbumsListingKey()}
+	 */
+	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order, ?AlbumListingScope $scope = null): string
 	{
 		$pinned_albums_listing_tag = $this->pinnedAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
 		$column_value = $column?->value ?? 'null';
 		$order_value = $order?->value ?? 'null';
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}";
+		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}{$scope_suffix}";
 	}
 
 	/**
@@ -299,5 +313,45 @@ class CacheKeyProvider
 		$user_tag = $this->userTag($user_id);
 
 		return "{$album_children_tag}:children-rights:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/buckets` (Feature 062,
+	 * FR-062-13): a pure function of `(scope, user identity)` — `own`/
+	 * `shared`/different users never collide (NFR-062-08). Tagged with the
+	 * same {@see self::albumChildrenTag()} (passing `null`, root) already
+	 * evicted by every existing root-album-affecting handler, plus
+	 * {@see self::userTag()}.
+	 */
+	public function rootAlbumBucketsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-buckets:{$scope->value}:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root` (Feature 062, FR-062-13),
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 */
+	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-data:{$scope->value}:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/rights` (Feature 062,
+	 * FR-062-13), mirrors {@see self::rootAlbumBucketsKey()}.
+	 */
+	public function rootAlbumChildrenRightsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-rights:{$scope->value}:{$user_tag}";
 	}
 }
