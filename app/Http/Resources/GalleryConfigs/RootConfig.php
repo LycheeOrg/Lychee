@@ -16,7 +16,6 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -25,7 +24,6 @@ class RootConfig extends Data
 	public bool $is_album_timeline_enabled = false;
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
-	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 	// Feature 063 (FR-063-16): same instance-wide-only config AlbumConfig exposes.
 	public string $date_format_album_thumb;
