@@ -219,6 +219,7 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem, TabsItem } from "@nuxt/ui";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
@@ -345,7 +346,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 	return sections.filter((s) => s.length > 0);
 });
 
-defineShortcuts({
+definePanelShortcuts({
 	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
 	f: () => togglableStore.toggleFullScreen(),
 	" ": () => unselect(),

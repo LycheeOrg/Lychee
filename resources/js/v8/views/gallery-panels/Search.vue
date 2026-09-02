@@ -174,6 +174,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { trans } from "laravel-vue-i18n";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -507,7 +508,7 @@ function goBack() {
 	}
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	// Album operations
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {

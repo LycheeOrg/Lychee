@@ -208,6 +208,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{ personId: string; photoId?: string }>();
 
@@ -632,7 +633,7 @@ function onMerged(targetPersonId: string) {
 }
 
 // Keybindings
-defineShortcuts({
+definePanelShortcuts({
 	// Photo operations (arrow keys are flipped for RTL languages)
 	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
 	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),

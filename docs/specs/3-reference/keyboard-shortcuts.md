@@ -1,0 +1,203 @@
+# Keyboard Shortcuts Cheat Sheet
+
+Reference of every keyboard shortcut wired in the Lychee frontend (v8 Nuxt UI views, identical in the legacy v7 views unless noted).
+
+`Mod` means `Cmd` on Apple devices and `Ctrl` everywhere else.
+
+All shortcuts are ignored while the focus is inside an `input`, `textarea` or `select`, except `Esc`.
+
+## Global
+
+| Key | Action |
+| --- | --- |
+| `?` | Open the keyboard shortcuts dialog |
+| `Mod` + `K` | Open the spotlight search |
+| `Esc` | While a modal is open the modal closes and the view below ignores every key. Otherwise: clear the selection if there is one, then blur the focused field, then go back |
+| `Enter` | Confirm the current dialog or input |
+| `F` | Toggle full screen |
+| `H` | Toggle sensitive albums (cycles the NSFW blur overlay when a photo is open) |
+| `L` | Open the login dialog |
+| `K` | Open passkey login (root albums view only) |
+| `Mod` + `V` | Paste an image or video from the clipboard into the upload dialog |
+
+## Albums view (root)
+
+| Key | Action |
+| --- | --- |
+| `N` | New album |
+| `U` | Upload photos |
+| `/` | Open search |
+| `Mod` + `A` | Select everything |
+| `Space` | Clear the selection |
+| `M` | Move the selection |
+| `Delete` / `Backspace` | Delete the selection |
+
+## Album view (no photo open)
+
+| Key | Action |
+| --- | --- |
+| `N` | New album |
+| `U` | Upload photos |
+| `/` | Open search |
+| `I` | Toggle the album edit panel |
+| `Mod` + `A` | Select every photo and sub-album |
+| `Space` | Clear the selection |
+| `M` | Move the selection |
+| `Delete` / `Backspace` | Delete the selection |
+| `Esc` | Clear the selection, then close the open panel, then go back |
+
+## Photo open (album, tag, search, timeline, flow, person)
+
+| Key | Action |
+| --- | --- |
+| `Left arrow` | Previous photo (flipped in RTL languages) |
+| `Right arrow` | Next photo (flipped in RTL languages) |
+| `Space` | Start or stop the slideshow |
+| `I` | Show or hide the details panel |
+| `O` | Cycle the overlay mode (EXIF, description, none) |
+| `P` | Toggle the face overlay |
+| `E` | Edit the photo information |
+| `S` | Highlight the photo (star) |
+| `M` | Move the photo |
+| `Delete` / `Backspace` | Delete the photo |
+| `0` to `5` | Set the rating from 0 to 5 stars (album view) |
+| `Esc` | Stop the slideshow, then close the details, then close the photo |
+
+## Face recognition
+
+| Key | Action | Where |
+| --- | --- | --- |
+| `D` | Dismiss the proposed cluster | Cluster review queue |
+| `Right arrow` / `Space` | Skip the proposed cluster | Cluster review queue |
+| `Enter` | Assign the cluster to the selected person | Cluster review queue |
+| `Mod` + `A` | Select or unselect every face | Face maintenance |
+| `Ctrl` + click on a face box | Dismiss that face (desktop only) | Photo view, details drawer |
+
+## Other views
+
+| Key | Action | Where |
+| --- | --- | --- |
+| `H` | Toggle sensitive content | Statistics |
+| `Esc` | Clear the selection if there is one, then go back | Map, Frame, Favourites |
+| `Enter` / `Escape` | Save or cancel the inline rename | Bulk album edit, album tracks, person detail |
+
+## Mouse modifiers
+
+| Gesture | Action |
+| --- | --- |
+| `Mod` + click | Add or remove one item from the selection |
+| `Shift` + click | Select the range from the last clicked item |
+| Click and drag | Lasso selection (holding `Mod` or `Shift` keeps the current selection) |
+| `Left arrow` / `Right arrow` on the rating widget | Move between stars, `Enter` or `Space` applies the rating |
+
+## Embedded widget lightbox
+
+| Key | Action |
+| --- | --- |
+| `Left arrow` | Previous photo |
+| `Right arrow` | Next photo |
+| `Space` | Cycle the information mode |
+| `Esc` | Close the lightbox |
+
+---
+
+# Aide-memoire des raccourcis clavier
+
+Reference de tous les raccourcis clavier du frontend Lychee (vues v8 Nuxt UI, identiques dans les vues v7 historiques sauf mention contraire).
+
+`Mod` correspond a `Cmd` sur les appareils Apple et a `Ctrl` partout ailleurs.
+
+Tous les raccourcis sont ignores quand le focus est dans un `input`, un `textarea` ou un `select`, sauf `Esc`.
+
+## Global
+
+| Touche | Action |
+| --- | --- |
+| `?` | Ouvrir la fenetre des raccourcis clavier |
+| `Mod` + `K` | Ouvrir la recherche spotlight |
+| `Esc` | Quand une fenetre est ouverte, elle se ferme et la vue en dessous ignore toutes les touches. Sinon : vider la selection s'il y en a une, puis retirer le focus du champ, puis revenir en arriere |
+| `Enter` | Valider la fenetre ou le champ courant |
+| `F` | Basculer en plein ecran |
+| `H` | Afficher ou masquer les albums sensibles (fait defiler le flou NSFW quand une photo est ouverte) |
+| `L` | Ouvrir la fenetre de connexion |
+| `K` | Ouvrir la connexion par passkey (vue racine des albums uniquement) |
+| `Mod` + `V` | Coller une image ou une video du presse-papier dans la fenetre de televersement |
+
+## Vue albums (racine)
+
+| Touche | Action |
+| --- | --- |
+| `N` | Nouvel album |
+| `U` | Televerser des photos |
+| `/` | Ouvrir la recherche |
+| `Mod` + `A` | Tout selectionner |
+| `Space` | Vider la selection |
+| `M` | Deplacer la selection |
+| `Delete` / `Backspace` | Supprimer la selection |
+
+## Vue album (aucune photo ouverte)
+
+| Touche | Action |
+| --- | --- |
+| `N` | Nouvel album |
+| `U` | Televerser des photos |
+| `/` | Ouvrir la recherche |
+| `I` | Afficher ou masquer le panneau d'edition de l'album |
+| `Mod` + `A` | Selectionner toutes les photos et sous-albums |
+| `Space` | Vider la selection |
+| `M` | Deplacer la selection |
+| `Delete` / `Backspace` | Supprimer la selection |
+| `Esc` | Vider la selection, puis fermer le panneau ouvert, puis revenir en arriere |
+
+## Photo ouverte (album, tag, recherche, chronologie, flow, personne)
+
+| Touche | Action |
+| --- | --- |
+| `Fleche gauche` | Photo precedente (inversee dans les langues RTL) |
+| `Fleche droite` | Photo suivante (inversee dans les langues RTL) |
+| `Space` | Demarrer ou arreter le diaporama |
+| `I` | Afficher ou masquer le panneau d'informations |
+| `O` | Changer le mode d'affichage de la surimpression (EXIF, description, aucune) |
+| `P` | Afficher ou masquer la surimpression des visages |
+| `E` | Modifier les informations de la photo |
+| `S` | Mettre la photo en avant (etoile) |
+| `M` | Deplacer la photo |
+| `Delete` / `Backspace` | Supprimer la photo |
+| `0` a `5` | Attribuer une note de 0 a 5 etoiles (vue album) |
+| `Esc` | Arreter le diaporama, puis fermer les details, puis fermer la photo |
+
+## Reconnaissance faciale
+
+| Touche | Action | Ou |
+| --- | --- | --- |
+| `D` | Rejeter le groupe propose | File de revision des groupes |
+| `Fleche droite` / `Space` | Passer le groupe propose | File de revision des groupes |
+| `Enter` | Affecter le groupe a la personne selectionnee | File de revision des groupes |
+| `Mod` + `A` | Selectionner ou deselectionner tous les visages | Maintenance des visages |
+| `Ctrl` + clic sur un cadre de visage | Rejeter ce visage (bureau uniquement) | Vue photo, tiroir de details |
+
+## Autres vues
+
+| Touche | Action | Ou |
+| --- | --- | --- |
+| `H` | Afficher ou masquer le contenu sensible | Statistiques |
+| `Esc` | Vider la selection s'il y en a une, puis revenir en arriere | Carte, Frame, Favoris |
+| `Enter` / `Escape` | Valider ou annuler le renommage en ligne | Edition groupee d'albums, pistes audio, fiche personne |
+
+## Modificateurs souris
+
+| Geste | Action |
+| --- | --- |
+| `Mod` + clic | Ajouter ou retirer un element de la selection |
+| `Shift` + clic | Selectionner la plage depuis le dernier element clique |
+| Clic maintenu et glisse | Selection au lasso (maintenir `Mod` ou `Shift` conserve la selection en cours) |
+| `Fleche gauche` / `Fleche droite` sur le widget de note | Se deplacer entre les etoiles, `Enter` ou `Space` applique la note |
+
+## Lightbox du widget embarque
+
+| Touche | Action |
+| --- | --- |
+| `Fleche gauche` | Photo precedente |
+| `Fleche droite` | Photo suivante |
+| `Space` | Changer le mode d'information |
+| `Esc` | Fermer la lightbox |

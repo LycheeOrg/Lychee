@@ -83,6 +83,37 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// NavMenu
 		isNavOpen: false,
 	}),
+	getters: {
+		is_modal_open(state): boolean {
+			return (
+				state.is_login_open ||
+				state.is_webauthn_open ||
+				state.is_metrics_open ||
+				state.is_upload_visible ||
+				state.is_camera_capture_visible ||
+				state.is_create_album_visible ||
+				state.is_create_tag_album_visible ||
+				state.is_create_person_album_visible ||
+				state.is_album_edit_open ||
+				state.is_photo_edit_open ||
+				state.is_rename_visible ||
+				state.is_move_visible ||
+				state.is_delete_visible ||
+				state.is_merge_album_visible ||
+				state.is_share_album_visible ||
+				state.is_embed_code_visible ||
+				state.is_import_from_link_open ||
+				state.is_import_from_dropbox_open ||
+				state.is_import_from_server_open ||
+				state.is_tag_visible ||
+				state.is_license_visible ||
+				state.is_copy_visible ||
+				state.is_apply_renamer_visible ||
+				state.is_watermark_confirm_visible ||
+				state.is_keybindings_help_open
+			);
+		},
+	},
 	actions: {
 		loadUploadConfig() {
 			if (this.upload_config !== undefined) {
