@@ -101,103 +101,103 @@ All shortcuts are ignored while the focus is inside an `input`, `textarea` or `s
 
 ---
 
-# Aide-memoire des raccourcis clavier
+# Aide-mémoire des raccourcis clavier
 
-Reference de tous les raccourcis clavier du frontend Lychee (vues v8 Nuxt UI, identiques dans les vues v7 historiques sauf mention contraire).
+Référence de tous les raccourcis clavier du frontend Lychee (vues v8 Nuxt UI, identiques dans les vues v7 historiques sauf mention contraire).
 
-`Mod` correspond a `Cmd` sur les appareils Apple et a `Ctrl` partout ailleurs.
+`Mod` correspond à `Cmd` sur les appareils Apple et à `Ctrl` partout ailleurs.
 
-Tous les raccourcis sont ignores quand le focus est dans un `input`, un `textarea` ou un `select`, sauf `Esc`.
+Tous les raccourcis sont ignorés quand le focus est dans un `input`, un `textarea` ou un `select`, sauf `Esc`.
 
 ## Global
 
 | Touche | Action |
 | --- | --- |
-| `?` | Ouvrir la fenetre des raccourcis clavier |
+| `?` | Ouvrir la fenêtre des raccourcis clavier |
 | `Mod` + `K` | Ouvrir la recherche spotlight |
-| `Esc` | Quand une fenetre est ouverte, elle se ferme et la vue en dessous ignore toutes les touches. Sinon : vider la selection s'il y en a une, puis retirer le focus du champ, puis revenir en arriere |
-| `Enter` | Valider la fenetre ou le champ courant |
-| `F` | Basculer en plein ecran |
-| `H` | Afficher ou masquer les albums sensibles (fait defiler le flou NSFW quand une photo est ouverte) |
-| `L` | Ouvrir la fenetre de connexion |
+| `Esc` | Quand une fenêtre est ouverte, elle se ferme et la vue en dessous ignore toutes les touches. Sinon : vider la sélection s'il y en a une, puis retirer le focus du champ, puis revenir en arrière |
+| `Enter` | Valider la fenêtre ou le champ courant |
+| `F` | Basculer en plein écran |
+| `H` | Afficher ou masquer les albums sensibles (fait défiler le flou NSFW quand une photo est ouverte) |
+| `L` | Ouvrir la fenêtre de connexion |
 | `K` | Ouvrir la connexion par passkey (vue racine des albums uniquement) |
-| `Mod` + `V` | Coller une image ou une video du presse-papier dans la fenetre de televersement |
+| `Mod` + `V` | Coller une image ou une vidéo du presse-papier dans la fenêtre de téléversement |
 
 ## Vue albums (racine)
 
 | Touche | Action |
 | --- | --- |
 | `N` | Nouvel album |
-| `U` | Televerser des photos |
+| `U` | Téléverser des photos |
 | `/` | Ouvrir la recherche |
-| `Mod` + `A` | Tout selectionner |
-| `Space` | Vider la selection |
-| `M` | Deplacer la selection |
-| `Delete` / `Backspace` | Supprimer la selection |
+| `Mod` + `A` | Tout sélectionner |
+| `Space` | Vider la sélection |
+| `M` | Déplacer la sélection |
+| `Delete` / `Backspace` | Supprimer la sélection |
 
 ## Vue album (aucune photo ouverte)
 
 | Touche | Action |
 | --- | --- |
 | `N` | Nouvel album |
-| `U` | Televerser des photos |
+| `U` | Téléverser des photos |
 | `/` | Ouvrir la recherche |
-| `I` | Afficher ou masquer le panneau d'edition de l'album |
-| `Mod` + `A` | Selectionner toutes les photos et sous-albums |
-| `Space` | Vider la selection |
-| `M` | Deplacer la selection |
-| `Delete` / `Backspace` | Supprimer la selection |
-| `Esc` | Vider la selection, puis fermer le panneau ouvert, puis revenir en arriere |
+| `I` | Afficher ou masquer le panneau d'édition de l'album |
+| `Mod` + `A` | Sélectionner toutes les photos et sous-albums |
+| `Space` | Vider la sélection |
+| `M` | Déplacer la sélection |
+| `Delete` / `Backspace` | Supprimer la sélection |
+| `Esc` | Vider la sélection, puis fermer le panneau ouvert, puis revenir en arrière |
 
 ## Photo ouverte (album, tag, recherche, chronologie, flow, personne)
 
 | Touche | Action |
 | --- | --- |
-| `Fleche gauche` | Photo precedente (inversee dans les langues RTL) |
-| `Fleche droite` | Photo suivante (inversee dans les langues RTL) |
-| `Space` | Demarrer ou arreter le diaporama |
+| `Flèche gauche` | Photo précédente (inversée dans les langues RTL) |
+| `Flèche droite` | Photo suivante (inversée dans les langues RTL) |
+| `Space` | Démarrer ou arrêter le diaporama |
 | `I` | Afficher ou masquer le panneau d'informations |
 | `O` | Changer le mode d'affichage de la surimpression (EXIF, description, aucune) |
 | `P` | Afficher ou masquer la surimpression des visages |
 | `E` | Modifier les informations de la photo |
-| `S` | Mettre la photo en avant (etoile) |
-| `M` | Deplacer la photo |
+| `S` | Mettre la photo en avant (étoile) |
+| `M` | Déplacer la photo |
 | `Delete` / `Backspace` | Supprimer la photo |
-| `0` a `5` | Attribuer une note de 0 a 5 etoiles (vue album) |
-| `Esc` | Arreter le diaporama, puis fermer les details, puis fermer la photo |
+| `0` à `5` | Attribuer une note de 0 à 5 étoiles (vue album) |
+| `Esc` | Arrêter le diaporama, puis fermer les détails, puis fermer la photo |
 
 ## Reconnaissance faciale
 
-| Touche | Action | Ou |
+| Touche | Action | Où |
 | --- | --- | --- |
-| `D` | Rejeter le groupe propose | File de revision des groupes |
-| `Fleche droite` / `Space` | Passer le groupe propose | File de revision des groupes |
-| `Enter` | Affecter le groupe a la personne selectionnee | File de revision des groupes |
-| `Mod` + `A` | Selectionner ou deselectionner tous les visages | Maintenance des visages |
-| `Ctrl` + clic sur un cadre de visage | Rejeter ce visage (bureau uniquement) | Vue photo, tiroir de details |
+| `D` | Rejeter le groupe proposé | File de révision des groupes |
+| `Flèche droite` / `Space` | Passer le groupe proposé | File de révision des groupes |
+| `Enter` | Affecter le groupe à la personne sélectionnée | File de révision des groupes |
+| `Mod` + `A` | Sélectionner ou désélectionner tous les visages | Maintenance des visages |
+| `Ctrl` + clic sur un cadre de visage | Rejeter ce visage (bureau uniquement) | Vue photo, tiroir de détails |
 
 ## Autres vues
 
-| Touche | Action | Ou |
+| Touche | Action | Où |
 | --- | --- | --- |
 | `H` | Afficher ou masquer le contenu sensible | Statistiques |
-| `Esc` | Vider la selection s'il y en a une, puis revenir en arriere | Carte, Frame, Favoris |
-| `Enter` / `Escape` | Valider ou annuler le renommage en ligne | Edition groupee d'albums, pistes audio, fiche personne |
+| `Esc` | Vider la sélection s'il y en a une, puis revenir en arrière | Carte, Frame, Favoris |
+| `Enter` / `Escape` | Valider ou annuler le renommage en ligne | Édition groupée d'albums, pistes audio, fiche personne |
 
 ## Modificateurs souris
 
 | Geste | Action |
 | --- | --- |
-| `Mod` + clic | Ajouter ou retirer un element de la selection |
-| `Shift` + clic | Selectionner la plage depuis le dernier element clique |
-| Clic maintenu et glisse | Selection au lasso (maintenir `Mod` ou `Shift` conserve la selection en cours) |
-| `Fleche gauche` / `Fleche droite` sur le widget de note | Se deplacer entre les etoiles, `Enter` ou `Space` applique la note |
+| `Mod` + clic | Ajouter ou retirer un élément de la sélection |
+| `Shift` + clic | Sélectionner la plage depuis le dernier élément cliqué |
+| Clic maintenu et glissé | Sélection au lasso (maintenir `Mod` ou `Shift` conserve la sélection en cours) |
+| `Flèche gauche` / `Flèche droite` sur le widget de note | Se déplacer entre les étoiles, `Enter` ou `Space` applique la note |
 
-## Lightbox du widget embarque
+## Lightbox du widget embarqué
 
 | Touche | Action |
 | --- | --- |
-| `Fleche gauche` | Photo precedente |
-| `Fleche droite` | Photo suivante |
+| `Flèche gauche` | Photo précédente |
+| `Flèche droite` | Photo suivante |
 | `Space` | Changer le mode d'information |
 | `Esc` | Fermer la lightbox |
