@@ -45,9 +45,15 @@
 			     the subalbum itself is password-protected, a generic no-image
 			     icon otherwise — the one AlbumThumbImage.vue fallback branch that
 			     doesn't depend on thumb.type/thumb.placeholder (tier 2 has neither). -->
-			<span class="thumbimg absolute w-full h-full m-0 p-0 top-0 left-0 flex items-center justify-center" :class="[chromeClass, cornerClass]">
-				<img class="w-1/3 h-1/3 object-contain opacity-60" :alt="$t('gallery.thumbnail')" :src="noCoverIconSrc" draggable="false" />
-			</span>
+			<!-- <span class="thumbimg absolute w-full h-full m-0 p-0 top-0 left-0 flex items-center justify-center" > -->
+			<img
+				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
+				:alt="$t('gallery.thumbnail')"
+				:src="noCoverIconSrc"
+				:class="[chromeClass, cornerClass]"
+				draggable="false"
+			/>
+			<!-- </span> -->
 		</template>
 		<AlbumThumbOverlay v-if="display_thumb_album_overlay !== 'never'" :album="props.album" />
 		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ml-1 top-0 left-0 flex">
@@ -57,7 +63,7 @@
 			<ThumbBadge v-if="showPasswordFlag && props.album.cover_id === null" :class="ALBUM_BADGE_BG.link" icon="lock-locked" />
 			<ThumbBadge v-if="showPasswordFlag && props.album.cover_id !== null" :class="ALBUM_BADGE_BG.danger" icon="lock-unlocked" />
 			<ThumbBadge
-				v-if="is_cover_id_flag_enabled && props.cover_id === props.album.cover_id"
+				v-if="is_cover_id_flag_enabled && props.cover_id !== null && props.cover_id === props.album.cover_id"
 				:class="ALBUM_BADGE_BG.favorite"
 				icon="folder-cover"
 			/>

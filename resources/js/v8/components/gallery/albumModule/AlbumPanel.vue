@@ -139,7 +139,7 @@
 					<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
 					<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
 				</template>
-				<GalleryFooter v-once context="album" />
+				<GalleryFooter v-if="albumStore.album" v-once context="album" />
 			</div>
 		</div>
 	</UMain>
