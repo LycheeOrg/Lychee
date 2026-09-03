@@ -150,10 +150,9 @@ class AlbumController extends Controller
 			shall_override: true
 		);
 
-		// Feature 061 (FR-061-03): the parent's own sort column/order or
-		// timeline granularity governs its *direct children's* bucket_id,
-		// not its own — so a change to any of the three needs to recompute
-		// every direct child, not just this album.
+		// The parent's own sort column/order or timeline granularity governs
+		// its *direct children's* bucket_id, not its own — so a change to any
+		// of the three needs to recompute every direct child, not just this album.
 		$sorting_or_timeline_changed = $album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']);
 		RecomputeChildAlbumBucketsJob::dispatchIf($sorting_or_timeline_changed, $album->id);
 		// The job above bulk-`upsert()`s every direct child's `bucket_id`,
