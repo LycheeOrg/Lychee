@@ -16,7 +16,7 @@ use App\Policies\AlbumPolicy;
 
 /**
  * Single source of truth for every {@see ManagedCacheService} key and tag
- * used by the album/tag listing cache (Feature 053).
+ * used by the album/tag listing cache.
  *
  * A producer (e.g. `AlbumRepository`, `Top`, `GetTagWithPhotosAndAlbums`)
  * and its invalidator (e.g. `ManagedCacheAlbumListingInvalidator`) must
@@ -133,7 +133,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Coarse tag carried by every `GET /api/v3/Albums` (Feature 057) cache
+	 * Coarse tag carried by every `GET /api/v3/Albums` cache
 	 * entry, across every user identity and flag combination; evicting it
 	 * alone flushes the entire v3 listing cache.
 	 */
@@ -251,10 +251,10 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums` (Feature 057): a pure function of
+	 * Cache key for `GET /api/v3/Albums`: a pure function of
 	 * user identity plus the exact `(with_parent_id, for_bulk_edit)` flag
 	 * combination requested, so no two distinct combinations or users ever
-	 * collide (NFR-057-04).
+	 * collide.
 	 */
 	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit): string
 	{
@@ -267,11 +267,10 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/{album_id}/children/buckets`
-	 * (Feature 061, FR-061-08): a pure function of `(album_id, user
-	 * identity)` — no sort-column dimension is needed since it is implied by
-	 * `album_id` (a parent's effective sort column is a property of that
-	 * album, not a per-request choice).
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/buckets`:
+	 * a pure function of `(album_id, user identity)` — no sort-column
+	 * dimension is needed since it is implied by `album_id`
+	 * (a parent's effective sort column is a property of that album, not a per-request choice).
 	 */
 	public function albumBucketsKey(string $album_id, int|string|null $user_id): string
 	{
@@ -282,8 +281,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/{album_id}/children` (Feature 061,
-	 * FR-061-15), mirrors {@see self::albumBucketsKey()}.
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children`, mirrors {@see self::albumBucketsKey()}.
 	 *
 	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
 	 *                                album ids ({@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}) -
@@ -302,8 +300,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`
-	 * (Feature 061, FR-061-22), mirrors {@see self::albumBucketsKey()}.
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`, mirrors {@see self::albumBucketsKey()}.
 	 *
 	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()}
 	 */

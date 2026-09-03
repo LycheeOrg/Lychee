@@ -9,10 +9,9 @@
 use App\Models\Extensions\BaseConfigMigration;
 
 /**
- * Feature 061 (CFG-061-01/02): instance-wide-only configuration governing how
- * a `TITLE`-sorted parent's direct children compute their `bucket_id`
- * (`RecomputeAlbumStatsJob::computeBucket()`). Unlike `album_sorting_col`/
- * `album_timeline`, these two keys have no per-album override.
+ * Instance-wide-only configuration governing how  a `TITLE`-sorted parent's
+ * direct children compute their `bucket_id` (`RecomputeAlbumStatsJob::computeBucket()`).
+ * Unlike `album_sorting_col`/`album_timeline`, these two keys have no per-album override.
  */
 return new class() extends BaseConfigMigration {
 	public const CAT = 'Gallery';

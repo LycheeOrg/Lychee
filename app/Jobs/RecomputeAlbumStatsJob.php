@@ -124,7 +124,6 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
 			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
 
-			// Compute bucket_id (Feature 061), governed by the album's own parent.
 			$album->bucket_id = $this->computeBucket($album);
 			$album->save();
 
@@ -336,13 +335,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	}
 
 	/**
-	 * Compute `bucket_id` (Feature 061, FR-061-02): resolves the album's own
-	 * *parent's* effective sort column (or the instance-wide default for a
-	 * root album) and granularity, then delegates the actual truncation to
-	 * {@see AlbumBucketComputer} — shared with
-	 * {@see RecomputeChildAlbumBucketsJob} and the backfill command, so the
-	 * truncation logic itself lives in exactly one place. Never queries
-	 * `photos` (NFR-061-03) — every value is derivable from the album row
+	 * Compute `bucket_id`: resolves the album's own *parent's* effective
+	 * sort column (or the instance-wide default for a root album) and granularity,
+	 * then delegates the actual truncation to {@see AlbumBucketComputer} —
+	 * shared with {@see RecomputeChildAlbumBucketsJob} and the backfill command,
+	 * so the truncation logic itself lives in exactly one place.
+	 * Never queries `photos` — every value is derivable from the album row
 	 * itself plus its parent's already-loaded settings.
 	 *
 	 * @param Album $album

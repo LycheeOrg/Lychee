@@ -21,10 +21,9 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Recomputes `bucket_id` for every **direct child** of one parent album
- * (Feature 061, FR-061-03, DO-061-04) — the propagation direction
- * {@see RecomputeAlbumStatsJob} does not already cover: when the parent's
- * own `album_sorting_col`/`album_sorting_order`/`album_timeline` changes,
- * every direct child's `bucket_id` (governed by the parent, not the child
+ * — the propagation direction {@see RecomputeAlbumStatsJob} does not already
+ * cover: when the parent's own `album_sorting_col`/`album_sorting_order`/`album_timeline`
+ * changes, every direct child's `bucket_id` (governed by the parent, not the child
  * itself) needs recomputing.
  *
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one

@@ -25,7 +25,6 @@ class RootConfig extends Data
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
-	// Feature 063 (FR-063-16): same instance-wide-only config AlbumConfig exposes.
 	public string $date_format_album_thumb;
 	public DateOrderingType $thumb_min_max_order;
 

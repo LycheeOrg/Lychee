@@ -14,21 +14,20 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Bulk-recomputes `bucket_id` for every album (Feature 061, FR-061-04,
- * CLI-061-01, DO-061-05) — sibling to {@see RecomputeAlbumStats}. Run once
- * at initial deploy (backfill), and again if an instance-wide
- * `sorting_albums_col`/`timeline_albums_granularity`/`title_bucket_mode`/
+ * Bulk-recomputes `bucket_id` for every album —
+ * sibling to {@see RecomputeAlbumStats}. Run once at initial deploy (backfill),
+ * and again if an instance-wide `sorting_albums_col`/`timeline_albums_granularity`/`title_bucket_mode`/
  * `title_bucket_prefix_length` default changes, since those two title
- * configs are instance-wide only and carry no per-album change trigger
- * (FR-061-11).
+ * configs are instance-wide only and carry no per-album change trigger.
  *
  * Derives every value from the album row itself, plus its resolved
  * parent's sort-column/granularity settings, via one chunked self-join
- * query — never touches `photos`/`photo_album` (NFR-061-03).
+ * query — never touches `photos`/`photo_album`.
  */
 class RecomputeAlbumBuckets extends Command
 {
@@ -79,7 +78,7 @@ class RecomputeAlbumBuckets extends Command
 			->orderBy('a.id')
 			->chunkById(
 				$chunk_size,
-				function (\Illuminate\Support\Collection $rows) use (&$processed, $bar, $bucket_computer, $global_default_column): void {
+				function (Collection $rows) use (&$processed, $bar, $bucket_computer, $global_default_column): void {
 					$updates = [];
 					foreach ($rows as $row) {
 						$sorting_column = $row->album_sorting_col !== null
