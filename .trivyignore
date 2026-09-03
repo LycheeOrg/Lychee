@@ -23,3 +23,7 @@ CVE-2026-77354
 # Authentication bypass on the ssh part of the golang.org/x/crypto package, which is used by the golang.org/x/crypto/ssh
 # This is not impactful on Lychee as it is not used in frankenphp
 CVE-2026-56854
+
+# There is no fix yet compiled in a new Frankenphp docker image.
+# It would be nice if Douglas was a bit more reactive on those.
+CVE-2026-84304
