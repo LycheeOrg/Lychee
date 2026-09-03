@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Assets\DbBool;
 use App\Http\Requests\Gallery\AlbumAccessPermissionListRequest;
 use App\Http\Resources\V3\AlbumAccessPermissionListResource;
 use App\Models\Album;
@@ -124,11 +125,11 @@ class AlbumAccessPermissionListController extends Controller
 			$user_names[] = $row->user_name;
 			$group_ids[] = $row->group_id !== null ? (int) $row->group_id : null;
 			$group_names[] = $row->group_name;
-			$grants_full_photo_accesses[] = $has_permission ? filter_var($row->grants_full_photo_access, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_downloads[] = $has_permission ? filter_var($row->grants_download, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_uploads[] = $has_permission ? filter_var($row->grants_upload, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_edits[] = $has_permission ? filter_var($row->grants_edit, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_deletes[] = $has_permission ? filter_var($row->grants_delete, FILTER_VALIDATE_BOOLEAN) : null;
+			$grants_full_photo_accesses[] = $has_permission ? DbBool::parse($row->grants_full_photo_access) : null;
+			$grants_downloads[] = $has_permission ? DbBool::parse($row->grants_download) : null;
+			$grants_uploads[] = $has_permission ? DbBool::parse($row->grants_upload) : null;
+			$grants_edits[] = $has_permission ? DbBool::parse($row->grants_edit) : null;
+			$grants_deletes[] = $has_permission ? DbBool::parse($row->grants_delete) : null;
 		}
 
 		return new AlbumAccessPermissionListResource(

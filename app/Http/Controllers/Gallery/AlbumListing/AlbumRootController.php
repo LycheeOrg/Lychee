@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery\AlbumListing;
 
+use App\Assets\DbBool;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
@@ -202,10 +203,10 @@ class AlbumRootController extends Controller
 			$bucket_ids[] = $scope === AlbumListingScope::SHARED ? (string) $row->owner_id : ($row->bucket_id ?? 'unknown');
 			$owner_ids[] = (string) $row->owner_id;
 			$is_password_requireds[] = $row->password !== null;
-			$is_nsfws[] = filter_var($row->is_nsfw, FILTER_VALIDATE_BOOLEAN);
-			$is_pinneds[] = filter_var($row->is_pinned, FILTER_VALIDATE_BOOLEAN);
+			$is_nsfws[] = DbBool::parse($row->is_nsfw);
+			$is_pinneds[] = DbBool::parse($row->is_pinned);
 			$is_publics[] = $row->public_grant_id !== null;
-			$is_link_requireds[] = filter_var($row->public_is_link_required, FILTER_VALIDATE_BOOLEAN);
+			$is_link_requireds[] = DbBool::parse($row->public_is_link_required);
 			$has_subalbums[] = ((int) $row->num_children) > 0;
 			$num_photos[] = (int) $row->num_photos;
 			$num_subalbums[] = (int) $row->num_children;
@@ -439,10 +440,17 @@ class AlbumRootController extends Controller
 
 		$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', 'grants_', true, $user);
 
+		// PostgreSQL has no `MAX()` aggregate for `boolean` (unlike MySQL/SQLite,
+		// where a boolean is just an int); `bool_or()` is its equivalent.
+		$or_aggregate = match (DB::getDriverName()) {
+			'pgsql' => 'bool_or',
+			default => 'MAX',
+		};
+
 		$rows = $query
 			->select(['albums.id'])
-			->selectRaw('MAX(grants_computed_access_permissions.grants_edit) as grants_edit')
-			->selectRaw('MAX(grants_computed_access_permissions.grants_download) as grants_download')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_edit) as grants_edit')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_download) as grants_download')
 			->groupBy('albums.id')
 			->toBase()
 			->get();
@@ -452,8 +460,8 @@ class AlbumRootController extends Controller
 		$grants_download = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
-			$grants_edit[] = filter_var($row->grants_edit, FILTER_VALIDATE_BOOLEAN);
-			$grants_download[] = filter_var($row->grants_download, FILTER_VALIDATE_BOOLEAN);
+			$grants_edit[] = DbBool::parse($row->grants_edit);
+			$grants_download[] = DbBool::parse($row->grants_download);
 		}
 
 		return new AlbumChildrenRightsResource(
