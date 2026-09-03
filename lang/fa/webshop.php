@@ -285,7 +285,7 @@ return [
         'paymentCancelledMessage' => 'پرداخت لغو شده است.',
         'paymentFailed' => 'پرداخت ناموفق بود',
         'paymentFailedMessage' => 'ما نتوانستیم پرداخت شما را تأیید کنیم. لطفاً دوباره تلاش کنید یا در صورت تداوم مشکل با پشتیبانی تماس بگیرید.',
-        'paymentProcessing' => 'Payment being confirmed',
-        'paymentProcessingMessage' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

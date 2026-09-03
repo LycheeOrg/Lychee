@@ -17,6 +17,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\OmnipayFactory;
 use App\Models\Order;
 use App\Services\MoneyService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Omnipay\Common\Exception\InvalidCreditCardException;
@@ -174,9 +175,49 @@ class CheckoutService
 	public function completePayment(Order $order, ResponseInterface $response): Order
 	{
 		$transaction_id = $response->getTransactionReference();
-		$order->markAsPaid($transaction_id);
+		$this->settle($order, $transaction_id);
 
 		return $order;
+	}
+
+	/**
+	 * Mark an order as paid, at most once.
+	 *
+	 * The browser return and an inbound payment notification can arrive at the
+	 * same moment, and both would otherwise observe PROCESSING and settle the
+	 * order — dispatching OrderCompleted (and thus fulfilling) twice. The row
+	 * is locked and re-read inside a transaction, so exactly one caller
+	 * performs the transition; the loser sees the fresh state and reports that
+	 * it changed nothing.
+	 *
+	 * @param Order  $order          The order to settle
+	 * @param string $transaction_id The reference to store on the order
+	 *
+	 * @return bool Whether THIS call completed the order
+	 */
+	private function settle(Order $order, string $transaction_id): bool
+	{
+		return DB::transaction(function () use ($order, $transaction_id): bool {
+			$fresh = Order::query()->whereKey($order->getKey())->lockForUpdate()->first();
+
+			if ($fresh === null) {
+				return false;
+			}
+
+			if (in_array($fresh->status, [PaymentStatusType::COMPLETED, PaymentStatusType::CLOSED], true)) {
+				// Someone else settled it first; adopt their state without
+				// claiming the transition.
+				$order->refresh();
+
+				return false;
+			}
+
+			// Saved through the caller's instance, while this transaction holds
+			// the row lock, so wasChanged('status') is true for the winner only.
+			$order->markAsPaid($transaction_id);
+
+			return true;
+		});
 	}
 
 	/**
@@ -253,7 +294,11 @@ class CheckoutService
 			$response = $gateway->fetchTransaction(['transactionReference' => $transaction_reference])->send();
 
 			if ($response->isSuccessful()) {
-				return $this->completePayment($order, $response);
+				// Same reasoning as in handlePaymentNotification(): the order's
+				// own transaction id has to stay the stable lookup key.
+				$this->settle($order, $order->transaction_id);
+
+				return $order;
 			}
 
 			if ($response instanceof PayzumFetchTransactionResponse && ($response->isExpired() || $response->isCancelled())) {
@@ -337,12 +382,18 @@ class CheckoutService
 			abort(400, 'Amount mismatch');
 		}
 
-		$transaction_reference = $notification->getTransactionReference();
-		if ($transaction_reference === null) {
+		if ($notification->getTransactionReference() === null) {
 			abort(400, 'Missing payment reference');
 		}
 
-		$order->markAsPaid($transaction_reference);
+		// Settled with the order's own transaction id rather than the gateway
+		// reference: that id is the lookup key of both the return and the
+		// notification URLs, and replacing it would make every later request
+		// for this order — including the buyer's browser return after an
+		// early notification — fail to resolve. The Payzum invoice stays
+		// reachable by it, since their API reads an invoice by payment id or
+		// by order id.
+		$this->settle($order, $order->transaction_id);
 
 		return $order;
 	}

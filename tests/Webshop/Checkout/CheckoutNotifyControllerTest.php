@@ -20,7 +20,10 @@ namespace Tests\Webshop\Checkout;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
+use App\Events\OrderCompleted;
+use App\Models\Configs;
 use App\Services\MoneyService;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
 
 /**
@@ -105,10 +108,13 @@ class CheckoutNotifyControllerTest extends BaseCheckoutControllerTest
 		$response = $this->postNotification($this->payload());
 		$response->assertStatus(204);
 
+		// The transaction id is deliberately left untouched: it is the lookup
+		// key of the return and notification URLs for the rest of the order's
+		// life. The Payzum invoice stays reachable by it.
 		$this->assertDatabaseHas('orders', [
 			'id' => $this->test_order->id,
 			'status' => PaymentStatusType::COMPLETED->value,
-			'transaction_id' => 'pzi_test_0001',
+			'transaction_id' => $this->test_order->transaction_id,
 		]);
 	}
 
@@ -161,10 +167,13 @@ class CheckoutNotifyControllerTest extends BaseCheckoutControllerTest
 		$this->postNotification($this->payload())->assertStatus(204);
 		$this->postNotification($this->payload())->assertStatus(204);
 
+		// The transaction id is deliberately left untouched: it is the lookup
+		// key of the return and notification URLs for the rest of the order's
+		// life. The Payzum invoice stays reachable by it.
 		$this->assertDatabaseHas('orders', [
 			'id' => $this->test_order->id,
 			'status' => PaymentStatusType::COMPLETED->value,
-			'transaction_id' => 'pzi_test_0001',
+			'transaction_id' => $this->test_order->transaction_id,
 		]);
 	}
 
@@ -186,6 +195,48 @@ class CheckoutNotifyControllerTest extends BaseCheckoutControllerTest
 			$body
 		);
 		$response->assertStatus(404);
+	}
+
+	public function testItFulfilsExactlyOnceAcrossRedeliveries(): void
+	{
+		Configs::set('webshop_auto_fulfill_enabled', '1');
+		Event::fake([OrderCompleted::class]);
+
+		$this->postNotification($this->payload())->assertStatus(204);
+		$this->postNotification($this->payload())->assertStatus(204);
+
+		Event::assertDispatchedTimes(OrderCompleted::class, 1);
+	}
+
+	public function testTheBrowserReturnStillResolvesAfterAnEarlyNotification(): void
+	{
+		// The notification usually wins the race with the buyer's browser.
+		// Completing the order must not invalidate the transaction id its
+		// return URL was built with, or the buyer lands on a "not found".
+		$this->postNotification($this->payload())->assertStatus(204);
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/Payzum/' . $this->test_order->transaction_id);
+
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.complete'));
+
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::COMPLETED->value,
+		]);
+	}
+
+	public function testTheBrowserReturnDoesNotFulfilAgainAfterAnEarlyNotification(): void
+	{
+		Configs::set('webshop_auto_fulfill_enabled', '1');
+
+		$this->postNotification($this->payload())->assertStatus(204);
+
+		Event::fake([OrderCompleted::class]);
+
+		$this->get('/api/v2/Shop/Checkout/Finalize/Payzum/' . $this->test_order->transaction_id);
+
+		Event::assertNotDispatched(OrderCompleted::class);
 	}
 
 	public function testFinalizeKeepsProcessingOrderPending(): void
