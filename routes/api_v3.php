@@ -44,11 +44,11 @@ Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListContr
 Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
 Route::get('/Albums/root/buckets', [Gallery\AlbumListing\AlbumRootController::class, 'buckets']);
 Route::get('/Albums/root/rights', [Gallery\AlbumListing\AlbumRootController::class, 'rights']);
-Route::get('/Albums/smart', [Gallery\AlbumListing\AlbumCategoryController::class, 'smart']);
-Route::get('/Albums/persons', [Gallery\AlbumListing\AlbumCategoryController::class, 'persons']);
-Route::get('/Albums/tags', [Gallery\AlbumListing\AlbumCategoryController::class, 'tags']);
-Route::get('/Albums/tags/rights', [Gallery\AlbumListing\AlbumCategoryController::class, 'tagsRights']);
-Route::get('/Albums/pinned', [Gallery\AlbumListing\AlbumCategoryController::class, 'pinned']);
+Route::get('/Albums/smart', [Gallery\AlbumListing\AlbumSmartController::class, 'smart']);
+Route::get('/Albums/persons', [Gallery\AlbumListing\AlbumPersonController::class, 'persons']);
+Route::get('/Albums/tags', [Gallery\AlbumListing\AlbumTagController::class, 'tags']);
+Route::get('/Albums/tags/rights', [Gallery\AlbumListing\AlbumTagController::class, 'tagsRights']);
+Route::get('/Albums/pinned', [Gallery\AlbumListing\AlbumPinnedController::class, 'pinned']);
 
 Route::get('/Albums/{album_id}', [Gallery\AlbumListing\AlbumChildrenController::class, 'index']);
 Route::get('/Albums/{album_id}/buckets', [Gallery\AlbumListing\AlbumChildrenController::class, 'buckets']);

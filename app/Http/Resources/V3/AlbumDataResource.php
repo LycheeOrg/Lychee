@@ -12,7 +12,9 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/children`.
+ * Response body of `GET /api/v3/Albums/{album_id}` and
+ * `GET /api/v3/Albums/root` — despite the "children" framing below (this
+ * class predates root's own reuse of it), it serves both tiers alike.
  *
  * Struct-of-Arrays per ADR-0009: one whole-album-at-once body (no windowed
  * pagination), built from a single flat `toBase()` query with zero joins
@@ -35,7 +37,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * bucket.
  */
 #[TypeScript()]
-class AlbumChildrenDataResource extends Data
+class AlbumDataResource extends Data
 {
 	/**
 	 * @param string[]        $ids

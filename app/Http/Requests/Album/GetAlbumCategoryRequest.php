@@ -11,9 +11,10 @@ namespace App\Http\Requests\Album;
 use App\Http\Requests\BaseApiRequest;
 
 /**
- * Request shared by `AlbumCategoryController::smart()`/`tags()`/`tagsRights()`
- * — no `scope` parameter, no album to resolve; just the feature flag gate.
- * `persons()` and `pinned()` instead consume {@see GetScopedAlbumsRequest}.
+ * Request shared by `AlbumSmartController::smart()` and
+ * `AlbumTagController::tags()`/`tagsRights()` — no `scope` parameter, no
+ * album to resolve; just the feature flag gate. `persons()` and `pinned()`
+ * instead consume {@see GetScopedAlbumsRequest}.
  */
 class GetAlbumCategoryRequest extends BaseApiRequest
 {

@@ -46,6 +46,7 @@ declare namespace App {
 		export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
 		export type AlbumHeaderSize = "half_screen" | "full_screen";
 		export type AlbumLayoutType = "list" | "grid";
+		export type AlbumListingScope = "own" | "shared";
 		export type AlbumTitleColor = "white" | "black" | "colour_1" | "colour_2" | "colour_3" | "colour_4" | "colour_5";
 		export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
@@ -746,7 +747,7 @@ declare namespace App {
 					is_album_timeline_enabled: boolean;
 					is_search_accessible: boolean;
 					show_keybinding_help_button: boolean;
-					album_thumb_css_aspect_ratio: App.Enum.AspectRatioType;
+					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 					date_format_album_thumb: string;
 					thumb_min_max_order: App.Enum.DateOrderingType;
 					back_button_enabled: boolean;
@@ -1681,7 +1682,7 @@ declare namespace App {
 				};
 			}
 			namespace V3 {
-				export type AlbumAccessPermissionListResource = {
+				export type AlbumAccessPermissionResource = {
 					album_ids: string[];
 					album_titles: string[];
 					_lft: number[];
@@ -1705,7 +1706,19 @@ declare namespace App {
 					labels: string[];
 					bucketable: boolean;
 				};
-				export type AlbumChildrenDataResource = {
+				export type AlbumCategoryResource = {
+					ids: string[];
+					titles: string[];
+					cover_ids: (string | null)[];
+					owner_ids: string[];
+				};
+				export type AlbumCategoryRightsResource = {
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
+					grants_delete: boolean[];
+				};
+				export type AlbumDataResource = {
 					ids: string[];
 					titles: string[];
 					descriptions: string[];
@@ -1723,14 +1736,6 @@ declare namespace App {
 					created_ats: string[];
 					min_taken_ats: (string | null)[];
 					max_taken_ats: (string | null)[];
-				};
-				export type AlbumChildrenRightsResource = {
-					owner_id?: string;
-					can_delete_children: boolean;
-					can_move_children: boolean;
-					ids: string[];
-					grants_edit: boolean[];
-					grants_download: boolean[];
 				};
 				export type AlbumListBulkEditFieldsResource = {
 					owner_ids: number[];
@@ -1762,6 +1767,14 @@ declare namespace App {
 					cover_ids: (string | null)[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
+				};
+				export type AlbumRightsResource = {
+					owner_id?: string;
+					can_delete_children: boolean;
+					can_move_children: boolean;
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
 				};
 			}
 		}

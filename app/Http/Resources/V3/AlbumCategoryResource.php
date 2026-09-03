@@ -23,7 +23,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * `smart` albums have no real owner and always report `"0"`.
  */
 #[TypeScript()]
-class AlbumCategoryListResource extends Data
+class AlbumCategoryResource extends Data
 {
 	/**
 	 * @param string[]        $ids

@@ -18,8 +18,8 @@ use App\Enum\TitleBucketMode;
 use App\Http\Controllers\Gallery\AlbumListController;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumBucketResource;
-use App\Http\Resources\V3\AlbumChildrenDataResource;
-use App\Http\Resources\V3\AlbumChildrenRightsResource;
+use App\Http\Resources\V3\AlbumDataResource;
+use App\Http\Resources\V3\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
@@ -86,7 +86,7 @@ class AlbumRootController extends Controller
 
 	// ── GET /Albums/root ────────────────────────────────────────────
 
-	public function index(GetScopedAlbumsRequest $request): AlbumChildrenDataResource
+	public function index(GetScopedAlbumsRequest $request): AlbumDataResource
 	{
 		$scope = $request->scope();
 		/** @var User|null $user */
@@ -104,12 +104,12 @@ class AlbumRootController extends Controller
 				$this->cache_key_provider->userTag($user?->id),
 				$this->cache_key_provider->albumListingGlobalTag(),
 			],
-			fn (): AlbumChildrenDataResource => $this->queryChildren($scope, $user),
+			fn (): AlbumDataResource => $this->queryChildren($scope, $user),
 			ttl: $ttl,
 		);
 	}
 
-	private function queryChildren(AlbumListingScope $scope, ?User $user): AlbumChildrenDataResource
+	private function queryChildren(AlbumListingScope $scope, ?User $user): AlbumDataResource
 	{
 		$query = $this->baseQuery($scope, $user);
 		$sorting = AlbumSortingCriterion::createDefault();
@@ -164,13 +164,13 @@ class AlbumRootController extends Controller
 			->toBase()
 			->get();
 
-		return $this->toChildrenResource($rows, $user, $scope);
+		return $this->toAlbumDataResource($rows, $user, $scope);
 	}
 
 	/**
 	 * @param Collection<int,object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}> $rows
 	 */
-	private function toChildrenResource(Collection $rows, ?User $user, AlbumListingScope $scope): AlbumChildrenDataResource
+	private function toAlbumDataResource(Collection $rows, ?User $user, AlbumListingScope $scope): AlbumDataResource
 	{
 		$ids = [];
 		$titles = [];
@@ -214,7 +214,7 @@ class AlbumRootController extends Controller
 			$max_taken_ats[] = $row->max_taken_at;
 		}
 
-		return new AlbumChildrenDataResource(
+		return new AlbumDataResource(
 			ids: $ids,
 			titles: $titles,
 			descriptions: $descriptions,
@@ -389,7 +389,7 @@ class AlbumRootController extends Controller
 
 	// ── GET /Albums/root/rights ─────────────────────────────────────
 
-	public function rights(GetScopedAlbumsRequest $request): AlbumChildrenRightsResource
+	public function rights(GetScopedAlbumsRequest $request): AlbumRightsResource
 	{
 		$scope = $request->scope();
 		/** @var User|null $user */
@@ -407,7 +407,7 @@ class AlbumRootController extends Controller
 				$this->cache_key_provider->userTag($user?->id),
 				$this->cache_key_provider->albumListingGlobalTag(),
 			],
-			fn (): AlbumChildrenRightsResource => $this->queryRights($scope, $user),
+			fn (): AlbumRightsResource => $this->queryRights($scope, $user),
 			ttl: $ttl,
 		);
 	}
@@ -420,7 +420,7 @@ class AlbumRootController extends Controller
 	 * — root has no single owner to report there, even under
 	 * `own` scope.
 	 */
-	private function queryRights(AlbumListingScope $scope, ?User $user): AlbumChildrenRightsResource
+	private function queryRights(AlbumListingScope $scope, ?User $user): AlbumRightsResource
 	{
 		$is_admin = $user?->may_administrate === true;
 		$query = $this->baseQuery($scope, $user);
@@ -429,7 +429,7 @@ class AlbumRootController extends Controller
 			$ids = $query->select(['albums.id'])->toBase()->pluck('id')->all();
 			$count = count($ids);
 
-			return new AlbumChildrenRightsResource(
+			return new AlbumRightsResource(
 				owner_id: Optional::create(),
 				can_delete_children: true,
 				can_move_children: true,
@@ -465,7 +465,7 @@ class AlbumRootController extends Controller
 			$grants_download[] = DbBool::parse($row->grants_download);
 		}
 
-		return new AlbumChildrenRightsResource(
+		return new AlbumRightsResource(
 			owner_id: Optional::create(),
 			can_delete_children: false,
 			can_move_children: false,

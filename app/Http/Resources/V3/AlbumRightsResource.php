@@ -13,10 +13,10 @@ use Spatie\LaravelData\Optional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/children/rights`
- * — the raw permission signals a right-click menu
- * on a selection of albums needs, not the fully-combined `can_edit`/
- * `can_download` booleans (Non-Goals): `owner_id`/`can_delete_children`/
+ * Response body of `GET /api/v3/Albums/{album_id}/rights` and
+ * `GET /api/v3/Albums/root/rights` — the raw permission signals a
+ * right-click menu on a selection of albums needs, not the fully-combined
+ * `can_edit`/`can_download` booleans (Non-Goals): `owner_id`/`can_delete_children`/
  * `can_move_children` are whole-response (uniform across every direct
  * child, since both checks key off `parent_id`, which is `album_id` itself
  * for every direct child); `grants_edit`/`grants_download` are per-child,
@@ -35,7 +35,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * unchanged.
  */
 #[TypeScript()]
-class AlbumChildrenRightsResource extends Data
+class AlbumRightsResource extends Data
 {
 	/**
 	 * @param string[] $ids
