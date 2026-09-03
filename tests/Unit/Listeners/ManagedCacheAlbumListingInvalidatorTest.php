@@ -338,6 +338,36 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	}
 
 	/**
+	 * The root index/buckets/rights entries ({@see \App\Http\Controllers\Gallery\AlbumListing\AlbumRootController})
+	 * carry albumListingGlobalTag() alongside their own albumChildrenTag(null)/userTag()
+	 * pair, so the coarse flush event must evict all three even though it
+	 * does not touch albumChildrenTag(null) itself.
+	 */
+	public function testAlbumListingCacheFlushRequestedEvictsAllThreeRootEntries(): void
+	{
+		$user = User::factory()->create();
+
+		$index_key = $this->cache_key_provider->rootAlbumChildrenDataKey(AlbumListingScope::OWN, $user->id);
+		$buckets_key = $this->cache_key_provider->rootAlbumBucketsKey(AlbumListingScope::OWN, $user->id);
+		$rights_key = $this->cache_key_provider->rootAlbumChildrenRightsKey(AlbumListingScope::OWN, $user->id);
+
+		$root_tags = [
+			$this->cache_key_provider->albumChildrenTag(null),
+			$this->cache_key_provider->userTag($user->id),
+			$this->cache_key_provider->albumListingGlobalTag(),
+		];
+		$this->seedCache($index_key, $root_tags);
+		$this->seedCache($buckets_key, $root_tags);
+		$this->seedCache($rights_key, $root_tags);
+
+		$this->listener->handleAlbumListingCacheFlushRequested(new AlbumListingCacheFlushRequested());
+
+		$this->assertEvicted($index_key);
+		$this->assertEvicted($buckets_key);
+		$this->assertEvicted($rights_key);
+	}
+
+	/**
 	 * NFR-053-06 spot check: none of the precise-eviction handlers should
 	 * ever touch the coarse `album-listing-global` tag.
 	 */

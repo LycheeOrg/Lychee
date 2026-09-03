@@ -454,4 +454,47 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		$ids2 = $this->actingAs($user2)->getJsonV3('Albums/root?scope=own')->assertOk()->json('ids');
 		self::assertSame([$mine2->id], $ids2);
 	}
+
+	/**
+	 * SettingsController::setConfigs dispatches AlbumListingCacheFlushRequested
+	 * (synchronous, coarse) *before* queuing RecomputeRootAlbumBucketsJob. A
+	 * request landing in that gap re-warms the root buckets cache with the
+	 * pre-upsert bucket_id — a plain global-tag flush can never catch that
+	 * refill, since it already ran. The job itself must therefore evict
+	 * albumChildrenTag(null) again once its own upsert() actually lands.
+	 */
+	public function testRecomputeJobInvalidatesRootCacheRewarmedDuringTheFlushDispatchGap(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$user = User::factory()->create();
+		Album::factory()->as_root()->owned_by($user)->create([
+			'created_at' => new \Illuminate\Support\Carbon('2024-01-01'),
+		]);
+		$this->recomputeRootBuckets();
+
+		$before = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
+		self::assertSame(['2024'], $before);
+
+		// Admin changes the sorting config: SettingsController fires the
+		// coarse flush synchronously, then queues the recompute job.
+		Configs::set('title_bucket_mode', 'alphabetical');
+		Configs::set('sorting_albums_col', 'title');
+		event(new \App\Events\AlbumListingCacheFlushRequested());
+
+		// The race: a request lands after the flush but before the queued
+		// job runs, re-warming the cache — bucket_id in the DB has not been
+		// touched yet, so this is still correct *at this instant*, but the
+		// entry it leaves behind is now stale the moment the job upserts.
+		$rewarmed = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
+		self::assertSame(['2024'], $rewarmed);
+
+		// The queued job finally runs and upserts the new bucket_id.
+		$this->recomputeRootBuckets();
+
+		$after = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
+		self::assertNotSame(['2024'], $after, 'Root buckets cache served stale pre-upsert data after the recompute job ran.');
+	}
 }

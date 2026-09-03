@@ -102,6 +102,7 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumChildrenDataResource => $this->queryChildren($scope, $user),
 			ttl: $ttl,
@@ -252,6 +253,7 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumBucketResource => $scope === AlbumListingScope::OWN
 				? $this->queryOwnBuckets($user)
@@ -403,6 +405,7 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumChildrenRightsResource => $this->queryRights($scope, $user),
 			ttl: $ttl,

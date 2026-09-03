@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\DTO\AlbumSortingCriterion;
+use App\Events\AlbumChildrenChanged;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -84,5 +85,13 @@ class RecomputeRootAlbumBucketsJob implements ShouldQueue
 		}
 
 		DB::table('albums')->upsert($updates, ['id'], ['bucket_id']);
+
+		// SettingsController::setConfigs dispatches AlbumListingCacheFlushRequested
+		// (a synchronous, coarse flush) before dispatching this queued job — the
+		// global-tag flush alone can be won by a request that repopulates
+		// albumChildrenTag(null) with pre-upsert bucket_id data before this job
+		// runs. Evict that tag again now that the new bucket_id values are
+		// actually committed, closing the refill race.
+		AlbumChildrenChanged::dispatch([null]);
 	}
 }
