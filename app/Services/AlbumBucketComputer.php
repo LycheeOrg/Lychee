@@ -17,15 +17,14 @@ use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 
 /**
- * Shared `bucket_id` truncation logic (Feature 061, FR-061-02), reused by
- * every write path that populates it: {@see \App\Jobs\RecomputeAlbumStatsJob},
- * {@see \App\Jobs\RecomputeChildAlbumBucketsJob}, and the
- * `lychee:recompute-album-buckets` backfill command (CLI-061-01) — so a
+ * Shared `bucket_id` truncation logic, reused by every write path that populates it:
+ * {@see \App\Jobs\RecomputeAlbumStatsJob}, {@see \App\Jobs\RecomputeChildAlbumBucketsJob},
+ * and the `lychee:recompute-album-buckets` backfill command — so a
  * bucket-truncation bugfix or a `title_bucket_mode` semantics change only
  * needs to happen once.
  *
  * Operates purely on already-resolved scalar/Carbon inputs — never queries
- * `photos` (NFR-061-03) and never resolves an `Album`'s parent itself; each
+ * `photos` and never resolves an `Album`'s parent itself; each
  * caller is responsible for resolving the effective sort column/granularity
  * (which differs by write path: an Eloquent relation for a single album, a
  * raw self-join for a full-table pass) and handing this class only the
@@ -95,7 +94,7 @@ final class AlbumBucketComputer
 
 	/**
 	 * Bucket computation for a `TITLE`-sorted parent, branching on the
-	 * instance-wide `title_bucket_mode` config (FR-061-02/11).
+	 * instance-wide `title_bucket_mode` config.
 	 */
 	private function computeTitleBucket(TimelineAlbumGranularity $granularity, string $title, string $title_base): ?string
 	{

@@ -639,12 +639,11 @@ class AlbumQueryPolicy
 			$columns[] = $prefix . 'base_albums.created_at';
 			$columns[] = $prefix . 'base_albums.description';
 			$columns[] = $prefix . 'base_albums.published_at';
-			// Feature 061 (FR-061-12): the children-data endpoint needs
-			// is_nsfw off this same already-necessary join (applyVisibilityFilter()
-			// always joins base_albums via this method) — adding it here
+			// The children-data endpoint needs is_nsfw off this same already-necessary join
+			// (applyVisibilityFilter() always joins base_albums via this method) — adding it here
 			// avoids that endpoint needing a second, otherwise-redundant join.
 			$columns[] = $prefix . 'base_albums.is_nsfw';
-			// Feature 061 (FR-061-27): same reasoning, for is_pinned.
+			// Same reasoning, for is_pinned.
 			$columns[] = $prefix . 'base_albums.is_pinned';
 		}
 

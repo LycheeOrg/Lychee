@@ -27,7 +27,6 @@ class RootConfig extends Data
 	public bool $show_keybinding_help_button = false;
 	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
-	// Feature 062 (FR-062-16): same instance-wide-only config AlbumConfig exposes.
 	public string $date_format_album_thumb;
 	public DateOrderingType $thumb_min_max_order;
 

@@ -9,9 +9,8 @@
 namespace App\Enum;
 
 /**
- * Governs how a `TITLE`-sorted parent's direct children compute their
- * `bucket_id` (Feature 061, DO-061-06). Instance-wide config-backed only
- * (`title_bucket_mode`) — there is no per-album override.
+ * Governs how a `TITLE`-sorted parent's direct children compute their `bucket_id`.
+ * Instance-wide config-backed only (`title_bucket_mode`) — there is no per-album override.
  */
 enum TitleBucketMode: string
 {

@@ -30,9 +30,6 @@ use Illuminate\Support\Facades\DB;
  * Translates every album-listing-relevant domain event into the precise (or,
  * for a handful of genuinely rare/subtree-wide operations, coarse) cache
  * tag(s) it invalidates.
- *
- * Consolidates the tag scheme derived from Feature 053's mutation-surface
- * audit; see spec.md FR-053-22/FR-053-31 for the full mapping rationale.
  */
 class ManagedCacheAlbumListingInvalidator
 {
@@ -93,7 +90,7 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->base_album_id));
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
 
-		// Feature 061 (FR-061-22): the rights endpoint's cache is keyed by
+		// The rights endpoint's cache is keyed by
 		// the *queried parent's own* albumChildrenTag(), and
 		// can_delete_children/can_move_children/grants_* all derive from
 		// access_permissions rows on that parent (or its direct children,
