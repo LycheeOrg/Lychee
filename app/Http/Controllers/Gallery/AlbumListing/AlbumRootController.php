@@ -38,13 +38,11 @@ use Spatie\LaravelData\Optional;
 
 /**
  * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights]`
- * (Feature 062, FR-062-01..06) — root albums (`parent_id IS NULL`) get the
- * same buckets/index/rights trio as sub-albums (Feature 061), plus a
- * `scope` (`own`\|`shared`) dimension reproducing today's `Top::get()`
- * owned/shared partition. `own` scope reuses the exact
- * bucket_id/instance-default-sorting mechanism sub-albums use; `shared`
- * scope groups by owner as a **live** `GROUP BY owner_id` at read time,
- * never via the persisted `bucket_id` column (G3/G4).
+ * root albums (`parent_id IS NULL`) get the same buckets/index/rights
+ * trio as sub-albums, plus a `scope` (`own`\|`shared`) dimension
+ * reproducing today's `Top::get()` owned/shared partition.
+ * `own` scope reuses the exact bucket_id/instance-default-sorting mechanism sub-albums use;
+ * `shared` scope groups by owner as a **live** `GROUP BY owner_id` at read time, never via the persisted `bucket_id` column.
  */
 class AlbumRootController extends Controller
 {
@@ -61,7 +59,7 @@ class AlbumRootController extends Controller
 	 * Base query shared by all three endpoints: every root album visible to
 	 * `$user`, scoped by ownership, with the same `deduplicate_pinned_albums`
 	 * conditional join {@see \App\Actions\Albums\Top::queryRootAlbums()}
-	 * already applies (NFR-062-05 parity).
+	 * already applies.
 	 *
 	 * @return Builder<Album>
 	 */
@@ -117,13 +115,13 @@ class AlbumRootController extends Controller
 		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
 
 		if ($scope === AlbumListingScope::OWN) {
-			// Mirrors the sub-album tier exactly (FR-062-03): order by the
+			// Mirrors the sub-album tier exactly: order by the
 			// already-persisted bucket_id (NULL last), then the effective
 			// sort criterion.
 			$query->orderByRaw('(albums.bucket_id IS NULL) ASC')
 				->orderBy('albums.bucket_id', $direction);
 		} else {
-			// FR-062-04: owner-ordered first, never by the persisted
+			// Owner-ordered first, never by the persisted
 			// bucket_id column.
 			$query->orderBy('base_albums.owner_id', 'asc');
 		}
@@ -196,7 +194,7 @@ class AlbumRootController extends Controller
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
 			$cover_ids[] = AlbumListController::resolveCoverId($row, $user);
-			// FR-062-04: for shared scope, the bucket_id field carries the
+			// For shared scope, the bucket_id field carries the
 			// row's own owner_id (never the persisted date/title column) so
 			// grouping response rows by bucket_id reproduces the buckets
 			// endpoint's own owner grouping.
@@ -331,11 +329,11 @@ class AlbumRootController extends Controller
 	}
 
 	/**
-	 * FR-062-05: a live `GROUP BY base_albums.owner_id` — never the
+	 * A live `GROUP BY base_albums.owner_id` — never the
 	 * persisted `bucket_id` column, never {@see AlbumBucketComputer}.
-	 * `bucketable` is unconditionally `true` (Q-062-15), even for a
-	 * zero-result query. Label resolution is authentication-gated
-	 * (Q-062-14): the `users` join runs only for an authenticated caller;
+	 * `bucketable` is unconditionally `true`, even for a
+	 * zero-result query. Label resolution is authentication-gated:
+	 * the `users` join runs only for an authenticated caller;
 	 * a guest never executes it at all, every label hardcoded `"unknown"`.
 	 */
 	private function querySharedBuckets(?User $user): AlbumBucketResource
@@ -365,7 +363,7 @@ class AlbumRootController extends Controller
 			return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
 		}
 
-		// Guest: the users join is never executed at all (NFR-062-02) — not
+		// Guest: the users join is never executed at all — not
 		// merely hidden after the fact.
 		$rows = $query
 			->select(['base_albums.owner_id'])
@@ -412,11 +410,11 @@ class AlbumRootController extends Controller
 	}
 
 	/**
-	 * FR-062-06: root has no single shared parent's `access_permissions` to
+	 * Root has no single shared parent's `access_permissions` to
 	 * check `can_delete_children`/`can_move_children` against — both flags
 	 * are always `false` for a non-admin caller (either scope), `true` for
 	 * an admin. `owner_id` is unconditionally omitted from the JSON payload
-	 * (Q-062-16) — root has no single owner to report there, even under
+	 * — root has no single owner to report there, even under
 	 * `own` scope.
 	 */
 	private function queryRights(AlbumListingScope $scope, ?User $user): AlbumChildrenRightsResource

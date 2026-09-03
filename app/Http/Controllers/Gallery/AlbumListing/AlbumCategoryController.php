@@ -38,10 +38,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Serves the flat, un-bucketed category listings (Feature 062, FR-062-09/10/15):
+ * Serves the flat, un-bucketed category listings:
  * `GET /Albums/smart`, `/persons`, `/tags`, `/tags/rights`, `/pinned`.
  * Smart/tag albums stay un-scoped; persons/pinned additionally take the same
- * `own`\|`shared` split as root (FR-062-15), always as one flat, ungrouped
+ * `own`\|`shared` split as root, always as one flat, ungrouped
  * list — never per-owner buckets, never a `/buckets` route (NG9).
  */
 class AlbumCategoryController extends Controller
@@ -60,11 +60,9 @@ class AlbumCategoryController extends Controller
 	/**
 	 * Reuses the existing cheap, in-memory, `Gate`-filtered
 	 * `AlbumFactory::getAllBuiltInSmartAlbums(false)` list — no live `photos`
-	 * query (Feature 062, FR-062-16 amendment narrowed this from "zero SQL
-	 * queries" to "zero *photo* queries"): cover pixels come from one
-	 * batched, indexed lookup against the pre-computed `album_user_thumbs`
-	 * cache ({@link \App\Models\Extensions\CachesAlbumUserThumb}), the same
-	 * cache `BaseSmartAlbum::getThumbAttribute()`/`RecomputeAlbumUserThumbsJob`
+	 * query: cover pixels come from one  batched, indexed lookup against the
+	 * pre-computed `album_user_thumbs` cache ({@link \App\Models\Extensions\CachesAlbumUserThumb}),
+	 * the same cache `BaseSmartAlbum::getThumbAttribute()`/`RecomputeAlbumUserThumbsJob`
 	 * already read/write for the v2 `Top::get()` path — never resolved live.
 	 */
 	public function smart(GetAlbumCategoryRequest $request): AlbumCategoryListResource

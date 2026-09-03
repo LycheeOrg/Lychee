@@ -12,8 +12,8 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/tags/rights` (Feature 062, FR-062-10,
- * DO-062-06) — a flat tag-album catalogue has no parent-child relationship
+ * Response body of `GET /api/v3/Albums/tags/rights` —
+ * a flat tag-album catalogue has no parent-child relationship
  * to check, so unlike {@see AlbumChildrenRightsResource} there is no
  * `can_delete_children`/`can_move_children` concept, and no whole-response
  * `owner_id` (each tag album has its own, carried per-row via the sibling

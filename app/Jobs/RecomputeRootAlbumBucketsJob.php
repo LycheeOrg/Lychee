@@ -20,19 +20,19 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Recomputes `bucket_id` for every **root** album (Feature 062, FR-062-07,
- * DO-062-02) — closes the dispatch gap {@see RecomputeChildAlbumBucketsJob}
- * deliberately doesn't cover (parent-scoped only): root albums have no
- * parent to govern their bucketing, so the instance-wide
+ * Recomputes `bucket_id` for every **root** album — closes the dispatch gap
+ * {@see RecomputeChildAlbumBucketsJob} deliberately doesn't cover
+ * (parent-scoped only): root albums have no parent to govern their
+ * bucketing, so the instance-wide
  * `sorting_albums_col`/`sorting_albums_order`/`timeline_albums_granularity`/
  * `title_bucket_mode`/`title_bucket_prefix_length` config plays the role a
  * parent's own settings would for a sub-album.
  *
  * Only ever affects `own`-scope buckets — `shared` scope is always computed
- * live via a `GROUP BY owner_id` (FR-062-05) and needs no recompute path.
+ * live via a `GROUP BY owner_id` and needs no recompute path.
  *
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one
- * bulk `upsert()` (NFR-062-03), mirroring
+ * bulk `upsert()`, mirroring
  * {@see RecomputeChildAlbumBucketsJob}'s shape exactly.
  */
 class RecomputeRootAlbumBucketsJob implements ShouldQueue

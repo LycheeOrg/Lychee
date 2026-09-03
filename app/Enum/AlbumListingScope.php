@@ -9,12 +9,12 @@
 namespace App\Enum;
 
 /**
- * Enum AlbumListingScope (Feature 062, DO-062-01).
+ * Enum AlbumListingScope.
  *
  * The `scope` request dimension shared by root (index/buckets/rights),
- * `/Albums/persons`, and `/Albums/pinned` (FR-062-02/FR-062-15): required
- * for an authenticated caller, optional-defaulting-to-`SHARED` for a guest —
- * a guest can never request `OWN` (there is no unpartitioned third mode).
+ * `/Albums/persons`, and `/Albums/pinned`: required for an authenticated caller,
+ * optional-defaulting-to-`SHARED` for a guest — a guest can never request `OWN`
+ * (there is no unpartitioned third mode).
  */
 enum AlbumListingScope: string
 {

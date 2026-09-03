@@ -14,7 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Response body of `GET /api/v3/Albums/{album_id}/children/rights`
- * (Feature 061, DO-061-10) — the raw permission signals a right-click menu
+ * — the raw permission signals a right-click menu
  * on a selection of albums needs, not the fully-combined `can_edit`/
  * `can_download` booleans (Non-Goals): `owner_id`/`can_delete_children`/
  * `can_move_children` are whole-response (uniform across every direct
@@ -25,10 +25,10 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * underlying right is offered by the right-click menu this endpoint serves
  * (Non-Goals).
  *
- * `owner_id` (Feature 062, DO-062-04) is widened to `string|Optional`: root
+ * `owner_id` is widened to `string|Optional`: root
  * has no single "parent album" whose grants this endpoint checks
  * (heterogeneous ownership either way), so the value is always absent for
- * root's response, for **both** `own` and `shared` scope (Q-062-16) —
+ * root's response, for **both** `own` and `shared` scope —
  * `Optional` omits the key from the JSON payload entirely rather than
  * serializing a useless `"owner_id": null`. The sub-album and
  * `TagAlbum`/`PersonAlbum`-matching tiers keep emitting a real value

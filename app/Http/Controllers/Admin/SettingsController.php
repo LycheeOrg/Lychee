@@ -52,10 +52,9 @@ class SettingsController extends Controller
 
 	/**
 	 * Config keys whose change governs root albums' `own`-scope `bucket_id`
-	 * (Feature 062, FR-062-07, G6) — closes the dispatch gap
-	 * {@see \App\Jobs\RecomputeChildAlbumBucketsJob} deliberately doesn't
-	 * cover (parent-scoped only): root albums have no parent whose settings
-	 * would otherwise trigger a recompute.
+	 * — closes the dispatch gap {@see \App\Jobs\RecomputeChildAlbumBucketsJob}
+	 * deliberately doesn't cover (parent-scoped only):
+	 * root albums have no parent whose settings would otherwise trigger a recompute.
 	 */
 	public const ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS = [
 		'sorting_albums_col',

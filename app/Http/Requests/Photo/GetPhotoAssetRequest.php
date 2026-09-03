@@ -140,7 +140,7 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}). {@link BaseSmartAlbum}
 	 * gets the same cached-computed-thumb exception (2026-09-02 amendment,
 	 * Feature 063 FR-056-08) — it has no hardcoded `cover_id` of its own, but
-	 * its cover, when resolved by `GET /Albums/smart` (Feature 062 FR-062-16),
+	 * its cover, when resolved by `GET /Albums/smart`,
 	 * comes from this exact cache, and may have since fallen out of the
 	 * smart album's own live `smart_photo_condition` (e.g. a photo was
 	 * unstarred) before the next {@link \App\Jobs\RecomputeAlbumUserThumbsJob}

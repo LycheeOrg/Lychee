@@ -44,13 +44,12 @@ use function Safe\mktime;
 
 /**
  * Serves the sub-album tier: `GET /api/v3/Albums/{album_id}`,
- * `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights` (Feature 061,
- * renamed by Feature 062, FR-062-12, Q-062-12 — the `/children` path segment
- * is dropped, mirroring root's own naming; the query logic and response
- * shape below are an unmodified, verbatim port of Feature 061's
+ * `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights` — the `/children`
+ * path segment is dropped, mirroring root's own naming; the query logic and
+ * response shape below are an unmodified, verbatim port of the former
  * `AlbumBucketController`/`AlbumChildrenDataController`/`AlbumChildrenRightsController`,
  * merged into one class per method — only the class/namespace boundary and
- * the route path changed, NFR-062-06).
+ * the route path changed.
  */
 class AlbumChildrenController extends Controller
 {
@@ -94,7 +93,7 @@ class AlbumChildrenController extends Controller
 
 		// OWNER_ID is a valid effective sort column, but every direct child
 		// of a given album always shares that album's exact owner_id -> it
-		// can never produce more than one bucket (FR-061-06). Short-circuit
+		// can never produce more than one bucket. Short-circuit
 		// without ever running a GROUP BY.
 		if ($sorting->column === ColumnSortingType::OWNER_ID) {
 			return new AlbumBucketResource(bucket_ids: [], counts: [], labels: [], bucketable: false);
@@ -128,10 +127,9 @@ class AlbumChildrenController extends Controller
 	}
 
 	/**
-	 * Computes one display label per distinct bucket (FR-061-18) — bounded
-	 * by bucket count, never by child-row count (NFR-061-01's scope
-	 * explicitly exempts this: it runs entirely in PHP, after the
-	 * `GROUP BY`).
+	 * Computes one display label per distinct bucket — bounded
+	 * by bucket count, never by child-row count: it runs entirely in PHP,
+	 * after the `GROUP BY`.
 	 *
 	 * @param string[] $bucket_ids
 	 */
@@ -277,7 +275,7 @@ class AlbumChildrenController extends Controller
 	 */
 	private function fetch(Builder $query, ?User $user): AlbumChildrenDataResource
 	{
-		// Feature 061 (FR-061-27): the album's own public/anonymous grant,
+		// The album's own public/anonymous grant,
 		// independent of the requesting viewer — distinct from
 		// computed_access_permissions above, which reflects the *viewer's*
 		// effective access. A unique index on
@@ -460,7 +458,7 @@ class AlbumChildrenController extends Controller
 
 		if ($is_admin) {
 			// Mirrors AlbumQueryPolicy::applyVisibilityFilter()/applyReachabilityFilter()'s
-			// own admin early-return (NFR-061-10) — neither the grants join
+			// own admin early-return — neither the grants join
 			// nor the can_delete_children exists() query ever runs.
 			$ids = $query->select(['albums.id'])->toBase()->pluck('id')->all();
 			$count = count($ids);
@@ -537,11 +535,10 @@ class AlbumChildrenController extends Controller
 
 	/**
 	 * `getComputedAccessPermissionSubQuery(full: true, ...)` applies no
-	 * internal `GROUP BY` (FR-061-21) — a caller in multiple groups with
+	 * internal `GROUP BY` — a caller in multiple groups with
 	 * separate matching grants on the same child would otherwise produce
 	 * duplicate joined rows. `GROUP BY` + `MAX()` here correctly OR-merges
-	 * them: any matching group/user/public row granting a right is enough
-	 * (NFR-061-09).
+	 * them: any matching group/user/public row granting a right is enough.
 	 *
 	 * @param Builder<Album> $query
 	 *
