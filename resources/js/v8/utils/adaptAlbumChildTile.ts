@@ -48,12 +48,12 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
  * root's `own`/`shared` query already partitions by ownership at the SQL
  * level (`AlbumRootController::baseQuery()`), so every row in an `own`-scope
  * response is unconditionally the caller's own, and root's own
- * `AlbumChildrenRightsResource.owner_id` is `Optional`/omitted entirely
+ * `AlbumRightsResource.owner_id` is `Optional`/omitted entirely
  * (`AlbumRootController::queryRights()`, FR-062-06) — there is no
  * per-child/per-response owner id to compare against at root at all.
  *
  * @param i        Index into tier 3's per-child arrays.
- * @param rightsV3 Tier 3 response (`AlbumChildrenRightsResource`).
+ * @param rightsV3 Tier 3 response (`AlbumRightsResource`).
  * @param isOwner  Whether the caller owns this child (precomputed).
  * @param mayUpload `albumsStore.rootRights?.can_upload` — `UserResource`
  *                 itself never exposes the underlying `User::$may_upload`
@@ -65,7 +65,7 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
  */
 export function combineAlbumChildRights(
 	i: number,
-	rightsV3: App.Http.Resources.V3.AlbumChildrenRightsResource,
+	rightsV3: App.Http.Resources.V3.AlbumRightsResource,
 	isOwner: boolean,
 	mayUpload: boolean | undefined,
 ): App.Http.Resources.Rights.AlbumRightsResource {
@@ -112,7 +112,7 @@ export function combineAlbumChildRights(
  *                 coerces; `null`/`undefined` for a guest, never matches.
  */
 export function isRegularAlbumParentOwner(
-	rightsV3: App.Http.Resources.V3.AlbumChildrenRightsResource,
+	rightsV3: App.Http.Resources.V3.AlbumRightsResource,
 	isRegularAlbumParent: boolean,
 	currentUserId: number | null | undefined,
 ): boolean {
@@ -129,7 +129,7 @@ export function isRegularAlbumParentOwner(
  * computation. `formatted_min_max` is computed client-side (FR-063-16).
  *
  * @param i          Index into tier 2's per-child arrays.
- * @param childrenV3 Tier 2 response (`AlbumChildrenDataResource`).
+ * @param childrenV3 Tier 2 response (`AlbumDataResource`).
  * @param rights     This child's already-combined rights (or the safe
  *                   all-`false` default before tier 3 resolves, FR-063-03).
  * @param dateFormatAlbumThumb `date_format_album_thumb` config value.
@@ -137,7 +137,7 @@ export function isRegularAlbumParentOwner(
  */
 export function adaptAlbumChildTile(
 	i: number,
-	childrenV3: App.Http.Resources.V3.AlbumChildrenDataResource,
+	childrenV3: App.Http.Resources.V3.AlbumDataResource,
 	rights: App.Http.Resources.Rights.AlbumRightsResource,
 	dateFormatAlbumThumb: string,
 	thumbMinMaxOrder: App.Enum.DateOrderingType,

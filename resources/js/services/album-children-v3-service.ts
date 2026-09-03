@@ -18,7 +18,7 @@ const AlbumChildrenV3Service = {
 		});
 	},
 
-	getChildren(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenDataResource>> {
+	getChildren(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumDataResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}`, {
 			data: {},
@@ -26,7 +26,7 @@ const AlbumChildrenV3Service = {
 		});
 	},
 
-	getRights(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenRightsResource>> {
+	getRights(album_id: string): Promise<AxiosResponse<App.Http.Resources.V3.AlbumRightsResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/rights`, {
 			data: {},

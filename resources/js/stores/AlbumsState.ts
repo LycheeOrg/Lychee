@@ -35,8 +35,8 @@ export const useAlbumsStore = defineStore("albums-store", {
 		// page") — own/shared root albums additionally carry bucket
 		// tier1 state (mirroring AlbumState.ts's bucketsV3/boundariesV3 for
 		// sub-album children, since AlbumRootController literally reuses
-		// the same AlbumBucketResource/AlbumChildrenDataResource/
-		// AlbumChildrenRightsResource shapes). `albums` itself doubles as
+		// the same AlbumBucketResource/AlbumDataResource/
+		// AlbumRightsResource shapes). `albums` itself doubles as
 		// the "own" scope's adapted-tile array on the flag-on path (same
 		// field, same shape contract the flag-off path already populates,
 		// mirroring how `baseSmartAlbums` already does this); `shared`
@@ -214,7 +214,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 		 * `loadAlbumsV3()`, reusing the exact same `computeBucketBoundaries()`/
 		 * `adaptAlbumChildTile()` pure functions (`AlbumRootController`
 		 * literally returns the same `AlbumBucketResource`/
-		 * `AlbumChildrenDataResource` shapes sub-album children already use).
+		 * `AlbumDataResource` shapes sub-album children already use).
 		 * `own` scope's adapted tiles are written into the existing `albums`
 		 * field (same field/shape the flag-off path already populates,
 		 * mirroring `baseSmartAlbums`); `shared` scope gets the new flat
@@ -255,7 +255,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 		 * already partitions by ownership at the SQL level
 		 * (`AlbumRootController::baseQuery()`), so every row in an
 		 * `own`-scope response is unconditionally the caller's own, and
-		 * root's `AlbumChildrenRightsResource.owner_id` is `Optional`/omitted
+		 * root's `AlbumRightsResource.owner_id` is `Optional`/omitted
 		 * entirely (FR-062-06) — there is no per-row owner id to compare
 		 * against here, unlike sub-album children.
 		 */

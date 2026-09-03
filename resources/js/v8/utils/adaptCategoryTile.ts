@@ -2,7 +2,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
 
 /**
  * Adapts one row of a Feature 062 flat category listing (`GET /Albums/smart`,
- * `/tags`, `/persons`, `/pinned` — all share `AlbumCategoryListResource`'s
+ * `/tags`, `/persons`, `/pinned` — all share `AlbumCategoryResource`'s
  * shape: ids/titles/cover_ids/owner_ids) into the same `AdaptedAlbumTile`
  * shape FR-063-06's sub-album adapter produces (FR-063-21, generalized
  * 2026-09-02 root-SoA addendum from its original smart-albums-only form) —
@@ -40,7 +40,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
  */
 export function adaptCategoryTile(
 	i: number,
-	data: App.Http.Resources.V3.AlbumCategoryListResource,
+	data: App.Http.Resources.V3.AlbumCategoryResource,
 	rights: App.Http.Resources.Rights.AlbumRightsResource = DEFAULT_ALBUM_CHILD_RIGHTS,
 	kind: "smart" | "tag" | "person" | "pinned" = "smart",
 ): AdaptedAlbumTile {
@@ -71,10 +71,10 @@ export function adaptCategoryTile(
 /**
  * Client-side rights combination for `/Albums/tags` + `/tags/rights`
  * (`AlbumCategoryRightsResource` — a *different*, leaner shape than
- * sub-album/root's `AlbumChildrenRightsResource`: no `can_delete_children`/
+ * sub-album/root's `AlbumRightsResource`: no `can_delete_children`/
  * `can_move_children` at the parent level, `grants_delete` given directly
  * per row instead). `ownerId` comes from the *list* response's own
- * `owner_ids[i]` (`AlbumCategoryListResource`, unlike `/smart` which has no
+ * `owner_ids[i]` (`AlbumCategoryResource`, unlike `/smart` which has no
  * real owner) — `/tags` and `/tags/rights` are two independent queries, so
  * rows are matched by id, never by shared index. `can_move` is
  * unconditionally `false` — moving requires `is_model_album`

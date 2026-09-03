@@ -13,13 +13,13 @@ import Constants from "./constants";
  * same merge), and `/Albums/root[/buckets|/rights]?scope=` (bucketed, the
  * same tier1/2/3 shape Feature 061/063 already established for sub-album
  * children — `AlbumRootController` literally reuses `AlbumBucketResource`/
- * `AlbumChildrenDataResource`/`AlbumChildrenRightsResource`). Cached the
+ * `AlbumDataResource`/`AlbumRightsResource`). Cached the
  * same way `AlbumChildrenV3Service` already is; invalidated by
  * `AlbumService.clearAlbums()` (FR-063-23), the same call site every other
  * root-listing cache entry already relies on.
  */
 const AlbumCategoryV3Service = {
-	getSmart(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryListResource>> {
+	getSmart(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/smart`, {
 			data: {},
@@ -27,7 +27,7 @@ const AlbumCategoryV3Service = {
 		});
 	},
 
-	getTags(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryListResource>> {
+	getTags(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/tags`, {
 			data: {},
@@ -43,7 +43,7 @@ const AlbumCategoryV3Service = {
 		});
 	},
 
-	getPersons(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryListResource>> {
+	getPersons(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/persons`, {
 			params: { scope },
@@ -52,7 +52,7 @@ const AlbumCategoryV3Service = {
 		});
 	},
 
-	getPinned(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryListResource>> {
+	getPinned(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/pinned`, {
 			params: { scope },
@@ -70,7 +70,7 @@ const AlbumCategoryV3Service = {
 		});
 	},
 
-	getRootChildren(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenDataResource>> {
+	getRootChildren(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumDataResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/root`, {
 			params: { scope },
@@ -79,7 +79,7 @@ const AlbumCategoryV3Service = {
 		});
 	},
 
-	getRootRights(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumChildrenRightsResource>> {
+	getRootRights(scope: App.Enum.AlbumListingScope): Promise<AxiosResponse<App.Http.Resources.V3.AlbumRightsResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/root/rights`, {
 			params: { scope },
