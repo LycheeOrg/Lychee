@@ -128,7 +128,7 @@ class AlbumCategoryController extends Controller
 	private function queryTags(?User $user, AlbumSortingCriterion $sorting): AlbumCategoryListResource
 	{
 		$query = $this->album_query_policy->applyVisibilityFilter(TagAlbum::query(), $user);
-		(new SortingDecorator($query))->orderBy($sorting->column, $sorting->order)->applyOrdering();
+		(new SortingDecorator($query))->orderBy($sorting->column->fallbackForCategoryAlbumListing(), $sorting->order)->applyOrdering();
 
 		$rows = $query
 			->select(['tag_albums.id', 'base_albums.title', 'tag_albums.cover_id', 'base_albums.owner_id'])
@@ -219,7 +219,7 @@ class AlbumCategoryController extends Controller
 	{
 		$query = $this->album_query_policy->applyVisibilityFilter(PersonAlbum::query(), $user);
 		$this->applyScopePredicate($query, $scope, $user);
-		(new SortingDecorator($query))->orderBy($sorting->column, $sorting->order)->applyOrdering();
+		(new SortingDecorator($query))->orderBy($sorting->column->fallbackForCategoryAlbumListing(), $sorting->order)->applyOrdering();
 
 		$rows = $query
 			->select(['person_albums.id', 'base_albums.title', 'base_albums.owner_id'])
