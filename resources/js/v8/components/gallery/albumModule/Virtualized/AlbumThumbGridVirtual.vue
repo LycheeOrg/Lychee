@@ -1,7 +1,7 @@
 <template>
 	<div class="w-full px-4 sm:px-6">
 		<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize}px` }">
-			<!-- Sticky pinned header (FR-063-08): only rendered once the active bucket's own
+			<!-- Sticky pinned header: only rendered once the active bucket's own
 			     real header row has scrolled past the top — see activeHeaderLabel below. The
 			     negative bottom margin keeps it from adding extra scroll height of its own.
 			     Docks below the page's own sticky top bar (top-(--ui-header-height), same
@@ -63,8 +63,8 @@
 </template>
 <script setup lang="ts">
 /**
- * Grid virtualizer for the flag-on subalbum-children path (FR-063-07,
- * Increment I5) — the `useVirtualizer` wiring pattern (reactive options via
+ * Grid virtualizer for the flag-on subalbum-children path — the
+ * `useVirtualizer` wiring pattern (reactive options via
  * `computed`, single relative spacer + absolutely-positioned translate3d
  * rows) is lifted from `AlbumNavTree.vue`'s existing tree virtualizer, the
  * only precedent for this library already in the codebase — but that
@@ -134,7 +134,7 @@ const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
 const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio));
 
-// Single unbucketed section (FR-063-09) when tier 1 isn't bucketable or the
+// Single unbucketed section when tier 1 isn't bucketable or the
 // count-mismatch fallback fires (boundariesV3 === null) — same flat
 // rendering path buildVirtualAlbumRows() already documents for both cases.
 const showHeaders = computed(() => albumStore.bucketableV3);
@@ -188,7 +188,7 @@ function tilesForRow(row: VirtualTileRow): AdaptedAlbumTile[] {
 	return albumsStore.albums.slice(row.startIndex, row.startIndex + row.count) as AdaptedAlbumTile[];
 }
 
-// Sticky pinned bucket label (FR-063-08): the currently-active bucket's
+// Sticky pinned bucket label: the currently-active bucket's
 // header, shown only once its own real (virtualized) header row has
 // scrolled past the top of the viewport — see the template comment above.
 const headerTops = computed(() => {

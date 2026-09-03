@@ -122,11 +122,11 @@ export type AlbumThumbConfig = {
 const props = defineProps<{
 	isSelected: boolean;
 	cover_id: string | null;
-	// `cover_id` here (2026-09-02 addendum, FR-063-22) is optional and
+	// `cover_id` here is optional and
 	// distinct from the sibling top-level `cover_id` prop above (the
 	// *parent* album's designated cover, used only for the folder-cover
 	// badge comparison) — this one is *this tile's own* cover photo id, read
-	// from `AdaptedAlbumTile` (root smart-album tiles, FR-063-21) when
+	// from `AdaptedAlbumTile` (root smart-album tiles) when
 	// present and passed through to `AlbumThumbImage.vue` for Asset-endpoint
 	// resolution; absent (`undefined`) for every plain v2-sourced tile,
 	// which renders exactly as before.

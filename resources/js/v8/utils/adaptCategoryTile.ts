@@ -4,7 +4,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
  * Adapts one row of a Feature 062 flat category listing (`GET /Albums/smart`,
  * `/tags`, `/persons`, `/pinned` — all share `AlbumCategoryResource`'s
  * shape: ids/titles/cover_ids/owner_ids) into the same `AdaptedAlbumTile`
- * shape FR-063-06's sub-album adapter produces (FR-063-21, generalized
+ * shape the sub-album adapter produces (generalized
  * 2026-09-02 root-SoA addendum from its original smart-albums-only form) —
  * reused as-is rather than introducing a second adapted-tile type.
  *
@@ -16,7 +16,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
  * `/smart` alone is provably always `false`-correct here, see
  * AlbumProtectionPolicy::ofSmartAlbum() vs. real base-album policies),
  * `thumb` `null` (cover resolved via `cover_id` instead, mirroring
- * FR-063-15/22), `timeline`/`formatted_min_max` `null` (none of these four
+ * the sub-album adapter), `timeline`/`formatted_min_max` `null` (none of these four
  * listings carry `min_taken_at`/`max_taken_at`), `owner` `null` (a *name*,
  * not the `owner_ids[i]` these listings actually carry — resolving an id to
  * a display name would need a lookup this lean listing doesn't provide;
@@ -24,7 +24,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
  *
  * `rights` defaults to `DEFAULT_ALBUM_CHILD_RIGHTS` (all-`false`, safe) —
  * correct for `/smart` (never editable) and for `/persons`/`/pinned` (no
- * rights endpoint exists for either, Feature 062 NG4 — a caller loses
+ * rights endpoint exists for either — a caller loses
  * right-click edit/delete for a pinned/person tile at root when the flag is
  * on, an accepted, documented gap, not silently wrong). Callers with a real
  * rights source (`/tags` + `/tags/rights`) pass a precomputed `rights`

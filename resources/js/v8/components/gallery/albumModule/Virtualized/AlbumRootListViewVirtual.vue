@@ -53,7 +53,7 @@
 <script setup lang="ts">
 /**
  * List-view virtualizer, root-scope fork of `AlbumListViewVirtual.vue`
- * (FR-063-10) — see `AlbumRootGridVirtual.vue`'s doc comment for why this
+ * — see `AlbumRootGridVirtual.vue`'s doc comment for why this
  * is a fork rather than a prop-driven variant of the sub-album version
  * (2026-09-02 root-SoA addendum).
  */

@@ -3,9 +3,9 @@ import { AxiosCacheInstance } from "axios-cache-interceptor";
 import Constants from "./constants";
 
 /**
- * Consumes Feature 061's three `GET /api/v3/Albums/{album_id}*`
- * endpoints (FR-063-01/03). Cached the same way `AlbumService`'s v2 calls
- * are — via `axios-cache-interceptor`'s enumerable `id`s (FR-063-19) —
+ * Consumes the three `GET /api/v3/Albums/{album_id}*`
+ * endpoints. Cached the same way `AlbumService`'s v2 calls
+ * are — via `axios-cache-interceptor`'s enumerable `id`s —
  * rather than a bespoke store-level cache; `AlbumService.clearCache()`
  * removes these same entries alongside the v2 ones it already clears.
  */

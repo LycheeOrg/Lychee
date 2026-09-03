@@ -41,7 +41,7 @@
 			/>
 		</template>
 		<template v-else>
-			<!-- No cover_id (FR-063-15's no-cover fallback): a password icon when
+			<!-- No cover_id (the no-cover fallback): a password icon when
 			     the subalbum itself is password-protected, a generic no-image
 			     icon otherwise — the one AlbumThumbImage.vue fallback branch that
 			     doesn't depend on thumb.type/thumb.placeholder (tier 2 has neither). -->
@@ -85,7 +85,7 @@
 </template>
 <script setup lang="ts">
 /**
- * Forked from AlbumThumb.vue (FR-063-15) — the tile component mounted per
+ * Forked from AlbumThumb.vue — the tile component mounted per
  * child by AlbumThumbPanelVirtualList.vue/AlbumListItemVirtual.vue on the
  * flag-on path. Reuses AlbumThumbOverlay.vue/AlbumThumbDecorations.vue/
  * ThumbBadge.vue and the selection/drag styling unchanged; replaces
@@ -99,7 +99,7 @@
  * Sizing note: unlike AlbumThumb.vue (which sets its own responsive
  * sm:/md:/.../w-[...] classes), this component fills whatever box its
  * parent's virtualized row already sized it to (w-full h-full) — the
- * analytic itemsPerRow/tileWidth computation (FR-063-14, albumTileWidth.ts)
+ * analytic itemsPerRow/tileWidth computation (albumTileWidth.ts)
  * is the one place those breakpoint widths now live.
  */
 import { computed, toRef } from "vue";
@@ -156,8 +156,8 @@ const noCoverIconSrc = computed(() => (props.album.is_password_required ? getPas
 
 const chromeClass = computed(() => (togglableStore.isDragging && !canInteractAlbum(props.album) ? "" : "group-hover:border-primary"));
 
-// Matches AlbumThumbImage.vue's own root-span classes (FR-063-15 forked this
-// component from AlbumThumb.vue/AlbumThumbImage.vue, but missed these).
+// Matches AlbumThumbImage.vue's own root-span classes (forking this
+// component from AlbumThumb.vue/AlbumThumbImage.vue missed these).
 const cornerClass = computed(() => ({
 	"rounded-lg": is_rounded_corners_enabled.value,
 	"border-solid border border-accented": is_album_border_enabled.value,

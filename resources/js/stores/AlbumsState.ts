@@ -102,11 +102,11 @@ export const useAlbumsStore = defineStore("albums-store", {
 			});
 		},
 		/**
-		 * Fetches Feature 062's `GET /Albums/smart` and adapts each row into
-		 * `this.baseSmartAlbums` (FR-063-20/21, 2026-09-02 addendum) — the flag-on
+		 * Fetches `GET /Albums/smart` and adapts each row into
+		 * `this.baseSmartAlbums` (2026-09-02 addendum) — the flag-on
 		 * replacement for `load()`'s v2 `data.data.smart_albums` read. `tagAlbums`/
 		 * `personAlbums` are unaffected, still v2-sourced regardless of the flag
-		 * (NFR-063-09) — the `smartAlbums` getter concatenates all three either way.
+		 * — the `smartAlbums` getter concatenates all three either way.
 		 */
 		loadSmartAlbumsV3(): Promise<void> {
 			return AlbumCategoryV3Service.getSmart()

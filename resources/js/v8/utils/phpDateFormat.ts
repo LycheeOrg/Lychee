@@ -1,5 +1,7 @@
+import { getActiveLanguage } from "laravel-vue-i18n";
+
 /**
- * Reproduces PHP's `date()` format-character semantics client-side (FR-063-16).
+ * Reproduces PHP's `date()` format-character semantics client-side.
  * `date_format_album_thumb`/`date_format_hero_created_at`-style configs are
  * free-text (`type_range: STRING_REQ`, not an enum) — an admin can type any
  * valid PHP `date()` format string, so this must handle the general case,
@@ -10,8 +12,32 @@
  * `\`-escapes the next character as a literal, exactly like PHP's `date()`.
  */
 
-const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+// Localized via the visitor's own browser locale, but only when Lychee's
+// configured app language is English: a non-English install already has an
+// admin-chosen language driving the rest of the UI, so day/month names stay
+// the literal, un-localized English `date()` always produces rather than
+// following a guest's possibly-unrelated browser language. `D`/`M` use a
+// real `"short"` formatter rather than slicing the long name, since a
+// 3-character slice isn't a valid abbreviation in most non-English locales.
+function buildDayNames(locale: string, weekday: "long" | "short"): string[] {
+	const formatter = new Intl.DateTimeFormat(locale, { weekday, timeZone: "UTC" });
+	// 2023-01-01 (UTC) was a Sunday — walk 7 consecutive UTC days from there
+	// for the Sunday-first ordering `date()`'s day-of-week numbering expects.
+	return Array.from({ length: 7 }, (_, i) => formatter.format(new Date(Date.UTC(2023, 0, 1 + i))));
+}
+
+function buildMonthNames(locale: string, month: "long" | "short"): string[] {
+	const formatter = new Intl.DateTimeFormat(locale, { month, timeZone: "UTC" });
+	return Array.from({ length: 12 }, (_, i) => formatter.format(new Date(Date.UTC(2023, i, 1))));
+}
+
+const isAppLanguageEnglish = getActiveLanguage().toLowerCase().startsWith("en");
+const localeForDateNames = isAppLanguageEnglish ? navigator.language : "en";
+
+const DAY_NAMES = buildDayNames(localeForDateNames, "long");
+const DAY_NAMES_SHORT = buildDayNames(localeForDateNames, "short");
+const MONTH_NAMES = buildMonthNames(localeForDateNames, "long");
+const MONTH_NAMES_SHORT = buildMonthNames(localeForDateNames, "short");
 
 function pad(value: number, length: number = 2): string {
 	return String(value).padStart(length, "0");
@@ -92,7 +118,7 @@ export function phpDateFormat(format: string, date: Date): string {
 				result += pad(day);
 				break;
 			case "D":
-				result += DAY_NAMES[weekday].slice(0, 3);
+				result += DAY_NAMES_SHORT[weekday];
 				break;
 			case "j":
 				result += String(day);
@@ -124,7 +150,7 @@ export function phpDateFormat(format: string, date: Date): string {
 				result += pad(month0 + 1);
 				break;
 			case "M":
-				result += MONTH_NAMES[month0].slice(0, 3);
+				result += MONTH_NAMES_SHORT[month0];
 				break;
 			case "n":
 				result += String(month0 + 1);
@@ -178,7 +204,7 @@ export function phpDateFormat(format: string, date: Date): string {
 				result += `${pad(year, 4)}-${pad(month0 + 1)}-${pad(day)}T${pad(hours24)}:${pad(minutes)}:${pad(seconds)}${timezoneOffsetString(date)}`;
 				break;
 			case "r":
-				result += `${DAY_NAMES[weekday].slice(0, 3)}, ${pad(day)} ${MONTH_NAMES[month0].slice(0, 3)} ${year} ${pad(hours24)}:${pad(minutes)}:${pad(seconds)} ${timezoneOffsetString(date).replace(":", "")}`;
+				result += `${DAY_NAMES_SHORT[weekday]}, ${pad(day)} ${MONTH_NAMES_SHORT[month0]} ${year} ${pad(hours24)}:${pad(minutes)}:${pad(seconds)} ${timezoneOffsetString(date).replace(":", "")}`;
 				break;
 			default:
 				// Unrecognized character: pass through literally, matching
@@ -193,7 +219,7 @@ export function phpDateFormat(format: string, date: Date): string {
 /**
  * Mirrors `ThumbAlbumResource::formatMinMaxDate()`
  * (`app/Http/Resources/Models/ThumbAlbumResource.php:116-132`) exactly,
- * executed client-side instead of re-fetched (FR-063-16).
+ * executed client-side instead of re-fetched.
  *
  * `formatMinMaxDate()`'s actual branching, reproduced precisely:
  * - either `min_taken_at`/`max_taken_at` missing (including *exactly one*

@@ -44,7 +44,7 @@ const WRAPPER_PADDING_PX_MOBILE = 16; // px-4 (below sm)
 
 /**
  * `AlbumThumbVirtual.vue`'s width classes, extracted here as the single
- * shared source of truth (FR-063-14): `tileWidth = viewportWidth *
+ * shared source of truth: `tileWidth = viewportWidth *
  * vwFraction - remOffset * 16px`, exactly reproducing
  * `sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)]
  * xl:w-[calc(14vw-1rem)] 2xl:w-[calc(11vw-0.75rem)] 3xl:w-[calc(10vw-0.75rem)]
@@ -110,7 +110,7 @@ const REM_PX = 16;
 
 /**
  * Imperative, synchronous equivalent of `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()`
- * (FR-063-11) — same threshold table, but a plain function of a width
+ * — same threshold table, but a plain function of a width
  * number rather than a reactive media-query listener, for
  * `dragAndSelect.ts`'s one-shot snapshot at drag-start.
  */
@@ -132,9 +132,9 @@ export type AlbumTileGeometry = {
 };
 
 /**
- * Pure form of the analytic tile-geometry formula (FR-063-14, DO-063-09,
- * Q-063-10) — extracted so `dragAndSelect.ts`'s imperative, one-shot
- * `getBoundingClientRect()`-based snapshot (FR-063-11) can compute the exact
+ * Pure form of the analytic tile-geometry formula — extracted so
+ * `dragAndSelect.ts`'s imperative, one-shot
+ * `getBoundingClientRect()`-based snapshot can compute the exact
  * same geometry a mounted grid uses without itself depending on the
  * `useElementSize`/`useBreakpoints` reactive composables below (whose
  * ResizeObserver-driven updates are asynchronous — unsuitable for a value
@@ -200,8 +200,8 @@ export type AlbumTileWidthResult = {
 /**
  * Reactive `itemsPerRow`/`tileWidth` derived analytically from viewport
  * width and the current Tailwind breakpoint — no probe tile, no DOM
- * measurement of any tile or container element (FR-063-14, DO-063-09,
- * Q-063-10). Correct synchronously from the very first evaluation, with no
+ * measurement of any tile or container element. Correct synchronously
+ * from the very first evaluation, with no
  * post-mount correction (see WRAPPER_PADDING_PX's own comment for why that
  * matters here specifically).
  */

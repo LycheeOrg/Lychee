@@ -128,7 +128,7 @@ const { is_touch_select_mode } = storeToRefs(togglableStore);
 const { is_nsfw_background_blurred, is_smart_album_flags_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
-	// `cover_id` optional (2026-09-02 addendum, FR-063-22) — see AlbumThumb.vue's
+	// `cover_id` optional — see AlbumThumb.vue's
 	// matching widened `album` prop type for the full explanation.
 	album: App.Http.Resources.Models.ThumbAlbumResource & { cover_id?: string | null };
 	isSelected: boolean;

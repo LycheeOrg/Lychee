@@ -1,5 +1,5 @@
 /**
- * Numeric width/height ratio for each `AspectRatioCSSType` (FR-063-14) —
+ * Numeric width/height ratio for each `AspectRatioCSSType` —
  * `AlbumThumbVirtual.vue` still uses the CSS class itself for its own
  * `aspect-*` class binding; this is only for the row-height math in
  * `virtualAlbumRows.ts`, which needs a plain number.

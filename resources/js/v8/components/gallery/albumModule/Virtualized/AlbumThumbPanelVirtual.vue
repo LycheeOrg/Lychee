@@ -16,12 +16,12 @@
 </template>
 <script setup lang="ts">
 /**
- * Flag-on replacement for AlbumThumbPanel.vue (FR-063-01) — dispatches
+ * Flag-on replacement for AlbumThumbPanel.vue — dispatches
  * grid vs. list the same way AlbumThumbPanel.vue does (`album_view_mode`),
  * but each branch is now a self-contained virtualizer reading straight from
  * AlbumState.ts/AlbumsState.ts (bucketsV3/boundariesV3/albums) rather than
  * taking them as props: there's no client-side timeline re-splitting here
- * (FR-063-02's bucket-driven headers replace AlbumThumbPanel.vue's own
+ * (bucket-driven headers replace AlbumThumbPanel.vue's own
  * splitter.ts usage entirely), so the prop surface collapses to just
  * selectedAlbums + the three propagated events.
  */

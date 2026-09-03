@@ -31,7 +31,7 @@
 /**
  * Flag-on replacement for the root gallery's own/shared `<AlbumThumbPanel>`
  * calls (2026-09-02 root-SoA addendum) — root-scope fork of
- * `AlbumThumbPanelVirtual.vue` (FR-063-10), dispatching grid vs. list the
+ * `AlbumThumbPanelVirtual.vue`, dispatching grid vs. list the
  * same way, reading straight from `AlbumsState.ts`'s own/shared bucket-tier
  * state (selected via the `scope` prop) rather than `AlbumState.ts`/
  * `AlbumsState.ts.albums` unconditionally.

@@ -209,7 +209,7 @@ export function useDragAndSelect(
 	}
 
 	/**
-	 * Flag-on replacement for `getBoxes("data-album-id")` (FR-063-11) —
+	 * Flag-on replacement for `getBoxes("data-album-id")` —
 	 * virtualization only ever mounts the tiles near the viewport, so a DOM
 	 * query would miss every off-screen album a drag rectangle could still
 	 * cover. Instead this reproduces the exact geometry
@@ -281,7 +281,7 @@ export function useDragAndSelect(
 			const gridBox = getBounding(gridRootEl, "root");
 
 			tiles.forEach((album, i) => {
-				// NSFW-hidden tiles (FR-063-15) render an empty box, not a
+				// NSFW-hidden tiles render an empty box, not a
 				// selectable one — matches getBoxes()'s DOM-absence for them.
 				if (album.is_nsfw && !lycheeStore.are_nsfw_visible) {
 					return;

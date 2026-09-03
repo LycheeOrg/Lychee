@@ -31,23 +31,22 @@ export type VirtualAlbumRowsResult = {
 	rowHeights: number[];
 	/** Parallel to `rows` — each row's own content height in px, excluding any trailing gap. Use this for the rendered content's height so it doesn't stretch into the gap reserved by `rowHeights`. */
 	rowContentHeights: number[];
-	/** Row/column → absolute box (FR-063-11): every child's box, mounted or not. O(1) per call. */
+	/** Row/column → absolute box: every child's box, mounted or not. O(1) per call. */
 	getTileBox: (childIndex: number) => TileBox;
 };
 
 /** A header row's fixed height in px — shared with the sticky-header overlay math (grid/list panels). */
 export const HEADER_ROW_HEIGHT = 40;
 
-/** List-view row's fixed height in px (FR-063-10) — shared by AlbumListViewVirtual.vue and the drag-select geometry reimplementation. */
+/** List-view row's fixed height in px — shared by AlbumListViewVirtual.vue and the drag-select geometry reimplementation. */
 export const LIST_ROW_HEIGHT = 40;
 
 /**
  * Turns `(childIds[], buckets, itemsPerRow, tileWidth, aspectRatioNumber)`
  * into a flattened virtualizer row list (header rows + tile rows) and a
- * tile-geometry lookup (DO-063-02) — shared by the grid virtual list
- * (FR-063-07), the list-view virtual list (FR-063-10, fixed row height —
- * not this height math), and the reimplemented drag-select geometry test
- * (FR-063-11).
+ * tile-geometry lookup — shared by the grid virtual list, the list-view
+ * virtual list (fixed row height — not this height math), and the
+ * reimplemented drag-select geometry test.
  *
  * `getTileBox()` is O(1) per call (offsets precomputed once here, not
  * re-walked per lookup) — drag-select tests every child's box against the
@@ -55,18 +54,18 @@ export const LIST_ROW_HEIGHT = 40;
  * scale this feature targets.
  *
  * @param childIds   Flat, already-ordered/grouped child ids (tier 2's own
- *                   order, FR-061-26 — used only for row keys, never re-sorted).
- * @param buckets    Bucket-boundary metadata (FR-063-02). Pass a single
+ *                   order — used only for row keys, never re-sorted).
+ * @param buckets    Bucket-boundary metadata. Pass a single
  *                   `{bucketId: "all", label: "", startIndex: 0, count: childIds.length}`
  *                   entry with `showHeaders: false` for the `bucketable: false`
- *                   (FR-063-09) or count-mismatch (FR-063-02 Failure path)
- *                   fallback — both collapse to the same flat rendering path.
+ *                   or count-mismatch fallback — both collapse to the same
+ *                   flat rendering path.
  * @param showHeaders Whether to emit header rows at all (`false` for the
  *                   flat-fallback case above).
- * @param itemsPerRow Tiles per row (FR-063-14) — degenerate `1` for list view.
- * @param tileWidth   Analytically-computed tile width in px (FR-063-14).
- * @param aspectRatioNumber Parent album's aspect ratio as width/height (FR-063-14).
- * @param gap         Analytically-computed gap in px between tiles/rows (FR-063-14).
+ * @param itemsPerRow Tiles per row — degenerate `1` for list view.
+ * @param tileWidth   Analytically-computed tile width in px.
+ * @param aspectRatioNumber Parent album's aspect ratio as width/height.
+ * @param gap         Analytically-computed gap in px between tiles/rows.
  *                    Applied both horizontally (by the caller's own flex
  *                    `gap` styling, between tiles in a row) and vertically —
  *                    baked into `rowHeights` here, uniformly between every

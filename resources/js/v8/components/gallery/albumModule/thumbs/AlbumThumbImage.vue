@@ -50,12 +50,12 @@ import Thumb from "@/v8/components/thumbs/Thumb.vue";
 const { isNotEmpty, getPlayIcon, getPlaceholderIcon, getNoImageIcon, getPaswwordIcon } = useImageHelpers();
 
 /**
- * `albumId`/`coverId` (2026-09-02 addendum, FR-063-22): optional, additive.
+ * `albumId`/`coverId`: optional, additive.
  * Every existing v2 caller passes neither, so `thumb` alone still drives
  * rendering exactly as before. When a caller (currently only root
- * smart-album tiles, `AlbumThumb.vue`, FR-063-20/21) passes `coverId`
- * non-null, the cover resolves via `<Thumb>`/the Feature 056 Asset endpoint
- * instead — the same mechanism FR-063-15's `AlbumThumbVirtual.vue` already
+ * smart-album tiles, `AlbumThumb.vue`) passes `coverId`
+ * non-null, the cover resolves via `<Thumb>`/the Asset endpoint
+ * instead — the same mechanism `AlbumThumbVirtual.vue` already
  * established for subalbum tiles. `coverId: null` (a v3 tile with no cached
  * cover) intentionally falls through to the existing `thumb`-based branch
  * below unchanged: the adapter already sets `thumb: null`, and `load()`'s

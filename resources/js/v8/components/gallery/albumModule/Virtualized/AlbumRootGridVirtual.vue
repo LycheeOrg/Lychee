@@ -69,7 +69,7 @@
  * Grid virtualizer for the flag-on root-gallery own/shared albums path
  * (2026-09-02 root-SoA addendum — "the point of the extension is to support
  * Struct-of-Array on the root gallery page"). Forked from
- * `AlbumThumbGridVirtual.vue` (FR-063-07) rather than making that component
+ * `AlbumThumbGridVirtual.vue` rather than making that component
  * take its data via props: this repo's established convention is to fork a
  * shared component rather than branch a flag/mode into it, and the two
  * components differ in exactly which store fields they read (root's own vs.

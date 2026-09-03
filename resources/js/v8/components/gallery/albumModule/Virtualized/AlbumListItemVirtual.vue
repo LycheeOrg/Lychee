@@ -86,17 +86,17 @@
 
 <script setup lang="ts">
 /**
- * Forked from AlbumListItem.vue (FR-063-17), same relationship
+ * Forked from AlbumListItem.vue, same relationship
  * AlbumThumbVirtual.vue has to AlbumThumb.vue: replaces AlbumThumbImage.vue's
  * pre-built-URL lookup with <Thumb> (tier 2 supplies only cover_id, no URL),
  * and drops the isSmartAlbum branch and the tag/person-album badges — all
  * dead code for adapted tiles, since direct children of a real album are
- * never a smart/tag/person album themselves (FR-061-24, same reasoning as
+ * never a smart/tag/person album themselves (same reasoning as
  * AlbumThumbVirtual.vue).
  *
  * Sizing note: fills whatever box AlbumListVirtual.vue's virtualized row
  * already sized it to (w-full h-full) — row height itself is a fixed
- * constant (FR-063-10), not aspect-ratio-derived like the grid.
+ * constant, not aspect-ratio-derived like the grid.
  */
 import { computed, toRef } from "vue";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";

@@ -90,11 +90,11 @@ const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | und
 const map = ref(undefined) as Ref<L.Map | undefined>;
 const bounds = ref<L.LatLngBoundsExpression | undefined>(undefined);
 const photoLayer = ref<unknown>(undefined);
-// One entry per track (FR-055-09 UI half); keyed by track id so a future re-fetch could diff them.
+// One entry per track; keyed by track id so a future re-fetch could diff them.
 const trackLayers = ref<Map<number, L.Layer>>(new Map());
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
-// Fixed palette cycled across tracks (Q-055-02: no persisted/user-chosen colors).
+// Fixed palette cycled across tracks (no persisted/user-chosen colors).
 const TRACK_COLORS = ["#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#42d4f4", "#f032e6", "#bfef45"];
 
 function colorForTrackIndex(index: number): string {
@@ -270,7 +270,7 @@ function addContentsToMap() {
 	}
 
 	// add tracks: one L.GPX layer per track, colored from a fixed palette, wired into
-	// Leaflet's native layers control for the legend/visibility checkboxes (Q-055-02).
+	// Leaflet's native layers control for the legend/visibility checkboxes.
 	// Placed before any early return so a track still renders on a photo-less album.
 	const overlays: Record<string, L.Layer> = {};
 	data.value.tracks.forEach((track, index) => {

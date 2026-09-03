@@ -15,7 +15,7 @@ import Constants from "./constants";
  * children — `AlbumRootController` literally reuses `AlbumBucketResource`/
  * `AlbumDataResource`/`AlbumRightsResource`). Cached the
  * same way `AlbumChildrenV3Service` already is; invalidated by
- * `AlbumService.clearAlbums()` (FR-063-23), the same call site every other
+ * `AlbumService.clearAlbums()`, the same call site every other
  * root-listing cache entry already relies on.
  */
 const AlbumCategoryV3Service = {

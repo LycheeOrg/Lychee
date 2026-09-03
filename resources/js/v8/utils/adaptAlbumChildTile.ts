@@ -1,7 +1,7 @@
 import { formatMinMaxDate } from "@/v8/utils/phpDateFormat";
 
 /**
- * Safe default (FR-063-03): every right `false` until tier 3 resolves — a
+ * Safe default: every right `false` until tier 3 resolves — a
  * right-click before the background fetch completes offers no actions
  * rather than incorrect ones.
  */
@@ -27,7 +27,7 @@ export const DEFAULT_ALBUM_CHILD_RIGHTS: App.Http.Resources.Rights.AlbumRightsRe
 /**
  * The actual shape of `albumsStore.albums` on the flag-on (v3) path:
  * `ThumbAlbumResource` plus `cover_id`, the one extra field tier 2 supplies
- * that the v2 type doesn't carry (FR-063-06, DO-063-01).
+ * that the v2 type doesn't carry.
  */
 export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 	cover_id: string | null;
@@ -35,7 +35,7 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 
 /**
  * Client-side rights combination Feature 061 deliberately left
- * unimplemented (FR-063-04) — verified to match
+ * unimplemented — verified to match
  * `AlbumPolicy::canEdit`/`canDownload`/`canDelete` exactly
  * (`app/Policies/AlbumPolicy.php:255-269,184-207,281-303`).
  *
@@ -49,7 +49,7 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
  * level (`AlbumRootController::baseQuery()`), so every row in an `own`-scope
  * response is unconditionally the caller's own, and root's own
  * `AlbumRightsResource.owner_id` is `Optional`/omitted entirely
- * (`AlbumRootController::queryRights()`, FR-062-06) — there is no
+ * (`AlbumRootController::queryRights()`) — there is no
  * per-child/per-response owner id to compare against at root at all.
  *
  * @param i        Index into tier 3's per-child arrays.
@@ -93,11 +93,11 @@ export function combineAlbumChildRights(
 }
 
 /**
- * `isOwner` derivation for the sub-album-children caller (FR-063-04/05):
- * `rightsV3.owner_id` is "the parent `album_id`'s own `owner_id`"
- * (FR-061-20) — for a regular `Album` parent this equals every direct
+ * `isOwner` derivation for the sub-album-children caller:
+ * `rightsV3.owner_id` is "the parent `album_id`'s own `owner_id`" — for a
+ * regular `Album` parent this equals every direct
  * child's own owner too, by Lychee's album-ownership-inheritance rule, so
- * the shortcut is sound. For a `TagAlbum`/`PersonAlbum` parent (FR-061-25)
+ * the shortcut is sound. For a `TagAlbum`/`PersonAlbum` parent
  * it is the *tag/person's* owner — unrelated to each dynamically-matched
  * child's real owner — so `isRegularAlbumParent` gates the shortcut off
  * entirely there (applying it would over-grant `can_delete`/`can_move`/
@@ -120,18 +120,18 @@ export function isRegularAlbumParentOwner(
 }
 
 /**
- * Adapts one tier-2 child (by index) into an `AdaptedAlbumTile` (FR-063-06).
+ * Adapts one tier-2 child (by index) into an `AdaptedAlbumTile`.
  * `thumb`/`timeline` are left `null` — resolved independently by
- * `AlbumThumbVirtual.vue`/`AlbumListItemVirtual.vue` (FR-063-15/17) and by
- * bucket-driven sectioning (FR-063-08) respectively, not read from this
+ * `AlbumThumbVirtual.vue`/`AlbumListItemVirtual.vue` and by
+ * bucket-driven sectioning respectively, not read from this
  * object in the flag-on path. `is_pinned`/`is_public`/`is_link_required` are
- * mapped straight through from tier 2 (FR-061-27) — no client-side
- * computation. `formatted_min_max` is computed client-side (FR-063-16).
+ * mapped straight through from tier 2 — no client-side
+ * computation. `formatted_min_max` is computed client-side.
  *
  * @param i          Index into tier 2's per-child arrays.
  * @param childrenV3 Tier 2 response (`AlbumDataResource`).
  * @param rights     This child's already-combined rights (or the safe
- *                   all-`false` default before tier 3 resolves, FR-063-03).
+ *                   all-`false` default before tier 3 resolves).
  * @param dateFormatAlbumThumb `date_format_album_thumb` config value.
  * @param thumbMinMaxOrder     `thumb_min_max_order` config value.
  */
@@ -153,7 +153,7 @@ export function adaptAlbumChildTile(
 		is_link_required: childrenV3.is_link_requireds[i],
 		is_password_required: childrenV3.is_password_requireds[i],
 		// Direct children of a real Album are never themselves a Tag/Person
-		// album — only the browsed parent can be one (FR-061-24).
+		// album — only the browsed parent can be one.
 		is_tag_album: false,
 		is_person_album: false,
 		has_subalbum: childrenV3.has_subalbums[i],

@@ -106,7 +106,7 @@ const AlbumService = {
 				axiosWithCache.storage.remove(`album_albums_${album_id}_page${page}`);
 				axiosWithCache.storage.remove(`album_photos_${album_id}_page${page}`);
 			}
-			// Clear v3 subalbum-children caches (Feature 063, FR-063-13/19).
+			// Clear v3 subalbum-children caches.
 			axiosWithCache.storage.remove(`album_v3_children_buckets_${album_id}`);
 			axiosWithCache.storage.remove(`album_v3_children_${album_id}`);
 			axiosWithCache.storage.remove(`album_v3_children_rights_${album_id}`);
@@ -116,9 +116,8 @@ const AlbumService = {
 	clearAlbums(): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
 		axiosWithCache.storage.remove("albums");
-		// Clear every v3 root-listing cache entry too (Feature 063,
-		// 2026-09-02 addendum, FR-063-23, extended to the full root SoA
-		// adoption) — this is the same "invalidate the root listing" call
+		// Clear every v3 root-listing cache entry too — this is the same
+		// "invalidate the root listing" call
 		// site every mutation that could affect it (create/delete/move/
 		// rename/visibility/unlock/pin) already calls.
 		axiosWithCache.storage.remove("albums_v3_smart");

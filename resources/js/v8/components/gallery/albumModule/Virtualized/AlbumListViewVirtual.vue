@@ -45,8 +45,8 @@
 </template>
 <script setup lang="ts">
 /**
- * List-view virtualizer for the flag-on subalbum-children path (FR-063-10,
- * Increment I6) — same window-scroll virtualizer wiring as
+ * List-view virtualizer for the flag-on subalbum-children path — same
+ * window-scroll virtualizer wiring as
  * AlbumThumbGridVirtual.vue (see that file's own comment for why
  * `useWindowVirtualizer`/`scrollMargin` rather than a nested scroll
  * container), but a single item per row (itemsPerRow=1) and a fixed row
