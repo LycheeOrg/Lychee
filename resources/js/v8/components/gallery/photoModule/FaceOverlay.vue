@@ -57,6 +57,7 @@ import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{
 	faces: App.Http.Resources.Models.FaceResource[];
@@ -81,7 +82,7 @@ const overlayEnabled = computed(() => initData.value?.modules.is_face_overlay_en
 const isVisible = computed(() => lycheeStore.is_face_overlay_visible);
 
 // P key toggles overlay visibility
-defineShortcuts({
+definePanelShortcuts({
 	p: () => (lycheeStore.is_face_overlay_visible = !lycheeStore.is_face_overlay_visible),
 });
 

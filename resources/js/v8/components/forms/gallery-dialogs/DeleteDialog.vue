@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="visible" :dismissible="true">
+	<UModal v-model:open="visible" :dismissible="true" :content="contentProps">
 		<template #body>
 			<p class="text-center text-muted max-w-xl text-wrap">
 				{{ confirmation }}<br />
@@ -53,6 +53,14 @@ const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const photoStore = usePhotoStore();
 const albumListStore = useAlbumListStore();
+
+const contentProps = {
+	tabindex: -1,
+	onOpenAutoFocus: (event: Event) => {
+		event.preventDefault();
+		(event.currentTarget as HTMLElement | null)?.focus();
+	},
+};
 
 const visible = defineModel<boolean>("open", { default: false });
 const emits = defineEmits<{

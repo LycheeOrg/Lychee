@@ -83,6 +83,7 @@ import { useUserStore } from "@/stores/UserState";
 import { trans } from "laravel-vue-i18n";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { AddMenuItem } from "@/v8/composables/contextMenus/contextMenuAlbumAdd";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const emits = defineEmits<{
 	refresh: [];
@@ -160,7 +161,7 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	n: () => timelineStore.rootRights?.can_upload && (is_create_album_visible.value = true),
 	u: () => timelineStore.rootRights?.can_upload && (is_upload_visible.value = true),
 	"/": () => timelineStore.rootConfig?.is_search_accessible && openSearch(),
