@@ -204,7 +204,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		}
 		self::assertSame(array_fill(0, count($json['labels']), 'unknown'), $json['labels']);
 
-		$users_join_queries = array_filter($log, fn (array $q) => preg_match('/join\s+"?users"?/i', $q['query']) === 1);
+		$users_join_queries = array_filter($log, fn (array $q) => preg_match('/join\s+[`"]?users[`"]?/i', $q['query']) === 1);
 		self::assertCount(0, $users_join_queries, 'Guest request must never execute a users join.');
 	}
 
@@ -222,7 +222,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
-		$users_join_queries = array_filter($log, fn (array $q) => preg_match('/join\s+"?users"?/i', $q['query']) === 1);
+		$users_join_queries = array_filter($log, fn (array $q) => preg_match('/join\s+[`"]?users[`"]?/i', $q['query']) === 1);
 		self::assertGreaterThan(0, count($users_join_queries));
 	}
 
