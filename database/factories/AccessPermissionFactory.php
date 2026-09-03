@@ -38,6 +38,7 @@ class AccessPermissionFactory extends Factory
 		[
 			'is_link_required' => true,
 			'grants_full_photo_access' => false,
+			'grants_cover_access' => false,
 			'grants_download' => false,
 			'grants_upload' => false,
 			'grants_edit' => false,
@@ -136,6 +137,15 @@ class AccessPermissionFactory extends Factory
 		return $this->state(function (array $attributes) {
 			return [
 				'grants_full_photo_access' => true,
+			];
+		});
+	}
+
+	public function grants_cover_access()
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'grants_cover_access' => true,
 			];
 		});
 	}

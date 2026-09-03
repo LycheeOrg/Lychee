@@ -152,6 +152,8 @@ return [
         'password_prot' => 'محافظت شده با رمز عبور',
         'password_prot_expl' => 'کاربران ناشناس برای دسترسی به این آلبوم به یک رمز عبور مشترک نیاز دارند.',
         'password_prop_not_compatible' => 'پاسخی که از حافظه موقت دریافت می شود این تنظیم در تضاد است.<br>به استفاده از حافظه موقت، باز کردن قفل این آلبوم</br>همچنین محتوای آن را برای سایر کاربران ناشناس آشکار می‌کند.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'حساس',
         'nsfw_expl' => 'آلبوم حاوی محتوای حساس است.',
         'visibility_updated' => 'حالت دید به‌روزرسانی شد.',

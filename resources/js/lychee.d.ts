@@ -1167,6 +1167,8 @@ declare namespace App {
 					is_public: boolean;
 					is_link_required: boolean;
 					is_password_required: boolean;
+					grants_cover_access: boolean;
+					is_locked: boolean;
 					is_tag_album: boolean;
 					is_person_album: boolean;
 					has_subalbum: boolean;
@@ -1268,6 +1270,7 @@ declare namespace App {
 						is_link_required: boolean;
 						is_nsfw: boolean;
 						grants_full_photo_access: boolean;
+						grants_cover_access: boolean;
 						grants_download: boolean;
 						grants_upload: boolean;
 						is_password_required: boolean;

@@ -153,6 +153,8 @@ return [
         'password_prot' => 'محمي بكلمة مرور',
         'password_prot_expl' => 'يحتاج المستخدمون المجهولون إلى كلمة مرور مشتركة للوصول إلى هذا الألبوم.',
         'password_prop_not_compatible' => 'ذاكرة التخزين المؤقت للاستجابة تتعارض مع هذا الإعداد.<br>بسبب التخزين المؤقت للاستجابة، فإن فتح هذا الألبوم سيؤدي أيضًا إلى كشف محتواه لمستخدمين آخرين مجهولين.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'حساس',
         'nsfw_expl' => 'يحتوي الألبوم على محتوى حساس.',
         'visibility_updated' => 'تم تحديث الرؤية.',

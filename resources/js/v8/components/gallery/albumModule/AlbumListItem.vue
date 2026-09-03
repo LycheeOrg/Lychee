@@ -95,8 +95,8 @@
 			<ListBadge v-if="showSensitiveFlag" :class="ALBUM_BADGE_FILL.nsfw" icon="warning" />
 			<ListBadge v-if="showPublicHiddenFlag" :class="ALBUM_BADGE_FILL.link" icon="eye" />
 			<ListBadge v-if="showPublicVisibleFlag" :class="ALBUM_BADGE_FILL.success" icon="eye" />
-			<ListBadge v-if="showPasswordFlag && album.thumb === null" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
-			<ListBadge v-if="showPasswordFlag && album.thumb !== null" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
+			<ListBadge v-if="showPasswordFlag && album.is_locked" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
+			<ListBadge v-if="showPasswordFlag && !album.is_locked" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
 			<ListBadge v-if="scopeFlagsEnabled && album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
 			<ListBadge v-if="scopeFlagsEnabled && album.is_person_album" :class="ALBUM_BADGE_FILL.success" icon="users" />
 		</div>

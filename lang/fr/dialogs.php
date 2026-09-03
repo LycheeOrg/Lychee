@@ -153,6 +153,8 @@ return [
         'password_prot' => 'Protégé par mot de passe',
         'password_prot_expl' => 'Les utilisateurs anonymes doivent connaître le mot de passe pour accéder à cet album.',
         'password_prop_not_compatible' => 'Le cache de réponse entre en conflit avec ce paramètre.<br>En raison du cache, le déverrouillage de cet album<br>révèlera aussi son contenu à d’autres utilisateurs anonymes.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Sensible',
         'nsfw_expl' => 'L’album contient du contenu sensible.',
         'visibility_updated' => 'Visibilité mise à jour.',

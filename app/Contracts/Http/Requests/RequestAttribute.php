@@ -80,6 +80,7 @@ class RequestAttribute
 	public const IS_LINK_REQUIRED_ATTRIBUTE = 'is_link_required';
 	public const GRANTS_DOWNLOAD_ATTRIBUTE = 'grants_download';
 	public const GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE = 'grants_full_photo_access';
+	public const GRANTS_COVER_ACCESS_ATTRIBUTE = 'grants_cover_access';
 	public const GRANTS_UPLOAD_ATTRIBUTE = 'grants_upload';
 	public const GRANTS_EDIT_ATTRIBUTE = 'grants_edit';
 	public const GRANTS_DELETE_ATTRIBUTE = 'grants_delete';

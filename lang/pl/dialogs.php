@@ -152,6 +152,8 @@ return [
         'password_prot' => 'Chronione hasłem',
         'password_prot_expl' => 'Anonimowi użytkownicy potrzebują udostępnionego hasła, aby uzyskać dostęp do tego albumu.',
         'password_prop_not_compatible' => 'Buforowanie odpowiedzi jest sprzeczne z tym ustawieniem.<br>Z powodu buforowania odpowiedzi, odblokowanie tego albumu<br>ujawni również jego zawartość innym anonimowym użytkownikom.',
+        'cover_access' => 'Show cover when locked',
+        'cover_access_expl' => 'Anonymous users can see this album\'s cover photo before entering the password.',
         'nsfw' => 'Wrażliwy',
         'nsfw_expl' => 'Album zawiera wrażliwe treści.',
         'visibility_updated' => 'Zaktualizowano widoczność.',

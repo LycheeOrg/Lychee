@@ -18,7 +18,11 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\AccessPermission;
+use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumsTest extends BaseApiWithDataTest
@@ -218,5 +222,56 @@ class AlbumsTest extends BaseApiWithDataTest
 		self::assertContains($this->album1->id, $albumIds, 'Album1 should be in regular albums even when pinned');
 
 		Configs::set('deduplicate_pinned_albums', false);
+	}
+
+	public function testLockedAlbumHidesThumbByDefault(): void
+	{
+		$lockedAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($lockedAlbum)->create();
+		(new RecomputeAlbumStatsJob($lockedAlbum->id))->handle();
+
+		$response = $this->getJson('Albums');
+		$this->assertOk($response);
+
+		$albums = $response->json('albums');
+		$found = null;
+		foreach ($albums as $album) {
+			if ($album['id'] === $lockedAlbum->id) {
+				$found = $album;
+				break;
+			}
+		}
+
+		self::assertNotNull($found, 'locked album should still appear in the listing');
+		self::assertTrue($found['is_password_required']);
+		self::assertFalse($found['grants_cover_access']);
+		self::assertNull($found['thumb']);
+	}
+
+	public function testLockedAlbumWithGrantsCoverAccessShowsThumb(): void
+	{
+		$lockedAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
+		AccessPermission::factory()->public()->visible()->locked()->grants_cover_access()->for_album($lockedAlbum)->create();
+		(new RecomputeAlbumStatsJob($lockedAlbum->id))->handle();
+
+		$response = $this->getJson('Albums');
+		$this->assertOk($response);
+
+		$albums = $response->json('albums');
+		$found = null;
+		foreach ($albums as $album) {
+			if ($album['id'] === $lockedAlbum->id) {
+				$found = $album;
+				break;
+			}
+		}
+
+		self::assertNotNull($found, 'locked album should still appear in the listing');
+		self::assertTrue($found['is_password_required'], 'album must remain locked for browsing photos');
+		self::assertTrue($found['grants_cover_access']);
+		self::assertNotNull($found['thumb']);
+		self::assertSame($photo->id, $found['thumb']['id']);
 	}
 }
