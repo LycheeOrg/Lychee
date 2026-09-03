@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Assets\DbBool;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\OrderSortingType;
@@ -243,10 +244,10 @@ class AlbumChildrenDataController extends Controller
 			$cover_ids[] = AlbumListController::resolveCoverId($row, $user);
 			$bucket_ids[] = $row->bucket_id ?? 'unknown';
 			$is_password_requireds[] = $row->password !== null;
-			$is_nsfws[] = filter_var($row->is_nsfw, FILTER_VALIDATE_BOOLEAN);
-			$is_pinneds[] = filter_var($row->is_pinned, FILTER_VALIDATE_BOOLEAN);
+			$is_nsfws[] = DbBool::parse($row->is_nsfw);
+			$is_pinneds[] = DbBool::parse($row->is_pinned);
 			$is_publics[] = $row->public_grant_id !== null;
-			$is_link_requireds[] = filter_var($row->public_is_link_required, FILTER_VALIDATE_BOOLEAN);
+			$is_link_requireds[] = DbBool::parse($row->public_is_link_required);
 			$has_subalbums[] = ((int) $row->num_children) > 0;
 			$num_photos[] = (int) $row->num_photos;
 			$num_subalbums[] = (int) $row->num_children;
