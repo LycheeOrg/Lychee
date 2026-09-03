@@ -207,7 +207,7 @@ _Last updated: 2026-08-29_
 
 ### I12 – Follow-up: tier 2 row ordering (2026-08-30)
 
-> Surfaced during Feature 062 spec drafting: `GET .../children` shipped with zero `ORDER BY` clause at all (the shipped test's own comment even said so — "the children endpoint has no bucket_id ordering guarantee of its own"). User chose to fix it at the source rather than have Feature 062 compensate for it client-side (FR-061-26).
+> Surfaced during Feature 063 spec drafting: `GET .../children` shipped with zero `ORDER BY` clause at all (the shipped test's own comment even said so — "the children endpoint has no bucket_id ordering guarantee of its own"). User chose to fix it at the source rather than have Feature 063 compensate for it client-side (FR-061-26).
 
 - [x] T-061-45 – Feature tests: for a real `Album` parent, the children endpoint's row order (deduplicated `bucket_ids` sequence) matches the buckets endpoint's own `bucket_ids` array exactly (S-061-42); a dedicated `title`/`date_prefix`-mode fixture where an undated child's title starts with a single leading digit (sorts *before* any 4-digit year alphabetically) still lands last, matching the buckets endpoint's mandatory "unknown always last" guarantee, proving the fix isn't cosmetic for the one non-monotonic bucketing mode (S-061-43) (F-061-26).
   _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php` rather than a new file.
@@ -220,7 +220,7 @@ _Last updated: 2026-08-29_
 
 ### I13 – Follow-up: tier 2 pin/public/link-required fields (2026-08-30)
 
-> Surfaced during Feature 062's ambiguity review (Q-062-05/06 in `docs/specs/4-architecture/open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 062's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
+> Surfaced during Feature 063's ambiguity review (Q-063-05/06 in `docs/specs/4-architecture/open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 063's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
 
 - [x] T-061-48 – Feature tests: a fixture spanning a pinned child, an unpinned child, a public+no-link-required child, a public+link-required child, and a fully private child — `is_pinneds`/`is_publics`/`is_link_requireds` match `ThumbAlbumResource`'s own resolution for the same children exactly (S-061-44) (F-061-27).
   _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php`.
