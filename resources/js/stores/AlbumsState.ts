@@ -118,8 +118,8 @@ export const useAlbumsStore = defineStore("albums-store", {
 				});
 		},
 		/**
-		 * Fetches `GET /Albums/tags` + `/Albums/tags/rights` (Feature 062
-		 * FR-062-09/FR-062-10) and combines them into `this.tagAlbums`,
+		 * Fetches `GET /Albums/tags` + `/Albums/tags/rights` and combines
+		 * them into `this.tagAlbums`,
 		 * merged into the root Smart Albums panel via the existing
 		 * `smartAlbums` getter (unchanged — tag albums were already merged
 		 * there in v2). Unlike smart albums, tag albums have a real rights
@@ -158,13 +158,13 @@ export const useAlbumsStore = defineStore("albums-store", {
 		},
 		/**
 		 * Fetches `GET /Albums/persons` for both `own`/`shared` scope
-		 * (Feature 062 FR-062-15) and merges them into `this.personAlbums` —
+		 * and merges them into `this.personAlbums` —
 		 * v2's `person_albums` field is likewise an unpartitioned own+shared
 		 * union, so both scopes are fetched and concatenated client-side (no
 		 * single "all" route exists at the API level, `GetScopedAlbumsRequest`
 		 * requires an explicit scope for an authenticated caller). A guest
 		 * only ever gets `shared` (`scope=own` is 422 for a guest). No rights
-		 * endpoint exists for persons (Feature 062 NG4) — rights default to
+		 * endpoint exists for persons — rights default to
 		 * `DEFAULT_ALBUM_CHILD_RIGHTS`, an accepted, documented gap (loses
 		 * right-click edit/delete for a person-album tile at root).
 		 */
@@ -185,11 +185,11 @@ export const useAlbumsStore = defineStore("albums-store", {
 				});
 		},
 		/**
-		 * Fetches `GET /Albums/pinned` for both `own`/`shared` scope
-		 * (Feature 062 FR-062-15), merged the same way `loadPersonAlbumsV3()`
+		 * Fetches `GET /Albums/pinned` for both `own`/`shared` scope,
+		 * merged the same way `loadPersonAlbumsV3()`
 		 * merges persons — v2's `pinned_albums` is likewise an unpartitioned
-		 * union. No rights endpoint exists for pinned either (Feature 062
-		 * NG4) — same accepted rights gap as persons.
+		 * union. No rights endpoint exists for pinned either —
+		 * same accepted rights gap as persons.
 		 */
 		loadPinnedAlbumsV3(): Promise<void> {
 			const userStore = useUserStore();
@@ -256,7 +256,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 		 * (`AlbumRootController::baseQuery()`), so every row in an
 		 * `own`-scope response is unconditionally the caller's own, and
 		 * root's `AlbumRightsResource.owner_id` is `Optional`/omitted
-		 * entirely (FR-062-06) — there is no per-row owner id to compare
+		 * entirely — there is no per-row owner id to compare
 		 * against here, unlike sub-album children.
 		 */
 		loadRootAlbumsV3Rights(scope: App.Enum.AlbumListingScope): Promise<void> {
@@ -301,8 +301,8 @@ export const useAlbumsStore = defineStore("albums-store", {
 			this.isLoading = true;
 			return AlbumService.getAll()
 				.then((data) => {
-					// `config`/`rights` have no v3 replacement source (Feature 062
-					// NG1 keeps v2's Top::get() byte-identical, and none of its
+					// `config`/`rights` have no v3 replacement source (v2's
+					// Top::get() stays byte-identical, and none of its
 					// five new endpoints carry a config/rights-for-the-page-itself
 					// field) — this v2 call stays in the loop even when the flag
 					// is on, purely for these two fields.

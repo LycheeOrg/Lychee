@@ -50,10 +50,10 @@ export const useAlbumStore = defineStore("album-store", {
 		albums_total: 0,
 		albums_loading: false as boolean,
 
-		// Feature 063: tier 1 (buckets) + derived boundary metadata for the
+		// Tier 1 (buckets) + derived boundary metadata for the
 		// flag-on virtualized subalbum grid/list. Tier 2 itself isn't kept
 		// separately once adapted — albumsStore.albums (AdaptedAlbumTile[])
-		// is the actual display source (FR-063-02/06).
+		// is the actual display source.
 		bucketsV3: undefined as App.Http.Resources.V3.AlbumBucketResource | undefined,
 		boundariesV3: null as AlbumBucketBoundary[] | null,
 
@@ -429,8 +429,8 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 
 		/**
-		 * Flag-aware dispatcher for the subalbum-children fetch (FR-063-01):
-		 * v3 tier 1+2 (+ background tier 3) when the flag is on, v2
+		 * Flag-aware dispatcher for the subalbum-children fetch: v3 tier 1+2
+		 * (+ background tier 3) when the flag is on, v2
 		 * `loadAlbums()` otherwise. The sole call site `load()` uses instead
 		 * of calling `loadAlbums(1, false)` directly.
 		 */
@@ -448,8 +448,8 @@ export const useAlbumStore = defineStore("album-store", {
 		 * Fetches tier 1 (buckets) + tier 2 (children) together and adapts
 		 * each child into an `AdaptedAlbumTile`, written into
 		 * `albumsStore.albums` — the flag-on replacement for v2's
-		 * `loadAlbums()` (FR-063-01/02/06). No windowed pagination: tier 2
-		 * is whole-album-at-once (FR-063-12), so the existing
+		 * `loadAlbums()`. No windowed pagination: tier 2
+		 * is whole-album-at-once, so the existing
 		 * `albums_*`-pagination fields are set to a single "page 1 of 1"
 		 * shape rather than needing a dedicated v3 branch in `AlbumPanel.vue`.
 		 */
@@ -468,7 +468,7 @@ export const useAlbumStore = defineStore("album-store", {
 					// Race condition guard: don't apply a response for an album
 					// the user has already navigated away from (mirrors
 					// loadAlbums()/loadPhotos()'s existing requestedAlbumId
-					// pattern — FR-063-18's intent, no separate mechanism needed).
+					// pattern, no separate mechanism needed).
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
@@ -511,8 +511,8 @@ export const useAlbumStore = defineStore("album-store", {
 
 		/**
 		 * Background-fetches tier 3 (rights) immediately after tier 1+2
-		 * resolve (FR-063-03) and reactively merges the combined rights into
-		 * each already-adapted child in place (FR-063-04).
+		 * resolve and reactively merges the combined rights into
+		 * each already-adapted child in place.
 		 */
 		loadAlbumsV3Rights(): Promise<void> {
 			const albumsStore = useAlbumsStore();
@@ -829,10 +829,10 @@ export const useAlbumStore = defineStore("album-store", {
 		hasAlbumsPagination(state): boolean {
 			return state.albums_last_page > 0;
 		},
-		// Feature 063 (FR-063-09): whether the flag-on grid/list should
+		// Whether the flag-on grid/list should
 		// render sticky bucket headers, or fall back to a single flat
 		// unbucketed section (either tier 1 genuinely reports
-		// `bucketable: false`, FR-063-02's defensive count-mismatch fallback
+		// `bucketable: false`, the defensive count-mismatch fallback
 		// kicked in, or there's only one bucket — a lone label carries no
 		// information worth a header row — all collapse to the same flat
 		// rendering path).
