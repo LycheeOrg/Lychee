@@ -76,8 +76,8 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 	public function testGuestOmittingScopeIsTreatedAsShared(): void
 	{
 		$user = User::factory()->create();
-		Album::factory()->as_root()->owned_by($user)->create();
-		AccessPermission::factory()->public()->visible()->for_album(Album::first())->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
 
 		$response = $this->getJsonV3('Albums/root');
 		$this->assertOk($response);
