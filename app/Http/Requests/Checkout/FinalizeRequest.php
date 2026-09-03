@@ -38,7 +38,13 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 	 */
 	public function authorize(): bool
 	{
-		return $this->order?->status === PaymentStatusType::PROCESSING && $this->order?->provider === $this->provider_type && $this->provider_type !== null;
+		// Asynchronous providers can complete the order from the payment
+		// notification before the buyer's browser returns; that return is
+		// still legitimate and must be able to show the completed order.
+		$is_valid_status = $this->order?->status === PaymentStatusType::PROCESSING ||
+			($this->order?->status === PaymentStatusType::COMPLETED && $this->provider_type === OmnipayProviderType::PAYZUM);
+
+		return $is_valid_status && $this->order?->provider === $this->provider_type && $this->provider_type !== null;
 	}
 
 	/**
