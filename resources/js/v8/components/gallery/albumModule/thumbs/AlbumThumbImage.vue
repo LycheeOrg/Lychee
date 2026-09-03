@@ -22,7 +22,7 @@
 			:class="{ invisible: !isImageLoaded }"
 			:album-id="albumId"
 			:photo-id="coverId"
-			type="thumb"
+			type="small2x"
 			@load="onImageLoad"
 		/>
 		<img

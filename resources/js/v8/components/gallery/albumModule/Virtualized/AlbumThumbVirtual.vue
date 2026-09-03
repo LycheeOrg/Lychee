@@ -22,7 +22,7 @@
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="thumb"
+				type="small"
 			/>
 			<Thumb
 				v-if="!togglableStore.isDragging"
@@ -30,14 +30,14 @@
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="thumb"
+				type="small"
 			/>
 			<Thumb
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
 				:class="[chromeClass, cornerClass, cssClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="thumb"
+				type="small"
 			/>
 		</template>
 		<template v-else>

@@ -430,16 +430,33 @@ const displaySharedAlbums = computed(() => {
 	return albumsStore.sharedAlbums;
 });
 
-// Check if we should show shared albums section (for inline mode)
-const shouldShowSharedAlbums = computed(() => {
+// Whether there are shared albums to show, respecting visibility mode.
+// `displaySharedAlbums` only ever reflects `albumsStore.sharedAlbums`, the
+// flag-off field — under struct-of-array, shared root data lands in
+// `sharedAlbumsV3` instead (see `AlbumsState.ts`'s `load()`), so that branch
+// must be checked separately or guests (who only ever have a "shared" scope,
+// never "own") see an empty root page.
+const hasSharedAlbums = computed(() => {
+	if (sharedAlbumsVisibilityMode.value === "hide") {
+		return false;
+	}
+	if (is_struct_of_array_enabled.value) {
+		if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
+			return albumsStore.sharedAlbumsV3.some((album) => !album.is_public);
+		}
+		return albumsStore.sharedAlbumsV3.length > 0;
+	}
 	return displaySharedAlbums.value.length > 0;
 });
+
+// Check if we should show shared albums section (for inline mode)
+const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {
 	const mode = sharedAlbumsVisibilityMode.value;
 	const isSeparateMode = mode === "separate" || mode === "separate_shared_only";
-	return isSeparateMode && displaySharedAlbums.value.length > 0;
+	return isSeparateMode && hasSharedAlbums.value;
 });
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(

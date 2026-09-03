@@ -40,7 +40,7 @@
 				class="thumbimg absolute w-full h-full m-0 p-0 border-0 object-cover top-0 left-0 hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30"
 				:album-id="album.id"
 				:photo-id="album.cover_id"
-				type="thumb"
+				type="small"
 			/>
 			<span v-else class="absolute w-full h-full m-0 p-0 border-0 flex items-center justify-center">
 				<img class="w-1/3 h-1/3 object-contain opacity-60" :alt="$t('gallery.thumbnail')" :src="noCoverIconSrc" draggable="false" />

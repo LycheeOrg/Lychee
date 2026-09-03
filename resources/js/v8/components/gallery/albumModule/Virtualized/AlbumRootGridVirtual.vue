@@ -46,11 +46,10 @@
 						:key="tile.id"
 						role="listitem"
 						:aria-posinset="item.row.startIndex + idx + 1"
-						:aria-setsize="tiles.length"
+						:aria-setsize="visibleTiles.tiles.length"
 						:style="{ width: `${tileWidth}px`, height: '100%', flexShrink: 0 }"
 					>
 						<AlbumThumbVirtual
-							v-if="!tile.is_nsfw || are_nsfw_visible"
 							:album="tile"
 							:cover_id="null"
 							:is-selected="props.selectedAlbums.includes(tile.id)"
@@ -95,6 +94,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
+import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
@@ -134,10 +134,15 @@ const boundaries = computed(() => {
 	return b !== null ? b : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.value.length }];
 });
 
+// NSFW-hidden tiles are dropped before row-chunking (not per-tile in the
+// template) — filtering afterwards would leave a gap at the end of whichever
+// row lost a tile, since row boundaries are fixed against the original counts.
+const visibleTiles = computed(() => filterBucketedTiles(tiles.value, boundaries.value, (tile) => !tile.is_nsfw || are_nsfw_visible.value));
+
 const rowsResult = computed(() =>
 	buildVirtualAlbumRows(
-		tiles.value.map((a) => a.id),
-		boundaries.value,
+		visibleTiles.value.tiles.map((a) => a.id),
+		visibleTiles.value.boundaries,
 		showHeaders.value,
 		itemsPerRow.value,
 		tileWidth.value,
@@ -164,7 +169,7 @@ const virtualRows = computed(() => virtualizer.value.getVirtualItems().map((item
 watch([rowsResult, scrollMargin], () => virtualizer.value.measure());
 
 function tilesForRow(row: VirtualTileRow): AdaptedAlbumTile[] {
-	return tiles.value.slice(row.startIndex, row.startIndex + row.count);
+	return visibleTiles.value.tiles.slice(row.startIndex, row.startIndex + row.count);
 }
 
 const headerTops = computed(() => {

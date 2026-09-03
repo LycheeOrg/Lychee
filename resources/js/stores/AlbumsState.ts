@@ -315,7 +315,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 								this.loadTagAlbumsV3(),
 								this.loadPersonAlbumsV3(),
 								this.loadPinnedAlbumsV3(),
-								this.loadRootAlbumsV3("own").then(() => void this.loadRootAlbumsV3Rights("own")),
+								...(userStore.isLoggedIn ? [this.loadRootAlbumsV3("own").then(() => void this.loadRootAlbumsV3Rights("own"))] : []),
 								this.loadRootAlbumsV3("shared").then(() => void this.loadRootAlbumsV3Rights("shared")),
 							]).then(() => {})
 						: Promise.resolve().then(() => {

@@ -34,11 +34,10 @@
 				<template v-else-if="item.row?.type === 'tiles'">
 					<AlbumListItemVirtual
 						v-for="(tile, idx) in tilesForRow(item.row)"
-						v-show="!tile.is_nsfw || are_nsfw_visible"
 						:key="tile.id"
 						role="listitem"
 						:aria-posinset="item.row.startIndex + idx + 1"
-						:aria-setsize="tiles.length"
+						:aria-setsize="visibleTiles.tiles.length"
 						:album="tile"
 						:is-selected="props.selectedAlbums.includes(tile.id)"
 						@clicked="propagateClicked"
@@ -65,6 +64,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, LIST_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
+import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumListItemVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
@@ -100,10 +100,16 @@ const boundaries = computed(() => {
 	return b !== null ? b : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.value.length }];
 });
 
+// NSFW-hidden tiles are dropped before row-chunking (not per-tile in the
+// template) — filtering afterwards would leave a blank row where a hidden
+// tile's own row used to be, since row boundaries are fixed against the
+// original counts.
+const visibleTiles = computed(() => filterBucketedTiles(tiles.value, boundaries.value, (tile) => !tile.is_nsfw || are_nsfw_visible.value));
+
 const rowsResult = computed(() =>
 	buildVirtualAlbumRows(
-		tiles.value.map((a) => a.id),
-		boundaries.value,
+		visibleTiles.value.tiles.map((a) => a.id),
+		visibleTiles.value.boundaries,
 		showHeaders.value,
 		1,
 		LIST_ROW_HEIGHT,
@@ -126,7 +132,7 @@ const totalSize = computed(() => virtualizer.value.getTotalSize());
 const virtualRows = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, row: rowsResult.value.rows[item.index] })));
 
 function tilesForRow(row: VirtualTileRow): AdaptedAlbumTile[] {
-	return tiles.value.slice(row.startIndex, row.startIndex + row.count);
+	return visibleTiles.value.tiles.slice(row.startIndex, row.startIndex + row.count);
 }
 
 const headerTops = computed(() => {

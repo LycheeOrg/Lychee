@@ -199,7 +199,10 @@ watch(
 	(newValue, oldValue) => {
 		if (newValue === undefined) {
 			initData.value = undefined;
-		} else if (newValue.id !== oldValue?.id) {
+		} else if (oldValue !== undefined && newValue.id !== oldValue.id) {
+			// A real login/logout while already mounted - rights depend on identity.
+			// `oldValue === undefined` is just onMounted's own initial load resolving,
+			// already covered by the direct `load()` call below.
 			load();
 		}
 	},

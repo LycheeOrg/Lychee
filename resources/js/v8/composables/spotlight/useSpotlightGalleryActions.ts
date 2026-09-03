@@ -10,6 +10,7 @@ import type { LycheeStateStore } from "@/stores/LycheeState";
 import type { ToastLike } from "@/composables/toast-contract";
 import FaceDetectionService from "@/services/face-detection-service";
 import UsersService from "@/services/users-service";
+import { useUserStore } from "@/stores/UserState";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 import type { SpotlightItem } from "./types";
 
@@ -49,10 +50,15 @@ export function useSpotlightGalleryActions(
 	// Mirrors AlbumEdit.vue's own `canShare` gate exactly, since the share action opens that
 	// same drawer/section rather than its own dialog. `UsersService.count()` is cached, so this
 	// costs nothing extra once AlbumEdit.vue (or another instance of this composable) has fetched it.
+	// A guest can never share (no `can_share_with_users` right), so skip the request entirely
+	// for them - SpotlightSearch.vue mounts this composable unconditionally on every page.
+	const userStore = useUserStore();
 	const numUsers = ref(0);
-	UsersService.count().then((data) => {
-		numUsers.value = data.data;
-	});
+	if (userStore.isLoggedIn) {
+		UsersService.count().then((data) => {
+			numUsers.value = data.data;
+		});
+	}
 
 	return computed(() => {
 		const items: SpotlightItem[] = [];
