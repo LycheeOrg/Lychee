@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Request for `GET /api/v3/Albums/{album_id}/children/rights` (Feature 061,
- * DO-061-09). `album_id` is bound from the route segment via
+ * Request for `GET /api/v3/Albums/{album_id}/children/rights`.
+ * `album_id` is bound from the route segment via
  * {@see self::prepareForValidation()}, resolving to a real {@see Album} *or*
  * a {@see TagAlbum}/{@see PersonAlbum} — mirrors
  * {@see \App\Http\Requests\Album\GetAlbumChildrenDataRequest}'s resolution

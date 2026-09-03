@@ -184,12 +184,12 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * @param ?AlbumListingScope $scope feature 062 (FR-062-13, FR-062-15) widening: `null`
+	 * @param ?AlbumListingScope $scope widening: `null`
 	 *                                  (v2's own `Top::get()` call, unchanged) omits the
 	 *                                  scope suffix entirely, keeping v2's cache entries
 	 *                                  byte-identical; a real scope (v3's `/Albums/persons`)
 	 *                                  appends it so `own`/`shared`/different users never
-	 *                                  collide (NFR-062-08)
+	 *                                  collide
 	 */
 	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, ?AlbumListingScope $scope = null): string
 	{
@@ -313,9 +313,9 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/root/buckets` (Feature 062,
-	 * FR-062-13): a pure function of `(scope, user identity)` — `own`/
-	 * `shared`/different users never collide (NFR-062-08). Tagged with the
+	 * Cache key for `GET /api/v3/Albums/root/buckets`: a pure function of
+	 * `(scope, user identity)` — `own`/`shared`/different users never
+	 * collide. Tagged with the
 	 * same {@see self::albumChildrenTag()} (passing `null`, root) already
 	 * evicted by every existing root-album-affecting handler, plus
 	 * {@see self::userTag()}.
@@ -329,7 +329,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/root` (Feature 062, FR-062-13),
+	 * Cache key for `GET /api/v3/Albums/root`,
 	 * mirrors {@see self::rootAlbumBucketsKey()}.
 	 */
 	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id): string
@@ -341,8 +341,8 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/root/rights` (Feature 062,
-	 * FR-062-13), mirrors {@see self::rootAlbumBucketsKey()}.
+	 * Cache key for `GET /api/v3/Albums/root/rights`,
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
 	 */
 	public function rootAlbumChildrenRightsKey(AlbumListingScope $scope, int|string|null $user_id): string
 	{

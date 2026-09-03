@@ -12,31 +12,32 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/children` (Feature 061,
- * DO-061-08).
+ * Response body of `GET /api/v3/Albums/{album_id}` and
+ * `GET /api/v3/Albums/root` — despite the "children" framing below (this
+ * class predates root's own reuse of it), it serves both tiers alike.
  *
  * Struct-of-Arrays per ADR-0009: one whole-album-at-once body (no windowed
  * pagination), built from a single flat `toBase()` query with zero joins
  * beyond {@see \App\Policies\AlbumQueryPolicy::applyVisibilityFilter()}'s own
  * plus one small additional left join for the album's public access grant
- * (FR-061-27) — every field is a plain column already on the
- * `albums`/`base_albums`/`access_permissions` row (NFR-061-07). `bucket_ids[i]`
+ * — every field is a plain column already on the
+ * `albums`/`base_albums`/`access_permissions` row. `bucket_ids[i]`
  * is each child's own `bucket_id` (`"unknown"` substituted for `null`) — the
  * join key a client uses to place a tile under the buckets endpoint's
- * matching sticky-header section (FR-061-17). `is_publics[i]`/
+ * matching sticky-header section. `is_publics[i]`/
  * `is_link_requireds[i]` reflect the album's own public/anonymous grant,
  * independent of the requesting viewer's identity — not to be confused with
- * `is_password_requireds[i]`, which reflects the *viewer's* effective access
- * (FR-061-27). No thumbnail media `type`/blur `placeholder` field — those
+ * `is_password_requireds[i]`, which reflects the *viewer's* effective access.
+ * No thumbnail media `type`/blur `placeholder` field — those
  * require a join this endpoint deliberately never adds (Non-Goals).
  *
- * `owner_ids[]` (Feature 062, DO-062-03) is additive — populated for both the
+ * `owner_ids[]` is additive — populated for both the
  * sub-album tier and the root tier; for root's `scope=shared`, `bucket_ids[i]`
  * additionally carries the row's own `owner_id` rather than a date/title
- * bucket (FR-062-04).
+ * bucket.
  */
 #[TypeScript()]
-class AlbumChildrenDataResource extends Data
+class AlbumDataResource extends Data
 {
 	/**
 	 * @param string[]        $ids

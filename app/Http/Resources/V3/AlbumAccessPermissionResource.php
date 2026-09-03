@@ -24,7 +24,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * `PATCH`/`DELETE /api/v2/Sharing`.
  */
 #[TypeScript()]
-class AlbumAccessPermissionListResource extends Data
+class AlbumAccessPermissionResource extends Data
 {
 	/** @var string[] */
 	public array $album_ids;

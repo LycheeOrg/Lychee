@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery\AlbumListing;
 
+use App\Assets\DbBool;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
@@ -17,8 +18,8 @@ use App\Enum\TitleBucketMode;
 use App\Http\Controllers\Gallery\AlbumListController;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumBucketResource;
-use App\Http\Resources\V3\AlbumChildrenDataResource;
-use App\Http\Resources\V3\AlbumChildrenRightsResource;
+use App\Http\Resources\V3\AlbumDataResource;
+use App\Http\Resources\V3\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
@@ -37,13 +38,11 @@ use Spatie\LaravelData\Optional;
 
 /**
  * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights]`
- * (Feature 062, FR-062-01..06) — root albums (`parent_id IS NULL`) get the
- * same buckets/index/rights trio as sub-albums (Feature 061), plus a
- * `scope` (`own`\|`shared`) dimension reproducing today's `Top::get()`
- * owned/shared partition. `own` scope reuses the exact
- * bucket_id/instance-default-sorting mechanism sub-albums use; `shared`
- * scope groups by owner as a **live** `GROUP BY owner_id` at read time,
- * never via the persisted `bucket_id` column (G3/G4).
+ * root albums (`parent_id IS NULL`) get the same buckets/index/rights
+ * trio as sub-albums, plus a `scope` (`own`\|`shared`) dimension
+ * reproducing today's `Top::get()` owned/shared partition.
+ * `own` scope reuses the exact bucket_id/instance-default-sorting mechanism sub-albums use;
+ * `shared` scope groups by owner as a **live** `GROUP BY owner_id` at read time, never via the persisted `bucket_id` column.
  */
 class AlbumRootController extends Controller
 {
@@ -60,7 +59,7 @@ class AlbumRootController extends Controller
 	 * Base query shared by all three endpoints: every root album visible to
 	 * `$user`, scoped by ownership, with the same `deduplicate_pinned_albums`
 	 * conditional join {@see \App\Actions\Albums\Top::queryRootAlbums()}
-	 * already applies (NFR-062-05 parity).
+	 * already applies.
 	 *
 	 * @return Builder<Album>
 	 */
@@ -87,7 +86,7 @@ class AlbumRootController extends Controller
 
 	// ── GET /Albums/root ────────────────────────────────────────────
 
-	public function index(GetScopedAlbumsRequest $request): AlbumChildrenDataResource
+	public function index(GetScopedAlbumsRequest $request): AlbumDataResource
 	{
 		$scope = $request->scope();
 		/** @var User|null $user */
@@ -103,26 +102,27 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
-			fn (): AlbumChildrenDataResource => $this->queryChildren($scope, $user),
+			fn (): AlbumDataResource => $this->queryChildren($scope, $user),
 			ttl: $ttl,
 		);
 	}
 
-	private function queryChildren(AlbumListingScope $scope, ?User $user): AlbumChildrenDataResource
+	private function queryChildren(AlbumListingScope $scope, ?User $user): AlbumDataResource
 	{
 		$query = $this->baseQuery($scope, $user);
 		$sorting = AlbumSortingCriterion::createDefault();
 		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
 
 		if ($scope === AlbumListingScope::OWN) {
-			// Mirrors the sub-album tier exactly (FR-062-03): order by the
+			// Mirrors the sub-album tier exactly: order by the
 			// already-persisted bucket_id (NULL last), then the effective
 			// sort criterion.
 			$query->orderByRaw('(albums.bucket_id IS NULL) ASC')
 				->orderBy('albums.bucket_id', $direction);
 		} else {
-			// FR-062-04: owner-ordered first, never by the persisted
+			// Owner-ordered first, never by the persisted
 			// bucket_id column.
 			$query->orderBy('base_albums.owner_id', 'asc');
 		}
@@ -164,13 +164,13 @@ class AlbumRootController extends Controller
 			->toBase()
 			->get();
 
-		return $this->toChildrenResource($rows, $user, $scope);
+		return $this->toAlbumDataResource($rows, $user, $scope);
 	}
 
 	/**
 	 * @param Collection<int,object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}> $rows
 	 */
-	private function toChildrenResource(Collection $rows, ?User $user, AlbumListingScope $scope): AlbumChildrenDataResource
+	private function toAlbumDataResource(Collection $rows, ?User $user, AlbumListingScope $scope): AlbumDataResource
 	{
 		$ids = [];
 		$titles = [];
@@ -195,17 +195,17 @@ class AlbumRootController extends Controller
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
 			$cover_ids[] = AlbumListController::resolveCoverId($row, $user);
-			// FR-062-04: for shared scope, the bucket_id field carries the
+			// For shared scope, the bucket_id field carries the
 			// row's own owner_id (never the persisted date/title column) so
 			// grouping response rows by bucket_id reproduces the buckets
 			// endpoint's own owner grouping.
 			$bucket_ids[] = $scope === AlbumListingScope::SHARED ? (string) $row->owner_id : ($row->bucket_id ?? 'unknown');
 			$owner_ids[] = (string) $row->owner_id;
 			$is_password_requireds[] = $row->password !== null;
-			$is_nsfws[] = filter_var($row->is_nsfw, FILTER_VALIDATE_BOOLEAN);
-			$is_pinneds[] = filter_var($row->is_pinned, FILTER_VALIDATE_BOOLEAN);
+			$is_nsfws[] = DbBool::parse($row->is_nsfw);
+			$is_pinneds[] = DbBool::parse($row->is_pinned);
 			$is_publics[] = $row->public_grant_id !== null;
-			$is_link_requireds[] = filter_var($row->public_is_link_required, FILTER_VALIDATE_BOOLEAN);
+			$is_link_requireds[] = DbBool::parse($row->public_is_link_required);
 			$has_subalbums[] = ((int) $row->num_children) > 0;
 			$num_photos[] = (int) $row->num_photos;
 			$num_subalbums[] = (int) $row->num_children;
@@ -214,7 +214,7 @@ class AlbumRootController extends Controller
 			$max_taken_ats[] = $row->max_taken_at;
 		}
 
-		return new AlbumChildrenDataResource(
+		return new AlbumDataResource(
 			ids: $ids,
 			titles: $titles,
 			descriptions: $descriptions,
@@ -253,6 +253,7 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumBucketResource => $scope === AlbumListingScope::OWN
 				? $this->queryOwnBuckets($user)
@@ -330,11 +331,11 @@ class AlbumRootController extends Controller
 	}
 
 	/**
-	 * FR-062-05: a live `GROUP BY base_albums.owner_id` — never the
+	 * A live `GROUP BY base_albums.owner_id` — never the
 	 * persisted `bucket_id` column, never {@see AlbumBucketComputer}.
-	 * `bucketable` is unconditionally `true` (Q-062-15), even for a
-	 * zero-result query. Label resolution is authentication-gated
-	 * (Q-062-14): the `users` join runs only for an authenticated caller;
+	 * `bucketable` is unconditionally `true`, even for a
+	 * zero-result query. Label resolution is authentication-gated:
+	 * the `users` join runs only for an authenticated caller;
 	 * a guest never executes it at all, every label hardcoded `"unknown"`.
 	 */
 	private function querySharedBuckets(?User $user): AlbumBucketResource
@@ -364,7 +365,7 @@ class AlbumRootController extends Controller
 			return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
 		}
 
-		// Guest: the users join is never executed at all (NFR-062-02) — not
+		// Guest: the users join is never executed at all — not
 		// merely hidden after the fact.
 		$rows = $query
 			->select(['base_albums.owner_id'])
@@ -388,7 +389,7 @@ class AlbumRootController extends Controller
 
 	// ── GET /Albums/root/rights ─────────────────────────────────────
 
-	public function rights(GetScopedAlbumsRequest $request): AlbumChildrenRightsResource
+	public function rights(GetScopedAlbumsRequest $request): AlbumRightsResource
 	{
 		$scope = $request->scope();
 		/** @var User|null $user */
@@ -404,21 +405,22 @@ class AlbumRootController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag(null),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
-			fn (): AlbumChildrenRightsResource => $this->queryRights($scope, $user),
+			fn (): AlbumRightsResource => $this->queryRights($scope, $user),
 			ttl: $ttl,
 		);
 	}
 
 	/**
-	 * FR-062-06: root has no single shared parent's `access_permissions` to
+	 * Root has no single shared parent's `access_permissions` to
 	 * check `can_delete_children`/`can_move_children` against — both flags
 	 * are always `false` for a non-admin caller (either scope), `true` for
 	 * an admin. `owner_id` is unconditionally omitted from the JSON payload
-	 * (Q-062-16) — root has no single owner to report there, even under
+	 * — root has no single owner to report there, even under
 	 * `own` scope.
 	 */
-	private function queryRights(AlbumListingScope $scope, ?User $user): AlbumChildrenRightsResource
+	private function queryRights(AlbumListingScope $scope, ?User $user): AlbumRightsResource
 	{
 		$is_admin = $user?->may_administrate === true;
 		$query = $this->baseQuery($scope, $user);
@@ -427,7 +429,7 @@ class AlbumRootController extends Controller
 			$ids = $query->select(['albums.id'])->toBase()->pluck('id')->all();
 			$count = count($ids);
 
-			return new AlbumChildrenRightsResource(
+			return new AlbumRightsResource(
 				owner_id: Optional::create(),
 				can_delete_children: true,
 				can_move_children: true,
@@ -439,10 +441,17 @@ class AlbumRootController extends Controller
 
 		$this->album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', 'grants_', true, $user);
 
+		// PostgreSQL has no `MAX()` aggregate for `boolean` (unlike MySQL/SQLite,
+		// where a boolean is just an int); `bool_or()` is its equivalent.
+		$or_aggregate = match (DB::getDriverName()) {
+			'pgsql' => 'bool_or',
+			default => 'MAX',
+		};
+
 		$rows = $query
 			->select(['albums.id'])
-			->selectRaw('MAX(grants_computed_access_permissions.grants_edit) as grants_edit')
-			->selectRaw('MAX(grants_computed_access_permissions.grants_download) as grants_download')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_edit) as grants_edit')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_download) as grants_download')
 			->groupBy('albums.id')
 			->toBase()
 			->get();
@@ -452,11 +461,11 @@ class AlbumRootController extends Controller
 		$grants_download = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
-			$grants_edit[] = filter_var($row->grants_edit, FILTER_VALIDATE_BOOLEAN);
-			$grants_download[] = filter_var($row->grants_download, FILTER_VALIDATE_BOOLEAN);
+			$grants_edit[] = DbBool::parse($row->grants_edit);
+			$grants_download[] = DbBool::parse($row->grants_download);
 		}
 
-		return new AlbumChildrenRightsResource(
+		return new AlbumRightsResource(
 			owner_id: Optional::create(),
 			can_delete_children: false,
 			can_move_children: false,

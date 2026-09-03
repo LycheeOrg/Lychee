@@ -17,8 +17,8 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Request for `GET /api/v3/Albums/{album_id}/children/buckets` (Feature 061,
- * DO-061-01). `album_id` is bound from the route segment via
+ * Request for `GET /api/v3/Albums/{album_id}/children/buckets`.
+ * `album_id` is bound from the route segment via
  * {@see self::prepareForValidation()}, mirroring
  * {@see \App\Http\Requests\Photo\GetPhotoAssetRequest}'s pattern (Feature
  * 056) rather than {@see \App\Http\Requests\Album\GetAlbumChildrenRequest}'s

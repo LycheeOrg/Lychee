@@ -12,13 +12,6 @@ namespace App\Enum;
  * Enum ColumnSortingAlbumType.
  *
  * All the allowed sorting possibilities on Album.
- *
- * `OWNER_ID` was removed by Feature 062 (FR-062-08, G5): a UI dropdown
- * narrowing already shipped in Feature 060 quietly removed it from the
- * *offered* choices (`configs.type_range` for `sorting_albums_col`) without
- * ever removing it from this enum. `ColumnSortingType::OWNER_ID` (the
- * broader, internal enum) is untouched — it stays available for internal,
- * non-configurable ordering (root's `shared`-scope owner grouping).
  */
 enum ColumnSortingAlbumType: string
 {

@@ -1682,7 +1682,7 @@ declare namespace App {
 				};
 			}
 			namespace V3 {
-				export type AlbumAccessPermissionListResource = {
+				export type AlbumAccessPermissionResource = {
 					album_ids: string[];
 					album_titles: string[];
 					_lft: number[];
@@ -1706,7 +1706,7 @@ declare namespace App {
 					labels: string[];
 					bucketable: boolean;
 				};
-				export type AlbumCategoryListResource = {
+				export type AlbumCategoryResource = {
 					ids: string[];
 					titles: string[];
 					cover_ids: (string | null)[];
@@ -1718,7 +1718,7 @@ declare namespace App {
 					grants_download: boolean[];
 					grants_delete: boolean[];
 				};
-				export type AlbumChildrenDataResource = {
+				export type AlbumDataResource = {
 					ids: string[];
 					titles: string[];
 					descriptions: string[];
@@ -1736,14 +1736,6 @@ declare namespace App {
 					created_ats: string[];
 					min_taken_ats: (string | null)[];
 					max_taken_ats: (string | null)[];
-				};
-				export type AlbumChildrenRightsResource = {
-					owner_id?: string;
-					can_delete_children: boolean;
-					can_move_children: boolean;
-					ids: string[];
-					grants_edit: boolean[];
-					grants_download: boolean[];
 				};
 				export type AlbumListBulkEditFieldsResource = {
 					owner_ids: number[];
@@ -1775,6 +1767,14 @@ declare namespace App {
 					cover_ids: (string | null)[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
+				};
+				export type AlbumRightsResource = {
+					owner_id?: string;
+					can_delete_children: boolean;
+					can_move_children: boolean;
+					ids: string[];
+					grants_edit: boolean[];
+					grants_download: boolean[];
 				};
 			}
 		}

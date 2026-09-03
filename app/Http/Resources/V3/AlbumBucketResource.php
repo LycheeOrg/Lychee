@@ -12,18 +12,17 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/children/buckets`
- * (Feature 061, DO-061-02).
+ * Response body of `GET /api/v3/Albums/{album_id}/children/buckets`.
  *
  * Struct-of-Arrays per ADR-0009: `bucket_ids`/`counts`/`labels` are
  * parallel, index-aligned arrays. `bucket_ids`/`counts` are grouped from
  * the materialized `albums.bucket_id` column (never a live date-truncation
- * function, NFR-061-01); `labels[i]` is a ready-to-render display string
+ * function); `labels[i]` is a ready-to-render display string
  * for `bucket_ids[i]`, computed at read time (not materialized) so a client
  * can render sticky headers with zero client-side date formatting.
  * `bucketable` is `false` (all three arrays empty) when the parent's own
  * effective sort column is `OWNER_ID` — direct siblings always share one
- * owner, so it can never produce more than one bucket (FR-061-06).
+ * owner, so it can never produce more than one bucket.
  */
 #[TypeScript()]
 class AlbumBucketResource extends Data

@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 /**
- * Request shared by root's index/buckets/rights (Feature 062, FR-062-02) and
- * `/Albums/persons`/`/Albums/pinned` (FR-062-15) — five methods across two
+ * Request shared by root's index/buckets/rights and
+ * `/Albums/persons`/`/Albums/pinned` — five methods across two
  * controllers reuse this one class since their `scope` validation is
  * identical: no album to resolve, just the feature flag gate plus the
  * `own`\|`shared` rule.
@@ -25,7 +25,7 @@ use Illuminate\Validation\Rule;
  * (422 otherwise — no implicit default). An **unauthenticated** caller may
  * omit `scope` (defaults to `shared`) or pass `shared` explicitly; passing
  * `own` as a guest is 422 — a guest can never have an "own" set, and
- * silently returning an empty result would hide a client bug (Q-062-05).
+ * silently returning an empty result would hide a client bug.
  */
 class GetScopedAlbumsRequest extends BaseApiRequest
 {

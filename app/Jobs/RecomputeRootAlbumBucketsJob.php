@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\DTO\AlbumSortingCriterion;
+use App\Events\AlbumChildrenChanged;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -20,19 +21,19 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Recomputes `bucket_id` for every **root** album (Feature 062, FR-062-07,
- * DO-062-02) — closes the dispatch gap {@see RecomputeChildAlbumBucketsJob}
- * deliberately doesn't cover (parent-scoped only): root albums have no
- * parent to govern their bucketing, so the instance-wide
+ * Recomputes `bucket_id` for every **root** album — closes the dispatch gap
+ * {@see RecomputeChildAlbumBucketsJob} deliberately doesn't cover
+ * (parent-scoped only): root albums have no parent to govern their
+ * bucketing, so the instance-wide
  * `sorting_albums_col`/`sorting_albums_order`/`timeline_albums_granularity`/
  * `title_bucket_mode`/`title_bucket_prefix_length` config plays the role a
  * parent's own settings would for a sub-album.
  *
  * Only ever affects `own`-scope buckets — `shared` scope is always computed
- * live via a `GROUP BY owner_id` (FR-062-05) and needs no recompute path.
+ * live via a `GROUP BY owner_id` and needs no recompute path.
  *
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one
- * bulk `upsert()` (NFR-062-03), mirroring
+ * bulk `upsert()`, mirroring
  * {@see RecomputeChildAlbumBucketsJob}'s shape exactly.
  */
 class RecomputeRootAlbumBucketsJob implements ShouldQueue
@@ -84,5 +85,13 @@ class RecomputeRootAlbumBucketsJob implements ShouldQueue
 		}
 
 		DB::table('albums')->upsert($updates, ['id'], ['bucket_id']);
+
+		// SettingsController::setConfigs dispatches AlbumListingCacheFlushRequested
+		// (a synchronous, coarse flush) before dispatching this queued job — the
+		// global-tag flush alone can be won by a request that repopulates
+		// albumChildrenTag(null) with pre-upsert bucket_id data before this job
+		// runs. Evict that tag again now that the new bucket_id values are
+		// actually committed, closing the refill race.
+		AlbumChildrenChanged::dispatch([null]);
 	}
 }

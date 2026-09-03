@@ -12,6 +12,7 @@ use App\Actions\Diagnostics\Configuration;
 use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
+use App\Assets\DbBool;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Http\Requests\Diagnostics\DiagnosticsRequest;
 use App\Http\Resources\Diagnostics\ErrorLine;
@@ -162,12 +163,12 @@ class DiagnosticsController extends Controller
 			->orderBy(APC::BASE_ALBUM_ID)
 			->get()
 			->map(function ($e) {
-				$e->is_link_required = $e->is_link_required === 1;
-				$e->grants_download = $e->grants_download === 1;
-				$e->grants_upload = $e->grants_upload === 1;
-				$e->grants_delete = $e->grants_delete === 1;
-				$e->grants_edit = $e->grants_edit === 1;
-				$e->grants_full_photo_access = $e->grants_full_photo_access === 1;
+				$e->is_link_required = DbBool::parse($e->is_link_required);
+				$e->grants_download = DbBool::parse($e->grants_download);
+				$e->grants_upload = DbBool::parse($e->grants_upload);
+				$e->grants_delete = DbBool::parse($e->grants_delete);
+				$e->grants_edit = DbBool::parse($e->grants_edit);
+				$e->grants_full_photo_access = DbBool::parse($e->grants_full_photo_access);
 
 				return $e;
 			});
