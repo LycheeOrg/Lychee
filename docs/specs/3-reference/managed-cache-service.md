@@ -1,6 +1,6 @@
 # Managed Cache Service
 
-This document is a technical reference for `App\Services\Cache\ManagedCacheService`, a generic, tag-evictable memoization layer introduced to cache expensive, permission-filtered queries (Feature 052).
+This document is a technical reference for `App\Services\Cache\ManagedCacheService`, a generic, tag-evictable memoization layer for caching expensive, permission-filtered queries.
 
 Linked spec: [`docs/specs/4-architecture/features/052-managed-cache-service/spec.md`](../4-architecture/features/052-managed-cache-service/spec.md).
 
@@ -10,7 +10,7 @@ Linked spec: [`docs/specs/4-architecture/features/052-managed-cache-service/spec
 
 Some values Lychee computes are expensive to recompute but depend on more than their literal inputs — most notably a listing filtered by a user's effective (inherited) album permissions. `ManagedCacheService` lets a caller memoize the result of an arbitrary callable under an arbitrary key, while declaring a set of dependency **tags** the result depends on. Any code path can later evict every cached entry tagged with a given value (e.g. `album:{id}` or `user:{id}`) in one call, without knowing which specific keys were affected.
 
-This is deliberately separate from the pre-existing whole-HTTP-response cache (`App\Metadata\Cache\RouteCacher`/`RouteCacheManager`, config `cache_enabled`, off by default — Feature 040). `ManagedCacheService` caches individual values (query results, computed values), not HTTP responses, is gated by its own config, and defaults to **on**.
+This is deliberately separate from the pre-existing whole-HTTP-response cache (`App\Metadata\Cache\RouteCacher`/`RouteCacheManager`, config `cache_enabled`, off by default). `ManagedCacheService` caches individual values (query results, computed values), not HTTP responses, is gated by its own config, and defaults to **on**.
 
 ## Why tags are hand-rolled, not a native cache-tagging feature
 
@@ -88,7 +88,7 @@ Added under the `Mod Cache` settings category (migration `database/migrations/20
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `managed_cache_enabled` | bool | `1` (true) | Gates whether `remember()`/`addTags()` do any cache I/O at all. Independent of Feature 040's `cache_enabled`. |
+| `managed_cache_enabled` | bool | `1` (true) | Gates whether `remember()`/`addTags()` do any cache I/O at all. Independent of the HTTP response cache's `cache_enabled`. |
 | `managed_cache_ttl` | positive int (seconds) | `3600` | Default TTL passed by the two pilot consumers below. |
 
 Both settings stay visible in the admin Settings UI even when `features.enable-request-caching` is `false` (its default) — `SettingsController::getAll()`'s existing `'Mod Cache'` category-visibility filter is patched to exempt these two keys specifically (`app/Http/Controllers/Admin/SettingsController.php`), so `managed_cache_enabled` remains genuinely independent of the HTTP response cache's off-by-default posture while still sharing the category's UI grouping.
@@ -235,6 +235,6 @@ Guidelines drawn from the pilot consumers:
 
 ## Non-goals / boundaries
 
-- Does not replace, deprecate, or re-enable the existing whole-HTTP-response cache (`cache_enabled`, `RouteCacher`, Feature 040) — that remains untouched and independently toggled.
+- Does not replace, deprecate, or re-enable the existing whole-HTTP-response cache (`cache_enabled`, `RouteCacher`) — that remains untouched and independently toggled.
 - Not adopted anywhere beyond the two pilot consumers in this feature; broader adoption (e.g. `current_user_permissions()`, `AlbumPolicy`, `Search`) is left to future work.
 - Introduces no new runtime dependency — uses the existing `Cache` facade against whatever `CACHE_DRIVER` is configured (default `file`), consistent with the offline-only constraint.
