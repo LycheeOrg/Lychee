@@ -283,12 +283,12 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 */
 	private function signatureRequired(?User $user): bool
 	{
-		if ($user === null) {
-			return true;
-		}
-
 		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
 			return false;
+		}
+
+		if ($user === null) {
+			return true;
 		}
 
 		if ($user->may_administrate) {
