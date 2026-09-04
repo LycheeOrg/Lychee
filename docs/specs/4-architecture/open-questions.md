@@ -168,49 +168,6 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
-<<<<<<< HEAD
-### ~~Q-062-14~~ · Guest exposure of owner display names via root's `shared`-scope bucket labels ✅ RESOLVED
-
-**Status:** Resolved — Option B  
-**Feature:** 062 – Root Album Listing Struct-of-Arrays  
-**Resolved:** 2026-09-02
-
-**Resolution:** The `users` join and label resolution are skipped entirely for unauthenticated callers — not just hidden after the fact, the join never executes (defense in depth, and avoids a pointless query). Owner-based grouping/counts are still computed for guests (the mechanism itself is unaffected — a guest still sees "3 buckets" if 3 distinct owners have shared albums), but every label falls back to the literal string `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this endpoint family. Authenticated callers still get real `COALESCE(display_name, username)` labels, unchanged.
-
-**Spec impact:** FR-062-05 gains an explicit guest branch (no join, `labels` hardcoded `'unknown'`); new scenario for guest label anonymization with real grouping intact.
-
-**Preferred option:** 🅱️ (**recommended**) Option B – No names for guests
-
-**Question**  
-FR-062-05 has `/Albums/root/buckets`'s `shared` scope resolve bucket labels via `COALESCE(display_name, username)` joined on `owner_id`, with no authentication gate stated in the FR itself. Since guests default to `shared` scope (FR-062-02) and have no `own` scope available, this means an unauthenticated visitor to the gallery would see the real display names of every user who owns a visible root album, in bucket headers. An earlier draft of this spec had an explicit NFR forbidding this; it was dropped when `OWNER_ID` was removed as a *sort column* option, on the reasoning that "shared is the only thing a guest can request, so there's nothing left to protect." That reasoning conflates two different things (which sort *column* an admin can configure vs. whether label lookups run for anonymous callers) and was decided unilaterally during a fast pivot, not requested by the user. Should guests see real names here?
-
----
-
-#### 🅰️ Option A – Guests see names (current spec text, unchanged)
-
-- **Idea:** Keep FR-062-05 as written — the `users` join and label resolution run unconditionally for `shared` scope, regardless of caller.
-- **Spec impact:** None — spec already reflects this.
-- **Pros:**  
-  - ✅ Simplest implementation — one code path, no guest branch.  
-  - ✅ Matches the fact that "who shared this album" is arguably already implicit, visible content (the album itself is public).
-- **Cons:**  
-  - ❌ Exposes potentially real names (not usernames) of every contributing user to any anonymous visitor, without them opting in to that exposure.  
-  - ❌ Reverses a more conservative decision from an earlier draft without an explicit product call.  
-  - ❌ Inconsistent with this codebase's general instinct elsewhere (e.g. `AlbumAccessPermissionListController` deliberately narrows columns to avoid over-exposing user data) even though the concrete data here (display name) is lower-sensitivity than a password hash.
-
----
-
-#### 🅱️ (**recommended**) Option B – No names for guests
-
-- **Idea:** Restrict the `users` join / label resolution to authenticated callers only. A guest's `shared`-scope buckets still group by `owner_id` (the grouping/count mechanism is unaffected) but each label falls back to a neutral placeholder (e.g. `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this same endpoint family) or the response omits `labels` for that scope when unauthenticated.
-- **Spec impact:** FR-062-05 gains an explicit guest branch; NFR list gains back a privacy requirement (mirrors the dropped draft NFR-062-07); new scenario for "guest sees buckets but no names."
-- **Pros:**  
-  - ✅ No new exposure surface introduced by this feature.  
-  - ✅ Matches the spirit of the original (pre-pivot) design intent.
-- **Cons:**  
-  - ❌ One more conditional branch in `AlbumRootController::buckets()`.  
-  - ❌ A guest's bucket headers become less informative ("3 albums" instead of "Alice: 3 albums").
-=======
 ### ~~Q-063-05~~ · Pin/Unpin menu label depends on `is_pinned`, which tier 2 never supplies ✅ RESOLVED
 
 **Status:** Resolved — Option A  
@@ -570,12 +527,54 @@ FR-063-01 says navigation "triggers a new `AlbumsState.ts` action that fetches t
   - ✅ Faster perceived navigation when revisiting a recently-browsed album.
 - **Cons:**
   - ❌ A second cache surface to keep in sync with FR-063-13's invalidation net — any future addition to that list (e.g. Q-063-09's cover-change trigger) must now also be remembered for this cache, doubling the blast radius of a missed trigger.
->>>>>>> d0e107e98 (Front-end for subalbums)
+
+### ~~Q-062-14~~ · Guest exposure of owner display names via root's `shared`-scope bucket labels ✅ RESOLVED
+
+**Status:** Resolved — Option B  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** The `users` join and label resolution are skipped entirely for unauthenticated callers — not just hidden after the fact, the join never executes (defense in depth, and avoids a pointless query). Owner-based grouping/counts are still computed for guests (the mechanism itself is unaffected — a guest still sees "3 buckets" if 3 distinct owners have shared albums), but every label falls back to the literal string `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this endpoint family. Authenticated callers still get real `COALESCE(display_name, username)` labels, unchanged.
+
+**Spec impact:** FR-062-05 gains an explicit guest branch (no join, `labels` hardcoded `'unknown'`); new scenario for guest label anonymization with real grouping intact.
+
+**Preferred option:** 🅱️ (**recommended**) Option B – No names for guests
+
+**Question**  
+FR-062-05 has `/Albums/root/buckets`'s `shared` scope resolve bucket labels via `COALESCE(display_name, username)` joined on `owner_id`, with no authentication gate stated in the FR itself. Since guests default to `shared` scope (FR-062-02) and have no `own` scope available, this means an unauthenticated visitor to the gallery would see the real display names of every user who owns a visible root album, in bucket headers. An earlier draft of this spec had an explicit NFR forbidding this; it was dropped when `OWNER_ID` was removed as a *sort column* option, on the reasoning that "shared is the only thing a guest can request, so there's nothing left to protect." That reasoning conflates two different things (which sort *column* an admin can configure vs. whether label lookups run for anonymous callers) and was decided unilaterally during a fast pivot, not requested by the user. Should guests see real names here?
+
+---
+
+#### 🅰️ Option A – Guests see names (current spec text, unchanged)
+
+- **Idea:** Keep FR-062-05 as written — the `users` join and label resolution run unconditionally for `shared` scope, regardless of caller.
+- **Spec impact:** None — spec already reflects this.
+- **Pros:**  
+  - ✅ Simplest implementation — one code path, no guest branch.  
+  - ✅ Matches the fact that "who shared this album" is arguably already implicit, visible content (the album itself is public).
+- **Cons:**  
+  - ❌ Exposes potentially real names (not usernames) of every contributing user to any anonymous visitor, without them opting in to that exposure.  
+  - ❌ Reverses a more conservative decision from an earlier draft without an explicit product call.  
+  - ❌ Inconsistent with this codebase's general instinct elsewhere (e.g. `AlbumAccessPermissionListController` deliberately narrows columns to avoid over-exposing user data) even though the concrete data here (display name) is lower-sensitivity than a password hash.
+
+---
+
+#### 🅱️ (**recommended**) Option B – No names for guests
+
+- **Idea:** Restrict the `users` join / label resolution to authenticated callers only. A guest's `shared`-scope buckets still group by `owner_id` (the grouping/count mechanism is unaffected) but each label falls back to a neutral placeholder (e.g. `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this same endpoint family) or the response omits `labels` for that scope when unauthenticated.
+- **Spec impact:** FR-062-05 gains an explicit guest branch; NFR list gains back a privacy requirement (mirrors the dropped draft NFR-062-07); new scenario for "guest sees buckets but no names."
+- **Pros:**  
+  - ✅ No new exposure surface introduced by this feature.  
+  - ✅ Matches the spirit of the original (pre-pivot) design intent.
+- **Cons:**  
+  - ❌ One more conditional branch in `AlbumRootController::buckets()`.  
+  - ❌ A guest's bucket headers become less informative ("3 albums" instead of "Alice: 3 albums").
+Owner to choose 🅰️ or 🅱️ before I1 — 🅰️ is the lower-risk default absent a demonstrated performance need.
 
 ---
 
 **Next action**  
-<<<<<<< HEAD
+
 User to confirm which behavior is intended before FR-062-05/NG9/NFR list are finalized; if Option B, add the guest branch and a dedicated scenario ID.
 
 ---
@@ -716,9 +715,6 @@ By ordinary REST convention, `GET /resource/{id}` fetches that one resource's ow
 
 **Next action**  
 User to confirm Option A (as currently specced) or revert to Option B; low urgency since either is a small, mechanical spec edit at this stage, before implementation starts.
-=======
-Owner to choose 🅰️ or 🅱️ before I1 — 🅰️ is the lower-risk default absent a demonstrated performance need.
->>>>>>> d0e107e98 (Front-end for subalbums)
 
 ---
 
