@@ -166,10 +166,12 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-056-05: temporary_image_link_enabled=false → 401 regardless of
-	 * (validly-signed) headers.
+	 * S-056-05: temporary_image_link_enabled=false → signatureRequired() is
+	 * false for guests too (Q-056-05), so the request falls through to the
+	 * ordinary AlbumPolicy check like any other unauthenticated request → 200
+	 * on a public album, regardless of headers.
 	 */
-	public function testDisabledFeatureIsUnauthorizedForGuest(): void
+	public function testDisabledFeatureFallsBackToAlbumPolicyForGuest(): void
 	{
 		Configs::set('temporary_image_link_enabled', '0');
 		$variant = $this->thumbVariantOf($this->photo4);
@@ -177,7 +179,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 
 		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders());
 
-		$response->assertUnauthorized();
+		$response->assertOk();
 	}
 
 	/**
@@ -388,9 +390,11 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 * header. Truth table (several combinations collapse
 	 * to the same outcome):
 	 *
-	 * - Guest: always 401, regardless of any config flag — guests are only
-	 *   ever authorized via a valid temporary link (FR-056-05), and no
-	 *   headers means that link can never be valid.
+	 * - Guest: 401 iff enabled (guests are only ever authorized via a valid
+	 *   temporary link when the feature is on, and no headers means that
+	 *   link can never be valid); when disabled, signatureRequired() is
+	 *   false for guests too, so the request falls through to AlbumPolicy
+	 *   and succeeds on a public album (FR-056-05, Q-056-05) — 200.
 	 * - Logged-in non-admin: 401 iff (enabled && when_logged_in), else 200
 	 *   (session alone suffices). `when_admin` is irrelevant to this caller.
 	 * - Admin: 401 iff (enabled && when_admin), else 200 (session alone
@@ -414,7 +418,8 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 
 					Auth::logout();
 					$guest_response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb");
-					self::assertSame(401, $guest_response->getStatusCode(), "guest, {$case}");
+					$expected_guest = $enabled ? 401 : 200;
+					self::assertSame($expected_guest, $guest_response->getStatusCode(), "guest, {$case}");
 
 					$non_admin_response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 					$expected_non_admin = ($enabled && $when_logged_in) ? 401 : 200;

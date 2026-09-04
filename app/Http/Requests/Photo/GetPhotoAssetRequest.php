@@ -274,10 +274,14 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * Determines whether `$user` must additionally present a valid
 	 * temporary-link signature to be authorized (ADR-0008).
 	 *
-	 * Guests are only ever authorized via a valid temporary link (FR-056-05)
-	 * — always `true`, regardless of config; {@link self::isSignatureValid()}
-	 * separately rejects them outright when the feature is globally
-	 * disabled. For authenticated users, this mirrors
+	 * `false` for every caller — guests included — when
+	 * `temporary_image_link_enabled` is off (Q-056-05): disabling the
+	 * feature drops the extra signature requirement outright rather than
+	 * locking guests out, so a disabled-feature guest relies solely on the
+	 * ordinary `AlbumPolicy`/`PhotoPolicy` check like any other caller.
+	 * Otherwise, guests are only ever authorized via a valid temporary link
+	 * (FR-056-05) — there's no session to fall back on. For authenticated
+	 * users, this mirrors
 	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
 	 * generation-time predicate, re-purposed for validation.
 	 */
