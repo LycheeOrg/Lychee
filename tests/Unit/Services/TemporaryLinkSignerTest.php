@@ -24,38 +24,34 @@ use Tests\AbstractTestCase;
 /**
  * Unit tests for TemporaryLinkSigner (Feature 056, FR-056-04).
  *
- * Pure unit-testable: no HTTP/Laravel request plumbing, just HMAC-SHA256 of
- * the timestamp keyed by config('app.key').
+ * Pure unit-testable: no HTTP/Laravel request plumbing, just a rotating
+ * code derived from a full HMAC-SHA256 digest keyed by config('app.key').
  */
 class TemporaryLinkSignerTest extends AbstractTestCase
 {
-	public function testValidMacVerifies(): void
+	public function testValidCodeVerifies(): void
 	{
 		$signer = new TemporaryLinkSigner();
-		$timestamp = 1_700_000_000;
 
-		$mac = $signer->sign($timestamp);
+		$code = $signer->sign();
 
-		self::assertTrue($signer->verify($timestamp, $mac));
+		self::assertTrue($signer->verify($code));
 	}
 
-	public function testTamperedMacFails(): void
+	public function testTamperedCodeFails(): void
 	{
 		$signer = new TemporaryLinkSigner();
-		$timestamp = 1_700_000_000;
 
-		$mac = $signer->sign($timestamp);
-		$tampered = substr($mac, 0, -1) . (str_ends_with($mac, 'a') ? 'b' : 'a');
+		$code = $signer->sign();
+		$tampered = substr($code, 0, -1) . (str_ends_with($code, '1') ? '2' : '1');
 
-		self::assertFalse($signer->verify($timestamp, $tampered));
+		self::assertFalse($signer->verify($tampered));
 	}
 
-	public function testMacForDifferentTimestampFails(): void
+	public function testUnrelatedCodeFails(): void
 	{
 		$signer = new TemporaryLinkSigner();
 
-		$mac = $signer->sign(1_700_000_000);
-
-		self::assertFalse($signer->verify(1_700_000_001, $mac));
+		self::assertFalse($signer->verify('000000000000'));
 	}
 }
