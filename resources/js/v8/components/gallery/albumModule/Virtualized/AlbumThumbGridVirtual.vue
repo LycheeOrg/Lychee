@@ -23,7 +23,7 @@
 				:style="{
 					height: `${item.size}px`,
 					transform: `translate3d(0, ${item.start - scrollMargin}px, 0)`,
-					contain: 'layout size paint',
+					contain: 'layout size',
 				}"
 			>
 				<div

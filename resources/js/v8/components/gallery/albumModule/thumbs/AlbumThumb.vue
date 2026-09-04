@@ -1,11 +1,9 @@
 <template>
 	<router-link
 		:to="{ name: albumRoutes().album, params: { albumId: album.id } }"
-		class="album-thumb block relative sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(11vw-0.75rem)] 3xl:w-[calc(10vw-0.75rem)] 4xl:w-[calc(8vw-0.75rem)] 5xl:w-[calc(6vw-0.75rem)] 6xl:w-[calc(4vw-0.75rem)] animate-zoomIn group"
+		class="album-thumb block relative animate-zoomIn group"
+		:style="{ width: `${tileWidth}px` }"
 		:class="{
-			'w-[calc(100%)]': number_albums_per_row_mobile === 1,
-			'w-[calc(50%-0.25rem)]': number_albums_per_row_mobile === 2,
-			'w-[calc(33%-0.25rem)]': number_albums_per_row_mobile === 3,
 			blurred: is_nsfw_background_blurred && props.album.is_nsfw,
 			'aspect-4x5': 'aspect-4x5' === aspectRatio,
 			'aspect-5x4': 'aspect-5x4' === aspectRatio,
@@ -110,6 +108,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { ALBUM_BADGE_BG } from "@/v8/utils/albumBadgeColors";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
+import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -147,18 +146,14 @@ const lycheeStore = useLycheeStateStore();
 
 const togglableStore = useTogglablesStateStore();
 const { getPlayIcon } = useImageHelpers();
-const {
-	display_thumb_album_overlay,
-	number_albums_per_row_mobile,
-	is_nsfw_background_blurred,
-	is_smart_album_flags_enabled,
-	is_cover_id_flag_enabled,
-} = storeToRefs(lycheeStore);
+const { display_thumb_album_overlay, is_nsfw_background_blurred, is_smart_album_flags_enabled, is_cover_id_flag_enabled } = storeToRefs(lycheeStore);
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
 );
+
+const { tileWidth } = useAlbumTileWidth();
 
 const { albumRoutes } = useAlbumRoute(router);
 const cannotInteractWhileDragging = computed(() => togglableStore.isDragging === true && canInteractAlbum(props.album) === false);
