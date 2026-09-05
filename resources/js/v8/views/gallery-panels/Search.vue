@@ -174,6 +174,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { trans } from "laravel-vue-i18n";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -265,14 +266,13 @@ async function load() {
 	photoStore.load();
 }
 
-const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
+const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open, is_download_album_visible, is_download_photo_visible } =
+	storeToRefs(togglableStore);
 
 const { getParentId } = usePhotoRoute(router);
 
-const is_download_photo_visible = ref(false);
 const downloadPhotoIds = ref<string[]>([]);
 const downloadFromId = ref<string | null>(null);
-const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 
 const title = computed<string>(() => trans("gallery.search.title"));
@@ -509,7 +509,7 @@ function goBack() {
 	}
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	// Album operations
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {

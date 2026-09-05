@@ -170,6 +170,7 @@ import { useAlbumListStore } from "@/stores/AlbumListState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { useRating } from "@/composables/photo/useRating";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -375,7 +376,7 @@ function openSearch() {
 	router.push({ name: "search", params: { albumId: albumStore.album.id } });
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
 			lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
@@ -431,14 +432,6 @@ defineShortcuts({
 
 		if (is_copy_visible.value) {
 			is_copy_visible.value = false;
-			return;
-		}
-
-		// Escape drops the current selection before navigating away, so that a
-		// selection surviving an in-place edit can be cleared without leaving the
-		// album.
-		if (hasSelection()) {
-			unselect();
 			return;
 		}
 

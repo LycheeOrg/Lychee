@@ -122,6 +122,7 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { trans } from "laravel-vue-i18n";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { AddMenuItem } from "@/v8/composables/contextMenus/contextMenuAlbumAdd";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{
 	title: string;
@@ -211,7 +212,7 @@ function toggleToList() {
 	lycheeStore.album_view_mode = "list";
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	n: () => albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true),
 	u: () => albumsStore.rootRights?.can_upload && (is_upload_visible.value = true),
 	"/": () => albumsStore.rootConfig?.is_search_accessible && openSearch(),

@@ -261,6 +261,7 @@ import FaceDetectionService from "@/services/face-detection-service";
 import GoBack from "@/v8/components/headers/GoBack.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { usePeopleList } from "@/composables/usePeopleList";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const toast = useAppToast();
 const rawToast = useToast();
@@ -739,7 +740,7 @@ watch(queueVisible, (visible) => {
 });
 
 // Keybindings, active only while the review queue is open and no confirm dialog is blocking it.
-defineShortcuts({
+definePanelShortcuts({
 	d: () => queueVisible.value && !confirmDialogVisible.value && !!queueCluster.value && requestDismissCluster(queueCluster.value),
 	arrowright: () => queueVisible.value && !confirmDialogVisible.value && skipQueueCluster(),
 	" ": () => queueVisible.value && !confirmDialogVisible.value && skipQueueCluster(),
