@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Implemented |
 | Last updated | 2026-09-05 |
 | Owners | ildyria |
 | Linked plan | `docs/specs/4-architecture/features/064-photo-listing-struct-of-arrays/plan.md` |

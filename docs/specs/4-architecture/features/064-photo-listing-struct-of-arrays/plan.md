@@ -1,7 +1,7 @@
 # Feature Plan 064 – Photo Listing Struct-of-Arrays
 
 _Linked specification:_ `docs/specs/4-architecture/features/064-photo-listing-struct-of-arrays/spec.md`
-_Status:_ Draft
+_Status:_ Implemented
 _Last updated:_ 2026-09-05
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections have been updated.
@@ -42,6 +42,8 @@ Give a client everything it needs to render a virtualized, justified-layout phot
 ## Implementation Drift Gate
 
 At completion, diff these files/trees against their pre-feature state and confirm the only changes are additive: `app/Http/Controllers/Gallery/AlbumPhotosController.php`, `app/Http/Requests/Album/GetAlbumPhotosRequest.php`, `app/Repositories/PhotoRepository.php`, `app/Http/Resources/Collections/PaginatedPhotosResource.php`, `app/Http/Resources/Models/PhotoResource.php`, `routes/api_v2.php`, `resources/js/v8/**` (should be empty — NG1). Record the diff output (or its absence) in this section before marking the feature complete.
+
+**Result (2026-09-05, T-064-29):** `git diff -- app/Http/Controllers/Gallery/AlbumPhotosController.php app/Http/Requests/Album/GetAlbumPhotosRequest.php app/Repositories/PhotoRepository.php app/Http/Resources/Collections/PaginatedPhotosResource.php app/Http/Resources/Models/PhotoResource.php routes/api_v2.php resources/js/v8` — **empty**. None of the 7 paths appear in `git status` either. Drift gate clean.
 
 ## Increment Map
 
@@ -111,6 +113,8 @@ At completion, diff these files/trees against their pre-feature state and confir
 ## Analysis Gate
 
 Pending — run before implementation begins, as tasks.md's `T-064-01`: confirm (a) exact `base_albums` sorting-column names against the live model (consumed by I1's `PhotoBucketComputer` and I2's dirty-check wiring, FR-064-03c), (b) `timeline_photo_date_format_hour`'s existence/default (consumed by I3's label computation, FR-064-06), (c) which existing observer/listener (if any) already fires on `Photo` metadata save, to decide whether FR-064-03(b)'s trigger is new wiring or an extension of an existing one (consumed by I2). This is the single authoritative pass for all three checks — I1's own Preconditions reference back to it rather than re-running it. Record findings here once run.
+
+**Findings (2026-09-05):** (a) confirmed — `base_albums.sorting_col`/`sorting_order`/`photo_timeline` exist exactly as assumed (`app/Models/BaseAlbumImpl.php:110-119,305-320`); `getEffectivePhotoSorting()` at `app/Models/Extensions/BaseAlbum.php:154-157`. (b) confirmed — `timeline_photo_date_format_year/_month/_day/_hour` all exist with sane defaults (`database/migrations/2024_10_30_064336_timeline_options.php`). (c) no single existing observer/listener fires uniformly on all 4 photo-metadata-save write sites (`PhotoController::update()`/`rename()`/`highlight()`, `Rating::do()`) — each dispatches a different (or no) event — so FR-064-03(b)'s trigger was wired as 4 explicit `RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged([...]), $photo->id)` call sites, not an Eloquent observer. No spec/tasks updates were needed — the live schema matched every assumption.
 
 ## Exit Criteria
 

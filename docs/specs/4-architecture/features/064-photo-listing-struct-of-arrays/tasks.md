@@ -1,6 +1,6 @@
 # Feature 064 Tasks – Photo Listing Struct-of-Arrays
 
-_Status: Draft_
+_Status: Implemented_
 _Last updated: 2026-09-05_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -173,21 +173,24 @@ _Last updated: 2026-09-05_
 
 ### I7 – Quality gates + documentation
 
-- [ ] T-064-28 – Full targeted regression sweep.
+- [x] T-064-28 – Full targeted regression sweep.
   _Verification commands:_
   - `php artisan test --filter=Photo` (v3 photo-listing suites)
   - `php artisan test --filter=Album` (updateAlbum dirty-check addition, no regression)
   - `php artisan test --filter=Cache`
   - `make phpstan`
   - `vendor/bin/php-cs-fixer fix --dry-run`
+  _Notes:_ The literal broad `--filter=Photo`/`--filter=Album`/`--filter=Cache` commands as written are unreliable in this environment: `phpunit.xml` runs with `processIsolation="false"`, and those 3 substrings each match hundreds of unrelated test classes across the whole suite (e.g. `--filter=Photo` also matches `AssistedVision\People\PersonPhotosTest`), which is effectively "the whole suite" — exactly what this repo's own convention says never to run. Running them (and, separately, letting two of them overlap in time against the same shared sqlite dev DB) produced ~200 false failures with a uniform "Assert that user table only contains the admin user"/"Updating X failed" pattern — confirmed to be test-runner DB contention, not a real regression, by re-running the identical failing test classes individually afterward (all green). Verified instead via targeted, sequential `--filter` runs covering every file this feature touched or logically relates to: all 120 of this feature's own new/extended tests (`PhotoBucketComputerTest`, `RecomputePhotoBucketsJobTest`, `RecomputeAlbumPhotoBucketsJobTest`, `RecomputePhotoBucketsCommandTest`, `PhotoUploadBucketTest`, `PhotoSortingBucketDispatchTest`, `PhotoBucketsV3Test`, `PhotoRatiosV3Test`, `PhotoDetailsV3Test`, `CacheKeyProviderTest`, `ManagedCachePhotoListingInvalidatorTest`) — green; plus a 112-test regression sweep of every precedent/related suite (`AlbumSortingBucketDispatchTest`, `AlbumBucketsV3Test`, `AlbumUpdateTest`, `UpdateAlbumRequestTest`, `AlbumTitleSyncTest`, `MoveOrDuplicateTest`, `PhotoRatingSyncTest`, `PhotoRatingIntegrationTest`, `PhotoRatingConcurrencyTest`, `PhotoTitleSyncTest`, `ManagedCacheAlbumListingInvalidatorTest`, `ManagedCacheServiceTest`) — green, zero regressions. `make phpstan` run in full (not scoped): 0 errors across 2929 files. `php-cs-fixer --dry-run` run against every new/changed file: clean (2 minor formatting nits found and fixed during implementation, both pre-commit).
 
-- [ ] T-064-29 – Implementation Drift Gate diff (plan.md).
+- [x] T-064-29 – Implementation Drift Gate diff (plan.md).
   _Intent:_ Confirm v2 photo-listing files + `resources/js/v8/**` are untouched (NG1/NG2/NFR-064-08).
   _Verification commands:_
   - `git diff -- app/Http/Controllers/Gallery/AlbumPhotosController.php app/Http/Requests/Album/GetAlbumPhotosRequest.php app/Repositories/PhotoRepository.php app/Http/Resources/Collections/PaginatedPhotosResource.php app/Http/Resources/Models/PhotoResource.php routes/api_v2.php resources/js/v8`
+  _Notes:_ Empty diff, confirmed. Recorded in plan.md's Implementation Drift Gate section.
 
-- [ ] T-064-30 – Documentation updates.
+- [x] T-064-30 – Documentation updates.
   _Intent:_ `docs/specs/3-reference/api-design.md`, `database-schema.md`, `docs/specs/4-architecture/knowledge-map.md`, `roadmap.md` (move Feature 064 to Completed once all tasks are `[x]`).
+  _Notes:_ `api-design.md` gained a new "API v3: Photo Listing Virtual-Scroll Backend" section (mirrors the album virtual-scroll section's structure). `database-schema.md`'s Photo section gained a `photo_album` pivot-table paragraph documenting `bucket_id`'s placement/write-path. `knowledge-map.md` gained entries for `PhotoChildrenController`, the 3 new Requests, the 3 new Resources, `photo_album.bucket_id`/the 2 new configs, `PhotoBucketComputer`, the 2 new jobs, the new command, and `ManagedCachePhotoListingInvalidator`. `roadmap.md`: Feature 064 moved from Active to Completed with a full implementation summary; spec.md/plan.md/tasks.md `Status` fields updated to `Implemented`; plan.md's Analysis Gate and Implementation Drift Gate sections both recorded their findings/results.
 
 ## Notes / TODOs
 
