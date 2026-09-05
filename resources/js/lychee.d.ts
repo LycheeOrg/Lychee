@@ -764,6 +764,9 @@ declare namespace App {
 					default_expert_settings: boolean;
 					default_all_settings: boolean;
 				};
+				export type TemporaryLinkMacConfig = {
+					mac: string;
+				};
 				export type UploadConfig = {
 					upload_processing_limit: number;
 					upload_chunk_size: number;

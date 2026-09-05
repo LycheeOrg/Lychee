@@ -42,6 +42,7 @@ Route::patch('/Contact', [Contact\ContactController::class, 'update'])->middlewa
 Route::delete('/Contact', [Contact\ContactController::class, 'destroy'])->middleware('support:se');
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
+Route::get('/Gallery::getMac', [Gallery\ConfigController::class, 'getMac']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);

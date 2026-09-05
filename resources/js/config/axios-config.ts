@@ -2,6 +2,24 @@ import axios, { AxiosError, InternalAxiosRequestConfig, type AxiosResponse } fro
 import CSRF from "./csrf-getter";
 // import { setupCache } from "axios-cache-interceptor/dev";
 import { setupCache } from "axios-cache-interceptor";
+import InitService from "../services/init-service";
+
+// Cached for the life of the session (unlike InitService.fetchMac()'s in-flight dedup, which only
+// coalesces concurrent callers of one fetch): once resolved, later Asset requests reuse this value
+// with zero extra network round-trips or server-side recomputation. Invalidated by the response
+// interceptor below when it goes stale.
+// `cachedMac` and `macFetched` are tracked separately because the server legitimately returns an
+// empty string (not null) when the temporary-link feature is disabled - without a separate
+// "have we fetched" flag, that empty value would look identical to "not fetched yet" and Gallery::getMac
+// would be re-requested on every single Asset/ request instead of once per session.
+let cachedMac: string | null = null;
+let macFetched = false;
+
+// Marks a request that already went through the mac-invalidate-and-retry path below, so a
+// second 401 (e.g. the feature was disabled meanwhile) is reported instead of retried forever.
+interface MacRetryConfig extends InternalAxiosRequestConfig {
+	__macRetried?: boolean;
+}
 
 /**
  * Requests made with `responseType: "blob"` (thumb assets, zip/photo downloads) still get their
@@ -31,7 +49,7 @@ const AxiosConfig = {
 		setupCache(axios);
 		axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 		axios.interceptors.request.use(
-			function (config: InternalAxiosRequestConfig) {
+			async function (config: InternalAxiosRequestConfig) {
 				try {
 					const token = CSRF.get();
 					config.headers["X-XSRF-TOKEN"] = token;
@@ -41,6 +59,17 @@ const AxiosConfig = {
 					// window.dispatchEvent(event);
 					// We reject to ensure that the request is not even sent.
 					// return Promise.reject("session_expired");
+				}
+
+				if (config.url?.includes("Asset/")) {
+					if (!macFetched) {
+						const { data } = await InitService.fetchMac();
+						cachedMac = data.mac || null;
+						macFetched = true;
+					}
+					if (cachedMac !== null) {
+						config.headers["X-Mac"] = cachedMac;
+					}
 				}
 
 				config.headers["Content-Type"] = "application/json";
@@ -55,7 +84,7 @@ const AxiosConfig = {
 			function (response: AxiosResponse): AxiosResponse {
 				return response;
 			},
-			async function (error: AxiosError): Promise<never> {
+			async function (error: AxiosError): Promise<AxiosResponse> {
 				if (!error.response) {
 					return Promise.reject(error);
 				}
@@ -76,6 +105,17 @@ const AxiosConfig = {
 					const event = new CustomEvent("session_expired");
 					window.dispatchEvent(event);
 					return Promise.reject(error);
+				}
+
+				// A cached mac can go stale mid-session (tab left open past the signer's
+				// window). Invalidate it and retry once - if the retry also 401s (e.g. the
+				// feature was disabled meanwhile), __macRetried stops this from looping.
+				const config = error.config as MacRetryConfig | undefined;
+				if (error.response.status === 401 && config?.url?.includes("Asset/") && !config.__macRetried) {
+					cachedMac = null;
+					macFetched = false;
+					config.__macRetried = true;
+					return axios(config);
 				}
 
 				// Blob-typed requests (thumb assets, zip/photo downloads) degrade gracefully on
