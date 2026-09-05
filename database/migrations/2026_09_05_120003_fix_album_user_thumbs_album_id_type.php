@@ -10,6 +10,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/OptimizeTables.php';
+
 /**
  * `album_user_thumbs.album_id` holds either a `base_albums.id` (always
  * exactly 24 chars) or a `SmartAlbumType` enum value (e.g. `'unsorted'`,
@@ -28,7 +30,17 @@ return new class() extends Migration {
 	private const TABLE_NAME = 'album_user_thumbs';
 	private const ALBUM_ID = 'album_id';
 	private const USER_ID_UNIQUE_KEY = 'user_id_unique_key';
+	private const USER_ID_UNIQUE_KEY_NAME = 'album_user_thumbs_album_id_user_id_unique_key_unique';
+	private const ALBUM_ID_INDEX_NAME = 'album_user_thumbs_album_id_index';
 	private const RANDOM_ID_LENGTH = 24;
+
+
+	private OptimizeTables $optimize;
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
 
 	/**
 	 * Run the migrations.
@@ -36,13 +48,13 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->dropUnique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY]);
-			$table->dropIndex([self::ALBUM_ID]);
+			$this->optimize->dropUniqueIfExists($table, self::USER_ID_UNIQUE_KEY_NAME);
+			$this->optimize->dropIndexIfExists($table, self::ALBUM_ID_INDEX_NAME);
 
 			$table->string(self::ALBUM_ID, self::RANDOM_ID_LENGTH)->change();
 
-			$table->unique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY]);
-			$table->index([self::ALBUM_ID]);
+			$table->unique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY], self::USER_ID_UNIQUE_KEY_NAME);
+			$table->index([self::ALBUM_ID], self::ALBUM_ID_INDEX_NAME);
 		});
 	}
 
@@ -52,13 +64,13 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->dropUnique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY]);
-			$table->dropIndex([self::ALBUM_ID]);
+			$this->optimize->dropUniqueIfExists($table, self::USER_ID_UNIQUE_KEY_NAME);
+			$this->optimize->dropIndexIfExists($table, self::ALBUM_ID_INDEX_NAME);
 
 			$table->char(self::ALBUM_ID, self::RANDOM_ID_LENGTH)->change();
 
-			$table->unique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY]);
-			$table->index([self::ALBUM_ID]);
+			$table->unique([self::ALBUM_ID, self::USER_ID_UNIQUE_KEY], self::USER_ID_UNIQUE_KEY_NAME);
+			$table->index([self::ALBUM_ID], self::ALBUM_ID_INDEX_NAME);
 		});
 	}
 };

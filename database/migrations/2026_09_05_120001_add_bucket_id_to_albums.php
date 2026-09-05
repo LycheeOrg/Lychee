@@ -10,6 +10,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/OptimizeTables.php';
+
 /**
  * Adds a nullable, plain (non-generated) `bucket_id` column to `albums`,
  * holding the already-truncated date-bucket label (or alphabetical title prefix)
@@ -31,11 +33,26 @@ use Illuminate\Support\Facades\Schema;
  * the composite one is always safe to drop.
  */
 return new class() extends Migration {
+
+	private OptimizeTables $optimize;
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
+
 	/**
 	 * Run the migrations.
 	 */
 	public function up(): void
 	{
+		// Ensuring idem potency.
+		Schema::table('albums', function (Blueprint $table) {
+			$this->optimize->dropIndexIfExists($table, 'albums_parent_id_index');
+			$this->optimize->dropIndexIfExists($table, 'albums_parent_id_bucket_id_index');
+		});
+
+
 		Schema::table('albums', function (Blueprint $table) {
 			$table->string('bucket_id')->nullable()->default(null)->after('parent_id');
 			$table->index('parent_id', 'albums_parent_id_index');
@@ -51,7 +68,7 @@ return new class() extends Migration {
 		Schema::table('albums', function (Blueprint $table) {
 			// albums_parent_id_index is intentionally NOT dropped here - it's
 			// the foreign key's permanent fallback index, see the class docblock.
-			$table->dropIndex('albums_parent_id_bucket_id_index');
+			$this->optimize->dropIndexIfExists($table, 'albums_parent_id_bucket_id_index');
 			$table->dropColumn('bucket_id');
 		});
 	}
