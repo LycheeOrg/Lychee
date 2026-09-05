@@ -54,8 +54,8 @@ Route::get('/Albums/{album_id}', [Gallery\AlbumListing\AlbumChildrenController::
 Route::get('/Albums/{album_id}/buckets', [Gallery\AlbumListing\AlbumChildrenController::class, 'buckets']);
 Route::get('/Albums/{album_id}/rights', [Gallery\AlbumListing\AlbumChildrenController::class, 'rights']);
 
-// Photo virtual-scroll backend (Feature 064), same gating mechanism as the
-// album family above. Distinct literal-segment routes from
+// Photo virtual-scroll backend, same gating mechanism as the album family
+// above. Distinct literal-segment routes from
 // `/Albums/{album_id}/buckets`/`/rights` above — Laravel disambiguates
 // same-position literal segments, no collision.
 Route::get('/Albums/{album_id}/Photos', [Gallery\AlbumListing\PhotoChildrenController::class, 'index']);

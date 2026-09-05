@@ -22,8 +22,8 @@ use App\Services\PhotoBucketComputer;
 use function Safe\mktime;
 
 /**
- * Query logic for `GET /api/v3/Albums/{album_id}/Photos/buckets`
- * (FR-064-05/06). Direct structural precedent:
+ * Query logic for `GET /api/v3/Albums/{album_id}/Photos/buckets`. Direct
+ * structural precedent:
  * {@see \App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController::queryBuckets()}.
  */
 class QueryPhotoBuckets
@@ -40,8 +40,7 @@ class QueryPhotoBuckets
 		$sorting = $album->getEffectivePhotoSorting();
 
 		// OWNER_ID is excluded from photo bucketing entirely, per explicit
-		// user direction (NG11) - short-circuit without ever running a
-		// GROUP BY.
+		// user direction - short-circuit without ever running a GROUP BY.
 		if ($sorting->column === ColumnSortingType::OWNER_ID) {
 			return new PhotoBucketResource(bucket_ids: [], counts: [], labels: [], bucketable: false);
 		}
@@ -51,7 +50,7 @@ class QueryPhotoBuckets
 			->where(PA::ALBUM_ID, '=', $album->id);
 
 		// Non-admins must not see unvalidated photos uploaded by other
-		// users - including in bucket counts (FR-064-12/G7).
+		// users - including in bucket counts.
 		if ($user?->may_administrate !== true) {
 			$this->applyUploadValidationFilter($query, $user?->id);
 		}
@@ -101,7 +100,7 @@ class QueryPhotoBuckets
 
 		// IS_HIGHLIGHTED ("1"/"0") and RATING_AVG ("0".."5") are also
 		// already primitive/human-parseable - translation to e.g.
-		// "Highlighted"/"★★★" is the frontend's job (FR-064-06).
+		// "Highlighted"/"★★★" is the frontend's job.
 		if ($sorting_column === ColumnSortingType::IS_HIGHLIGHTED || $sorting_column === ColumnSortingType::TYPE || $sorting_column === ColumnSortingType::RATING_AVG) {
 			return $bucket_ids;
 		}
@@ -125,8 +124,8 @@ class QueryPhotoBuckets
 	 * Formats one `bucket_id` (`"Y"`/`"Y-m"`/`"Y-m-d"`/`"Y-m-d-H"`, the exact
 	 * truncation format {@see PhotoBucketComputer::truncateDate()} writes)
 	 * against an arbitrary admin-configured PHP `date()` format string — via
-	 * `mktime()` + `date()`, not a `Carbon`/`DateTime` object (FR-064-16
-	 * discipline extended to label formatting too).
+	 * `mktime()` + `date()`, not a `Carbon`/`DateTime` object - the same
+	 * no-Carbon discipline applied here to label formatting too.
 	 */
 	private function formatBucketLabel(string $bucket_id, string $format): string
 	{

@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Log;
  * Derives every value from the `photo_album` row's own `photo_id`/`album_id`
  * pair's already-loaded photo columns plus the containing album's resolved
  * sorting/timeline settings, via one chunked self-join query — never
- * touches `size_variants`/`tags` (NFR-064-02).
+ * touches `size_variants`/`tags`.
  */
 class RecomputePhotoBuckets extends Command
 {

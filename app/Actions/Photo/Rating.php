@@ -109,10 +109,10 @@ class Rating
 				$photo->save();
 			});
 
-			// Feature 064 FR-064-03(b): rating_avg is a bucket-relevant
-			// column - recompute every album this photo is linked into
-			// whenever it actually changed. Must be captured before
-			// refresh() below, which resets the model's own change tracking.
+			// rating_avg is a bucket-relevant column - recompute every album
+			// this photo is linked into whenever it actually changed. Must
+			// be captured before refresh() below, which resets the model's
+			// own change tracking.
 			$rating_avg_changed = $photo->wasChanged('rating_avg');
 
 			// Reload photo with fresh statistics

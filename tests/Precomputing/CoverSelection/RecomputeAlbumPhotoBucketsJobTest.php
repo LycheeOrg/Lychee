@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test RecomputeAlbumPhotoBucketsJob (Feature 064, FR-064-03c).
+ * Test RecomputeAlbumPhotoBucketsJob.
  */
 class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 {
@@ -125,8 +125,8 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * NFR-064-06: a photo linked into two albums with different effective
-	 * photo-sort settings carries two different `bucket_id` values, one per
+	 * A photo linked into two albums with different effective photo-sort
+	 * settings carries two different `bucket_id` values, one per
 	 * `photo_album` row.
 	 */
 	public function testSamePhotoInTwoAlbumsWithDifferentSettingsDivergesCorrectly(): void

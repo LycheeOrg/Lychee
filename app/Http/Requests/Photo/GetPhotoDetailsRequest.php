@@ -17,13 +17,13 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Request for `GET /api/v3/Albums/{album_id}/Photos/details` (FR-064-09,
- * DO-064-04). Validates exactly-one-of `bucket_id` (string, uncapped result
- * set — a large bucket returns everything it contains, no truncation, per
- * explicit user direction) / `photo_ids[]` (array, capped at 300 entries as
- * input — 422 above, NFR-064-04). `album_id` resolution mirrors
+ * Request for `GET /api/v3/Albums/{album_id}/Photos/details`. Validates
+ * exactly-one-of `bucket_id` (string, uncapped result set — a large bucket
+ * returns everything it contains, no truncation, per explicit user
+ * direction) / `photo_ids[]` (array, capped at 300 entries as input — 422
+ * above). `album_id` resolution mirrors
  * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly (regular
- * `Album` only, NG3).
+ * `Album` only).
  */
 class GetPhotoDetailsRequest extends BaseApiRequest
 {

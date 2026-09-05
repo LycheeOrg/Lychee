@@ -32,7 +32,7 @@ use Carbon\Carbon;
  * album's own effective sort column/granularity (which differs by write
  * path: an Eloquent relation for a single album, a raw self-join for a
  * full-table pass) and the photo's own bucket-relevant columns, handing this
- * class only the already-decided values (NFR-064-02).
+ * class only the already-decided values.
  */
 final class PhotoBucketComputer
 {
@@ -68,7 +68,7 @@ final class PhotoBucketComputer
 	 * effective sort column and granularity.
 	 *
 	 * `OWNER_ID` is never a bucketable source for photos — excluded
-	 * entirely, per explicit user direction (NG11) — and always yields
+	 * entirely, per explicit user direction — and always yields
 	 * `null`, uncomputed, mirroring {@see AlbumBucketComputer::compute()}'s
 	 * own `OWNER_ID` short-circuit (there for a structurally different
 	 * reason: every direct child of one album always shares that album's
@@ -123,8 +123,8 @@ final class PhotoBucketComputer
 
 	/**
 	 * Bucket computation for a `TITLE`-sorted album, branching on the
-	 * instance-wide, **photo-specific** `photo_title_bucket_mode` config
-	 * (G6) — never Feature 061's album-only `title_bucket_mode`.
+	 * instance-wide, **photo-specific** `photo_title_bucket_mode` config —
+	 * never the album-only `title_bucket_mode`.
 	 */
 	private function computeTitleBucket(TimelinePhotoGranularity $granularity, string $title, string $title_base): ?string
 	{
@@ -150,8 +150,7 @@ final class PhotoBucketComputer
 	 * granularities photos share with albums, extended with a 4th,
 	 * photos-only `Y-m-d-H` tier for {@see TimelinePhotoGranularity::HOUR} —
 	 * dash-separated throughout so the buckets endpoint's label formatter
-	 * can re-parse every tier identically via a single `explode('-', ...)`
-	 * (FR-064-06).
+	 * can re-parse every tier identically via a single `explode('-', ...)`.
 	 */
 	private function truncateDate(Carbon $date, TimelinePhotoGranularity $granularity): string
 	{

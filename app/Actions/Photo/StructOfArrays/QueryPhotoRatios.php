@@ -29,12 +29,11 @@ use Illuminate\Support\Facades\DB;
 use Spatie\LaravelData\Optional;
 
 /**
- * Query logic for `GET /api/v3/Albums/{album_id}/Photos` (FR-064-07/08/16/18).
+ * Query logic for `GET /api/v3/Albums/{album_id}/Photos`.
  *
- * `toBase()`-only, one flat query (NFR-064-01) — no Eloquent hydration, no
+ * `toBase()`-only, one flat query — no Eloquent hydration, no
  * `PhotoResource`/relation eager-loading. The three `size_variants`
- * `LEFT JOIN`s (FR-064-08) remain exactly 3 fixed joins regardless of album
- * photo count (NFR-064-03).
+ * `LEFT JOIN`s remain exactly 3 fixed joins regardless of album photo count.
  */
 class QueryPhotoRatios
 {
@@ -67,7 +66,7 @@ class QueryPhotoRatios
 			->where(PA::ALBUM_ID, '=', $album->id);
 
 		// Non-admins must not see unvalidated photos uploaded by other
-		// users (FR-064-12/G7).
+		// users.
 		if ($user?->may_administrate !== true) {
 			$this->applyUploadValidationFilter($query, $user?->id);
 		}
@@ -109,11 +108,11 @@ class QueryPhotoRatios
 		}
 
 		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
-		// Order by bucket_id first (mirrors FR-061-26 / QueryPhotoBuckets
-		// exactly, "unknown" always last) so grouping this endpoint's rows by
+		// Order by bucket_id first (mirrors QueryPhotoBuckets exactly,
+		// "unknown" always last) so grouping this endpoint's rows by
 		// bucket_id reproduces the buckets endpoint's own {bucket_ids,counts}
-		// byte-for-byte (S-064-09), then the album's effective photo sort
-		// criterion as intra-bucket tie-break.
+		// byte-for-byte, then the album's effective photo sort criterion as
+		// intra-bucket tie-break.
 		$query->orderByRaw('(photo_album.bucket_id IS NULL) ASC')
 			->orderBy('photo_album.bucket_id', $direction);
 		(new SortingDecorator($query))->orderPhotosBy($sorting->column, $sorting->order)->applyOrdering();
@@ -124,11 +123,11 @@ class QueryPhotoRatios
 	}
 
 	/**
-	 * Adds the three `type`-filtered `size_variants` `LEFT JOIN`s FR-064-08
-	 * requires — deliberately does NOT reproduce
+	 * Adds the three `type`-filtered `size_variants` `LEFT JOIN`s the ratio
+	 * resolution requires — deliberately does NOT reproduce
 	 * {@see \App\Models\Photo::getAspectRatioAttribute()}'s video-forces-1
-	 * special case (Q-064-07): a video's real ratio wins whenever any of the
-	 * three exists.
+	 * special case: a video's real ratio wins whenever any of the three
+	 * exists.
 	 *
 	 * @param FixedQueryBuilder<Photo> $query
 	 */
@@ -147,7 +146,7 @@ class QueryPhotoRatios
 
 	/**
 	 * One `GROUP_CONCAT`(`STRING_AGG` on pgsql)-then-split aggregation,
-	 * joined once — not a per-row join (FR-064-07).
+	 * joined once — not a per-row join.
 	 *
 	 * @param FixedQueryBuilder<Photo> $query
 	 */

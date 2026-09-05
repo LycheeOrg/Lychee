@@ -37,9 +37,9 @@ class SetParent implements SharedPipe
 				->where(PA::ALBUM_ID, '=', $state->album->id)
 				->delete();
 
-			// Feature 064 FR-064-03(a): compute this new pivot row's
-			// bucket_id inline, against $state->album's own currently
-			// effective photo-sort/timeline settings.
+			// Compute this new pivot row's bucket_id inline, against
+			// $state->album's own currently effective photo-sort/timeline
+			// settings.
 			$bucket_computer = resolve(PhotoBucketComputer::class);
 			$sorting = $state->album->getEffectivePhotoSorting();
 			$granularity = $bucket_computer->resolveGranularity($state->album->photo_timeline);

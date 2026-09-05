@@ -11,9 +11,9 @@ use App\Models\Extensions\BaseConfigMigration;
 /**
  * Instance-wide-only configuration governing how a `TITLE`-sorted album's
  * direct **photos** compute their `bucket_id`
- * ({@see \App\Services\PhotoBucketComputer}) — Feature 064, FR-064-17/G6.
+ * ({@see \App\Services\PhotoBucketComputer}).
  *
- * Deliberately a fully independent pair from Feature 061's album-only
+ * Deliberately a fully independent pair from the album-only
  * `title_bucket_mode`/`title_bucket_prefix_length` (`2026_09_05_120002_add_title_bucket_configs.php`),
  * per explicit user direction: changing one must never affect the other.
  */

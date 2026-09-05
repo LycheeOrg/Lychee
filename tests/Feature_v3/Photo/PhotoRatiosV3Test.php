@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Covers Feature 064 FR-064-07/08/16/18, S-064-09/10/12/25/26/30.
+ * Covers `GET /Albums/{album_id}/Photos`.
  *
  * Builds its own isolated fixture per test, mirroring `PhotoBucketsV3Test`.
  */
@@ -76,7 +76,7 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$this->assertArrayNotHasKey('tags', $json);
 	}
 
-	// ── Ratio resolution (FR-064-08, S-064-10/30) ────────────────
+	// ── Ratio resolution ───────────────────────────────────────────
 
 	public function testRatioFallbackToOneWhenOnlyThumbVariantExists(): void
 	{
@@ -95,10 +95,9 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-064-30/Q-064-07: a video with only an ORIGINAL size variant (no
-	 * MEDIUM/SMALL) and a real, non-1 ratio must report that real ratio,
-	 * not the forced `1` `Photo::getAspectRatioAttribute()`'s video branch
-	 * would produce.
+	 * A video with only an ORIGINAL size variant (no MEDIUM/SMALL) and a
+	 * real, non-1 ratio must report that real ratio, not the forced `1`
+	 * `Photo::getAspectRatioAttribute()`'s video branch would produce.
 	 */
 	public function testVideoWithOnlyOriginalUsesRealRatioNotForcedOne(): void
 	{
@@ -134,10 +133,10 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$listing_queries = array_values(array_filter($log, fn (array $q) => str_contains(strtolower((string) $q['query']), 'size_variants')));
 		$this->assertCount(1, $listing_queries, 'Expected exactly one photos-listing query regardless of album photo count.');
 		$join_count = substr_count(strtolower((string) $listing_queries[0]['query']), 'left join "size_variants"') + substr_count(strtolower((string) $listing_queries[0]['query']), 'left join `size_variants`');
-		$this->assertSame(3, $join_count, 'Expected exactly 3 fixed size_variants joins, never N+1 (NFR-064-03).');
+		$this->assertSame(3, $join_count, 'Expected exactly 3 fixed size_variants joins, never N+1.');
 	}
 
-	// ── Config-gated field omission matrix (S-064-25) ────────────
+	// ── Config-gated field omission matrix ──────────────────────────
 
 	public function testRatingGateOffOmitsRatingFields(): void
 	{
@@ -207,7 +206,7 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$response->assertJson(['tags' => [['landscape']]]);
 	}
 
-	// ── Bucket correlation (S-064-09) ────────────────────────────
+	// ── Bucket correlation ─────────────────────────────────────────
 
 	public function testRatiosGroupedByBucketIdReproducesBucketsCounts(): void
 	{
@@ -231,7 +230,7 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$this->assertSame($expected, $grouped);
 	}
 
-	// ── Upload-validation curation (S-064-12) ────────────────────
+	// ── Upload-validation curation ────────────────────────────────
 
 	public function testNonAdminExcludesOtherUsersUnvalidatedUpload(): void
 	{
@@ -244,7 +243,7 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$response->assertJson(['ids' => [$visible->id]]);
 	}
 
-	// ── Raw dates, no Carbon (S-064-26) ───────────────────────────
+	// ── Raw dates, no Carbon ───────────────────────────────────────
 
 	public function testDatesAreRawIso8601RegardlessOfDateFormatPhotoThumb(): void
 	{
@@ -259,7 +258,7 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		// 'd/m/Y' display format - accepts either the 'T'-separated ISO
 		// 8601 form or a driver's native space-separated timestamp string,
 		// since this tier deliberately never instantiates a Carbon object
-		// to normalize it (FR-064-16/S-064-26).
+		// to normalize it.
 		$this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/', $json['taken_ats'][0]);
 	}
 

@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Covers Feature 064 FR-064-05/06, S-064-01..08/20..22.
+ * Covers `GET /Albums/{album_id}/Photos/buckets`.
  *
  * Builds its own isolated fixture per test (rather than editing the shared
  * v2/v3 base fixture), mirroring `Tests\Feature_v3\Album\AlbumBucketsV3Test`.
@@ -65,7 +65,7 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
-	// ── Grouping per sort column (S-064-01..08) ──────────────────
+	// ── Grouping per sort column ──────────────────────────────────
 
 	public function testGroupsByCreatedAt(): void
 	{
@@ -192,7 +192,7 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$response->assertJson(['bucket_ids' => ['5', 'unknown'], 'counts' => [1, 1], 'bucketable' => true]);
 	}
 
-	// ── Access / resolution edge cases (S-064-20..22) ────────────
+	// ── Access / resolution edge cases ────────────────────────────
 
 	public function testTagAlbumIdReturns404(): void
 	{
@@ -222,7 +222,7 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$response->assertExactJson(['bucket_ids' => [], 'counts' => [], 'labels' => [], 'bucketable' => true]);
 	}
 
-	// ── Upload-validation curation (S-064-12/G7) ─────────────────
+	// ── Upload-validation curation ────────────────────────────────
 
 	public function testNonAdminBucketCountsExcludeOtherUsersUnvalidatedUploads(): void
 	{
@@ -244,7 +244,7 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$admin_response->assertJson(['bucket_ids' => ['0'], 'counts' => [2], 'bucketable' => true]);
 	}
 
-	// ── NFR-064-06 regression (bucket_id is per-pivot-row, not per-photo) ──
+	// ── Regression: bucket_id is per-pivot-row, not per-photo ─────────────
 
 	public function testSamePhotoTwoAlbumsDifferentSettingsShowsDivergentBucketsPerAlbum(): void
 	{
@@ -272,7 +272,7 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$response_b->assertJson(['bucket_ids' => ['2022-06']]);
 	}
 
-	// ── Managed cache (I6, F-064-14/15, S-064-19/24) ─────────────
+	// ── Managed cache ──────────────────────────────────────────────
 
 	public function testCacheHitSkipsTheAggregationQuery(): void
 	{
@@ -321,8 +321,8 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-064-24: two different identities requesting the same album's tiers
-	 * never share a cache entry.
+	 * Two different identities requesting the same album's tiers never
+	 * share a cache entry.
 	 */
 	public function testNoCrossIdentityCacheLeakage(): void
 	{

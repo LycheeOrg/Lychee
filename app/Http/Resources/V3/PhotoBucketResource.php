@@ -22,7 +22,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * render sticky headers with zero client-side date formatting.
  * `bucketable` is `false` (all three arrays empty) when the album's own
  * effective photo-sort column is `OWNER_ID` — excluded from photo bucketing
- * entirely per explicit user direction (NG11), mirroring
+ * entirely per explicit user direction, mirroring
  * {@see \App\Http\Resources\V3\AlbumBucketResource}'s own shape exactly.
  */
 #[TypeScript()]

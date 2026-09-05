@@ -27,8 +27,8 @@ use Illuminate\Support\Carbon;
 use Tests\AbstractTestCase;
 
 /**
- * Covers Feature 064 FR-064-02 (all 6 bucketable `ColumnSortingPhotoType`
- * branches) and NG11 (`OWNER_ID` always excluded).
+ * Covers {@see \App\Services\PhotoBucketComputer} (all 6 bucketable
+ * `ColumnSortingPhotoType` branches, and `OWNER_ID` always excluded).
  */
 class PhotoBucketComputerTest extends AbstractTestCase
 {
@@ -70,7 +70,7 @@ class PhotoBucketComputerTest extends AbstractTestCase
 		);
 	}
 
-	// ── OWNER_ID (NG11) ─────────────────────────────────────────────
+	// ── OWNER_ID ───────────────────────────────────────────────────
 
 	public function testOwnerIdAlwaysReturnsNullWithoutTouchingConfig(): void
 	{

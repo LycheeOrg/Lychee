@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Covers Feature 064 FR-064-09/10/19/20/21, S-064-13..16/27..29.
+ * Covers `GET /Albums/{album_id}/Photos/details`.
  */
 class PhotoDetailsV3Test extends BaseApiWithDataTest
 {
@@ -47,7 +47,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
-	// ── Scoping validation (S-064-15/16) ─────────────────────────
+	// ── Scoping validation ─────────────────────────────────────────
 
 	public function testNeitherParamReturns422(): void
 	{
@@ -84,7 +84,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertCount(300, $response_300->json('ids'));
 	}
 
-	// ── bucket_id scoping (S-064-13/27) ──────────────────────────
+	// ── bucket_id scoping ──────────────────────────────────────────
 
 	public function testBucketIdModeReturnsExactlyThatBucketsPhotosUncapped(): void
 	{
@@ -119,7 +119,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$response->assertJson(['ids' => [$undated->id]]);
 	}
 
-	// ── photo_ids[] scoping (S-064-14) ────────────────────────────
+	// ── photo_ids[] scoping ────────────────────────────────────────
 
 	public function testPhotoIdsModeSilentlyCuratesInvisibleAndForeignIds(): void
 	{
@@ -135,7 +135,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$response->assertJson(['ids' => [$visible->id]]);
 	}
 
-	// ── Config-gated field omission (mirrors S-064-25 for details) ──
+	// ── Config-gated field omission ─────────────────────────────────
 
 	public function testExifGateOffOmitsExifFields(): void
 	{
@@ -165,7 +165,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertArrayHasKey('latitudes', $user_response->json());
 	}
 
-	// ── Full PhotoResource reconstruction parity (S-064-28) ───────
+	// ── Full PhotoResource reconstruction parity ──────────────────
 
 	public function testRatiosAndDetailsCombinedReconstructKeyPhotoResourceFields(): void
 	{
@@ -195,7 +195,7 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertSame($photo->license->value, $details['licenses'][0]);
 	}
 
-	// ── metrics_access=owner per-row visibility (S-064-29) ────────
+	// ── metrics_access=owner per-row visibility ───────────────────
 
 	public function testMetricsAccessOwnerIsPerRowNotPerRequest(): void
 	{

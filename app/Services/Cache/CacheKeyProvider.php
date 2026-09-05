@@ -352,7 +352,7 @@ class CacheKeyProvider
 		return "{$album_children_tag}:root-children-rights:{$scope->value}:{$user_tag}";
 	}
 
-	// ── Photo listing (Feature 064) ─────────────────────────────────
+	// ── Photo listing ────────────────────────────────────────────────
 
 	/**
 	 * Tag carried by every cached entry across all three photo-listing tiers
@@ -405,7 +405,7 @@ class CacheKeyProvider
 	 * function of `(album_id, user identity, scope)` — `$scope_digest` must
 	 * distinguish every distinct `bucket_id`/`photo_ids[]` combination a
 	 * caller could request, so two different detail requests for the same
-	 * album never collide (NFR-064-05). See {@see self::photoDetailsScopeDigest()}.
+	 * album never collide. See {@see self::photoDetailsScopeDigest()}.
 	 */
 	public function photoDetailsKey(string $album_id, string $scope_digest, int|string|null $user_id): string
 	{

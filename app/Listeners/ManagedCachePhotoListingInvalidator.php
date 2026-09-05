@@ -18,9 +18,8 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Translates every photo-listing-relevant domain event into the
- * {@see CacheKeyProvider::photoListingTag()} eviction(s) it implies
- * (FR-064-15). Direct structural precedent:
- * {@see ManagedCacheAlbumListingInvalidator}.
+ * {@see CacheKeyProvider::photoListingTag()} eviction(s) it implies. Direct
+ * structural precedent: {@see ManagedCacheAlbumListingInvalidator}.
  */
 class ManagedCachePhotoListingInvalidator
 {
@@ -72,7 +71,7 @@ class ManagedCachePhotoListingInvalidator
 	}
 
 	/**
-	 * FR-064-03(c)'s dedicated signal: an album's own `sorting_col`/
+	 * Dedicated signal for when an album's own `sorting_col`/
 	 * `sorting_order`/`photo_timeline` changed, which
 	 * {@see \App\Jobs\RecomputeAlbumPhotoBucketsJob} bulk-`upsert()`s
 	 * every direct photo's `bucket_id` for, bypassing Eloquent events

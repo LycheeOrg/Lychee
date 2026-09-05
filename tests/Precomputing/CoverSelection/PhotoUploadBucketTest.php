@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Covers Feature 064 FR-064-03(a): a new `photo_album` pivot-link insert
+ * Covers a new `photo_album` pivot-link insert
  * (here via {@see MoveOrDuplicate::do()}'s move/copy insert branch) computes
  * `bucket_id` inline against the destination album's own currently
  * effective settings — no separate recompute job needed for this trigger.
@@ -50,9 +50,9 @@ class PhotoUploadBucketTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * S-064-11 / NFR-064-06: copying (not moving) a photo into a second
-	 * album with different `sorting_col`/`photo_timeline` settings gives
-	 * each `photo_album` row its own, independently correct `bucket_id`.
+	 * Copying (not moving) a photo into a second album with different
+	 * `sorting_col`/`photo_timeline` settings gives each `photo_album` row
+	 * its own, independently correct `bucket_id`.
 	 */
 	public function testCopyIntoSecondAlbumWithDifferentSettingsDivergesCorrectly(): void
 	{
@@ -72,7 +72,7 @@ class PhotoUploadBucketTest extends BasePrecomputingTest
 		$move_action->do(collect([$photo]), null, $album_a);
 		// Copy (from === to === album_b is not the semantics here; the
 		// "copy" case is $from_album === $to_album for CopyPhotosRequest,
-		// but the structural point NFR-064-06 cares about is simply: the
+		// but the structural point that matters here is simply: the
 		// same photo linked into two different albums with different
 		// settings gets two different bucket_id values). Insert the second
 		// link directly, mirroring what CopyPhotosRequest's controller call

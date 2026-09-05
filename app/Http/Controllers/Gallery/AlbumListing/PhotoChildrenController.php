@@ -25,8 +25,8 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Serves the photo tier: `GET /api/v3/Albums/{album_id}/Photos`,
- * `/Albums/{album_id}/Photos/buckets`, `/Albums/{album_id}/Photos/details`
- * (Feature 064). Direct structural precedent:
+ * `/Albums/{album_id}/Photos/buckets`, `/Albums/{album_id}/Photos/details`.
+ * Direct structural precedent:
  * {@see \App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController}.
  */
 class PhotoChildrenController extends Controller

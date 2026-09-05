@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test RecomputePhotoBucketsJob (Feature 064, FR-064-03b).
+ * Test RecomputePhotoBucketsJob.
  */
 class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 {
@@ -76,9 +76,9 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * NFR-064-06 from the other trigger direction: recomputing one photo
-	 * that is linked into two albums with different effective settings
-	 * yields two different `bucket_id` values, one per `photo_album` row.
+	 * From the other trigger direction: recomputing one photo that is
+	 * linked into two albums with different effective settings yields two
+	 * different `bucket_id` values, one per `photo_album` row.
 	 */
 	public function testSamePhotoInTwoAlbumsWithDifferentSettingsDivergesCorrectly(): void
 	{

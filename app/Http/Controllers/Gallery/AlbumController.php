@@ -164,7 +164,7 @@ class AlbumController extends Controller
 		// bucket recompute actually affects). Invalidate it explicitly.
 		AlbumChildrenChanged::dispatchIf($sorting_or_timeline_changed, [$album->id]);
 
-		// Feature 064 FR-064-03(c): this album's own *photo*-sort settings
+		// This album's own *photo*-sort settings
 		// (`sorting_col`/`sorting_order`/`photo_timeline`) govern its direct
 		// photos' `bucket_id`, mirroring the album-bucket trigger above -
 		// a change to any of the three needs to recompute every direct
@@ -178,8 +178,8 @@ class AlbumController extends Controller
 		RecomputeAlbumPhotoBucketsJob::dispatchIf($photo_sorting_or_timeline_changed, $album->id);
 		// The job above bulk-`upsert()`s every direct photo's `bucket_id`,
 		// bypassing Eloquent events entirely - fires the dedicated
-		// photo-listing cache-invalidation signal for this trigger
-		// (FR-064-15), mirroring AlbumChildrenChanged's role above exactly.
+		// photo-listing cache-invalidation signal for this trigger,
+		// mirroring AlbumChildrenChanged's role above exactly.
 		AlbumPhotoSortingChanged::dispatchIf($photo_sorting_or_timeline_changed, [$album->id]);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);

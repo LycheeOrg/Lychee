@@ -13,10 +13,10 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * Fired when one or more albums' own *photo*-sort settings
- * (`sorting_col`/`sorting_order`/`photo_timeline`) change — Feature 064
- * FR-064-15's dedicated cache-invalidation signal for the same trigger that
- * dispatches {@see \App\Jobs\RecomputeAlbumPhotoBucketsJob} (FR-064-03c),
- * mirroring how {@see AlbumChildrenChanged} exists alongside
+ * (`sorting_col`/`sorting_order`/`photo_timeline`) change — the dedicated
+ * cache-invalidation signal for the same trigger that dispatches
+ * {@see \App\Jobs\RecomputeAlbumPhotoBucketsJob}, mirroring how
+ * {@see AlbumChildrenChanged} exists alongside
  * {@see \App\Jobs\RecomputeChildAlbumBucketsJob} for the album-bucket case.
  */
 class AlbumPhotoSortingChanged

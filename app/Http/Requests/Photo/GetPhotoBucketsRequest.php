@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Gate;
  * Resolves to a regular {@see Album} only — a `TagAlbum`/`PersonAlbum` id
  * or an unresolved id both yield a 404
  * ({@see \Illuminate\Database\Eloquent\ModelNotFoundException}), never the
- * broader `AlbumFactory::findAbstractAlbumOrFail()` resolution (NG3).
+ * broader `AlbumFactory::findAbstractAlbumOrFail()` resolution.
  */
 class GetPhotoBucketsRequest extends BaseApiRequest
 {

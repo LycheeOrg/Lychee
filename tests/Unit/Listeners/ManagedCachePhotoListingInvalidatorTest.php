@@ -34,7 +34,8 @@ use Illuminate\Support\Facades\Cache;
 use Tests\AbstractTestCase;
 
 /**
- * Covers Feature 064 FR-064-15 / S-064-19/24. Direct structural precedent:
+ * Covers {@see \App\Listeners\ManagedCachePhotoListingInvalidator}. Direct
+ * structural precedent:
  * {@see \Tests\Unit\Listeners\ManagedCacheAlbumListingInvalidatorTest}.
  */
 class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
@@ -146,7 +147,7 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 		$this->assertNotEvicted('k:unrelated');
 	}
 
-	// ── AlbumPhotoSortingChanged (FR-064-03c dedicated signal) ────
+	// ── AlbumPhotoSortingChanged dedicated signal ─────────────────
 
 	public function testAlbumPhotoSortingChangedEvictsListedAlbumsOnly(): void
 	{

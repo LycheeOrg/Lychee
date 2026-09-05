@@ -13,9 +13,9 @@ use Spatie\LaravelData\Optional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/Photos` (Feature 064,
- * FR-064-07). Struct-of-Arrays per ADR-0009: every array is index-aligned
- * to `ids`, whole-album-at-once, never paginated (G3).
+ * Response body of `GET /api/v3/Albums/{album_id}/Photos`. Struct-of-Arrays
+ * per ADR-0009: every array is index-aligned to `ids`, whole-album-at-once,
+ * never paginated.
  *
  * Conditionally-present fields (`rating_avgs`/`rating_users`/`thumb_infos`/
  * `tags`) are typed `array|Optional` — `Optional::create()` omits the key
@@ -39,8 +39,8 @@ class PhotoRatioResource extends Data
 	 * @param bool[]                   $is_videos
 	 * @param bool[]                   $is_raws
 	 * @param bool[]                   $is_live_photos
-	 * @param (string|null)[]          $taken_ats         raw ISO 8601, never Carbon-formatted (FR-064-16)
-	 * @param string[]                 $created_ats       raw ISO 8601, never Carbon-formatted (FR-064-16)
+	 * @param (string|null)[]          $taken_ats         raw ISO 8601, never Carbon-formatted
+	 * @param string[]                 $created_ats       raw ISO 8601, never Carbon-formatted
 	 * @param (string|null)[]          $taken_at_orig_tzs
 	 * @param float[]|Optional         $rating_avgs       gated by `rating_enabled` + `PhotoPolicy::CAN_READ_RATINGS`
 	 * @param (int|null)[]|Optional    $rating_users      the caller's own rating for that photo; gated the same as `rating_avgs`

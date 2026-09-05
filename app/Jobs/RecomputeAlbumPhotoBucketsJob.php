@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Recomputes `bucket_id` for every `photo_album` row of one album's direct
- * photos — the trigger for Feature 064 FR-064-03(c): when the album's own
+ * photos — the trigger for when the album's own
  * `sorting_col`/`sorting_order`/`photo_timeline` (its *photo*-sort settings)
  * change, every direct photo's `bucket_id` (governed by this album, not the
  * photo itself) needs recomputing.
@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Log;
  * Direct structural precedent: {@see RecomputeChildAlbumBucketsJob}.
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration of the
  * photos themselves) and one bulk `upsert()` covering every direct photo in
- * one round trip, never one save per photo (NFR-064-02).
+ * one round trip, never one save per photo.
  */
 class RecomputeAlbumPhotoBucketsJob implements ShouldQueue
 {

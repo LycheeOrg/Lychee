@@ -71,11 +71,11 @@ class MoveOrDuplicate
 				->where(PA::ALBUM_ID, '=', $to_album->id)
 				->delete();
 
-			// Feature 064 FR-064-03(a): compute each new pivot row's
-			// bucket_id inline, against $to_album's own currently effective
-			// photo-sort/timeline settings. A photo kept in its $from_album
-			// link too (the "copy" case) correctly keeps that other row's
-			// own, potentially different, bucket_id untouched (NFR-064-06).
+			// Compute each new pivot row's bucket_id inline, against
+			// $to_album's own currently effective photo-sort/timeline
+			// settings. A photo kept in its $from_album link too (the "copy"
+			// case) correctly keeps that other row's own, potentially
+			// different, bucket_id untouched.
 			$bucket_computer = resolve(PhotoBucketComputer::class);
 			$sorting = $to_album->getEffectivePhotoSorting();
 			$granularity = $bucket_computer->resolveGranularity($to_album->photo_timeline);

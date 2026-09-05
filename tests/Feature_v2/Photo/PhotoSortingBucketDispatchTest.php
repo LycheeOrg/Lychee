@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Covers Feature 064 FR-064-03(b)/(c): the write sites that must dispatch
+ * Covers the write sites that must dispatch
  * {@see RecomputePhotoBucketsJob}/{@see RecomputeAlbumPhotoBucketsJob} when
  * a photo's own bucket-relevant columns change, or when an album's own
  * *photo*-sort settings change — and must NOT dispatch for an unrelated

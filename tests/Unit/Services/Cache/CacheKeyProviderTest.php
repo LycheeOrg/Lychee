@@ -221,11 +221,11 @@ class CacheKeyProviderTest extends AbstractTestCase
 		self::assertStringNotContainsString(':scope:', $without_scope);
 	}
 
-	// ── Feature 064 (NFR-064-05): photo listing key uniqueness ────────
+	// ── Photo listing key uniqueness ───────────────────────────────────
 
 	/**
-	 * Feature 064: no two distinct (album_id, user identity) combinations
-	 * may collide for either `photoBucketsKey()` or `photoRatiosKey()`.
+	 * No two distinct (album_id, user identity) combinations may collide
+	 * for either `photoBucketsKey()` or `photoRatiosKey()`.
 	 */
 	public function testPhotoBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
 	{
@@ -238,9 +238,9 @@ class CacheKeyProviderTest extends AbstractTestCase
 	}
 
 	/**
-	 * NFR-064-05: a full matrix of (guest, user A, user B) × 2 distinct
-	 * album_ids × 3 tiers, plus 2 distinct `details` scopes for one fixed
-	 * (album_id, user) - all keys distinct.
+	 * A full matrix of (guest, user A, user B) × 2 distinct album_ids × 3
+	 * tiers, plus 2 distinct `details` scopes for one fixed (album_id,
+	 * user) - all keys distinct.
 	 */
 	public function testPhotoListingKeysAreUniqueAcrossTiersIdentityAlbumsAndDetailsScopes(): void
 	{

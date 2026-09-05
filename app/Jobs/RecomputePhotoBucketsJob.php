@@ -23,20 +23,19 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Recomputes `bucket_id` for every `photo_album` row of one photo — the
- * trigger for Feature 064 FR-064-03(b): when a photo's own bucket-relevant
- * columns (`taken_at`/`title`/`title_base`/`is_highlighted`/`type`/
- * `rating_avg`) change, every album this photo is linked into needs its own
- * `bucket_id` recomputed, since a single photo can be linked into several
- * albums whose effective `sorting_col`/`photo_timeline` settings genuinely
- * differ (NFR-064-06) — unlike {@see RecomputeAlbumPhotoBucketsJob}, this
- * job cannot resolve one shared sort setting up front; it resolves each
- * linked album's own settings per row, via a raw `base_albums` join rather
- * than N lazy Eloquent loads.
+ * trigger for when a photo's own bucket-relevant columns
+ * (`taken_at`/`title`/`title_base`/`is_highlighted`/`type`/`rating_avg`)
+ * change, every album this photo is linked into needs its own `bucket_id`
+ * recomputed, since a single photo can be linked into several albums whose
+ * effective `sorting_col`/`photo_timeline` settings genuinely differ —
+ * unlike {@see RecomputeAlbumPhotoBucketsJob}, this job cannot resolve one
+ * shared sort setting up front; it resolves each linked album's own
+ * settings per row, via a raw `base_albums` join rather than N lazy
+ * Eloquent loads.
  *
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one
- * bulk `upsert()`, never one save per linked album (NFR-064-02) — in
- * practice a photo is linked into a small, bounded number of albums, never
- * album-count-scale.
+ * bulk `upsert()`, never one save per linked album — in practice a photo is
+ * linked into a small, bounded number of albums, never album-count-scale.
  */
 class RecomputePhotoBucketsJob implements ShouldQueue
 {

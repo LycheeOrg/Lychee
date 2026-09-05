@@ -189,9 +189,9 @@ class PhotoController extends Controller
 
 		$photo->save();
 
-		// Feature 064 FR-064-03(b): title/title_base/taken_at are all
-		// bucket-relevant columns (created_at is immutable and excluded) -
-		// recompute every album this photo is linked into whenever any of
+		// title/title_base/taken_at are all bucket-relevant columns
+		// (created_at is immutable and excluded) - recompute every album
+		// this photo is linked into whenever any of
 		// them actually changed. Explicit call site, not an Eloquent hook,
 		// per repo convention.
 		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base', 'taken_at']), $photo->id);
@@ -214,9 +214,8 @@ class PhotoController extends Controller
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
 
-			// Feature 064 FR-064-03(b): is_highlighted is a bucket-relevant
-			// column - recompute every album this photo is linked into
-			// whenever it actually changed.
+			// is_highlighted is a bucket-relevant column - recompute every
+			// album this photo is linked into whenever it actually changed.
 			RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged('is_highlighted'), $photo->id);
 		}
 		$photo_ids = $request->photos()->map(fn (Photo $photo) => $photo->id)->all();
@@ -318,9 +317,8 @@ class PhotoController extends Controller
 		$photo->title_index = $title_split->index;
 		$photo->save();
 
-		// Feature 064 FR-064-03(b): title/title_base are bucket-relevant
-		// columns - recompute every album this photo is linked into
-		// whenever either actually changed.
+		// title/title_base are bucket-relevant columns - recompute every
+		// album this photo is linked into whenever either actually changed.
 		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base']), $photo->id);
 	}
 

@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test the `lychee:recompute-photo-buckets` backfill command (Feature 064,
- * FR-064-04, CLI-064-01, NFR-064-02, S-064-23).
+ * Test the `lychee:recompute-photo-buckets` backfill command.
  */
 class RecomputePhotoBucketsCommandTest extends BasePrecomputingTest
 {
@@ -95,7 +94,7 @@ class RecomputePhotoBucketsCommandTest extends BasePrecomputingTest
 	/**
 	 * A photo linked into two albums with different effective settings
 	 * recomputes to two different `bucket_id` values in a single full-table
-	 * pass (NFR-064-06).
+	 * pass.
 	 */
 	public function testFullTablePassRespectsPerAlbumDivergentSettings(): void
 	{

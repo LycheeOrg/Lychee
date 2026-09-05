@@ -171,7 +171,7 @@ class EventServiceProvider extends ServiceProvider
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
 
-		// Managed-cache photo-listing invalidation (Feature 064)
+		// Managed-cache photo-listing invalidation
 		Event::listen(PhotoSaved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoSaved');
 		Event::listen(PhotoMoved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoMoved');
 		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');

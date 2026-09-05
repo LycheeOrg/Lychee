@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Gate;
  * Request for `GET /api/v3/Albums/{album_id}/Photos` — mirrors
  * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly (same
  * `album_id` route-segment resolution, same regular-`Album`-only
- * restriction, NG3).
+ * restriction).
  */
 class GetPhotoRatiosRequest extends BaseApiRequest
 {

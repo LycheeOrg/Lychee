@@ -16,24 +16,24 @@ use Spatie\LaravelData\Optional;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Response body of `GET /api/v3/Albums/{album_id}/Photos/details` (Feature
- * 064, FR-064-10). Struct-of-Arrays per ADR-0009, index-aligned to `ids` —
- * except `palette`/`size_variants`/`statistics`, deliberately **nested
- * objects** rather than flattened into dozens of parallel arrays (a
- * scoped exception to the SoA convention, justified because `details` is
- * already the bounded, richer-payload tier — FR-064-19/20/21).
+ * Response body of `GET /api/v3/Albums/{album_id}/Photos/details`.
+ * Struct-of-Arrays per ADR-0009, index-aligned to `ids` — except
+ * `palette`/`size_variants`/`statistics`, deliberately **nested objects**
+ * rather than flattened into dozens of parallel arrays (a scoped exception
+ * to the SoA convention, justified because `details` is already the
+ * bounded, richer-payload tier).
  *
  * `ratios` (tier 2) + `details` (this tier) combined must field-by-field
  * reconstruct every field of v2's `PhotoResource` for any photo a caller
  * can see, except `next_photo_id`/`previous_photo_id` (v2 itself never
- * populates them in this listing context either — Q-064-06, S-064-28).
+ * populates them in this listing context either).
  *
  * Conditionally-present fields (EXIF-lite/GPS/location) are typed
  * `array|Optional`, gated once per request exactly like `PhotoResource`'s
- * `PreformattedPhotoData`/`PreComputedPhotoData` blocks already do
- * (FR-064-18). `statistics` is the one genuinely **per-row** gate in this
- * feature (`metrics_access=owner`) — always present as a key, `null`
- * per-element where the gate denies that specific row (FR-064-21).
+ * `PreformattedPhotoData`/`PreComputedPhotoData` blocks already do.
+ * `statistics` is the one genuinely **per-row** gate in this feature
+ * (`metrics_access=owner`) — always present as a key, `null` per-element
+ * where the gate denies that specific row.
  */
 #[TypeScript()]
 class PhotoDetailResource extends Data
@@ -48,14 +48,14 @@ class PhotoDetailResource extends Data
 	 * @param (string|null)[]                  $nsfw_statuses
 	 * @param string[]                         $checksums
 	 * @param string[]                         $original_checksums
-	 * @param string[]                         $updated_ats            raw ISO 8601, never Carbon-formatted (mirrors FR-064-16)
+	 * @param string[]                         $updated_ats            raw ISO 8601, never Carbon-formatted
 	 * @param (string|null)[]                  $live_photo_checksums
 	 * @param (string|null)[]                  $live_photo_content_ids
 	 * @param (string|null)[]                  $live_photo_urls
 	 * @param int[]                            $face_counts
-	 * @param (ColourPaletteResource|null)[]   $palette                nested, FR-064-20
-	 * @param (SizeVariantsResouce|null)[]     $size_variants          nested, all 9 variants, FR-064-19
-	 * @param (PhotoStatisticsResource|null)[] $statistics             nested; null per-row per `metrics_enabled` + per-row `metrics_access=owner` (FR-064-21)
+	 * @param (ColourPaletteResource|null)[]   $palette                nested
+	 * @param (SizeVariantsResouce|null)[]     $size_variants          nested, all 9 variants
+	 * @param (PhotoStatisticsResource|null)[] $statistics             nested; null per-row per `metrics_enabled` + per-row `metrics_access=owner`
 	 * @param (string|null)[]|Optional         $makes                  gated by `display_exif_data`
 	 * @param (string|null)[]|Optional         $models
 	 * @param (string|null)[]|Optional         $lenses

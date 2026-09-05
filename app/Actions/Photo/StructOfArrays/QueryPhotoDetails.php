@@ -25,21 +25,20 @@ use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Optional;
 
 /**
- * Query logic for `GET /api/v3/Albums/{album_id}/Photos/details`
- * (FR-064-09/10/11/18/19/20/21).
+ * Query logic for `GET /api/v3/Albums/{album_id}/Photos/details`.
  *
  * Unlike {@see QueryPhotoBuckets}/{@see QueryPhotoRatios}, this tier does
  * use Eloquent hydration (with `size_variants`/`palette`/`statistics`/
- * `tags`/`albums` eager-loaded) — a deliberate, scoped exception to
- * NFR-064-01's `toBase()`-only discipline: FR-064-19/20/21 require reusing
+ * `tags`/`albums` eager-loaded) — a deliberate, scoped exception to the
+ * other two tiers' `toBase()`-only discipline: reusing
  * `SizeVariantsResouce`/`ColourPaletteResource`/`PhotoStatisticsResource`
- * exactly as-is, and those classes are constructed from a hydrated `Photo`
- * model, not raw scalars. This is safe at this tier's scale specifically:
- * `details` is never whole-album (`photo_ids[]` is capped at 300 as input,
- * NFR-064-04; `bucket_id` mode is uncapped but bounded implicitly by that
- * bucket's own size, which the client already knows from tier 1) — the
- * scale concern NFR-064-01 exists for does not apply here the way it does
- * for the whole-album `buckets`/`ratios` tiers.
+ * exactly as-is requires those classes' hydrated-`Photo`-model constructor,
+ * not raw scalars. This is safe at this tier's scale specifically: `details`
+ * is never whole-album (`photo_ids[]` is capped at 300 as input; `bucket_id`
+ * mode is uncapped but bounded implicitly by that bucket's own size, which
+ * the client already knows from tier 1) — the scale concern that rules out
+ * Eloquent hydration for the whole-album `buckets`/`ratios` tiers doesn't
+ * apply here.
  */
 class QueryPhotoDetails
 {
@@ -61,14 +60,14 @@ class QueryPhotoDetails
 			->select('photos.*');
 
 		// Non-admins must not see unvalidated photos uploaded by other
-		// users (FR-064-12/G7).
+		// users.
 		if ($user?->may_administrate !== true) {
 			$this->applyUploadValidationFilter($query, $user?->id);
 		}
 
 		if ($bucket_id !== null) {
-			// The literal "unknown" sentinel maps to a NULL bucket_id
-			// (FR-064-09) - uncapped, resolves every matching row.
+			// The literal "unknown" sentinel maps to a NULL bucket_id -
+			// uncapped, resolves every matching row.
 			if ($bucket_id === 'unknown') {
 				$query->whereNull('photo_album.bucket_id');
 			} else {
@@ -76,7 +75,7 @@ class QueryPhotoDetails
 			}
 		} else {
 			// Ids not actually in this album or not visible to the caller
-			// are silently curated away, never a 4xx (FR-064-09).
+			// are silently curated away, never a 4xx.
 			$query->whereIn('photos.id', $photo_ids ?? []);
 		}
 
@@ -148,9 +147,9 @@ class QueryPhotoDetails
 			$should_downgrade = !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]);
 			$size_variants[] = new SizeVariantsResouce($photo, $should_downgrade);
 
-			// FR-064-21: the one genuinely per-row (not per-request) gate in
-			// this feature - `metrics_access=owner` depends on *this row's*
-			// owner_id, not a request-wide constant.
+			// The one genuinely per-row (not per-request) gate here -
+			// `metrics_access=owner` depends on *this row's* owner_id, not
+			// a request-wide constant.
 			$can_read_metrics = $metrics_enabled && match ($metrics_access) {
 				MetricsAccess::PUBLIC => true,
 				MetricsAccess::LOGGED_IN => $user !== null,
