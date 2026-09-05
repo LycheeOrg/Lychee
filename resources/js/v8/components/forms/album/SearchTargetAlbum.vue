@@ -15,7 +15,7 @@
 				v-if="is_struct_of_array_enabled && item.id !== null"
 				:album-id="item.id"
 				:photo-id="item.coverId ?? null"
-				type="thumb"
+				type="small"
 				class="w-4 rounded-sm"
 			/>
 			<img v-else :src="item.thumb" alt="poster" class="w-4 rounded-sm" />

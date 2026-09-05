@@ -16,10 +16,13 @@
 		:class="isNavOpen ? 'w-(--nav-bar-width)' : 'w-0'"
 	>
 		<div class="w-(--nav-bar-width) h-full flex flex-col border-e border-default">
-			<div class="flex justify-end p-2 shrink-0">
-				<UButton icon="lucide:panel-left-close" color="neutral" variant="ghost" size="sm" square @click="isNavOpen = false" />
-			</div>
-			<AlbumNavTree class="flex-1 min-h-0" />
+			<AlbumNavTree class="flex-1 min-h-0">
+				<template #collapse>
+					<!-- <div class="flex justify-end p-2 shrink-0"> -->
+					<UButton icon="lucide:panel-left-close" color="neutral" variant="ghost" size="sm" square @click="isNavOpen = false" />
+					<!-- </div> -->
+				</template>
+			</AlbumNavTree>
 		</div>
 	</div>
 

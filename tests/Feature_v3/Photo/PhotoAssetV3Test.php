@@ -99,14 +99,9 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	/**
 	 * @return array<string,string>
 	 */
-	private function signedHeaders(int $timestamp): array
+	private function signedHeaders(): array
 	{
-		$signer = new TemporaryLinkSigner();
-
-		return [
-			'X-Timestamp' => (string) $timestamp,
-			'X-Mac' => $signer->sign($timestamp),
-		];
+		return ['X-Mac' => (new TemporaryLinkSigner())->sign()];
 	}
 
 	/**
@@ -135,7 +130,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders());
 
 		$response->assertOk();
 	}
@@ -150,7 +145,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo1);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb", $this->signedHeaders());
 
 		$response->assertForbidden();
 	}
@@ -171,22 +166,25 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-056-05: temporary_image_link_enabled=false → 401 regardless of
-	 * (validly-signed) headers.
+	 * S-056-05: temporary_image_link_enabled=false → signatureRequired() is
+	 * false for guests too (Q-056-05), so the request falls through to the
+	 * ordinary AlbumPolicy check like any other unauthenticated request → 200
+	 * on a public album, regardless of headers.
 	 */
-	public function testDisabledFeatureIsUnauthorizedForGuest(): void
+	public function testDisabledFeatureFallsBackToAlbumPolicyForGuest(): void
 	{
 		Configs::set('temporary_image_link_enabled', '0');
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp));
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders());
 
-		$response->assertUnauthorized();
+		$response->assertOk();
 	}
 
 	/**
-	 * S-056-06: X-Mac that doesn't match the HMAC of X-Timestamp → 401.
+	 * S-056-06: X-Mac that doesn't match the current/grace-window code →
+	 * 401.
 	 */
 	public function testTamperedMacIsUnauthorized(): void
 	{
@@ -194,8 +192,8 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$headers = $this->signedHeaders(now()->timestamp);
-		$headers['X-Mac'] = substr($headers['X-Mac'], 0, -1) . (str_ends_with($headers['X-Mac'], 'a') ? 'b' : 'a');
+		$headers = $this->signedHeaders();
+		$headers['X-Mac'] = substr($headers['X-Mac'], 0, -1) . (str_ends_with($headers['X-Mac'], '1') ? '2' : '1');
 
 		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $headers);
 
@@ -203,47 +201,56 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-056-07: X-Timestamp older than
-	 * now() - temporary_image_link_life_in_seconds → 401 (expired).
+	 * S-056-07: X-Mac minted several steps in the past (older than the
+	 * signer's one-step grace window) → 401 (expired).
 	 */
-	public function testExpiredTimestampIsUnauthorized(): void
+	public function testStaleMacIsUnauthorized(): void
 	{
 		Configs::set('temporary_image_link_enabled', '1');
 		$life = resolve(ConfigManager::class)->getValueAsInt('temporary_image_link_life_in_seconds');
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp - $life - 60));
+		$this->travelTo(now()->subSeconds($life * 3));
+		$headers = $this->signedHeaders();
+		$this->travelBack();
+
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $headers);
 
 		$response->assertUnauthorized();
 	}
 
 	/**
-	 * S-056-08: X-Timestamp in the future (> now()) → 401.
+	 * S-056-08: X-Mac minted several steps in the future → 401.
 	 */
-	public function testFutureTimestampIsUnauthorized(): void
+	public function testFutureMacIsUnauthorized(): void
 	{
 		Configs::set('temporary_image_link_enabled', '1');
+		$life = resolve(ConfigManager::class)->getValueAsInt('temporary_image_link_life_in_seconds');
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $this->signedHeaders(now()->timestamp + 60));
+		$this->travelTo(now()->addSeconds($life * 3));
+		$headers = $this->signedHeaders();
+		$this->travelBack();
+
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", $headers);
 
 		$response->assertUnauthorized();
 	}
 
 	/**
-	 * S-056-09: Only one of X-Timestamp/X-Mac present → 422.
+	 * S-056-09: A garbage X-Mac value (never a valid code) → 401.
 	 */
-	public function testOnlyOneHeaderPresentIsUnprocessable(): void
+	public function testGarbageMacIsUnauthorized(): void
 	{
 		Configs::set('temporary_image_link_enabled', '1');
 		$variant = $this->thumbVariantOf($this->photo4);
 		$this->putBytes($variant);
 
-		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", ['X-Timestamp' => (string) now()->timestamp]);
+		$response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", ['X-Mac' => 'not-a-code']);
 
-		$response->assertUnprocessable();
+		$response->assertUnauthorized();
 	}
 
 	/**
@@ -379,13 +386,15 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 *
 	 * Enumerates all 2×2×2 combinations of temporary_image_link_enabled /
 	 * _when_logged_in / _when_admin, crossed with (guest / logged-in
-	 * non-admin / admin) caller state, all requesting without any
-	 * X-Timestamp/X-Mac headers. Truth table (several combinations collapse
+	 * non-admin / admin) caller state, all requesting without any X-Mac
+	 * header. Truth table (several combinations collapse
 	 * to the same outcome):
 	 *
-	 * - Guest: always 401, regardless of any config flag — guests are only
-	 *   ever authorized via a valid temporary link (FR-056-05), and no
-	 *   headers means that link can never be valid.
+	 * - Guest: 401 iff enabled (guests are only ever authorized via a valid
+	 *   temporary link when the feature is on, and no headers means that
+	 *   link can never be valid); when disabled, signatureRequired() is
+	 *   false for guests too, so the request falls through to AlbumPolicy
+	 *   and succeeds on a public album (FR-056-05, Q-056-05) — 200.
 	 * - Logged-in non-admin: 401 iff (enabled && when_logged_in), else 200
 	 *   (session alone suffices). `when_admin` is irrelevant to this caller.
 	 * - Admin: 401 iff (enabled && when_admin), else 200 (session alone
@@ -409,7 +418,8 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 
 					Auth::logout();
 					$guest_response = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb");
-					self::assertSame(401, $guest_response->getStatusCode(), "guest, {$case}");
+					$expected_guest = $enabled ? 401 : 200;
+					self::assertSame($expected_guest, $guest_response->getStatusCode(), "guest, {$case}");
 
 					$non_admin_response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb");
 					$expected_non_admin = ($enabled && $when_logged_in) ? 401 : 200;

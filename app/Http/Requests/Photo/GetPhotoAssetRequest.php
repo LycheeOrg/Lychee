@@ -67,11 +67,9 @@ use Illuminate\Validation\Rules\Enum;
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
-	private const TIMESTAMP_HEADER = 'X-Timestamp';
 	private const MAC_HEADER = 'X-Mac';
 
-	/** Internal validation-bag keys the two headers are merged into (see prepareForValidation()). */
-	private const TIMESTAMP_ATTRIBUTE = 'temporary_link_timestamp';
+	/** Internal validation-bag key the header is merged into (see prepareForValidation()). */
 	private const MAC_ATTRIBUTE = 'temporary_link_mac';
 
 	private AbstractAlbum $album;
@@ -79,7 +77,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
 
-	private ?int $timestamp = null;
 	private ?string $mac = null;
 
 	/**
@@ -228,8 +225,7 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => ['required', 'string', new Enum(SizeVariantAssetType::class)],
-			self::TIMESTAMP_ATTRIBUTE => ['nullable', 'integer', 'required_with:' . self::MAC_ATTRIBUTE],
-			self::MAC_ATTRIBUTE => ['nullable', 'string', 'required_with:' . self::TIMESTAMP_ATTRIBUTE],
+			self::MAC_ATTRIBUTE => ['nullable', 'string'],
 		];
 	}
 
@@ -244,7 +240,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => $this->route(RequestAttribute::ALBUM_ID_ATTRIBUTE),
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => $this->route(RequestAttribute::PHOTO_ID_ATTRIBUTE),
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => $this->route(RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE),
-			self::TIMESTAMP_ATTRIBUTE => $this->header(self::TIMESTAMP_HEADER),
 			self::MAC_ATTRIBUTE => $this->header(self::MAC_HEADER),
 		]);
 	}
@@ -272,7 +267,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			->where('type', '=', $this->size_variant_type)
 			->firstOrFail();
 
-		$this->timestamp = $values[self::TIMESTAMP_ATTRIBUTE] ?? null;
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
 	}
 
@@ -280,21 +274,25 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * Determines whether `$user` must additionally present a valid
 	 * temporary-link signature to be authorized (ADR-0008).
 	 *
-	 * Guests are only ever authorized via a valid temporary link (FR-056-05)
-	 * — always `true`, regardless of config; {@link self::isSignatureValid()}
-	 * separately rejects them outright when the feature is globally
-	 * disabled. For authenticated users, this mirrors
+	 * `false` for every caller — guests included — when
+	 * `temporary_image_link_enabled` is off (Q-056-05): disabling the
+	 * feature drops the extra signature requirement outright rather than
+	 * locking guests out, so a disabled-feature guest relies solely on the
+	 * ordinary `AlbumPolicy`/`PhotoPolicy` check like any other caller.
+	 * Otherwise, guests are only ever authorized via a valid temporary link
+	 * (FR-056-05) — there's no session to fall back on. For authenticated
+	 * users, this mirrors
 	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
 	 * generation-time predicate, re-purposed for validation.
 	 */
 	private function signatureRequired(?User $user): bool
 	{
-		if ($user === null) {
-			return true;
-		}
-
 		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
 			return false;
+		}
+
+		if ($user === null) {
+			return true;
 		}
 
 		if ($user->may_administrate) {
@@ -306,10 +304,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 
 	/**
 	 * Validates the temporary-link signature: the feature must be globally
-	 * enabled, both headers must be present (already guaranteed by
-	 * rules()'s both-or-neither validation, but a missing pair is still a
-	 * failure here, not a pass), the MAC must verify, and the timestamp must
-	 * be neither expired nor in the future (FR-056-04).
+	 * enabled, the header must be present (FR-056-04), and the code must
+	 * verify against the current time step (or its one-step grace window —
+	 * see {@link TemporaryLinkSigner}), which is what bounds its freshness;
+	 * there is no separate timestamp/TTL check to make here any more.
 	 */
 	public function isSignatureValid(): bool
 	{
@@ -317,21 +315,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			return false;
 		}
 
-		if ($this->timestamp === null || $this->mac === null) {
+		if ($this->mac === null) {
 			return false;
 		}
 
-		if (!(new TemporaryLinkSigner())->verify($this->timestamp, $this->mac)) {
-			return false;
-		}
-
-		$now = now()->timestamp;
-		if ($this->timestamp > $now) {
-			return false;
-		}
-
-		$life_in_seconds = $this->configs()->getValueAsInt('temporary_image_link_life_in_seconds');
-
-		return ($now - $this->timestamp) <= $life_in_seconds;
+		return (new TemporaryLinkSigner())->verify($this->mac);
 	}
 }

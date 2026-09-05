@@ -54,6 +54,8 @@
 					class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
 					:thumb="album.thumb"
 					:is-password-protected="album.is_password_required"
+					:album-id="album.id"
+					:cover-id="album.cover_id"
 				/>
 			</template>
 			<AlbumThumbImage
@@ -61,6 +63,8 @@
 				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
 				:thumb="album.thumb"
 				:is-password-protected="album.is_password_required"
+				:album-id="album.id"
+				:cover-id="album.cover_id"
 			/>
 		</router-link>
 
@@ -124,7 +128,9 @@ const { is_touch_select_mode } = storeToRefs(togglableStore);
 const { is_nsfw_background_blurred, is_smart_album_flags_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
-	album: App.Http.Resources.Models.ThumbAlbumResource;
+	// `cover_id` optional — see AlbumThumb.vue's
+	// matching widened `album` prop type for the full explanation.
+	album: App.Http.Resources.Models.ThumbAlbumResource & { cover_id?: string | null };
 	isSelected: boolean;
 }>();
 

@@ -9,7 +9,7 @@ import { onBeforeUnmount, onMounted, ref, type Ref } from "vue";
 /**
  * IntersectionObserver-driven section reveal, used by the `parallax_scroll`
  * animation preset (the only preset that reveals per-section on scroll
- * rather than once on mount - see Feature 054 T-054-35).
+ * rather than once on mount).
  */
 export function useScrollReveal(active: Ref<boolean>): {
 	el: Ref<HTMLElement | null>;
