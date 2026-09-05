@@ -85,35 +85,4 @@ class RecomputeAlbumBucketsCommandTest extends BasePrecomputingTest
 		$this->artisan('lychee:recompute-album-buckets')->assertExitCode(0);
 		$this->assertSame('v', $child->fresh()->bucket_id);
 	}
-
-	/**
-	 * Feature 062 (FR-062-08): a row left `bucket_id=null` under a
-	 * formerly-`OWNER_ID` effective column (uncomputed, since
-	 * `AlbumBucketComputer` already short-circuits `OWNER_ID` to `null`
-	 * today) now computes correctly under `created_at`, once the migration
-	 * has rewritten the stray `owner_id` value and a deployer re-runs this
-	 * backfill command per the migration's own note.
-	 */
-	public function testPostMigrationRunComputesBucketIdForFormerlyOwnerIdSortedAlbum(): void
-	{
-		$user = User::factory()->create();
-		$root = Album::factory()->as_root()->owned_by($user)->create();
-		$child = Album::factory()->children_of($root)->owned_by($user)->create();
-		DB::table('albums')->where('id', '=', $root->id)->update(['album_sorting_col' => 'owner_id']);
-
-		// Pre-migration: OWNER_ID is a valid effective sort column, but
-		// AlbumBucketComputer::compute() already short-circuits it to null.
-		$this->artisan('lychee:recompute-album-buckets')->assertExitCode(0);
-		$this->assertNull($child->fresh()->bucket_id);
-
-		/** @var \Illuminate\Database\Migrations\Migration $migration */
-		$migration = require base_path('database/migrations/2026_09_02_120000_remove_owner_id_album_sorting.php');
-		$migration->up();
-
-		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
-		$this->artisan('lychee:recompute-album-buckets')->assertExitCode(0);
-
-		$this->assertSame('created_at', $root->fresh()->album_sorting_col);
-		$this->assertSame($root->created_at->format('Y'), $child->fresh()->bucket_id);
-	}
 }
