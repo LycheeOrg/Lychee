@@ -258,11 +258,11 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem, TabsItem } from "@nuxt/ui";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 import { useLtRorRtL } from "@/utils/Helpers";
 import ResetDir from "@/v8/components/ResetDir.vue";
 
 const { flippedDir } = useLtRorRtL();
-
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
@@ -300,8 +300,16 @@ async function onLoggedIn() {
 const albumId = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
-const { is_login_open, is_upload_visible, list_upload_files, upload_config, is_webauthn_open, is_import_from_server_open, is_keybindings_help_open } =
-	storeToRefs(togglableStore);
+const {
+	is_login_open,
+	is_upload_visible,
+	list_upload_files,
+	upload_config,
+	is_webauthn_open,
+	is_import_from_server_open,
+	is_keybindings_help_open,
+	is_download_album_visible,
+} = storeToRefs(togglableStore);
 const { are_nsfw_visible, title, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
@@ -334,7 +342,6 @@ function togglePin() {
 	});
 }
 
-const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 
 const albumCallbacks = {
@@ -388,19 +395,22 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 	return sections.filter((s) => s.length > 0);
 });
 
-defineShortcuts({
-	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
-	f: () => togglableStore.toggleFullScreen(),
-	" ": () => unselect(),
-	m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
-	delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
-	backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
-	meta_a: () => {
-		selectEverything();
+definePanelShortcuts(
+	{
+		h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
+		f: () => togglableStore.toggleFullScreen(),
+		" ": () => unselect(),
+		m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
+		delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+		backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+		meta_a: () => {
+			selectEverything();
+		},
+		l: () => !userStore.isLoggedIn && (is_login_open.value = true),
+		k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
 	},
-	l: () => !userStore.isLoggedIn && (is_login_open.value = true),
-	k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
-});
+	{ extraModalOpen: isAdvisoriesVisible },
+);
 
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
 const root_parent_id = ref<string | null>(null);

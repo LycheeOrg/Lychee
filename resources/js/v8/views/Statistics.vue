@@ -41,6 +41,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Activity from "@/v8/components/statistics/Activity.vue";
 import { computed } from "vue";
 import { TotalAlbum } from "@/composables/album/albumStatistics";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -61,7 +62,7 @@ onMounted(async () => {
 	}
 });
 
-defineShortcuts({
+definePanelShortcuts({
 	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
 });
 </script>

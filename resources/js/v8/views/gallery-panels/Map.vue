@@ -41,6 +41,7 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import GoBack from "@/v8/components/headers/GoBack.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { clusterFunc } from "@/composables/photo";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -319,7 +320,7 @@ function updateZoom() {
 	}
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	escape: {
 		usingInput: true,
 		handler: () => goBack(),

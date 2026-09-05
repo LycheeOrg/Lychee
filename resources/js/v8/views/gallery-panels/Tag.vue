@@ -115,6 +115,7 @@ import { storeToRefs } from "pinia";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -191,7 +192,7 @@ function toggleDetails() {
 	are_details_open.value = !are_details_open.value;
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	// Album operations
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
@@ -260,14 +261,6 @@ defineShortcuts({
 
 			if (is_copy_visible.value) {
 				is_copy_visible.value = false;
-				return;
-			}
-
-			// Escape drops the current selection before navigating away, so that a
-			// selection surviving an in-place edit can be cleared without leaving the
-			// album.
-			if (hasSelection()) {
-				unselect();
 				return;
 			}
 

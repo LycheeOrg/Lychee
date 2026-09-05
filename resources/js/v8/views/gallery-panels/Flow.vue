@@ -48,6 +48,7 @@ import { useRouter } from "vue-router";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useUserStore } from "@/stores/UserState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -175,7 +176,7 @@ function previous() {
 	photoStore.photo = selectedAlbum.value?.photos.find((photo) => photo.id === photoStore.photo?.previous_photo_id);
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
 	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
 	o: () => photoStore.isLoaded && rotateOverlay(),

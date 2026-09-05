@@ -176,6 +176,7 @@ import { useTimelineStore } from "@/stores/TimelineState";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem } from "@nuxt/ui";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -437,7 +438,7 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	l: () => !photoStore.isLoaded && !userStore.isLoggedIn && (is_login_open.value = true),
 	"/": () => !photoStore.isLoaded && timelineStore.rootConfig?.is_search_accessible && openSearch(),
 	f: () => togglableStore.toggleFullScreen(),
