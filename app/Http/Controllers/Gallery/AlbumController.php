@@ -23,6 +23,7 @@ use App\Actions\Album\Unlock;
 use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
+use App\Events\AlbumChildrenChanged;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
@@ -56,6 +57,7 @@ use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
+use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
@@ -147,6 +149,18 @@ class AlbumController extends Controller
 			photo: $request->photo(),
 			shall_override: true
 		);
+
+		// The parent's own sort column/order or timeline granularity governs
+		// its *direct children's* bucket_id, not its own — so a change to any
+		// of the three needs to recompute every direct child, not just this album.
+		$sorting_or_timeline_changed = $album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']);
+		RecomputeChildAlbumBucketsJob::dispatchIf($sorting_or_timeline_changed, $album->id);
+		// The job above bulk-`upsert()`s every direct child's `bucket_id`,
+		// bypassing Eloquent events entirely - AlbumSaved below invalidates
+		// $album's own tag and its *parent's* children-listing tag, neither
+		// of which covers $album's own children-listing cache (the one the
+		// bucket recompute actually affects). Invalidate it explicitly.
+		AlbumChildrenChanged::dispatchIf($sorting_or_timeline_changed, [$album->id]);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 

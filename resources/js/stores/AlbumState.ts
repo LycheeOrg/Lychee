@@ -1,5 +1,6 @@
 import { ALL } from "@/config/constants";
 import AlbumService from "@/services/album-service";
+import AlbumChildrenV3Service from "@/services/album-children-v3-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import { defineStore } from "pinia";
 import { useTogglablesStateStore } from "./ModalsState";
@@ -7,6 +8,9 @@ import { usePhotosStore } from "./PhotosState";
 import { useAlbumsStore } from "./AlbumsState";
 import { useLycheeStateStore } from "./LycheeState";
 import { useLayoutStore } from "./LayoutState";
+import { useUserStore } from "./UserState";
+import { computeBucketBoundaries, type AlbumBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
+import { adaptAlbumChildTile, combineAlbumChildRights, isRegularAlbumParentOwner, DEFAULT_ALBUM_CHILD_RIGHTS } from "@/v8/utils/adaptAlbumChildTile";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
 
@@ -45,6 +49,13 @@ export const useAlbumStore = defineStore("album-store", {
 		albums_per_page: 0,
 		albums_total: 0,
 		albums_loading: false as boolean,
+
+		// Tier 1 (buckets) + derived boundary metadata for the
+		// flag-on virtualized subalbum grid/list. Tier 2 itself isn't kept
+		// separately once adapted — albumsStore.albums (AdaptedAlbumTile[])
+		// is the actual display source.
+		bucketsV3: undefined as App.Http.Resources.V3.AlbumBucketResource | undefined,
+		boundariesV3: null as AlbumBucketBoundary[] | null,
 
 		// Tag filter state for photos
 		active_tag_filter: null as { tag_ids: number[]; tag_logic: string } | null,
@@ -90,6 +101,8 @@ export const useAlbumStore = defineStore("album-store", {
 			this.albums_per_page = 0;
 			this.albums_total = 0;
 			this.albums_loading = false;
+			this.bucketsV3 = undefined;
+			this.boundariesV3 = null;
 			// Reset tag filter
 			this.active_tag_filter = null;
 			// Reset person filter and people list
@@ -416,6 +429,149 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 
 		/**
+		 * Flag-aware dispatcher for the subalbum-children fetch: v3 tier 1+2
+		 * (+ background tier 3) when the flag is on, v2
+		 * `loadAlbums()` otherwise. The sole call site `load()` uses instead
+		 * of calling `loadAlbums(1, false)` directly.
+		 */
+		loadAlbumsAuto(): Promise<void> {
+			const lycheeStore = useLycheeStateStore();
+			if (lycheeStore.is_struct_of_array_enabled) {
+				return this.loadAlbumsV3().then(() => {
+					void this.loadAlbumsV3Rights();
+				});
+			}
+			return this.loadAlbums(1, false);
+		},
+
+		/**
+		 * Fetches tier 1 (buckets) + tier 2 (children) together and adapts
+		 * each child into an `AdaptedAlbumTile`, written into
+		 * `albumsStore.albums` — the flag-on replacement for v2's
+		 * `loadAlbums()`. No windowed pagination: tier 2
+		 * is whole-album-at-once, so the existing
+		 * `albums_*`-pagination fields are set to a single "page 1 of 1"
+		 * shape rather than needing a dedicated v3 branch in `AlbumPanel.vue`.
+		 */
+		loadAlbumsV3(): Promise<void> {
+			const albumsStore = useAlbumsStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return Promise.resolve();
+			}
+
+			const requestedAlbumId = this.albumId;
+			this.albums_loading = true;
+
+			// GetAlbumBucketsRequest resolves plain Album ids only — a
+			// TagAlbum/PersonAlbum id 404s there (mirrors
+			// loadAlbumsV3Rights()'s isRegularAlbumParent guard), which would
+			// otherwise fail the whole Promise.all and leave albumsStore.albums
+			// stale. Skip the request for those and fall back to the same
+			// non-bucketable shape bucketableV3 already renders flat.
+			const isRegularAlbumParent = this.modelAlbum !== undefined;
+			const bucketsPromise: Promise<App.Http.Resources.V3.AlbumBucketResource> = isRegularAlbumParent
+				? AlbumChildrenV3Service.getBuckets(requestedAlbumId).then((response) => response.data)
+				: Promise.resolve({ bucket_ids: [], counts: [], labels: [], bucketable: false });
+
+			return Promise.all([bucketsPromise, AlbumChildrenV3Service.getChildren(requestedAlbumId)])
+				.then(([buckets, childrenResponse]) => {
+					// Race condition guard: don't apply a response for an album
+					// the user has already navigated away from (mirrors
+					// loadAlbums()/loadPhotos()'s existing requestedAlbumId
+					// pattern, no separate mechanism needed).
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const children = childrenResponse.data;
+
+					this.bucketsV3 = buckets;
+					this.boundariesV3 = computeBucketBoundaries(buckets, children.ids.length);
+
+					// date_format_album_thumb/thumb_min_max_order have no
+					// per-album override (unlike album_thumb_css_aspect_ratio) —
+					// this.config and rootConfig always agree in practice, but
+					// the same per-album-then-instance-default fallback chain
+					// is kept for consistency with the rest of this codebase.
+					const dateFormat = this.config?.date_format_album_thumb ?? albumsStore.rootConfig?.date_format_album_thumb ?? "M Y";
+					const dateOrder = this.config?.thumb_min_max_order ?? albumsStore.rootConfig?.thumb_min_max_order ?? "younger_older";
+
+					albumsStore.albums = children.ids.map((_, i) =>
+						adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, dateFormat, dateOrder),
+					);
+
+					this.albums_current_page = 1;
+					this.albums_last_page = 1;
+					this.albums_per_page = children.ids.length;
+					this.albums_total = children.ids.length;
+				})
+				.catch((error) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+					console.error(error);
+				})
+				.finally(() => {
+					if (this.albumId === requestedAlbumId) {
+						this.albums_loading = false;
+					}
+				});
+		},
+
+		/**
+		 * Background-fetches tier 3 (rights) immediately after tier 1+2
+		 * resolve and reactively merges the combined rights into
+		 * each already-adapted child in place.
+		 */
+		loadAlbumsV3Rights(): Promise<void> {
+			const albumsStore = useAlbumsStore();
+			const userStore = useUserStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return Promise.resolve();
+			}
+
+			const requestedAlbumId = this.albumId;
+			// Captured now, before any `await` — reflects the branch load()
+			// already resolved for this navigation (modelAlbum/tagAlbum/
+			// personAlbum are set before loadAlbumsAuto() is ever called).
+			const isRegularAlbumParent = this.modelAlbum !== undefined;
+
+			return AlbumChildrenV3Service.getRights(requestedAlbumId)
+				.then((response) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const rightsV3 = response.data;
+					const indexById = new Map(rightsV3.ids.map((id, i) => [id, i]));
+
+					albumsStore.albums = albumsStore.albums.map((tile) => {
+						const i = indexById.get(tile.id);
+						if (i === undefined) {
+							return tile;
+						}
+						return {
+							...tile,
+							rights: combineAlbumChildRights(
+								i,
+								rightsV3,
+								isRegularAlbumParentOwner(rightsV3, isRegularAlbumParent, userStore.user?.id),
+								albumsStore.rootRights?.can_upload,
+							),
+						};
+					});
+				})
+				.catch((error) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+					console.error(error);
+				});
+		},
+
+		/**
 		 * Set tag filter and reload photos.
 		 * Resets to page 1 and replaces existing photos.
 		 */
@@ -567,7 +723,7 @@ export const useAlbumStore = defineStore("album-store", {
 
 					if (data.data.config.is_model_album) {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
-						loader.push(this.loadAlbums(1, false));
+						loader.push(this.loadAlbumsAuto());
 					} else if (data.data.config.is_base_album) {
 						const resource = data.data.resource as Record<string, unknown>;
 						if ("is_person_album" in resource && resource.is_person_album) {
@@ -578,7 +734,7 @@ export const useAlbumStore = defineStore("album-store", {
 						// TagAlbum/PersonAlbum also expose "matching albums" (real albums
 						// carrying the tag as metadata / containing a matching face) via the
 						// same paginated /Album::albums endpoint used for real Album children.
-						loader.push(this.loadAlbums(1, false));
+						loader.push(this.loadAlbumsAuto());
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 					}
@@ -682,6 +838,16 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		hasAlbumsPagination(state): boolean {
 			return state.albums_last_page > 0;
+		},
+		// Whether the flag-on grid/list should
+		// render sticky bucket headers, or fall back to a single flat
+		// unbucketed section (either tier 1 genuinely reports
+		// `bucketable: false`, the defensive count-mismatch fallback
+		// kicked in, or there's only one bucket — a lone label carries no
+		// information worth a header row — all collapse to the same flat
+		// rendering path).
+		bucketableV3(state): boolean {
+			return (state.bucketsV3?.bucketable ?? false) && state.boundariesV3 !== null && state.boundariesV3.length > 1;
 		},
 	},
 });

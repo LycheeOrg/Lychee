@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Gallery;
 use App\Http\Resources\GalleryConfigs\FooterConfig;
 use App\Http\Resources\GalleryConfigs\InitConfig;
 use App\Http\Resources\GalleryConfigs\PhotoLayoutConfig;
+use App\Http\Resources\GalleryConfigs\TemporaryLinkMacConfig;
 use App\Http\Resources\GalleryConfigs\UploadConfig;
 use Illuminate\Routing\Controller;
 
@@ -55,5 +56,13 @@ class ConfigController extends Controller
 	public function getFooter(): FooterConfig
 	{
 		return new FooterConfig();
+	}
+
+	/**
+	 * Return the current temporary-link MAC code.
+	 */
+	public function getMac(): TemporaryLinkMacConfig
+	{
+		return new TemporaryLinkMacConfig();
 	}
 }

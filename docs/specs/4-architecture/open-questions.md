@@ -6,6 +6,36 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-062-01~~ | 062 – Root Album Listing Struct-of-Arrays | High | Guest privacy when the effective root sort column is `OWNER_ID` — bucket by owner anyway vs. fall back to `bucketable:false` for guests | Superseded twice — first by Q-062-08 (`OWNER_ID` removed as a config value, original premise gone), then a same-day "guests see names too" follow-up was itself reversed by Q-062-14 (authoritative: guests never see real names, `users` join skipped entirely) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-02~~ | 062 – Root Album Listing Struct-of-Arrays | High | `scope` request shape — required `own`/`shared` split per call vs. one optional combined/unpartitioned list | Resolved (required `own`/`shared` for authenticated callers; guest defaults to, and is limited to, `shared` — `scope=own` for a guest is 422; FR-062-02) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-03~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Route shape for a parent-less "children" concept — literal `/Albums/root/...` path vs. a new `::`-flat route family vs. `?parent_id=root` on the existing sub-album routes | Resolved (literal `/Albums/root`, `/Albums/root/buckets`, `/Albums/root/rights`, registered ahead of `/Albums/{album_id}/...`; dropped the "children" suffix — root is its own top-level listing, not children of a virtual parent; FR-062-01) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-04~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Tag/person/pinned root categories — one combined endpoint vs. separate endpoints per category | Superseded (revised to **separate** routes per category — `/Albums/smart`, `/Albums/persons`, `/Albums/tags` — not one combined endpoint; `pinned` dropped from this feature's scope entirely; FR-062-09) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-05~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should a guest be allowed to request `scope=own`? | Resolved (no — 422; silently returning empty would hide a client bug) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-06~~ | 062 – Root Album Listing Struct-of-Arrays | High | How does `shared`-scope owner-grouping coexist with "we do not want to bucket by `owner_id`"? | Resolved (two independent mechanisms — the persisted `bucket_id` column stays exclusively date/title-derived everywhere, forever; `shared` scope's owner-grouping is a separate, live, read-time `GROUP BY owner_id` that never touches `AlbumBucketComputer`/the `bucket_id` column; the response's `bucket_id` field is repurposed to carry `owner_id` for that scope only, so the client-side "group rows by `bucket_id`" contract stays uniform across scopes; FR-062-04/05) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-07~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Should `ColumnSortingType::OWNER_ID` (the broader, internal enum) also be removed alongside `ColumnSortingAlbumType::OWNER_ID`? | Resolved (no — only the configurable `ColumnSortingAlbumType::OWNER_ID` is removed; `ColumnSortingType::OWNER_ID` stays, needed internally for `Top::queryRootAlbums()`'s existing hardcoded sort and this feature's own `shared`-scope `ORDER BY owner_id`; NG7) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-08~~ | 062 – Root Album Listing Struct-of-Arrays | High | Remove `OWNER_ID` as a selectable `sorting_albums_col`/`album_sorting_col` value entirely, or keep supporting it (with owner-aware bucketing)? | Resolved (remove — user direction; `configs.type_range` already excludes it since Feature 060's dropdown narrowing, so this closes a dead config path rather than opening a new capability; migrate surviving `owner_id` values to `created_at`; FR-062-08) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-09~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | `pinned` albums — dropped from category-endpoint scope (Q-062-04) or reinstated? | Resolved (reinstated — `GET /Albums/pinned`, fifth flat category endpoint, no rights endpoint; per user follow-up "Oh good point, I forgot about the pinned albums. Add it back."; FR-062-09) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-10~~ | 062 – Root Album Listing Struct-of-Arrays | High | Should `/Albums/pinned` also get an own/shared split, and how should `shared` be structured (per-owner buckets like root, or flat)? | Resolved (yes — reuses root's `scope=own\|shared` via the same `GetScopedAlbumsRequest`; `shared` is one flat, ungrouped list, not per-owner buckets, per user follow-up: "the ones not owned... are all grouped" interpreted as one lump, consistent with pinned never being bucketable at all; FR-062-15) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-11~~ | 062 – Root Album Listing Struct-of-Arrays | High | Why is `/Albums/pinned` never bucketable, in either the date/title or owner-grouping sense? | Resolved (a pinned album's real tree position is arbitrary — not necessarily root — so its `bucket_id` is governed by its actual parent's sort settings; mixing values from unrelated parents into one pinned bucket list would be incoherent; per user: "this should solve the potential conflict between the bucket sizes as pinned albums are possibly not as root"; NG3/NG9) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-12~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should Feature 061's already-shipped `/Albums/{album_id}/children[/buckets\|/rights]` paths be renamed to drop `/children`, matching root's naming? | Resolved (yes, per user proposal — safe since Feature 061 shipped with no v8 frontend consumer yet; path-only rename, response shape untouched; existing 061 test files need only their request-URL literals updated, zero assertion changes; FR-062-01/12, NFR-062-06) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-13~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Should `/Albums/persons` also get the own/shared split, given `PersonAlbum` rows carry a real `owner_id`? | Resolved (yes, per user proposal — reuses the exact pattern already established for `/Albums/pinned` (flat shared, no buckets); `/Albums/tags`/`/Albums/smart` stay un-scoped, not requested; FR-062-09/15) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-14~~ | 062 – Root Album Listing Struct-of-Arrays | High | Should unauthenticated guests receive real owner display names via `/Albums/root/buckets`'s `shared`-scope labels? | Resolved (Option B — no join/names for guests; grouping stays real, labels become `"unknown"`) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-15~~ | 062 – Root Album Listing Struct-of-Arrays | High | Does `bucketable:false` mean "structurally can't group" (Feature 061's convention) or "zero rows this time" (this spec's current FR-062-05 wording)? | Resolved (Option A — keep 061's meaning; empty shared result is `bucketable:true` with empty arrays) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-16~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Is `/Albums/root/rights`'s `owner_id` field null for `scope=own` too, or only for `scope=shared`? | Resolved (Option A, refined — null unconditionally, both scopes; key omitted from the JSON payload entirely since it's always null for root) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-17~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Does dropping `/children` from `/Albums/{album_id}` (and `/Albums/root`, `/persons`, `/pinned`) read as "fetch one album" when it actually returns a child/collection listing? | Resolved (Option A — keep the rename as specced, no change) | 2026-09-02 | 2026-09-02 |
+| ~~Q-063-05~~ | 063 – Album Timeline Buckets Frontend Adoption | High | `contextMenu.ts` reads `selectedAlbum.is_pinned` for the Pin/Unpin menu label, but tier 2 doesn't supply `is_pinned` and the FR-063-06 adapter never sets it | Resolved (Option A — added `is_pinneds` to tier 2 via new Feature 061 FR-061-27; FR-063-06's adapter maps it straight through) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-06~~ | 063 – Album Timeline Buckets Frontend Adoption | High | `useAlbumFlags.ts` reads `album.is_public`/`album.is_link_required` for the Public/Hidden and Public/Visible tile badges, but tier 2 supplies neither | Resolved (Option A — added `is_publics`/`is_link_requireds` to tier 2 via the same FR-061-27; FR-063-06's adapter maps both straight through) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-07~~ | 063 – Album Timeline Buckets Frontend Adoption | Medium | `AlbumThumbOverlay.vue` reads `album.formatted_min_max ?? album.created_at`; tier 2 has raw `min_taken_at`/`max_taken_at` but not the server-formatted, ordering-aware string | Resolved (Option A — computed client-side; new `phpDateFormat.ts` (FR-063-16) reproduces PHP `date()` semantics from an adapted reference implementation, fed by two new `AlbumConfig`/`RootConfig` fields, `date_format_album_thumb`/`thumb_min_max_order`; new NFR-063-08 correctness bar) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-08~~ | 063 – Album Timeline Buckets Frontend Adoption | High | `AlbumListItem.vue` (list view) has the identical `AlbumThumbImage.vue`/pre-built-URL dependency that motivated `AlbumThumbVirtual.vue` for grid view, with no equivalent fix planned | Resolved (Option A — new `AlbumListItemVirtual.vue` (FR-063-17/DO-063-07), forked from `AlbumListItem.vue` the same way `AlbumThumbVirtual.vue` forks `AlbumThumb.vue`) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-09~~ | 063 – Album Timeline Buckets Frontend Adoption | Medium | FR-063-13's mutation re-fetch trigger list omitted "cover photo changed," despite tile rendering now depending on `cover_id` | Resolved (Option A — cover-photo change added to FR-063-13's trigger list, manual + automatic recompute; audit task added to confirm/add the call site) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-10~~ | 063 – Album Timeline Buckets Frontend Adoption | Medium | FR-063-07/FR-063-14's "measured tile width via a probe tile" mechanism was never concretely specified | Resolved (no probe tile — analytic computation instead: container width via a `getWidth.ts`-style measurement, current breakpoint via `useBreakpoints()`, tile width from a shared breakpoint→formula lookup table also used by the CSS classes, FR-063-14) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-11~~ | 063 – Album Timeline Buckets Frontend Adoption | Medium | No request-cancellation/staleness guard was specified for rapid album-to-album navigation | Resolved (Option A — monotonic request-generation counter on `AlbumsState.ts`, FR-063-18; a response is applied only if its generation still matches the store's current one) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-12~~ | 063 – Album Timeline Buckets Frontend Adoption | Low | No caching/staleness policy was specified for repeat navigation to an already-visited album | Resolved (Option B — short-TTL per-`album_id` cache mirroring v2's `AlbumService` convention, FR-063-19, invalidated by the same trigger set as the mutation re-fetch) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-13~~ | 063 – Album Timeline Buckets Frontend Adoption | Low | Spec-precision review pass found several textual issues, no design decision required | Resolved (all corrected directly — adapted tile object now named `AdaptedAlbumTile` explicitly; FR-063-07's stale "`AlbumThumb`'s own" wording corrected as part of the FR-063-14 rewrite; FR-063-02/FR-063-09's shared flat-fallback path now cross-referenced explicitly) | 2026-08-30 | 2026-08-30 |
+| ~~Q-063-14~~ | 063 – Album Timeline Buckets Frontend Adoption | High | User asked to "expand Feature 063 to also support smart albums" — ambiguous between (a) the root gallery's smart-album tiles (Feature 062's `GET /Albums/smart`, shipped with zero frontend consumer, flagged as a follow-up feature) and (b) browsing into a smart album's own detail page (where Feature 061's tier 1/2/3 children endpoints explicitly leave smart albums unresolved, FR-061-24) | Resolved (A — root gallery's smart-album tiles. Investigation found option B is a non-issue in practice: `AlbumState.ts`'s `load()` never calls `loadAlbumsAuto()`/tier 1-2-3 at all for a smart album — it branches on backend-computed `config.is_model_album`/`is_base_album`, both `false` for `BaseSmartAlbum` (`AlbumConfig.php:57-58`), so no v2 or v3 children request is ever attempted for a smart album's own page, flag on or off; nothing to fix there. Option A is a real, unimplemented gap — `Albums.vue`'s Smart Albums section still reads `Top::get()`'s `smart_albums` field unconditionally, regardless of `is_struct_of_array_enabled`; FR-063-20..23) | 2026-09-02 | 2026-09-02 |
+| ~~Q-063-15~~ | 063 – Album Timeline Buckets Frontend Adoption | High | `GET /Albums/smart` (Feature 062) deliberately never resolves a cover photo (`cover_ids` always `null`, by design, to stay a zero-SQL-query endpoint), whereas today's v2 root listing shows a real per-viewer cached cover for every smart-album tile (`ThumbAlbumResource`/`CachesAlbumUserThumb`) — accept the resulting regression (generic icon on every flag-on smart-album tile) or amend Feature 062 to add real covers? | Resolved (amend — via the existing, already-populated `AlbumUserThumb` per-viewer cache `BaseSmartAlbum`/`RecomputeAlbumUserThumbsJob` already read/write for the v2 path, batched into one indexed `whereIn('album_id', ...)` query, not a live photo query; FR-062-16. A second, related gap surfaced during scoping: `GetPhotoAssetRequest::isPhotoOfAlbum()` (Feature 056) already has a cache-backed cover exception for `TagAlbum`/`PersonAlbum` but not `BaseSmartAlbum` — without extending it too, a cached smart-album cover that has since fallen out of the live query condition would 403 through the Asset endpoint; extended symmetrically, FR-056-08) | 2026-09-02 | 2026-09-02 |
+| ~~Q-063-16~~ | 063 – Album Timeline Buckets Frontend Adoption | High | After Q-063-14 shipped a smart-albums-only slice, user follow-up: *"The point of feature 63 extension is to support StructOfArray on the root gallery page."* — does this mean the whole root gallery page's SoA adoption (all five Feature 062 root/category endpoints — smart, tags, persons, pinned, root own/shared), or a narrower subset? | Resolved (everything, per explicit user choice among three sized options — "Everything (Recommended)" over "own-root grid only" or "flat swaps only". Supersedes Q-063-14's narrower "smart albums only" framing; NFR-063-09/Non-Goals amended accordingly. FR-063-24..30) | 2026-09-03 | 2026-09-03 |
+| ~~Q-063-17~~ | 063 – Album Timeline Buckets Frontend Adoption | Medium | Own/shared root albums need the same virtualized-grid-with-sticky-headers treatment sub-album children already have (FR-063-07/10) — reuse those existing components made prop-driven/generic, or fork new root-scope versions? | Resolved (fork — `AlbumRootGridVirtual.vue`/`AlbumRootListViewVirtual.vue`/`AlbumRootPanelVirtual.vue`, mirroring this repo's already-established "fork a shared component rather than branch a mode into it" convention (Q-063-02's own reasoning, and the precedent `AlbumThumbVirtual.vue` itself set forking from `AlbumThumb.vue`). The two contexts read structurally different store fields (root's own/shared scope vs. the currently-browsed album's children) — a genuinely different data source, not merely a rendering-strategy difference a prop could parameterize away cleanly. Pure functions (`buildVirtualAlbumRows`, `computeBucketBoundaries`, `useAlbumTileWidth`, `adaptAlbumChildTile`) and leaf tile components (`AlbumThumbVirtual.vue`) were already store-decoupled and are reused unchanged; only the three store-coupled orchestration components are forked. FR-063-24) | 2026-09-03 | 2026-09-03 |
 | ~~Q-060-01~~ | 060 – Database-Driven Title Sorting | Medium | Does Description get the same title_base/title_index split as Title, or is it dropped as a sort criterion entirely? | Resolved (Description ordering removed completely — no split columns for description; existing Description-based sort configs are migrated to Title, FR-060-10) | 2026-08-27 | 2026-08-27 |
 | ~~Q-060-02~~ | 060 – Database-Driven Title Sorting | Medium | Should the numeric-suffix splitter be a single hardcoded rule or a pluggable/configurable pattern system, given other patterns (e.g. parenthesised numbering) may be wanted later? | Resolved (hardcoded ordered 2-rule chain — trailing digits, then trailing parenthesised number — baked into one `TitleSplitter` function, FR-060-02; a fully pluggable/admin-configurable system explicitly deferred as a Non-Goal/Follow-up) | 2026-08-27 | 2026-08-27 |
 | ~~Q-060-03~~ | 060 – Database-Driven Title Sorting | High | User review of the draft `TitleSplitter` heuristic found both rules only match at the absolute end of the string, so a trailing file extension (e.g. `xxx_123.jpg`, `xxx (123).xts`) silently defeats both the trailing-digit and parenthesised-number rules, falling to the no-index fallback — a real regression for the single most common case (photo filenames as titles). | Resolved (added a Stage-A extension-aware pre-strip — `\.([A-Za-z][A-Za-z0-9]{0,4})$`, deliberately excluding digit-only suffixes like `.2` so those still hit the trailing-digit rule directly — applied before both rules; see Q-060-04 for a correction to how the extension is subsequently handled) | 2026-08-28 | 2026-08-28 |
@@ -137,6 +167,556 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-063-05~~ · Pin/Unpin menu label depends on `is_pinned`, which tier 2 never supplies ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** `is_pinned` added to tier 2's response as new Feature 061 FR-061-27 (`is_pinneds: bool[]` on `AlbumChildrenDataResource`, a plain column, zero extra join). Feature 063's FR-063-06 adapter maps it straight through to the adapted tile object, closing the Pin/Unpin label bug at the source.
+
+**Spec impact:** New Feature 061 FR-061-27, DO-061-08 field-list update, new S-061-44, new Feature 061 tasks T-061-48..50 (unchecked — not yet implemented). Feature 063's FR-063-06 updated; Non-Goals' "no changes to Feature 061's contract" amended to allow this one exception; new S-063-21.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Add `is_pinned` to tier 2's response
+
+**Question**  
+`contextMenu.ts:374` picks the Pin/Unpin menu label from `selectedAlbum.is_pinned` (`selectedAlbum.is_pinned ? "unpin" : "pin"`). Feature 061's tier 2 endpoint (`GET .../children`, FR-061-12's field list) never includes `is_pinned`, and Feature 063's FR-063-06 adapter doesn't set it either — so on the adapted object it's always `undefined`, and the flag-on context menu would show "Pin" even for an already-pinned subalbum. `is_pinned` is a plain boolean column on `albums` (confirmed in `ThumbAlbumResource.php`: `$this->is_pinned = $data instanceof BaseAlbum ? $data->is_pinned : false;`). How should this be fixed?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Add `is_pinned` to tier 2's response
+
+- **Idea:** Extend `AlbumChildrenDataResource`/`AlbumChildrenDataController` (Feature 061) to also return `is_pinneds: bool[]`, a plain column read with zero extra joins — same cost class as `is_password_requireds`/`is_nsfws`, already present.
+- **Spec impact:** A new FR on Feature 061's spec (mirrors the FR-061-26 precedent — 063 surfaced a real 061 gap, fixed at the source); Feature 063's Non-Goal "No changes to Feature 061's contract" gets the same kind of explicit exception FR-061-26 already required. FR-063-06 updated to map the new field straight through.
+- **Pros:**
+  - ✅ Fixes the bug at its root — the menu label becomes correct, not just less wrong.
+  - ✅ Directly mirrors this feature's own established precedent (FR-061-26) for "found a real 061 gap while drafting 063, fixed at the source."
+  - ✅ Trivial marginal cost — one more plain-column array on an endpoint that already returns a dozen.
+- **Cons:**
+  - ❌ Touches Feature 061 (already "Completed") a second time.
+  - ❌ Requires reconciling with the current Non-Goal wording in both specs.
+
+---
+
+#### 🅱️ Option B – Accept as a known regression, documented like the video-icon/blur-placeholder trade-offs
+
+- **Idea:** Leave `is_pinned` unset; the Pin/Unpin label always reads "Pin" on the flag-on path. Document it as a third accepted regression alongside FR-063-15's two existing ones.
+- **Spec impact:** One new Non-Goals bullet; no FR/endpoint change.
+- **Pros:**
+  - ✅ Zero implementation cost, zero risk to Feature 061.
+- **Cons:**
+  - ❌ Unlike the video-icon/blur-placeholder trade-offs (which degrade gracefully), this one is actively misleading — clicking "Pin" on an already-pinned album is a wrong-labeled action, not just a missing decoration.
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️; if 🅰️, apply the same amendment pattern FR-061-26 used (new Feature 061 FR + updated Non-Goals in both specs) before I2/I3 tasks begin.
+
+---
+
+### ~~Q-063-06~~ · Public/Hidden and Public/Visible badges depend on fields tier 2 never supplies ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** `is_public`/`is_link_required` added to tier 2's response as part of the same Feature 061 FR-061-27 as Q-063-05 (`is_publics`/`is_link_requireds: bool[]`, resolved from each child's own `public_permissions()` relation — a join distinct from `applyVisibilityFilter()`'s existing one). Feature 063's FR-063-06 adapter maps both straight through.
+
+**Spec impact:** Bundled into the same FR-061-27/DO-061-08/S-061-44/T-061-48..50 amendment as Q-063-05. Feature 063's FR-063-06 updated; new S-063-22.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Add `is_public`/`is_link_required` to tier 2's response
+
+**Question**  
+`useAlbumFlags.ts:23,27` computes `showPublicHiddenFlag`/`showPublicVisibleFlag` from `album.is_public`/`album.is_link_required`, both read directly off the album object passed to `AlbumThumb.vue` — reused unchanged by `AlbumThumbVirtual.vue` per FR-063-15/Goals. Tier 2's field list (FR-061-12) has neither field, and FR-063-06's adapter doesn't set them. Both badges would then be permanently invisible on the flag-on path, regardless of an album's actual public/link-required status. `is_password_required` (a sibling field resolved by the exact same `AlbumProtectionPolicy` computation) is already included in tier 2 — so this isn't a new class of cost, just two fields that got left out. How should this be fixed?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Add `is_public`/`is_link_required` to tier 2's response
+
+- **Idea:** Extend `AlbumChildrenDataResource` to also expose `is_publics: bool[]`/`is_link_requireds: bool[]`, resolved from the same `AlbumProtectionPolicy` call tier 2 already makes for `is_password_required` — no new policy computation, just two more fields read off an object already in hand.
+- **Spec impact:** Same shape as Q-063-05 Option A — a Feature 061 FR addition, Non-Goal exception, FR-063-06 field-mapping update.
+- **Pros:**
+  - ✅ Fixes both badges correctly.
+  - ✅ Free to compute — `AlbumProtectionPolicy::ofBaseAlbum()` is already called per row for `is_password_required`; these are two more properties off the same object.
+- **Cons:**
+  - ❌ Same Feature 061 re-touch cost as Q-063-05.
+
+---
+
+#### 🅱️ Option B – Accept as a known regression
+
+- **Idea:** Leave both fields unset; neither badge ever renders on flag-on tiles.
+- **Spec impact:** One new Non-Goals bullet.
+- **Pros:**
+  - ✅ Zero cost.
+- **Cons:**
+  - ❌ A real, visible information loss for any instance with `is_public_hidden_flag_enabled`/`is_public_visible_flag_enabled` turned on — those badges exist specifically to communicate an album's sharing state at a glance.
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️; if bundled with Q-063-05's Option A, land as one combined FR-061 amendment rather than two separate ones.
+
+---
+
+### ~~Q-063-07~~ · Tile date subtitle silently shows the wrong date when tier 2 lacks `formatted_min_max` ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** Computed client-side, not added to tier 2. New `phpDateFormat.ts` (FR-063-16/DO-063-08) reproduces PHP `date()` format-character semantics, adapted from a reference community implementation, then replicates `ThumbAlbumResource::formatMinMaxDate()`'s join/ordering logic using tier 2's already-present raw `min_taken_at`/`max_taken_at`. Since `date_format_album_thumb`/`thumb_min_max_order` are free-text/enum configs not previously exposed to the frontend, both were added as new fields on the pre-existing `AlbumConfig`/`RootConfig` resources (not a Feature 061 touch — these resources predate and sit outside Feature 061's contract). New NFR-063-08 sets the correctness bar (byte-for-byte match against real PHP `date()` output); confirmed non-trivial in scope since the config is genuinely free-text (any valid PHP format string), not a fixed handful of tokens — flagged as an explicit plan.md Risk (unrecognized format characters must pass through literally, matching PHP's own behavior).
+
+**Spec impact:** New FR-063-16, DO-063-08, NFR-063-08, S-063-23; new plan.md Increment I13; `AlbumConfig`/`RootConfig` field additions noted in the Interface Catalogue.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Compute the formatted string client-side in the adapter
+
+**Question**  
+`AlbumThumbOverlay.vue:54,58` renders `props.album.formatted_min_max ?? props.album.created_at` as the tile's date subtitle (shown when `album_subtitle_type` is `'takedate'` or `'creation'`). `formatted_min_max` is a server-computed string (`ThumbAlbumResource::formatMinMaxDate()`) that combines `min_taken_at`/`max_taken_at` with the `thumb_min_max_order` config's ordering choice. Tier 2 supplies the raw `min_taken_at`/`max_taken_at` values but not this formatted string, and FR-063-06's adapter doesn't compute an equivalent — so every flag-on tile configured for `'takedate'` would silently fall back to showing `created_at` instead, with no error or visible sign anything is wrong. How should this be fixed?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Compute the formatted string client-side in the adapter
+
+- **Idea:** Replicate `formatMinMaxDate()`'s logic (string concatenation ordered by the `thumb_min_max_order` config) in the FR-063-06 adapter, using tier 2's already-present raw `min_taken_at`/`max_taken_at` plus the same config value already available client-side (mirrors FR-063-04's established precedent: "the client already knows its own identity ... combining ... is a small, well-defined client computation — deliberately not replicated server-side").
+- **Spec impact:** No change to Feature 061's contract at all — this is a pure frontend addition to FR-063-06, since the only missing ingredient (the ordering config) is a config value, not new endpoint data.
+- **Pros:**
+  - ✅ Fixes the bug with zero backend change — doesn't touch Feature 061.
+  - ✅ Directly mirrors an approach this spec has already used and justified once (FR-063-04).
+- **Cons:**
+  - ❌ Duplicates `formatMinMaxDate()`'s date-formatting/ordering logic in two languages (PHP for v2, TS for v3) — a small ongoing drift risk if the server-side format ever changes.
+
+---
+
+#### 🅱️ Option B – Extend tier 2 to supply the pre-formatted string
+
+- **Idea:** Add `formatted_min_maxes: (string\|null)[]` to `AlbumChildrenDataResource`, computed server-side per row.
+- **Spec impact:** Feature 061 FR addition, same Non-Goal exception pattern as Q-063-05/02.
+- **Pros:**
+  - ✅ Single source of truth for the format — no client/server duplication risk.
+- **Cons:**
+  - ❌ Runs against Feature 061's own stated design philosophy for this endpoint — Non-Goals already excludes label/date-string computation from tier 2 once for exactly this reason ("requires a join to `photos`/size-variant rows to resolve" — this case doesn't need a join, but it is the same class of per-row string formatting 061 avoided elsewhere on principle).
+  - ❌ A third Feature 061 re-touch in the same drafting pass, on top of Q-063-05/02.
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️ — 🅰️ avoids further Feature 061 changes and is a smaller, self-contained fix; land before I3.
+
+---
+
+### ~~Q-063-08~~ · List view has the identical cover-image problem as grid view, with no equivalent fix planned ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** New `AlbumListItemVirtual.vue` (FR-063-17/DO-063-07), forked from `AlbumListItem.vue` exactly the way `AlbumThumbVirtual.vue` forks `AlbumThumb.vue` — `ListBadge.vue`/layout logic reused unchanged, `AlbumThumbImage.vue` replaced with `<Thumb>` at the row's existing fixed thumbnail size. `AlbumListViewVirtual.vue` mounts it per row.
+
+**Spec impact:** New FR-063-17, DO-063-07, S-063-24; plan.md Increment I6 expanded to include it.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Fork `AlbumListItem.vue` the same way `AlbumThumbVirtual.vue` forks `AlbumThumb.vue`
+
+**Question**  
+`AlbumListItem.vue` (the flag-off list-row component) imports and uses `AlbumThumbImage.vue` directly for its own thumbnail — the exact same pre-built-URL dependency that motivated forking `AlbumThumbVirtual.vue` (FR-063-15) for grid tiles. But FR-063-10/DO-063-04 (`AlbumListViewVirtual.vue`) only describe reusing the grid's row-flattening composable at `itemsPerRow = 1` — neither mentions a list-row equivalent of `AlbumThumbVirtual.vue`. As currently specified, list view would either try to reuse `AlbumListItem.vue` unchanged (breaking identically to how `AlbumThumb.vue` would have) or reuse `AlbumThumbVirtual.vue` itself (wrong layout — a full square/aspect-ratio tile doesn't fit a list row). How should list view resolve its cover image?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Fork `AlbumListItem.vue` into a new `AlbumListItemVirtual.vue`
+
+- **Idea:** Same pattern as FR-063-15: a new component under `.../albumModule/Virtualized/`, reusing `AlbumListItem.vue`'s badge (`ListBadge.vue`) and layout logic unchanged, replacing its `AlbumThumbImage.vue` usage with `<Thumb :album-id :photo-id type="thumb">` at the row's fixed thumbnail size (`h-8 md:h-5`, matching FR-063-10's already-specified fixed row height).
+- **Spec impact:** New FR (e.g. FR-063-16), new DO, new task(s) in I6; `AlbumListViewVirtual.vue` renders this new component per row instead of an unspecified placeholder.
+- **Pros:**
+  - ✅ Full parity with the grid path — list view actually shows correct, live cover images, matching FR-063-10's own stated goal ("cover both view modes, not just the default grid").
+  - ✅ Directly reuses the exact same `<Thumb>`/`ThumbAssetService` mechanism, no new infrastructure.
+- **Cons:**
+  - ❌ Another new component + task, modest but real scope growth.
+
+---
+
+#### 🅱️ Option B – Scope list view down for v1 (icon-only rows, no cover pixels)
+
+- **Idea:** Flag-on list rows render without a real cover thumbnail (a generic icon placeholder) until a follow-up feature adds the fork.
+- **Spec impact:** FR-063-10 amended to explicitly drop cover-image rendering for list view; a Follow-up entry added.
+- **Pros:**
+  - ✅ Smaller scope for this feature.
+- **Cons:**
+  - ❌ Directly contradicts FR-063-10's own cited Source ("User instruction: cover both view modes, not just the default grid") — this would be reneging on an already-stated goal, not just deferring a nice-to-have.
+  - ❌ A visibly worse list view than today's flag-off one (which does show real thumbnails).
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️ before I6 begins — this affects I6's task list and DO-063-04's own scope either way.
+
+---
+
+### ~~Q-063-09~~ · `cover_id` changes aren't in FR-063-13's mutation re-fetch trigger list ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** "Cover photo change" (manual selection or automatic `auto_cover_id_*` recompute) added to FR-063-13's trigger list. A new task audits whether an existing v2 call site already fires on a cover change, wiring the re-fetch there or adding a new one if none exists — not assumed away.
+
+**Spec impact:** FR-063-13 updated; Goals/plan.md Increment I9 updated; new task for the audit itself.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Add "cover photo changed" to the trigger list
+
+**Question**  
+FR-063-13 re-fetches tier 1+2 after create/delete/move/rename/lock-unlock/visibility-change — mirroring `AlbumService.clearCache()`'s existing v2 call sites. None of those cover an explicit cover-photo change (user picks a new cover for a subalbum) or an automatic cover recompute (e.g. `RecomputeAlbumStatsJob` updating `auto_cover_id_max_privilege`/`auto_cover_id_least_privilege` after the current cover photo is deleted from within that subalbum). Since FR-063-15 now makes tile rendering depend on `cover_id`, a cover-only change with no accompanying metadata mutation would leave that tile showing a stale image indefinitely, until some unrelated re-fetch happens to occur. Should this be added as a trigger?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Add cover-change events to FR-063-13's trigger list
+
+- **Idea:** Wire the store's re-fetch action alongside whatever existing call site(s) already fire on a manual cover change (if any exist today for v2) and on `AlbumComputedDataUpdated`-style recompute events, mirroring Feature 053's own precedent for reacting to `RecomputeAlbumStatsJob` completion (Q-053-04).
+- **Spec impact:** FR-063-13's trigger list gains "cover photo changed (manual or automatic recompute)."
+- **Pros:**
+  - ✅ Closes a real staleness gap in a feature whose entire value proposition is "correct cover pixels."
+  - ✅ Small, additive change — one more call site on an already-established re-fetch action.
+- **Cons:**
+  - ❌ Requires confirming whether a per-cover-change event/call site already exists to hook, or a new one needs adding (audit needed, similar to Feature 058's FR-058-12 invalidation-net audit this FR already cites as its own precedent).
+
+---
+
+#### 🅱️ Option B – Accept as a known staleness gap
+
+- **Idea:** Leave cover changes untriggered; the tile keeps its old cover pixels until an unrelated re-fetch/navigation happens to refresh it.
+- **Spec impact:** A note added to FR-063-13's Failure path column.
+- **Pros:**
+  - ✅ No additional audit/wiring work.
+- **Cons:**
+  - ❌ Directly undercuts this feature's core promise — a subalbum grid whose thumbnails can silently go stale after the exact kind of edit (changing a cover) users make often.
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️; if 🅰️, audit existing cover-change call sites (manual set + recompute-job completion) before wiring I9's re-fetch action.
+
+---
+
+### ~~Q-063-10~~ · The "probe tile" tile-width-measurement mechanism is never concretely specified ✅ RESOLVED
+
+**Status:** Resolved — neither original option; a third approach found during resolution  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** Owner asked "how are we doing it right now?" rather than picking 🅰️/🅱️ below — investigation found this codebase already has two relevant, reusable pieces neither original option accounted for: `resources/js/layouts/getWidth.ts` (existing container-width measurement — `window.innerWidth` minus real computed padding/scrollbar, used by the photo-layout composables) and `useBreakpoints`/`breakpointsTailwind` (`@vueuse/core`, already used in `AlbumNavPanel.vue`/`useAdminTiles.ts` for reactive Tailwind-breakpoint detection). Resolved by combining both: measure the scroll container's width the `getWidth.ts` way (no tile involved), read the current breakpoint reactively via `useBreakpoints()` (extended with this project's actual `3xl`/`4xl` thresholds — not fully located during this pass, flagged as a plan.md Risk to source during implementation), then compute tile width from the *same* `calc()` formula already encoded in the width classes, via one shared lookup table both the CSS and this JS computation read from. No probe tile, no DOM measurement of any tile element at all — a stronger outcome than either original option (🅰️'s probe tile, 🅱️'s circular first-real-row measurement).
+
+**Spec impact:** FR-063-14 rewritten in full; new DO-063-09 (`albumTileWidth.ts`); plan.md's original width-duplication Risk marked resolved with the new reasoning; new `3xl`/`4xl`-sourcing Risk added.
+
+**Original options below, superseded:**
+
+**Preferred option (superseded):** 🅰️ (**recommended**) Option A – A dedicated, permanently-mounted hidden probe element
+
+**Question**  
+FR-063-07/FR-063-14 both depend on a "measured tile width," and plan.md's Risks section says this comes from "e.g. via a one-time `getBoundingClientRect()` on a mounted probe tile" — but no FR, DO, or task actually pins down what this probe tile *is*: a real `AlbumThumbVirtual.vue` instance rendered purely for measurement, a bare `<div>` carrying the same width/`aspect-*` classes, or something else — and whether it lives permanently off-screen or is borrowed from whichever row happens to mount first. `itemsPerRow`/row-height math (FR-063-14) can't be implemented without this being pinned down. How should tile width actually be measured?
+
+---
+
+#### 🅰️ (**recommended**) Option A – A dedicated, permanently-mounted hidden probe element
+
+- **Idea:** A single element (`visibility: hidden` or `position: absolute` off-screen — not `display: none`, which drops layout — so it still has real dimensions) carrying the exact same responsive width classes `AlbumThumbVirtual.vue` uses, mounted once per grid instance, remeasured on every `ResizeObserver` callback.
+- **Spec impact:** A concrete implementation note added to FR-063-07/DO-063-02/03, e.g. as a new small DO for the probe element itself.
+- **Pros:**
+  - ✅ Always available to measure, independent of whether any real row has mounted yet — no chicken-and-egg problem on first paint.
+  - ✅ Decoupled from real data — measuring doesn't depend on a specific child existing.
+- **Cons:**
+  - ❌ One extra always-present DOM node per grid instance (negligible at this feature's scale, but worth naming explicitly).
+
+---
+
+#### 🅱️ Option B – Measure the first real mounted tile row directly
+
+- **Idea:** No separate probe — read `getBoundingClientRect()` off whatever `AlbumThumbVirtual.vue` instance the virtualizer happens to mount first.
+- **Spec impact:** Simpler DOM (no extra hidden node), but `itemsPerRow` is unknown until *something* has already mounted — and `itemsPerRow` is exactly what's needed to decide how many tiles to mount in the first place.
+- **Pros:**
+  - ✅ No extra always-present DOM node.
+- **Cons:**
+  - ❌ Circular dependency on first paint: the virtualizer needs `itemsPerRow` to know what to mount, but this option needs something mounted to learn `itemsPerRow`.
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️ (🅱️'s circularity likely rules it out) before I4/I5 tasks begin — this is a concrete blocker for T-063-10 (implementing `virtualAlbumRows.ts`'s width input).
+
+---
+
+### ~~Q-063-11~~ · No stale-response guard specified for rapid album-to-album navigation ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** A monotonic request-generation counter on `AlbumsState.ts` (the token variant of Option A, not `AbortController`) — incremented per `loadAlbumsV3()` call, captured per in-flight fetch, a response applied only if its generation still matches the store's current one.
+
+**Spec impact:** New FR-063-18; Goals/plan.md Increment I1 updated; new S-063-26.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Guard against stale responses with a generation token/`AbortController`
+
+**Question**  
+FR-063-01 triggers a new tier 1+2 fetch on every album navigation; FR-063-03 fires tier 3 immediately after. Neither FR states what happens if the user navigates from album A to album B before album A's fetch(es) resolve — could A's late-arriving response overwrite the store after B's own (later-started, possibly-faster) fetch has already rendered, producing a visible flash of the wrong album's children? This is distinct from the same-session-mutation race FR-063-02's Failure path already covers (`sum(counts) !== children.length`) — that race is about internal consistency of one album's own two responses; this one is about which album's data wins when two different albums' fetches overlap.
+
+---
+
+#### 🅰️ (**recommended**) Option A – Guard with a generation token or `AbortController`
+
+- **Idea:** `AlbumsState.ts` tracks the currently-requested `album_id` (or a monotonic counter) at fetch-start; when a response arrives, it's applied only if it still matches the current target — otherwise discarded. `AbortController` is the more thorough version (also cancels the in-flight HTTP request, not just its effect).
+- **Spec impact:** New clause on FR-063-01 (and FR-063-03 by extension) describing the guard.
+- **Pros:**
+  - ✅ Common, well-understood SPA pattern — closes a real, easy-to-hit race (fast back-and-forth browsing is normal usage, not an edge case).
+  - ✅ Cheap to implement — a few lines in the fetch action.
+- **Cons:**
+  - ❌ One more piece of state to keep correct (the "current generation" tracking itself must not have its own bugs).
+
+---
+
+#### 🅱️ Option B – Accept as a rare, self-correcting staleness window
+
+- **Idea:** No guard; if it happens, the user briefly sees album A's stale children under album B's header, self-corrected whenever the (usually near-simultaneous) later response also lands.
+- **Spec impact:** None — status quo.
+- **Pros:**
+  - ✅ Zero implementation cost.
+  - ✅ Mirrors this spec's own already-accepted staleness-window precedent (plan.md Risks, cross-session mutation race).
+- **Cons:**
+  - ❌ Unlike that precedent (rare, cross-session), this race is triggered by ordinary fast browsing — plausibly common, not rare, and directly visible (wrong album's content, not just a stale count).
+
+---
+
+**Next action**  
+Owner to choose 🅰️ or 🅱️ before I1 — if 🅰️, add to T-063-01's implementation notes.
+
+---
+
+### ~~Q-063-12~~ · No caching/staleness policy specified for repeat navigation to an already-visited album ✅ RESOLVED
+
+**Status:** Resolved — Option B  
+**Feature:** 063 – Album Timeline Buckets Frontend Adoption  
+**Resolved:** 2026-08-30
+
+**Resolution:** Owner chose Option B over the recommended Option A — a short-TTL, per-`album_id` in-memory cache on `AlbumsState.ts`, mirroring v2's `AlbumService` convention, invalidated by the exact same trigger set FR-063-13's mutation re-fetch already uses (now including Q-063-09's cover-change trigger).
+
+**Spec impact:** New FR-063-19; Goals/plan.md Increment I1 updated; new S-063-25; DO-063-01 gains the cache as new store state.
+
+**Preferred option (not chosen):** 🅰️ Option A – No caching; always re-fetch fresh
+
+**Question**  
+FR-063-01 says navigation "triggers a new `AlbumsState.ts` action that fetches tier 1... and tier 2," but doesn't say whether this always re-fetches from the network or checks for a recent cached response first — unlike v2's `AlbumService`, which has an explicit `clearCache()` convention this spec's own FR-063-13 mirrors for invalidation, implying v2 *does* cache. Should v3 navigation behave the same way?
+
+---
+
+#### 🅰️ (**recommended**) Option A – No caching; always re-fetch fresh on every navigation
+
+- **Idea:** `loadAlbumsV3()` always issues fresh tier 1+2 requests, with no short-lived cache layer.
+- **Spec impact:** None needed beyond stating this explicitly in FR-063-01.
+- **Pros:**
+  - ✅ Simplest possible correctness story — never a second staleness surface to reason about alongside FR-063-13's invalidation net.
+  - ✅ Avoids doubling FR-063-13's already-established mutation-invalidation list for a second cache layer.
+- **Cons:**
+  - ❌ Slightly more network traffic on rapid back-and-forth browsing between the same few albums than a cached approach would need.
+
+---
+
+#### 🅱️ Option B – Short-lived cache keyed by `album_id`, mirroring v2's `AlbumService`
+
+- **Idea:** Cache tier 1+2 responses per `album_id` for some TTL/until invalidated, reusing FR-063-13's mutation list as the same cache's invalidation triggers.
+- **Spec impact:** New cache mechanism + explicit statement that FR-063-13's trigger list now serves double duty (re-fetch action *and* cache invalidation).
+- **Pros:**
+  - ✅ Faster perceived navigation when revisiting a recently-browsed album.
+- **Cons:**
+  - ❌ A second cache surface to keep in sync with FR-063-13's invalidation net — any future addition to that list (e.g. Q-063-09's cover-change trigger) must now also be remembered for this cache, doubling the blast radius of a missed trigger.
+
+### ~~Q-062-14~~ · Guest exposure of owner display names via root's `shared`-scope bucket labels ✅ RESOLVED
+
+**Status:** Resolved — Option B  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** The `users` join and label resolution are skipped entirely for unauthenticated callers — not just hidden after the fact, the join never executes (defense in depth, and avoids a pointless query). Owner-based grouping/counts are still computed for guests (the mechanism itself is unaffected — a guest still sees "3 buckets" if 3 distinct owners have shared albums), but every label falls back to the literal string `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this endpoint family. Authenticated callers still get real `COALESCE(display_name, username)` labels, unchanged.
+
+**Spec impact:** FR-062-05 gains an explicit guest branch (no join, `labels` hardcoded `'unknown'`); new scenario for guest label anonymization with real grouping intact.
+
+**Preferred option:** 🅱️ (**recommended**) Option B – No names for guests
+
+**Question**  
+FR-062-05 has `/Albums/root/buckets`'s `shared` scope resolve bucket labels via `COALESCE(display_name, username)` joined on `owner_id`, with no authentication gate stated in the FR itself. Since guests default to `shared` scope (FR-062-02) and have no `own` scope available, this means an unauthenticated visitor to the gallery would see the real display names of every user who owns a visible root album, in bucket headers. An earlier draft of this spec had an explicit NFR forbidding this; it was dropped when `OWNER_ID` was removed as a *sort column* option, on the reasoning that "shared is the only thing a guest can request, so there's nothing left to protect." That reasoning conflates two different things (which sort *column* an admin can configure vs. whether label lookups run for anonymous callers) and was decided unilaterally during a fast pivot, not requested by the user. Should guests see real names here?
+
+---
+
+#### 🅰️ Option A – Guests see names (current spec text, unchanged)
+
+- **Idea:** Keep FR-062-05 as written — the `users` join and label resolution run unconditionally for `shared` scope, regardless of caller.
+- **Spec impact:** None — spec already reflects this.
+- **Pros:**  
+  - ✅ Simplest implementation — one code path, no guest branch.  
+  - ✅ Matches the fact that "who shared this album" is arguably already implicit, visible content (the album itself is public).
+- **Cons:**  
+  - ❌ Exposes potentially real names (not usernames) of every contributing user to any anonymous visitor, without them opting in to that exposure.  
+  - ❌ Reverses a more conservative decision from an earlier draft without an explicit product call.  
+  - ❌ Inconsistent with this codebase's general instinct elsewhere (e.g. `AlbumAccessPermissionListController` deliberately narrows columns to avoid over-exposing user data) even though the concrete data here (display name) is lower-sensitivity than a password hash.
+
+---
+
+#### 🅱️ (**recommended**) Option B – No names for guests
+
+- **Idea:** Restrict the `users` join / label resolution to authenticated callers only. A guest's `shared`-scope buckets still group by `owner_id` (the grouping/count mechanism is unaffected) but each label falls back to a neutral placeholder (e.g. `"unknown"`, mirroring the existing `bucket_id ?? 'unknown'` convention already used elsewhere in this same endpoint family) or the response omits `labels` for that scope when unauthenticated.
+- **Spec impact:** FR-062-05 gains an explicit guest branch; NFR list gains back a privacy requirement (mirrors the dropped draft NFR-062-07); new scenario for "guest sees buckets but no names."
+- **Pros:**  
+  - ✅ No new exposure surface introduced by this feature.  
+  - ✅ Matches the spirit of the original (pre-pivot) design intent.
+- **Cons:**  
+  - ❌ One more conditional branch in `AlbumRootController::buckets()`.  
+  - ❌ A guest's bucket headers become less informative ("3 albums" instead of "Alice: 3 albums").
+Owner to choose 🅰️ or 🅱️ before I1 — 🅰️ is the lower-risk default absent a demonstrated performance need.
+
+---
+
+**Next action**  
+
+User to confirm which behavior is intended before FR-062-05/NG9/NFR list are finalized; if Option B, add the guest branch and a dedicated scenario ID.
+
+---
+
+### ~~Q-062-15~~ · Does `bucketable:false` mean "structurally ungroupable" or "zero results this time"? ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** `bucketable` keeps Feature 061's exact meaning — it describes whether the grouping *mechanism* is available, not whether there happens to be data. `shared` scope is unconditionally `bucketable:true` for both guests and authenticated callers (owner-based grouping is always a coherent mechanism for that scope); a zero-shared-albums result returns `bucketable:true` with empty `bucket_ids`/`counts`/`labels` arrays, exactly like 061's own empty-children behavior today. `bucketable:false` remains reserved for genuine structural incapability (there is none left in this scope, since `OWNER_ID` is no longer reachable as a bucket dimension at all per Q-062-08).
+
+**Spec impact:** FR-062-05's "`bucketable:false` only for an empty result" parenthetical is removed; S-062-07 updated to expect `bucketable:true` + empty arrays instead of `bucketable:false`.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Keep Feature 061's meaning; empty ≠ false
+
+**Question**  
+Feature 061's shipped `AlbumBucketController` sets `bucketable:false` in exactly one case — the `OWNER_ID`-configured-column short-circuit, a *structural* incapability to bucket. A normal query that legitimately returns zero children still yields `bucketable:true` with empty arrays. FR-062-05 (this spec) instead says `shared`-scope `bucketable` is "always `true`... `bucketable:false` only for an empty result" — the opposite mapping: `false` now signals "no data," not "can't group." A frontend built against 061's convention (skip rendering sticky headers / virtual-scroll setup when `bucketable:false`, because there's no groupable dimension) would misinterpret a merely-empty `shared` result the same way as a genuinely ungroupable one, or vice versa depending on which convention it was actually written against. Which meaning should `bucketable` carry for the new endpoints?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Keep 061's meaning: `bucketable` describes the mechanism, not the data
+
+- **Idea:** `shared` scope is always `bucketable:true` (owner-grouping is always a valid mechanism for this scope), even when the result set happens to be empty — `bucket_ids`/`counts`/`labels` are just empty arrays in that case, exactly like 061's own empty-children behavior today.
+- **Spec impact:** FR-062-05's parenthetical ("`bucketable:false` only for an empty result") is deleted; add a scenario asserting `bucketable:true` + empty arrays for a zero-shared-albums caller.
+- **Pros:**  
+  - ✅ One consistent meaning for `bucketable` across every endpoint in this family (Feature 061 and 062 alike) — a frontend written once against the field never needs a per-endpoint branch.  
+  - ✅ Matches existing shipped behavior exactly, zero surprise for anyone who already built against 061.
+- **Cons:**  
+  - ❌ None identified — this is the lower-risk, already-proven option.
+
+---
+
+#### 🅱️ Option B – Keep this spec's current wording; `bucketable:false` also covers "empty"
+
+- **Idea:** Accept the dual meaning as written: `false` means either "can't group" or "nothing to group."
+- **Spec impact:** None — spec already reflects this. Would need an explicit callout in Documentation Deliverables so frontend authors don't assume 061's convention.
+- **Pros:**  
+  - ✅ Arguably saves the frontend a round trip in the empty case (no point rendering an empty virtual-scroll container either way).
+- **Cons:**  
+  - ❌ Silently changes the meaning of a field name reused verbatim from a shipped feature, for only one of its two call sites — a subtle trap for anyone extending this family later.  
+  - ❌ No test coverage currently distinguishes the two cases from each other.
+
+---
+
+**Next action**  
+User to pick A or B; if A, remove the parenthetical from FR-062-05 and add the empty-but-bucketable scenario; if B, add an explicit cross-reference note in FR-062-05 warning that this diverges from 061.
+
+---
+
+### ~~Q-062-16~~ · Is `/Albums/root/rights`'s `owner_id` null for `scope=own`, or only for `scope=shared`? ✅ RESOLVED
+
+**Status:** Resolved — Option A, refined  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** `owner_id` stays `null` unconditionally for root's rights response, for both `own` and `shared` scope (Option A, as recommended). Follow-up question during resolution — "if it is always null do we need it?" — is correct: a field that is *always* null on this endpoint carries zero information and is just noise. Refined resolution: the key is **omitted from the JSON payload entirely** for root's rights response (via a conditional resource field, e.g. Laravel's `whenNotNull()`), rather than serialized as a useless `"owner_id": null`. The sub-album tier and the `TagAlbum`/`PersonAlbum` matching-albums tier — where `owner_id` is always a real, meaningful value — are unaffected: the shared `AlbumChildrenRightsResource` class still emits the key there, unchanged, since the same conditional only omits it when the value is actually null.
+
+**Spec impact:** FR-062-06 reworded to state the omission explicitly; DO-062-04 updated (`nullable, omitted from the payload when null` rather than just `nullable`).
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Null unconditionally, both scopes
+
+**Question**  
+FR-062-06 widens `AlbumChildrenRightsResource`'s top-level `owner_id` to nullable "because root has no single owner to report," stated without a scope carve-out. But under `scope=own`, every row genuinely does share one real owner — the caller — the exact fact FR-062-03 relies on to justify its own `own`-scope simplifications for buckets. Should `own`-scope root rights report the caller's real `owner_id`, or stay null like `shared` scope?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Null unconditionally, both scopes
+
+- **Idea:** `owner_id` is always `null` on this resource regardless of `scope`, matching FR-062-06 as currently written.
+- **Spec impact:** None — spec already reflects this; just needs an explicit sentence confirming it's deliberate, not an oversight.
+- **Pros:**  
+  - ✅ One code path, no scope-conditional logic in the rights controller.  
+  - ✅ The field is genuinely not useful here anyway — a caller requesting `own` scope already knows whose albums they are by definition.
+- **Cons:**  
+  - ❌ Slightly inconsistent with the rest of this feature, where `own` scope is treated as meaningfully simpler than `shared` almost everywhere else.
+
+---
+
+#### 🅱️ Option B – Populate with the caller's id for `own` scope
+
+- **Idea:** `owner_id = (string) $user->id` when `scope=own`; stays `null` for `shared`.
+- **Spec impact:** FR-062-06 gains a scope-conditional clause; DO-062-04 updated.
+- **Pros:**  
+  - ✅ More information for "free" — no extra query, `$user->id` is already known.
+- **Cons:**  
+  - ❌ Adds a branch to a resource whose main job (per-row grants) doesn't otherwise vary by scope, for a field of doubtful client value.
+
+---
+
+**Next action**  
+User to confirm; low effort either way, but FR-062-06 should say which explicitly rather than leaving it inferable.
+
+---
+
+### ~~Q-062-17~~ · Does dropping `/children` make `/Albums/{album_id}` read as "fetch one album"? ✅ RESOLVED
+
+**Status:** Resolved — Option A  
+**Feature:** 062 – Root Album Listing Struct-of-Arrays  
+**Resolved:** 2026-09-02
+
+**Resolution:** Keep the rename exactly as specced — `/Albums/{album_id}`, `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights` (Q-062-12 stands, reconsideration confirmed no change). The naming tradeoff is accepted knowingly rather than reverted.
+
+**Spec impact:** None — spec already reflects this; Appendix note added confirming the decision was revisited and stands.
+
+**Preferred option:** 🅰️ (**recommended**) Option A – Keep the rename, accept the naming tradeoff
+
+**Question**  
+By ordinary REST convention, `GET /resource/{id}` fetches that one resource's own fields. This feature renames `/Albums/{album_id}/children` (self-documenting: "this album's children") to `/Albums/{album_id}` (Q-062-12), which actually returns a Struct-of-Arrays **collection** of that album's children, not the album's own metadata. The same pattern now applies to `/Albums/root`, `/Albums/persons`, `/Albums/pinned` — all singular/scope-shaped paths returning collections. This was an accepted tradeoff for the *new* root-family paths; renaming an *already-shipped* Feature 061 path to match raises the stakes slightly, since it's the first time this ambiguity touches a path that isn't brand new. Is the consistency win worth it, or should the rename be reconsidered now that it's not just new surface?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Keep the rename, accept the naming tradeoff
+
+- **Idea:** Proceed exactly as specified (Q-062-12) — `/Albums/{album_id}`, `/Albums/{album_id}/buckets`, `/Albums/{album_id}/rights`.
+- **Spec impact:** None — spec already reflects this.
+- **Pros:**  
+  - ✅ Consistent scheme across every endpoint in this family: `/Albums/<scope-or-id>` = "list what's under this," `/buckets` and `/rights` as siblings.  
+  - ✅ Confirmed zero v8 consumers reference the old path — genuinely free to change.  
+  - ✅ Shorter, cleaner URLs, matching the user's own stated preference.
+- **Cons:**  
+  - ❌ A future API consumer's first instinct reading `GET /Albums/{id}` may be "this returns the album," not "this returns its children" — discoverable only via documentation, not the URL itself.
+
+---
+
+#### 🅱️ Option B – Keep `/children` on the sub-album tier only; only root-level (parent-less) paths drop it
+
+- **Idea:** Revert Q-062-12 — sub-album tier stays `/Albums/{album_id}/children[/buckets|/rights]` (self-documenting, matches real REST expectations for a real resource id). Root/persons/pinned/smart/tags keep the shorter form, since they were never going to collide with a "fetch this resource" reading in the first place (there's no single "smart album" or "pinned album" resource by that name).
+- **Spec impact:** Revert FR-062-01/FR-062-12's rename clause, NFR-062-06's URL-literal caveat, S-062-28, Q-062-12's resolution, and all "8 new + 3 renamed" route-count language back to "8 new, 3 re-pointed, paths unchanged."
+- **Pros:**  
+  - ✅ Removes all rename-related risk and test-file churn (T-062-02, T-062-00) entirely.  
+  - ✅ `/children` after a real `{album_id}` is the one place in this whole route family where the "collection, not the resource" cue is actually load-bearing (elsewhere the segment itself, e.g. `smart`/`pinned`, already isn't a plausible single-resource name).
+- **Cons:**  
+  - ❌ Breaks the "`/Albums/<scope-or-id>` always means list" consistency the rest of the feature establishes.  
+  - ❌ Reintroduces the asymmetry this revision was explicitly trying to remove.
+
+---
+
+**Next action**  
+User to confirm Option A (as currently specced) or revert to Option B; low urgency since either is a small, mechanical spec edit at this stage, before implementation starts.
+
+---
 
 ### ~~Q-056-01~~: MAC/signature mechanism for temporary asset links ✅ RESOLVED
 

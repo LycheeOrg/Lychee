@@ -8,8 +8,9 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Assets\DbBool;
 use App\Http\Requests\Gallery\AlbumAccessPermissionListRequest;
-use App\Http\Resources\V3\AlbumAccessPermissionListResource;
+use App\Http\Resources\V3\AlbumAccessPermissionResource;
 use App\Models\Album;
 use App\Models\User;
 use Illuminate\Database\Query\JoinClause;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  */
 class AlbumAccessPermissionListController extends Controller
 {
-	public function index(AlbumAccessPermissionListRequest $request): AlbumAccessPermissionListResource
+	public function index(AlbumAccessPermissionListRequest $request): AlbumAccessPermissionResource
 	{
 		/** @var User $user */
 		$user = Auth::user();
@@ -91,7 +92,7 @@ class AlbumAccessPermissionListController extends Controller
 	/**
 	 * @param Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string}> $rows
 	 */
-	private function buildResource(Collection $rows): AlbumAccessPermissionListResource
+	private function buildResource(Collection $rows): AlbumAccessPermissionResource
 	{
 		$album_ids = [];
 		$album_titles = [];
@@ -124,14 +125,14 @@ class AlbumAccessPermissionListController extends Controller
 			$user_names[] = $row->user_name;
 			$group_ids[] = $row->group_id !== null ? (int) $row->group_id : null;
 			$group_names[] = $row->group_name;
-			$grants_full_photo_accesses[] = $has_permission ? filter_var($row->grants_full_photo_access, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_downloads[] = $has_permission ? filter_var($row->grants_download, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_uploads[] = $has_permission ? filter_var($row->grants_upload, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_edits[] = $has_permission ? filter_var($row->grants_edit, FILTER_VALIDATE_BOOLEAN) : null;
-			$grants_deletes[] = $has_permission ? filter_var($row->grants_delete, FILTER_VALIDATE_BOOLEAN) : null;
+			$grants_full_photo_accesses[] = $has_permission ? DbBool::parse($row->grants_full_photo_access) : null;
+			$grants_downloads[] = $has_permission ? DbBool::parse($row->grants_download) : null;
+			$grants_uploads[] = $has_permission ? DbBool::parse($row->grants_upload) : null;
+			$grants_edits[] = $has_permission ? DbBool::parse($row->grants_edit) : null;
+			$grants_deletes[] = $has_permission ? DbBool::parse($row->grants_delete) : null;
 		}
 
-		return new AlbumAccessPermissionListResource(
+		return new AlbumAccessPermissionResource(
 			album_ids: $album_ids,
 			album_titles: $album_titles,
 			lft: $lft,

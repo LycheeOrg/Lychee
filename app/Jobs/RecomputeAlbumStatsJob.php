@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
+use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Events\AlbumComputedDataUpdated;
@@ -20,6 +21,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
+use App\Services\AlbumBucketComputer;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -121,6 +123,8 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album, $is_nsfw_context);
 			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
 			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
+
+			$album->bucket_id = $this->computeBucket($album);
 			$album->save();
 
 			AlbumComputedDataUpdated::dispatch($album->id);
@@ -328,6 +332,38 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 
 		// Album is not public visible and multiple permissions exist => Consider it publically accessible
 		return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
+	}
+
+	/**
+	 * Compute `bucket_id`: resolves the album's own *parent's* effective
+	 * sort column (or the instance-wide default for a root album) and granularity,
+	 * then delegates the actual truncation to {@see AlbumBucketComputer} —
+	 * shared with {@see RecomputeChildAlbumBucketsJob} and the backfill command,
+	 * so the truncation logic itself lives in exactly one place.
+	 * Never queries `photos` — every value is derivable from the album row
+	 * itself plus its parent's already-loaded settings.
+	 *
+	 * @param Album $album
+	 *
+	 * @return string|null
+	 */
+	private function computeBucket(Album $album): ?string
+	{
+		$sorting_column = $album->parent?->getEffectiveAlbumSorting()->column
+			?? AlbumSortingCriterion::createDefault()->column;
+
+		$bucket_computer = resolve(AlbumBucketComputer::class);
+		$granularity = $bucket_computer->resolveGranularity($album->parent?->album_timeline);
+
+		return $bucket_computer->compute(
+			sorting_column: $sorting_column,
+			granularity: $granularity,
+			title: $album->title,
+			title_base: $album->title_base,
+			created_at: $album->created_at,
+			min_taken_at: $album->min_taken_at,
+			max_taken_at: $album->max_taken_at,
+		);
 	}
 
 	/**

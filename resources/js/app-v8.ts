@@ -1,6 +1,6 @@
 /**
  * v8 entry point (Nuxt UI). Served instead of `app.ts` when
- * `Features::active('nuxt_ui')` is true (see Feature 049 / ADR-0006).
+ * `Features::active('nuxt_ui')` is true.
  * Kept independent from `app.ts` — v7 is not affected by anything here.
  */
 import { createApp } from "vue";

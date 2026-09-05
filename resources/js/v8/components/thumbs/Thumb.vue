@@ -20,7 +20,7 @@ const src = ref<string>(placeholder);
 // When `type` isn't pinned by the caller, pick the 2x variant on HiDPI screens instead of
 // always fetching the 1x one - devicePixelRatio doesn't change during a session, so this is
 // only read once rather than tracked reactively.
-const effectiveType = computed<App.Enum.SizeVariantAssetType>(() => props.type ?? (window.devicePixelRatio > 1 ? "thumb2x" : "thumb"));
+const effectiveType = computed<App.Enum.SizeVariantAssetType>(() => props.type ?? (window.devicePixelRatio > 1 ? "small2x" : "small"));
 
 let release: (() => void) | undefined;
 let loadId = 0;

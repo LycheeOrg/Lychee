@@ -4,8 +4,7 @@
  * This is the single source of truth for the app's route names/paths. Both
  * the v7 router (`@/router/routes.ts`, PrimeVue) and the v8 router
  * (`@/v8/router/routes.ts`, Nuxt UI) attach components to this same list, so
- * both bundles are reachable at identical URLs regardless of which is served
- * (see Feature 049 / ADR-0006).
+ * both bundles are reachable at identical URLs regardless of which is served.
  */
 export interface RoutePath {
 	name: string;

@@ -55,7 +55,7 @@ const socialIcons: IconifyJSON = {
 
 /**
  * Registers the Iconify collections offline so icon lookups never hit the public
- * Iconify API at runtime - see Feature 049 T-049-03. Lychee must be usable with
+ * Iconify API at runtime. Lychee must be usable with
  * zero network connection, so any new icon set must be added here as a local
  * @iconify-json/* dependency (or, for a handful of one-off icons, hand-copied
  * bodies like socialIcons above) rather than resolved remotely.

@@ -10,12 +10,12 @@ namespace App\Http\Resources\GalleryConfigs;
 
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Enum\DateOrderingType;
 use App\Enum\SharedAlbumsVisibility;
 use App\Enum\TimelineAlbumGranularity;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -24,8 +24,9 @@ class RootConfig extends Data
 	public bool $is_album_timeline_enabled = false;
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
-	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
+	public string $date_format_album_thumb;
+	public DateOrderingType $thumb_min_max_order;
 
 	// for now we keep it here. Maybe we should move it to a separate class
 	public bool $back_button_enabled;
@@ -51,6 +52,8 @@ class RootConfig extends Data
 		$this->is_search_accessible = $is_logged_in || request()->configs()->getValueAsBool('search_public');
 
 		$this->album_thumb_css_aspect_ratio = request()->configs()->getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
+		$this->date_format_album_thumb = request()->configs()->getValueAsString('date_format_album_thumb');
+		$this->thumb_min_max_order = request()->configs()->getValueAsEnum('thumb_min_max_order', DateOrderingType::class);
 		$this->show_keybinding_help_button = request()->configs()->getValueAsBool('show_keybinding_help_button');
 		$this->back_button_enabled = request()->configs()->getValueAsBool('back_button_enabled');
 		$this->back_button_text = request()->configs()->getValueAsString('back_button_text');

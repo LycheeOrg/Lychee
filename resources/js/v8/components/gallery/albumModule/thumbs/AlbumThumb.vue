@@ -1,11 +1,9 @@
 <template>
 	<router-link
 		:to="{ name: albumRoutes().album, params: { albumId: album.id } }"
-		class="album-thumb block relative sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)] xl:w-[calc(14vw-1rem)] 2xl:w-[calc(12vw-0.75rem)] 3xl:w-[calc(12vw-0.75rem)] 4xl:w-52 animate-zoomIn group"
+		class="album-thumb block relative animate-zoomIn group"
+		:style="{ width: `${tileWidth}px` }"
 		:class="{
-			'w-[calc(100%)]': number_albums_per_row_mobile === 1,
-			'w-[calc(50%-0.25rem)]': number_albums_per_row_mobile === 2,
-			'w-[calc(33%-0.25rem)]': number_albums_per_row_mobile === 3,
 			blurred: is_nsfw_background_blurred && props.album.is_nsfw,
 			'aspect-4x5': 'aspect-4x5' === aspectRatio,
 			'aspect-5x4': 'aspect-5x4' === aspectRatio,
@@ -23,12 +21,16 @@
 			class="group-hover:border-primary top-0 left-0 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
+			:album-id="props.album.id"
+			:cover-id="props.album.cover_id"
 		/>
 		<AlbumThumbImage
 			v-if="!togglableStore.isDragging"
 			class="group-hover:border-primary top-0 left-0 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
+			:album-id="props.album.id"
+			:cover-id="props.album.cover_id"
 		/>
 		<AlbumThumbImage
 			class="group-hover:border-primary top-0 left-0"
@@ -36,6 +38,8 @@
 			:class="cssClass"
 			:is-selectable="isSelectable"
 			:is-password-protected="props.album.is_password_required"
+			:album-id="props.album.id"
+			:cover-id="props.album.cover_id"
 		/>
 		<AlbumThumbOverlay v-if="display_thumb_album_overlay !== 'never'" :album="props.album" />
 		<span v-if="props.album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
@@ -104,6 +108,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { ALBUM_BADGE_BG } from "@/v8/utils/albumBadgeColors";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
+import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
@@ -116,7 +121,15 @@ export type AlbumThumbConfig = {
 const props = defineProps<{
 	isSelected: boolean;
 	cover_id: string | null;
-	album: App.Http.Resources.Models.ThumbAlbumResource;
+	// `cover_id` here is optional and
+	// distinct from the sibling top-level `cover_id` prop above (the
+	// *parent* album's designated cover, used only for the folder-cover
+	// badge comparison) — this one is *this tile's own* cover photo id, read
+	// from `AdaptedAlbumTile` (root smart-album tiles) when
+	// present and passed through to `AlbumThumbImage.vue` for Asset-endpoint
+	// resolution; absent (`undefined`) for every plain v2-sourced tile,
+	// which renders exactly as before.
+	album: App.Http.Resources.Models.ThumbAlbumResource & { cover_id?: string | null };
 }>();
 
 const emits = defineEmits<{
@@ -133,18 +146,14 @@ const lycheeStore = useLycheeStateStore();
 
 const togglableStore = useTogglablesStateStore();
 const { getPlayIcon } = useImageHelpers();
-const {
-	display_thumb_album_overlay,
-	number_albums_per_row_mobile,
-	is_nsfw_background_blurred,
-	is_smart_album_flags_enabled,
-	is_cover_id_flag_enabled,
-} = storeToRefs(lycheeStore);
+const { display_thumb_album_overlay, is_nsfw_background_blurred, is_smart_album_flags_enabled, is_cover_id_flag_enabled } = storeToRefs(lycheeStore);
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
 );
+
+const { tileWidth } = useAlbumTileWidth();
 
 const { albumRoutes } = useAlbumRoute(router);
 const cannotInteractWhileDragging = computed(() => togglableStore.isDragging === true && canInteractAlbum(props.album) === false);

@@ -26,7 +26,7 @@ Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_con
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 /**
- * ADMIN SETUP (v8, Feature 051).
+ * ADMIN SETUP (v8).
  * Unauthenticated by necessity (there is no admin yet); guarded internally by
  * SetUpAdminRequest, which rejects once an admin user already exists.
  */
@@ -42,6 +42,7 @@ Route::patch('/Contact', [Contact\ContactController::class, 'update'])->middlewa
 Route::delete('/Contact', [Contact\ContactController::class, 'destroy'])->middleware('support:se');
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
+Route::get('/Gallery::getMac', [Gallery\ConfigController::class, 'getMac']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);

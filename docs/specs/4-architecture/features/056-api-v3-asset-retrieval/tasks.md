@@ -1,7 +1,7 @@
 # Feature 056 Tasks – API v3 Asset Retrieval
 
-_Status: Completed_
-_Last updated: 2026-08-21_
+_Status: Completed — T-056-19 (2026-09-02 amendment, `BaseSmartAlbum` cache-exception branch + `AlbumIDRule` validation fix, FR-056-08) implemented, `PhotoAssetV3Test` 29/29 green._
+_Last updated: 2026-09-02_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -133,5 +133,11 @@ _Last updated: 2026-08-21_
   - `make phpstan`
   _Notes:_ `make phpstan` (0 errors/2822 files) and `php-cs-fixer` (clean) both ran full-project and are unqualified passes. The unfiltered `php artisan test` run hits the same pre-existing environment-level timeout/SQLite-lock-contention issue documented for Features 052/055 (confirmed unrelated to this feature: an untouched existing test, `SecureImageLinksTest`, passes cleanly in isolation; a clean low-contention `--testsuite=Unit` run shows exactly one pre-existing unrelated failure class, missing php-ldap extension constants in `LdapServiceTest`). Verified instead via the full `Feature_v3` suite (18/18), `TemporaryLinkSignerTest` (3/3), and `LoginRequiredTest` (touches the same `app/Http/Kernel.php` this feature added one middleware alias to) — all green. Roadmap row moved to Completed.
 
+- [x] T-056-19 *(2026-09-02 amendment, precondition for Feature 063's I14)* – `GetPhotoAssetRequest::isPhotoOfAlbum()`: add a `BaseSmartAlbum` branch (`$album instanceof BaseSmartAlbum && $this->isComputedAlbumThumb($album->get_id())`) mirroring the existing `TagAlbum`/`PersonAlbum` branch immediately above it (FR-056-08).
+  _Intent:_ Feature 062's new `/Albums/smart` cover-photo resolution (FR-062-16) depends on this — without it, a cached-but-since-stale smart-album cover would 403 through this endpoint. Feature 063's own I14 tracks it only as a precondition (T-063-42), this is the actual implementation task.
+  _Note:_ A second, corollary fix was required to make this branch reachable at all: `rules()` validated `album_id` via `RandomIDRule` instead of `AlbumIDRule` (the rule `GetAlbumRequest`/`GetAlbumHeadRequest` already use for the same purpose), so every smart-album-shaped `album_id` 422'd before ever reaching `isPhotoOfAlbum()` — a pre-existing bug, invisible until now because `TagAlbum`/`PersonAlbum` ids happen to satisfy `RandomIDRule`'s length/charset check too. Swapped to `AlbumIDRule`. Three tests added to `PhotoAssetV3Test`: cached cover still live-matching (200), cached cover no longer live-matching — the actual staleness scenario this branch exists for (200, would have been 403 without it), and an uncached non-matching photo (still 403, proving this isn't a blanket bypass).
+  _Verification commands:_ `make phpstan` (0 errors); `vendor/bin/php-cs-fixer fix --dry-run` (clean); `php artisan test --filter=PhotoAssetV3Test` (29/29 green).
+
 ## Notes / TODOs
 - T-056-10's S3 test-fixture pattern (fake disk) should be reused from an existing S3-aware test (e.g. around `UploadSizeVariantToS3Job`) rather than reinvented — confirm the exact fixture during implementation.
+- **(2026-09-02 amendment)** T-056-19 (`isPhotoOfAlbum()`'s new `BaseSmartAlbum` branch) is a small, deliberate exception to this feature's "Completed" status — driven by a dependency from Feature 063's smart-album-root-tiles addendum, not a bug found in this feature's original scope.

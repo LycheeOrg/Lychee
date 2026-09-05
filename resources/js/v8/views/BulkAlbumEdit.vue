@@ -329,7 +329,7 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // ── Computed helpers ──────────────────────────────────────────────────────────
 
-/** O(n) depth computation using a stack of ancestor _rgt values (Q-034-02 → B). */
+/** O(n) depth computation using a stack of ancestor _rgt values. */
 const albumDepths = computed<number[]>(() => {
 	const depths: number[] = [];
 	const stack: number[] = [];

@@ -168,7 +168,7 @@ Lychee uses route-based versioning:
 
 ### API v3: Photo Asset Retrieval
 
-**GET** `/api/v3/Photo/{photo_id}/Asset/{size_variant}`
+**GET** `/api/v3/Asset/{album_id}/{photo_id}/{size_variant}`
 
 Retrieves a single photo size-variant's binary file (thumbnail through original), watermark-aware. Registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\PhotoAssetController::show()`, `App\Http\Requests\Photo\GetPhotoAssetRequest`), under the `api` middleware group but with `accept_content_type:json`/`content_type:json` opted out of on this route specifically (binary passthrough, not JSON) — a `json_errors` middleware (`App\Http\Middleware\EnsureJsonErrorResponses`) still forces every *error* response to render as Lychee's standard JSON error body regardless of the caller's actual `Accept` header.
 
@@ -176,6 +176,7 @@ Retrieves a single photo size-variant's binary file (thumbnail through original)
 
 | Parameter | Type | Description |
 |-----------|------|--------------|
+| `album_id` | string | The (real/tag/person) album the photo is being viewed through — resolves the album-level access check alongside the photo-level one (`RandomIDRule`) |
 | `photo_id` | string | The photo's ID (`RandomIDRule`) |
 | `size_variant` | string | A `SizeVariantType` case name, case-insensitive (`raw`, `original`, `medium2x`, `medium`, `small2x`, `small`, `thumb2x`, `thumb`, `placeholder`) |
 
@@ -237,6 +238,118 @@ The first v3 endpoint to realize the Struct-of-Arrays (SoA) collection conventio
 | 200 | Curated listing returned (empty arrays, not an error, when nothing is visible) |
 | 403 | `with_parent_id=true` or `for_bulk_edit=true` requested by a non-admin caller |
 | 422 | `with_parent_id`/`for_bulk_edit` present but not boolean-parseable |
+
+### API v3: Album Virtual-Scroll Backend
+
+Three `GET` endpoints, all scoped to one parent `album_id` (a route segment, e.g. `/api/v3/Albums/{album_id}`), together forming the backend contract for a future virtual-scrolled album grid — sticky date headers, per-tile render data, and background-fetched right-click permission signals. Backend-contract-only: no v8 frontend consumer exists yet. All three are gated by `modules.is_struct_of_array_enabled` (`STRUCT_OF_ARRAY_ENABLED`, the same flag as `GET /api/v3/Albums` above) checked in each request's own `authorize()`, enforced server-side (403 when off), not just at the frontend. All three cache through `ManagedCacheService`, tagged with the same `CacheKeyProvider::albumChildrenTag($album_id)` the v2 listing's cache already uses, so every existing invalidation call site also invalidates these; `ManagedCacheAlbumListingInvalidator::handleAccessPermissionChanged()` additionally evicts the *changed album's own* `albumChildrenTag()` (not just its parent's), since the rights endpoint below is a consumer whose cache depends on grants against the queried album itself.
+
+The three routes below live at `/Albums/{album_id}[/buckets|/rights]`, mirroring root's own naming (see the next section). They are all registered on one `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController` (methods `buckets()`/`index()`/`rights()`), alongside separate controllers for root/category listings — see below.
+
+`album_id` resolves to a real `App\Models\Album`, a `TagAlbum`, or a `PersonAlbum` for tiers 2/3 (an unresolvable id, or a smart album, is a 404) — mirrored from v2's `App\Http\Requests\Album\GetAlbumChildrenRequest`. Tier 1 (buckets) stays regular-`Album`-only (a `TagAlbum`/`PersonAlbum` id is a 404 there): a materialized `bucket_id` groups cleanly for a real album's direct children (`parent_id`-scoped, one governing sort column/granularity), but a `TagAlbum`/`PersonAlbum`'s "children" are dynamically-matched real Albums scattered under different real parents, each already carrying a `bucket_id` computed against *its own* parent's settings — there is no single governing source for a bucket aggregate to group by, so bucketing does not extend to those two types.
+
+For a `TagAlbum`/`PersonAlbum`, tiers 2/3 reuse the same "matching albums" query logic v2's `AlbumChildrenController`/`AlbumRepository::getMatchingAlbumsForTagPaginated()`/`getMatchingAlbumsForPersonPaginated()` already build (`AlbumRepository::queryMatchingAlbumsForTag()`/`queryMatchingAlbumsForPerson()`, extracted from those methods and reused unpaginated, `toBase()`-queried) — `AlbumQueryPolicy::applyBrowsabilityFilter()` scoped (not `applyVisibilityFilter()`, matching v2's own choice for this case), gated by the same `TA_albums_listing_enabled`/`PA_albums_listing_enabled` configs (disabled → empty result, not an error). Tier 3's `can_delete_children`/`can_move_children` are always `false` for these two types — a dynamically-matched, disparately-parented result set has no single shared parent whose `access_permissions` grants could uniformly apply the way a real album's direct children (`parent_id = album_id` for every one of them) do; `grants_edit`/`grants_download` stay per-child-meaningful (each matching album has its own real grants). `owner_id` is the `TagAlbum`/`PersonAlbum`'s own owner.
+
+#### Tier 1 — `GET /api/v3/Albums/{album_id}/buckets`
+
+Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController::buckets()` / `App\Http\Requests\Album\GetAlbumBucketsRequest`. Returns bucket counts (never per-child data) for the parent's direct children, grouped by a **materialized** `albums.bucket_id` column — populated at write time (see `database-schema.md`), never a live `DATE_FORMAT`/`GROUP BY`-per-row computation — so the query is always a plain, index-served `GROUP BY bucket_id` (composite index `(parent_id, bucket_id)`), confirmed via `EXPLAIN QUERY PLAN` against a 7,000-child fixture. Lets a client size a scrollbar and render sticky headers before fetching a single child row.
+
+**Response:** `AlbumBucketResource` (Struct-of-Arrays)
+```json
+{
+  "bucket_ids": ["2024", "2023", "unknown"],
+  "counts": [12, 8, 3],
+  "labels": ["2024", "2023", "unknown"],
+  "bucketable": true
+}
+```
+- `bucket_ids`/`counts`/`labels` are parallel, index-aligned; ordered by a plain `ORDER BY bucket_id <dir>` (`<dir>` from the parent's own effective sort direction) — never routed through `SortingDecorator`/PHP natural sort, even when the parent sorts by `title`. The `"unknown"` entry (children whose `bucket_id` is `NULL` — no dated photos, or an unparseable title) always sorts last, regardless of `<dir>`.
+- `labels[i]` is a ready-to-render display string for `bucket_ids[i]`, computed at read time (not materialized): `Carbon::parse(bucket_ids[i])->format($timeline_album_date_format_*)` for date-based sources, `bucket_ids[i]` verbatim for `alphabetical`-mode `title` sorting, and the literal string `"unknown"` for that entry (never `Carbon`-parsed).
+- `bucketable: false` (all three arrays empty) when the parent's effective sort column is `OWNER_ID` — every direct child of one album always shares that album's `owner_id`, so grouping by it can never produce more than one bucket; the endpoint short-circuits without ever running a `GROUP BY`.
+
+#### Tier 2 — `GET /api/v3/Albums/{album_id}`
+
+Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController::index()` / `App\Http\Requests\Album\GetAlbumChildrenDataRequest`. Returns the actual per-direct-child tile data, whole-album-at-once (no windowed pagination), as a single flat `toBase()` query with zero joins beyond `applyVisibilityFilter()`'s own baseline (`base_albums`, `computed_access_permissions`) plus one small additional left join for the album's own public access grant (`public_access_permissions` — see below) — confirmed via query-log capture (exactly one query against `albums`).
+
+**Response:** `AlbumChildrenDataResource` (Struct-of-Arrays, one entry per visible direct child)
+```json
+{
+  "ids": ["abc123"],
+  "titles": ["Sub-album"],
+  "descriptions": ["First 100 characters…"],
+  "cover_ids": ["photo123"],
+  "bucket_ids": ["2024"],
+  "owner_ids": ["42"],
+  "is_password_requireds": [false],
+  "is_nsfws": [false],
+  "is_pinneds": [false],
+  "is_publics": [false],
+  "is_link_requireds": [false],
+  "has_subalbums": [false],
+  "num_photos": [12],
+  "num_subalbums": [0],
+  "created_ats": ["2024-01-01T00:00:00Z"],
+  "min_taken_ats": [null],
+  "max_taken_ats": [null]
+}
+```
+- `bucket_ids[i]` is that child's own `bucket_id` (`"unknown"` substituted for `NULL`) — the join key back to Tier 1: grouping this endpoint's children by `bucket_ids` and counting reproduces Tier 1's `{bucket_ids, counts}` exactly, for the same `(album_id, caller)`.
+- `owner_ids[i]` is that child's own owner id — additive, present for both this sub-album tier and the root tier below.
+- Rows are ordered by `bucket_id` first — exactly mirroring Tier 1's own `ORDER BY (bucket_id IS NULL) ASC, bucket_id <dir>`, `"unknown"` always last — then by the parent's effective sort criterion within each bucket; for a `TagAlbum`/`PersonAlbum` (no `bucket_id` concept), by the instance-wide default sort criterion instead. A client can therefore slice this endpoint's flat array into sections using Tier 1's own per-bucket `counts`, with zero client-side grouping or sorting.
+- `descriptions[i]` is SQL-truncated to 100 characters (`SUBSTR(...)`, not PHP-side).
+- `cover_ids[i]` resolves via the same priority rule as the Album Listing endpoint above (`App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()`, reused unchanged). No thumbnail media `type`/blur `placeholder` field — resolving a cover to pixels is the caller's job via the Asset endpoint (`GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` — see above).
+- `is_pinneds[i]` is a plain `base_albums.is_pinned` column, added to the same narrow-column subquery `applyVisibilityFilter()`'s `base_albums` join already selects (`AlbumQueryPolicy::joinBaseAlbumOwnerId()`) — zero extra join, same pattern as `is_nsfws`.
+- `is_publics[i]`/`is_link_requireds[i]` reflect the child album's own public/anonymous access grant, **independent of the requesting viewer** — not to be confused with `is_password_requireds[i]`, which reflects the *viewer's own effective* access via `computed_access_permissions`. Resolved via one additional left join, `public_access_permissions` (a narrow-column subquery over `access_permissions` pre-filtered to `user_id IS NULL AND user_group_id IS NULL` — a unique index on `(base_album_id, user_id_unique_key, user_group_id_unique_key)` guarantees at most one such row per album, so the join can never fan out the result set). `is_publics[i]` is `true` iff that row exists; `is_link_requireds[i]` is that row's own `is_link_required` column (`false` when no public grant exists at all). Matches `ThumbAlbumResource`/`AlbumProtectionPolicy::ofBaseAlbum()`'s existing `is_public`/`is_link_required` resolution exactly, just computed at the query layer instead of per-model. The subquery's column list is deliberately narrow (`base_album_id`, `is_link_required` only) rather than a raw table join — `access_permissions` carries its own `created_at`/`updated_at` timestamps that would otherwise collide with `SortingDecorator`'s unqualified `ORDER BY created_at`.
+
+#### Tier 3 — pixels
+
+Already served by the Asset endpoint documented above — no separate endpoint. A client fetches pixels per mounted tile using Tier 2's `cover_ids[i]`.
+
+#### `GET /api/v3/Albums/{album_id}/rights`
+
+Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController::rights()` / `App\Http\Requests\Album\GetAlbumChildrenRightsRequest`. Meant to be fetched in the background immediately after Tier 2 renders (not on the right-click/selection event itself) — the permission signals a right-click/multi-select context menu on a selection of albums needs, with zero interaction-time latency.
+
+**Response:** `AlbumChildrenRightsResource`
+```json
+{
+  "owner_id": "42",
+  "can_delete_children": false,
+  "can_move_children": false,
+  "ids": ["abc123"],
+  "grants_edit": [false],
+  "grants_download": [true]
+}
+```
+- `owner_id`/`can_delete_children`/`can_move_children` are whole-response (one value, not an array) — uniform across every direct child, since both rights checks key off `parent_id`, which is `album_id` itself for every direct child. `can_delete_children` mirrors `AlbumPolicy::canDelete()`'s parent-scoped `AccessPermission` query verbatim; `can_move_children` reuses the same value (mirrors `AlbumRightsResource::can_move`'s existing reuse of the delete gate).
+- `grants_edit`/`grants_download` are per-child, index-aligned with `ids` — the only rights components that genuinely vary per child (a subalbum can be individually shared independent of its siblings). Computed via one `LEFT JOIN` against `AlbumQueryPolicy::getComputedAccessPermissionSubQuery(full: true, user: $currentUser)` (reused from `AlbumListController.php:88`'s existing call site, with the real caller instead of the hardcoded public-only case), `GROUP BY` child id with `MAX()` per `grants_*` column — required, not optional: that subquery applies no internal `GROUP BY` in `full: true` mode, so a caller belonging to multiple groups with separate matching grants on the same child would otherwise produce duplicate joined rows; `MAX()` OR-merges them correctly.
+- `grants_upload`/`grants_full_photo_access` and any combined `can_edit`/`can_download`/`can_upload`/`can_access_original`/`can_share`/`can_share_with_users`/`can_transfer` field are deliberately not transmitted — the client already knows its own identity (for the owner-based component of `can_edit`/`can_download`) and combines it with the transmitted `grants_*` flag itself; neither `can_upload` nor `can_access_original` is offered by the right-click menu this endpoint serves at all.
+- Admin callers (`may_administrate`) short-circuit to every right `true` for every child, without the grants join or the `can_delete_children` `exists()` query ever running.
+
+### API v3: Root & Category Album Listings
+
+Eight `GET` endpoints, all under `App\Http\Controllers\Gallery\AlbumListing\*`, gated by the same `modules.is_struct_of_array_enabled` flag as the endpoints above. Root albums (`parent_id IS NULL`) get the same buckets/index/rights trio sub-albums have, plus a `scope` (`own`\|`shared`) request parameter reproducing today's `GET /api/v2/Albums` owned/shared partition; smart/person/tag/pinned albums get flat, un-bucketed listings. `GET /api/v2/Albums` (`AlbumsController`/`Top`/`RootAlbumResource`) is untouched — this is an additive v3 surface, not a replacement.
+
+**`scope` request rule** (`GetScopedAlbumsRequest`, shared by root's three endpoints plus `/Albums/persons`/`/Albums/pinned`): an **authenticated** caller must pass exactly one of `own`\|`shared` (422 otherwise, no implicit default); an **unauthenticated** caller may omit it (defaults to `shared`) or pass `shared` explicitly — passing `own` as a guest is 422, never a silently-empty result. `/Albums/smart` and `/Albums/tags` take no `scope` at all (un-scoped, `GetAlbumCategoryRequest`).
+
+#### `GET /api/v3/Albums/root[/buckets|/rights]`
+
+Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumRootController` (`index()`/`buckets()`/`rights()`).
+
+- **`scope=own`** behaves exactly like the sub-album tier above: `Album::query()->whereIsRoot()->where('base_albums.owner_id', $user->id)`, buckets grouped by the already-persisted, date/title-derived `bucket_id` column. Kept live against instance-wide sort/timeline/title-bucket config changes by `App\Jobs\RecomputeRootAlbumBucketsJob` (mirrors `RecomputeChildAlbumBucketsJob`'s one-`SELECT`-plus-bulk-`upsert()` shape; dispatched from `SettingsController::setConfigs()` whenever the saved keys intersect `sorting_albums_col`/`sorting_albums_order`/`timeline_albums_granularity`/`title_bucket_mode`/`title_bucket_prefix_length`).
+- **`scope=shared`** groups by owner as the primary dimension via a **live, read-time `GROUP BY base_albums.owner_id`** — never the persisted `bucket_id` column, and `AlbumBucketComputer` is never invoked for this path (`albums.bucket_id` stays exclusively date/title-derived, system-wide, for every album, root included). The children-data endpoint's `bucket_ids[i]` field is, for this scope only, the row's own `owner_id` as a string — grouping response rows by `bucket_ids` still reproduces the buckets endpoint's own grouping, without ever writing owner data into the real `bucket_id` column. Rows are ordered by `owner_id` first, then the instance's normal sort criterion within each owner group. `bucketable` is **unconditionally `true`** for this scope, even for a zero-result query (empty `bucket_ids`/`counts`/`labels` arrays) — `bucketable` describes whether the grouping *mechanism* is available, not whether data happens to exist.
+  - **Label resolution is authentication-gated:** an authenticated caller sees `COALESCE(users.display_name, users.username)` per owner (one `LEFT JOIN users`); a **guest** never executes that join at all — every label is hardcoded to the literal string `"unknown"`, though the grouping and counts stay real (a guest still learns *how many* distinct contributors there are, never their names). This is deliberate and easy to get backwards in a future edit — do not "fix" it to show real names to guests.
+- **`GET /api/v3/Albums/root/rights`**: root has no single parent album's `access_permissions` to check `can_delete_children`/`can_move_children` against (heterogeneous ownership either way) — both flags are always `false` for a non-admin caller, `true` for an admin, regardless of scope. `owner_id` (present and real on the sub-album tier's own rights response) is **omitted from the JSON payload entirely** here (a `Spatie\LaravelData\Optional` field, not a serialized `null`) — unconditional across both `own` and `shared` scope, since root never has one single owner to report.
+
+#### `GET /api/v3/Albums/smart` · `GET /api/v3/Albums/tags` · `GET /api/v3/Albums/tags/rights`
+
+Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumCategoryController` (`smart()`/`tags()`/`tagsRights()`). Both listings return the shared, minimum-viable `AlbumCategoryListResource` (Struct-of-Arrays: `ids`/`titles`/`cover_ids`/`owner_ids`) — no `scope`, no bucket tier (these categories are curated/bounded by an admin's taxonomy or built-in definition, not by photo volume). `smart` reuses `AlbumFactory::getAllBuiltInSmartAlbums(false)` verbatim (the same in-memory, `Gate`-filtered list `Top::get()` already builds) — `owner_ids[i]` is always `"0"` (no real owner). `tags` mirrors `Top::queryTagAlbums()`'s filter/sort exactly, minus its `access_permissions`/`owner`/`userThumbRow.photo.size_variants` eager loads (`toBase()`-queried instead). `tags/rights` returns a flat `AlbumCategoryRightsResource` (`ids`/`grants_edit`/`grants_download`/`grants_delete` — no `can_delete_children`/`can_move_children` concept for a flat catalogue with no parent-child relationship).
+
+#### `GET /api/v3/Albums/persons` · `GET /api/v3/Albums/pinned`
+
+Registered via the same `AlbumCategoryController` (`persons()`/`pinned()`), each consuming `GetScopedAlbumsRequest` like root. Both mirror their respective `Top::queryPersonAlbums()`/`queryPinnedAlbums()` filter/join/sort exactly (`persons` keeps the `ai_vision_face_enabled`-off empty-block gate regardless of scope; `pinned` keeps its own separate `sorting_pinned_albums_col`/`sorting_pinned_albums_order` config, untouched by the `OWNER_ID` removal below, and is not restricted to root albums). Unlike root, **`shared` scope for these two is one flat, ungrouped list** — never a per-owner `GROUP BY`, and neither has a `/buckets` route: a pinned album's real tree position is arbitrary (its `bucket_id` is governed by whatever its *actual* parent's sort settings are), so a "pinned buckets" aggregate would mix incomparable dimensions from unrelated parts of the tree; `owner_ids[i]` in the flat listing still lets a client render a "shared by X" label per row without server-side grouping. No rights endpoint for either (a pinned root album already gets rights via `/Albums/root/rights`; a pinned sub-album via the sub-album tier's own `/rights`; person albums have no dedicated rights endpoint in this feature).
+
+#### `ColumnSortingAlbumType::OWNER_ID`
+
+`OWNER_ID` is not present in `ColumnSortingAlbumType` (the *configurable* `sorting_albums_col`/`album_sorting_col` enum) — it is not offered as a sortable column choice, and any surviving `owner_id` value (`configs.sorting_albums_col` or a per-album `albums.album_sorting_col` override) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum used for the live `shared`-scope `ORDER BY owner_id` above, and `Top::queryRootAlbums()`'s existing hardcoded sort) is a separate enum and is unaffected. Deployers should run `lychee:recompute-album-buckets` after upgrading, so any row left `bucket_id=null` under a formerly-`OWNER_ID` effective column gets a real date/title value.
 
 ## Pagination Endpoints
 
@@ -399,4 +512,4 @@ Page sizes and UI modes are configurable via the admin settings panel or directl
 
 ---
 
-*Last updated: February 24, 2026*
+*Last updated: September 3, 2026*

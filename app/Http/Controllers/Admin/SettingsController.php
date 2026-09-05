@@ -20,6 +20,7 @@ use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetJSSettingRequest;
 use App\Http\Resources\GalleryConfigs\SettingsConfig;
 use App\Http\Resources\Models\ConfigCategoryResource;
+use App\Jobs\RecomputeRootAlbumBucketsJob;
 use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
@@ -44,6 +45,23 @@ class SettingsController extends Controller
 		'deduplicate_pinned_albums',
 		'ai_vision_face_enabled',
 		'albums_per_page',
+		'timeline_albums_granularity',
+		'title_bucket_mode',
+		'title_bucket_prefix_length',
+	];
+
+	/**
+	 * Config keys whose change governs root albums' `own`-scope `bucket_id`
+	 * — closes the dispatch gap {@see \App\Jobs\RecomputeChildAlbumBucketsJob}
+	 * deliberately doesn't cover (parent-scoped only):
+	 * root albums have no parent whose settings would otherwise trigger a recompute.
+	 */
+	public const ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS = [
+		'sorting_albums_col',
+		'sorting_albums_order',
+		'timeline_albums_granularity',
+		'title_bucket_mode',
+		'title_bucket_prefix_length',
 	];
 
 	public const V8_CONFIGS = [
@@ -159,6 +177,7 @@ class SettingsController extends Controller
 		});
 
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
+		RecomputeRootAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
 
 		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);

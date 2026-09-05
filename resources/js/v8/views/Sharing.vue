@@ -113,7 +113,7 @@ import type { TableColumn } from "@nuxt/ui";
 import { type UserOrGroupId } from "@/stores/UsersAndGroupsState";
 
 type Permission = App.Http.Resources.Models.AccessPermissionResource;
-type AccessPermissionListResource = App.Http.Resources.V3.AlbumAccessPermissionListResource;
+type AccessPermissionResource = App.Http.Resources.V3.AlbumAccessPermissionResource;
 
 // One row per album (tree-ordered), each folding in its own zero-or-more
 // permissions — mirrors BulkAlbumEdit.vue's one-row-per-album table, with a
@@ -166,7 +166,7 @@ const columns: TableColumn<AlbumSharesRow>[] = [
 
 // Rebuilds the flat per-permission object ShareLine already knows how to
 // render from the Struct-of-Arrays response at index `i`.
-function adaptPermissionRow(data: AccessPermissionListResource, i: number): Permission {
+function adaptPermissionRow(data: AccessPermissionResource, i: number): Permission {
 	return {
 		id: data.permission_ids[i],
 		user_id: data.user_ids[i],
@@ -186,7 +186,7 @@ function adaptPermissionRow(data: AccessPermissionListResource, i: number): Perm
 // Rebuilds one row per album (tree-ordered, matching BulkAlbumEdit's approach) from
 // the flat (album, permission) Struct-of-Arrays response, folding each album's
 // permissions (zero, one, or many) into that album's own row.
-function groupIntoAlbumRows(data: AccessPermissionListResource): AlbumSharesRow[] {
+function groupIntoAlbumRows(data: AccessPermissionResource): AlbumSharesRow[] {
 	const rows: AlbumSharesRow[] = [];
 	const byAlbumId = new Map<string, AlbumSharesRow>();
 

@@ -5,6 +5,12 @@ import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "./albumActions";
 import { AlbumsStore } from "@/stores/AlbumsState";
 import { PhotosStore } from "@/stores/PhotosState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/album/albumTileWidth";
+import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
+import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
@@ -36,6 +42,9 @@ export function useDragAndSelect(
 ) {
 	const initialPosition = ref<InitialPosition | undefined>(undefined);
 	const position = ref<Position | undefined>(undefined);
+
+	const lycheeStore = useLycheeStateStore();
+	const albumStore = useAlbumStore();
 
 	const cache = {
 		max_height: 0,
@@ -141,7 +150,7 @@ export function useDragAndSelect(
 		cache.max_height = get_max_height();
 		cache.max_width = get_max_width();
 		cache.photo_boxes = getBoxes("data-photo-id");
-		cache.album_boxes = getBoxes("data-album-id");
+		cache.album_boxes = lycheeStore.is_struct_of_array_enabled ? getAlbumBoxesV3() : getBoxes("data-album-id");
 		// We use slice to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
 		// Otherwise that would be a reference to the original array and we would modify it.
 		cache.currentPhotoSelectionIds = togglableStore.selectedPhotosIds.slice();
@@ -198,6 +207,112 @@ export function useDragAndSelect(
 		});
 
 		return ret;
+	}
+
+	/**
+	 * Flag-on replacement for `getBoxes("data-album-id")` —
+	 * virtualization only ever mounts the tiles near the viewport, so a DOM
+	 * query would miss every off-screen album a drag rectangle could still
+	 * cover. Instead this reproduces the exact geometry
+	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue (sub-album children)
+	 * or AlbumRootGridVirtual.vue/AlbumRootListViewVirtual.vue (root gallery
+	 * own/shared, 2026-09-02 root-SoA addendum) lay their tiles out with —
+	 * same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure functions,
+	 * same inputs — and anchors it via `getBounding()` on each mounted grid
+	 * root (`[data-album-grid-root]`, always in the DOM even when its tiles
+	 * aren't), so the result lands in the exact same coordinate system
+	 * `getBoxes()` itself uses, whatever `#galleryView`'s own scroll model
+	 * turns out to be — no need to duplicate that math here.
+	 *
+	 * Queries *every* `[data-album-grid-root]`, not just the first: the root
+	 * gallery's non-tabbed SHOW mode can mount two independent grids
+	 * simultaneously (own + shared, `[data-album-grid-scope="own"|"shared"]`)
+	 * — a drag spanning both must select tiles from both. The sub-album path
+	 * never sets `data-album-grid-scope` at all, so it's distinguished from
+	 * either root scope by that attribute's absence.
+	 */
+	function getAlbumBoxesV3(): Bounding[] {
+		const gridRootEls = document.querySelectorAll<HTMLElement>("[data-album-grid-root]");
+		const boxes: Bounding[] = [];
+
+		gridRootEls.forEach((gridRootEl) => {
+			const scope = gridRootEl.getAttribute("data-album-grid-scope");
+			const tiles = scope === "own" ? albumsStore.albums : scope === "shared" ? albumsStore.sharedAlbumsV3 : albumsStore.albums;
+			const boundariesV3 =
+				scope === "own" ? albumsStore.ownBoundariesV3 : scope === "shared" ? albumsStore.sharedBoundariesV3 : albumStore.boundariesV3;
+			const bucketableV3 =
+				scope === "own" ? albumsStore.ownBucketableV3 : scope === "shared" ? albumsStore.sharedBucketableV3 : albumStore.bucketableV3;
+
+			const isListMode = lycheeStore.album_view_mode === "list";
+			const viewportWidth = window.innerWidth;
+			const containerWidth = gridRootEl.getBoundingClientRect().width;
+
+			let itemsPerRow: number;
+			let tileWidth: number;
+			let gap: number;
+			let aspectRatioNumber: number;
+			if (isListMode) {
+				itemsPerRow = 1;
+				tileWidth = LIST_ROW_HEIGHT;
+				gap = 0;
+				aspectRatioNumber = 1;
+			} else {
+				const breakpoint = resolveBreakpoint(viewportWidth);
+				const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
+				itemsPerRow = geometry.itemsPerRow;
+				tileWidth = geometry.tileWidth;
+				gap = geometry.gap;
+				aspectRatioNumber = aspectRatioCssToNumber(
+					scope === null ? albumStore.config?.album_thumb_css_aspect_ratio : albumsStore.rootConfig?.album_thumb_css_aspect_ratio,
+				);
+			}
+
+			const boundaries = boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
+			// Filter NSFW-hidden tiles out *before* row-chunking, same as
+			// AlbumThumbGridVirtual.vue/AlbumRootGridVirtual.vue/the list forks —
+			// buildVirtualAlbumRows() bakes bucket counts into fixed-size rows, so
+			// skipping a hidden tile's box afterwards (at emit time) leaves every
+			// later tile's real DOM row one slot ahead of what getTileBox(i) still
+			// reports, drifting every following hit-box.
+			const { tiles: visibleTiles, boundaries: visibleBoundaries } = filterBucketedTiles(
+				tiles,
+				boundaries,
+				(album) => !album.is_nsfw || lycheeStore.are_nsfw_visible,
+			);
+
+			const { getTileBox } = buildVirtualAlbumRows(
+				visibleTiles.map((a) => a.id),
+				visibleBoundaries,
+				bucketableV3,
+				itemsPerRow,
+				tileWidth,
+				aspectRatioNumber,
+				gap,
+			);
+
+			const gridBox = getBounding(gridRootEl, "root");
+
+			visibleTiles.forEach((album, i) => {
+				const box = getTileBox(i);
+				const top = gridBox.top + box.top;
+				const left = gridBox.left + box.left;
+				// List-mode rows render full-width (title/metadata extend past the
+				// 40px thumbnail, see AlbumListItemVirtual.vue) — `box.width` here is
+				// only `tileWidth` (=LIST_ROW_HEIGHT) reused to derive row height, not
+				// the row's actual rendered width, so the hit-box must reach
+				// `gridBox.right` or drags hovering the title/metadata miss the row.
+				const right = isListMode ? gridBox.right : left + box.width;
+				boxes.push({
+					id: album.id,
+					top: top,
+					left: left,
+					right: right,
+					bottom: top + box.height,
+				});
+			});
+		});
+
+		return boxes;
 	}
 
 	function applySelection() {

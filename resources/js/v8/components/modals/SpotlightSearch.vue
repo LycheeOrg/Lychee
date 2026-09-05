@@ -13,7 +13,7 @@
 						v-if="item.kind === 'album'"
 						:album-id="item.albumId"
 						:photo-id="item.photoId ?? null"
-						type="thumb"
+						type="small"
 						class="size-8 rounded shrink-0 object-cover"
 					/>
 					<img

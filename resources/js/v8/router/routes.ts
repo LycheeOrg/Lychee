@@ -54,8 +54,8 @@ const DuplicatesFinder = () => import("@/v8/views/DuplicatesFinder.vue");
 
 /**
  * v8 (Nuxt UI) route table. Consumes the same shared `paths` manifest as the
- * v7 router (`@/router/routes.ts`) so both bundles serve identical URLs (see
- * Feature 049 / ADR-0006). Routes not yet migrated fall back to Placeholder;
+ * v7 router (`@/router/routes.ts`) so both bundles serve identical URLs.
+ * Routes not yet migrated fall back to Placeholder;
  * each build-out task replaces its own entries here as it lands.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -51,6 +51,8 @@ Regular photo albums with hierarchical tree structure using nested set model.
 - `is_public`: Public visibility flag
 - `is_nsfw`: NSFW content flag
 - `is_link_required`: Requires direct link flag
+- `bucket_id`: nullable string — the pre-truncated date-bucket label (`Y`/`Y-m`/`Y-m-d`, e.g. `"2024-03"`) or alphabetical `title_base` prefix an album's **own parent's** effective sort column/granularity currently produce for it (for a **root** album — no parent — the *instance-wide* `sorting_albums_col`/`sorting_albums_order`/`timeline_albums_granularity`/`title_bucket_mode`/`title_bucket_prefix_length` config plays that role instead); `NULL` when the effective sort column is `OWNER_ID` (never computed — every direct child of one album always shares that album's exact `owner_id`, so it can never bucket), or when no data is available for the resolved source (no dated photos under `min_taken_at`/`max_taken_at`, or an unparseable title under `date_prefix`-mode `title` sorting). Populated at write time by `RecomputeAlbumStatsJob`, `RecomputeChildAlbumBucketsJob` (a parent's own sort/timeline change re-buckets its *children*), `RecomputeRootAlbumBucketsJob` (an instance-wide sort/timeline/title-bucket config change re-buckets every *root* album, dispatched from `SettingsController::setConfigs()`), and the `lychee:recompute-album-buckets` backfill command — never computed live at read time. **`bucket_id` stays exclusively date/title-derived, for every album (root included) — it is never owner-derived, and never will be**: root's `GET /api/v3/Albums/root/buckets?scope=shared` (see `api-design.md`) groups by owner via a separate, live, read-time `GROUP BY base_albums.owner_id` that never touches this column or `AlbumBucketComputer` at all. Composite index `(parent_id, bucket_id)` lets `GET /api/v3/Albums/{album_id}/buckets` (see `api-design.md`) serve a plain, index-served `GROUP BY bucket_id` even at 7,000+ direct children.
+- `album_sorting_col`: `ColumnSortingAlbumType::OWNER_ID` is not a selectable value — it is not offered in the sort-column choices, and any surviving `owner_id` value (this column, or the `configs.sorting_albums_col` instance setting) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum) is a separate enum and is unaffected.
 
 **Relationships:**
 - Belongs to `User` (owner)
@@ -63,7 +65,7 @@ Regular photo albums with hierarchical tree structure using nested set model.
 For detailed information about the tree structure implementation, see [Album Tree Structure](../4-architecture/album-tree-structure.md) which explains the nested set model with `_lft` and `_rgt` boundaries.
 
 #### Track
-GPS/GPX tracks belonging to an album (Feature 055 — multiple tracks per album, superseding the single `albums.track_short_path` column it replaced).
+GPS/GPX tracks belonging to an album — an album can have multiple tracks; the single `albums.track_short_path` column has been replaced.
 
 **Key Fields:**
 - `id`: Primary key (auto-increment)
@@ -320,7 +322,7 @@ Eager loading enforced with `Model::shouldBeStrict()`, which throws an exception
 - [Tag System](../4-architecture/tag-system.md) - Tag architecture and operations
 - [Image Processing](image-processing.md) - Size variant generation and processing pipeline
 
-## AI Vision Schema Additions (Feature 030)
+## AI Vision Schema Additions
 
 ### New Tables
 

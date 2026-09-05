@@ -16,7 +16,17 @@
 			draggable="false"
 			loading="lazy"
 		/>
+		<Thumb
+			v-if="coverId !== undefined && coverId !== null && albumId !== undefined"
+			class="w-full h-full m-0 p-0 border-0 object-cover"
+			:class="{ invisible: !isImageLoaded }"
+			:album-id="albumId"
+			:photo-id="coverId"
+			type="small2x"
+			@load="onImageLoad"
+		/>
 		<img
+			v-else
 			:alt="$t('gallery.thumbnail')"
 			class="w-full h-full m-0 p-0 border-0 object-cover"
 			:class="classObject"
@@ -35,14 +45,31 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { watch, ref, computed } from "vue";
 import { storeToRefs } from "pinia";
+import Thumb from "@/v8/components/thumbs/Thumb.vue";
 
 const { isNotEmpty, getPlayIcon, getPlaceholderIcon, getNoImageIcon, getPaswwordIcon } = useImageHelpers();
 
+/**
+ * `albumId`/`coverId`: optional, additive.
+ * Every existing v2 caller passes neither, so `thumb` alone still drives
+ * rendering exactly as before. When a caller (currently only root
+ * smart-album tiles, `AlbumThumb.vue`) passes `coverId`
+ * non-null, the cover resolves via `<Thumb>`/the Asset endpoint
+ * instead — the same mechanism `AlbumThumbVirtual.vue` already
+ * established for subalbum tiles. `coverId: null` (a v3 tile with no cached
+ * cover) intentionally falls through to the existing `thumb`-based branch
+ * below unchanged: the adapter already sets `thumb: null`, and `load()`'s
+ * existing `isNotEmpty(thumb?.thumb) ? ... : isPasswordProtected ? ... : ...`
+ * ternary already resolves that to the correct password/no-image icon with
+ * no further change needed here.
+ */
 const props = defineProps<{
 	thumb: App.Http.Resources.Models.ThumbResource | undefined | null;
 	class: string;
 	isPasswordProtected: boolean;
 	isSelectable?: boolean;
+	albumId?: string;
+	coverId?: string | null;
 }>();
 
 const togglableStore = useTogglablesStateStore();

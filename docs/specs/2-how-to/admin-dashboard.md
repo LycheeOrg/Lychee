@@ -1,6 +1,6 @@
 # Admin Dashboard
 
-The Admin Dashboard (`/admin`) provides a single entry point for all administrative tools, plus a cacheable overview of key system metrics. It was introduced in Feature 037.
+The Admin Dashboard (`/admin`) provides a single entry point for all administrative tools, plus a cacheable overview of key system metrics.
 
 ## Toggle: `use_admin_dashboard`
 

@@ -52,7 +52,7 @@ For a one-off override instead, pass `:ui` directly on the instance — several 
 
 ## Icons
 
-v7 used PrimeIcons (`pi pi-*` classes); v8 uses Nuxt UI's `<UIcon>` backed by Iconify, with the `prime` Iconify collection (`@iconify-json/prime`) providing a 1:1 icon-name mapping so no icons had to be redesigned as part of the migration (see ADR-0005, Q-049-02).
+v7 used PrimeIcons (`pi pi-*` classes); v8 uses Nuxt UI's `<UIcon>` backed by Iconify, with the `prime` Iconify collection (`@iconify-json/prime`) providing a 1:1 icon-name mapping so no icons had to be redesigned (see ADR-0005).
 
 - `resources/js/v8/icons.ts` registers the `prime` collection offline at startup (`registerIconCollections()`, called once in `app-v8.ts`) so icon lookups never hit the public Iconify API at runtime.
 - `primeIconToIconifyName("pi pi-home")` → `"prime:home"` converts a v7-style class string to the Iconify name `<UIcon>` expects — use this when porting a v7 component that stored icon names as PrimeIcons classes (e.g. from a store or API response) rather than hand-writing the `prime:` prefix everywhere.
