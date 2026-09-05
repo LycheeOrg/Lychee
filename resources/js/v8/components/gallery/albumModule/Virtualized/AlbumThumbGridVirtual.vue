@@ -48,7 +48,7 @@
 					>
 						<AlbumThumbVirtual
 							:album="tile"
-							:cover_id="null"
+							:cover_id="albumStore.coverId ?? null"
 							:is-selected="props.selectedAlbums.includes(tile.id)"
 							@click="propagateClicked($event, tile.id)"
 							@touch-select="(e: MouseEvent) => emits('selected', e, tile.id)"

@@ -463,8 +463,19 @@ export const useAlbumStore = defineStore("album-store", {
 			const requestedAlbumId = this.albumId;
 			this.albums_loading = true;
 
-			return Promise.all([AlbumChildrenV3Service.getBuckets(requestedAlbumId), AlbumChildrenV3Service.getChildren(requestedAlbumId)])
-				.then(([bucketsResponse, childrenResponse]) => {
+			// GetAlbumBucketsRequest resolves plain Album ids only — a
+			// TagAlbum/PersonAlbum id 404s there (mirrors
+			// loadAlbumsV3Rights()'s isRegularAlbumParent guard), which would
+			// otherwise fail the whole Promise.all and leave albumsStore.albums
+			// stale. Skip the request for those and fall back to the same
+			// non-bucketable shape bucketableV3 already renders flat.
+			const isRegularAlbumParent = this.modelAlbum !== undefined;
+			const bucketsPromise: Promise<App.Http.Resources.V3.AlbumBucketResource> = isRegularAlbumParent
+				? AlbumChildrenV3Service.getBuckets(requestedAlbumId).then((response) => response.data)
+				: Promise.resolve({ bucket_ids: [], counts: [], labels: [], bucketable: false });
+
+			return Promise.all([bucketsPromise, AlbumChildrenV3Service.getChildren(requestedAlbumId)])
+				.then(([buckets, childrenResponse]) => {
 					// Race condition guard: don't apply a response for an album
 					// the user has already navigated away from (mirrors
 					// loadAlbums()/loadPhotos()'s existing requestedAlbumId
@@ -473,7 +484,6 @@ export const useAlbumStore = defineStore("album-store", {
 						return;
 					}
 
-					const buckets = bucketsResponse.data;
 					const children = childrenResponse.data;
 
 					this.bucketsV3 = buckets;

@@ -10,6 +10,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
@@ -267,10 +268,21 @@ export function useDragAndSelect(
 			}
 
 			const boundaries = boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
+			// Filter NSFW-hidden tiles out *before* row-chunking, same as
+			// AlbumThumbGridVirtual.vue/AlbumRootGridVirtual.vue/the list forks —
+			// buildVirtualAlbumRows() bakes bucket counts into fixed-size rows, so
+			// skipping a hidden tile's box afterwards (at emit time) leaves every
+			// later tile's real DOM row one slot ahead of what getTileBox(i) still
+			// reports, drifting every following hit-box.
+			const { tiles: visibleTiles, boundaries: visibleBoundaries } = filterBucketedTiles(
+				tiles,
+				boundaries,
+				(album) => !album.is_nsfw || lycheeStore.are_nsfw_visible,
+			);
 
 			const { getTileBox } = buildVirtualAlbumRows(
-				tiles.map((a) => a.id),
-				boundaries,
+				visibleTiles.map((a) => a.id),
+				visibleBoundaries,
 				bucketableV3,
 				itemsPerRow,
 				tileWidth,
@@ -280,20 +292,21 @@ export function useDragAndSelect(
 
 			const gridBox = getBounding(gridRootEl, "root");
 
-			tiles.forEach((album, i) => {
-				// NSFW-hidden tiles render an empty box, not a
-				// selectable one — matches getBoxes()'s DOM-absence for them.
-				if (album.is_nsfw && !lycheeStore.are_nsfw_visible) {
-					return;
-				}
+			visibleTiles.forEach((album, i) => {
 				const box = getTileBox(i);
 				const top = gridBox.top + box.top;
 				const left = gridBox.left + box.left;
+				// List-mode rows render full-width (title/metadata extend past the
+				// 40px thumbnail, see AlbumListItemVirtual.vue) — `box.width` here is
+				// only `tileWidth` (=LIST_ROW_HEIGHT) reused to derive row height, not
+				// the row's actual rendered width, so the hit-box must reach
+				// `gridBox.right` or drags hovering the title/metadata miss the row.
+				const right = isListMode ? gridBox.right : left + box.width;
 				boxes.push({
 					id: album.id,
 					top: top,
 					left: left,
-					right: left + box.width,
+					right: right,
 					bottom: top + box.height,
 				});
 			});

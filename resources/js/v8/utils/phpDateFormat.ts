@@ -10,6 +10,14 @@ import { getActiveLanguage } from "laravel-vue-i18n";
  * matching PHP's own `date()` behavior for an unknown format character.
  *
  * `\`-escapes the next character as a literal, exactly like PHP's `date()`.
+ *
+ * Deliberately plain TS, not Rust/WASM: this formats a handful of date
+ * fields per render, so WASM's compute win doesn't apply and the call
+ * boundary overhead would likely lose to plain JS here. It also leans on
+ * `Intl.DateTimeFormat`/`navigator.language` for locale-aware names and
+ * timezone abbreviations - Web APIs a WASM module can't call directly,
+ * so it would still need a JS shim marshaling strings for every lookup,
+ * negating the point of moving it out of TS.
  */
 
 // Localized via the visitor's own browser locale, but only when Lychee's
@@ -64,17 +72,31 @@ function isLeapYear(year: number): boolean {
 }
 
 function dayOfYear(date: Date): number {
-	const start = new Date(date.getFullYear(), 0, 1);
-	return Math.floor((date.getTime() - start.getTime()) / 86400000);
+	const start = Date.UTC(date.getFullYear(), 0, 1);
+	const current = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+	return Math.floor((current - start) / 86400000);
+}
+
+// The Thursday of `date`'s ISO-8601 week - both the week number and the
+// week-numbering year (`W`/`o`) are defined relative to it.
+function isoThursday(date: Date): Date {
+	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+	const day = d.getUTCDay() === 0 ? 7 : d.getUTCDay();
+	d.setUTCDate(d.getUTCDate() + 4 - day);
+	return d;
 }
 
 // ISO-8601 week number.
 function isoWeekNumber(date: Date): number {
-	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-	const day = d.getUTCDay() === 0 ? 7 : d.getUTCDay();
-	d.setUTCDate(d.getUTCDate() + 4 - day);
+	const d = isoThursday(date);
 	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
 	return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+// ISO-8601 week-numbering year: differs from the calendar year for dates in
+// the first/last days of January/December that belong to an adjacent week.
+function isoWeekYear(date: Date): number {
+	return isoThursday(date).getUTCFullYear();
 }
 
 function daysInMonth(year: number, month0: number): number {
@@ -87,6 +109,32 @@ function timezoneOffsetString(date: Date): string {
 	const abs = Math.abs(offsetMinutes);
 	return `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
 }
+
+// Heuristic used across JS date libraries: a timezone's "standard" (non-DST)
+// offset is the larger (less-west) of its January/July offsets, so any date
+// whose own offset is smaller than that is in daylight saving time.
+function isDaylightSavingTime(date: Date): boolean {
+	const januaryOffset = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+	const julyOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+	return date.getTimezoneOffset() < Math.max(januaryOffset, julyOffset);
+}
+
+// `Intl`'s abbreviation for the browser's local timezone at this specific
+// date (so it reflects e.g. "PST" vs "PDT" rather than a fixed name).
+function timezoneAbbreviation(date: Date): string {
+	const part = new Intl.DateTimeFormat("en-US", { timeZoneName: "short" }).formatToParts(date).find((p) => p.type === "timeZoneName");
+	return part?.value ?? "";
+}
+
+// Swatch Internet Time: the mean solar day split into 1000 ".beats", counted
+// from midnight in Biel Mean Time (UTC+1), independent of the viewer's zone.
+function swatchInternetTime(date: Date): string {
+	const utcMillis = date.getTime() + date.getTimezoneOffset() * 60000;
+	const millisSinceBmtMidnight = (((utcMillis + 3600000) % 86400000) + 86400000) % 86400000;
+	return pad(Math.floor(millisSinceBmtMidnight / 86400), 3);
+}
+
+const LOCAL_TIMEZONE_IDENTIFIER = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 /**
  * @param format PHP `date()`-style format string.
@@ -162,6 +210,15 @@ export function phpDateFormat(format: string, date: Date): string {
 			case "L":
 				result += isLeapYear(year) ? "1" : "0";
 				break;
+			case "o":
+				result += String(isoWeekYear(date));
+				break;
+			case "X":
+				result += `${year < 0 ? "-" : "+"}${pad(Math.abs(year), 4)}`;
+				break;
+			case "x":
+				result += year < 1 || year > 9999 ? `${year < 0 ? "-" : "+"}${pad(Math.abs(year), 4)}` : String(year);
+				break;
 			case "Y":
 				result += String(year);
 				break;
@@ -174,6 +231,9 @@ export function phpDateFormat(format: string, date: Date): string {
 				break;
 			case "A":
 				result += hours24 < 12 ? "AM" : "PM";
+				break;
+			case "B":
+				result += swatchInternetTime(date);
 				break;
 			case "g":
 				result += String(hours12);
@@ -193,8 +253,33 @@ export function phpDateFormat(format: string, date: Date): string {
 			case "s":
 				result += pad(seconds);
 				break;
+			case "u":
+				result += `${pad(date.getMilliseconds(), 3)}000`;
+				break;
 			case "v":
 				result += String(date.getMilliseconds()).padStart(3, "0");
+				break;
+			// Timezone
+			case "e":
+				result += LOCAL_TIMEZONE_IDENTIFIER;
+				break;
+			case "I":
+				result += isDaylightSavingTime(date) ? "1" : "0";
+				break;
+			case "O":
+				result += timezoneOffsetString(date).replace(":", "");
+				break;
+			case "P":
+				result += timezoneOffsetString(date);
+				break;
+			case "p":
+				result += date.getTimezoneOffset() === 0 ? "Z" : timezoneOffsetString(date);
+				break;
+			case "T":
+				result += timezoneAbbreviation(date);
+				break;
+			case "Z":
+				result += String(-date.getTimezoneOffset() * 60);
 				break;
 			// Full date/time
 			case "U":
