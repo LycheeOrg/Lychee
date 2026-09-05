@@ -19,11 +19,83 @@
 namespace Tests\Feature_v2\Settings;
 
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Jobs\RecomputeRootAlbumBucketsJob;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UpdateSettingsTest extends BaseApiWithDataTest
 {
+	// ── Feature 062 (FR-062-07, G6, S-062-10..12): root bucket recompute ──
+
+	/** @return array<int,array<string,string>> */
+	public static function rootBucketRecomputeConfigsProvider(): array
+	{
+		return [
+			'sorting_albums_col' => [['key' => 'sorting_albums_col', 'value' => 'created_at']],
+			'sorting_albums_order' => [['key' => 'sorting_albums_order', 'value' => 'ASC']],
+			'title_bucket_mode' => [['key' => 'title_bucket_mode', 'value' => 'date_prefix']],
+			'title_bucket_prefix_length' => [['key' => 'title_bucket_prefix_length', 'value' => '1']],
+		];
+	}
+
+	/**
+	 * @param array<string,string> $config
+	 */
+	#[DataProvider('rootBucketRecomputeConfigsProvider')]
+	public function testChangingRootBucketRecomputeConfigDispatchesJob(array $config): void
+	{
+		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		Queue::assertPushed(RecomputeRootAlbumBucketsJob::class);
+	}
+
+	/**
+	 * `timeline_albums_granularity` is a level-1 (Supporter Edition) config —
+	 * kept as its own test rather than folded into the data provider above,
+	 * which runs unconditionally.
+	 */
+	public function testChangingTimelineGranularityConfigDispatchesJob(): void
+	{
+		$this->requireSe();
+		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'timeline_albums_granularity',
+					'value' => 'year',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Queue::assertPushed(RecomputeRootAlbumBucketsJob::class);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchRootBucketRecompute(): void
+	{
+		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Queue::assertNotPushed(RecomputeRootAlbumBucketsJob::class);
+	}
+
 	public function testChangingAlbumSortingConfigDispatchesCoarseFlush(): void
 	{
 		Event::fake([AlbumListingCacheFlushRequested::class]);

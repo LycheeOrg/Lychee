@@ -11,6 +11,7 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Enum\DateOrderingType;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
@@ -38,6 +39,8 @@ class AlbumConfig extends Data
 	public bool $is_nsfw_warning_visible;
 	public bool $is_breadcrumb_enabled;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
+	public string $date_format_album_thumb;
+	public DateOrderingType $thumb_min_max_order;
 	public PhotoLayoutType $photo_layout;
 	public bool $is_album_timeline_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
@@ -65,6 +68,9 @@ class AlbumConfig extends Data
 		} else {
 			$this->album_thumb_css_aspect_ratio = $config_manager->getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		}
+
+		$this->date_format_album_thumb = $config_manager->getValueAsString('date_format_album_thumb');
+		$this->thumb_min_max_order = $config_manager->getValueAsEnum('thumb_min_max_order', DateOrderingType::class);
 
 		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? $config_manager->getValueAsEnum('layout', PhotoLayoutType::class);
 

@@ -1,4 +1,5 @@
 import Constants from "@/services/constants";
+import { computed } from "vue";
 
 export function useImageHelpers() {
 	function isNotEmpty(link: string | null | undefined): link is string {
@@ -39,7 +40,12 @@ export function useLtRorRtL() {
 		return document.documentElement.dir === "rtl";
 	}
 
+	const dir = computed(() => (isLTR() ? "ltr" : "rtl"));
+	const flippedDir = computed(() => (isLTR() ? "rtl" : "ltr"));
+
 	return {
+		dir,
+		flippedDir,
 		isLTR,
 		isRTL,
 	};

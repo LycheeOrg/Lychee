@@ -89,7 +89,7 @@ The photo creation process uses a pipeline with multiple stages:
 
 For detailed information about the photo processing pipeline, see [app/Actions/Photo/README.md](../../../app/Actions/Photo/README.md).
 
-## RAW Upload Pipeline (Feature 020)
+## RAW Upload Pipeline
 
 Camera RAW files (NEF, CR2, CR3, ARW, DNG, ORF, RW2, RAF, PEF, SRW, NRW, PSD, HEIC, HEIF) are handled by a **dual-variant** pipeline that preserves the unmodified source file alongside a displayable JPEG original.
 
@@ -137,7 +137,7 @@ Extracted metadata includes:
 - **GPS Coordinates**: Latitude, longitude, altitude
 - **Image Properties**: Width, height, orientation
 
-### Metadata Write-Back (Feature 059)
+### Metadata Write-Back
 
 By default, Lychee only ever *reads* EXIF/IPTC/XMP metadata from uploaded files — editing a photo's title, description, or tags, or rating a photo, only updates the database. The opt-in `embed_metadata_in_files_enabled` config (category **Image Processing**, default off) changes this: when enabled, editing title/description/tags (any user with edit rights) or rating a photo as its **owner** additionally embeds the new value into the photo's **Original** file and, when present, its preserved **RAW** camera file (see "RAW Upload Pipeline" above), via a queued `App\Jobs\EmbedMetadataJob`.
 

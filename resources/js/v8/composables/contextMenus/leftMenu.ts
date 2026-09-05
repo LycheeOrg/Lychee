@@ -77,6 +77,10 @@ export function useLeftMenu(
 	});
 
 	async function load(): Promise<void> {
+		// Identity-specific rights - clear before refetching so the menu never
+		// shows the previous user's access while the request is pending or after
+		// it fails (a stale `initData` would otherwise linger untouched).
+		initData.value = undefined;
 		return InitService.fetchGlobalRights().then((data) => {
 			initData.value = data.data;
 		});

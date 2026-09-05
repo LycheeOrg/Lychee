@@ -39,43 +39,64 @@
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">
-							<UTabs v-model="activeTab" :items="tabItems" class="w-full">
+							<UTabs v-model="activeTab" :items="tabItems" class="w-full" variant="link" :dir="flippedDir">
 								<template #my-albums>
-									<template v-if="albumsStore.pinnedAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="false"
-											header="gallery.pinned_albums"
-											:albums="albumsStore.pinnedAlbums"
-											:is-alone="!displayAlbums.length"
-											:selected-albums="selectedAlbumsIds"
-											@clicked="albumSelect"
-											@contexted="contextMenuAlbumOpen"
-										/>
-									</template>
-									<template v-if="displayAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+									<ResetDir>
+										<template v-if="albumsStore.pinnedAlbums.length > 0">
+											<AlbumThumbPanel
+												:is-timeline="false"
+												header="gallery.pinned_albums"
+												:albums="albumsStore.pinnedAlbums"
+												:is-alone="!displayAlbums.length"
+												:selected-albums="selectedAlbumsIds"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+										<AlbumRootPanelVirtual
+											v-if="is_struct_of_array_enabled"
+											scope="own"
 											header="gallery.albums"
-											:albums="displayAlbums"
-											:is-alone="!albumsStore.pinnedAlbums.length"
 											:selected-albums="selectedAlbumsIds"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+										<template v-else-if="displayAlbums.length > 0">
+											<AlbumThumbPanel
+												:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+												header="gallery.albums"
+												:albums="displayAlbums"
+												:is-alone="!albumsStore.pinnedAlbums.length"
+												:selected-albums="selectedAlbumsIds"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+									</ResetDir>
 								</template>
 								<template #shared>
-									<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-										<AlbumThumbPanel
-											:header="sharedAlbum.header"
-											:albums="sharedAlbum.data"
-											:is-alone="displaySharedAlbums.length === 1"
+									<ResetDir>
+										<AlbumRootPanelVirtual
+											v-if="is_struct_of_array_enabled"
+											scope="shared"
 											:selected-albums="selectedAlbumsIds"
-											:is-timeline="false"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+										<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+											<AlbumThumbPanel
+												:header="sharedAlbum.header"
+												:albums="sharedAlbum.data"
+												:is-alone="displaySharedAlbums.length === 1"
+												:selected-albums="selectedAlbumsIds"
+												:is-timeline="false"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+									</ResetDir>
 								</template>
 							</UTabs>
 						</template>
@@ -93,7 +114,16 @@
 									@contexted="contextMenuAlbumOpen"
 								/>
 							</template>
-							<template v-if="displayAlbums.length > 0">
+							<AlbumRootPanelVirtual
+								v-if="is_struct_of_array_enabled"
+								scope="own"
+								header="gallery.albums"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@selected="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
+							<template v-else-if="displayAlbums.length > 0">
 								<AlbumThumbPanel
 									:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
 									header="gallery.albums"
@@ -104,7 +134,15 @@
 									@contexted="contextMenuAlbumOpen"
 								/>
 							</template>
-							<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+							<AlbumRootPanelVirtual
+								v-if="is_struct_of_array_enabled && shouldShowSharedAlbums"
+								scope="shared"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@selected="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
+							<template v-else-if="!is_struct_of_array_enabled" v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
 								<AlbumThumbPanel
 									v-if="shouldShowSharedAlbums"
 									:header="sharedAlbum.header"
@@ -173,6 +211,7 @@
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import AlbumRootPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumRootPanelVirtual.vue";
 import { useUserStore } from "@/stores/UserState";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/v8/components/headers/AlbumsHeader.vue";
@@ -219,6 +258,10 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem, TabsItem } from "@nuxt/ui";
+import { useLtRorRtL } from "@/utils/Helpers";
+import ResetDir from "@/v8/components/ResetDir.vue";
+
+const { flippedDir } = useLtRorRtL();
 
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
@@ -399,16 +442,33 @@ const displaySharedAlbums = computed(() => {
 	return albumsStore.sharedAlbums;
 });
 
-// Check if we should show shared albums section (for inline mode)
-const shouldShowSharedAlbums = computed(() => {
+// Whether there are shared albums to show, respecting visibility mode.
+// `displaySharedAlbums` only ever reflects `albumsStore.sharedAlbums`, the
+// flag-off field — under struct-of-array, shared root data lands in
+// `sharedAlbumsV3` instead (see `AlbumsState.ts`'s `load()`), so that branch
+// must be checked separately or guests (who only ever have a "shared" scope,
+// never "own") see an empty root page.
+const hasSharedAlbums = computed(() => {
+	if (sharedAlbumsVisibilityMode.value === "hide") {
+		return false;
+	}
+	if (is_struct_of_array_enabled.value) {
+		if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
+			return albumsStore.sharedAlbumsV3.some((album) => !album.is_public);
+		}
+		return albumsStore.sharedAlbumsV3.length > 0;
+	}
 	return displaySharedAlbums.value.length > 0;
 });
+
+// Check if we should show shared albums section (for inline mode)
+const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {
 	const mode = sharedAlbumsVisibilityMode.value;
 	const isSeparateMode = mode === "separate" || mode === "separate_shared_only";
-	return isSeparateMode && displaySharedAlbums.value.length > 0;
+	return isSeparateMode && hasSharedAlbums.value;
 });
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(

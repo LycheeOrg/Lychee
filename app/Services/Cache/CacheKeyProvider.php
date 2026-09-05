@@ -9,12 +9,14 @@
 namespace App\Services\Cache;
 
 use App\DTO\SortingCriterion;
+use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Policies\AlbumPolicy;
 
 /**
  * Single source of truth for every {@see ManagedCacheService} key and tag
- * used by the album/tag listing cache (Feature 053).
+ * used by the album/tag listing cache.
  *
  * A producer (e.g. `AlbumRepository`, `Top`, `GetTagWithPhotosAndAlbums`)
  * and its invalidator (e.g. `ManagedCacheAlbumListingInvalidator`) must
@@ -131,7 +133,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Coarse tag carried by every `GET /api/v3/Albums` (Feature 057) cache
+	 * Coarse tag carried by every `GET /api/v3/Albums` cache
 	 * entry, across every user identity and flag combination; evicting it
 	 * alone flushes the entire v3 listing cache.
 	 */
@@ -142,6 +144,20 @@ class CacheKeyProvider
 
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
+
+	/**
+	 * Digest of the current session's unlocked-album ids
+	 * ({@see AlbumPolicy::getUnlockedAlbumIDs()}), for embedding in a cache
+	 * key whose underlying query depends on that session-scoped state (e.g. a
+	 * TagAlbum/PersonAlbum's "matching albums" curation) - two different
+	 * unlock states must never collide on the same key. No cryptographically
+	 * secure hash is needed here, just a fast one that is unlikely to
+	 * collide.
+	 */
+	public function unlockedAlbumsDigest(): string
+	{
+		return hash('xxh3', implode(',', AlbumPolicy::getUnlockedAlbumIDs()));
+	}
 
 	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, int $per_page, SortingCriterion $sorting): string
 	{
@@ -167,22 +183,35 @@ class CacheKeyProvider
 		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
 	}
 
-	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
+	/**
+	 * @param ?AlbumListingScope $scope widening: `null`
+	 *                                  (v2's own `Top::get()` call, unchanged) omits the
+	 *                                  scope suffix entirely, keeping v2's cache entries
+	 *                                  byte-identical; a real scope (v3's `/Albums/persons`)
+	 *                                  appends it so `own`/`shared`/different users never
+	 *                                  collide
+	 */
+	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, ?AlbumListingScope $scope = null): string
 	{
 		$person_albums_listing_tag = $this->personAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}{$scope_suffix}";
 	}
 
-	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order): string
+	/**
+	 * @param ?AlbumListingScope $scope see {@see self::personAlbumsListingKey()}
+	 */
+	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order, ?AlbumListingScope $scope = null): string
 	{
 		$pinned_albums_listing_tag = $this->pinnedAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
 		$column_value = $column?->value ?? 'null';
 		$order_value = $order?->value ?? 'null';
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}";
+		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}{$scope_suffix}";
 	}
 
 	/**
@@ -222,10 +251,10 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums` (Feature 057): a pure function of
+	 * Cache key for `GET /api/v3/Albums`: a pure function of
 	 * user identity plus the exact `(with_parent_id, for_bulk_edit)` flag
 	 * combination requested, so no two distinct combinations or users ever
-	 * collide (NFR-057-04).
+	 * collide.
 	 */
 	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit): string
 	{
@@ -235,5 +264,91 @@ class CacheKeyProvider
 		$for_bulk_edit_value = $for_bulk_edit ? '1' : '0';
 
 		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/buckets`:
+	 * a pure function of `(album_id, user identity)` — no sort-column
+	 * dimension is needed since it is implied by `album_id`
+	 * (a parent's effective sort column is a property of that album, not a per-request choice).
+	 */
+	public function albumBucketsKey(string $album_id, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:buckets:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children`, mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}) -
+	 *                                only meaningful (non-empty) for a TagAlbum/PersonAlbum,
+	 *                                whose matching-albums result set this state actually
+	 *                                curates; mirrors {@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}'s
+	 *                                own key convention. Empty for a regular Album, whose
+	 *                                own direct-children listing does not depend on it.
+	 */
+	public function albumChildrenDataKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-data:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`, mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()}
+	 */
+	public function albumChildrenRightsKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-rights:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/buckets`: a pure function of
+	 * `(scope, user identity)` — `own`/`shared`/different users never
+	 * collide. Tagged with the
+	 * same {@see self::albumChildrenTag()} (passing `null`, root) already
+	 * evicted by every existing root-album-affecting handler, plus
+	 * {@see self::userTag()}.
+	 */
+	public function rootAlbumBucketsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-buckets:{$scope->value}:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root`,
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 */
+	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-data:{$scope->value}:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/rights`,
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 */
+	public function rootAlbumChildrenRightsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-rights:{$scope->value}:{$user_tag}";
 	}
 }

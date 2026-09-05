@@ -165,7 +165,7 @@ class Top
 			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
 
 		return (new SortingDecorator($tag_album_query))
-			->orderBy($this->sorting->column, $this->sorting->order)
+			->orderBy($this->sorting->column->fallbackForCategoryAlbumListing(), $this->sorting->order)
 			->get();
 	}
 
@@ -175,7 +175,7 @@ class Top
 			->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
 
 		return (new SortingDecorator($person_album_query))
-			->orderBy($this->sorting->column, $this->sorting->order)
+			->orderBy($this->sorting->column->fallbackForCategoryAlbumListing(), $this->sorting->order)
 			->get();
 	}
 

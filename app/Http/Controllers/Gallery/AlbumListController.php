@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Assets\DbBool;
 use App\Http\Requests\Gallery\AlbumListV3Request;
 use App\Http\Resources\V3\AlbumListBulkEditFieldsResource;
 use App\Http\Resources\V3\AlbumListResource;
@@ -221,12 +222,12 @@ class AlbumListController extends Controller
 			$album_thumb_aspect_ratios[] = $row->album_thumb_aspect_ratio;
 			$album_timelines[] = $row->album_timeline;
 			$photo_timelines[] = $row->photo_timeline;
-			$is_nsfws[] = filter_var($row->is_nsfw, FILTER_VALIDATE_BOOLEAN);
+			$is_nsfws[] = DbBool::parse($row->is_nsfw);
 			$is_publics[] = $row->public_base_album_id !== null;
-			$is_link_requireds[] = filter_var($row->public_is_link_required, FILTER_VALIDATE_BOOLEAN);
-			$grants_full_photo_accesses[] = filter_var($row->public_grants_full_photo_access, FILTER_VALIDATE_BOOLEAN);
-			$grants_downloads[] = filter_var($row->public_grants_download, FILTER_VALIDATE_BOOLEAN);
-			$grants_uploads[] = filter_var($row->public_grants_upload, FILTER_VALIDATE_BOOLEAN);
+			$is_link_requireds[] = DbBool::parse($row->public_is_link_required);
+			$grants_full_photo_accesses[] = DbBool::parse($row->public_grants_full_photo_access);
+			$grants_downloads[] = DbBool::parse($row->public_grants_download);
+			$grants_uploads[] = DbBool::parse($row->public_grants_upload);
 			$created_ats[] = $row->created_at; // Let's see if carbon is necessary
 			// If not then that is way better for performance. If it is necessary, then we can use Carbon to convert the UTC time to ISO 8601 format.
 			// $created_ats[] = Carbon::parse($row->created_at, 'UTC')->toIso8601String();
@@ -263,7 +264,7 @@ class AlbumListController extends Controller
 	 * admin/owner viewer, else `auto_cover_id_least_privilege`. Operates on
 	 * already-selected columns only — no relation load, no extra query.
 	 */
-	private static function resolveCoverId(object $row, ?User $user): ?string
+	public static function resolveCoverId(object $row, ?User $user): ?string
 	{
 		if ($row->cover_id !== null) {
 			return $row->cover_id;

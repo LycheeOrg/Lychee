@@ -106,12 +106,30 @@ const AlbumService = {
 				axiosWithCache.storage.remove(`album_albums_${album_id}_page${page}`);
 				axiosWithCache.storage.remove(`album_photos_${album_id}_page${page}`);
 			}
+			// Clear v3 subalbum-children caches.
+			axiosWithCache.storage.remove(`album_v3_children_buckets_${album_id}`);
+			axiosWithCache.storage.remove(`album_v3_children_${album_id}`);
+			axiosWithCache.storage.remove(`album_v3_children_rights_${album_id}`);
 		}
 	},
 
 	clearAlbums(): void {
 		const axiosWithCache = axios as unknown as AxiosCacheInstance;
 		axiosWithCache.storage.remove("albums");
+		// Clear every v3 root-listing cache entry too — this is the same
+		// "invalidate the root listing" call
+		// site every mutation that could affect it (create/delete/move/
+		// rename/visibility/unlock/pin) already calls.
+		axiosWithCache.storage.remove("albums_v3_smart");
+		axiosWithCache.storage.remove("albums_v3_tags");
+		axiosWithCache.storage.remove("albums_v3_tags_rights");
+		for (const scope of ["own", "shared"] as const) {
+			axiosWithCache.storage.remove(`albums_v3_persons_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_pinned_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_buckets_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_${scope}`);
+			axiosWithCache.storage.remove(`albums_v3_root_rights_${scope}`);
+		}
 	},
 
 	getAll(): Promise<AxiosResponse<App.Http.Resources.Collections.RootAlbumResource>> {

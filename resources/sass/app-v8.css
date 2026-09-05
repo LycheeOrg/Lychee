@@ -277,6 +277,22 @@ body {
 	--aspect-3x2: 3 / 2;
 	--aspect-square: 1 / 1;
 	--aspect-video: 16 / 9;
+
+	/*
+	  Continues Tailwind's own default breakpoint increment (md->lg, lg->xl,
+	  xl->2xl are each +256px) up to 6xl. Previously undefined here, so every
+	  3xl:/4xl: class already written against them (AlbumThumb.vue) compiled
+	  to dead, silently-dropped utilities - see albumTileWidth.ts's matching
+	  TILE_WIDTH_FORMULA/breakpoints table, the JS-side counterpart that must
+	  stay numerically in sync with these. v8 only - resources/sass/app.css
+	  (v7) intentionally not touched, matching this codebase's established
+	  v8-only convention; v7's own identical 3xl:/4xl: classes on its
+	  AlbumThumb.vue stay dead.
+	*/
+	--breakpoint-3xl: 1792px;
+	--breakpoint-4xl: 2048px;
+	--breakpoint-5xl: 2304px;
+	--breakpoint-6xl: 2560px;
 }
 @keyframes pulseToNull {
 	50% {
