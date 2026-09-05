@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 // LeftMenu.vue and AlbumPanel.vue each independently fetch the same
@@ -22,9 +22,14 @@ const InitService = {
 
 	fetchMac(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.TemporaryLinkMacConfig>> {
 		if (macRequest === null) {
-			macRequest = axios.get(`${Constants.getApiUrl()}Gallery::getMac`, { data: {} }).finally(() => {
-				macRequest = null;
-			});
+			// The MAC lifetime is admin-configurable and can be set below axios-cache-interceptor's
+			// 300s default TTL. A cached response would let the 401 retry in axios-config.ts's
+			// response interceptor reuse the same expired MAC instead of fetching a fresh one.
+			macRequest = axios
+				.get(`${Constants.getApiUrl()}Gallery::getMac`, { data: {}, cache: { enabled: false } } as AxiosRequestConfig)
+				.finally(() => {
+					macRequest = null;
+				});
 		}
 		return macRequest;
 	},
