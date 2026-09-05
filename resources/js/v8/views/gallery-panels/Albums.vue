@@ -58,6 +58,7 @@
 										header="gallery.albums"
 										:selected-albums="selectedAlbumsIds"
 										@clicked="albumSelect"
+										@selected="albumSelect"
 										@contexted="contextMenuAlbumOpen"
 									/>
 									<template v-else-if="displayAlbums.length > 0">
@@ -78,6 +79,7 @@
 										scope="shared"
 										:selected-albums="selectedAlbumsIds"
 										@clicked="albumSelect"
+										@selected="albumSelect"
 										@contexted="contextMenuAlbumOpen"
 									/>
 									<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
@@ -114,6 +116,7 @@
 								header="gallery.albums"
 								:selected-albums="selectedAlbumsIds"
 								@clicked="albumSelect"
+								@selected="albumSelect"
 								@contexted="contextMenuAlbumOpen"
 							/>
 							<template v-else-if="displayAlbums.length > 0">
@@ -132,6 +135,7 @@
 								scope="shared"
 								:selected-albums="selectedAlbumsIds"
 								@clicked="albumSelect"
+								@selected="albumSelect"
 								@contexted="contextMenuAlbumOpen"
 							/>
 							<template v-else-if="!is_struct_of_array_enabled" v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">

@@ -1,4 +1,4 @@
-import { computed, ref, type ComputedRef, type Ref } from "vue";
+import { computed, ref, watch, type ComputedRef, type Ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import type { AlbumStore } from "@/stores/AlbumState";
@@ -52,13 +52,23 @@ export function useSpotlightGalleryActions(
 	// costs nothing extra once AlbumEdit.vue (or another instance of this composable) has fetched it.
 	// A guest can never share (no `can_share_with_users` right), so skip the request entirely
 	// for them - SpotlightSearch.vue mounts this composable unconditionally on every page.
+	// SpotlightSearch.vue mounts before LeftMenu's async userStore.load() resolves, so isLoggedIn
+	// must be watched rather than checked once - a one-shot check would run while still logged out.
 	const userStore = useUserStore();
 	const numUsers = ref(0);
-	if (userStore.isLoggedIn) {
-		UsersService.count().then((data) => {
-			numUsers.value = data.data;
-		});
-	}
+	watch(
+		() => userStore.isLoggedIn,
+		(isLoggedIn) => {
+			if (isLoggedIn) {
+				UsersService.count().then((data) => {
+					numUsers.value = data.data;
+				});
+			} else {
+				numUsers.value = 0;
+			}
+		},
+		{ immediate: true },
+	);
 
 	return computed(() => {
 		const items: SpotlightItem[] = [];
