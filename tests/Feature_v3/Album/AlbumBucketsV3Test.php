@@ -62,7 +62,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 	{
 		config(['features.struct-of-array' => false]);
 
-		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/children/buckets");
+		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/buckets");
 		$this->assertForbidden($response);
 	}
 
@@ -80,7 +80,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$this->recompute($c1);
 		$this->recompute($c2);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson([
 			'bucket_ids' => ['2023', '2024'],
@@ -104,7 +104,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$undated = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($undated);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson([
 			'bucket_ids' => ['2022', 'unknown'],
@@ -125,7 +125,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$photo->albums()->attach($child->id);
 		$this->recompute($child);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['bucket_ids' => ['2022-06'], 'counts' => [1], 'bucketable' => true]);
 	}
@@ -145,7 +145,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$this->recompute($c2);
 		$this->recompute($c3);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		// Plain ORDER BY bucket_id DESC (the parent's own sort direction),
 		// "unknown" always last — never routed through title's own
@@ -163,32 +163,32 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertExactJson(['bucket_ids' => [], 'counts' => [], 'labels' => [], 'bucketable' => false]);
 	}
 
 	public function testTagAlbumIdReturns404(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/buckets");
 		$this->assertNotFound($response);
 	}
 
 	public function testUnknownAlbumIdReturns404(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/AAAAAAAAAAAAAAAAAAAAAAAA/children/buckets');
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/AAAAAAAAAAAAAAAAAAAAAAAA/buckets');
 		$this->assertNotFound($response);
 	}
 
 	public function testNoAccessReturns403(): void
 	{
-		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->album1->id}/children/buckets");
+		$response = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->album1->id}/buckets");
 		$this->assertForbidden($response);
 	}
 
 	public function testZeroChildrenParentReturnsEmptyArrays(): void
 	{
-		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album5->id}/children/buckets");
+		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album5->id}/buckets");
 		$this->assertOk($response);
 		$response->assertExactJson(['bucket_ids' => [], 'counts' => [], 'labels' => [], 'bucketable' => true]);
 	}
@@ -202,7 +202,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$grandchild = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($grandchild);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['counts' => [1], 'bucketable' => true]);
 	}
@@ -219,7 +219,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2024-03-01')]);
 		$this->recompute($child);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['bucket_ids' => ['2024-03'], 'labels' => ['March 2024']]);
 	}
@@ -240,7 +240,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2005-06-01')]);
 		$this->recompute($child);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['bucket_ids' => ['2005'], 'labels' => ['2005']]);
 	}
@@ -257,7 +257,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child->save();
 		$this->recompute($child);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['bucket_ids' => ['z'], 'labels' => ['z']]);
 	}
@@ -271,7 +271,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$undated = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($undated);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($response);
 		$response->assertJson(['bucket_ids' => ['unknown'], 'labels' => ['unknown']]);
 	}
@@ -316,11 +316,11 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk();
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk();
 		$log = DB::getQueryLog();
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -340,7 +340,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json('counts');
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk()->json('counts');
 		self::assertSame([1], $before);
 
 		$create_response = $this->actingAs($this->userMayUpload1)->postJson('Album', [
@@ -351,7 +351,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$new_album_id = $create_response->getOriginalContent();
 		$this->recompute(Album::findOrFail($new_album_id));
 
-		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/buckets")->assertOk()->json('counts');
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets")->assertOk()->json('counts');
 		self::assertSame([2], $after);
 	}
 
@@ -368,10 +368,10 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		Configs::set('managed_cache_enabled', '1');
 		Configs::set('managed_cache_albums_enabled', '1');
 
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/children/buckets")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/buckets")->assertOk();
 
 		$admin_call_count = $this->countTableQueries(
-			fn () => $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/children/buckets")->assertOk(),
+			fn () => $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/buckets")->assertOk(),
 			['albums', 'base_albums', 'access_permissions']
 		);
 
@@ -398,7 +398,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$this->recompute($hidden_child);
 		AccessPermission::factory()->for_user_group($this->group1)->for_album($hidden_child)->visible()->create();
 
-		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($before);
 		self::assertSame([], $before->json('bucket_ids'));
 
@@ -411,7 +411,7 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 
 		$this->userNoUpload->unsetRelation('user_groups')->refresh();
 
-		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/buckets");
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/buckets");
 		$this->assertOk($after);
 		self::assertSame([1], $after->json('counts'));
 	}

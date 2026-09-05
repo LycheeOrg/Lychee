@@ -3,7 +3,7 @@ import { reactive } from "vue";
 /**
  * Promise-based confirm dialog, backed by a singleton ConfirmModalHost.vue
  * mounted once in v8/views/App.vue - replaces PrimeVue's useConfirm()/
- * <ConfirmDialog> for the v8 tree - see Feature 049 FR-049-05, DO-049-02.
+ * <ConfirmDialog> for the v8 tree.
  */
 export interface ConfirmDialogOptions {
 	title: string;

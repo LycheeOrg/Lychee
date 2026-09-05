@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Request for `GET /api/v3/Albums/{album_id}/children` (Feature 061,
- * DO-061-07). `album_id` is bound from the route segment via
+ * Request for `GET /api/v3/Albums/{album_id}/children`.
+ * `album_id` is bound from the route segment via
  * {@see self::prepareForValidation()} (mirrors
  * {@see \App\Http\Requests\Album\GetAlbumBucketsRequest}'s pattern), but —
  * unlike that endpoint — resolves to a real {@see Album} *or* a

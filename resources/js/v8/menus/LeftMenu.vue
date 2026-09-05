@@ -194,14 +194,27 @@ watch(
 	},
 );
 
+// `userStore.refresh()` (called by every gallery page's own mount bootstrap -
+// Albums.vue/Album.vue/Search.vue/...) synchronously resets `user.value` to
+// `undefined` while it re-fetches - a transient loading sentinel, not a
+// logout (a guest has `id: null`, never `undefined`). `lastKnownUserId` lets
+// the watcher below see straight through that blip instead of treating it as
+// a logout: reacting to it here (wiping `initData` and then never reloading
+// it, since the next resolution's `oldValue` is that same forced `undefined`)
+// left `initData` stuck blank on essentially every page mount.
+let lastKnownUserId: number | null | undefined;
+
 watch(
 	() => user.value,
-	(newValue, oldValue) => {
+	(newValue) => {
 		if (newValue === undefined) {
-			initData.value = undefined;
-		} else if (newValue.id !== oldValue?.id) {
+			return;
+		}
+		if (lastKnownUserId !== undefined && newValue.id !== lastKnownUserId) {
+			// A real login/logout while already mounted - rights depend on identity.
 			load();
 		}
+		lastKnownUserId = newValue.id;
 	},
 );
 </script>

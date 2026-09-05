@@ -289,6 +289,8 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_nsfw_warning_visible: false,
 		is_breadcrumb_enabled: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
+		date_format_album_thumb: "M Y",
+		thumb_min_max_order: "younger_older",
 		photo_layout: "justified",
 		is_album_timeline_enabled: false,
 		is_photo_timeline_enabled: false,

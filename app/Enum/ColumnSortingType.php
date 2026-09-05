@@ -46,6 +46,25 @@ enum ColumnSortingType: string
 	 * @param string           $prefix    Optional table prefix (e.g., 'photos.')
 	 * @param OrderSortingType $direction the order direction
 	 */
+	/**
+	 * `min_taken_at`/`max_taken_at` are precomputed only on the `albums`
+	 * table (real, photo-containing root/folder albums) — `TagAlbum` and
+	 * `PersonAlbum` flat category listings carry no such column, so
+	 * ordering by either against those tables fails on every SQL backend
+	 * except SQLite (which silently tolerates an unresolvable ORDER BY
+	 * identifier instead of erroring). Callers building a query against
+	 * `tag_albums`/`person_albums` must substitute this fallback for the
+	 * globally-configured `sorting_albums_col` before handing it to
+	 * {@link \App\Models\Extensions\SortingDecorator}.
+	 */
+	public function fallbackForCategoryAlbumListing(): self
+	{
+		return match ($this) {
+			self::MIN_TAKEN_AT, self::MAX_TAKEN_AT => self::CREATED_AT,
+			default => $this,
+		};
+	}
+
 	public function getRawOrderExpression(string $prefix, OrderSortingType $direction): string
 	{
 		return match ($this) {

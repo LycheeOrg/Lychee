@@ -155,7 +155,7 @@ class AlbumRepository
 	 * Builds (without sorting/pagination) the query for the real Albums
 	 * carrying every tag referenced by a TagAlbum's criteria — the same
 	 * `WHERE`/`JOIN` logic {@see self::queryMatchingAlbumsForTagPaginated()}
-	 * paginates, exposed unsorted/unpaginated for Feature 061's v3
+	 * paginates, exposed unsorted/unpaginated for the v3
 	 * `GET /Albums/{album_id}/children`/`.../rights` endpoints (whole-result,
 	 * `toBase()`-queried).
 	 *
@@ -262,7 +262,7 @@ class AlbumRepository
 	 * Builds (without sorting/pagination) the query for the real Albums
 	 * containing at least one photo matching a PersonAlbum's criteria — the
 	 * same logic {@see self::queryMatchingAlbumsForPersonPaginated()}
-	 * paginates, exposed unsorted/unpaginated for Feature 061's v3
+	 * paginates, exposed unsorted/unpaginated for the v3
 	 * `GET /Albums/{album_id}/children`/`.../rights` endpoints (whole-result,
 	 * `toBase()`-queried).
 	 *

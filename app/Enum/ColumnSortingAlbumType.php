@@ -11,11 +11,10 @@ namespace App\Enum;
 /**
  * Enum ColumnSortingAlbumType.
  *
- * All the allowed sorting possibilities on Album
+ * All the allowed sorting possibilities on Album.
  */
 enum ColumnSortingAlbumType: string
 {
-	case OWNER_ID = 'owner_id';
 	case CREATED_AT = 'created_at';
 
 	case TITLE = 'title';

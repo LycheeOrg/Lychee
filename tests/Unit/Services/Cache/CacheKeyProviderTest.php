@@ -18,6 +18,8 @@
 
 namespace Tests\Unit\Services\Cache;
 
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\AlbumListingScope;
 use App\Services\Cache\CacheKeyProvider;
 use Tests\AbstractTestCase;
 
@@ -147,5 +149,75 @@ class CacheKeyProviderTest extends AbstractTestCase
 		self::assertNotSame($key_a, $key_b);
 		self::assertNotSame($key_a, $key_empty);
 		self::assertNotSame($key_b, $key_empty);
+	}
+
+	// ── Feature 062 (FR-062-13, NFR-062-08): root/persons/pinned scope ──
+	// key uniqueness across (guest-shared, user A own, user A shared,
+	// user B own).
+
+	/**
+	 * @param callable(AlbumListingScope,int|string|null):string $key_fn
+	 */
+	private function assertUniqueAcrossScopeAndIdentityMatrix(callable $key_fn): void
+	{
+		$combinations = [
+			'guest-shared' => [AlbumListingScope::SHARED, null],
+			'user-a-own' => [AlbumListingScope::OWN, 'user-a'],
+			'user-a-shared' => [AlbumListingScope::SHARED, 'user-a'],
+			'user-b-own' => [AlbumListingScope::OWN, 'user-b'],
+		];
+
+		$keys = [];
+		foreach ($combinations as $label => [$scope, $user_id]) {
+			$key = $key_fn($scope, $user_id);
+			self::assertArrayNotHasKey($key, $keys, "duplicate key generated for {$label}");
+			$keys[$key] = $label;
+		}
+
+		self::assertCount(4, $keys);
+	}
+
+	public function testRootAlbumBucketsKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumBucketsKey($scope, $user_id)
+		);
+	}
+
+	public function testRootAlbumChildrenDataKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumChildrenDataKey($scope, $user_id)
+		);
+	}
+
+	public function testRootAlbumChildrenRightsKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumChildrenRightsKey($scope, $user_id)
+		);
+	}
+
+	public function testPersonAlbumsListingKeyIsUniqueAcrossScopeAndIdentityMatrixAndOmitsSuffixWhenScopeIsNull(): void
+	{
+		$sorting = AlbumSortingCriterion::createDefault();
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->personAlbumsListingKey($user_id, $sorting, $scope)
+		);
+
+		// v2's own Top::get() call (scope omitted) must produce the exact
+		// same key it always has — no behavioral change for v2's own cache.
+		$without_scope = $this->provider->personAlbumsListingKey(null, $sorting);
+		self::assertStringNotContainsString(':scope:', $without_scope);
+	}
+
+	public function testPinnedAlbumsListingKeyIsUniqueAcrossScopeAndIdentityMatrixAndOmitsSuffixWhenScopeIsNull(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->pinnedAlbumsListingKey($user_id, null, null, $scope)
+		);
+
+		$without_scope = $this->provider->pinnedAlbumsListingKey(null, null, null);
+		self::assertStringNotContainsString(':scope:', $without_scope);
 	}
 }

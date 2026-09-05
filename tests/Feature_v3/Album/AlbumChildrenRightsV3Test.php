@@ -53,7 +53,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 	{
 		config(['features.struct-of-array' => false]);
 
-		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/children/rights");
+		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/rights");
 		$this->assertForbidden($response);
 	}
 
@@ -61,7 +61,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 
 	public function testResponseShapeAndWholeVsPerChildSplit(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/children/rights");
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/rights");
 		$this->assertOk($response);
 		$json = $response->json();
 
@@ -74,7 +74,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		self::assertIsArray($json['ids']);
 		self::assertSame((string) $this->userMayUpload1->id, $json['owner_id']);
 
-		$children_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}/children")->assertOk()->json('ids');
+		$children_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->album1->id}")->assertOk()->json('ids');
 		self::assertEqualsCanonicalizing($children_ids, $json['ids']);
 	}
 
@@ -102,7 +102,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 			->grants_edit()
 			->create();
 
-		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 
 		$idx_shared = array_search($shared_child->id, $json['ids'], true);
 		$idx_sibling = array_search($sibling->id, $json['ids'], true);
@@ -128,7 +128,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 			->grants_delete()
 			->create();
 
-		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 
 		self::assertTrue($json['can_delete_children']);
 		self::assertTrue($json['can_move_children']);
@@ -154,7 +154,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		AccessPermission::factory()->for_user_group($this->group1)->for_album($shared_child)->visible()->grants_edit()->create();
 		AccessPermission::factory()->for_user_group($this->group2)->for_album($shared_child)->visible()->grants_download()->create();
 
-		$json = $this->actingAs($caller)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($caller)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 		$idx = array_search($shared_child->id, $json['ids'], true);
 
 		self::assertTrue($json['grants_edit'][$idx], 'grants_edit must be true (MAX-merged from group1), not arbitrarily overwritten by group2\'s row.');
@@ -178,7 +178,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
-		$json = $this->actingAs($this->admin)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->admin)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 		$log = DB::getQueryLog();
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -197,7 +197,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 	public function testGuestCallerOnlyReflectsPublicGrants(): void
 	{
 		// subAlbum4/album4 are public with grants set via perm4/perm44 fixtures.
-		$json = $this->getJsonV3("Albums/{$this->album4->id}/children/rights")->assertOk()->json();
+		$json = $this->getJsonV3("Albums/{$this->album4->id}/rights")->assertOk()->json();
 
 		self::assertContains($this->subAlbum4->id, $json['ids']);
 		self::assertFalse($json['can_delete_children']);
@@ -215,11 +215,11 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/rights")->assertOk();
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
-		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk();
+		$this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/rights")->assertOk();
 		$log = DB::getQueryLog();
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -243,7 +243,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($child);
 
-		$before = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/children/rights");
+		$before = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights");
 		$this->assertForbidden($before);
 
 		$share_response = $this->actingAs($this->userMayUpload1)->postJson('Sharing', [
@@ -258,7 +258,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		]);
 		self::assertSame(200, $share_response->getStatusCode());
 
-		$after = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json();
+		$after = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 		self::assertTrue($after['can_delete_children']);
 	}
 
@@ -270,13 +270,13 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$visible = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
 		$this->recompute($visible);
 
-		$owner_rights_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children/rights")->assertOk()->json('ids');
-		$owner_children_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/children")->assertOk()->json('ids');
+		$owner_rights_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json('ids');
+		$owner_children_ids = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}")->assertOk()->json('ids');
 
 		self::assertEqualsCanonicalizing($owner_children_ids, $owner_rights_ids);
 
 		// Parent itself is private -> a stranger can't even resolve it.
-		$this->assertForbidden($this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights"));
+		$this->assertForbidden($this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/rights"));
 	}
 
 	// ── TagAlbum / PersonAlbum "matching albums" support ───────────
@@ -290,7 +290,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 	{
 		$this->album1->tags()->sync([$this->tag_test->id]);
 
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/rights")->assertOk()->json();
 
 		self::assertSame([$this->album1->id], $json['ids']);
 		self::assertFalse($json['can_delete_children']);
@@ -315,12 +315,12 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$password_album->tags()->sync([$this->tag_test->id]);
 		AccessPermission::factory()->public()->visible()->locked()->for_album($password_album)->create();
 
-		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights");
+		$response_locked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/rights");
 		$this->assertOk($response_locked);
 		self::assertSame([], $response_locked->json('ids'));
 
 		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $password_album->id);
-		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights");
+		$response_unlocked = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/rights");
 		$this->assertOk($response_unlocked);
 		self::assertSame([$password_album->id], $response_unlocked->json('ids'));
 	}
@@ -340,7 +340,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 			->grants_edit()
 			->create();
 
-		$json = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$this->tagAlbum1->id}/rights")->assertOk()->json();
 
 		self::assertSame([$this->album1->id], $json['ids']);
 		self::assertTrue($json['grants_edit'][0]);
@@ -351,7 +351,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 	{
 		$this->album1->tags()->sync([$this->tag_test->id]);
 
-		$json = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->tagAlbum1->id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->tagAlbum1->id}/rights")->assertOk()->json();
 
 		self::assertFalse($json['can_delete_children']);
 		self::assertFalse($json['can_move_children']);
@@ -374,7 +374,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$this->assertOk($create_response);
 		$person_album_id = $create_response->getOriginalContent();
 
-		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/children/rights")->assertOk()->json();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/rights")->assertOk()->json();
 
 		self::assertSame([$this->album1->id], $json['ids']);
 		self::assertFalse($json['can_delete_children']);
@@ -401,7 +401,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$this->recompute($hidden_child);
 		AccessPermission::factory()->for_user_group($this->group1)->for_album($hidden_child)->visible()->grants_edit()->create();
 
-		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights");
+		$before = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/rights");
 		$this->assertOk($before);
 		self::assertSame([], $before->json('ids'));
 
@@ -414,7 +414,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 
 		$this->userNoUpload->unsetRelation('user_groups')->refresh();
 
-		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/children/rights");
+		$after = $this->actingAs($this->userNoUpload)->getJsonV3("Albums/{$parent->id}/rights");
 		$this->assertOk($after);
 		self::assertSame([$hidden_child->id], $after->json('ids'));
 		self::assertTrue($after->json('grants_edit')[0]);

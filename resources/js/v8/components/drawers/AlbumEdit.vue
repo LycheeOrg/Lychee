@@ -142,7 +142,7 @@ UsersService.count().then((data) => {
 
 const canShare = computed(() => albumStore.rights?.can_share_with_users && numUsers.value > 1 && albumStore.config?.is_base_album);
 const canMove = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_move);
-// Gated exactly like `canMove` (Q-055-12): hidden for smart/tag/person albums.
+// Gated exactly like `canMove`: hidden for smart/tag/person albums.
 const canTracks = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_edit);
 const trackCount = computed(() => albumStore.modelAlbum?.tracks?.length ?? 0);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);

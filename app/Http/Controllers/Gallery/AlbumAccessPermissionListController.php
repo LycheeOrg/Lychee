@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Assets\DbBool;
 use App\Http\Requests\Gallery\AlbumAccessPermissionListRequest;
-use App\Http\Resources\V3\AlbumAccessPermissionListResource;
+use App\Http\Resources\V3\AlbumAccessPermissionResource;
 use App\Models\Album;
 use App\Models\User;
 use Illuminate\Database\Query\JoinClause;
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  */
 class AlbumAccessPermissionListController extends Controller
 {
-	public function index(AlbumAccessPermissionListRequest $request): AlbumAccessPermissionListResource
+	public function index(AlbumAccessPermissionListRequest $request): AlbumAccessPermissionResource
 	{
 		/** @var User $user */
 		$user = Auth::user();
@@ -92,7 +92,7 @@ class AlbumAccessPermissionListController extends Controller
 	/**
 	 * @param Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string}> $rows
 	 */
-	private function buildResource(Collection $rows): AlbumAccessPermissionListResource
+	private function buildResource(Collection $rows): AlbumAccessPermissionResource
 	{
 		$album_ids = [];
 		$album_titles = [];
@@ -132,7 +132,7 @@ class AlbumAccessPermissionListController extends Controller
 			$grants_deletes[] = $has_permission ? DbBool::parse($row->grants_delete) : null;
 		}
 
-		return new AlbumAccessPermissionListResource(
+		return new AlbumAccessPermissionResource(
 			album_ids: $album_ids,
 			album_titles: $album_titles,
 			lft: $lft,
