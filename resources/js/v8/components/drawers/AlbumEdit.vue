@@ -7,7 +7,7 @@
 				<div v-if="sections.length > 1" class="flex relative items-start justify-between gap-8">
 					<UPageAside class="hidden sticky lg:block lg:top-0 w-52 shrink-0 py-0">
 						<AlbumExpertModeToggle v-if="albumStore.config?.is_base_album" v-model="is_expert_mode" class="mb-6" />
-						<UNavigationMenu orientation="vertical" :items="navItems" highlight :dir="isLTR() ? 'ltr' : 'rtl'" />
+						<UNavigationMenu orientation="vertical" :items="navItems" highlight :dir />
 					</UPageAside>
 					<div class="w-full min-w-0 flex flex-col gap-10">
 						<section id="album-settings-about" class="w-full flex justify-center flex-wrap items-start gap-4 scroll-mt-4">
@@ -105,7 +105,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
-const { isLTR } = useLtRorRtL();
+const { dir } = useLtRorRtL();
 
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();

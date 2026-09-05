@@ -39,60 +39,64 @@
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">
-							<UTabs v-model="activeTab" :items="tabItems" class="w-full">
+							<UTabs v-model="activeTab" :items="tabItems" class="w-full" variant="link" :dir="flippedDir">
 								<template #my-albums>
-									<template v-if="albumsStore.pinnedAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="false"
-											header="gallery.pinned_albums"
-											:albums="albumsStore.pinnedAlbums"
-											:is-alone="!displayAlbums.length"
-											:selected-albums="selectedAlbumsIds"
-											@clicked="albumSelect"
-											@contexted="contextMenuAlbumOpen"
-										/>
-									</template>
-									<AlbumRootPanelVirtual
-										v-if="is_struct_of_array_enabled"
-										scope="own"
-										header="gallery.albums"
-										:selected-albums="selectedAlbumsIds"
-										@clicked="albumSelect"
-										@selected="albumSelect"
-										@contexted="contextMenuAlbumOpen"
-									/>
-									<template v-else-if="displayAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+									<ResetDir>
+										<template v-if="albumsStore.pinnedAlbums.length > 0">
+											<AlbumThumbPanel
+												:is-timeline="false"
+												header="gallery.pinned_albums"
+												:albums="albumsStore.pinnedAlbums"
+												:is-alone="!displayAlbums.length"
+												:selected-albums="selectedAlbumsIds"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+										<AlbumRootPanelVirtual
+											v-if="is_struct_of_array_enabled"
+											scope="own"
 											header="gallery.albums"
-											:albums="displayAlbums"
-											:is-alone="!albumsStore.pinnedAlbums.length"
 											:selected-albums="selectedAlbumsIds"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+										<template v-else-if="displayAlbums.length > 0">
+											<AlbumThumbPanel
+												:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+												header="gallery.albums"
+												:albums="displayAlbums"
+												:is-alone="!albumsStore.pinnedAlbums.length"
+												:selected-albums="selectedAlbumsIds"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+									</ResetDir>
 								</template>
 								<template #shared>
-									<AlbumRootPanelVirtual
-										v-if="is_struct_of_array_enabled"
-										scope="shared"
-										:selected-albums="selectedAlbumsIds"
-										@clicked="albumSelect"
-										@selected="albumSelect"
-										@contexted="contextMenuAlbumOpen"
-									/>
-									<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-										<AlbumThumbPanel
-											:header="sharedAlbum.header"
-											:albums="sharedAlbum.data"
-											:is-alone="displaySharedAlbums.length === 1"
+									<ResetDir>
+										<AlbumRootPanelVirtual
+											v-if="is_struct_of_array_enabled"
+											scope="shared"
 											:selected-albums="selectedAlbumsIds"
-											:is-timeline="false"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+										<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
+											<AlbumThumbPanel
+												:header="sharedAlbum.header"
+												:albums="sharedAlbum.data"
+												:is-alone="displaySharedAlbums.length === 1"
+												:selected-albums="selectedAlbumsIds"
+												:is-timeline="false"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+									</ResetDir>
 								</template>
 							</UTabs>
 						</template>
@@ -254,6 +258,10 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem, TabsItem } from "@nuxt/ui";
+import { useLtRorRtL } from "@/utils/Helpers";
+import ResetDir from "@/v8/components/ResetDir.vue";
+
+const { flippedDir } = useLtRorRtL();
 
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
