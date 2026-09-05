@@ -34,7 +34,6 @@ return new class() extends Migration {
 	private const ALBUM_ID_INDEX_NAME = 'album_user_thumbs_album_id_index';
 	private const RANDOM_ID_LENGTH = 24;
 
-
 	private OptimizeTables $optimize;
 
 	public function __construct()

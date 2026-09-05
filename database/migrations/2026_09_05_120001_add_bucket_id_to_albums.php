@@ -33,7 +33,6 @@ require_once 'TemporaryModels/OptimizeTables.php';
  * the composite one is always safe to drop.
  */
 return new class() extends Migration {
-
 	private OptimizeTables $optimize;
 
 	public function __construct()
@@ -51,7 +50,6 @@ return new class() extends Migration {
 			$this->optimize->dropIndexIfExists($table, 'albums_parent_id_index');
 			$this->optimize->dropIndexIfExists($table, 'albums_parent_id_bucket_id_index');
 		});
-
 
 		Schema::table('albums', function (Blueprint $table) {
 			$table->string('bucket_id')->nullable()->default(null)->after('parent_id');
