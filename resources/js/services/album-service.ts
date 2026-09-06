@@ -110,6 +110,13 @@ const AlbumService = {
 			axiosWithCache.storage.remove(`album_v3_children_buckets_${album_id}`);
 			axiosWithCache.storage.remove(`album_v3_children_${album_id}`);
 			axiosWithCache.storage.remove(`album_v3_children_rights_${album_id}`);
+			// Clear v3 photo-listing caches (Feature 065) — mirrors the
+			// subalbum-children entries above. `photo_v3_details_*`'s
+			// per-request digest suffix isn't enumerable here (mirrors
+			// `getPhotos()`'s own filtered-request cache-key comment above) —
+			// left to expire naturally via TTL, an accepted limitation.
+			axiosWithCache.storage.remove(`photo_v3_buckets_${album_id}`);
+			axiosWithCache.storage.remove(`photo_v3_ratios_${album_id}`);
 		}
 	},
 
