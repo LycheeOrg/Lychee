@@ -23,6 +23,7 @@ import AlbumService from "@/services/album-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{
 	albumId?: string;
@@ -88,7 +89,7 @@ function goBack() {
 	}
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	escape: {
 		usingInput: true,
 		handler: () => goBack(),

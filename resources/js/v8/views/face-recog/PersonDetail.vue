@@ -208,6 +208,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{ personId: string; photoId?: string }>();
 
@@ -632,40 +633,56 @@ function onMerged(targetPersonId: string) {
 }
 
 // Keybindings
-defineShortcuts({
-	// Photo operations (arrow keys are flipped for RTL languages)
-	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
-	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
-	i: () => photoStore.isLoaded && toggleDetails(),
-	o: () => photoStore.isLoaded && rotateOverlay(),
-	" ": () => photoStore.isLoaded && is_slideshow_enabled.value && slideshow(),
-	f: () => photoStore.isLoaded && togglableStore.toggleFullScreen(),
+definePanelShortcuts(
+	{
+		// Photo operations (arrow keys are flipped for RTL languages)
+		arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
+		arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
+		i: () => photoStore.isLoaded && toggleDetails(),
+		o: () => photoStore.isLoaded && rotateOverlay(),
+		" ": () => photoStore.isLoaded && is_slideshow_enabled.value && slideshow(),
+		f: () => photoStore.isLoaded && togglableStore.toggleFullScreen(),
 
-	// Escape handling
-	escape: {
-		usingInput: true,
-		handler: () => {
-			// Stop slideshow if active
-			if (is_slideshow_active.value) {
-				stop();
-				return;
-			}
+		// Escape handling
+		escape: {
+			usingInput: true,
+			handler: () => {
+				// Stop slideshow if active
+				if (is_slideshow_active.value) {
+					stop();
+					return;
+				}
 
-			// Lose focus if input is focused
-			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-				document.activeElement.blur();
-				return;
-			}
+				// Lose focus if input is focused
+				if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+					document.activeElement.blur();
+					return;
+				}
 
-			// If photo is open, close it
-			if (photoStore.isLoaded) {
-				closePhoto();
-				return;
-			}
+				// If photo is open, close it
+				if (photoStore.isLoaded) {
+					closePhoto();
+					return;
+				}
 
-			// Otherwise, go back to people list
-			router.push({ name: "people" });
+				if (isBatchMode.value) {
+					cancelBatchMode();
+					return;
+				}
+
+				// Otherwise, go back to people list
+				router.push({ name: "people" });
+			},
 		},
 	},
-});
+	{
+		localSelection: {
+			has: () => selectedPhotoIds.value.length > 0,
+			clear: () => {
+				selectedPhotoIds.value = [];
+				lastSelectedIndex.value = -1;
+			},
+		},
+	},
+);
 </script>

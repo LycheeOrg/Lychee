@@ -218,6 +218,7 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const { is_download_album_visible } = storeToRefs(togglableStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
 });
@@ -274,7 +275,6 @@ function toggleStatistics() {
 	}
 }
 
-const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 const is_download_photo_visible = ref(false);
 const downloadPhotoIds = ref<string[]>([]);
