@@ -249,29 +249,74 @@ class AlbumsTest extends BaseApiWithDataTest
 		self::assertNull($found['thumb']);
 	}
 
-	public function testLockedAlbumWithGrantsCoverAccessShowsThumb(): void
+	public function testLockedAlbumShowsThumbWhenGlobalConfigEnabled(): void
 	{
+		Configs::set('show_cover_of_locked_albums', true);
+
 		$lockedAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
-		AccessPermission::factory()->public()->visible()->locked()->grants_cover_access()->for_album($lockedAlbum)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($lockedAlbum)->create();
 		(new RecomputeAlbumStatsJob($lockedAlbum->id))->handle();
 
-		$response = $this->getJson('Albums');
-		$this->assertOk($response);
-
-		$albums = $response->json('albums');
-		$found = null;
-		foreach ($albums as $album) {
-			if ($album['id'] === $lockedAlbum->id) {
-				$found = $album;
-				break;
-			}
-		}
+		$found = $this->findAlbumInListing($lockedAlbum->id);
 
 		self::assertNotNull($found, 'locked album should still appear in the listing');
 		self::assertTrue($found['is_password_required'], 'album must remain locked for browsing photos');
-		self::assertTrue($found['is_locked'], 'cover access does not unlock the album itself');
+		self::assertTrue($found['is_locked'], 'the global cover config does not unlock the album itself');
 		self::assertNotNull($found['thumb']);
 		self::assertSame($photo->id, $found['thumb']['id']);
+	}
+
+	public function testLockedAlbumShowsSelectedCoverWhenGlobalConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$lockedAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
+		$selectedCover = Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
+		$lockedAlbum->cover_id = $selectedCover->id;
+		$lockedAlbum->save();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($lockedAlbum)->create();
+		(new RecomputeAlbumStatsJob($lockedAlbum->id))->handle();
+
+		$found = $this->findAlbumInListing($lockedAlbum->id);
+
+		self::assertNotNull($found, 'locked album should still appear in the listing');
+		self::assertTrue($found['is_locked']);
+		self::assertNotNull($found['thumb']);
+		self::assertSame($selectedCover->id, $found['thumb']['id']);
+	}
+
+	public function testLockedAlbumHidesAutoSelectedCoverEvenWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$lockedAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($lockedAlbum)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($lockedAlbum)->create();
+		(new RecomputeAlbumStatsJob($lockedAlbum->id))->handle();
+
+		$found = $this->findAlbumInListing($lockedAlbum->id);
+
+		self::assertNotNull($found, 'locked album should still appear in the listing');
+		self::assertTrue($found['is_locked']);
+		self::assertNull($found['thumb'], 'an auto-selected cover must not leak through the manual-cover-only setting');
+	}
+
+	/**
+	 * @return array<string,mixed>|null
+	 */
+	private function findAlbumInListing(string $album_id): ?array
+	{
+		$response = $this->getJson('Albums');
+		$this->assertOk($response);
+
+		foreach ($response->json('albums') as $album) {
+			if ($album['id'] === $album_id) {
+				return $album;
+			}
+		}
+
+		return null;
 	}
 }

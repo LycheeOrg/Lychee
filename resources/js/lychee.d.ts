@@ -1278,7 +1278,6 @@ declare namespace App {
 						is_link_required: boolean;
 						is_nsfw: boolean;
 						grants_full_photo_access: boolean;
-						grants_cover_access: boolean;
 						grants_download: boolean;
 						grants_upload: boolean;
 						is_password_required: boolean;

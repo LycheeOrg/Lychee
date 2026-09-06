@@ -38,7 +38,6 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 				'grants_download' => false,
 				'grants_upload' => false,
 				'grants_full_photo_access' => false,
-				'grants_cover_access' => false,
 			]);
 			$this->assertCreated($response);
 		}
@@ -61,7 +60,6 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 				'grants_download' => false,
 				'grants_upload' => false,
 				'grants_full_photo_access' => false,
-				'grants_cover_access' => false,
 			]);
 			$this->assertCreated($response);
 		}
