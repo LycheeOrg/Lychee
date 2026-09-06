@@ -10,12 +10,12 @@
 		:data-photo-id="props.photo.id"
 		@mouseenter="prefetchFaces"
 	>
-		<span class="thumbimg relative w-full h-full border-none overflow-hidden">
+		<span class="thumbimg block relative w-full h-full border-none overflow-hidden">
 			<Thumb
 				class="thumb-image absolute w-full h-full top-0 left-0 object-cover object-center"
 				:album-id="props.albumId"
 				:photo-id="props.photo.id"
-				type="thumb"
+				type="small2x"
 			/>
 		</span>
 		<div

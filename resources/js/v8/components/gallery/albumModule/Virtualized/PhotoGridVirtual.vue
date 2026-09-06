@@ -176,7 +176,15 @@ const ratingFilterActive = computed(() => photosStore.photoRatingFilter !== null
 const filteredPhotoIds = computed(() => (ratingFilterActive.value ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null));
 
 const layoutResult = computed(() => {
-	if (!ready.value) {
+	// `containerWidth` starts at 0 until `useElementSize`'s ResizeObserver
+	// fires its first measurement, independently of `ready`. Computing the
+	// real layout against a 0px width isn't just a cosmetic 0-size flash —
+	// the WASM primitives can return fewer boxes than input tiles for a
+	// degenerate width, leaving holes in `computePhotoLayout()`'s `boxes`
+	// array that later crash the render (`relativeBox()` reading `.top` off
+	// an undefined box). Stay in the same empty state as `!ready` until a
+	// real width is known.
+	if (!ready.value || containerWidth.value <= 0) {
 		return {
 			positioned: [] as { photo: App.Http.Resources.Models.PhotoResource; box: PhotoBox }[],
 			totalHeight: 0,

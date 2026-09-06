@@ -95,26 +95,55 @@ export type PhotoChunk = {
 };
 
 /**
- * Groups the already-known, already-positioned box list into fixed
- * tile-count chunks (FR-065-08) — a pure virtualization bookkeeping unit,
- * unrelated to any visual row, which is what lets a row-indexed virtualizer
- * (`useWindowVirtualizer`) drive `masonry`/`grid`'s genuinely non-row-uniform
- * geometry (Decision Card Q-065-04). Never splits a bucket's header away
- * from at least its first tile.
+ * Splits a bucket's tiles into consecutive runs that share the same `top` —
+ * one real visual row for row-uniform layouts (justified/square/grid/list),
+ * one column-fill "step" for masonry's column-packed geometry — read
+ * directly off the already-computed boxes. A justified/masonry row's tile
+ * count depends on each tile's own aspect ratio, so it varies row to row; a
+ * fixed-size window (e.g. "row 1's count, applied to every row") would cut
+ * a differently-sized row's tail into the next chunk, which isn't
+ * necessarily mounted yet — visually truncating that row (missing tiles,
+ * unfilled row width) until the user scrolls further. Grouping by the
+ * boxes' own `top` transitions can't split a row, by construction.
+ */
+function splitIntoRows(boxes: PhotoBox[], startIndex: number, count: number): { start: number; count: number }[] {
+	if (count === 0) {
+		return [];
+	}
+	const rows: { start: number; count: number }[] = [];
+	let rowStart = startIndex;
+	let rowTop = boxes[startIndex]?.top ?? 0;
+	for (let i = startIndex + 1; i < startIndex + count; i++) {
+		const top = boxes[i]?.top ?? 0;
+		if (Math.abs(top - rowTop) > 0.5) {
+			rows.push({ start: rowStart, count: i - rowStart });
+			rowStart = i;
+			rowTop = top;
+		}
+	}
+	rows.push({ start: rowStart, count: startIndex + count - rowStart });
+	return rows;
+}
+
+/**
+ * Groups the already-known, already-positioned box list into one virtualizer
+ * chunk per real visual row (FR-065-08, `splitIntoRows()`) — a pure
+ * virtualization bookkeeping unit, unrelated to any layout concept, which is
+ * what lets a row-indexed virtualizer (`useWindowVirtualizer`) drive
+ * `masonry`/`grid`'s genuinely non-row-uniform geometry (Decision Card
+ * Q-065-04). Never splits a bucket's header away from at least its first
+ * tile.
  */
 export function buildPhotoChunks(
 	boxes: PhotoBox[],
 	buckets: AlbumBucketBoundary[],
 	showHeaders: boolean,
 	headerTops: PhotoHeaderTop[],
-	chunkTileSize: number = 60,
 ): PhotoChunk[] {
 	const chunks: PhotoChunk[] = [];
 
 	buckets.forEach((bucket, bucketIdx) => {
 		const headerInfo = showHeaders ? headerTops[bucketIdx] : undefined;
-		let offset = 0;
-		let isFirstChunkOfBucket = true;
 
 		if (bucket.count === 0) {
 			if (headerInfo !== undefined) {
@@ -130,26 +159,23 @@ export function buildPhotoChunks(
 			return;
 		}
 
-		while (offset < bucket.count) {
-			const tileStart = bucket.startIndex + offset;
-			const tileCount = Math.min(chunkTileSize, bucket.count - offset);
-			const firstBox = boxes[tileStart];
-			const lastBox = boxes[tileStart + tileCount - 1];
-			const chunkTop = isFirstChunkOfBucket && headerInfo !== undefined ? headerInfo.top : (firstBox?.top ?? 0);
+		const rows = splitIntoRows(boxes, bucket.startIndex, bucket.count);
+		rows.forEach((row, rowIdx) => {
+			const isFirstRowOfBucket = rowIdx === 0;
+			const firstBox = boxes[row.start];
+			const lastBox = boxes[row.start + row.count - 1];
+			const chunkTop = isFirstRowOfBucket && headerInfo !== undefined ? headerInfo.top : (firstBox?.top ?? 0);
 			const contentBottom = lastBox !== undefined ? lastBox.top + lastBox.height : chunkTop;
 
 			chunks.push({
-				key: `chunk-${bucket.bucketId}-${offset}`,
+				key: `chunk-${bucket.bucketId}-${row.start}`,
 				top: chunkTop,
 				size: contentBottom - chunkTop,
-				tileStart,
-				tileCount,
-				header: isFirstChunkOfBucket && headerInfo !== undefined ? { label: headerInfo.label, bucketId: headerInfo.bucketId } : null,
+				tileStart: row.start,
+				tileCount: row.count,
+				header: isFirstRowOfBucket && headerInfo !== undefined ? { label: headerInfo.label, bucketId: headerInfo.bucketId } : null,
 			});
-
-			offset += tileCount;
-			isFirstChunkOfBucket = false;
-		}
+		});
 	});
 
 	// Each chunk's virtualizer size is the stride to the next chunk's top
