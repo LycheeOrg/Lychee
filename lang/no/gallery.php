@@ -350,6 +350,7 @@ return [
         'license' => 'Lisens',
         'license_all' => 'Lisens for valgte',
         'set_cover' => 'Angi albumforside',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Fjern albumoverskrift',
         'set_header' => 'Angi albumoverskrift',
         'copy_to' => 'Kopier til …',

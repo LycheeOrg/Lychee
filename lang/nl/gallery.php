@@ -350,6 +350,7 @@ return [
         'license' => 'Licentie',
         'license_all' => 'Licentie instellen voor selectie',
         'set_cover' => 'Stel albumhoes in',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Verwijder albumkop',
         'set_header' => 'Stel albumkop in',
         'copy_to' => 'Kopiëren naar …',

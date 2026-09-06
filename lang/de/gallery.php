@@ -350,6 +350,7 @@ return [
         'license' => 'Lizenz',
         'license_all' => 'Auswahl lizensieren',
         'set_cover' => 'Album-Cover festlegen',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Album-Header entfernen',
         'set_header' => 'Album-Header festlegen',
         'copy_to' => 'Kopieren nach …',

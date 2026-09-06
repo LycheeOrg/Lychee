@@ -350,6 +350,7 @@ return [
         'license' => 'License',
         'license_all' => 'License Selected',
         'set_cover' => 'Set Album Cover',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Remove Album Header',
         'set_header' => 'Set Album Header',
         'copy_to' => 'Copy to …',

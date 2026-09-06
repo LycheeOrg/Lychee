@@ -350,6 +350,7 @@ return [
         'license' => 'الترخيص',
         'license_all' => 'ترخيص المحدد',
         'set_cover' => 'تعيين غلاف الألبوم',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'إزالة رأس الألبوم',
         'set_header' => 'تعيين رأس الألبوم',
         'copy_to' => 'نسخ إلى …',

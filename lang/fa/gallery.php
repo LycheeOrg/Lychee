@@ -350,6 +350,7 @@ return [
         'license' => 'مجوز',
         'license_all' => 'تنظیم مجوز انتخاب شده‌ها',
         'set_cover' => 'تنظیم جلد آلبوم',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'حذف هدر آلبوم',
         'set_header' => 'تنظیم هدر آلبوم',
         'copy_to' => 'کپی به …',

@@ -350,6 +350,7 @@ return [
         'license' => 'License',
         'license_all' => 'License Selected',
         'set_cover' => '设为相册封面',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => '移除相册页眉图片',
         'set_header' => '设置相册页眉图片',
         'copy_to' => '复制到…',

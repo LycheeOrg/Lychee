@@ -350,6 +350,7 @@ return [
         'license' => 'License',
         'license_all' => 'License Selected',
         'set_cover' => 'Установить обложку альбома',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Удалить заголовок альбома',
         'set_header' => 'Установить заголовок альбома',
         'copy_to' => 'Копировать в …',

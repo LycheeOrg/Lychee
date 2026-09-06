@@ -350,6 +350,7 @@ return [
         'license' => 'Licence',
         'license_all' => 'Vybrané licence',
         'set_cover' => 'Nastavit obal alba',
+        'remove_cover' => 'Remove Album Cover',
         'remove_header' => 'Odebrat záhlaví alba',
         'set_header' => 'Nastavit záhlaví alba',
         'copy_to' => 'Kopírovat do ...',
