@@ -245,7 +245,7 @@ class AlbumsTest extends BaseApiWithDataTest
 
 		self::assertNotNull($found, 'locked album should still appear in the listing');
 		self::assertTrue($found['is_password_required']);
-		self::assertFalse($found['grants_cover_access']);
+		self::assertTrue($found['is_locked']);
 		self::assertNull($found['thumb']);
 	}
 
@@ -270,7 +270,7 @@ class AlbumsTest extends BaseApiWithDataTest
 
 		self::assertNotNull($found, 'locked album should still appear in the listing');
 		self::assertTrue($found['is_password_required'], 'album must remain locked for browsing photos');
-		self::assertTrue($found['grants_cover_access']);
+		self::assertTrue($found['is_locked'], 'cover access does not unlock the album itself');
 		self::assertNotNull($found['thumb']);
 		self::assertSame($photo->id, $found['thumb']['id']);
 	}

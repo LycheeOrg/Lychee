@@ -1176,7 +1176,6 @@ declare namespace App {
 					is_public: boolean;
 					is_link_required: boolean;
 					is_password_required: boolean;
-					grants_cover_access: boolean;
 					is_locked: boolean;
 					is_tag_album: boolean;
 					is_person_album: boolean;
