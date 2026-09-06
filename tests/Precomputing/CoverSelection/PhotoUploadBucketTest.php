@@ -112,7 +112,7 @@ class PhotoUploadBucketTest extends BasePrecomputingTest
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
-		$insert_queries = array_filter($log, fn (array $q) => preg_match('/^insert into "?photo_album"?/i', trim($q['query'])) === 1);
+		$insert_queries = array_filter($log, fn (array $q) => preg_match('/^insert into [`"]?photo_album[`"]?/i', trim($q['query'])) === 1);
 		$this->assertCount(1, $insert_queries, 'Expected exactly one bulk insert query, got: ' . implode(' | ', array_column($insert_queries, 'query')));
 	}
 }
