@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Ordne album etter',
             'asc/desc' => 'stigende/synkende',
             'header' => 'Angi albumoverskrift',
+            'cover' => 'Set album cover',
             'compact_header' => 'Bruk kompakt topptekst',
             'license' => 'Angi lisens',
             'copyright' => 'Angi opphavsrett',

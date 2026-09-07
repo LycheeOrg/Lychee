@@ -133,6 +133,7 @@ class AlbumController extends Controller
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->is_pinned = $request->is_pinned();
+		$album->cover_id = $request->coverPhoto()?->id;
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();

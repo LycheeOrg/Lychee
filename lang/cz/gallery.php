@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Seřadit alba podle',
             'asc/desc' => 'vzestupně/sestupně',
             'header' => 'Nastavit záhlaví alba',
+            'cover' => 'Set album cover',
             'compact_header' => 'Použít kompaktní záhlaví',
             'license' => 'Nastavit licenci',
             'copyright' => 'Nastavit copyright',

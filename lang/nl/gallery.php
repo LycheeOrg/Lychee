@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Albums sorteren op',
             'asc/desc' => 'oplopend/aflopend',
             'header' => 'Stel albumkop in',
+            'cover' => 'Set album cover',
             'compact_header' => 'Gebruik compacte kop',
             'license' => 'Stel licentie in',
             'copyright' => 'Stel auteursrecht in',

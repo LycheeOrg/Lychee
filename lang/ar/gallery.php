@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'ترتيب الألبومات بواسطة',
             'asc/desc' => 'تصاعدي/تنازلي',
             'header' => 'تعيين رأس الألبوم',
+            'cover' => 'Set album cover',
             'compact_header' => 'استخدام رأس مدمج',
             'license' => 'تعيين الترخيص',
             'copyright' => 'تعيين حقوق الطبع والنشر',

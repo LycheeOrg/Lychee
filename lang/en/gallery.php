@@ -219,6 +219,7 @@ return [
             'children_ordering' => 'Order albums by',
             'asc/desc' => 'asc/desc',
             'header' => 'Set album header',
+            'cover' => 'Set album cover',
             'compact_header' => 'Use compact header',
             'license' => 'Set license',
             'copyright' => 'Set copyright',

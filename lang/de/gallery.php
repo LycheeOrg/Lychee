@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Alben anordnen nach',
             'asc/desc' => 'Aufsteigend/Absteigend',
             'header' => 'Album-Header festlegen',
+            'cover' => 'Set album cover',
             'compact_header' => 'Kompakten Header verwenden',
             'license' => 'Lizenz festlegen',
             'copyright' => 'Urheberrecht festlegen',

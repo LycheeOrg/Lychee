@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'مرتب سازی آلبوم‌ها بر اساس',
             'asc/desc' => 'صعودی/نزولی',
             'header' => 'تنظیم هدر آلبوم',
+            'cover' => 'Set album cover',
             'compact_header' => 'استفاده از هدر فشرده',
             'license' => 'تنظیم مجوز',
             'copyright' => 'تنظیم کپی‌رایت',

@@ -59,6 +59,13 @@
 							</template>
 						</USelectMenu>
 					</UFormField>
+					<UFormField :label="$t('gallery.album.properties.cover')">
+						<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72">
+							<template #item-leading="{ item }">
+								<img :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+							</template>
+						</USelectMenu>
+					</UFormField>
 					<UFormField :label="$t('gallery.album.properties.license')">
 						<USelectMenu v-model="license" :items="licenseOptions" label-key="label" class="w-72">
 							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
@@ -238,6 +245,7 @@ const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_person_album = ref<boolean>(false);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
+const cover_id = ref<HeaderOption | undefined>(undefined);
 const is_and = ref<boolean>(false);
 
 const photoTimelineOptions = computed(() => {
@@ -291,6 +299,29 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 	};
 }
 
+const coverOptions = computed<HeaderOption[]>(() =>
+	photosStore.photos.map((photo) => ({
+		id: photo.id,
+		title: photo.title,
+		thumb: photo.size_variants.thumb?.url,
+	})),
+);
+
+function buildCoverId(value: string | null, photos: App.Http.Resources.Models.PhotoResource[]): HeaderOption | undefined {
+	if (value === null) {
+		return undefined;
+	}
+	const photo = photos.find((photo) => photo.id === value);
+	if (photo === undefined) {
+		return undefined;
+	}
+	return {
+		id: photo.id,
+		title: photo.title,
+		thumb: photo.size_variants.thumb?.url,
+	};
+}
+
 function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, photos: App.Http.Resources.Models.PhotoResource[]) {
 	isLoading.value = true;
 	is_model_album.value = editable.is_model_album;
@@ -308,6 +339,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	albumTimeline.value = SelectBuilders.buildTimelineAlbumGranularity(editable.album_timeline ?? undefined);
 	photoTimeline.value = SelectBuilders.buildTimelinePhotoGranularity(editable.photo_timeline ?? undefined);
 	header_id.value = buildHeaderId(editable.header_id, photos);
+	cover_id.value = buildCoverId(editable.cover_id, photos);
 	tags.value = editable.tags;
 	is_and.value = editable.is_and ?? false;
 
@@ -359,6 +391,7 @@ function saveAlbum() {
 		copyright: copyright.value ?? null,
 		tags: tags.value,
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
+		cover_id: cover_id.value?.id ?? null,
 		is_compact: header_id.value?.id === "compact",
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
@@ -457,6 +490,7 @@ watch(
 		copyright,
 		aspectRatio,
 		header_id,
+		cover_id,
 		tags,
 		is_and,
 		selectedPersons,

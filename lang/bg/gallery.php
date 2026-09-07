@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Подреждай албумите по',
             'asc/desc' => 'възх./низх.',
             'header' => 'Задай заглавка на албума',
+            'cover' => 'Set album cover',
             'compact_header' => 'Използвай компактна заглавка',
             'license' => 'Задай лиценз',
             'copyright' => 'Задай авторски права',

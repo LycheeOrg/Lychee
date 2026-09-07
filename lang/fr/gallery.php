@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Ordre des albums',
             'asc/desc' => 'asc/desc',
             'header' => 'Définir l’en-tête de l’album',
+            'cover' => 'Set album cover',
             'compact_header' => 'Utiliser un en-tête compact',
             'license' => 'Définir la licence',
             'copyright' => 'Définir le copyright',

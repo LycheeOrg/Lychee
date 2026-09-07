@@ -218,6 +218,7 @@ return [
             'children_ordering' => 'Sortuj albumy według',
             'asc/desc' => 'asc/desc',
             'header' => 'Ustawianie nagłówka albumu',
+            'cover' => 'Set album cover',
             'compact_header' => 'Użyj kompaktowego nagłówka',
             'license' => 'Ustaw licencję',
             'copyright' => 'Ustaw prawo autorskie',
