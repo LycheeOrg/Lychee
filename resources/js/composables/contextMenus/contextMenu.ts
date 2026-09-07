@@ -126,7 +126,11 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.album !== undefined && (selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)) {
+		if (
+			selectors.album !== undefined &&
+			selectors.album.value !== undefined &&
+			(selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)
+		) {
 			const cover_album = selectors.album.value as
 				| App.Http.Resources.Models.HeadAlbumResource
 				| App.Http.Resources.Models.HeadTagAlbumResource;
@@ -138,7 +142,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
+		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined && selectors.album.value !== undefined) {
 			const parent_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource;
 			if (parent_album.header_id === selectedPhoto.id) {
 				menuItems.push({
