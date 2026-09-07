@@ -60,7 +60,7 @@
 						</USelectMenu>
 					</UFormField>
 					<UFormField :label="$t('gallery.album.properties.cover')">
-						<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72">
+						<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72" clear>
 							<template #item-leading="{ item }">
 								<img :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
 							</template>
@@ -245,7 +245,7 @@ const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_person_album = ref<boolean>(false);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
-const cover_id = ref<HeaderOption | undefined>(undefined);
+const cover_id = ref<HeaderOption | null | undefined>(undefined);
 const is_and = ref<boolean>(false);
 
 const photoTimelineOptions = computed(() => {
