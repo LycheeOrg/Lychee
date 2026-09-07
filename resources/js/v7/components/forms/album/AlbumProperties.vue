@@ -167,7 +167,14 @@
 					</div>
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
-							<Select label-id="cover" v-model="cover_id" class="w-72 border-none" :options="coverOptions" option-label="title" show-clear>
+							<Select
+								label-id="cover"
+								v-model="cover_id"
+								class="w-72 border-none"
+								:options="coverOptions"
+								option-label="title"
+								show-clear
+							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
 										<img :src="slotProps.value.thumb" alt="poster" class="w-4 rounded-sm" />
