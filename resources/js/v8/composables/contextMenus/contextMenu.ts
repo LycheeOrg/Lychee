@@ -131,9 +131,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			selectors.album.value !== undefined &&
 			(selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)
 		) {
-			const cover_album = selectors.album.value as
-				| App.Http.Resources.Models.HeadAlbumResource
-				| App.Http.Resources.Models.HeadTagAlbumResource;
+			const cover_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 			menuItems.push({
 				label: cover_album.cover_id === selectedPhoto.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "lucide:id-card",
