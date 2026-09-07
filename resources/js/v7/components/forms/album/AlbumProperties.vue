@@ -496,7 +496,9 @@ function buildCoverId(value: string | null, photos: App.Http.Resources.Models.Ph
 	}
 	const photo = photos.find((photo) => photo.id === value);
 	if (photo === undefined) {
-		return undefined;
+		// The persisted cover isn't in the loaded page of photos; keep its id so
+		// saving another field doesn't serialize cover_id as null and clear it.
+		return { id: value };
 	}
 	return {
 		id: photo.id,
