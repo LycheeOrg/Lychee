@@ -351,4 +351,88 @@ class CacheKeyProvider
 
 		return "{$album_children_tag}:root-children-rights:{$scope->value}:{$user_tag}";
 	}
+
+	// ── Photo listing ────────────────────────────────────────────────
+
+	/**
+	 * Tag carried by every cached entry across all three photo-listing tiers
+	 * (`buckets`/`ratios`/`details`) for one album — evicting it alone
+	 * flushes every cached photo-listing response for that album, across
+	 * every user identity and `details` scope.
+	 */
+	public function photoListingTag(string $album_id): string
+	{
+		return "photo-listing:{$album_id}";
+	}
+
+	/**
+	 * @param string[] $album_ids
+	 *
+	 * @return string[]
+	 */
+	public function photoListingTags(array $album_ids): array
+	{
+		return array_map($this->photoListingTag(...), $album_ids);
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/buckets`: a pure
+	 * function of `(album_id, user identity)` — mirrors
+	 * {@see self::albumBucketsKey()}.
+	 */
+	public function photoBucketsKey(string $album_id, int|string|null $user_id): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:buckets:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos`, mirrors
+	 * {@see self::photoBucketsKey()}.
+	 */
+	public function photoRatiosKey(string $album_id, int|string|null $user_id): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:ratios:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/details`: a pure
+	 * function of `(album_id, user identity, scope)` — `$scope_digest` must
+	 * distinguish every distinct `bucket_id`/`photo_ids[]` combination a
+	 * caller could request, so two different detail requests for the same
+	 * album never collide. See {@see self::photoDetailsScopeDigest()}.
+	 */
+	public function photoDetailsKey(string $album_id, string $scope_digest, int|string|null $user_id): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:details:{$scope_digest}:{$user_tag}";
+	}
+
+	/**
+	 * Digest identifying the exact `details` request scope
+	 * ({@see \App\Http\Requests\Photo\GetPhotoDetailsRequest}) — either the
+	 * requested `bucket_id` verbatim, or a fast hash of the sorted
+	 * `photo_ids[]` list (order-independent: the same id set requested in a
+	 * different order is still the same cached response).
+	 *
+	 * @param string[]|null $photo_ids
+	 */
+	public function photoDetailsScopeDigest(?string $bucket_id, ?array $photo_ids): string
+	{
+		if ($bucket_id !== null) {
+			return "bucket:{$bucket_id}";
+		}
+
+		$ids = $photo_ids ?? [];
+		sort($ids);
+
+		return 'ids:' . hash('xxh3', implode(',', $ids));
+	}
 }

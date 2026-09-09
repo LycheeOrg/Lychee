@@ -92,35 +92,47 @@
 								/>
 							</template>
 							<!-- Tag Filter -->
-							<PhotoThumbPanel
-								v-if="layoutStore.config && photosStore.photos.length > 0"
+							<PhotoThumbPanelVirtual
+								v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
 								header="gallery.album.header_photos"
-								:photos="photosStore.filteredPhotos"
-								:photos-timeline="photosStore.filteredPhotosTimeline"
 								:selected-photos="selectedPhotosIds"
-								:is-timeline="albumStore.config.is_photo_timeline_enabled"
-								:with-control="true"
 								@clicked="photoClick"
 								@selected="photoSelect"
 								@contexted="contextMenuPhotoOpen"
 								@toggle-buy-me="toggleBuyMe"
-								ref="photoPanel"
 							/>
-							<!-- Pagination for photos -->
-							<Pagination
-								v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
-								:mode="lycheeStore.photos_pagination_mode"
-								:loading="albumStore.photos_loading"
-								:has-more="albumStore.hasMorePhotos"
-								:current-page="albumStore.photos_current_page"
-								:last-page="albumStore.photos_last_page"
-								:per-page="albumStore.photos_per_page"
-								:total="albumStore.photos_total"
-								:remaining="albumStore.photosRemainingCount"
-								resource-type="photos"
-								@load-more="albumStore.loadMorePhotos()"
-								@go-to-page="goToPhotosPage"
-							/>
+							<template v-else>
+								<PhotoThumbPanel
+									v-if="layoutStore.config && photosStore.photos.length > 0"
+									header="gallery.album.header_photos"
+									:photos="photosStore.filteredPhotos"
+									:photos-timeline="photosStore.filteredPhotosTimeline"
+									:selected-photos="selectedPhotosIds"
+									:is-timeline="albumStore.config.is_photo_timeline_enabled"
+									:with-control="true"
+									@clicked="photoClick"
+									@selected="photoSelect"
+									@contexted="contextMenuPhotoOpen"
+									@toggle-buy-me="toggleBuyMe"
+									ref="photoPanel"
+								/>
+								<!-- Pagination for photos: not applicable on the SoA path
+								     (tier 2 is whole-album-at-once, never paginated) -->
+								<Pagination
+									v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+									:mode="lycheeStore.photos_pagination_mode"
+									:loading="albumStore.photos_loading"
+									:has-more="albumStore.hasMorePhotos"
+									:current-page="albumStore.photos_current_page"
+									:last-page="albumStore.photos_last_page"
+									:per-page="albumStore.photos_per_page"
+									:total="albumStore.photos_total"
+									:remaining="albumStore.photosRemainingCount"
+									resource-type="photos"
+									@load-more="albumStore.loadMorePhotos()"
+									@go-to-page="goToPhotosPage"
+								/>
+							</template>
 						</div>
 					</UContextMenu>
 					<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
@@ -149,6 +161,7 @@ import { computed, ref, ComponentPublicInstance } from "vue";
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
+import PhotoThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbPanelVirtual.vue";
 import ShareAlbum from "@/v8/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/v8/components/gallery/albumModule/AlbumHero.vue";
 import AlbumEdit from "@/v8/components/drawers/AlbumEdit.vue";
@@ -388,8 +401,27 @@ const photoCallbacks = {
 		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
-	toggleTag: toggleTag,
-	toggleLicense: toggleLicense,
+	// The tag/license dialogs can be opened against a multi-selection
+	// without ever going through the lightbox (unlike PhotoEdit.vue's
+	// drawer, which is only reachable once a photo is already open there —
+	// FR-065-13 already covers that path). `ratios`' own `tags` field is
+	// conditionally gated behind display settings unrelated to whether a
+	// photo actually has tags, so a SoA-sourced tile's `tags`/`license`
+	// fields can't be trusted as "no details fetched yet" here — fetch
+	// details for the current selection first (Q-065-05: no-op when
+	// `isPhotoSoaActive` is false).
+	toggleTag: () => {
+		if (albumStore.isPhotoSoaActive) {
+			void albumStore.loadPhotoDetails(selectedPhotosIds.value);
+		}
+		toggleTag();
+	},
+	toggleLicense: () => {
+		if (albumStore.isPhotoSoaActive) {
+			void albumStore.loadPhotoDetails(selectedPhotosIds.value);
+		}
+		toggleLicense();
+	},
 	toggleRename: toggleRename,
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,

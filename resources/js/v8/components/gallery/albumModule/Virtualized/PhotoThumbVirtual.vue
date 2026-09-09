@@ -1,0 +1,203 @@
+<template>
+	<a
+		:class="{
+			'photo group shadow-md shadow-black/25 cursor-pointer overflow-hidden absolute': true,
+			'outline-2 outline-primary-500': props.isSelected && is_selection_border_enabled,
+			'rounded-lg': is_rounded_corners_enabled,
+			'border-solid border border-accented': is_album_border_enabled,
+		}"
+		:style="boxStyle"
+		:data-photo-id="props.photo.id"
+		@mouseenter="prefetchFaces"
+	>
+		<span class="thumbimg block relative w-full h-full border-none overflow-hidden">
+			<Thumb
+				class="thumb-image absolute w-full h-full top-0 left-0 object-cover object-center"
+				:album-id="props.albumId"
+				:photo-id="props.photo.id"
+				type="small2x"
+			/>
+		</span>
+		<div
+			v-if="props.isSelected && is_selection_overlay_enabled"
+			class="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none bg-primary/20"
+		></div>
+		<div
+			:class="{
+				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-black/40 text-shadow-sm': true,
+				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
+				hidden: display_thumb_photo_overlay === 'never',
+			}"
+		>
+			<template v-if="photo_thumb_info === 'title'">
+				<h1 class="min-h-4.75 mt-3 mb-1 ltr:ml-3 rtl:mr-3 text-white text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">
+					{{ props.photo.title }}
+				</h1>
+				<div class="last:mb-2">
+					<span v-if="props.photo.preformatted.taken_at" class="block mt-0 ltr:mr-0 ltr:ml-3 rtl:mr-3 text-2xs text-neutral-300">
+						<span title="Camera Date"><MiniIcon icon="camera-slr" class="w-2 h-2 m-0 ltr:mr-1 rtl:ml-1 fill-neutral-300" /></span
+						>{{ props.photo.preformatted.taken_at }}
+					</span>
+					<span v-else class="block mt-0 mr-0 ltr:ml-3 rtl:mr-3 text-2xs text-neutral-300">{{ props.photo.preformatted.created_at }}</span>
+				</div>
+				<div v-if="is_photo_thumb_tags_enabled" class="last:mb-2">
+					<span
+						v-for="(tag, idx) in props.photo.tags"
+						:key="`photo-thumb${props.photo.id}-tag-${idx}`"
+						class="inline-block ltr:ml-3 rtl:mr-3 text-xs text-neutral-300 bg-neutral-800/50 rounded px-1.5 py-0.5"
+					>
+						{{ tag.name }}
+					</span>
+				</div>
+			</template>
+			<template v-else>
+				<h1
+					class="min-h-4.75 mt-3 mb-1 ltr:ml-3 rtl:mr-3 text-base text-ellipsis prose-invert line-clamp-3"
+					v-html="props.photo.preformatted.description"
+				></h1>
+			</template>
+		</div>
+		<div
+			v-if="props.photo.precomputed.is_video"
+			class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300 flex justify-center items-center"
+		>
+			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
+		</div>
+		<!-- Touch select mode indicator -->
+		<div
+			v-if="is_touch_select_mode"
+			class="absolute top-1.5 ltr:right-1.5 rtl:left-1.5 z-10 w-5 h-5 rounded-full pointer-events-none flex items-center justify-center"
+			:class="{
+				'border border-white bg-black/40': !props.isSelected,
+			}"
+		>
+			<UIcon v-if="props.isSelected" name="lucide:check-circle" class="text-lg text-primary" />
+		</div>
+		<div v-else class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
+			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
+			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
+		</div>
+		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
+			<ThumbBadge v-if="showHighlightedFlag" class="bg-yellow-500" :pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`" />
+			<ThumbBadge v-if="showCoverIdFlag" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="showHeaderIdFlag" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
+			<ThumbBadge v-if="showValidatedFlag" class="bg-neutral-800" border-color="border-none" pi="lucide:shield text-amber-500 text-shadow-md" />
+		</div>
+		<!-- Rating Overlay -->
+		<ThumbRatingOverlay v-if="rating_album_view_mode !== 'never' && props.photo.rating !== null" :rating="props.photo.rating" />
+	</a>
+</template>
+<script setup lang="ts">
+/**
+ * Forked from `PhotoThumb.vue` — the grid-shaped tile mounted per photo by
+ * `PhotoGridVirtual.vue` for `justified`/`square`/`masonry`/`grid`
+ * (FR-065-10). Reuses every badge/overlay/rating/selection binding
+ * unchanged, reading from the same `AdaptedPhotoTile` (a genuinely
+ * `PhotoResource`-shaped object — see `adaptPhotoTile.ts`) a v2 tile would
+ * also satisfy. Two deliberate changes from `PhotoThumb.vue`:
+ *
+ * 1. The thumbnail image resolves via `<Thumb>` (Feature 056 Asset
+ *    endpoint), not `photo.size_variants` directly — tier 2 (`ratios`)
+ *    supplies photo ids only, never pre-built URLs (mirrors why
+ *    `AlbumThumbVirtual.vue` forked `AlbumThumb.vue` for the exact same
+ *    reason). The blur-up placeholder image is dropped entirely rather than
+ *    kept as dead markup — `size_variants.placeholder` is always `null` for
+ *    an SoA-adapted tile, so it could never render (NG11's accepted
+ *    regression).
+ * 2. Position/size come from the `box` prop (the tile's precomputed,
+ *    analytic box — `computePhotoLayout()`), not an external DOM-mutating
+ *    layout pass.
+ *
+ * Deliberately NOT forked: hover-triggered face-prefetch and any
+ * file-size-dependent markup — this component has neither to begin with
+ * (those live in `PhotoListItemVirtual.vue`/its own effective no-op, see
+ * that file and `adaptPhotoTile.ts`'s own doc comment — NG11/Q-065-06).
+ */
+import { computed, ref, toRef } from "vue";
+import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
+import ThumbBadge from "@/v8/components/gallery/albumModule/thumbs/ThumbBadge.vue";
+import ThumbRatingOverlay from "@/v8/components/gallery/albumModule/thumbs/ThumbRatingOverlay.vue";
+import Thumb from "@/v8/components/thumbs/Thumb.vue";
+import { useLycheeStateStore } from "@/stores/LycheeState";
+import { storeToRefs } from "pinia";
+import { useImageHelpers } from "@/utils/Helpers";
+import { useFavouriteStore } from "@/stores/FavouriteState";
+import ThumbFavourite from "@/v8/components/gallery/albumModule/thumbs/ThumbFavourite.vue";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useRouter } from "vue-router";
+import ThumbBuyMe from "@/v8/components/gallery/albumModule/thumbs/ThumbBuyMe.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
+import { usePhotoFlags } from "@/v8/composables/photo/photoFlags";
+import type { PhotoBox } from "@/v8/composables/photo/analyticPhotoLayout";
+
+const props = defineProps<{
+	isSelected: boolean;
+	isCoverId: boolean;
+	isHeaderId: boolean;
+	photo: App.Http.Resources.Models.PhotoResource;
+	isBuyable: boolean;
+	albumId: string;
+	box: PhotoBox;
+}>();
+
+const emits = defineEmits<{
+	toggleBuyMe: [];
+}>();
+
+const { getPlayIcon } = useImageHelpers();
+const favourites = useFavouriteStore();
+const lycheeStore = useLycheeStateStore();
+const orderStore = useOrderManagementStore();
+const togglableStore = useTogglablesStateStore();
+const router = useRouter();
+const { getParentId } = usePhotoRoute(router);
+const {
+	is_favourite_enabled,
+	display_thumb_photo_overlay,
+	photo_thumb_info,
+	is_photo_thumb_tags_enabled,
+	rating_album_view_mode,
+	is_rounded_corners_enabled,
+	is_album_border_enabled,
+	is_selection_border_enabled,
+	is_selection_overlay_enabled,
+} = storeToRefs(lycheeStore);
+const { is_touch_select_mode } = storeToRefs(togglableStore);
+const srcPlay = ref(getPlayIcon());
+
+const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag, showValidatedFlag } = usePhotoFlags(
+	toRef(props, "photo"),
+	toRef(props, "isCoverId"),
+	toRef(props, "isHeaderId"),
+);
+
+const boxStyle = computed(() => ({
+	top: `${props.box.top}px`,
+	left: `${props.box.left}px`,
+	width: `${props.box.width}px`,
+	height: `${props.box.height}px`,
+}));
+
+function toggleFavourite() {
+	favourites.toggle(props.photo, getParentId());
+}
+
+function toggleBuyMe() {
+	emits("toggleBuyMe");
+}
+
+// Deliberately not wired to `prefetchFaces()` for the SoA path (NG11/Q-065-06)
+// — `AdaptedPhotoTile.face_count` is always `0`, so this is a permanent
+// no-op, kept only so the markup stays parallel to `PhotoThumb.vue`'s own
+// `@mouseenter` binding.
+function prefetchFaces() {
+	// Intentional no-op — see this component's own doc comment (NG11/Q-065-06).
+}
+
+const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));
+const isInBasket = computed(
+	() => orderStore?.order?.items?.some((item: App.Http.Resources.Shop.OrderItemResource) => item.photo_id === props.photo.id) ?? false,
+);
+</script>

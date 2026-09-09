@@ -45,6 +45,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\EmbedMetadataJob;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
+use App\Jobs\RecomputePhotoBucketsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -188,6 +189,13 @@ class PhotoController extends Controller
 
 		$photo->save();
 
+		// title/title_base/created_at/taken_at are all bucket-relevant
+		// columns - created_at is writable here via uploadDate() above, not
+		// immutable - recompute every album this photo is linked into
+		// whenever any of them actually changed. Explicit call site, not an
+		// Eloquent hook, per repo convention.
+		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at']), $photo->id);
+
 		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 
 		return new PhotoResource(
@@ -205,6 +213,10 @@ class PhotoController extends Controller
 		foreach ($request->photos() as $photo) {
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
+
+			// is_highlighted is a bucket-relevant column - recompute every
+			// album this photo is linked into whenever it actually changed.
+			RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged('is_highlighted'), $photo->id);
 		}
 		$photo_ids = $request->photos()->map(fn (Photo $photo) => $photo->id)->all();
 
@@ -304,6 +316,10 @@ class PhotoController extends Controller
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
 		$photo->save();
+
+		// title/title_base are bucket-relevant columns - recompute every
+		// album this photo is linked into whenever either actually changed.
+		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base']), $photo->id);
 	}
 
 	/**

@@ -19,6 +19,7 @@ use App\Events\PhotoSaved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
+use App\Services\PhotoBucketComputer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -70,8 +71,31 @@ class MoveOrDuplicate
 				->where(PA::ALBUM_ID, '=', $to_album->id)
 				->delete();
 
+			// Compute each new pivot row's bucket_id inline, against
+			// $to_album's own currently effective photo-sort/timeline
+			// settings. A photo kept in its $from_album link too (the "copy"
+			// case) correctly keeps that other row's own, potentially
+			// different, bucket_id untouched.
+			$bucket_computer = resolve(PhotoBucketComputer::class);
+			$sorting = $to_album->getEffectivePhotoSorting();
+			$granularity = $bucket_computer->resolveGranularity($to_album->photo_timeline);
+
 			// Add the new links.
-			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
+			DB::table(PA::PHOTO_ALBUM)->insert($photos->map(fn (Photo $photo) => [
+				'photo_id' => $photo->id,
+				'album_id' => $to_album->id,
+				'bucket_id' => $bucket_computer->compute(
+					sorting_column: $sorting->column,
+					granularity: $granularity,
+					title: $photo->title,
+					title_base: $photo->title_base ?? '',
+					created_at: $photo->created_at,
+					taken_at: $photo->taken_at,
+					is_highlighted: $photo->is_highlighted,
+					type: $photo->type ?? '',
+					rating_avg: $photo->rating_avg,
+				),
+			])->all());
 
 			// Dispatch event for destination album (photos added)
 			AlbumSaved::dispatch([$to_album->id], [$to_album->parent_id]);
