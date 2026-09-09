@@ -27,3 +27,4 @@ CVE-2026-56854
 # There is no fix yet compiled in a new Frankenphp docker image.
 # It would be nice if Douglas was a bit more reactive on those.
 CVE-2026-84304
+CVE-2026-84445
