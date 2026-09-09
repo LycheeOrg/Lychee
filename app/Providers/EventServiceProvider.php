@@ -27,6 +27,7 @@ use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
 use App\Events\PersonAlbumSaved;
 use App\Events\PhotoAdded;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
@@ -176,5 +177,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoMoved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoMoved');
 		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');
 		Event::listen(AlbumPhotoSortingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handleAlbumPhotoSortingChanged');
+		Event::listen(PhotoBucketsRecomputed::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoBucketsRecomputed');
 	}
 }

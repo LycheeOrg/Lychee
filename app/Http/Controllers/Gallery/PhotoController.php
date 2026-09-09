@@ -189,12 +189,12 @@ class PhotoController extends Controller
 
 		$photo->save();
 
-		// title/title_base/taken_at are all bucket-relevant columns
-		// (created_at is immutable and excluded) - recompute every album
-		// this photo is linked into whenever any of
-		// them actually changed. Explicit call site, not an Eloquent hook,
-		// per repo convention.
-		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base', 'taken_at']), $photo->id);
+		// title/title_base/created_at/taken_at are all bucket-relevant
+		// columns - created_at is writable here via uploadDate() above, not
+		// immutable - recompute every album this photo is linked into
+		// whenever any of them actually changed. Explicit call site, not an
+		// Eloquent hook, per repo convention.
+		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at']), $photo->id);
 
 		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 

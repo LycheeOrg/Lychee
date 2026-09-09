@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Assets\DbBool;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Models\Album;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -99,5 +100,12 @@ class RecomputeAlbumPhotoBucketsJob implements ShouldQueue
 		}
 
 		DB::table('photo_album')->upsert($updates, ['photo_id', 'album_id'], ['bucket_id']);
+
+		// Dispatched here, after the write has actually landed, rather than
+		// at the call site that queues this job - the write above bypasses
+		// Eloquent events, and firing the eviction any earlier would let it
+		// race ahead of this (queued, possibly-delayed) job and leave the
+		// cache serving stale `bucket_id` values in between.
+		AlbumPhotoSortingChanged::dispatch([$this->album_id]);
 	}
 }
