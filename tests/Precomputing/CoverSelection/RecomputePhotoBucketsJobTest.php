@@ -9,11 +9,13 @@
 namespace Tests\Precomputing\CoverSelection;
 
 use App\Enum\TimelinePhotoGranularity;
+use App\Events\PhotoBucketsRecomputed;
 use App\Jobs\RecomputePhotoBucketsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -48,9 +50,43 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 
 	public function testUnknownPhotoOrZeroLinksIsNoOp(): void
 	{
+		Event::fake([PhotoBucketsRecomputed::class]);
+
 		// Must not throw.
 		(new RecomputePhotoBucketsJob('nonexistent-photo-id-0000000'))->handle();
 		$this->assertTrue(true);
+
+		// No rows were touched, so there is nothing to invalidate.
+		Event::assertNotDispatched(PhotoBucketsRecomputed::class);
+	}
+
+	/**
+	 * The job bulk-`upsert()`s every linked album's `photo_album.bucket_id`,
+	 * bypassing Eloquent events entirely - it must dispatch the dedicated
+	 * photo-listing cache-invalidation signal itself once that write has
+	 * landed, since nothing else will (regression coverage for the bucket
+	 * recompute + cache invalidation gap, e.g. after a rating change).
+	 */
+	public function testDispatchesPhotoBucketsRecomputedAfterUpsert(): void
+	{
+		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
+		$user = User::factory()->create();
+		$album1 = Album::factory()->as_root()->owned_by($user)->create();
+		$album2 = Album::factory()->as_root()->owned_by($user)->create();
+
+		$photo = Photo::factory()->owned_by($user)->create();
+		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album1->id]);
+		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album2->id]);
+
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		(new RecomputePhotoBucketsJob($photo->id))->handle();
+
+		Event::assertDispatched(
+			PhotoBucketsRecomputed::class,
+			fn (PhotoBucketsRecomputed $event) => empty(array_diff([$album1->id, $album2->id], $event->album_ids)) &&
+				empty(array_diff($event->album_ids, [$album1->id, $album2->id]))
+		);
 	}
 
 	public function testRecomputesInOneBulkUpdateNotOnePerAlbum(): void

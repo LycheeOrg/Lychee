@@ -53,6 +53,31 @@ class PhotoSortingBucketDispatchTest extends BaseApiWithDataTest
 		Queue::assertPushed(RecomputePhotoBucketsJob::class, fn (RecomputePhotoBucketsJob $job) => $job->photo_id === $this->photo1->id);
 	}
 
+	public function testUpdateCreatedAtChangeDispatches(): void
+	{
+		// Pre-sync title_base once so this test isolates `created_at` -
+		// mirrors the pre-sync in testUpdateUnrelatedAttributeChangeDoesNotDispatch.
+		$this->photo1->title_base = \App\Services\TitleSplitter::split($this->photo1->title)->base;
+		$this->photo1->save();
+		$this->photo1->refresh();
+
+		Queue::fake([RecomputePhotoBucketsJob::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
+			'photo_id' => $this->photo1->id,
+			'title' => $this->photo1->title,
+			'description' => $this->photo1->description ?? '',
+			'tags' => [],
+			'license' => 'none',
+			'taken_at' => null,
+			'upload_date' => $this->photo1->created_at->addDay()->toDateTimeString(),
+			'from_id' => $this->album1->id,
+		]);
+		$this->assertOk($response);
+
+		Queue::assertPushed(RecomputePhotoBucketsJob::class, fn (RecomputePhotoBucketsJob $job) => $job->photo_id === $this->photo1->id);
+	}
+
 	public function testUpdateUnrelatedAttributeChangeDoesNotDispatch(): void
 	{
 		// Pre-sync title_base/taken_at once so the assertion below is not a
@@ -72,7 +97,13 @@ class PhotoSortingBucketDispatchTest extends BaseApiWithDataTest
 			'tags' => [],
 			'license' => 'none',
 			'taken_at' => null,
-			'upload_date' => $this->photo1->created_at->toDateString(),
+			// Full microsecond precision, not just the date - `created_at`
+			// is itself bucket-relevant (writable here via `uploadDate()`),
+			// and the factory stores it with microseconds, so anything
+			// coarser (even a full "Y-m-d H:i:s" string) truncates them and
+			// registers as a real change, defeating the point of this
+			// "unrelated attribute" test.
+			'upload_date' => $this->photo1->created_at->format('Y-m-d H:i:s.u'),
 			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);

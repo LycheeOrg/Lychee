@@ -24,7 +24,6 @@ use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumChildrenChanged;
-use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
@@ -175,12 +174,12 @@ class AlbumController extends Controller
 		// forwarding to `$album->base_class` - so the dirty-tracking that
 		// matters here is `base_class`'s own, not `$album`'s.
 		$photo_sorting_or_timeline_changed = $album->base_class->wasChanged(['sorting_col', 'sorting_order', 'photo_timeline']);
+		// The job bulk-`upsert()`s every direct photo's `bucket_id`,
+		// bypassing Eloquent events entirely - it dispatches its own
+		// `AlbumPhotoSortingChanged` cache-invalidation signal internally,
+		// after that write actually lands, so eviction can't race ahead of
+		// this queued (possibly-delayed) job the way firing it here would.
 		RecomputeAlbumPhotoBucketsJob::dispatchIf($photo_sorting_or_timeline_changed, $album->id);
-		// The job above bulk-`upsert()`s every direct photo's `bucket_id`,
-		// bypassing Eloquent events entirely - fires the dedicated
-		// photo-listing cache-invalidation signal for this trigger,
-		// mirroring AlbumChildrenChanged's role above exactly.
-		AlbumPhotoSortingChanged::dispatchIf($photo_sorting_or_timeline_changed, [$album->id]);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 

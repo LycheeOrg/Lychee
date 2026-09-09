@@ -19,6 +19,7 @@
 namespace Tests\Unit\Listeners;
 
 use App\Events\AlbumPhotoSortingChanged;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoMoved;
 use App\Events\PhotoSaved;
@@ -162,5 +163,32 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 
 		$this->assertEvicted('k:album');
 		$this->assertNotEvicted('k:unrelated');
+	}
+
+	// ── PhotoBucketsRecomputed dedicated signal ───────────────────
+
+	public function testPhotoBucketsRecomputedEvictsListedAlbumsOnly(): void
+	{
+		$user = User::factory()->create();
+		$album_a = Album::factory()->as_root()->owned_by($user)->create();
+		$album_b = Album::factory()->as_root()->owned_by($user)->create();
+		$unrelated = Album::factory()->as_root()->owned_by($user)->create();
+
+		$this->seedCache('k:a', [$this->cache_key_provider->photoListingTag($album_a->id)]);
+		$this->seedCache('k:b', [$this->cache_key_provider->photoListingTag($album_b->id)]);
+		$this->seedCache('k:unrelated', [$this->cache_key_provider->photoListingTag($unrelated->id)]);
+
+		$this->listener->handlePhotoBucketsRecomputed(new PhotoBucketsRecomputed([$album_a->id, $album_b->id]));
+
+		$this->assertEvicted('k:a');
+		$this->assertEvicted('k:b');
+		$this->assertNotEvicted('k:unrelated');
+	}
+
+	public function testPhotoBucketsRecomputedWithEmptyIdsIsNoOp(): void
+	{
+		$this->seedCache('k:x', ['some-tag']);
+		$this->listener->handlePhotoBucketsRecomputed(new PhotoBucketsRecomputed([]));
+		$this->assertNotEvicted('k:x');
 	}
 }

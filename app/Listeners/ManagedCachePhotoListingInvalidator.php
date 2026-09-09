@@ -9,6 +9,7 @@
 namespace App\Listeners;
 
 use App\Events\AlbumPhotoSortingChanged;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoMoved;
 use App\Events\PhotoSaved;
@@ -80,6 +81,21 @@ class ManagedCachePhotoListingInvalidator
 	 */
 	public function handleAlbumPhotoSortingChanged(AlbumPhotoSortingChanged $event): void
 	{
+		$this->cache->forgetTags($this->cache_key_provider->photoListingTags($event->album_ids));
+	}
+
+	/**
+	 * Dedicated signal for {@see \App\Jobs\RecomputePhotoBucketsJob}, which
+	 * bulk-`upsert()`s every linked album's `photo_album.bucket_id` for one
+	 * photo, bypassing Eloquent events entirely - the photo-listing cache
+	 * for every affected album must be evicted explicitly here.
+	 */
+	public function handlePhotoBucketsRecomputed(PhotoBucketsRecomputed $event): void
+	{
+		if ($event->album_ids === []) {
+			return;
+		}
+
 		$this->cache->forgetTags($this->cache_key_provider->photoListingTags($event->album_ids));
 	}
 }

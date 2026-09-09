@@ -12,6 +12,7 @@ use App\Assets\DbBool;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelinePhotoGranularity;
+use App\Events\PhotoBucketsRecomputed;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,10 +25,11 @@ use Illuminate\Support\Facades\DB;
 /**
  * Recomputes `bucket_id` for every `photo_album` row of one photo — the
  * trigger for when a photo's own bucket-relevant columns
- * (`taken_at`/`title`/`title_base`/`is_highlighted`/`type`/`rating_avg`)
- * change, every album this photo is linked into needs its own `bucket_id`
- * recomputed, since a single photo can be linked into several albums whose
- * effective `sorting_col`/`photo_timeline` settings genuinely differ —
+ * (`created_at`/`taken_at`/`title`/`title_base`/`is_highlighted`/`type`/
+ * `rating_avg`) change, every album this photo is linked into needs its
+ * own `bucket_id` recomputed, since a single photo can be linked into
+ * several albums whose effective `sorting_col`/`photo_timeline` settings
+ * genuinely differ —
  * unlike {@see RecomputeAlbumPhotoBucketsJob}, this job cannot resolve one
  * shared sort setting up front; it resolves each linked album's own
  * settings per row, via a raw `base_albums` join rather than N lazy
@@ -108,5 +110,11 @@ class RecomputePhotoBucketsJob implements ShouldQueue
 		}
 
 		DB::table('photo_album')->upsert($updates, ['photo_id', 'album_id'], ['bucket_id']);
+
+		// Dispatched here, after the write has actually landed, rather than
+		// by each call site that queues this job - the write above bypasses
+		// Eloquent events, and this is the only signal that the affected
+		// albums' photo-listing cache is now stale.
+		PhotoBucketsRecomputed::dispatch(array_column($updates, 'album_id'));
 	}
 }

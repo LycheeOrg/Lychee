@@ -12,11 +12,13 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -91,16 +93,49 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
+		Event::fake([AlbumPhotoSortingChanged::class]);
+
 		// Must not throw.
 		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
 		$this->assertTrue(true);
+
+		// No rows were touched, so there is nothing to invalidate.
+		Event::assertNotDispatched(AlbumPhotoSortingChanged::class);
 	}
 
 	public function testUnknownAlbumIsNoOp(): void
 	{
+		Event::fake([AlbumPhotoSortingChanged::class]);
+
 		// Must not throw.
 		(new RecomputeAlbumPhotoBucketsJob('nonexistent-album-id-000000'))->handle();
 		$this->assertTrue(true);
+
+		Event::assertNotDispatched(AlbumPhotoSortingChanged::class);
+	}
+
+	/**
+	 * The job bulk-`upsert()`s every direct photo's `bucket_id`, bypassing
+	 * Eloquent events entirely - it must dispatch the dedicated
+	 * photo-listing cache-invalidation signal itself once that write has
+	 * landed, since nothing else will (regression coverage for the bucket
+	 * recompute + cache invalidation gap).
+	 */
+	public function testDispatchesAlbumPhotoSortingChangedAfterUpsert(): void
+	{
+		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$this->makeThreePhotos($user, $album);
+
+		$album->photo_timeline = TimelinePhotoGranularity::MONTH;
+		$album->save();
+
+		Event::fake([AlbumPhotoSortingChanged::class]);
+
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		Event::assertDispatched(AlbumPhotoSortingChanged::class, fn (AlbumPhotoSortingChanged $event) => $event->album_ids === [$album->id]);
 	}
 
 	public function testRecomputesInOneBulkUpdateNotOnePerPhoto(): void
