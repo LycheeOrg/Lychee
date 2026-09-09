@@ -135,20 +135,20 @@ class DateTimeWithTimezoneCast implements CastsAttributes, ComparesCastableAttri
 	 *
 	 * @param Model  $model
 	 * @param string $key
-	 * @param mixed  $firstValue
-	 * @param mixed  $secondValue
+	 * @param mixed  $first_value
+	 * @param mixed  $second_value
 	 *
 	 * @return bool
 	 */
-	public function compare(Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
+	public function compare(Model $model, string $key, mixed $first_value, mixed $second_value): bool
 	{
-		if ($firstValue === $secondValue) {
+		if ($first_value === $second_value) {
 			return true;
 		}
-		if ($firstValue === null || $secondValue === null) {
+		if ($first_value === null || $second_value === null) {
 			return false;
 		}
-		if (!is_string($firstValue) || !is_string($secondValue)) {
+		if (!is_string($first_value) || !is_string($second_value)) {
 			return false;
 		}
 		// Same precondition as `get()` — `asDateTime()` is only public on a
@@ -158,6 +158,6 @@ class DateTimeWithTimezoneCast implements CastsAttributes, ComparesCastableAttri
 			throw new LycheeLogicException('Model must implement HasUTCBasedTimes');
 		}
 
-		return $model->asDateTime($firstValue)->eq($model->asDateTime($secondValue));
+		return $model->asDateTime($first_value)->eq($model->asDateTime($second_value));
 	}
 }

@@ -84,8 +84,8 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 
 		Event::assertDispatched(
 			PhotoBucketsRecomputed::class,
-			fn (PhotoBucketsRecomputed $event) => empty(array_diff([$album1->id, $album2->id], $event->album_ids))
-				&& empty(array_diff($event->album_ids, [$album1->id, $album2->id]))
+			fn (PhotoBucketsRecomputed $event) => empty(array_diff([$album1->id, $album2->id], $event->album_ids)) &&
+				empty(array_diff($event->album_ids, [$album1->id, $album2->id]))
 		);
 	}
 
