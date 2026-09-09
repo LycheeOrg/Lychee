@@ -21,7 +21,7 @@ use Illuminate\Database\Migrations\Migration;
  * 060 already narrowed it to `created_at|title|max_taken_at|min_taken_at`
  * (no `owner_id`).
  *
- * Deployers must re-run `lychee:recompute-album-buckets` after upgrading:
+ * Deployers must re-run `lychee:recompute-buckets` after upgrading:
  * any row left `bucket_id=null` under a formerly-`OWNER_ID` effective column
  * now needs a real date/title value.
  */

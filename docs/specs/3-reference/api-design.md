@@ -349,7 +349,7 @@ Registered via the same `AlbumCategoryController` (`persons()`/`pinned()`), each
 
 #### `ColumnSortingAlbumType::OWNER_ID`
 
-`OWNER_ID` is not present in `ColumnSortingAlbumType` (the *configurable* `sorting_albums_col`/`album_sorting_col` enum) — it is not offered as a sortable column choice, and any surviving `owner_id` value (`configs.sorting_albums_col` or a per-album `albums.album_sorting_col` override) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum used for the live `shared`-scope `ORDER BY owner_id` above, and `Top::queryRootAlbums()`'s existing hardcoded sort) is a separate enum and is unaffected. Deployers should run `lychee:recompute-album-buckets` after upgrading, so any row left `bucket_id=null` under a formerly-`OWNER_ID` effective column gets a real date/title value.
+`OWNER_ID` is not present in `ColumnSortingAlbumType` (the *configurable* `sorting_albums_col`/`album_sorting_col` enum) — it is not offered as a sortable column choice, and any surviving `owner_id` value (`configs.sorting_albums_col` or a per-album `albums.album_sorting_col` override) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum used for the live `shared`-scope `ORDER BY owner_id` above, and `Top::queryRootAlbums()`'s existing hardcoded sort) is a separate enum and is unaffected. Deployers should run `lychee:recompute-buckets` after upgrading, so any row left `bucket_id=null` under a formerly-`OWNER_ID` effective column gets a real date/title value.
 
 ### API v3: Photo Listing Virtual-Scroll Backend
 
