@@ -2,84 +2,9 @@ import axios, { type AxiosResponse } from "axios";
 import { AxiosCacheInstance } from "axios-cache-interceptor";
 import Constants from "./constants";
 
-/**
- * Response body of `GET /api/v3/Albums/{album_id}/Photos/buckets`.
- * Mirrors `App\Http\Resources\V3\PhotoBucketResource` — not yet generated
- * into `lychee.d.ts` (Feature 064 shipped without a `php artisan
- * typescript:transform` run in a dev environment), so hand-transcribed here
- * from the PHP source directly. Replace with the generated
- * `App.Http.Resources.V3.PhotoBucketResource` type once that command has
- * been run.
- */
-export type PhotoBucketResource = {
-	bucket_ids: string[];
-	counts: number[];
-	labels: string[];
-	bucketable: boolean;
-};
-
-/**
- * Response body of `GET /api/v3/Albums/{album_id}/Photos` — mirrors
- * `App\Http\Resources\V3\PhotoRatioResource`. Conditionally-present fields
- * are simply absent from the parsed JSON object when the server omitted
- * them (`Optional::create()`), so they're typed optional here rather than
- * nullable.
- */
-export type PhotoRatioResource = {
-	ids: string[];
-	titles: string[];
-	types: string[];
-	bucket_ids: string[];
-	ratios: number[];
-	owner_ids: number[];
-	is_highlighteds: boolean[];
-	is_validateds: boolean[];
-	is_videos: boolean[];
-	is_raws: boolean[];
-	is_live_photos: boolean[];
-	taken_ats: (string | null)[];
-	created_ats: string[];
-	taken_at_orig_tzs: (string | null)[];
-	rating_avgs?: number[];
-	rating_users?: (number | null)[];
-	thumb_infos?: (string | null)[];
-	tags?: string[][];
-};
-
-/**
- * Response body of `GET /api/v3/Albums/{album_id}/Photos/details` — mirrors
- * `App\Http\Resources\V3\PhotoDetailResource`.
- */
-export type PhotoDetailResource = {
-	ids: string[];
-	descriptions: (string | null)[];
-	tags: string[][];
-	rating_avgs: (number | null)[];
-	licenses: string[];
-	owner_ids: number[];
-	nsfw_statuses: (string | null)[];
-	checksums: string[];
-	original_checksums: string[];
-	updated_ats: string[];
-	live_photo_checksums: (string | null)[];
-	live_photo_content_ids: (string | null)[];
-	live_photo_urls: (string | null)[];
-	face_counts: number[];
-	palette: (App.Http.Resources.Models.ColourPaletteResource | null)[];
-	size_variants: (App.Http.Resources.Models.SizeVariantsResouce | null)[];
-	statistics: (App.Http.Resources.Models.PhotoStatisticsResource | null)[];
-	makes?: (string | null)[];
-	models?: (string | null)[];
-	lenses?: (string | null)[];
-	apertures?: (string | null)[];
-	shutters?: (string | null)[];
-	focals?: (string | null)[];
-	isos?: (string | null)[];
-	latitudes?: (number | null)[];
-	longitudes?: (number | null)[];
-	altitudes?: (number | null)[];
-	locations?: (string | null)[];
-};
+export type PhotoBucketResource = App.Http.Resources.V3.PhotoBucketResource;
+export type PhotoRatioResource = App.Http.Resources.V3.PhotoRatioResource;
+export type PhotoDetailResource = App.Http.Resources.V3.PhotoDetailResource;
 
 export type PhotoDetailsScope = { bucketId: string } | { photoIds: string[] };
 
