@@ -13,13 +13,13 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Events\PhotoBucketsRecomputed;
+use App\Models\Extensions\UTCBasedTimes;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -45,6 +45,7 @@ class RecomputePhotoBucketsJob implements ShouldQueue
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use UTCBasedTimes;
 
 	public int $tries = 3;
 
@@ -100,8 +101,8 @@ class RecomputePhotoBucketsJob implements ShouldQueue
 					granularity: $granularity,
 					title: $row->title,
 					title_base: $row->title_base ?? '',
-					created_at: Carbon::parse($row->created_at),
-					taken_at: $row->taken_at !== null ? Carbon::parse($row->taken_at) : null,
+					created_at: $this->asDateTime($row->created_at),
+					taken_at: $row->taken_at !== null ? $this->asDateTime($row->taken_at) : null,
 					is_highlighted: DbBool::parse($row->is_highlighted),
 					type: $row->type ?? '',
 					rating_avg: $row->rating_avg,
