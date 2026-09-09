@@ -220,4 +220,69 @@ class CacheKeyProviderTest extends AbstractTestCase
 		$without_scope = $this->provider->pinnedAlbumsListingKey(null, null, null);
 		self::assertStringNotContainsString(':scope:', $without_scope);
 	}
+
+	// ── Photo listing key uniqueness ───────────────────────────────────
+
+	/**
+	 * No two distinct (album_id, user identity) combinations may collide
+	 * for either `photoBucketsKey()` or `photoRatiosKey()`.
+	 */
+	public function testPhotoBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoBucketsKey($album_id, $user_id));
+	}
+
+	public function testPhotoRatiosKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, $user_id));
+	}
+
+	/**
+	 * A full matrix of (guest, user A, user B) × 2 distinct album_ids × 3
+	 * tiers, plus 2 distinct `details` scopes for one fixed (album_id,
+	 * user) - all keys distinct.
+	 */
+	public function testPhotoListingKeysAreUniqueAcrossTiersIdentityAlbumsAndDetailsScopes(): void
+	{
+		$user_ids = [null, 'user-a', 'user-b'];
+		$album_ids = ['album-1', 'album-2'];
+
+		$keys = [];
+		foreach ($album_ids as $album_id) {
+			foreach ($user_ids as $user_id) {
+				foreach ([
+					$this->provider->photoBucketsKey($album_id, $user_id),
+					$this->provider->photoRatiosKey($album_id, $user_id),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2024', $user_id),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2025', $user_id),
+				] as $key) {
+					self::assertArrayNotHasKey($key, $keys, "duplicate key: {$key}");
+					$keys[$key] = true;
+				}
+			}
+		}
+
+		self::assertCount(6 * 4, $keys);
+	}
+
+	public function testPhotoDetailsScopeDigestIsStableAcrossPhotoIdOrder(): void
+	{
+		$digest1 = $this->provider->photoDetailsScopeDigest(null, ['id-b', 'id-a']);
+		$digest2 = $this->provider->photoDetailsScopeDigest(null, ['id-a', 'id-b']);
+
+		self::assertSame($digest1, $digest2);
+	}
+
+	public function testPhotoDetailsScopeDigestDistinguishesBucketFromPhotoIdsMode(): void
+	{
+		$bucket_digest = $this->provider->photoDetailsScopeDigest('unknown', null);
+		$ids_digest = $this->provider->photoDetailsScopeDigest(null, []);
+
+		self::assertNotSame($bucket_digest, $ids_digest);
+	}
+
+	public function testPhotoListingTagIsDistinctPerAlbum(): void
+	{
+		self::assertNotSame($this->provider->photoListingTag('album-1'), $this->provider->photoListingTag('album-2'));
+	}
 }

@@ -11,6 +11,8 @@ import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/al
 import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
+import { computeVisiblePhotoLayout, type PhotoLayoutMode } from "@/v8/composables/photo/analyticPhotoLayout";
+import { useLayoutStore } from "@/stores/LayoutState";
 
 const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
@@ -45,6 +47,7 @@ export function useDragAndSelect(
 
 	const lycheeStore = useLycheeStateStore();
 	const albumStore = useAlbumStore();
+	const layoutStore = useLayoutStore();
 
 	const cache = {
 		max_height: 0,
@@ -149,7 +152,7 @@ export function useDragAndSelect(
 
 		cache.max_height = get_max_height();
 		cache.max_width = get_max_width();
-		cache.photo_boxes = getBoxes("data-photo-id");
+		cache.photo_boxes = albumStore.isPhotoSoaActive ? getPhotoBoxesV3() : getBoxes("data-photo-id");
 		cache.album_boxes = lycheeStore.is_struct_of_array_enabled ? getAlbumBoxesV3() : getBoxes("data-album-id");
 		// We use slice to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
 		// Otherwise that would be a reference to the original array and we would modify it.
@@ -313,6 +316,72 @@ export function useDragAndSelect(
 		});
 
 		return boxes;
+	}
+
+	/**
+	 * Flag-on (`isPhotoSoaActive`) replacement for `getBoxes("data-photo-id")`
+	 * — a single, mode-agnostic function covering all five layout modes
+	 * (FR-065-16), mirroring `getAlbumBoxesV3()`'s own precedent exactly:
+	 * re-derives every photo's box analytically via
+	 * `computeVisiblePhotoLayout()` (the same shared function
+	 * `PhotoGridVirtual.vue` renders from — including its rating-filter-aware
+	 * boundary recompute, Q-065-05/FR-065-19), anchored via `getBounding()` on
+	 * the mounted `[data-photo-grid-root]` marker element (always in the DOM
+	 * even when individual tiles are virtualized away). No DOM-query fallback
+	 * for any mode — box geometry is always known the moment tier 2 resolves.
+	 */
+	function getPhotoBoxesV3(): Bounding[] {
+		const gridRootEl = document.querySelector<HTMLElement>("[data-photo-grid-root]");
+		if (gridRootEl === null) {
+			return [];
+		}
+
+		const mode = layoutStore.layout as PhotoLayoutMode;
+		const containerWidth = gridRootEl.getBoundingClientRect().width;
+		const config = layoutStore.config;
+		const target =
+			config === undefined
+				? 0
+				: mode === "justified"
+					? config.photo_layout_justified_row_height
+					: mode === "square"
+						? config.photo_layout_square_column_width
+						: mode === "masonry"
+							? config.photo_layout_masonry_column_width
+							: mode === "grid"
+								? config.photo_layout_grid_column_width
+								: 0;
+		const gap = config === undefined ? 0 : config.photo_layout_gap;
+
+		const ratingFilterActive = photosStore.photoRatingFilter !== null;
+		const filteredPhotoIds = ratingFilterActive ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null;
+
+		const { positioned } = computeVisiblePhotoLayout(
+			mode,
+			photosStore.photos,
+			albumStore.photoRatiosV3,
+			albumStore.photoBoundariesV3,
+			albumStore.photoBucketableV3,
+			ratingFilterActive,
+			filteredPhotoIds,
+			containerWidth,
+			target,
+			gap,
+		);
+
+		const gridBox = getBounding(gridRootEl, "root");
+
+		return positioned.map(({ photo, box }) => {
+			const top = gridBox.top + box.top;
+			const left = gridBox.left + box.left;
+			return {
+				id: photo.id,
+				top: top,
+				left: left,
+				right: left + box.width,
+				bottom: top + box.height,
+			};
+		});
 	}
 
 	function applySelection() {

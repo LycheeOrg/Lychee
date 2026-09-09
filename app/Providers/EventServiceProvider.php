@@ -13,6 +13,7 @@ use App\Events\AlbumChildrenChanged;
 use App\Events\AlbumComputedDataUpdated;
 use App\Events\AlbumDeleted;
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
@@ -26,6 +27,7 @@ use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
 use App\Events\PersonAlbumSaved;
 use App\Events\PhotoAdded;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
@@ -39,6 +41,7 @@ use App\Events\UserGroupMembershipChanged;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
+use App\Listeners\ManagedCachePhotoListingInvalidator;
 use App\Listeners\ManagedCacheUserListingInvalidator;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
@@ -168,5 +171,12 @@ class EventServiceProvider extends ServiceProvider
 
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
+
+		// Managed-cache photo-listing invalidation
+		Event::listen(PhotoSaved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoMoved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoMoved');
+		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');
+		Event::listen(AlbumPhotoSortingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handleAlbumPhotoSortingChanged');
+		Event::listen(PhotoBucketsRecomputed::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoBucketsRecomputed');
 	}
 }

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
+import { useAlbumStore } from "./AlbumState";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -53,6 +54,30 @@ export const usePhotoStore = defineStore("photo-store", {
 				return;
 			}
 			this.photo = photosState.photos.find((p) => p.id === this.photoId);
+
+			// On-demand tier-3 (`details`) fetch (G5), gated on `isPhotoSoaActive`
+			// (Q-065-05, Option A): only fires on the SoA path, where the tile
+			// found above is a lightweight, `ratios`-derived object still
+			// missing description/EXIF/size-variant-URL/etc. On the v2 path
+			// (or a TagAlbum/PersonAlbum/filtered view) `this.photo` is already
+			// a full `PhotoResource` — calling `loadPhotoDetails()` there would
+			// either 404 (Feature 064's endpoints reject non-Album parents) or
+			// be a wasted round trip against already-complete data, so it is
+			// never called at all in that case. Neighbor ids improve
+			// swipe-transition preview quality, mirroring how v2's own
+			// already-fully-loaded page gives adjacent photos' full data for
+			// free — `previous_photo_id`/`next_photo_id` are already correct at
+			// this point (`loadPhotosV3()` runs `rebuildNavigationLinks()`
+			// immediately after populating the array).
+			if (this.photo !== undefined) {
+				const albumStore = useAlbumStore();
+				if (albumStore.isPhotoSoaActive) {
+					const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
+						(id): id is string => id !== null && id !== undefined,
+					);
+					void albumStore.loadPhotoDetails(ids);
+				}
+			}
 		},
 	},
 	getters: {

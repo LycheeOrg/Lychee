@@ -351,6 +351,56 @@ Registered via the same `AlbumCategoryController` (`persons()`/`pinned()`), each
 
 `OWNER_ID` is not present in `ColumnSortingAlbumType` (the *configurable* `sorting_albums_col`/`album_sorting_col` enum) — it is not offered as a sortable column choice, and any surviving `owner_id` value (`configs.sorting_albums_col` or a per-album `albums.album_sorting_col` override) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum used for the live `shared`-scope `ORDER BY owner_id` above, and `Top::queryRootAlbums()`'s existing hardcoded sort) is a separate enum and is unaffected. Deployers should run `lychee:recompute-album-buckets` after upgrading, so any row left `bucket_id=null` under a formerly-`OWNER_ID` effective column gets a real date/title value.
 
+### API v3: Photo Listing Virtual-Scroll Backend
+
+Three `GET` endpoints, all scoped to one containing `album_id` (a real `App\Models\Album` only — `TagAlbum`/`PersonAlbum`/`BaseSmartAlbum` 404), forming the backend contract for a future virtualized/justified-layout photo grid inside one album — mirrors the sub-album virtual-scroll backend above, ported from albums to the photos directly inside them (Feature 064). Backend-contract-only: no v8 frontend consumer exists yet. All three are gated by `modules.is_struct_of_array_enabled`, registered on one `App\Http\Controllers\Gallery\AlbumListing\PhotoChildrenController` (`buckets()`/`index()`/`details()`), and cache through `ManagedCacheService`, tagged with a new `CacheKeyProvider::photoListingTag($album_id)` (evicted on `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`, and on `AlbumPhotoSortingChanged` — a new, dedicated event mirroring `AlbumChildrenChanged`'s role for the album-bucket case).
+
+**Structural note:** unlike the album tiers above, `bucket_id` here lives on the **`photo_album` pivot row**, not on `photos` itself — `photo_album` is a genuine many-to-many table (`MoveOrDuplicate::do()` supports copying one photo into a second album while it keeps its first link), so a single photo linked into two albums with different effective sort/timeline settings correctly carries two different `bucket_id` values, one per pivot row. 6 of `ColumnSortingPhotoType`'s 7 values are bucketable; `OWNER_ID` is excluded entirely (by policy, not structural necessity — a shared album can genuinely contain photos from several owners, but ownership is not treated as a useful bucket dimension for photos).
+
+#### Tier 1 — `GET /api/v3/Albums/{album_id}/Photos/buckets`
+
+Registered via `PhotoChildrenController::buckets()` / `App\Http\Requests\Photo\GetPhotoBucketsRequest`. Returns bucket counts for the album's direct photos, grouped by the materialized `photo_album.bucket_id` column (composite index `(album_id, bucket_id)`) — a plain, index-served `GROUP BY`, never a live per-row date computation.
+
+**Response:** `PhotoBucketResource` (Struct-of-Arrays) — identical shape to `AlbumBucketResource` (`bucket_ids`/`counts`/`labels`/`bucketable`). Label formatting extends the album tier's date-truncation scheme with a 4th, photos-only `HOUR` granularity (`Y-m-d-H`, parsed via `mktime()`); `alphabetical`-mode `TITLE`, `IS_HIGHLIGHTED`, `TYPE`, and `RATING_AVG` buckets are already primitive and returned as their own labels verbatim. `bucketable: false` (no query ever run) when the album's effective photo-sort column is `OWNER_ID`.
+
+#### Tier 2 — `GET /api/v3/Albums/{album_id}/Photos`
+
+Registered via `PhotoChildrenController::index()` / `App\Http\Requests\Photo\GetPhotoRatiosRequest`. Returns whole-album-at-once render data for every visible direct photo — no windowed pagination (a `{id, ratio}`-class SoA payload stays cheap even at 10,000+ photos) — as one flat `toBase()` query with exactly 3 fixed `size_variants` `LEFT JOIN`s (never N+1) resolving each photo's aspect ratio.
+
+**Response:** `PhotoRatioResource` (Struct-of-Arrays)
+```json
+{
+  "ids": ["photo123"],
+  "titles": ["Sunset"],
+  "types": ["image/jpeg"],
+  "bucket_ids": ["2024"],
+  "ratios": [1.5],
+  "owner_ids": [42],
+  "is_highlighteds": [false],
+  "is_validateds": [true],
+  "is_videos": [false],
+  "is_raws": [false],
+  "is_live_photos": [false],
+  "taken_ats": ["2024-01-01T12:00:00Z"],
+  "created_ats": ["2024-01-02T08:00:00Z"],
+  "taken_at_orig_tzs": [null]
+}
+```
+- `ratios[i]` = `COALESCE(sv_original.ratio, sv_medium.ratio, sv_small.ratio, 1)` — deliberately does **not** reproduce `Photo::getAspectRatioAttribute()`'s video-forces-`1` special case; a video's real ratio wins whenever any of the three size variants exists, `1` only when none do.
+- `taken_ats`/`created_ats`/`taken_at_orig_tzs` are the raw DB column values — never passed through `Carbon`/`date()` server-side (the client formats them via the existing `date_format_photo_thumb` config, the same `phpDateFormat.ts` reproduction Feature 063 built for albums).
+- Conditionally-present fields, each entirely **omitted from the payload** (not null-filled) when their gate is off, evaluated once per request: `rating_avgs`/`rating_users` (`rating_enabled` + `PhotoPolicy::canReadRatings()`); `thumb_infos` (`display_thumb_photo_overlay!==never` AND `photo_thumb_info=description`); `tags` (`display_thumb_photo_overlay!==never` AND `photo_thumb_info=title` AND `photo_thumb_tags_enabled`, one `GROUP_CONCAT`/`STRING_AGG`(pgsql)-then-split aggregation, not a per-row join).
+- Rows are ordered by `bucket_id` first (mirrors the album tiers' own `ORDER BY (bucket_id IS NULL) ASC, bucket_id <dir>`), then the album's effective photo sort criterion within each bucket — grouping this endpoint's rows by `bucket_id` and counting reproduces Tier 1's `{bucket_ids, counts}` exactly, whenever `bucketable: true`.
+
+#### `GET /api/v3/Albums/{album_id}/Photos/details`
+
+Registered via `PhotoChildrenController::details()` / `App\Http\Requests\Photo\GetPhotoDetailsRequest`. The information needed when a caller is about to open a photo — description, tags, rating, license, EXIF-lite, GPS/location, watermark-aware size-variant URLs, palette, statistics — scoped (never whole-album) to exactly one of two mutually-exclusive query parameters:
+- `bucket_id` (string, including the literal `"unknown"` sentinel for a `NULL` bucket) — resolves **every** matching photo in that bucket, **uncapped**; the client is expected to consult Tier 1's own `counts[]` before choosing a potentially-large bucket this way.
+- `photo_ids[]` (array, **capped at 300 entries as input**, 422 above) — resolves exactly those ids' rows within `album_id`; ids not actually in the album, or not visible to the caller, are silently curated away rather than erroring. Fetching more than 300 arbitrary ids means the client self-chunks via repeated requests, each ≤300 ids sliced from its own already-known `ratios` id list — no server-side cursor.
+
+Neither or both parameters supplied is a 422.
+
+**Response:** `PhotoDetailResource` (Struct-of-Arrays, index-aligned to `ids`) — unconditional: `descriptions`, `tags` (full list, unconditional unlike Tier 2's config-gated copy), `rating_avgs`, `licenses`, `owner_ids`, `nsfw_statuses`, `checksums`/`original_checksums`, `updated_ats` (raw ISO 8601), live-photo fields, `face_counts`, plus three **nested objects** (a deliberate, scoped exception to the SoA convention, since this tier is already the bounded, richer-payload one) reusing existing resource classes as-is: `size_variants` (`SizeVariantsResouce`, all 9 variants), `palette` (`ColourPaletteResource`), `statistics` (`PhotoStatisticsResource`). Conditionally-present (`Optional`, omitted when off): EXIF-lite fields (`display_exif_data`), GPS fields (`gps_coordinate_display`+`_public` for guests), `locations` (`location_show`+`_public` for guests). `statistics[i]` is the one genuinely **per-row** gate in this feature — `metrics_enabled` plus, when `metrics_access=owner`, a per-row comparison of that specific photo's `owner_id` against the caller (a `details` response spanning two different photo owners can show real statistics for one and `null` for the other, for the same caller, in the same response). `ratios` (Tier 2) + `details` combined reconstruct every field of v2's `PhotoResource` for a visible photo, except `next_photo_id`/`previous_photo_id` (v2 itself never populates them in this listing context either).
+
 ## Pagination Endpoints
 
 Lychee implements offset-based pagination for albums and photos to efficiently handle large collections. Three dedicated endpoints allow incremental data loading:
