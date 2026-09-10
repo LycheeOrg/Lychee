@@ -168,6 +168,32 @@
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
 							<Select
+								label-id="cover"
+								v-model="cover_id"
+								class="w-72 border-none"
+								:options="coverOptions"
+								option-label="title"
+								show-clear
+							>
+								<template #value="slotProps">
+									<div v-if="slotProps.value" class="flex items-center">
+										<img :src="slotProps.value.thumb" alt="poster" class="w-4 rounded-sm" />
+										<span class="ltr:ml-4 rtl:mr-4">{{ slotProps.value.title }}</span>
+									</div>
+								</template>
+								<template #option="slotProps">
+									<div class="flex items-center">
+										<img :src="slotProps.option.thumb" alt="poster" class="w-4 rounded-sm" />
+										<span class="ltr:ml-4 rtl:mr-4">{{ slotProps.option.title }}</span>
+									</div>
+								</template>
+							</Select>
+							<label for="cover">{{ $t("gallery.album.properties.cover") }}</label>
+						</FloatLabel>
+					</div>
+					<div class="h-10 my-2">
+						<FloatLabel variant="on">
+							<Select
 								label-id="license"
 								v-model="license"
 								class="w-72 border-none"
@@ -409,6 +435,7 @@ const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_person_album = ref<boolean>(false);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
+const cover_id = ref<HeaderOption | undefined>(undefined);
 const is_and = ref<boolean>(false);
 
 const photoTimelineOptions = computed(() => {
@@ -444,6 +471,14 @@ const headersOptions = computed(() => {
 	return list;
 });
 
+const coverOptions = computed<HeaderOption[]>(() =>
+	photosStore.photos.map((photo) => ({
+		id: photo.id,
+		title: photo.title,
+		thumb: photo.size_variants.thumb?.url,
+	})),
+);
+
 function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.PhotoResource[]): HeaderOption | undefined {
 	if (value === null) {
 		return undefined;
@@ -454,6 +489,23 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 	const photo = photos.find((photo) => photo.id === value);
 	if (photo === undefined) {
 		return undefined;
+	}
+	return {
+		id: photo.id,
+		title: photo.title,
+		thumb: photo.size_variants.thumb?.url,
+	};
+}
+
+function buildCoverId(value: string | null, photos: App.Http.Resources.Models.PhotoResource[]): HeaderOption | undefined {
+	if (value === null) {
+		return undefined;
+	}
+	const photo = photos.find((photo) => photo.id === value);
+	if (photo === undefined) {
+		// The persisted cover isn't in the loaded page of photos; keep its id so
+		// saving another field doesn't serialize cover_id as null and clear it.
+		return { id: value };
 	}
 	return {
 		id: photo.id,
@@ -478,6 +530,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	albumTimeline.value = SelectBuilders.buildTimelineAlbumGranularity(editable.album_timeline ?? undefined);
 	photoTimeline.value = SelectBuilders.buildTimelinePhotoGranularity(editable.photo_timeline ?? undefined);
 	header_id.value = buildHeaderId(editable.header_id, photos);
+	cover_id.value = buildCoverId(editable.cover_id, photos);
 	tags.value = editable.tags;
 	is_and.value = editable.is_and ?? false;
 
@@ -522,6 +575,7 @@ function saveAlbum() {
 		album_aspect_ratio: aspectRatio.value?.value ?? null,
 		copyright: copyright.value ?? null,
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
+		cover_id: cover_id.value?.id ?? null,
 		is_compact: header_id.value?.id === "compact",
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,

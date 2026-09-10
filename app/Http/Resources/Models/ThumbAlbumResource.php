@@ -37,6 +37,7 @@ class ThumbAlbumResource extends Data
 	public bool $is_public;
 	public bool $is_link_required;
 	public bool $is_password_required;
+	public bool $is_locked;
 
 	public bool $is_tag_album;
 	public bool $is_person_album;
@@ -87,7 +88,8 @@ class ThumbAlbumResource extends Data
 		}
 
 		$this->id = $data->get_id();
-		if ($policy->is_password_required === true && !resolve(AlbumPolicy::class)->isUnlocked($data)) {
+		$is_locked = $policy->is_password_required === true && !resolve(AlbumPolicy::class)->isUnlocked($data);
+		if ($is_locked && !$this->shallShowLockedCover($data)) {
 			$this->thumb = null;
 		} else {
 			$this->thumb = ThumbResource::fromModel($data->get_thumb());
@@ -97,6 +99,7 @@ class ThumbAlbumResource extends Data
 		$this->is_public = $policy->is_public;
 		$this->is_link_required = $policy->is_link_required;
 		$this->is_password_required = $policy->is_password_required;
+		$this->is_locked = $is_locked;
 
 		$this->is_pinned = $data instanceof BaseAlbum ? $data->is_pinned : false;
 
@@ -111,6 +114,30 @@ class ThumbAlbumResource extends Data
 	public static function fromModel(AbstractAlbum $album): ThumbAlbumResource
 	{
 		return new self($album);
+	}
+
+	/**
+	 * Whether the cover of a locked (password-protected) album shall be
+	 * displayed to a visitor who has not unlocked it.
+	 *
+	 * Governed by two global configs:
+	 * - `show_cover_of_locked_albums`: always show the cover, regardless of
+	 *   how it was selected.
+	 * - `show_selected_cover_on_locked_albums`: show the cover only when it
+	 *   was manually chosen via "Set as Cover" (i.e. `cover_id` is set),
+	 *   rather than automatically selected. This avoids exposing a cover
+	 *   photo whose selection is effectively random (dependent on the
+	 *   album's photo ordering).
+	 */
+	private function shallShowLockedCover(AbstractAlbum $data): bool
+	{
+		if (request()->configs()->getValueAsBool('show_cover_of_locked_albums')) {
+			return true;
+		}
+
+		$has_selected_cover = ($data instanceof Album || $data instanceof TagAlbum) && $data->cover_id !== null;
+
+		return $has_selected_cover && request()->configs()->getValueAsBool('show_selected_cover_on_locked_albums');
 	}
 
 	private function formatMinMaxDate(): void

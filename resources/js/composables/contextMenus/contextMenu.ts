@@ -126,16 +126,21 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.album !== undefined && (selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)) {
+		if (
+			selectors.album !== undefined &&
+			selectors.album.value !== undefined &&
+			(selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)
+		) {
+			const cover_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 			menuItems.push({
-				label: "gallery.menus.set_cover",
+				label: cover_album.cover_id === selectedPhoto.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: photoCallbacks.setAsCover,
-				access: selectors.album.value?.rights.can_edit ?? false,
+				access: cover_album.rights.can_edit ?? false,
 			});
 		}
 
-		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
+		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined && selectors.album.value !== undefined) {
 			const parent_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource;
 			if (parent_album.header_id === selectedPhoto.id) {
 				menuItems.push({
@@ -330,11 +335,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const lycheeStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
+			const parent_album = selectors.album?.value as App.Http.Resources.Models.HeadAlbumResource | undefined;
 			menuItems.push({
-				label: "gallery.menus.set_cover",
+				label: parent_album?.cover_id === selectedAlbum.thumb?.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: albumCallbacks.setAsCover,
-				access: selectors.album?.value?.rights.can_edit ?? false,
+				access: parent_album?.rights.can_edit ?? false,
 			});
 		}
 

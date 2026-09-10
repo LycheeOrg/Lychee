@@ -10,7 +10,7 @@ import { DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/ad
  *
  * Every field the lean category-list response doesn't carry gets a safe
  * default: `is_pinned`/`is_public`/`is_link_required`/`is_nsfw`/
- * `is_password_required` all `false` (none of these four category listings
+ * `is_password_required`/`is_locked` all `false` (none of these four category listings
  * expose them — a real, documented gap for `/tags`/`/persons`/`/pinned`
  * specifically, where a caller *could* have set e.g. `is_public` on one;
  * `/smart` alone is provably always `false`-correct here, see
@@ -54,6 +54,7 @@ export function adaptCategoryTile(
 		is_public: false,
 		is_link_required: false,
 		is_password_required: false,
+		is_locked: false,
 		is_tag_album: kind === "tag",
 		is_person_album: kind === "person",
 		has_subalbum: false,
