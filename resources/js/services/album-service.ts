@@ -28,6 +28,7 @@ export type UpdateAbumData = {
 	copyright: string | null;
 	tags?: string[];
 	header_id: string | null;
+	cover_id: string | null;
 	is_compact: boolean;
 	is_pinned: boolean;
 	album_timeline: App.Enum.TimelineAlbumGranularity | null;

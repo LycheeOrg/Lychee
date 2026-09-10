@@ -357,6 +357,14 @@ const photoCallbacks = {
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
 		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.cover_id = albumStore.modelAlbum?.cover_id ?? null;
+		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
 	},

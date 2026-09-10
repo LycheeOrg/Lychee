@@ -57,8 +57,8 @@
 			<ThumbBadge v-if="props.album.id === 'my_rated_pictures'" class="bg-orange-500" pi="trophy" />
 			<ThumbBadge v-if="props.album.id === 'my_best_pictures'" class="bg-yellow-500" pi="trophy" />
 			<ThumbBadge v-if="props.album.is_public" :class="props.album.is_link_required ? 'bg-orange-400' : 'bg-green-600'" icon="eye" />
-			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" class="bg-orange-400" icon="lock-locked" />
-			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" class="bg-red-700" icon="lock-unlocked" />
+			<ThumbBadge v-if="props.album.is_password_required && props.album.is_locked" class="bg-orange-400" icon="lock-locked" />
+			<ThumbBadge v-if="props.album.is_password_required && !props.album.is_locked" class="bg-red-700" icon="lock-unlocked" />
 			<ThumbBadge v-if="props.album.is_tag_album" class="bg-green-600" icon="tags" />
 			<ThumbBadge v-if="props.album.is_person_album" class="bg-purple-600" pi="users" />
 			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" class="bg-yellow-500" icon="folder-cover" />

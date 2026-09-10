@@ -366,6 +366,14 @@ const photoCallbacks = {
 		if (albumStore.tagAlbum !== undefined) {
 			albumStore.tagAlbum.cover_id = albumStore.tagAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
 		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.cover_id = albumStore.modelAlbum?.cover_id ?? albumStore.tagAlbum?.cover_id ?? null;
+		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
 	setAsHeader: () => {
@@ -486,6 +494,14 @@ const albumCallbacks = {
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.cover_id =
 				albumStore.modelAlbum.cover_id === selectedAlbum.value!.thumb?.id ? null : selectedAlbum.value!.thumb?.id;
+		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.cover_id = albumStore.modelAlbum?.cover_id ?? null;
 		}
 		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");

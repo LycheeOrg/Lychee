@@ -152,6 +152,10 @@ export function adaptAlbumChildTile(
 		is_public: childrenV3.is_publics[i],
 		is_link_required: childrenV3.is_link_requireds[i],
 		is_password_required: childrenV3.is_password_requireds[i],
+		// Tier 2 doesn't carry per-viewer unlock state; assume still locked
+		// whenever a password is required so the lock badge never claims
+		// "unlocked" without evidence.
+		is_locked: childrenV3.is_password_requireds[i],
 		// Direct children of a real Album are never themselves a Tag/Person
 		// album — only the browsed parent can be one.
 		is_tag_album: false,

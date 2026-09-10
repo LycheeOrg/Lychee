@@ -40,6 +40,7 @@ class RequestAttribute
 	public const BUCKET_ID_ATTRIBUTE = 'bucket_id';
 	public const SIZE_VARIANT_TOKEN_ATTRIBUTE = 'size_variant';
 	public const HEADER_ID_ATTRIBUTE = 'header_id';
+	public const COVER_ID_ATTRIBUTE = 'cover_id';
 
 	public const TITLE_ATTRIBUTE = 'title';
 	public const DATE_ATTRIBUTE = 'date';

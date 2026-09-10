@@ -85,6 +85,16 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasTagsTrait;
 
 	private bool $tags_provided = false;
+	private ?Photo $cover_photo = null;
+
+	/**
+	 * The photo to use as the album's manually-selected cover, or null to
+	 * fall back to auto-selection.
+	 */
+	public function coverPhoto(): ?Photo
+	{
+		return $this->cover_photo;
+	}
 
 	/**
 	 * Whether the `tags` key was present in the request payload at all.
@@ -107,6 +117,15 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 					->where(PA::ALBUM_ID, $this->album->id)
 					->where(PA::PHOTO_ID, $this->photo->id)
 					->count() > 0)
+			) &&
+			(
+				$this->cover_photo === null ||
+				DB::table(PA::PHOTO_ALBUM)
+					->join('albums', 'albums.id', '=', PA::ALBUM_ID)
+					->where(PA::PHOTO_ID, $this->cover_photo->id)
+					->where('albums._lft', '>=', $this->album->_lft)
+					->where('albums._rgt', '<=', $this->album->_rgt)
+					->exists()
 			);
 	}
 
@@ -143,6 +162,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
@@ -195,6 +215,10 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 
 		$slug = $values[RequestAttribute::SLUG_ATTRIBUTE] ?? null;
 		$album->slug = ($slug !== '' ? $slug : null);
+
+		/** @var string|null $cover_id */
+		$cover_id = $values[RequestAttribute::COVER_ID_ATTRIBUTE];
+		$this->cover_photo = $cover_id !== null ? Photo::query()->findOrFail($cover_id) : null;
 
 		if ($this->is_compact) {
 			return;

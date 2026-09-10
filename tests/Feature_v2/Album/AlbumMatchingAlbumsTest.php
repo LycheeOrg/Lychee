@@ -216,6 +216,7 @@ class AlbumMatchingAlbumsTest extends BaseApiWithDataTest
 			'is_compact' => false,
 			'is_pinned' => false,
 			'header_id' => null,
+			'cover_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
 		]);
