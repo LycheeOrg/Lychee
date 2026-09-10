@@ -96,7 +96,10 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 // behind the true viewport top (y=0).
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
-const showHeaders = computed(() => albumStore.bucketableV3);
+// See AlbumThumbGridVirtual.vue's identical comment: also gated on the
+// album's own `is_album_timeline_enabled` display toggle, not just
+// bucketability — a non-timeline album must render one continuous list.
+const showHeaders = computed(() => albumStore.bucketableV3 && (albumStore.config?.is_album_timeline_enabled ?? false));
 const boundaries = computed(() =>
 	albumStore.boundariesV3 !== null ? albumStore.boundariesV3 : [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }],
 );

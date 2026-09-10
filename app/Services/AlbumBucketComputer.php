@@ -19,7 +19,7 @@ use Carbon\Carbon;
 /**
  * Shared `bucket_id` truncation logic, reused by every write path that populates it:
  * {@see \App\Jobs\RecomputeAlbumStatsJob}, {@see \App\Jobs\RecomputeChildAlbumBucketsJob},
- * and the `lychee:recompute-album-buckets` backfill command — so a
+ * and the `lychee:recompute-buckets` backfill command — so a
  * bucket-truncation bugfix or a `title_bucket_mode` semantics change only
  * needs to happen once.
  *

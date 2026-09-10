@@ -243,8 +243,19 @@ export function useDragAndSelect(
 			const tiles = scope === "own" ? albumsStore.albums : scope === "shared" ? albumsStore.sharedAlbumsV3 : albumsStore.albums;
 			const boundariesV3 =
 				scope === "own" ? albumsStore.ownBoundariesV3 : scope === "shared" ? albumsStore.sharedBoundariesV3 : albumStore.boundariesV3;
+			// Also gated on `is_album_timeline_enabled` — must match whichever
+			// grid/list component actually laid these tiles out
+			// (AlbumThumbGridVirtual.vue/AlbumRootGridVirtual.vue and their list
+			// forks), since a mismatched `showHeaders` here would reserve/drop
+			// header row space this scope's real DOM layout doesn't, drifting
+			// every computed hit-box.
+			const isAlbumTimelineEnabled =
+				scope === "own" || scope === "shared"
+					? (albumsStore.rootConfig?.is_album_timeline_enabled ?? false)
+					: (albumStore.config?.is_album_timeline_enabled ?? false);
 			const bucketableV3 =
-				scope === "own" ? albumsStore.ownBucketableV3 : scope === "shared" ? albumsStore.sharedBucketableV3 : albumStore.bucketableV3;
+				(scope === "own" ? albumsStore.ownBucketableV3 : scope === "shared" ? albumsStore.sharedBucketableV3 : albumStore.bucketableV3) &&
+				isAlbumTimelineEnabled;
 
 			const isListMode = lycheeStore.album_view_mode === "list";
 			const viewportWidth = window.innerWidth;
@@ -356,12 +367,18 @@ export function useDragAndSelect(
 		const ratingFilterActive = photosStore.photoRatingFilter !== null;
 		const filteredPhotoIds = ratingFilterActive ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null;
 
+		// Also gated on `is_photo_timeline_enabled` — must match
+		// PhotoGridVirtual.vue's own identical `showHeaders`, since a mismatch
+		// here would reserve/drop header row space the real DOM layout
+		// doesn't, drifting every computed hit-box.
+		const showHeaders = albumStore.photoBucketableV3 && (albumStore.config?.is_photo_timeline_enabled ?? false);
+
 		const { positioned } = computeVisiblePhotoLayout(
 			mode,
 			photosStore.photos,
 			albumStore.photoRatiosV3,
 			albumStore.photoBoundariesV3,
-			albumStore.photoBucketableV3,
+			showHeaders,
 			ratingFilterActive,
 			filteredPhotoIds,
 			containerWidth,

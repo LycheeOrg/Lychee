@@ -94,17 +94,35 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
 const tiles = computed<AdaptedAlbumTile[]>(() => (props.scope === "own" ? (albumsStore.albums as AdaptedAlbumTile[]) : albumsStore.sharedAlbumsV3));
-const showHeaders = computed(() => (props.scope === "own" ? albumsStore.ownBucketableV3 : albumsStore.sharedBucketableV3));
+// See AlbumRootGridVirtual.vue's identical comment: also gated on the
+// instance-wide `is_album_timeline_enabled` display toggle.
+const isAlbumTimelineEnabled = computed(() => albumsStore.rootConfig?.is_album_timeline_enabled ?? false);
+const showHeaders = computed(
+	() => (props.scope === "own" ? albumsStore.ownBucketableV3 : albumsStore.sharedBucketableV3) && isAlbumTimelineEnabled.value,
+);
 const boundaries = computed(() => {
 	const b = props.scope === "own" ? albumsStore.ownBoundariesV3 : albumsStore.sharedBoundariesV3;
 	return b !== null ? b : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.value.length }];
 });
 
-// NSFW-hidden tiles are dropped before row-chunking (not per-tile in the
+// NSFW-hidden tiles, and (for `shared` scope in `separate_shared_only` mode)
+// publicly-owned albums, are dropped before row-chunking (not per-tile in the
 // template) — filtering afterwards would leave a blank row where a hidden
 // tile's own row used to be, since row boundaries are fixed against the
-// original counts.
-const visibleTiles = computed(() => filterBucketedTiles(tiles.value, boundaries.value, (tile) => !tile.is_nsfw || are_nsfw_visible.value));
+// original counts. `separate_shared_only` only ever separates *directly*
+// shared albums (`is_public === false`) from publicly-visible ones (issue
+// #4717) — the flag-off path applies the identical `!album.is_public` rule
+// in `Albums.vue`'s `displaySharedAlbums`.
+const isDirectlySharedOnly = computed(
+	() => props.scope === "shared" && albumsStore.rootConfig?.shared_albums_visibility_mode === "separate_shared_only",
+);
+const visibleTiles = computed(() =>
+	filterBucketedTiles(
+		tiles.value,
+		boundaries.value,
+		(tile) => (!tile.is_nsfw || are_nsfw_visible.value) && (!isDirectlySharedOnly.value || !tile.is_public),
+	),
+);
 
 const rowsResult = computed(() =>
 	buildVirtualAlbumRows(

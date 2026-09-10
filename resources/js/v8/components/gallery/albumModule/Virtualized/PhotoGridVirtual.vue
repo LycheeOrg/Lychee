@@ -175,6 +175,18 @@ const targetAndGap = computed<{ target: number; gap: number }>(() => {
 const ratingFilterActive = computed(() => photosStore.photoRatingFilter !== null);
 const filteredPhotoIds = computed(() => (ratingFilterActive.value ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null));
 
+// Also gated on the album's own `is_photo_timeline_enabled` display toggle —
+// mirrors the flag-off `AlbumPanel.vue`'s identical
+// `albumStore.config.is_photo_timeline_enabled` prop passed to
+// `PhotoThumbPanel`, which this SoA path had been missing (same class of bug
+// as the album-listing one, see `AlbumThumbGridVirtual.vue`). Fed into
+// `computeVisiblePhotoLayout()` below as its own `bucketable` param (not just
+// read separately for the header label itself) — otherwise the underlying
+// row-packing would still chunk photos into separate per-bucket runs (with
+// reserved header space) even with the label text suppressed, instead of one
+// continuous flow.
+const showHeaders = computed(() => albumStore.photoBucketableV3 && (albumStore.config?.is_photo_timeline_enabled ?? false));
+
 const layoutResult = computed(() => {
 	// `containerWidth` starts at 0 until `useElementSize`'s ResizeObserver
 	// fires its first measurement, independently of `ready`. Computing the
@@ -197,7 +209,7 @@ const layoutResult = computed(() => {
 		photosStore.photos,
 		albumStore.photoRatiosV3,
 		albumStore.photoBoundariesV3,
-		albumStore.photoBucketableV3,
+		showHeaders.value,
 		ratingFilterActive.value,
 		filteredPhotoIds.value,
 		containerWidth.value,
@@ -209,7 +221,6 @@ const layoutResult = computed(() => {
 // Headers still render when a rating filter is active (FR-065-19) —
 // `computeVisiblePhotoLayout()`'s own returned `boundaries` already reflect
 // the filtered counts (and drop an entirely-emptied bucket entirely).
-const showHeaders = computed(() => albumStore.photoBucketableV3);
 
 const layout = computed(() => ({
 	boxes: layoutResult.value.positioned.map((p) => p.box),
