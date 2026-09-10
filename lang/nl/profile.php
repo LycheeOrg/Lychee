@@ -13,6 +13,8 @@ return [
         'current_password' => 'Huidig wachtwoord',
         'credentials_update' => 'Uw inloggegevens worden gewijzigd in het volgende:',
         'username' => 'Gebruikersnaam',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nieuw wachtwoord',
         'confirm_new_password' => 'Bevestig nieuw wachtwoord',
         'password_strength_info' => 'De wachtwoordsterkte is een schatting op basis van het <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-algoritme</a>.',

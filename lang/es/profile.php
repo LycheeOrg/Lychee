@@ -12,6 +12,8 @@ return [
         'current_password' => 'Contraseña actual',
         'credentials_update' => 'Sus credenciales se cambiarán a lo siguiente:',
         'username' => 'Nombre de usuario',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nueva contraseña',
         'confirm_new_password' => 'Confirmar nueva contraseña',
         'password_strength_info' => 'La seguridad de la contraseña es una estimación calculada con el <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algoritmo zxcvbn</a>.',
