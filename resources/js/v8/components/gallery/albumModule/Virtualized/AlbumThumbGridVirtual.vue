@@ -134,10 +134,13 @@ const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
 const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio));
 
-// Single unbucketed section when tier 1 isn't bucketable or the
-// count-mismatch fallback fires (boundariesV3 === null) — same flat
-// rendering path buildVirtualAlbumRows() already documents for both cases.
-const showHeaders = computed(() => albumStore.bucketableV3);
+// Single unbucketed section when tier 1 isn't bucketable, the
+// count-mismatch fallback fires (boundariesV3 === null), or the album's own
+// timeline display is switched off (`is_album_timeline_enabled` — mirrors
+// the flag-off `AlbumThumbPanel.vue`'s identical `props.isTimeline` gate,
+// which this SoA path had been missing) — same flat rendering path
+// buildVirtualAlbumRows() already documents for the other cases.
+const showHeaders = computed(() => albumStore.bucketableV3 && (albumStore.config?.is_album_timeline_enabled ?? false));
 const boundaries = computed(() =>
 	albumStore.boundariesV3 !== null ? albumStore.boundariesV3 : [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }],
 );

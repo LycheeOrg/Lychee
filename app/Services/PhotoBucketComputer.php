@@ -22,7 +22,7 @@ use Carbon\Carbon;
  * trigger (upload, {@see \App\Actions\Photo\MoveOrDuplicate::do()}),
  * {@see \App\Jobs\RecomputePhotoBucketsJob},
  * {@see \App\Jobs\RecomputeAlbumPhotoBucketsJob}, and the
- * `lychee:recompute-photo-buckets` backfill command — so a bucket-truncation
+ * `lychee:recompute-buckets` backfill command — so a bucket-truncation
  * bugfix or a `photo_title_bucket_mode` semantics change only needs to
  * happen once.
  *
