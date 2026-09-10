@@ -210,6 +210,33 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		$this->assertDatabaseHas('albums', ['id' => $this->album1->id, 'cover_id' => null]);
 	}
 
+	public function testUpdateAlbumCoverIdFromDescendantAlbumAllowed(): void
+	{
+		// Setting an album's cover to a photo that lives in one of its
+		// descendant albums must be allowed.
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => null,
+			'photo_sorting_order' => null,
+			'album_sorting_column' => null,
+			'album_sorting_order' => null,
+			'album_aspect_ratio' => null,
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'cover_id' => $this->subPhoto1->id,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+		$this->assertDatabaseHas('albums', ['id' => $this->album1->id, 'cover_id' => $this->subPhoto1->id]);
+	}
+
 	public function testUpdateAlbumCoverIdOutsideAlbumForbidden(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
