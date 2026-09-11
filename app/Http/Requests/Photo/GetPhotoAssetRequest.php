@@ -26,6 +26,7 @@ use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use App\Services\TemporaryLinkSigner;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -258,14 +259,40 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
 		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
-		// SizeVariant must stay a real model: Watermarker::get_path() and the
-		// controller rely on its enum casts (type, storage_disk). We still
-		// limit the hydrated columns to only what those two call sites read.
-		$this->size_variant = SizeVariant::query()
-			->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
-			->where('photo_id', '=', $this->photo_id)
-			->where('type', '=', $this->size_variant_type)
-			->firstOrFail();
+		// The requested type may simply never have been generated for this
+		// photo (e.g. a `small2x` variant when the source is too small to
+		// warrant a 2x thumbnail) - walk the same fallback chain
+		// PhotoAssetController::fallback() uses for a missing *file*
+		// (SizeVariantType::fallbackType()) so a missing DB *row* degrades
+		// the same way instead of 404ing outright. The controller then
+		// continues that exact chain from whichever type we resolve to here
+		// if that type's file also turns out to be missing on disk.
+		$type = $this->size_variant_type;
+		$size_variant = null;
+		while ($size_variant === null) {
+			// SizeVariant must stay a real model: Watermarker::get_path() and
+			// the controller rely on its enum casts (type, storage_disk). We
+			// still limit the hydrated columns to only what those two call
+			// sites read.
+			$size_variant = SizeVariant::query()
+				->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
+				->where('photo_id', '=', $this->photo_id)
+				->where('type', '=', $type)
+				->first();
+
+			if ($size_variant !== null) {
+				break;
+			}
+
+			$next = $type->fallbackType();
+			if ($next === null) {
+				throw (new ModelNotFoundException())->setModel(SizeVariant::class);
+			}
+			$type = $next;
+		}
+
+		$this->size_variant_type = $type;
+		$this->size_variant = $size_variant;
 
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
 	}
