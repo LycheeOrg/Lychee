@@ -13,6 +13,8 @@ return [
         'current_password' => 'Aktualne hasło',
         'credentials_update' => 'Twoje poświadczenia zostaną zmienione na następujące:',
         'username' => 'Nazwa użytkownika',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nowe hasło',
         'confirm_new_password' => 'Potwierdź nowe hasło',
         'password_strength_info' => 'Siła hasła jest szacowana za pomocą <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algorytmu zxcvbn</a>.',

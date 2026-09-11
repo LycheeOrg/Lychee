@@ -13,6 +13,8 @@ return [
         'current_password' => 'Current password',
         'credentials_update' => 'Your credentials will be changed to the following:',
         'username' => 'Username',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'New password',
         'confirm_new_password' => 'Confirm new password',
         'password_strength_info' => 'The password strength is an estimate using the <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn algorithm</a>.',

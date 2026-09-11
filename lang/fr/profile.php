@@ -13,6 +13,8 @@ return [
         'current_password' => 'Mot de passe actuel',
         'credentials_update' => 'Vos identifiants seront mis à jour comme suit :',
         'username' => 'Nom d’utilisateur',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nouveau mot de passe',
         'confirm_new_password' => 'Confirmer le nouveau mot de passe',
         'password_strength_info' => 'La robustesse du mot de passe est une estimation calculée avec l’<a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algorithme zxcvbn</a>.',

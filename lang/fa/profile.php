@@ -13,6 +13,8 @@ return [
         'current_password' => 'رمزعبور فعلی',
         'credentials_update' => 'اطلاعات کاربری شما به موارد زیر تغییر خواهد کرد:',
         'username' => 'نام کاربری',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'رمزعبور جدید',
         'confirm_new_password' => 'تأیید رمزعبور جدید',
         'password_strength_info' => 'قدرت رمز عبور تخمینی است که با استفاده از <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">الگوریتم zxcvbn</a> محاسبه می‌شود.',

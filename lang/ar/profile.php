@@ -13,6 +13,8 @@ return [
         'current_password' => 'كلمة المرور الحالية',
         'credentials_update' => 'سيتم تغيير بيانات الاعتماد الخاصة بك إلى ما يلي:',
         'username' => 'اسم المستخدم',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'كلمة المرور الجديدة',
         'confirm_new_password' => 'تأكيد كلمة المرور الجديدة',
         'password_strength_info' => 'قوة كلمة المرور هي تقدير باستخدام <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">خوارزمية zxcvbn</a>.',

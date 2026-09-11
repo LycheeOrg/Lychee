@@ -13,6 +13,8 @@ return [
         'current_password' => 'Текущий пароль',
         'credentials_update' => 'Ваши данные будут изменены на следующие:',
         'username' => 'Имя пользователя',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Новый пароль',
         'confirm_new_password' => 'Подтвердите новый пароль',
         'password_strength_info' => 'Надёжность пароля — это оценка, рассчитанная с помощью <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">алгоритма zxcvbn</a>.',
