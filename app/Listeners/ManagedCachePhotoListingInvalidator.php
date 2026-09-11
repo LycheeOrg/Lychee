@@ -8,11 +8,17 @@
 
 namespace App\Listeners;
 
+use App\Constants\PersonAlbumPersons as PAP;
+use App\Enum\SmartAlbumType;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
+use App\Events\PhotoPersonsChanged;
+use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
+use App\Events\PhotoTagsChanged;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Support\Facades\DB;
@@ -97,5 +103,86 @@ class ManagedCachePhotoListingInvalidator
 		}
 
 		$this->cache->forgetTags($this->cache_key_provider->photoListingTags($event->album_ids));
+	}
+
+	/**
+	 * A `TagAlbum`'s photo listing has no `photo_album` row to key off (see
+	 * {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource}) - every
+	 * `TagAlbum` whose tag set overlaps `$event->tag_ids` (the union of old
+	 * and new tags, see {@see PhotoTagsChanged}) must be evicted, since the
+	 * photo may have just entered or left its membership.
+	 */
+	public function handlePhotoTagsChanged(PhotoTagsChanged $event): void
+	{
+		if ($event->tag_ids === []) {
+			return;
+		}
+
+		$tag_album_ids = DB::table('tag_albums_tags')
+			->whereIn('tag_id', $event->tag_ids)
+			->distinct()
+			->pluck('album_id')
+			->all();
+
+		if ($tag_album_ids !== []) {
+			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($tag_album_ids));
+		}
+	}
+
+	/**
+	 * Same reasoning as {@see self::handlePhotoTagsChanged()}, for
+	 * `PersonAlbum`. `$event->person_ids` is already the old/new union, so
+	 * no "removed person" gap here.
+	 */
+	public function handlePhotoPersonsChanged(PhotoPersonsChanged $event): void
+	{
+		if ($event->person_ids === []) {
+			return;
+		}
+
+		$person_album_ids = DB::table(PAP::PERSON_ALBUM_PERSONS)
+			->whereIn(PAP::PERSON_ID, $event->person_ids)
+			->distinct()
+			->pluck('album_id')
+			->all();
+
+		if ($person_album_ids !== []) {
+			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($person_album_ids));
+		}
+	}
+
+	/**
+	 * Every built-in smart album whose condition reads `rating_avg` (see
+	 * `App\SmartAlbums\{OneStarAlbum,...,FiveStarsAlbum,UnratedAlbum,
+	 * BestPicturesAlbum,MyRatedPicturesAlbum,MyBestPicturesAlbum}`) must be
+	 * evicted unconditionally - {@see PhotoRatingChanged} carries neither
+	 * the old nor the new rating, and several of these conditions are
+	 * threshold/rank-based (`best_pictures`, `my_best_pictures`), so which
+	 * one(s) actually flipped can't be determined cheaply here. Mirrors
+	 * {@see \App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange}'s own
+	 * unconditional smart-album refresh for the same reason.
+	 */
+	public function handlePhotoRatingChanged(PhotoRatingChanged $event): void
+	{
+		$this->cache->forgetTags($this->cache_key_provider->photoListingTags([
+			SmartAlbumType::ONE_STAR->value,
+			SmartAlbumType::TWO_STARS->value,
+			SmartAlbumType::THREE_STARS->value,
+			SmartAlbumType::FOUR_STARS->value,
+			SmartAlbumType::FIVE_STARS->value,
+			SmartAlbumType::UNRATED->value,
+			SmartAlbumType::BEST_PICTURES->value,
+			SmartAlbumType::MY_RATED_PICTURES->value,
+			SmartAlbumType::MY_BEST_PICTURES->value,
+		]));
+	}
+
+	/**
+	 * Only the `highlighted` smart album's condition reads `is_highlighted`
+	 * (`App\SmartAlbums\HighlightedAlbum`).
+	 */
+	public function handlePhotoHighlightToggled(PhotoHighlightToggled $event): void
+	{
+		$this->cache->forgetTag($this->cache_key_provider->photoListingTag(SmartAlbumType::HIGHLIGHTED->value));
 	}
 }

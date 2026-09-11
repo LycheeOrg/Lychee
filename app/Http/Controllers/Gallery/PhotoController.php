@@ -179,9 +179,10 @@ class PhotoController extends Controller
 		$photo->created_at = $request->uploadDate();
 
 		$existing_tags = Tag::from($request->tags());
+		$old_tag_ids = $photo->tags()->pluck('tags.id')->all();
 		$photo->tags()->sync($existing_tags->pluck('id'));
 		$photo->load('tags');
-		PhotoTagsChanged::dispatch([$photo->id]);
+		PhotoTagsChanged::dispatch([$photo->id], array_values(array_unique([...$old_tag_ids, ...$existing_tags->pluck('id')->all()])));
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
@@ -334,6 +335,12 @@ class PhotoController extends Controller
 		// Fetch existing tags
 		$existing_tags = Tag::from($tags);
 
+		// Captured before the mutation below - PhotoTagsChanged::$tag_ids
+		// must carry the union of old and new tag IDs (a tag removed by
+		// `shall_override` is otherwise unrecoverable once the delete below
+		// has run), mirroring PhotoPersonsChanged::$person_ids exactly.
+		$old_tag_ids = DB::table('photos_tags')->whereIn('photo_id', $photo_ids)->distinct()->pluck('tag_id')->all();
+
 		DB::transaction(function () use ($request, $existing_tags, $photo_ids): void {
 			if ($request->shall_override) {
 				// Delete existing associations for those photos ids if we override the tags
@@ -348,7 +355,7 @@ class PhotoController extends Controller
 			});
 			DB::commit();
 		});
-		PhotoTagsChanged::dispatch($photo_ids->all());
+		PhotoTagsChanged::dispatch($photo_ids->all(), array_values(array_unique([...$old_tag_ids, ...$existing_tags->pluck('id')->all()])));
 
 		if ($request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
 			$photos->each(fn (Photo $photo) => EmbedMetadataJob::dispatch($photo));
