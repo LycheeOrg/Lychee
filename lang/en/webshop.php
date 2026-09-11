@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Payment has been cancelled.',
         'paymentFailed' => 'Payment failed',
         'paymentFailedMessage' => 'We were not able to confirm your payment. Please try again or contact support if the problem persists.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e38b8c7b427ffdb9d729d6b75959a9cb",
+    "content-hash": "0008a62321fec85c47374ad9e0b87883",
     "packages": [
         {
             "name": "apimatic/core",
@@ -6223,6 +6223,121 @@
                 "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/2.4.0"
             },
             "time": "2026-08-21T15:05:45+00:00"
+        },
+        {
+            "name": "payzum/omnipay-payzum",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/payzum-dev/omnipay-payzum.git",
+                "reference": "19a259aa1a46513731f6d590202554c29e61da0a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/payzum-dev/omnipay-payzum/zipball/19a259aa1a46513731f6d590202554c29e61da0a",
+                "reference": "19a259aa1a46513731f6d590202554c29e61da0a",
+                "shasum": ""
+            },
+            "require": {
+                "omnipay/common": "^3.2",
+                "payzum/payzum-php": "^0.1",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "omnipay/tests": "^4.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Omnipay\\Payzum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Payzum",
+                    "homepage": "https://payzum.com"
+                }
+            ],
+            "description": "Payzum driver for the Omnipay payment processing library — accept crypto and stablecoin payments (USDC/USDT, multi-chain, non-custodial).",
+            "homepage": "https://github.com/payzum-dev/omnipay-payzum",
+            "keywords": [
+                "USDC",
+                "USDT",
+                "bitcoin",
+                "crypto",
+                "ethereum",
+                "gateway",
+                "merchant",
+                "omnipay",
+                "pay",
+                "payment",
+                "payzum",
+                "stablecoin"
+            ],
+            "support": {
+                "docs": "https://merchant.payzum.com/docs",
+                "issues": "https://github.com/payzum-dev/omnipay-payzum/issues",
+                "source": "https://github.com/payzum-dev/omnipay-payzum"
+            },
+            "time": "2026-09-02T20:39:40+00:00"
+        },
+        {
+            "name": "payzum/payzum-php",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/payzum-dev/payzum-php.git",
+                "reference": "c646c948883da1aad21d43d4692791604bc09bbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/payzum-dev/payzum-php/zipball/c646c948883da1aad21d43d4692791604bc09bbc",
+                "reference": "c646c948883da1aad21d43d4692791604bc09bbc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=8.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Payzum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Payzum",
+                    "homepage": "https://payzum.com"
+                }
+            ],
+            "description": "Official PHP SDK for the Payzum crypto payment API — accept stablecoin and crypto payments, verify IPN webhooks.",
+            "homepage": "https://merchant.payzum.com",
+            "keywords": [
+                "USDC",
+                "USDT",
+                "bitcoin",
+                "crypto",
+                "ethereum",
+                "payment-gateway",
+                "payments",
+                "payzum",
+                "stablecoin"
+            ],
+            "support": {
+                "docs": "https://merchant.payzum.com/docs",
+                "issues": "https://github.com/payzum-dev/payzum-php/issues",
+                "source": "https://github.com/payzum-dev/payzum-php"
+            },
+            "time": "2026-08-30T21:24:12+00:00"
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",

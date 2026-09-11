@@ -39,6 +39,10 @@ Route::middleware('support:pro')->group(function (): void {
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
 		Route::get('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.return');
+		// Keyed by order id, not transaction id: completing an order replaces
+		// its transaction id with the provider reference, and the gateway
+		// retries notifications to the original URL.
+		Route::post('/Notify/Payzum/{order_id}', [Shop\CheckoutController::class, 'notify'])->withoutMiddleware(['accept_content_type:json'])->name('shop.checkout.notify');
 		Route::get('/Cancel/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.cancel');
 	});
 	Route::group(['prefix' => '/Shop/Management'], function (): void {
