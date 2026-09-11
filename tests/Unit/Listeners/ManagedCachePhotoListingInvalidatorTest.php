@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Listeners;
 
+use App\Enum\SmartAlbumType;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
@@ -214,6 +215,20 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 
 		$this->assertEvicted('k:a');
 		$this->assertNotEvicted('k:b');
+	}
+
+	public function testPhotoTagsChangedEvictsUntaggedSmartAlbum(): void
+	{
+		$user = User::factory()->create();
+		$tag_a = Tag::factory()->create();
+		$tag_album_a = TagAlbum::factory()->owned_by($user)->of_tags([$tag_a])->create();
+
+		$this->seedCache('k:untagged', [$this->cache_key_provider->photoListingTag(SmartAlbumType::UNTAGGED->value)]);
+		$this->seedCache('k:unrelated', [$this->cache_key_provider->photoListingTag($tag_album_a->id)]);
+
+		$this->listener->handlePhotoTagsChanged(new PhotoTagsChanged(['photo-1'], [$tag_a->id]));
+
+		$this->assertEvicted('k:untagged');
 	}
 
 	public function testPhotoTagsChangedWithEmptyTagIdsIsNoOp(): void

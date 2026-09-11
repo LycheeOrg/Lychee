@@ -110,7 +110,10 @@ class ManagedCachePhotoListingInvalidator
 	 * {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource}) - every
 	 * `TagAlbum` whose tag set overlaps `$event->tag_ids` (the union of old
 	 * and new tags, see {@see PhotoTagsChanged}) must be evicted, since the
-	 * photo may have just entered or left its membership.
+	 * photo may have just entered or left its membership. The `untagged`
+	 * smart album is evicted unconditionally too: a photo enters it when its
+	 * last tag is removed and leaves it when its first tag is added, and
+	 * `$event->tag_ids` alone can't tell which of those happened.
 	 */
 	public function handlePhotoTagsChanged(PhotoTagsChanged $event): void
 	{
@@ -127,6 +130,8 @@ class ManagedCachePhotoListingInvalidator
 		if ($tag_album_ids !== []) {
 			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($tag_album_ids));
 		}
+
+		$this->cache->forgetTag($this->cache_key_provider->photoListingTag(SmartAlbumType::UNTAGGED->value));
 	}
 
 	/**
