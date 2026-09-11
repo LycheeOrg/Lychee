@@ -297,6 +297,27 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$response->assertJson(['ids' => [$this->photo1->id]]);
 	}
 
+	/**
+	 * `BaseSmartAlbum::photos()` left-joins `photo_album` without any
+	 * `album_id` restriction - a photo belonging to more than one regular
+	 * album must still appear exactly once here, not once per membership
+	 * (see `ResolvesPhotoSource::resolvePhotoQuery()`'s `whereIn`
+	 * id-subquery fix for this exact fan-out).
+	 */
+	public function testSmartAlbumDeduplicatesPhotoBelongingToMultipleAlbums(): void
+	{
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+		// photo1 already belongs to album1 (base fixture) - attach it to a
+		// second, same-owner album too.
+		$this->photo1->albums()->attach($this->subAlbum1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos');
+		$this->assertOk($response);
+		$json = $response->json();
+		$this->assertSame([$this->photo1->id], $json['ids']);
+	}
+
 	public function testPersonAlbumIdSucceeds(): void
 	{
 		Configs::set('ai_vision_enabled', '1');

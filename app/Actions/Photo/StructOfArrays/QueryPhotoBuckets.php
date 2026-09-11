@@ -95,6 +95,18 @@ class QueryPhotoBuckets
 	 * (bounded by this album's own photo count, exactly the scale the
 	 * un-grouped `Album` case already visits for {@see QueryPhotoRatios}).
 	 *
+	 * Grouped by run-length counting over the already-ordered rows, never
+	 * by keying a PHP array on the `bucket_id` string itself: PHP silently
+	 * casts a canonical-integer-looking string key (e.g. `"2026"`, a
+	 * YEAR-granularity date bucket, or `"1"`/`"0"` for `IS_HIGHLIGHTED`) to
+	 * an actual `int` array key, which would corrupt the `string[]`
+	 * `bucket_ids` contract on the way out to JSON. This is safe because
+	 * rows sharing the same live-computed bucket are always contiguous in
+	 * this SQL-ordered result - `bucket_id` is a deterministic,
+	 * order-preserving function of the exact column being sorted on for
+	 * every supported sort column (date truncation, rounding, or a direct
+	 * column value).
+	 *
 	 * @return array{0:string[],1:int[]}
 	 */
 	private function queryLiveBuckets(AbstractAlbum $album, ?User $user, ColumnSortingType $column, OrderSortingType $order): array
@@ -106,21 +118,34 @@ class QueryPhotoBuckets
 
 		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
 
-		$counts_by_bucket = [];
+		$bucket_ids = [];
+		$counts = [];
+		$unknown_count = null;
 		foreach ($rows as $row) {
-			$bucket_id = $this->liveBucketId($column, $granularity, $row) ?? 'unknown';
-			$counts_by_bucket[$bucket_id] = ($counts_by_bucket[$bucket_id] ?? 0) + 1;
+			$bucket_id = $this->liveBucketId($column, $granularity, $row);
+			if ($bucket_id === null) {
+				// Accumulated separately and always appended last (below),
+				// regardless of $order - "unknown" rows need not even be
+				// contiguous with each other in the sorted result.
+				$unknown_count = ($unknown_count ?? 0) + 1;
+				continue;
+			}
+
+			$last_index = count($bucket_ids) - 1;
+			if ($last_index >= 0 && $bucket_ids[$last_index] === $bucket_id) {
+				$counts[$last_index]++;
+			} else {
+				$bucket_ids[] = $bucket_id;
+				$counts[] = 1;
+			}
 		}
 
-		// NULL ("unknown") always sorts last, regardless of $order - move it
-		// to the end regardless of when it was first encountered above.
-		if (array_key_exists('unknown', $counts_by_bucket)) {
-			$unknown_count = $counts_by_bucket['unknown'];
-			unset($counts_by_bucket['unknown']);
-			$counts_by_bucket['unknown'] = $unknown_count;
+		if ($unknown_count !== null) {
+			$bucket_ids[] = 'unknown';
+			$counts[] = $unknown_count;
 		}
 
-		return [array_keys($counts_by_bucket), array_values($counts_by_bucket)];
+		return [$bucket_ids, $counts];
 	}
 
 	/**

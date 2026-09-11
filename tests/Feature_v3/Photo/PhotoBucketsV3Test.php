@@ -223,6 +223,29 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		]);
 	}
 
+	/**
+	 * `BaseSmartAlbum::photos()` left-joins `photo_album` without any
+	 * `album_id` restriction - a photo belonging to more than one regular
+	 * album must still be counted exactly once here, not once per
+	 * membership (see `ResolvesPhotoSource::resolvePhotoQuery()`'s
+	 * `whereIn` id-subquery fix for this exact fan-out).
+	 */
+	public function testSmartAlbumDeduplicatesPhotoBelongingToMultipleAlbums(): void
+	{
+		$this->setInstanceDefaults('created_at', 'year');
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+		// photo1 already belongs to album1 (base fixture) - attach it to a
+		// second, same-owner album too.
+		$this->photo1->albums()->attach($this->subAlbum1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets');
+		$this->assertOk($response);
+		$json = $response->json();
+		$this->assertSame([$this->photo1->created_at->format('Y')], $json['bucket_ids']);
+		$this->assertSame([1], $json['counts']);
+	}
+
 	public function testUnknownAlbumIdReturns404(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/AAAAAAAAAAAAAAAAAAAAAAAA/Photos/buckets');

@@ -57,11 +57,20 @@ trait ResolvesPhotoSource
 				->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 				->where(PA::ALBUM_ID, '=', $album->id);
 		} elseif ($album instanceof BaseSmartAlbum) {
-			// Already a `FixedQueryBuilder<Photo>` at runtime (built off
-			// `Photo::query()`) - only typed as the looser `Builder` by
-			// `BaseSmartAlbum::photos()`'s own signature.
-			/** @var FixedQueryBuilder<Photo> $query */
-			$query = $album->photos();
+			// `BaseSmartAlbum::photos()` applies its visibility filter
+			// directly on a query that already carries an un-scoped
+			// `leftJoin(photo_album, ...)` (no album_id restriction -
+			// BaseSmartAlbum.php's own `photos()`) - a photo belonging to N
+			// regular albums therefore fans out to N rows there. This is
+			// exactly the duplication `HasManyPhotosByTag::addEagerConstraints()`'s
+			// own doc comment describes and deliberately avoids, via a
+			// `whereIn` id-subquery instead of joining directly on the
+			// outer/returned query - mirrored here for the same reason: the
+			// query this method returns must carry exactly one row per
+			// `photos.id`, regardless of how many regular albums a photo
+			// belongs to.
+			$matching_ids = $album->photos()->select('photos.id');
+			$query = Photo::query()->whereIn('photos.id', $matching_ids);
 		} else {
 			// TagAlbum | PersonAlbum - `photos()` returns a `Relation`
 			// (`HasManyPhotosByTag`/`HasManyPhotosByPerson`); `getQuery()`
