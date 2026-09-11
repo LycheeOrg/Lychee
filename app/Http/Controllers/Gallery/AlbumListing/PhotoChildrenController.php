@@ -48,7 +48,7 @@ class PhotoChildrenController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		$key = $this->cache_key_provider->photoBucketsKey($album->id, $user?->id);
+		$key = $this->cache_key_provider->photoBucketsKey($album->get_id(), $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -56,7 +56,7 @@ class PhotoChildrenController extends Controller
 			$enabled,
 			$key,
 			[
-				$this->cache_key_provider->photoListingTag($album->id),
+				$this->cache_key_provider->photoListingTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
 			],
 			fn (): PhotoBucketResource => $this->query_photo_buckets->do($album, $user),
@@ -72,7 +72,7 @@ class PhotoChildrenController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		$key = $this->cache_key_provider->photoRatiosKey($album->id, $user?->id);
+		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -80,7 +80,7 @@ class PhotoChildrenController extends Controller
 			$enabled,
 			$key,
 			[
-				$this->cache_key_provider->photoListingTag($album->id),
+				$this->cache_key_provider->photoListingTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
 			],
 			fn (): PhotoRatioResource => $this->query_photo_ratios->do($album, $user),
@@ -97,7 +97,7 @@ class PhotoChildrenController extends Controller
 		$user = Auth::user();
 
 		$scope_digest = $this->cache_key_provider->photoDetailsScopeDigest($request->bucketId(), $request->photoIds());
-		$key = $this->cache_key_provider->photoDetailsKey($album->id, $scope_digest, $user?->id);
+		$key = $this->cache_key_provider->photoDetailsKey($album->get_id(), $scope_digest, $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -105,7 +105,7 @@ class PhotoChildrenController extends Controller
 			$enabled,
 			$key,
 			[
-				$this->cache_key_provider->photoListingTag($album->id),
+				$this->cache_key_provider->photoListingTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
 			],
 			fn (): PhotoDetailResource => $this->query_photo_details->do($album, $user, $request->bucketId(), $request->photoIds()),

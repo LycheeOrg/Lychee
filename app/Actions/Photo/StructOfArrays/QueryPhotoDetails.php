@@ -8,18 +8,18 @@
 
 namespace App\Actions\Photo\StructOfArrays;
 
-use App\Constants\PhotoAlbum as PA;
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MetricsAccess;
 use App\Http\Resources\Models\ColourPaletteResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Http\Resources\V3\PhotoDetailResource;
 use App\Models\Album;
-use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Photo;
 use App\Models\User;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\PhotoBucketComputer;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Optional;
@@ -42,36 +42,36 @@ use Spatie\LaravelData\Optional;
  */
 class QueryPhotoDetails
 {
-	use FiltersUploadValidation;
+	use ResolvesPhotoSource;
 
 	public function __construct(
 		private readonly ConfigManager $config_manager,
+		private readonly PhotoBucketComputer $bucket_computer,
 	) {
 	}
 
 	/**
 	 * @param string[]|null $photo_ids
 	 */
-	public function do(Album $album, ?User $user, ?string $bucket_id, ?array $photo_ids): PhotoDetailResource
+	public function do(AbstractAlbum $album, ?User $user, ?string $bucket_id, ?array $photo_ids): PhotoDetailResource
 	{
-		$query = Photo::query()
-			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->where(PA::ALBUM_ID, '=', $album->id)
-			->select('photos.*');
-
-		// Non-admins must not see unvalidated photos uploaded by other
-		// users.
-		if ($user?->may_administrate !== true) {
-			$this->applyUploadValidationFilter($query, $user?->id);
-		}
+		$query = $this->resolvePhotoQuery($album, $user)->select('photos.*');
 
 		if ($bucket_id !== null) {
-			// The literal "unknown" sentinel maps to a NULL bucket_id -
-			// uncapped, resolves every matching row.
-			if ($bucket_id === 'unknown') {
-				$query->whereNull('photo_album.bucket_id');
+			if ($album instanceof Album) {
+				// The literal "unknown" sentinel maps to a NULL bucket_id -
+				// uncapped, resolves every matching row.
+				if ($bucket_id === 'unknown') {
+					$query->whereNull('photo_album.bucket_id');
+				} else {
+					$query->where('photo_album.bucket_id', '=', $bucket_id);
+				}
 			} else {
-				$query->where('photo_album.bucket_id', '=', $bucket_id);
+				// TagAlbum/PersonAlbum/BaseSmartAlbum have no stored
+				// `bucket_id` to filter by in SQL - resolve the matching ids
+				// live first (mirrors QueryPhotoBuckets/QueryPhotoRatios),
+				// then curate the main query down to exactly those rows.
+				$query->whereIn('photos.id', $this->resolveLiveBucketPhotoIds($album, $user, $bucket_id));
 			}
 		} else {
 			// Ids not actually in this album or not visible to the caller
@@ -83,6 +83,37 @@ class QueryPhotoDetails
 		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags', 'albums'])->get();
 
 		return $this->buildResource($photos, $user);
+	}
+
+	/**
+	 * Lean pass over this album's candidate photos to resolve exactly which
+	 * ids live-compute to `$bucket_id` (or to `NULL`/"unknown" if
+	 * `$bucket_id === 'unknown'`) - see {@see ResolvesPhotoSource} for why a
+	 * non-`Album` source has no stored `bucket_id` column to filter by
+	 * directly in SQL.
+	 *
+	 * @return string[]
+	 */
+	private function resolveLiveBucketPhotoIds(AbstractAlbum $album, ?User $user, string $bucket_id): array
+	{
+		$sorting = $this->resolveEffectiveSorting($album);
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+
+		$query = $this->resolvePhotoQuery($album, $user);
+		$rows = $query->select([
+			'photos.id', 'photos.title', 'photos.title_base', 'photos.created_at', 'photos.taken_at',
+			'photos.is_highlighted', 'photos.type', 'photos.rating_avg',
+		])->toBase()->get();
+
+		$matching_ids = [];
+		foreach ($rows as $row) {
+			$row_bucket_id = $this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown';
+			if ($row_bucket_id === $bucket_id) {
+				$matching_ids[] = $row->id;
+			}
+		}
+
+		return $matching_ids;
 	}
 
 	/**

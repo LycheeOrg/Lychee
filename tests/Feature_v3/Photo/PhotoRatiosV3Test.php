@@ -20,6 +20,9 @@ namespace Tests\Feature_v3\Photo;
 
 use App\Enum\SizeVariantType;
 use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
@@ -273,10 +276,49 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 
 	// ── Access / resolution edge cases ────────────────────────────
 
-	public function testTagAlbumIdReturns404(): void
+	public function testTagAlbumIdSucceedsWithLiveComputedBucketIds(): void
 	{
+		// tagAlbum1 matches photo1 (tagged `test`) only - photo1b (untagged,
+		// same album) and every other fixture photo must not appear.
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos");
-		$this->assertNotFound($response);
+		$this->assertOk($response);
+		$json = $response->json();
+		$this->assertSame([$this->photo1->id], $json['ids']);
+		$this->assertNotSame('unknown', $json['bucket_ids'][0]);
+	}
+
+	public function testSmartAlbumIdSucceeds(): void
+	{
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos');
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$this->photo1->id]]);
+	}
+
+	public function testPersonAlbumIdSucceeds(): void
+	{
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		$person = Person::factory()->create(['name' => 'Alice', 'is_searchable' => true]);
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+
+		// PersonAlbum creation is a v2 (JSON) endpoint - reused here purely
+		// as fixture setup, mirroring Tests\AssistedVision\PersonAlbumTest;
+		// there is no PersonAlbum::factory() equivalent that also wires up
+		// matching Face rows.
+		$create_response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_v3_test',
+			'persons' => [$person->id],
+			'is_and' => false,
+		]);
+		$this->assertOk($create_response);
+		$person_album_id = $create_response->getOriginalContent();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/Photos");
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$this->photo1->id]]);
 	}
 
 	public function testNoAccessReturns403(): void

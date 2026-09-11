@@ -8,12 +8,13 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Album;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Policies\AlbumPolicy;
-use App\Rules\RandomIDRule;
+use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -21,19 +22,14 @@ use Illuminate\Support\Facades\Gate;
  * `album_id` is bound from the route segment via
  * {@see self::prepareForValidation()}, mirroring
  * {@see \App\Http\Requests\Album\GetAlbumBucketsRequest}'s pattern.
- * Resolves to a regular {@see Album} only — a `TagAlbum`/`PersonAlbum` id
- * or an unresolved id both yield a 404
- * ({@see \Illuminate\Database\Eloquent\ModelNotFoundException}), never the
- * broader `AlbumFactory::findAbstractAlbumOrFail()` resolution.
+ * Resolves via
+ * {@see \App\Factories\AlbumFactory::findAbstractAlbumOrFail()}, covering a
+ * regular {@see \App\Models\Album}, a {@see \App\Models\TagAlbum}, a
+ * {@see \App\Models\PersonAlbum}, or a {@see \App\SmartAlbums\BaseSmartAlbum}.
  */
-class GetPhotoBucketsRequest extends BaseApiRequest
+class GetPhotoBucketsRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	private Album $album;
-
-	public function album(): Album
-	{
-		return $this->album;
-	}
+	use HasAbstractAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -50,7 +46,7 @@ class GetPhotoBucketsRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -72,6 +68,7 @@ class GetPhotoBucketsRequest extends BaseApiRequest
 	{
 		/** @var string $album_id */
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = Album::query()->where('id', '=', $album_id)->firstOrFail();
+		// We do not need the relations. We try to be lean.
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
 	}
 }

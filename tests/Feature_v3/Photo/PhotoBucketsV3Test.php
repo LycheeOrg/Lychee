@@ -194,10 +194,33 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 
 	// ── Access / resolution edge cases ────────────────────────────
 
-	public function testTagAlbumIdReturns404(): void
+	public function testTagAlbumIdSucceedsWithLiveComputedBuckets(): void
 	{
+		$this->setInstanceDefaults('created_at', 'year');
+		// tagAlbum1 matches photo1 (tagged `test`) only - photo1b (untagged,
+		// same album) and every other fixture photo must not appear.
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos/buckets");
-		$this->assertNotFound($response);
+		$this->assertOk($response);
+		$response->assertJson([
+			'bucket_ids' => [$this->photo1->created_at->format('Y')],
+			'counts' => [1],
+			'bucketable' => true,
+		]);
+	}
+
+	public function testSmartAlbumIdSucceedsWithLiveComputedBuckets(): void
+	{
+		$this->setInstanceDefaults('created_at', 'year');
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets');
+		$this->assertOk($response);
+		$response->assertJson([
+			'bucket_ids' => [$this->photo1->created_at->format('Y')],
+			'counts' => [1],
+			'bucketable' => true,
+		]);
 	}
 
 	public function testUnknownAlbumIdReturns404(): void
