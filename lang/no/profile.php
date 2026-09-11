@@ -13,6 +13,8 @@ return [
         'current_password' => 'Nåværende passord',
         'credentials_update' => 'Dine innloggingsdetalier din vil bli endret til følgende:',
         'username' => 'Brukernavn',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nytt passord',
         'confirm_new_password' => 'Bekreft nytt passord',
         'password_strength_info' => 'Passordstyrken er et estimat basert på <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-algoritmen</a>.',

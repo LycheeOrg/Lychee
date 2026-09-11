@@ -13,6 +13,8 @@ return [
         'current_password' => '当前密码',
         'credentials_update' => '您的登录信息将更改为：',
         'username' => '用户名',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => '新密码',
         'confirm_new_password' => '确认新密码',
         'password_strength_info' => '密码强度是使用 <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn 算法</a>估算的。',

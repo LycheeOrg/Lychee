@@ -27,22 +27,27 @@
 					</UFormField>
 				</div>
 				<div v-if="is_basic_auth_enabled" class="w-full mb-6">
-					<div class="pb-4">
-						{{ $t("profile.login.credentials_update") }}
-					</div>
 					<UFormField :label="$t('profile.login.username')">
 						<InputText id="username" v-model="username" />
 					</UFormField>
-					<UFormField class="mt-4" :label="$t('profile.login.new_password')">
-						<InputPassword id="password" v-model="password" has-check />
-					</UFormField>
-					<UFormField class="mt-4" :label="$t('profile.login.confirm_new_password')">
-						<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
-					</UFormField>
-					<div class="text-muted mt-2">
-						<UIcon name="lucide:circle-question-mark" class="inline-block size-4 text-info" />
-						<span v-html="$t('profile.login.password_strength_info')"></span>
-					</div>
+					<UButton color="neutral" variant="link" class="mt-4 p-0" @click="togglePasswordChange">
+						{{ $t(isChangePasswordOpen ? "profile.login.cancel_password_change" : "profile.login.change_password") }}
+					</UButton>
+					<template v-if="isChangePasswordOpen">
+						<div class="pt-4">
+							{{ $t("profile.login.credentials_update") }}
+						</div>
+						<UFormField class="mt-4" :label="$t('profile.login.new_password')">
+							<InputPassword id="password" v-model="password" has-check />
+						</UFormField>
+						<UFormField class="mt-4" :label="$t('profile.login.confirm_new_password')">
+							<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
+						</UFormField>
+						<div class="text-muted mt-2">
+							<UIcon name="lucide:circle-question-mark" class="inline-block size-4 text-info" />
+							<span v-html="$t('profile.login.password_strength_info')"></span>
+						</div>
+					</template>
 				</div>
 				<div class="w-full">
 					<div class="pb-4">
@@ -88,6 +93,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 
 const isApiTokenOpen = ref(false);
+const isChangePasswordOpen = ref(false);
 
 const lycheeStore = useLycheeStateStore();
 const { is_basic_auth_enabled } = storeToRefs(lycheeStore);
@@ -109,6 +115,14 @@ const hasChanged = computed(() => {
 		(email.value ?? "") !== (user.value?.email ?? "")
 	);
 });
+
+function togglePasswordChange() {
+	isChangePasswordOpen.value = !isChangePasswordOpen.value;
+	if (!isChangePasswordOpen.value) {
+		password.value = undefined;
+		password_confirmation.value = undefined;
+	}
+}
 
 function load() {
 	AuthService.user().then((data) => {
@@ -140,6 +154,7 @@ function save() {
 			username.value = data.data.username as string;
 			password.value = undefined;
 			password_confirmation.value = undefined;
+			isChangePasswordOpen.value = false;
 			email.value = data.data.email ?? undefined;
 			toast.add({
 				severity: "success",

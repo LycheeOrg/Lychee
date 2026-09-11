@@ -13,6 +13,8 @@ return [
         'current_password' => 'Текуща парола',
         'credentials_update' => 'Вашите данни ще бъдат променени на следните:',
         'username' => 'Потребителско име',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Нова парола',
         'confirm_new_password' => 'Потвърдете новата парола',
         'password_strength_info' => 'Силата на паролата е приблизителна оценка, използваща <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">алгоритъма zxcvbn</a>.',

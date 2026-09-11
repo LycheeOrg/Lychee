@@ -13,6 +13,8 @@ return [
         'current_password' => 'Aktuální heslo',
         'credentials_update' => 'Vaše přihlašovací údaje budou změněny na následující:',
         'username' => 'Uživatelské jméno',
+        'change_password' => 'Change password',
+        'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Nové heslo',
         'confirm_new_password' => 'Potvrďte nové heslo',
         'password_strength_info' => 'Síla hesla je odhad pomocí <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algoritmu zxcvbn</a>.',
