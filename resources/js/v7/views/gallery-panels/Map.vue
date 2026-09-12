@@ -111,7 +111,10 @@ function mapInit() {
 		// Set initial view to (0,0)
 		map.value = L.map("lychee_map_container").setView([0.0, 0.0], 2);
 
-		L.tileLayer(map_provider.value?.layer, { attribution: map_provider.value?.attribution }).addTo(map.value);
+		L.tileLayer(map_provider.value?.layer, {
+			attribution: map_provider.value?.attribution,
+			referrerPolicy: "origin",
+		}).addTo(map.value);
 
 		open();
 
