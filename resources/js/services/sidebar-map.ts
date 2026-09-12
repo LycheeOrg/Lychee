@@ -39,7 +39,10 @@ export default class SidebarMap {
 
 		const myMap = L.map("leaflet_map_single_photo").setView([latitude, longitude], 13);
 
-		L.tileLayer(this.layer, { attribution: this.attribution }).addTo(myMap);
+		L.tileLayer(this.layer, {
+			attribution: this.attribution,
+			referrerPolicy: "origin",
+		}).addTo(myMap);
 
 		// Add Marker to map, direction is not set
 		L.marker([latitude, longitude]).addTo(myMap);
