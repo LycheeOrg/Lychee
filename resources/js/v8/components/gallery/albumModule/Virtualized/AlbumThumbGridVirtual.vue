@@ -142,7 +142,9 @@ const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.confi
 // buildVirtualAlbumRows() already documents for the other cases.
 const showHeaders = computed(() => albumStore.bucketableV3 && (albumStore.config?.is_album_timeline_enabled ?? false));
 const boundaries = computed(() =>
-	albumStore.boundariesV3 !== null ? albumStore.boundariesV3 : [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }],
+	showHeaders.value && albumStore.boundariesV3 !== null
+		? albumStore.boundariesV3
+		: [{ bucketId: "all", label: "", startIndex: 0, count: albumsStore.albums.length }],
 );
 
 // NSFW-hidden tiles are dropped before row-chunking (not per-tile in the
