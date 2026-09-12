@@ -38,6 +38,7 @@ use function Safe\preg_match;
  * @property bool        $not_on_docker
  * @property int         $order
  * @property bool        $is_expert
+ * @property string|null $required_keys
  *
  * @method static ConfigsBuilder|Configs addSelect($column)
  * @method static ConfigsBuilder|Configs join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -69,7 +70,7 @@ class Configs extends Model
 	 *
 	 * @var list<string>
 	 */
-	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description', 'level', 'not_on_docker', 'order'];
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'is_secret', 'description', 'level', 'not_on_docker', 'order', 'required_keys'];
 
 	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.

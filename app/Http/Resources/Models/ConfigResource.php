@@ -25,6 +25,9 @@ class ConfigResource extends Data
 	public bool $require_se;
 	public int|null $order;
 
+	/** @var array<int,string> */
+	public array $required_keys;
+
 	public function __construct(Configs $c)
 	{
 		$this->key = $c->key;
@@ -35,6 +38,7 @@ class ConfigResource extends Data
 		$this->require_se = $c->level > 0;
 		$this->is_expert = $c->is_expert;
 		$this->order = (config('app.env', 'dev') === 'dev') ? $c->order : null;
+		$this->required_keys = $c->required_keys !== null && $c->required_keys !== '' ? explode(',', $c->required_keys) : [];
 	}
 
 	public static function fromModel(Configs $c): ConfigResource
