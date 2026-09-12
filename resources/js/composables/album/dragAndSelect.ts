@@ -281,7 +281,8 @@ export function useDragAndSelect(
 				);
 			}
 
-			const boundaries = boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
+			const boundaries =
+				bucketableV3 && boundariesV3 !== null ? boundariesV3 : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
 			// Filter NSFW-hidden tiles out *before* row-chunking, same as
 			// AlbumThumbGridVirtual.vue/AlbumRootGridVirtual.vue/the list forks —
 			// buildVirtualAlbumRows() bakes bucket counts into fixed-size rows, so
