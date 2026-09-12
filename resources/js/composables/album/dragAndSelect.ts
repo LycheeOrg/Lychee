@@ -281,7 +281,15 @@ export function useDragAndSelect(
 				);
 			}
 
-			const boundaries = boundariesV3 ?? [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
+			const boundaries =
+				bucketableV3 && boundariesV3 !== null ? boundariesV3 : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.length }];
+			// `separate_shared_only` only ever separates *directly* shared albums
+			// (`is_public === false`) from publicly-visible ones — the `shared`
+			// scope drops public albums before `buildVirtualAlbumRows()`
+			// (AlbumRootGridVirtual.vue/AlbumRootListViewVirtual.vue's own
+			// `isDirectlySharedOnly` filter), so this must reproduce that same
+			// exclusion or the boxes below drift out of sync with what's rendered.
+			const isDirectlySharedOnly = scope === "shared" && albumsStore.rootConfig?.shared_albums_visibility_mode === "separate_shared_only";
 			// Filter NSFW-hidden tiles out *before* row-chunking, same as
 			// AlbumThumbGridVirtual.vue/AlbumRootGridVirtual.vue/the list forks —
 			// buildVirtualAlbumRows() bakes bucket counts into fixed-size rows, so
@@ -291,7 +299,7 @@ export function useDragAndSelect(
 			const { tiles: visibleTiles, boundaries: visibleBoundaries } = filterBucketedTiles(
 				tiles,
 				boundaries,
-				(album) => !album.is_nsfw || lycheeStore.are_nsfw_visible,
+				(album) => (!album.is_nsfw || lycheeStore.are_nsfw_visible) && (!isDirectlySharedOnly || !album.is_public),
 			);
 
 			const { getTileBox } = buildVirtualAlbumRows(

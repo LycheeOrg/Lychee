@@ -139,7 +139,7 @@ const showHeaders = computed(
 );
 const boundaries = computed(() => {
 	const b = props.scope === "own" ? albumsStore.ownBoundariesV3 : albumsStore.sharedBoundariesV3;
-	return b !== null ? b : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.value.length }];
+	return showHeaders.value && b !== null ? b : [{ bucketId: "all", label: "", startIndex: 0, count: tiles.value.length }];
 });
 
 // NSFW-hidden tiles, and (for `shared` scope in `separate_shared_only` mode)
