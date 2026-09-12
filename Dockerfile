@@ -88,6 +88,7 @@ RUN apt-get update \
     gosu \
 	ghostscript \
     # Update with respect to vulnerabilities detected with Trivy
+    gzip \
     libgssapi-krb5-2 \
     libssh2-1t64 \
     perl \
