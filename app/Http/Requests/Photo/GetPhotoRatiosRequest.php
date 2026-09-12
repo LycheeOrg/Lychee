@@ -8,28 +8,26 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Album;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Policies\AlbumPolicy;
-use App\Rules\RandomIDRule;
+use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
  * Request for `GET /api/v3/Albums/{album_id}/Photos` — mirrors
- * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly (same
- * `album_id` route-segment resolution, same regular-`Album`-only
- * restriction).
+ * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly. `album_id`
+ * resolves via {@see \App\Factories\AlbumFactory::findAbstractAlbumOrFail()},
+ * covering a regular {@see \App\Models\Album}, a
+ * {@see \App\Models\TagAlbum}, a {@see \App\Models\PersonAlbum}, or a
+ * {@see \App\SmartAlbums\BaseSmartAlbum}.
  */
-class GetPhotoRatiosRequest extends BaseApiRequest
+class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	private Album $album;
-
-	public function album(): Album
-	{
-		return $this->album;
-	}
+	use HasAbstractAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -46,7 +44,7 @@ class GetPhotoRatiosRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -68,6 +66,7 @@ class GetPhotoRatiosRequest extends BaseApiRequest
 	{
 		/** @var string $album_id */
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = Album::query()->where('id', '=', $album_id)->firstOrFail();
+		// We do not need the relations. We try to be lean.
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
 	}
 }

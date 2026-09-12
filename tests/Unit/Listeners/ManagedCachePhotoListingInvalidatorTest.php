@@ -18,14 +18,20 @@
 
 namespace Tests\Unit\Listeners;
 
+use App\Enum\SmartAlbumType;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
+use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
+use App\Events\PhotoTagsChanged;
 use App\Listeners\ManagedCachePhotoListingInvalidator;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\Tag;
+use App\Models\TagAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\Cache\CacheKeyProvider;
@@ -190,5 +196,73 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 		$this->seedCache('k:x', ['some-tag']);
 		$this->listener->handlePhotoBucketsRecomputed(new PhotoBucketsRecomputed([]));
 		$this->assertNotEvicted('k:x');
+	}
+
+	// ── PhotoTagsChanged ────────────────────────────────────────────
+
+	public function testPhotoTagsChangedEvictsOnlyTagAlbumsWhoseTagSetOverlaps(): void
+	{
+		$user = User::factory()->create();
+		$tag_a = Tag::factory()->create();
+		$tag_b = Tag::factory()->create();
+		$tag_album_a = TagAlbum::factory()->owned_by($user)->of_tags([$tag_a])->create();
+		$tag_album_b = TagAlbum::factory()->owned_by($user)->of_tags([$tag_b])->create();
+
+		$this->seedCache('k:a', [$this->cache_key_provider->photoListingTag($tag_album_a->id)]);
+		$this->seedCache('k:b', [$this->cache_key_provider->photoListingTag($tag_album_b->id)]);
+
+		$this->listener->handlePhotoTagsChanged(new PhotoTagsChanged(['photo-1'], [$tag_a->id]));
+
+		$this->assertEvicted('k:a');
+		$this->assertNotEvicted('k:b');
+	}
+
+	public function testPhotoTagsChangedEvictsUntaggedSmartAlbum(): void
+	{
+		$user = User::factory()->create();
+		$tag_a = Tag::factory()->create();
+		$tag_album_a = TagAlbum::factory()->owned_by($user)->of_tags([$tag_a])->create();
+
+		$this->seedCache('k:untagged', [$this->cache_key_provider->photoListingTag(SmartAlbumType::UNTAGGED->value)]);
+		$this->seedCache('k:unrelated', [$this->cache_key_provider->photoListingTag($tag_album_a->id)]);
+
+		$this->listener->handlePhotoTagsChanged(new PhotoTagsChanged(['photo-1'], [$tag_a->id]));
+
+		$this->assertEvicted('k:untagged');
+	}
+
+	public function testPhotoTagsChangedWithEmptyTagIdsIsNoOp(): void
+	{
+		$this->seedCache('k:x', ['some-tag']);
+		$this->listener->handlePhotoTagsChanged(new PhotoTagsChanged(['photo-1'], []));
+		$this->assertNotEvicted('k:x');
+	}
+
+	// ── PhotoRatingChanged ──────────────────────────────────────────
+
+	public function testPhotoRatingChangedEvictsEveryRatingDependentSmartAlbum(): void
+	{
+		$this->seedCache('k:five-stars', [$this->cache_key_provider->photoListingTag('five_stars')]);
+		$this->seedCache('k:unrated', [$this->cache_key_provider->photoListingTag('unrated')]);
+		$this->seedCache('k:unrelated', [$this->cache_key_provider->photoListingTag('highlighted')]);
+
+		$this->listener->handlePhotoRatingChanged(new PhotoRatingChanged('photo-1'));
+
+		$this->assertEvicted('k:five-stars');
+		$this->assertEvicted('k:unrated');
+		$this->assertNotEvicted('k:unrelated');
+	}
+
+	// ── PhotoHighlightToggled ───────────────────────────────────────
+
+	public function testPhotoHighlightToggledEvictsOnlyTheHighlightedSmartAlbum(): void
+	{
+		$this->seedCache('k:highlighted', [$this->cache_key_provider->photoListingTag('highlighted')]);
+		$this->seedCache('k:unrelated', [$this->cache_key_provider->photoListingTag('five_stars')]);
+
+		$this->listener->handlePhotoHighlightToggled(new PhotoHighlightToggled(['photo-1']));
+
+		$this->assertEvicted('k:highlighted');
+		$this->assertNotEvicted('k:unrelated');
 	}
 }

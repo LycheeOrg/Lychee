@@ -8,15 +8,14 @@
 
 namespace App\Actions\Photo\StructOfArrays;
 
-use App\Constants\PhotoAlbum as PA;
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Enum\TitleBucketMode;
 use App\Http\Resources\V3\PhotoBucketResource;
 use App\Models\Album;
-use App\Models\Extensions\FiltersUploadValidation;
-use App\Models\Photo;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
 use App\Services\PhotoBucketComputer;
 use function Safe\mktime;
@@ -28,16 +27,21 @@ use function Safe\mktime;
  */
 class QueryPhotoBuckets
 {
-	use FiltersUploadValidation;
+	use ResolvesPhotoSource;
+
+	private const LIVE_BUCKET_COLUMNS = [
+		'photos.title', 'photos.title_base', 'photos.created_at', 'photos.taken_at',
+		'photos.is_highlighted', 'photos.type', 'photos.rating_avg',
+	];
 
 	public function __construct(
 		private readonly PhotoBucketComputer $bucket_computer,
 	) {
 	}
 
-	public function do(Album $album, ?User $user): PhotoBucketResource
+	public function do(AbstractAlbum $album, ?User $user): PhotoBucketResource
 	{
-		$sorting = $album->getEffectivePhotoSorting();
+		$sorting = $this->resolveEffectiveSorting($album);
 
 		// OWNER_ID is excluded from photo bucketing entirely, per explicit
 		// user direction - short-circuit without ever running a GROUP BY.
@@ -45,17 +49,24 @@ class QueryPhotoBuckets
 			return new PhotoBucketResource(bucket_ids: [], counts: [], labels: [], bucketable: false);
 		}
 
-		$query = Photo::query()
-			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->where(PA::ALBUM_ID, '=', $album->id);
-
-		// Non-admins must not see unvalidated photos uploaded by other
-		// users - including in bucket counts.
-		if ($user?->may_administrate !== true) {
-			$this->applyUploadValidationFilter($query, $user?->id);
+		if ($album instanceof Album) {
+			[$bucket_ids, $counts] = $this->queryStoredBuckets($album, $user, $sorting->order);
+		} else {
+			[$bucket_ids, $counts] = $this->queryLiveBuckets($album, $user, $sorting->column, $sorting->order);
 		}
 
-		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
+		$labels = $this->computeLabels($bucket_ids, $sorting->column, $this->resolvePhotoTimeline($album));
+
+		return new PhotoBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
+	}
+
+	/**
+	 * @return array{0:string[],1:int[]}
+	 */
+	private function queryStoredBuckets(Album $album, ?User $user, OrderSortingType $order): array
+	{
+		$query = $this->resolvePhotoQuery($album, $user);
+		$direction = $order === OrderSortingType::DESC ? 'desc' : 'asc';
 
 		$rows = $query
 			->select(['photo_album.bucket_id'])
@@ -74,9 +85,67 @@ class QueryPhotoBuckets
 			$counts[] = (int) $row->bucket_count;
 		}
 
-		$labels = $this->computeLabels($bucket_ids, $sorting->column, $album->photo_timeline);
+		return [$bucket_ids, $counts];
+	}
 
-		return new PhotoBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
+	/**
+	 * `TagAlbum`/`PersonAlbum`/`BaseSmartAlbum` have no stored `bucket_id`
+	 * to `GROUP BY` (see {@see ResolvesPhotoSource}) - every candidate row's
+	 * bucket is computed live instead, then grouped in PHP after the query
+	 * (bounded by this album's own photo count, exactly the scale the
+	 * un-grouped `Album` case already visits for {@see QueryPhotoRatios}).
+	 *
+	 * Grouped by run-length counting over the already-ordered rows, never
+	 * by keying a PHP array on the `bucket_id` string itself: PHP silently
+	 * casts a canonical-integer-looking string key (e.g. `"2026"`, a
+	 * YEAR-granularity date bucket, or `"1"`/`"0"` for `IS_HIGHLIGHTED`) to
+	 * an actual `int` array key, which would corrupt the `string[]`
+	 * `bucket_ids` contract on the way out to JSON. This is safe because
+	 * rows sharing the same live-computed bucket are always contiguous in
+	 * this SQL-ordered result - `bucket_id` is a deterministic,
+	 * order-preserving function of the exact column being sorted on for
+	 * every supported sort column (date truncation, rounding, or a direct
+	 * column value).
+	 *
+	 * @return array{0:string[],1:int[]}
+	 */
+	private function queryLiveBuckets(AbstractAlbum $album, ?User $user, ColumnSortingType $column, OrderSortingType $order): array
+	{
+		$query = $this->resolvePhotoQuery($album, $user);
+		(new SortingDecorator($query))->orderPhotosBy($column, $order)->applyOrdering();
+
+		$rows = $query->select(self::LIVE_BUCKET_COLUMNS)->toBase()->get();
+
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+
+		$bucket_ids = [];
+		$counts = [];
+		$unknown_count = null;
+		foreach ($rows as $row) {
+			$bucket_id = $this->liveBucketId($column, $granularity, $row);
+			if ($bucket_id === null) {
+				// Accumulated separately and always appended last (below),
+				// regardless of $order - "unknown" rows need not even be
+				// contiguous with each other in the sorted result.
+				$unknown_count = ($unknown_count ?? 0) + 1;
+				continue;
+			}
+
+			$last_index = count($bucket_ids) - 1;
+			if ($last_index >= 0 && $bucket_ids[$last_index] === $bucket_id) {
+				$counts[$last_index]++;
+			} else {
+				$bucket_ids[] = $bucket_id;
+				$counts[] = 1;
+			}
+		}
+
+		if ($unknown_count !== null) {
+			$bucket_ids[] = 'unknown';
+			$counts[] = $unknown_count;
+		}
+
+		return [$bucket_ids, $counts];
 	}
 
 	/**

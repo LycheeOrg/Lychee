@@ -24,7 +24,11 @@ use App\Enum\OrderSortingType;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\Photo;
+use App\Models\Tag;
+use App\Models\TagAlbum;
 use App\Services\TitleSplitter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -194,10 +198,56 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 
 	// ── Access / resolution edge cases ────────────────────────────
 
-	public function testTagAlbumIdReturns404(): void
+	public function testTagAlbumIdSucceedsWithLiveComputedBuckets(): void
 	{
+		$this->setInstanceDefaults('created_at', 'year');
+		// tagAlbum1 matches photo1 (tagged `test`) only - photo1b (untagged,
+		// same album) and every other fixture photo must not appear.
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos/buckets");
-		$this->assertNotFound($response);
+		$this->assertOk($response);
+		$response->assertJson([
+			'bucket_ids' => [$this->photo1->created_at->format('Y')],
+			'counts' => [1],
+			'bucketable' => true,
+		]);
+	}
+
+	public function testSmartAlbumIdSucceedsWithLiveComputedBuckets(): void
+	{
+		$this->setInstanceDefaults('created_at', 'year');
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets');
+		$this->assertOk($response);
+		$response->assertJson([
+			'bucket_ids' => [$this->photo1->created_at->format('Y')],
+			'counts' => [1],
+			'bucketable' => true,
+		]);
+	}
+
+	/**
+	 * `BaseSmartAlbum::photos()` left-joins `photo_album` without any
+	 * `album_id` restriction - a photo belonging to more than one regular
+	 * album must still be counted exactly once here, not once per
+	 * membership (see `ResolvesPhotoSource::resolvePhotoQuery()`'s
+	 * `whereIn` id-subquery fix for this exact fan-out).
+	 */
+	public function testSmartAlbumDeduplicatesPhotoBelongingToMultipleAlbums(): void
+	{
+		$this->setInstanceDefaults('created_at', 'year');
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+		// photo1 already belongs to album1 (base fixture) - attach it to a
+		// second, same-owner album too.
+		$this->photo1->albums()->attach($this->subAlbum1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets');
+		$this->assertOk($response);
+		$json = $response->json();
+		$this->assertSame([$this->photo1->created_at->format('Y')], $json['bucket_ids']);
+		$this->assertSame([1], $json['counts']);
 	}
 
 	public function testUnknownAlbumIdReturns404(): void
@@ -364,5 +414,124 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 
 		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets")->assertOk()->json('bucket_ids');
 		self::assertSame(['2023-01'], $after);
+	}
+
+	/**
+	 * A `TagAlbum`'s photo listing has no `photo_album` row to invalidate
+	 * against (see `ResolvesPhotoSource`) - a warm cache must still reflect
+	 * a photo gaining a matching tag, via `ManagedCachePhotoListingInvalidator::handlePhotoTagsChanged()`.
+	 */
+	public function testCacheInvalidatedOnPhotoTagsChanged(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$tag = Tag::factory()->with_name('cache_regression_tag')->create();
+		$tag_album = TagAlbum::factory()->owned_by($this->userMayUpload1)->of_tags([$tag])->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->create();
+
+		// Warm the cache while the photo does not yet carry the tag.
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$tag_album->id}/Photos/buckets")->assertOk()->json('counts');
+		self::assertSame([], $before);
+
+		$this->actingAs($this->userMayUpload1)->patchJson('Photo::tags', [
+			'photo_ids' => [$photo->id],
+			'tags' => ['cache_regression_tag'],
+			'shall_override' => true,
+		])->assertNoContent();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$tag_album->id}/Photos/buckets")->assertOk()->json('counts');
+		self::assertSame([1], $after);
+	}
+
+	/**
+	 * Same as above, for `PersonAlbum` -
+	 * `ManagedCachePhotoListingInvalidator::handlePhotoPersonsChanged()`.
+	 */
+	public function testCacheInvalidatedOnPhotoPersonsChanged(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		Configs::set('ai_vision_face_permission_mode', 'private');
+
+		$person = Person::factory()->create(['name' => 'CacheRegressionPerson', 'is_searchable' => true]);
+		$create_response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_cache_regression',
+			'persons' => [$person->id],
+			'is_and' => false,
+		]);
+		$this->assertOk($create_response);
+		$person_album_id = $create_response->getOriginalContent();
+
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->create();
+		$face = Face::factory()->for_photo($photo)->create();
+
+		// Warm the cache while the face is not yet assigned to the person.
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/Photos/buckets")->assertOk()->json('counts');
+		self::assertSame([], $before);
+
+		$this->actingAs($this->userMayUpload1)->postJson("Face/{$face->id}/assign", [
+			'person_id' => $person->id,
+		])->assertCreated();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$person_album_id}/Photos/buckets")->assertOk()->json('counts');
+		self::assertSame([1], $after);
+	}
+
+	/**
+	 * A rating-dependent smart album (`five_stars`) - `PhotoRatingChanged`
+	 * carries no rating value, so
+	 * `ManagedCachePhotoListingInvalidator::handlePhotoRatingChanged()`
+	 * evicts every rating-dependent smart album unconditionally.
+	 */
+	public function testCacheInvalidatedOnPhotoRatingChanged(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+		Configs::set('rating_enabled', '1');
+
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->create();
+
+		// Warm the cache while the photo is unrated.
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/five_stars/Photos/buckets')->assertOk()->json('counts');
+		self::assertSame([], $before);
+
+		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+			'photo_id' => $photo->id,
+			'rating' => 5,
+		])->assertCreated();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/five_stars/Photos/buckets')->assertOk()->json('counts');
+		self::assertSame([1], $after);
+	}
+
+	/**
+	 * The `highlighted` smart album -
+	 * `ManagedCachePhotoListingInvalidator::handlePhotoHighlightToggled()`.
+	 */
+	public function testCacheInvalidatedOnPhotoHighlightToggled(): void
+	{
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->create();
+
+		// Warm the cache while the photo is not yet highlighted.
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets')->assertOk()->json('counts');
+		self::assertSame([], $before);
+
+		$this->actingAs($this->userMayUpload1)->postJson('Photo::highlight', [
+			'photo_ids' => [$photo->id],
+			'is_highlighted' => true,
+		])->assertNoContent();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/buckets')->assertOk()->json('counts');
+		self::assertSame([1], $after);
 	}
 }
