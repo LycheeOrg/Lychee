@@ -24,7 +24,9 @@ use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use App\Services\PhotoBucketComputer;
+use App\SmartAlbums\TimelineAlbum;
 use GrahamCampbell\Markdown\Facades\Markdown;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Spatie\LaravelData\Optional;
@@ -47,7 +49,14 @@ class QueryPhotoRatios
 	) {
 	}
 
-	public function do(AbstractAlbum $album, ?User $user): PhotoRatioResource
+	/**
+	 * @param string[]|null $bucketIds mutually exclusive with `$photoIds` -
+	 *                                 both `null` preserves today's
+	 *                                 whole-scope behaviour byte-for-byte
+	 *                                 (NFR-066-03)
+	 * @param string[]|null $photoIds  mutually exclusive with `$bucketIds`
+	 */
+	public function do(AbstractAlbum $album, ?User $user, ?array $bucketIds = null, ?array $photoIds = null): PhotoRatioResource
 	{
 		$sorting = $this->resolveEffectiveSorting($album);
 		$is_regular_album = $album instanceof Album;
@@ -66,6 +75,7 @@ class QueryPhotoRatios
 
 		$query = $this->resolvePhotoQuery($album, $user);
 		$this->joinRatioSizeVariants($query);
+		$this->applyScopeFilter($query, $album, $user, $bucketIds, $photoIds);
 
 		$select = [
 			'photos.id',
@@ -149,6 +159,131 @@ class QueryPhotoRatios
 		$query->leftJoin('size_variants as sv_small', function (JoinClause $join): void {
 			$join->on('sv_small.photo_id', '=', 'photos.id')->where('sv_small.type', '=', SizeVariantType::SMALL->value);
 		});
+	}
+
+	/**
+	 * Applies the optional, mutually exclusive `bucket_ids[]`/`photo_ids[]`
+	 * window (FR-066-06) - both `null` is a no-op, preserving today's
+	 * whole-scope behaviour byte-for-byte (NFR-066-03).
+	 *
+	 * @param FixedQueryBuilder<Photo> $query
+	 * @param string[]|null            $bucketIds
+	 * @param string[]|null            $photoIds
+	 */
+	private function applyScopeFilter(FixedQueryBuilder $query, AbstractAlbum $album, ?User $user, ?array $bucketIds, ?array $photoIds): void
+	{
+		if ($photoIds !== null) {
+			// Source-agnostic: works identically for every AbstractAlbum
+			// kind, stored or live bucket_id alike.
+			$query->whereIn('photos.id', $photoIds);
+
+			return;
+		}
+
+		if ($bucketIds === null) {
+			return;
+		}
+
+		if ($album instanceof Album) {
+			$this->applyAlbumBucketWindowFilter($query, $bucketIds);
+
+			return;
+		}
+
+		if ($album instanceof TimelineAlbum) {
+			// SQL-pushdown bounded (NFR-066-01), mirrors QueryPhotoDetails::applyTimelineBucketFilter().
+			$this->applyTimelineBucketWindowFilter($query, $album, $bucketIds);
+
+			return;
+		}
+
+		// TagAlbum/PersonAlbum/every other BaseSmartAlbum: no stored
+		// bucket_id and no SQL-pushdown live computation for them
+		// (ResolvesPhotoSource) - resolve the matching ids the same
+		// full-scan way QueryPhotoDetails::resolveLiveBucketPhotoIds()
+		// already does for a single bucket, generalized to a requested set;
+		// bounded by this source's own (album-scale) candidate set, exactly
+		// like every other live-bucket computation for these sources
+		// (Non-Goals: their existing live-scan path itself stays untouched).
+		$query->whereIn('photos.id', $this->resolveLiveBucketSetPhotoIds($album, $user, $bucketIds));
+	}
+
+	/**
+	 * @param FixedQueryBuilder<Photo> $query
+	 * @param string[]                 $bucket_ids
+	 */
+	private function applyAlbumBucketWindowFilter(FixedQueryBuilder $query, array $bucket_ids): void
+	{
+		$known = array_values(array_diff($bucket_ids, ['unknown']));
+		$wants_unknown = in_array('unknown', $bucket_ids, true);
+
+		$query->where(function (Builder $q) use ($known, $wants_unknown): void {
+			if ($known !== []) {
+				$q->orWhereIn('photo_album.bucket_id', $known);
+			}
+			if ($wants_unknown) {
+				$q->orWhereNull('photo_album.bucket_id');
+			}
+		});
+	}
+
+	/**
+	 * @param FixedQueryBuilder<Photo> $query
+	 * @param string[]                 $bucket_ids
+	 */
+	private function applyTimelineBucketWindowFilter(FixedQueryBuilder $query, TimelineAlbum $album, array $bucket_ids): void
+	{
+		$sorting = $this->resolveEffectiveSorting($album);
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+		$column = $sorting->column->value;
+
+		$query->where(function (Builder $q) use ($bucket_ids, $column, $granularity): void {
+			foreach ($bucket_ids as $bucket_id) {
+				if ($bucket_id === 'unknown') {
+					$q->orWhereNull($column);
+					continue;
+				}
+
+				[$start, $end] = $this->bucket_computer->bucketDateRange($bucket_id, $granularity);
+				$q->orWhere(function (Builder $sub) use ($column, $start, $end): void {
+					$sub->where($column, '>=', $start)->where($column, '<', $end);
+				});
+			}
+		});
+	}
+
+	/**
+	 * Full-scan resolution of every candidate photo whose live-computed
+	 * bucket falls in `$bucket_ids`, for a `TagAlbum`/`PersonAlbum`/
+	 * non-`TimelineAlbum` `BaseSmartAlbum` source - generalizes
+	 * {@see QueryPhotoDetails::resolveLiveBucketPhotoIds()}'s single-bucket
+	 * version to a requested set.
+	 *
+	 * @param string[] $bucket_ids
+	 *
+	 * @return string[]
+	 */
+	private function resolveLiveBucketSetPhotoIds(AbstractAlbum $album, ?User $user, array $bucket_ids): array
+	{
+		$sorting = $this->resolveEffectiveSorting($album);
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+
+		$query = $this->resolvePhotoQuery($album, $user);
+		$rows = $query->select([
+			'photos.id', 'photos.title', 'photos.title_base', 'photos.created_at', 'photos.taken_at',
+			'photos.is_highlighted', 'photos.type', 'photos.rating_avg',
+		])->toBase()->get();
+
+		$wanted = array_flip($bucket_ids);
+		$matching_ids = [];
+		foreach ($rows as $row) {
+			$row_bucket_id = $this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown';
+			if (isset($wanted[$row_bucket_id])) {
+				$matching_ids[] = $row->id;
+			}
+		}
+
+		return $matching_ids;
 	}
 
 	/**

@@ -24,6 +24,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
+use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy extends BasePolicy
@@ -122,6 +123,10 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
+		if ($album instanceof TimelineAlbum) {
+			return $this->canAccessTimeline($user);
+		}
+
 		if (!$album instanceof BaseAlbum) {
 			/** @var BaseSmartAlbum $album */
 			return $this->canSee($user, $album);
@@ -144,6 +149,30 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks whether the current user can access {@see TimelineAlbum} -
+	 * reproduces {@see \App\Http\Requests\Timeline\IdOrDatedTimelineRequest::authorize()}'s
+	 * exact predicate, which is unrelated to (and deliberately does not
+	 * reuse) the `may_upload`-based {@see self::canSee()} rule every other
+	 * built-in smart album goes through: an authenticated user always may,
+	 * a guest only if `timeline_photos_public` is on - either way gated by
+	 * the instance-wide `timeline_page_enabled` switch.
+	 *
+	 * @param User|null $user
+	 *
+	 * @return bool
+	 */
+	private function canAccessTimeline(?User $user): bool
+	{
+		$config_manager = app(ConfigManager::class);
+
+		if ($user === null && !$config_manager->getValueAsBool('timeline_photos_public')) {
+			return false;
+		}
+
+		return $config_manager->getValueAsBool('timeline_page_enabled');
 	}
 
 	/**

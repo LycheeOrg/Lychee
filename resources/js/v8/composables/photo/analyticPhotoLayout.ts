@@ -1,6 +1,6 @@
 import { justified, masonry, grid, square } from "@/v8/layouts/wasmLayouts";
 import { HEADER_ROW_HEIGHT, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
-import { filterBucketedTiles, type AlbumBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
+import { filterBucketedTiles, type AlbumBucketBoundary, type TimelineBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
 
 export type PhotoLayoutMode = "justified" | "square" | "masonry" | "grid" | "list";
 
@@ -14,7 +14,7 @@ export type PhotoBox = { top: number; left: number; width: number; height: numbe
  * the DOM-reading/writing is entirely each `useX.ts` wrapper's own choice.
  * `list` needs no WASM call at all (Decision Card Q-065-01/Q-065-04).
  */
-function computeBucketLayout(
+export function computeBucketLayout(
 	mode: PhotoLayoutMode,
 	ratios: number[],
 	containerWidth: number,
@@ -106,7 +106,11 @@ export type PhotoChunk = {
  * unfilled row width) until the user scrolls further. Grouping by the
  * boxes' own `top` transitions can't split a row, by construction.
  */
-function splitIntoRows(boxes: PhotoBox[], startIndex: number, count: number): { start: number; count: number }[] {
+export function splitIntoRows(
+	boxes: (PhotoBox | undefined)[],
+	startIndex: number,
+	count: number,
+): { start: number; count: number }[] {
 	if (count === 0) {
 		return [];
 	}
@@ -247,4 +251,184 @@ export function computeVisiblePhotoLayout(
 
 	const positioned: PositionedPhoto[] = visiblePairs.map((p, i) => ({ photo: p.photo, box: layout.boxes[i] }));
 	return { positioned, totalHeight: layout.totalHeight, headerTops: layout.headerTops, boundaries: visibleBoundaries };
+}
+
+// ---------------------------------------------------------------------------
+// Timeline (Feature 066) — incremental, bucket-windowed layout.
+//
+// `computePhotoLayout()`/`computeVisiblePhotoLayout()` above both assume the
+// WHOLE scope's `ratios` are already loaded (one dense, index-aligned array).
+// Timeline's `tiles`/`ratios` (`TimelineState.ts`) are append-only into a
+// flat array PRE-SIZED from the `buckets` tier's own known per-bucket counts
+// (FR-066-11) — a bucket whose window hasn't resolved yet leaves a hole
+// (`undefined`) at its reserved slots, not a shorter array. The functions
+// below are the mid-load-safe counterparts: a not-yet-loaded bucket gets a
+// placeholder height from the SAME WASM primitive fed uniform `1.0`-ratio
+// input (NFR-066-05, layout-mode-correct — justified/masonry/square/grid all
+// pack `1.0`-ratio input consistently, so this is never an arbitrary guess),
+// and only the one bucket whose ratio source actually changed
+// (placeholder→real) is ever recomputed (T-066-24) — every other bucket's
+// cache entry is reused untouched.
+// ---------------------------------------------------------------------------
+
+/** One cached per-bucket layout result, keyed by a signature over everything that could invalidate it (mode/width/target/gap/loaded-state/count) — a signature mismatch is what triggers recomputation for exactly that one bucket (T-066-24). */
+export type TimelineLayoutCacheEntry = {
+	/** `null` for a not-yet-loaded bucket — nothing to render yet, only `containerHeight` (the placeholder height) matters. */
+	boxes: PhotoBox[] | null;
+	containerHeight: number;
+	signature: string;
+};
+
+export type TimelineBucketPixelLayout = {
+	bucketId: string;
+	label: string;
+	startIndex: number;
+	count: number;
+	loaded: boolean;
+	/** Absolute top, same coordinate space as the returned `boxes` — includes this bucket's own header row when `showHeaders` is true. */
+	top: number;
+	/** This bucket's own stride (header + content), NOT including the inter-bucket gap already folded into `top`'s running total. */
+	height: number;
+};
+
+/**
+ * Timeline's counterpart to `computePhotoLayout()` (DO-066-06,
+ * `computeTimelineBucketLayout()`'s sibling in `albumBucketBoundaries.ts`
+ * handles the count-only boundary math; this one adds real pixel geometry).
+ * A cheap O(#buckets) prefix-sum pass over `boundaries` — each bucket's own
+ * `{boxes, containerHeight}` comes from `cache` when its signature still
+ * matches (T-066-24), or is computed fresh (real layout for a loaded bucket,
+ * uniform-`1.0`-ratio placeholder layout for one that isn't, T-066-25) and
+ * written back into `cache` otherwise. Never re-runs the WASM primitive for
+ * a bucket whose own inputs haven't changed.
+ */
+export function computeTimelinePhotoLayout(
+	mode: PhotoLayoutMode,
+	boundaries: TimelineBucketBoundary[],
+	ratios: (number | undefined)[],
+	loadedBucketIds: ReadonlySet<string>,
+	cache: Map<string, TimelineLayoutCacheEntry>,
+	showHeaders: boolean,
+	containerWidth: number,
+	target: number,
+	gap: number,
+): { boxes: (PhotoBox | undefined)[]; totalHeight: number; headerTops: PhotoHeaderTop[]; buckets: TimelineBucketPixelLayout[] } {
+	const boxes: (PhotoBox | undefined)[] = new Array(ratios.length);
+	const headerTops: PhotoHeaderTop[] = [];
+	const bucketLayouts: TimelineBucketPixelLayout[] = [];
+	let runningTop = 0;
+
+	for (const bucket of boundaries) {
+		const bucketTop = runningTop;
+		const loaded = loadedBucketIds.has(bucket.bucketId);
+
+		if (showHeaders) {
+			headerTops.push({ top: runningTop, label: bucket.label, bucketId: bucket.bucketId });
+			runningTop += HEADER_ROW_HEIGHT + gap;
+		}
+
+		const signature = `${mode}|${containerWidth}|${target}|${gap}|${loaded ? "real" : "placeholder"}|${bucket.count}`;
+		let cached = cache.get(bucket.bucketId);
+		if (cached === undefined || cached.signature !== signature) {
+			if (loaded) {
+				const bucketRatios: number[] = [];
+				for (let i = bucket.startIndex; i < bucket.startIndex + bucket.count; i++) {
+					bucketRatios.push(ratios[i] ?? 1);
+				}
+				const { boxes: bucketBoxes, containerHeight } = computeBucketLayout(mode, bucketRatios, containerWidth, target, gap);
+				cached = { boxes: bucketBoxes, containerHeight, signature };
+			} else {
+				const placeholderRatios: number[] = new Array(bucket.count).fill(1);
+				const { containerHeight } = computeBucketLayout(mode, placeholderRatios, containerWidth, target, gap);
+				cached = { boxes: null, containerHeight, signature };
+			}
+			cache.set(bucket.bucketId, cached);
+		}
+
+		if (cached.boxes !== null) {
+			for (let i = 0; i < cached.boxes.length; i++) {
+				const b = cached.boxes[i];
+				boxes[bucket.startIndex + i] = { top: b.top + runningTop, left: b.left, width: b.width, height: b.height };
+			}
+		}
+		runningTop += cached.containerHeight + gap;
+
+		bucketLayouts.push({
+			bucketId: bucket.bucketId,
+			label: bucket.label,
+			startIndex: bucket.startIndex,
+			count: bucket.count,
+			loaded,
+			top: bucketTop,
+			height: runningTop - gap - bucketTop,
+		});
+	}
+
+	const totalHeight = boundaries.length > 0 ? Math.max(0, runningTop - gap) : 0;
+	return { boxes, totalHeight, headerTops, buckets: bucketLayouts };
+}
+
+export type TimelineChunk = PhotoChunk & {
+	/** `true` for a not-yet-loaded bucket's single placeholder chunk — `tileCount` is always `0` in that case, nothing to mount. */
+	placeholder: boolean;
+	bucketId: string;
+};
+
+/**
+ * Timeline's counterpart to `buildPhotoChunks()`. A loaded bucket is chunked
+ * identically (one virtualizer row per real visual row, `splitIntoRows()`).
+ * A not-yet-loaded bucket collapses to exactly ONE chunk spanning its own
+ * placeholder height (header included, when shown) — `tileCount: 0`, so the
+ * virtualizer never tries to mount tiles for a slot `tiles`/`ratios` hasn't
+ * resolved yet; it reflows into the real per-row chunks the moment
+ * `computeTimelinePhotoLayout()` reports that bucket as `loaded`.
+ */
+export function buildTimelineChunks(boxes: (PhotoBox | undefined)[], buckets: TimelineBucketPixelLayout[], showHeaders: boolean): TimelineChunk[] {
+	const chunks: TimelineChunk[] = [];
+
+	buckets.forEach((bucket) => {
+		if (!bucket.loaded || bucket.count === 0) {
+			chunks.push({
+				key: `chunk-${bucket.bucketId}-placeholder`,
+				top: bucket.top,
+				size: bucket.height,
+				tileStart: bucket.startIndex,
+				tileCount: 0,
+				header: showHeaders ? { label: bucket.label, bucketId: bucket.bucketId } : null,
+				placeholder: true,
+				bucketId: bucket.bucketId,
+			});
+			return;
+		}
+
+		const rows = splitIntoRows(boxes, bucket.startIndex, bucket.count);
+		rows.forEach((row, rowIdx) => {
+			const isFirstRowOfBucket = rowIdx === 0;
+			const firstBox = boxes[row.start];
+			const lastBox = boxes[row.start + row.count - 1];
+			const chunkTop = isFirstRowOfBucket && showHeaders ? bucket.top : (firstBox?.top ?? 0);
+			const contentBottom = lastBox !== undefined ? lastBox.top + lastBox.height : chunkTop;
+
+			chunks.push({
+				key: `chunk-${bucket.bucketId}-${row.start}`,
+				top: chunkTop,
+				size: contentBottom - chunkTop,
+				tileStart: row.start,
+				tileCount: row.count,
+				header: isFirstRowOfBucket && showHeaders ? { label: bucket.label, bucketId: bucket.bucketId } : null,
+				placeholder: false,
+				bucketId: bucket.bucketId,
+			});
+		});
+	});
+
+	// Same stride-folding pass as `buildPhotoChunks()` — see there.
+	for (let i = 0; i < chunks.length; i++) {
+		const next = chunks[i + 1];
+		if (next !== undefined) {
+			chunks[i].size = Math.max(chunks[i].size, next.top - chunks[i].top);
+		}
+	}
+
+	return chunks;
 }

@@ -9,6 +9,7 @@
 namespace App\Listeners;
 
 use App\Constants\PersonAlbumPersons as PAP;
+use App\Enum\ColumnSortingPhotoType;
 use App\Enum\SmartAlbumType;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Events\PhotoBucketsRecomputed;
@@ -19,8 +20,10 @@ use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
+use App\Repositories\ConfigManager;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
+use App\Services\PhotoBucketComputer;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -30,9 +33,13 @@ use Illuminate\Support\Facades\DB;
  */
 class ManagedCachePhotoListingInvalidator
 {
+	private const TIMELINE_ALBUM_ID = SmartAlbumType::TIMELINE->value;
+
 	public function __construct(
 		private ManagedCacheService $cache,
 		private CacheKeyProvider $cache_key_provider,
+		private ConfigManager $config_manager,
+		private PhotoBucketComputer $bucket_computer,
 	) {
 	}
 
@@ -58,23 +65,78 @@ class ManagedCachePhotoListingInvalidator
 		if ($album_ids !== []) {
 			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($album_ids));
 		}
+
+		$this->evictTimelineBucketsFor($event->photo_ids);
 	}
 
 	/**
 	 * A cross-album move affects both the source and destination album's
-	 * photo listings.
+	 * photo listings, plus (FR-066-10) Timeline's own listing - a moved
+	 * photo's `created_at`/`taken_at` (and therefore its Timeline bucket)
+	 * is untouched by the move itself, but its real-album membership -
+	 * which can affect Timeline visibility via NSFW-sensitive-album
+	 * filtering - has changed.
 	 */
 	public function handlePhotoMoved(PhotoMoved $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->photoListingTags([$event->from_album_id, $event->to_album_id]));
+		$this->evictTimelineBucketsFor($event->photo_ids);
 	}
 
 	/**
-	 * A photo was removed from (or hard-deleted out of) one album.
+	 * A photo was removed from (or hard-deleted out of) one album, plus
+	 * (FR-066-10) Timeline's coarse tag only - `PhotoDeleted` carries no
+	 * `photo_ids`, so the deleted photo's Timeline bucket can no longer be
+	 * resolved to evict just its fine tag; documented tradeoff (S-066-11).
 	 */
 	public function handlePhotoDeleted(PhotoDeleted $event): void
 	{
-		$this->cache->forgetTag($this->cache_key_provider->photoListingTag($event->album_id));
+		$this->cache->forgetTags([
+			$this->cache_key_provider->photoListingTag($event->album_id),
+			$this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID),
+		]);
+	}
+
+	/**
+	 * Resolves each of `$photo_ids`' current Timeline bucket (per the
+	 * instance-wide `timeline_photos_order`/`timeline_photos_granularity`
+	 * config, mirroring {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource::resolveEffectiveSorting()}'s
+	 * `TimelineAlbum` branch) and evicts its fine tag, plus the coarse tag
+	 * unconditionally once (FR-066-09/FR-066-10) — Timeline's `buckets`
+	 * tier response (whole-library counts) depends on every photo, so it
+	 * must be invalidated on every relevant save/move regardless; only the
+	 * *other* cached buckets' `ratios`/`details` entries are spared
+	 * (NFR-066-04).
+	 *
+	 * Carbon-free (`[[feedback_avoid_carbon_server_side]]`): reads the raw
+	 * `created_at`/`taken_at` column value directly, truncated via
+	 * {@see PhotoBucketComputer::truncateRawDate()}.
+	 *
+	 * @param array<int,string> $photo_ids
+	 */
+	private function evictTimelineBucketsFor(array $photo_ids): void
+	{
+		if ($photo_ids === []) {
+			return;
+		}
+
+		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+		if (!in_array($order, [ColumnSortingPhotoType::CREATED_AT, ColumnSortingPhotoType::TAKEN_AT], true)) {
+			$order = ColumnSortingPhotoType::TAKEN_AT;
+		}
+		$granularity = $this->bucket_computer->resolveGranularity(null);
+
+		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select($order->value)->get();
+
+		$tags = [$this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID)];
+		foreach ($rows as $row) {
+			/** @var string|null $raw_date */
+			$raw_date = $row->{$order->value};
+			$bucket_id = $raw_date === null ? 'unknown' : $this->bucket_computer->truncateRawDate($raw_date, $granularity);
+			$tags[] = $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $bucket_id);
+		}
+
+		$this->cache->forgetTags(array_unique($tags));
 	}
 
 	/**
@@ -110,10 +172,7 @@ class ManagedCachePhotoListingInvalidator
 	 * {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource}) - every
 	 * `TagAlbum` whose tag set overlaps `$event->tag_ids` (the union of old
 	 * and new tags, see {@see PhotoTagsChanged}) must be evicted, since the
-	 * photo may have just entered or left its membership. The `untagged`
-	 * smart album is evicted unconditionally too: a photo enters it when its
-	 * last tag is removed and leaves it when its first tag is added, and
-	 * `$event->tag_ids` alone can't tell which of those happened.
+	 * photo may have just entered or left its membership.
 	 */
 	public function handlePhotoTagsChanged(PhotoTagsChanged $event): void
 	{
@@ -130,8 +189,6 @@ class ManagedCachePhotoListingInvalidator
 		if ($tag_album_ids !== []) {
 			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($tag_album_ids));
 		}
-
-		$this->cache->forgetTag($this->cache_key_provider->photoListingTag(SmartAlbumType::UNTAGGED->value));
 	}
 
 	/**

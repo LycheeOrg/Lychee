@@ -21,7 +21,7 @@
 				<LycheeLoadingIcon fast class="text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
 			</div>
 			<PhotoThumbPanel
-				v-if="layoutStore.config !== undefined && photosStore.photos.length > 0"
+				v-if="!isTimelineSoaActive && layoutStore.config !== undefined && photosStore.photos.length > 0"
 				header="gallery.album.header_photos"
 				:photos="photosStore.photos"
 				:photos-timeline="photosStore.photosTimeline"
@@ -33,6 +33,19 @@
 				:with-control="false"
 				class="pt-4"
 				:intersection-action="loadDate"
+			/>
+			<!-- Feature 066 (I10, FR-066-15/NFR-066-06): flag-on virtualized
+			     replacement for the block above — same `photoClick`/`selectPhoto`/
+			     `contextMenuPhotoOpen` handlers, sourced from `TimelineState.ts`'s
+			     v3 state instead of `photosStore.photos` directly. -->
+			<PhotoGridVirtual
+				v-if="isTimelineSoaActive && layoutStore.config !== undefined"
+				source="timeline"
+				:selected-photos="selectedPhotosIds"
+				class="pt-4"
+				@clicked="photoClick"
+				@selected="selectPhoto"
+				@contexted="contextMenuPhotoOpen"
 			/>
 			<!-- Photo panel -->
 			<PhotoPanel
@@ -55,7 +68,12 @@
 			<div class="flex justify-center" v-if="timelineStore.isLoading && !isTouchDevice()">
 				<LycheeLoadingIcon fast class="text-2xl" />
 			</div>
-			<TimelineDates :dates="timelineStore.dates" v-if="!photoStore.isLoaded" @load="goToDate" />
+			<TimelineDates :dates="timelineStore.dates" v-if="!isTimelineSoaActive && !photoStore.isLoaded" @load="goToDate" />
+			<TimelineDatesV3
+				:buckets="timelineStore.bucketsV3"
+				v-if="isTimelineSoaActive && !photoStore.isLoaded && timelineStore.bucketsV3 !== undefined"
+				@load="goToBucket"
+			/>
 
 			<!-- Dialogs -->
 			<template v-if="photoStore.isLoaded">
@@ -153,6 +171,8 @@ import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import TimelineDates from "@/v8/components/gallery/timelineModule/TimelineDates.vue";
+import TimelineDatesV3 from "@/v8/components/gallery/timelineModule/TimelineDatesV3.vue";
+import PhotoGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoGridVirtual.vue";
 import PhotoTagDialog from "@/v8/components/forms/photo/PhotoTagDialog.vue";
 import PhotoLicenseDialog from "@/v8/components/forms/photo/PhotoLicenseDialog.vue";
 import PhotoCopyDialog from "@/v8/components/forms/photo/PhotoCopyDialog.vue";
@@ -236,6 +256,18 @@ const downloadPhotoIds = ref<string[]>([]);
 // full-screen `LoadingProgress` overlay (they still show `timelineStore.isLoading`'s inline spinners).
 const isInitialLoading = ref(true);
 
+/**
+ * Feature 066 (I10) — flag-on dispatcher, mirrors `AlbumState.ts`'s own
+ * `isPhotoSoaActive` pattern. Read by this view's template to swap between
+ * the v2 (`PhotoThumbPanel`/`TimelineDates`) and v3
+ * (`PhotoGridVirtual`/`TimelineDatesV3`) rendering paths, and by `refresh()`
+ * below to swap between the v2 (`loadDates()`+`initialLoad()`) and v3
+ * (`loadV3()`) data-fetch paths. Delegates to `timelineStore.isTimelineSoaActive`
+ * (the same underlying `is_struct_of_array_enabled` flag `AlbumState.ts`
+ * reads) rather than re-deriving the flag here.
+ */
+const isTimelineSoaActive = computed(() => timelineStore.isTimelineSoaActive);
+
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	if (entry.isIntersecting) {
 		timelineStore.loadMore();
@@ -276,6 +308,17 @@ function goToDate(date: string) {
 	timelineStore.initialLoad(date, undefined)?.then(() => scrollToDate(date));
 }
 
+/**
+ * `TimelineDatesV3.vue`'s own `@load` handler (v3 path counterpart of
+ * `goToDate()` above) — just pushes the new `date` (bucket id) route param.
+ * `PhotoGridVirtual.vue`'s own `route.params.date` watcher (mounted, not
+ * torn down by this navigation) does the actual eager-load + scroll, so
+ * there's nothing else to do here (S-066-18).
+ */
+function goToBucket(bucketId: string): void {
+	router.push({ name: "timeline", params: { date: bucketId } });
+}
+
 function toggleDetails() {
 	is_photo_edit_open.value = false;
 	are_details_open.value = !are_details_open.value;
@@ -292,7 +335,16 @@ function goBack() {
 	}
 
 	if (photoStore.photo !== undefined) {
-		loadDate(photoStore.photo?.timeline?.time_date);
+		if (isTimelineSoaActive.value) {
+			// v3: the route's own `date` (bucket id) param is already correct
+			// (set by `photoRoute()` when the photo was opened, or by the
+			// deep-link/side-rail navigation that landed here) — no need to
+			// re-derive it from `photo.timeline`, which `adaptPhotoTile()`
+			// never populates for a v3 tile (see that file's own doc comment).
+			router.push({ name: "timeline", params: { date: route.params.date as string, photoId: undefined } });
+		} else {
+			loadDate(photoStore.photo?.timeline?.time_date);
+		}
 		photoStore.reset();
 		return;
 	}
@@ -309,6 +361,34 @@ async function refresh() {
 		// Bye.
 		router.push({ name: "gallery" });
 	}
+
+	// Feature 066 (I10) — `timelineStore.load()` above (root config/rights/
+	// layout mode) is NOT part of the SoA photo-tier surface at all (it's
+	// Timeline-root metadata, not photo listing) and stays common to both
+	// paths. Only the photo-listing fetch itself branches: v3's
+	// `loadV3()` replaces v2's `loadDates()`+`initialLoad()` pair — see
+	// `TimelineState.ts.loadV3()`'s own doc comment for what it does
+	// (buckets tier, optional deep-link resolution, first/target bucket
+	// window). The v3 branch does not scroll here — `PhotoGridVirtual.vue`'s
+	// own mount hook does that once its own layout is known (a rendering
+	// concern, kept out of this view same as out of the store).
+	if (isTimelineSoaActive.value) {
+		await Promise.allSettled([layoutStore.load(), userStore.load()]);
+		await timelineStore.loadV3(props.date, props.photoId);
+		// Opens the lightbox on the deep-linked photo (FR-066-13/UI-066-03) —
+		// `loadV3()` above already ensured the target bucket (hence this
+		// photo) is present in `photosStore.photos` before this runs. Unlike
+		// `Album.vue`/`Tag.vue`'s own equivalent initial-mount assignment,
+		// this view's watch on `route.params.photoId` further below only
+		// fires on a SUBSEQUENT change, never on first mount.
+		if (props.photoId !== undefined && props.photoId !== "") {
+			photoStore.photoId = props.photoId;
+			photoStore.load();
+		}
+		isInitialLoading.value = false;
+		return;
+	}
+
 	await Promise.allSettled([layoutStore.load(), userStore.load(), timelineStore.loadDates()]);
 	await timelineStore.initialLoad(props.date ?? "", props.photoId);
 	isInitialLoading.value = false;

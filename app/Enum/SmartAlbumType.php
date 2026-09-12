@@ -34,6 +34,7 @@ enum SmartAlbumType: string
 	case BEST_PICTURES = 'best_pictures';
 	case MY_RATED_PICTURES = 'my_rated_pictures';
 	case MY_BEST_PICTURES = 'my_best_pictures';
+	case TIMELINE = 'timeline';
 
 	/**
 	 * Return whether the smart album is enabled.
@@ -60,6 +61,13 @@ enum SmartAlbumType: string
 			self::MY_RATED_PICTURES => Auth::check() && $config_manager->getValueAsBool('enable_my_rated_pictures'),
 			// My Best Pictures requires authenticated user, config, AND Lychee SE license
 			self::MY_BEST_PICTURES => Auth::check() && $config_manager->getValueAsBool('enable_my_best_pictures') && $this->isLycheeSEActive(),
+			// Timeline is not a generic smart album: it is never listed via
+			// AlbumFactory::getAllBuiltInSmartAlbums() (the sidebar/listing
+			// mechanism this flag gates) and is only ever reached directly
+			// via album_id='timeline', governed by its own
+			// timeline_page_enabled/timeline_photos_public rule
+			// (see AlbumPolicy::canAccess()'s dedicated TimelineAlbum branch).
+			self::TIMELINE => false,
 		};
 	}
 
@@ -101,6 +109,11 @@ enum SmartAlbumType: string
 			self::BEST_PICTURES,
 			self::MY_RATED_PICTURES,
 			self::MY_BEST_PICTURES => false,
+			// Never consulted: TimelineAlbum is routed through its own
+			// AlbumPolicy::canAccess() branch, not canSee() (which is the
+			// only caller of this method) - value is irrelevant but must be
+			// present for match exhaustiveness.
+			self::TIMELINE => false,
 		};
 	}
 }
