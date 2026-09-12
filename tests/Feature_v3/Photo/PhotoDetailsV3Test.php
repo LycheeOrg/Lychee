@@ -223,10 +223,39 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 
 	// ── Access / resolution edge cases ────────────────────────────
 
-	public function testTagAlbumIdReturns404(): void
+	public function testTagAlbumIdSucceeds(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos/details", ['bucket_id' => 'unknown']);
-		$this->assertNotFound($response);
+		// tagAlbum1 matches photo1 (tagged `test`) only.
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos/details", ['photo_ids' => [$this->photo1->id]]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$this->photo1->id]]);
+	}
+
+	/**
+	 * `bucket_id` mode for a non-`Album` source has no stored `bucket_id`
+	 * column to filter by directly - it resolves matching ids through a
+	 * lean live-computation pass first ({@see \App\Actions\Photo\StructOfArrays\QueryPhotoDetails::resolveLiveBucketPhotoIds()}).
+	 * This exercises that path directly, distinct from `photo_ids` mode.
+	 */
+	public function testTagAlbumBucketIdModeSucceeds(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'created_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'year']);
+		$bucket_id = $this->photo1->created_at->format('Y');
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$this->tagAlbum1->id}/Photos/details", ['bucket_id' => $bucket_id]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$this->photo1->id]]);
+	}
+
+	public function testSmartAlbumIdSucceeds(): void
+	{
+		$this->photo1->is_highlighted = true;
+		$this->photo1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/highlighted/Photos/details', ['photo_ids' => [$this->photo1->id]]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$this->photo1->id]]);
 	}
 
 	public function testNoAccessReturns403(): void

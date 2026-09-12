@@ -1044,16 +1044,20 @@ export const useAlbumStore = defineStore("album-store", {
 		 * (`loadPhotoDetails()`, gated at its call sites in `PhotoState.ts`
 		 * and the edit dialogs), and drag-select (`getPhotoBoxesV3()`)
 		 * instead of each independently re-deriving the same condition.
-		 * `true` only for a regular `Album` parent (NG5 — `TagAlbum`/
-		 * `PersonAlbum`/`BaseSmartAlbum` 404 on Feature 064's routes) with
-		 * no active tag/person filter (NG4 — neither is supported by any of
-		 * the three v3 tiers).
+		 * `true` for a regular `Album`, a `TagAlbum`, a `PersonAlbum`, or a
+		 * `BaseSmartAlbum` parent alike — the v3 photo-listing tier now
+		 * covers all four album types — with no active tag/person *filter*
+		 * (NG4 — filtering a regular album's photos by tag/person is a
+		 * separate, unrelated feature still served by v2 only).
 		 */
 		isPhotoSoaActive(state): boolean {
 			const lycheeStore = useLycheeStateStore();
 			return (
 				lycheeStore.is_struct_of_array_enabled &&
-				state.modelAlbum !== undefined &&
+				(state.modelAlbum !== undefined ||
+					state.tagAlbum !== undefined ||
+					state.personAlbum !== undefined ||
+					state.smartAlbum !== undefined) &&
 				state.active_tag_filter === null &&
 				state.active_person_filter === null
 			);

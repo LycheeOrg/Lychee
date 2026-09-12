@@ -8,11 +8,13 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Album;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -22,20 +24,18 @@ use Illuminate\Support\Facades\Gate;
  * returns everything it contains, no truncation, per explicit user
  * direction) / `photo_ids[]` (array, capped at 300 entries as input — 422
  * above). `album_id` resolution mirrors
- * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly (regular
- * `Album` only).
+ * {@see \App\Http\Requests\Photo\GetPhotoBucketsRequest} exactly — resolves
+ * via {@see \App\Factories\AlbumFactory::findAbstractAlbumOrFail()}, covering
+ * a regular {@see \App\Models\Album}, a {@see \App\Models\TagAlbum}, a
+ * {@see \App\Models\PersonAlbum}, or a {@see \App\SmartAlbums\BaseSmartAlbum}.
  */
-class GetPhotoDetailsRequest extends BaseApiRequest
+class GetPhotoDetailsRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	private Album $album;
+	use HasAbstractAlbumTrait;
+
 	private ?string $bucket_id = null;
 	/** @var string[]|null */
 	private ?array $photo_ids = null;
-
-	public function album(): Album
-	{
-		return $this->album;
-	}
 
 	public function bucketId(): ?string
 	{
@@ -65,7 +65,7 @@ class GetPhotoDetailsRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::BUCKET_ID_ATTRIBUTE => [
 				'required_without:' . RequestAttribute::PHOTO_IDS_ATTRIBUTE,
 				'prohibits:' . RequestAttribute::PHOTO_IDS_ATTRIBUTE,
@@ -99,7 +99,8 @@ class GetPhotoDetailsRequest extends BaseApiRequest
 	{
 		/** @var string $album_id */
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
-		$this->album = Album::query()->where('id', '=', $album_id)->firstOrFail();
+		// We do not need the relations. We try to be lean.
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
 
 		/** @var string|null $bucket_id */
 		$bucket_id = $values[RequestAttribute::BUCKET_ID_ATTRIBUTE] ?? null;

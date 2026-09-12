@@ -9,7 +9,8 @@
 namespace App\Actions\Photo\StructOfArrays;
 
 use App\Assets\DbBool;
-use App\Constants\PhotoAlbum as PA;
+use App\Contracts\Models\AbstractAlbum;
+use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\OrderSortingType;
 use App\Enum\PhotoThumbInfoType;
@@ -17,12 +18,12 @@ use App\Enum\SizeVariantType;
 use App\Enum\VisibilityType;
 use App\Http\Resources\V3\PhotoRatioResource;
 use App\Models\Album;
-use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
+use App\Services\PhotoBucketComputer;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
@@ -37,17 +38,19 @@ use Spatie\LaravelData\Optional;
  */
 class QueryPhotoRatios
 {
-	use FiltersUploadValidation;
+	use ResolvesPhotoSource;
 
 	public function __construct(
 		private readonly ConfigManager $config_manager,
 		private readonly FileExtensionService $file_extension_service,
+		private readonly PhotoBucketComputer $bucket_computer,
 	) {
 	}
 
-	public function do(Album $album, ?User $user): PhotoRatioResource
+	public function do(AbstractAlbum $album, ?User $user): PhotoRatioResource
 	{
-		$sorting = $album->getEffectivePhotoSorting();
+		$sorting = $this->resolveEffectiveSorting($album);
+		$is_regular_album = $album instanceof Album;
 
 		$rating_enabled = $this->config_manager->getValueAsBool('rating_enabled');
 		// PhotoPolicy::canReadRatings() ignores its own $photo argument
@@ -61,23 +64,14 @@ class QueryPhotoRatios
 		$tags_on = $overlay !== VisibilityType::NEVER && $thumb_info_mode === PhotoThumbInfoType::TITLE && $this->config_manager->getValueAsBool('photo_thumb_tags_enabled');
 		$blank_titles = $this->config_manager->getValueAsBool('file_name_hidden') && $user === null;
 
-		$query = Photo::query()
-			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->where(PA::ALBUM_ID, '=', $album->id);
-
-		// Non-admins must not see unvalidated photos uploaded by other
-		// users.
-		if ($user?->may_administrate !== true) {
-			$this->applyUploadValidationFilter($query, $user?->id);
-		}
-
+		$query = $this->resolvePhotoQuery($album, $user);
 		$this->joinRatioSizeVariants($query);
 
 		$select = [
 			'photos.id',
 			'photos.title',
+			'photos.title_base',
 			'photos.type',
-			'photo_album.bucket_id',
 			'photos.owner_id',
 			'photos.is_highlighted',
 			'photos.is_validated',
@@ -85,17 +79,25 @@ class QueryPhotoRatios
 			'photos.created_at',
 			'photos.taken_at_orig_tz',
 			'photos.live_photo_short_path',
+			// Always selected, independent of $can_read_ratings: a
+			// non-`Album` source needs the raw value for live bucket
+			// computation (RATING_AVG may be the effective sort column) even
+			// when the viewer isn't permitted to see ratings - the output
+			// array below still only ever gets populated when
+			// $can_read_ratings is true, so nothing extra reaches the
+			// response.
+			'photos.rating_avg',
 		];
+		if ($is_regular_album) {
+			$select[] = 'photo_album.bucket_id';
+		}
 		$selects_raw = ['COALESCE(sv_original.ratio, sv_medium.ratio, sv_small.ratio, 1) as ratio'];
 
-		if ($can_read_ratings) {
-			$select[] = 'photos.rating_avg';
-			if ($user !== null) {
-				$query->leftJoin('photo_ratings as pr', function (JoinClause $join) use ($user): void {
-					$join->on('pr.photo_id', '=', 'photos.id')->where('pr.user_id', '=', $user->id);
-				});
-				$select[] = 'pr.rating as rating_user';
-			}
+		if ($can_read_ratings && $user !== null) {
+			$query->leftJoin('photo_ratings as pr', function (JoinClause $join) use ($user): void {
+				$join->on('pr.photo_id', '=', 'photos.id')->where('pr.user_id', '=', $user->id);
+			});
+			$select[] = 'pr.rating as rating_user';
 		}
 
 		if ($thumb_infos_on) {
@@ -107,19 +109,24 @@ class QueryPhotoRatios
 			$select[] = 'tag_agg.tag_names';
 		}
 
-		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
-		// Order by bucket_id first (mirrors QueryPhotoBuckets exactly,
-		// "unknown" always last) so grouping this endpoint's rows by
-		// bucket_id reproduces the buckets endpoint's own {bucket_ids,counts}
-		// byte-for-byte, then the album's effective photo sort criterion as
-		// intra-bucket tie-break.
-		$query->orderByRaw('(photo_album.bucket_id IS NULL) ASC')
-			->orderBy('photo_album.bucket_id', $direction);
+		if ($is_regular_album) {
+			$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
+			// Order by bucket_id first (mirrors QueryPhotoBuckets exactly,
+			// "unknown" always last) so grouping this endpoint's rows by
+			// bucket_id reproduces the buckets endpoint's own {bucket_ids,counts}
+			// byte-for-byte, then the album's effective photo sort criterion as
+			// intra-bucket tie-break.
+			$query->orderByRaw('(photo_album.bucket_id IS NULL) ASC')
+				->orderBy('photo_album.bucket_id', $direction);
+		}
+		// For a non-`Album` source there is no stored `bucket_id` to
+		// pre-sort by - `buildResource()` computes it live per row below
+		// instead, off the same effective-sort-ordered rows.
 		(new SortingDecorator($query))->orderPhotosBy($sorting->column, $sorting->order)->applyOrdering();
 
 		$rows = $query->select($select)->selectRaw(implode(', ', $selects_raw))->toBase()->get();
 
-		return $this->buildResource($rows, $can_read_ratings, $user !== null, $thumb_infos_on, $tags_on, $blank_titles);
+		return $this->buildResource($rows, $can_read_ratings, $user !== null, $thumb_infos_on, $tags_on, $blank_titles, $is_regular_album, $sorting, $album);
 	}
 
 	/**
@@ -178,7 +185,18 @@ class QueryPhotoRatios
 		bool $thumb_infos_on,
 		bool $tags_on,
 		bool $blank_titles,
+		bool $is_regular_album,
+		PhotoSortingCriterion $sorting,
+		AbstractAlbum $album,
 	): PhotoRatioResource {
+		// Only used for a non-`Album` source (see below) - there is no
+		// stored `bucket_id` to read off the row in that case, so it is
+		// computed live per row instead, mirroring
+		// `QueryPhotoBuckets::queryLiveBuckets()` exactly so both tiers
+		// agree on the same bucket for the same photo. Harmless to resolve
+		// unconditionally - cheap, and simply unused for a regular `Album`.
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+
 		$ids = [];
 		$titles = [];
 		$types = [];
@@ -206,7 +224,9 @@ class QueryPhotoRatios
 			$ids[] = $row->id;
 			$titles[] = $blank_titles ? '' : $row->title;
 			$types[] = $type;
-			$bucket_ids[] = $row->bucket_id ?? 'unknown';
+			$bucket_ids[] = $is_regular_album
+				? ($row->bucket_id ?? 'unknown')
+				: ($this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown');
 			$ratios[] = (float) $row->ratio;
 			$owner_ids[] = (int) $row->owner_id;
 			$is_highlighteds[] = DbBool::parse($row->is_highlighted);

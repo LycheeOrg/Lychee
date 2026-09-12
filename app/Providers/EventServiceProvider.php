@@ -178,5 +178,9 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');
 		Event::listen(AlbumPhotoSortingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handleAlbumPhotoSortingChanged');
 		Event::listen(PhotoBucketsRecomputed::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoBucketsRecomputed');
+		Event::listen(PhotoTagsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoTagsChanged');
+		Event::listen(PhotoPersonsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoPersonsChanged');
+		Event::listen(PhotoRatingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoRatingChanged');
+		Event::listen(PhotoHighlightToggled::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoHighlightToggled');
 	}
 }

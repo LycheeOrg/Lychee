@@ -49,12 +49,7 @@ class PhotoAssetController extends Controller
 	 */
 	private function fallback(string $photo_id, SizeVariantType $type, Watermarker $watermarker)
 	{
-		$fallback = match ($type) {
-			SizeVariantType::SMALL2X => SizeVariantType::SMALL,
-			SizeVariantType::SMALL => SizeVariantType::THUMB,
-			SizeVariantType::THUMB2X => SizeVariantType::THUMB,
-			default => null,
-		};
+		$fallback = $type->fallbackType();
 
 		if ($fallback === null) {
 			return response()->json(['error' => 'File not found'], 404);

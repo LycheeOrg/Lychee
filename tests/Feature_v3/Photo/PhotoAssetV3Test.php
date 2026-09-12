@@ -593,6 +593,29 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
+	 * GetPhotoAssetRequest::processValidatedValues() case: the *originally
+	 * requested* type has no DB row at all (e.g. a photo too small to have
+	 * warranted a small2x variant at generation time) — unlike the other
+	 * fallback tests above, this never reaches PhotoAssetController::fallback()
+	 * with a resolved size_variant to begin with, so the chain-walk must
+	 * happen at request-validation time instead of 404ing outright.
+	 */
+	public function testMissingDbRowForOriginallyRequestedTypeFallsBackToNextSize(): void
+	{
+		$this->putBytes($this->smallVariantOf($this->photo1), 'small-bytes');
+		SizeVariant::query()
+			->where('photo_id', '=', $this->photo1->id)
+			->where('type', '=', SizeVariantType::SMALL2X)
+			->delete();
+		// small2x row is gone entirely; small has a row and a file.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertOk();
+		self::assertSame('small-bytes', $response->streamedContent());
+	}
+
+	/**
 	 * PhotoAssetController::fallback() exhausted-chain case: small2x, small
 	 * and thumb all have DB rows but none has a file on disk, and thumb has
 	 * no further fallback target → 404.
@@ -600,6 +623,24 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	public function testFallbackChainExhaustedReturnsNotFound(): void
 	{
 		// Every relevant row exists (factory default) but no bytes are put for any of them.
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
+
+		$response->assertNotFound();
+	}
+
+	/**
+	 * GetPhotoAssetRequest's own chain-walk (see
+	 * testMissingDbRowForOriginallyRequestedTypeFallsBackToNextSize above)
+	 * must still 404 once it has walked every DB row all the way down to
+	 * nothing, exactly like the controller's own exhausted-chain case.
+	 */
+	public function testMissingDbRowsForEntireChainReturnsNotFound(): void
+	{
+		SizeVariant::query()
+			->where('photo_id', '=', $this->photo1->id)
+			->whereIn('type', [SizeVariantType::SMALL2X, SizeVariantType::SMALL, SizeVariantType::THUMB])
+			->delete();
 
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
 
