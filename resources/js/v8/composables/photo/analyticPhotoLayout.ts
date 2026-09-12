@@ -106,11 +106,7 @@ export type PhotoChunk = {
  * unfilled row width) until the user scrolls further. Grouping by the
  * boxes' own `top` transitions can't split a row, by construction.
  */
-export function splitIntoRows(
-	boxes: (PhotoBox | undefined)[],
-	startIndex: number,
-	count: number,
-): { start: number; count: number }[] {
+export function splitIntoRows(boxes: (PhotoBox | undefined)[], startIndex: number, count: number): { start: number; count: number }[] {
 	if (count === 0) {
 		return [];
 	}

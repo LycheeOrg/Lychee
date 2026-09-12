@@ -77,9 +77,7 @@ const { spliter } = useSplitter();
 
 type BucketEntry = { bucketId: string; label: string };
 
-const bucketEntries = computed<BucketEntry[]>(() =>
-	props.buckets.bucket_ids.map((bucketId, i) => ({ bucketId, label: props.buckets.labels[i] })),
-);
+const bucketEntries = computed<BucketEntry[]>(() => props.buckets.bucket_ids.map((bucketId, i) => ({ bucketId, label: props.buckets.labels[i] })));
 
 const years = computed(() => {
 	return spliter(

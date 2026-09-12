@@ -213,9 +213,7 @@ export const useTimelineStore = defineStore("timeline-store", {
 			}
 
 			const offsetByBucket = new Map(this.boundariesV3.map((b) => [b.bucketId, b]));
-			const toFetch = [...new Set(bucketIds)].filter(
-				(id) => offsetByBucket.has(id) && !this.loadedBucketsV3[id] && !this.loadingBucketsV3[id],
-			);
+			const toFetch = [...new Set(bucketIds)].filter((id) => offsetByBucket.has(id) && !this.loadedBucketsV3[id] && !this.loadingBucketsV3[id]);
 			if (toFetch.length === 0) {
 				return;
 			}
@@ -358,9 +356,7 @@ export const useTimelineStore = defineStore("timeline-store", {
 		async loadPhotoDetailsV3(ids: string[]): Promise<void> {
 			const photosState = usePhotosStore();
 
-			const idsToFetch = [...new Set(ids)].filter(
-				(id) => !this.photoDetailsResolvedIdsV3[id] && photosState.photos.some((p) => p.id === id),
-			);
+			const idsToFetch = [...new Set(ids)].filter((id) => !this.photoDetailsResolvedIdsV3[id] && photosState.photos.some((p) => p.id === id));
 			if (idsToFetch.length === 0) {
 				return;
 			}
