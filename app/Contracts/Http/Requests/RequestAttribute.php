@@ -38,6 +38,7 @@ class RequestAttribute
 	public const PHOTO_ID_ATTRIBUTE = 'photo_id';
 	public const PHOTO_IDS_ATTRIBUTE = 'photo_ids';
 	public const BUCKET_ID_ATTRIBUTE = 'bucket_id';
+	public const BUCKET_IDS_ATTRIBUTE = 'bucket_ids';
 	public const SIZE_VARIANT_TOKEN_ATTRIBUTE = 'size_variant';
 	public const HEADER_ID_ATTRIBUTE = 'header_id';
 	public const COVER_ID_ATTRIBUTE = 'cover_id';

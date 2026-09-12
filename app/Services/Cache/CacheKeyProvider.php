@@ -376,6 +376,29 @@ class CacheKeyProvider
 	}
 
 	/**
+	 * Fine-grained tag carried (in addition to {@see self::photoListingTag()})
+	 * by a bucket-windowed `ratios`/`details` cache entry - evicting it
+	 * alone flushes only that one bucket's cached entries for this album,
+	 * leaving every other cached bucket warm (FR-066-09, NFR-066-04). The
+	 * `buckets` tier itself never carries this tag (FR-066-09): it is
+	 * always whole-scope, so only the coarse tag applies to it.
+	 */
+	public function photoListingBucketTag(string $album_id, string $bucket_id): string
+	{
+		return "photo-listing-bucket:{$album_id}:{$bucket_id}";
+	}
+
+	/**
+	 * @param string[] $bucket_ids
+	 *
+	 * @return string[]
+	 */
+	public function photoListingBucketTags(string $album_id, array $bucket_ids): array
+	{
+		return array_map(fn (string $bucket_id): string => $this->photoListingBucketTag($album_id, $bucket_id), $bucket_ids);
+	}
+
+	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/buckets`: a pure
 	 * function of `(album_id, user identity)` — mirrors
 	 * {@see self::albumBucketsKey()}.
@@ -391,13 +414,50 @@ class CacheKeyProvider
 	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos`, mirrors
 	 * {@see self::photoBucketsKey()}.
+	 *
+	 * @param string $scope_digest see {@see self::photoRatiosScopeDigest()} -
+	 *                             distinguishes every distinct
+	 *                             `bucket_ids[]`/`photo_ids[]` window a
+	 *                             caller could request (or the whole-scope
+	 *                             request, digest `"all"`) so two different
+	 *                             windows for the same album never collide
 	 */
-	public function photoRatiosKey(string $album_id, int|string|null $user_id): string
+	public function photoRatiosKey(string $album_id, string $scope_digest, int|string|null $user_id): string
 	{
 		$tag = $this->photoListingTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag}:ratios:{$user_tag}";
+		return "{$tag}:ratios:{$scope_digest}:{$user_tag}";
+	}
+
+	/**
+	 * Digest identifying the exact `ratios` request scope
+	 * ({@see \App\Http\Requests\Photo\GetPhotoRatiosRequest}), mirroring
+	 * {@see self::photoDetailsScopeDigest()} exactly: the sorted, hashed
+	 * `bucket_ids[]` list, or the sorted, hashed `photo_ids[]` list, or the
+	 * literal `"all"` sentinel when both are omitted (today's whole-scope
+	 * request, NFR-066-03).
+	 *
+	 * @param string[]|null $bucket_ids
+	 * @param string[]|null $photo_ids
+	 */
+	public function photoRatiosScopeDigest(?array $bucket_ids, ?array $photo_ids): string
+	{
+		if ($bucket_ids !== null) {
+			$ids = $bucket_ids;
+			sort($ids);
+
+			return 'buckets:' . hash('xxh3', implode(',', $ids));
+		}
+
+		if ($photo_ids !== null) {
+			$ids = $photo_ids;
+			sort($ids);
+
+			return 'ids:' . hash('xxh3', implode(',', $ids));
+		}
+
+		return 'all';
 	}
 
 	/**

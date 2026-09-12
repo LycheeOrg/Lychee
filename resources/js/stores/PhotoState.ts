@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumStore } from "./AlbumState";
+import { useTimelineStore } from "./TimelineState";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -69,13 +70,27 @@ export const usePhotoStore = defineStore("photo-store", {
 			// free — `previous_photo_id`/`next_photo_id` are already correct at
 			// this point (`loadPhotosV3()` runs `rebuildNavigationLinks()`
 			// immediately after populating the array).
+			//
+			// Feature 066: a Timeline-sourced tile is exactly as
+			// `ratios`-lightweight (`adaptPhotoTile()` is reused unmodified,
+			// FR-066-11) and needs the same on-demand tier-3 resolution — routed
+			// to `timelineStore.loadPhotoDetailsV3()` instead, gated on
+			// `photo.album_id === "timeline"` (the literal id every
+			// Timeline-adapted tile carries) rather than on the current route,
+			// so this stays correct even mid-transition between views. The two
+			// gates are mutually exclusive in practice (a v3 album tile's
+			// `album_id` is never `"timeline"`), but checked as a clean
+			// `else if` regardless — never both in the same call.
 			if (this.photo !== undefined) {
 				const albumStore = useAlbumStore();
+				const timelineStore = useTimelineStore();
+				const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
+					(id): id is string => id !== null && id !== undefined,
+				);
 				if (albumStore.isPhotoSoaActive) {
-					const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
-						(id): id is string => id !== null && id !== undefined,
-					);
 					void albumStore.loadPhotoDetails(ids);
+				} else if (timelineStore.isTimelineSoaActive && this.photo.album_id === "timeline") {
+					void timelineStore.loadPhotoDetailsV3(ids);
 				}
 			}
 		},

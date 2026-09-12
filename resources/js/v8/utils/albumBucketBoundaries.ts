@@ -57,6 +57,41 @@ export function computeBucketBoundaries(buckets: App.Http.Resources.V3.AlbumBuck
 	return boundaries;
 }
 
+/** Same shape as {@see AlbumBucketBoundary} — Timeline's boundaries are computed differently (see {@see computeTimelineBucketLayout}) but consumed identically. */
+export type TimelineBucketBoundary = AlbumBucketBoundary;
+
+/**
+ * Timeline's own boundary computation (DO-066-06) — valid mid-load, unlike
+ * {@see computeBucketBoundaries} above, which asserts `sum(counts) ===
+ * childrenCount` (only ever true once every bucket's `ratios` window has
+ * resolved). Timeline's `buckets` tier is fetched once, eagerly, whole-scope
+ * (FR-066-11) — every bucket's `startIndex`/`count` is already fully known
+ * the moment `buckets` itself resolves, independent of how many of those
+ * slots' `ratios` have actually loaded yet. Never reads a children/tiles
+ * array length at all, by construction.
+ *
+ * `bucketable: false` (an `OWNER_ID`-sorted scope — never actually reachable
+ * for Timeline, whose effective sort is always `CREATED_AT`/`TAKEN_AT` per
+ * FR-066-04, but handled defensively, mirroring `PhotoBucketResource`'s own
+ * documented `bucketable:false` contract) collapses to one flat, unbucketed
+ * boundary spanning every photo, exactly like `computeVisiblePhotoLayout()`'s
+ * own `bucketable:false` fallback.
+ */
+export function computeTimelineBucketLayout(buckets: App.Http.Resources.V3.PhotoBucketResource): TimelineBucketBoundary[] {
+	if (!buckets.bucketable) {
+		const total = buckets.counts.reduce((sum, count) => sum + count, 0);
+		return total > 0 ? [{ bucketId: "all", label: "", startIndex: 0, count: total }] : [];
+	}
+
+	const boundaries: TimelineBucketBoundary[] = [];
+	let startIndex = 0;
+	for (let i = 0; i < buckets.bucket_ids.length; i++) {
+		boundaries.push({ bucketId: buckets.bucket_ids[i], label: buckets.labels[i], startIndex, count: buckets.counts[i] });
+		startIndex += buckets.counts[i];
+	}
+	return boundaries;
+}
+
 /**
  * Drops tiles a predicate rejects (NSFW tiles when hidden) from both the
  * flat tile array and the bucket boundaries, recomputing each surviving

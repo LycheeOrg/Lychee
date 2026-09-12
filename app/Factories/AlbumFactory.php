@@ -28,6 +28,7 @@ use App\SmartAlbums\OneStarAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\ThreeStarsAlbum;
+use App\SmartAlbums\TimelineAlbum;
 use App\SmartAlbums\TwoStarsAlbum;
 use App\SmartAlbums\UnratedAlbum;
 use App\SmartAlbums\UnsortedAlbum;
@@ -52,6 +53,7 @@ class AlbumFactory
 		SmartAlbumType::BEST_PICTURES->value => BestPicturesAlbum::class,
 		SmartAlbumType::MY_RATED_PICTURES->value => MyRatedPicturesAlbum::class,
 		SmartAlbumType::MY_BEST_PICTURES->value => MyBestPicturesAlbum::class,
+		SmartAlbumType::TIMELINE->value => TimelineAlbum::class,
 	];
 
 	private const PHOTOS_RELATIONS = ['photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating'];

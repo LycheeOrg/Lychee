@@ -487,7 +487,7 @@ All gallery modes support comprehensive keyboard shortcuts:
 ### Lazy Loading
 - Components use `import()` for code splitting
 - Images loaded progressively with intersection observer
-- Virtual scrolling for large photo sets
+- Virtual scrolling for large photo sets — `PhotoGridVirtual.vue` (`albumModule/Virtualized/`) windows rendering via `@tanstack/vue-virtual`, analytic (non-DOM-measured) WASM layout, behind the `is_struct_of_array_enabled` flag. Feature 065 wired the per-album photo grid this way; Feature 066 extended the same component (`source: "album"|"timeline"` prop) to the global Timeline view (`Timeline.vue`), adding incremental, bucket-windowed data fetching (`TimelineState.ts`'s v3 fields/actions) and layout-mode-correct placeholder sizing for not-yet-loaded date buckets, since a whole library — unlike one album — can't be fetched at once. See `docs/specs/4-architecture/features/066-timeline-struct-of-arrays/` and `docs/specs/4-architecture/features/065-photo-listing-struct-of-arrays-adoption/`.
 
 ### Caching Strategy
 - Thumbnail caching at multiple resolutions

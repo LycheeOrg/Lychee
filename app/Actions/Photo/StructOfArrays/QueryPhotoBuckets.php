@@ -13,11 +13,14 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Enum\TitleBucketMode;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Resources\V3\PhotoBucketResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
 use App\Services\PhotoBucketComputer;
+use App\SmartAlbums\TimelineAlbum;
+use Illuminate\Support\Facades\DB;
 use function Safe\mktime;
 
 /**
@@ -51,6 +54,17 @@ class QueryPhotoBuckets
 
 		if ($album instanceof Album) {
 			[$bucket_ids, $counts] = $this->queryStoredBuckets($album, $user, $sorting->order);
+		} elseif ($album instanceof TimelineAlbum) {
+			// Timeline's scope is potentially the whole library - unlike
+			// TagAlbum/PersonAlbum (proven safe at album scale), a PHP row
+			// scan here would not be SQL-pushdown bounded (NFR-066-01).
+			// $sorting->column is always CREATED_AT or TAKEN_AT for a
+			// TimelineAlbum source (see ResolvesPhotoSource::resolveEffectiveSorting()),
+			// so a driver-specific `GROUP BY` truncation on that raw date
+			// column is sufficient - no OWNER_ID/TITLE/IS_HIGHLIGHTED/TYPE/
+			// RATING_AVG case to handle here.
+			$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+			[$bucket_ids, $counts] = $this->queryPushdownBuckets($album, $user, $sorting->column, $sorting->order, $granularity);
 		} else {
 			[$bucket_ids, $counts] = $this->queryLiveBuckets($album, $user, $sorting->column, $sorting->order);
 		}
@@ -146,6 +160,94 @@ class QueryPhotoBuckets
 		}
 
 		return [$bucket_ids, $counts];
+	}
+
+	/**
+	 * SQL-pushdown-bounded `GROUP BY` truncation, for a {@see TimelineAlbum}
+	 * source only (NFR-066-01) - cost is bounded by the distinct-bucket
+	 * count the `GROUP BY` yields, never by candidate-photo count, unlike
+	 * {@see self::queryLiveBuckets()}'s PHP row scan (kept unchanged for
+	 * `TagAlbum`/`PersonAlbum`, proven safe only at album scale).
+	 *
+	 * Every driver truncates to the same dash-separated `"Y"`/`"Y-m"`/
+	 * `"Y-m-d"`/`"Y-m-d-H"` format {@see PhotoBucketComputer::truncateDate()}/
+	 * {@see ResolvesPhotoSource::truncateRawDate()} both write — required so
+	 * a `bucket_id` returned here agrees byte-for-byte with the same
+	 * photo's `bucket_id` as computed live by the `ratios`/`details` tiers
+	 * for the same `TimelineAlbum` source. This is a deliberate departure
+	 * from {@see \App\Actions\Photo\Timeline::dates()}'s own per-driver
+	 * `HOUR` format (`...T HH24`, a `T`-separated ISO string never meant to
+	 * be compared against another tier's bucket id) - that v2-only method
+	 * is intentionally left untouched (FR-066-15), not reused here.
+	 *
+	 * `NULL`s ("unknown") are counted via one extra, cheap, unfiltered
+	 * `COUNT(*)` rather than folded into the `GROUP BY` itself (`GROUP BY`
+	 * treats every `NULL` as one single group already, so this would work
+	 * too — kept as a separate query purely so "unknown" can be appended
+	 * last unconditionally, mirroring {@see self::queryLiveBuckets()}'s own
+	 * always-last placement regardless of `$order`).
+	 *
+	 * @return array{0:string[],1:int[]}
+	 */
+	private function queryPushdownBuckets(AbstractAlbum $album, ?User $user, ColumnSortingType $column, OrderSortingType $order, TimelinePhotoGranularity $granularity): array
+	{
+		$direction = $order === OrderSortingType::DESC ? 'desc' : 'asc';
+		$date_expression = self::dateTruncationExpression($column->value, $granularity);
+
+		$rows = $this->resolvePhotoQuery($album, $user)
+			->whereNotNull($column->value)
+			->selectRaw($date_expression . ' as bucket_id')
+			->selectRaw('COUNT(*) as bucket_count')
+			->groupBy('bucket_id')
+			->orderBy('bucket_id', $direction)
+			->toBase()
+			->get();
+
+		$bucket_ids = [];
+		$counts = [];
+		foreach ($rows as $row) {
+			$bucket_ids[] = (string) $row->bucket_id;
+			$counts[] = (int) $row->bucket_count;
+		}
+
+		$unknown_count = $this->resolvePhotoQuery($album, $user)->whereNull($column->value)->count();
+		if ($unknown_count > 0) {
+			$bucket_ids[] = 'unknown';
+			$counts[] = $unknown_count;
+		}
+
+		return [$bucket_ids, $counts];
+	}
+
+	/**
+	 * Driver-specific SQL expression truncating `$column` to `$granularity`,
+	 * in the dash-separated `"Y"`/`"Y-m"`/`"Y-m-d"`/`"Y-m-d-H"` format - see
+	 * {@see self::queryPushdownBuckets()}'s docblock for why this must match
+	 * that format exactly, rather than {@see \App\Actions\Photo\Timeline::dates()}'s
+	 * own per-driver formatting.
+	 */
+	private static function dateTruncationExpression(string $column, TimelinePhotoGranularity $granularity): string
+	{
+		$is_driver_pgsql = DB::getDriverName() === 'pgsql';
+
+		$formatter = match (DB::getDriverName()) {
+			'sqlite' => 'strftime(\'%2$s\', %1$s)',
+			'mysql', 'mariadb' => 'DATE_FORMAT(%1$s, \'%2$s\')',
+			'pgsql' => 'to_char(%1$s, \'%2$s\')',
+			default => throw new LycheeInvalidArgumentException('Unsupported database driver'),
+		};
+
+		$date_format = match ($granularity) {
+			TimelinePhotoGranularity::YEAR => $is_driver_pgsql ? 'YYYY' : '%Y',
+			TimelinePhotoGranularity::MONTH => $is_driver_pgsql ? 'YYYY-MM' : '%Y-%m',
+			TimelinePhotoGranularity::DAY => $is_driver_pgsql ? 'YYYY-MM-DD' : '%Y-%m-%d',
+			TimelinePhotoGranularity::HOUR => $is_driver_pgsql ? 'YYYY-MM-DD-HH24' : '%Y-%m-%d-%H',
+			// @codeCoverageIgnoreStart
+			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeInvalidArgumentException('DEFAULT/DISABLED is not a valid resolved granularity for photos'),
+			// @codeCoverageIgnoreEnd
+		};
+
+		return sprintf($formatter, $column, $date_format);
 	}
 
 	/**

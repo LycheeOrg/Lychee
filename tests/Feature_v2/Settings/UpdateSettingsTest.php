@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Settings;
 
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\PhotoBucketsRecomputed;
 use App\Jobs\RecomputeRootAlbumBucketsJob;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -128,6 +129,75 @@ class UpdateSettingsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	// ── Feature 066 (T-066-20): Timeline photo-listing coarse flush ──
+
+	/** @return array<string,array<int,array<string,string>>> */
+	public static function timelinePhotoListingCoarseFlushConfigsProvider(): array
+	{
+		return [
+			'hide_nsfw_in_timeline' => [['key' => 'hide_nsfw_in_timeline', 'value' => '1']],
+			'timeline_photos_order' => [['key' => 'timeline_photos_order', 'value' => 'created_at']],
+			'timeline_page_enabled' => [['key' => 'timeline_page_enabled', 'value' => '1']],
+			'timeline_photos_public' => [['key' => 'timeline_photos_public', 'value' => '1']],
+		];
+	}
+
+	/**
+	 * @param array<string,string> $config
+	 */
+	#[DataProvider('timelinePhotoListingCoarseFlushConfigsProvider')]
+	public function testChangingTimelineConfigDispatchesPhotoListingCoarseFlush(array $config): void
+	{
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(PhotoBucketsRecomputed::class, fn (PhotoBucketsRecomputed $event) => $event->album_ids === ['timeline']);
+	}
+
+	/**
+	 * `timeline_photos_granularity` is a level-1 (Supporter Edition) config —
+	 * kept as its own test rather than folded into the data provider above,
+	 * mirroring {@see self::testChangingTimelineGranularityConfigDispatchesJob()}.
+	 */
+	public function testChangingTimelineGranularityConfigDispatchesPhotoListingCoarseFlush(): void
+	{
+		$this->requireSe();
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'timeline_photos_granularity',
+					'value' => 'month',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(PhotoBucketsRecomputed::class, fn (PhotoBucketsRecomputed $event) => $event->album_ids === ['timeline']);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchTimelinePhotoListingCoarseFlush(): void
+	{
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(PhotoBucketsRecomputed::class);
 	}
 
 	public function testUpdateSettingsGuest(): void

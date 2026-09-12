@@ -71,21 +71,48 @@ class PhotoChildrenController extends Controller
 		$album = $request->album();
 		/** @var User|null $user */
 		$user = Auth::user();
+		$bucket_ids = $request->bucketIds();
+		$photo_ids = $request->photoIds();
 
-		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $user?->id);
+		$scope_digest = $this->cache_key_provider->photoRatiosScopeDigest($bucket_ids, $photo_ids);
+		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $scope_digest, $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
 		return $this->managed_cache_service->rememberIf(
 			$enabled,
 			$key,
-			[
-				$this->cache_key_provider->photoListingTag($album->get_id()),
-				$this->cache_key_provider->userTag($user?->id),
-			],
-			fn (): PhotoRatioResource => $this->query_photo_ratios->do($album, $user),
+			$this->photoRatiosTags($album->get_id(), $bucket_ids, $user?->id),
+			fn (): PhotoRatioResource => $this->query_photo_ratios->do($album, $user, $bucket_ids, $photo_ids),
 			ttl: $ttl,
 		);
+	}
+
+	/**
+	 * Cache tags for one `ratios` response: the coarse per-album tag,
+	 * always; plus one fine per-bucket tag (FR-066-09) for each requested
+	 * bucket, so a bucket-scoped request's cache entry can be evicted
+	 * without thrashing every other cached bucket for the same album.
+	 * A whole-scope (`$bucket_ids === null`) or `photo_ids[]`-scoped
+	 * request carries only the coarse tag - there is no fixed bucket set to
+	 * name a fine tag after.
+	 *
+	 * @param string[]|null $bucket_ids
+	 *
+	 * @return string[]
+	 */
+	private function photoRatiosTags(string $album_id, ?array $bucket_ids, int|string|null $user_id): array
+	{
+		$tags = [
+			$this->cache_key_provider->photoListingTag($album_id),
+			$this->cache_key_provider->userTag($user_id),
+		];
+
+		if ($bucket_ids !== null) {
+			$tags = array_merge($tags, $this->cache_key_provider->photoListingBucketTags($album_id, $bucket_ids));
+		}
+
+		return $tags;
 	}
 
 	// ── GET /Albums/{album_id}/Photos/details ───────────────────────
@@ -95,20 +122,29 @@ class PhotoChildrenController extends Controller
 		$album = $request->album();
 		/** @var User|null $user */
 		$user = Auth::user();
+		$bucket_id = $request->bucketId();
 
-		$scope_digest = $this->cache_key_provider->photoDetailsScopeDigest($request->bucketId(), $request->photoIds());
+		$scope_digest = $this->cache_key_provider->photoDetailsScopeDigest($bucket_id, $request->photoIds());
 		$key = $this->cache_key_provider->photoDetailsKey($album->get_id(), $scope_digest, $user?->id);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
+		$tags = [
+			$this->cache_key_provider->photoListingTag($album->get_id()),
+			$this->cache_key_provider->userTag($user?->id),
+		];
+		if ($bucket_id !== null) {
+			// Fine per-bucket tag (FR-066-09) - a `photo_ids[]`-scoped
+			// request has no single fixed bucket to name a fine tag after,
+			// so it carries only the coarse tag, same as before.
+			$tags[] = $this->cache_key_provider->photoListingBucketTag($album->get_id(), $bucket_id);
+		}
+
 		return $this->managed_cache_service->rememberIf(
 			$enabled,
 			$key,
-			[
-				$this->cache_key_provider->photoListingTag($album->get_id()),
-				$this->cache_key_provider->userTag($user?->id),
-			],
-			fn (): PhotoDetailResource => $this->query_photo_details->do($album, $user, $request->bucketId(), $request->photoIds()),
+			$tags,
+			fn (): PhotoDetailResource => $this->query_photo_details->do($album, $user, $bucket_id, $request->photoIds()),
 			ttl: $ttl,
 		);
 	}
