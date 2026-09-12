@@ -41,7 +41,7 @@ export default class SidebarMap {
 
 		L.tileLayer(this.layer, {
 			attribution: this.attribution,
-			referrerPolicy: 'origin'
+			referrerPolicy: "origin",
 		}).addTo(myMap);
 
 		// Add Marker to map, direction is not set
