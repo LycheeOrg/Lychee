@@ -6,6 +6,7 @@
 		@pointermove="onPointerMove"
 		@pointerup="onPointerUp"
 		@pointerleave="onPointerLeave"
+		dir="ltr"
 	>
 		<!-- Resting-state ticks: year labels + month dots, positioned by real pixel fraction (T-067). -->
 		<div
@@ -23,7 +24,7 @@
 		<!-- Playhead: continuously tracks real scroll position. -->
 		<div class="absolute inset-x-0 h-0 pointer-events-none" :style="{ top: `${playheadTopPx}px` }">
 			<div
-				class="absolute ltr:left-2 ltr:right-2 rtl:right-2 rtl:left-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]"
+				class="absolute left-2 right-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]"
 			/>
 		</div>
 
@@ -37,34 +38,36 @@
 			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-20"
 			:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 		>
-			<!-- Background only — the fade-to-transparent mask (revealing the glass on
-			     the rail's own side, blending its far edge into the album content it
-			     floats over) must NOT apply to the date labels below: a `mask` clips
-			     its entire subtree, so a label overflowing into that fading 26% strip
-			     used to fade out right along with the background instead of staying
-			     legible above it. The gradient angle itself must flip per direction
-			     (`ltr:`/`rtl:`, not a single unprefixed `mask-[...]`): a bare `90deg`
-			     always fades transparent-at-left/opaque-at-right regardless of `dir`,
-			     which was correct for the rail's LTR right-edge placement but fully
-			     backwards once RTL moves the rail (and this lens) to the left edge —
-			     the glass ended up opaque over the content and transparent over the
-			     rail's own ticks. -->
 			<div
 				class="absolute inset-0 overflow-hidden ltr:border-s rtl:border-e border-default bg-default/85 backdrop-blur-sm ltr:mask-[linear-gradient(90deg,transparent,#000_26%)] rtl:mask-[linear-gradient(270deg,transparent,#000_26%)]"
 			/>
-			<div class="absolute inset-0 overflow-hidden">
+			<div
+				:dir
+				class="absolute inset-0 overflow-hidden rtl:text-left ltr:text-right"
+				>
 				<span
 					v-for="item in lens.items"
 					:key="item.bucketId"
-					class="absolute ltr:right-3 rtl:left-3 -translate-y-1/2 whitespace-nowrap font-mono z-30"
-					:class="item.strong ? 'text-highlighted' : 'text-muted'"
+					class="absolute -translate-y-1/2 whitespace-nowrap font-mono z-30"
+					:class="{
+						'text-highlighted' : item.strong,
+						'text-muted' : !item.strong,
+						'right-3' : isLTR(),
+						'left-3' : isRTL(),
+					}"
 					:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
 				>
-					<span dir="ltr">{{ item.label }}</span>
+					{{ item.label }}
 				</span>
 			</div>
 			<!-- Focal line inside the glass — the ruler edge across the magnified dates. -->
-			<div class="absolute ltr:left-[26%] rtl:right-[26%] inset-x-0 h-0 pointer-events-none" :style="{ top: `${lens.focal}px` }">
+			<div
+				class="absoluteh-0 pointer-events-none" :style="{ top: `${lens.focal}px` }"
+				:class="{
+					'left-[26%] right-0' : isLTR(),
+					'left-0 right-[26%]' : isRTL(),
+				}"
+				>
 				<div class="absolute inset-0 ltr:right-2 rtl:left-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]" />
 			</div>
 		</div>
@@ -72,10 +75,14 @@
 		<!-- Readout pill: exact date + count under the cursor. -->
 		<div
 			v-if="hovering && hoverBucket !== null"
-			class="absolute ltr:right-53 rtl:left-53 -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
+			class="absolute -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
+			:class="{
+				'right-53' : isLTR(),
+				'left-53' : isRTL(),
+			}"
 			:style="{ top: `${cursorY}px` }"
 		>
-			<span dir="ltr">{{ hoverBucket.label }}</span>
+			<span :dir>{{ hoverBucket.label }}</span>
 			<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{
 				trans_choice("gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
 			}}</em>
@@ -109,6 +116,9 @@
 import { useElementSize } from "@vueuse/core";
 import { trans_choice } from "laravel-vue-i18n";
 import { ref, computed } from "vue";
+import { useLtRorRtL } from "@/utils/Helpers";
+
+const { dir, isLTR, isRTL } = useLtRorRtL();
 
 const props = defineProps<{
 	buckets: App.Http.Resources.V3.PhotoBucketResource;
