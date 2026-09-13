@@ -180,12 +180,14 @@ class QueryPhotoBuckets
 	 * be compared against another tier's bucket id) - that v2-only method
 	 * is intentionally left untouched (FR-066-15), not reused here.
 	 *
-	 * `NULL`s ("unknown") are counted via one extra, cheap, unfiltered
-	 * `COUNT(*)` rather than folded into the `GROUP BY` itself (`GROUP BY`
-	 * treats every `NULL` as one single group already, so this would work
-	 * too — kept as a separate query purely so "unknown" can be appended
-	 * last unconditionally, mirroring {@see self::queryLiveBuckets()}'s own
-	 * always-last placement regardless of `$order`).
+	 * `NULL`s are deliberately NOT bucketed as "unknown" here, unlike
+	 * {@see self::queryStoredBuckets()}/{@see self::queryLiveBuckets()} (both
+	 * per-album contexts, where a dateless photo still belongs somewhere in
+	 * that album's own browsing view): the Timeline is date-first by
+	 * definition, so a photo with no `$column` value has no coherent
+	 * position on it at all - it's excluded from `bucket_ids`/`counts`
+	 * entirely (and therefore from `tilesV3`/`ratiosV3` allocation and every
+	 * later fetch), not merely hidden from display.
 	 *
 	 * @return array{0:string[],1:int[]}
 	 */
@@ -208,12 +210,6 @@ class QueryPhotoBuckets
 		foreach ($rows as $row) {
 			$bucket_ids[] = (string) $row->bucket_id;
 			$counts[] = (int) $row->bucket_count;
-		}
-
-		$unknown_count = $this->resolvePhotoQuery($album, $user)->whereNull($column->value)->count();
-		if ($unknown_count > 0) {
-			$bucket_ids[] = 'unknown';
-			$counts[] = $unknown_count;
 		}
 
 		return [$bucket_ids, $counts];

@@ -149,6 +149,18 @@ const emits = defineEmits<{
 	toggleBuyMe: [id: string];
 	/** Timeline-only — see `activeHeaderEntry`'s own watcher below. */
 	activeBucketChanged: [bucketId: string | null];
+	/**
+	 * Timeline-only (T-067, Timeline Scrubber rail): every bucket's real pixel
+	 * `{top,height}` (placeholder-estimated until loaded, same values
+	 * `timelinePixelLayout`/`resolveTimelineDeepLink()` already use), bundled
+	 * with `totalHeight` so `TimelineDatesV3.vue`'s rail can position its
+	 * ticks/playhead and map a cursor position to a real scroll target for
+	 * drag-scrubbing — bundled into one event so a consumer never sees a torn
+	 * (buckets vs totalHeight) update.
+	 */
+	timelineLayoutChanged: [payload: { buckets: { bucketId: string; top: number; height: number }[]; totalHeight: number }];
+	/** Timeline-only — raw content-relative scroll offset (`offset` below), for the rail's continuous playhead. Fires on every scroll tick by nature; keep consumers of this to a single cheap style binding. */
+	scrollOffsetChanged: [offset: number];
 }>();
 
 const source = computed(() => props.source ?? "album");
@@ -327,6 +339,9 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
+/** Scroll position in the grid's own content coordinate space (0 at the very top of the layout) — shared by `activeHeaderEntry`, the reflow watcher, and (timeline-only) `scrollOffsetChanged` below, so there's exactly one definition of "where the viewport currently is" against `layout.value.totalHeight`. */
+const contentScrollOffset = computed(() => (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value);
+
 const virtualizer = useWindowVirtualizer(
 	computed(() => ({
 		count: chunks.value.length,
@@ -380,7 +395,7 @@ function cumulativeChunkHeightAbove(chunkList: (PhotoChunk | TimelineChunk)[], o
 // not something that could be scroll-tested. Flagged pending manual
 // verification (T-066-29).
 watch([chunks, scrollMargin], (_new, [oldChunks]) => {
-	const offset = (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value;
+	const offset = contentScrollOffset.value;
 	const oldAbove = source.value === "timeline" ? cumulativeChunkHeightAbove(oldChunks, offset) : null;
 
 	virtualizer.value.measure();
@@ -442,7 +457,7 @@ function menuOpen(id: string, e: MouseEvent) {
 // `layout.headerTops` this feature computes instead. Already source-generic
 // (`layout` itself branches above), so no Timeline-specific change needed.
 const activeHeaderEntry = computed<{ label: string; bucketId: string } | null>(() => {
-	const offset = (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value;
+	const offset = contentScrollOffset.value;
 	const tops = layout.value.headerTops;
 	let current: { top: number; label: string; bucketId: string } | null = null;
 	for (const h of tops) {
@@ -477,6 +492,49 @@ watch(
 	},
 	{ immediate: true },
 );
+
+// --- Timeline Scrubber rail (T-067) ---
+
+/** `timelinePixelLayout.value.buckets` trimmed to just what `TimelineDatesV3.vue`'s rail needs — every bucket's real (or placeholder-estimated, for a not-yet-loaded one) pixel position. */
+const timelineBucketLayoutList = computed<{ bucketId: string; top: number; height: number }[]>(() => {
+	if (source.value !== "timeline") {
+		return [];
+	}
+	return timelinePixelLayout.value.buckets.map((b) => ({ bucketId: b.bucketId, top: b.top, height: b.height }));
+});
+
+watch(
+	[timelineBucketLayoutList, () => timelinePixelLayout.value.totalHeight],
+	([buckets, totalHeight]) => {
+		if (source.value === "timeline") {
+			emits("timelineLayoutChanged", { buckets, totalHeight });
+		}
+	},
+	{ immediate: true },
+);
+
+watch(
+	contentScrollOffset,
+	(offset) => {
+		if (source.value === "timeline") {
+			emits("scrollOffsetChanged", offset);
+		}
+	},
+	{ immediate: true },
+);
+
+/**
+ * Timeline Scrubber rail's drag-scrub primitive (T-067): jumps straight to a
+ * content-coordinate pixel offset, same call `resolveTimelineDeepLink()` uses
+ * for a bucket's own `top` — exposed so `TimelineDatesV3.vue` can drive
+ * continuous scrubbing without duplicating virtualizer internals. Callers are
+ * expected to rAF-throttle rapid calls (e.g. a pointermove drag) themselves.
+ */
+function scrollToPixelOffset(px: number): void {
+	virtualizer.value.scrollToOffset(px + scrollMargin.value);
+}
+
+defineExpose({ scrollToPixelOffset });
 
 // --- Feature 066: Timeline-only scroll-proximity prefetch (T-066-28) + deep-link resolution (T-066-30/31) ---
 

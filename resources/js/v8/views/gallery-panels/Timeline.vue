@@ -37,50 +37,82 @@
 			same reason.
 		-->
 		<div v-if="timelineStore.rootConfig && timelineStore.rootRights">
-			<div v-if="timelineStore.minPage > 1" class="flex justify-center pt-2">
-				<UButton
-					variant="ghost"
-					icon="lucide:chevrons-up"
-					color="neutral"
-					@click="timelineStore.loadLess"
-					:label="$t('gallery.timeline.load_previous')"
-					v-if="!timelineStore.isLoading"
+			<!--
+				Flex row (mirrors AlbumPanel.vue's own `<div class="flex"><AlbumNavPanel/><div class="flex-1 ...">`):
+				`TimelineDatesV3.vue` used to be `position: fixed`, overlapping the rightmost photo
+				column. It's now a real flex sibling with its own reserved width, so the grid column
+				is genuinely narrower rather than rendering underneath it.
+			-->
+			<div class="flex">
+				<div class="flex-1 min-w-0">
+					<div v-if="timelineStore.minPage > 1" class="flex justify-center pt-2">
+						<UButton
+							variant="ghost"
+							icon="lucide:chevrons-up"
+							color="neutral"
+							@click="timelineStore.loadLess"
+							:label="$t('gallery.timeline.load_previous')"
+							v-if="!timelineStore.isLoading"
+						/>
+						<LycheeLoadingIcon fast class="text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
+					</div>
+					<PhotoThumbPanel
+						v-if="!isTimelineSoaActive && layoutStore.config !== undefined && photosStore.photos.length > 0"
+						header="gallery.album.header_photos"
+						:photos="photosStore.photos"
+						:photos-timeline="photosStore.photosTimeline"
+						:selected-photos="selectedPhotosIds"
+						@clicked="photoClick"
+						@selected="selectPhoto"
+						@contexted="contextMenuPhotoOpen"
+						:is-timeline="true"
+						:with-control="false"
+						class="pt-4"
+						:intersection-action="loadDate"
+					/>
+					<!-- Feature 066 (I10, FR-066-15/NFR-066-06): flag-on virtualized
+					     replacement for the block above — same `photoClick`/`selectPhoto`/
+					     `contextMenuPhotoOpen` handlers, sourced from `TimelineState.ts`'s
+					     v3 state instead of `photosStore.photos` directly.
+					     `UContainer` matches `PhotoThumbPanelVirtual.vue`'s own wrapping of
+					     this same component on the album path. -->
+					<UContainer v-if="isTimelineSoaActive && layoutStore.config !== undefined" id="lychee_view_content" class="w-full border-0">
+						<PhotoGridVirtual
+							ref="photoGridRef"
+							source="timeline"
+							:selected-photos="selectedPhotosIds"
+							class="pt-4"
+							@clicked="photoClick"
+							@selected="selectPhoto"
+							@contexted="contextMenuPhotoOpen"
+							@active-bucket-changed="(id) => (activeBucketId = id)"
+							@timeline-layout-changed="(payload) => (timelineLayout = payload)"
+							@scroll-offset-changed="(offset) => (timelineScrollOffset = offset)"
+						/>
+					</UContainer>
+
+					<div
+						class="sentinel"
+						v-intersection-observer="onIntersectionObserver"
+						v-if="timelineStore.maxPage < timelineStore.lastPage"
+					></div>
+					<div class="flex justify-center" v-if="timelineStore.isLoading && !isTouchDevice()">
+						<LycheeLoadingIcon fast class="text-2xl" />
+					</div>
+				</div>
+				<TimelineDates :dates="timelineStore.dates" v-if="!isTimelineSoaActive && !photoStore.isLoaded" @load="goToDate" />
+				<TimelineDatesV3
+					:buckets="timelineStore.bucketsV3"
+					:active-bucket-id="activeBucketId"
+					:bucket-layout="timelineLayout.buckets"
+					:total-height="timelineLayout.totalHeight"
+					:scroll-offset="timelineScrollOffset"
+					v-if="isTimelineSoaActive && !photoStore.isLoaded && timelineStore.bucketsV3 !== undefined"
+					@load="goToBucket"
+					@scrub="(px) => photoGridRef?.scrollToPixelOffset(px)"
 				/>
-				<LycheeLoadingIcon fast class="text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
 			</div>
-			<PhotoThumbPanel
-				v-if="!isTimelineSoaActive && layoutStore.config !== undefined && photosStore.photos.length > 0"
-				header="gallery.album.header_photos"
-				:photos="photosStore.photos"
-				:photos-timeline="photosStore.photosTimeline"
-				:selected-photos="selectedPhotosIds"
-				@clicked="photoClick"
-				@selected="selectPhoto"
-				@contexted="contextMenuPhotoOpen"
-				:is-timeline="true"
-				:with-control="false"
-				class="pt-4"
-				:intersection-action="loadDate"
-			/>
-			<!-- Feature 066 (I10, FR-066-15/NFR-066-06): flag-on virtualized
-			     replacement for the block above — same `photoClick`/`selectPhoto`/
-			     `contextMenuPhotoOpen` handlers, sourced from `TimelineState.ts`'s
-			     v3 state instead of `photosStore.photos` directly.
-			     `UContainer` matches `PhotoThumbPanelVirtual.vue`'s own wrapping of
-			     this same component on the album path — without it the grid had no
-			     side gutter at all, running edge-to-edge under `TimelineDatesV3.vue`'s
-			     fixed sidebar. -->
-			<UContainer v-if="isTimelineSoaActive && layoutStore.config !== undefined" id="lychee_view_content" class="w-full border-0">
-				<PhotoGridVirtual
-					source="timeline"
-					:selected-photos="selectedPhotosIds"
-					class="pt-4"
-					@clicked="photoClick"
-					@selected="selectPhoto"
-					@contexted="contextMenuPhotoOpen"
-					@active-bucket-changed="(id) => (activeBucketId = id)"
-				/>
-			</UContainer>
+
 			<!-- Photo panel -->
 			<PhotoPanel
 				v-if="photoStore.isLoaded"
@@ -96,18 +128,6 @@
 				@go-back="goBack"
 				@next="() => next(true)"
 				@previous="() => previous(true)"
-			/>
-
-			<div class="sentinel" v-intersection-observer="onIntersectionObserver" v-if="timelineStore.maxPage < timelineStore.lastPage"></div>
-			<div class="flex justify-center" v-if="timelineStore.isLoading && !isTouchDevice()">
-				<LycheeLoadingIcon fast class="text-2xl" />
-			</div>
-			<TimelineDates :dates="timelineStore.dates" v-if="!isTimelineSoaActive && !photoStore.isLoaded" @load="goToDate" />
-			<TimelineDatesV3
-				:buckets="timelineStore.bucketsV3"
-				:active-bucket-id="activeBucketId"
-				v-if="isTimelineSoaActive && !photoStore.isLoaded && timelineStore.bucketsV3 !== undefined"
-				@load="goToBucket"
 			/>
 
 			<!-- Dialogs -->
@@ -305,6 +325,15 @@ const isTimelineSoaActive = computed(() => timelineStore.isTimelineSoaActive);
 
 /** Bucket currently scrolled into view in `PhotoGridVirtual.vue` (its own `activeHeaderEntry`), forwarded to `TimelineDatesV3.vue` so the sidebar's highlighted entry tracks scrolling, not just `route.params.date` (which only changes on an explicit navigation/deep-link). */
 const activeBucketId = ref<string | null>(null);
+
+/** Template ref to `PhotoGridVirtual.vue`'s exposed `scrollToPixelOffset()` — the drag-scrub target `TimelineDatesV3.vue`'s `@scrub` drives. */
+const photoGridRef = ref<InstanceType<typeof PhotoGridVirtual> | null>(null);
+
+/** `PhotoGridVirtual.vue`'s `timelineLayoutChanged` payload (every bucket's real/placeholder pixel `{top,height}` + `totalHeight`), forwarded to `TimelineDatesV3.vue`'s rail for tick/playhead positioning and drag-scrub targeting. */
+const timelineLayout = ref<{ buckets: { bucketId: string; top: number; height: number }[]; totalHeight: number }>({ buckets: [], totalHeight: 0 });
+
+/** `PhotoGridVirtual.vue`'s continuous content-relative scroll offset, forwarded to `TimelineDatesV3.vue`'s playhead. */
+const timelineScrollOffset = ref(0);
 
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	if (entry.isIntersecting) {

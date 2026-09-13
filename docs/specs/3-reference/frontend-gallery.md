@@ -444,6 +444,39 @@ The search module provides comprehensive search functionality.
 
 ---
 
+### Timeline Module (`timelineModule/`)
+
+The timeline module implements the global Timeline's date-scrub rail (`Timeline.vue`'s own right-hand navigation), separate from the album module's per-album grid.
+
+**`TimelineDatesV3.vue`**
+- The v3 (Struct-of-Arrays) date rail — mounted only when `isTimelineSoaActive` is true; `TimelineDates.vue` (below) is the untouched v2 fallback, a deliberate fork rather than shared code.
+- A narrow, sticky flex sibling of the photo grid, not an overlay — `Timeline.vue` wraps both in one `<div class="flex">`, the same pattern `AlbumNavPanel.vue` uses alongside `AlbumPanel.vue`'s grid.
+- **At rest**, shows only year labels and month ticks:
+  - A bold year number marks the first (most recent) bucket of that year.
+  - A small dot marks a month with at least one photo; a short dash marks a "quarter" month specifically (January/April/July/October), drawn larger so the rail reads like a ruler with minor (month) and major (quarter) ticks. Months with no photos get no tick at all — the rail reflects actual data density, not a fixed calendar grid.
+  - **Spacing between ticks is proportional to real scroll distance, not calendar time.** Every tick's position is `(bucket.top / totalHeight) * railHeight`, using the same pixel layout `PhotoGridVirtual.vue` computes for the grid itself — photo count, row-packing under the active layout mode (justified/masonry/square/grid/list), photo aspect ratios, and the browser's container width all feed into it. A year with more photos (or whose photos pack into more rows) takes up proportionally more of the rail; a sparse year compresses to a sliver.
+  - A month tick that would land within 16px of a year label is dropped rather than repositioned, so every rendered tick's position stays exactly true to the real layout (an earlier attempt that pushed colliding ticks down instead caused the push to cascade across dozens of ticks per year, eventually dragging later years off the bottom of the rail entirely).
+- **Hovering** shows a fisheye lens that magnifies nearby dates into readable labels near the cursor (with a collision-cull pass so labels never overlap), plus a readout pill with the exact date and photo count. The lens is anchored to the rail's own right edge (not floating beside it), so it fully covers — rather than merely sitting next to — the resting-state ticks while active.
+- A playhead line continuously tracks the real scroll position.
+- **Drag-to-scrub**: pressing and dragging on the rail scrubs the grid continuously by real pixel offset (rAF-throttled); releasing (or a plain click) finalizes to a route-pushed, deep-linkable bucket via the existing `@load`/`goToBucket` navigation.
+- Ported from a Claude Design mockup (`Timeline Scrubber.html`) with the mockup's own hardcoded dark palette/fonts replaced by the app's semantic theme tokens (`text-primary`, `bg-toned`, etc.) so it stays correct in both light and dark mode.
+
+**`TimelineDates.vue`**
+- The v2 (legacy) date sidebar — an always-expanded, `position: fixed` list of every date that overlaps the rightmost photo column. Untouched fork, still used when the SoA flag is off.
+
+**Data flow** (`PhotoGridVirtual.vue` → `Timeline.vue` → `TimelineDatesV3.vue`):
+```typescript
+// PhotoGridVirtual.vue emits, timeline-only:
+activeBucketChanged   // bucket id currently scrolled into view
+timelineLayoutChanged // { buckets: {bucketId,top,height}[], totalHeight } — every bucket's real (or placeholder-estimated) pixel geometry
+scrollOffsetChanged   // continuous content-relative scroll position, for the playhead
+
+// exposed for the rail's drag-scrub, without a route push:
+scrollToPixelOffset(px: number)
+```
+
+---
+
 ## Component Interaction Patterns
 
 ### State Management Flow
@@ -514,4 +547,4 @@ All gallery modes support comprehensive keyboard shortcuts:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: September 13, 2026*
