@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="{
-			'fixed flex flex-col text-muted ltr:text-right rtl:text-left top-0 h-full overflow-y-scroll no-scrollbar': true,
+			'fixed flex flex-col text-muted ltr:text-right rtl:text-left top-0 h-full overflow-y-scroll no-scrollbar z-20': true,
 			'ltr:right-6 rtl:left-6': !isTouch,
 			'ltr:right-2 rtl:left-2': isTouch,
 			'ltr:bg-linear-to-l rtl:bg-linear-to-r from-default pt-14 text-shadow-sm group pb-24': true,
@@ -11,7 +11,7 @@
 		<div v-for="yearChunk in years" :key="yearChunk.header" class="">
 			<span
 				:class="{
-					'sticky inline-block top-0 font-semibold z-10 drop-shadow-md text-3xl scale-75 text-highlighted': true,
+					'sticky inline-block top-0 font-semibold z-20 drop-shadow-md text-3xl scale-75 text-highlighted': true,
 					'group-hover:scale-100 transition-all duration-150 ltr:origin-right rtl:origin-left': true,
 					'scale-100': currentYear === parseInt(yearChunk.header, 10),
 				}"
@@ -71,6 +71,8 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const props = defineProps<{
 	buckets: App.Http.Resources.V3.PhotoBucketResource;
+	/** `PhotoGridVirtual.vue`'s own scroll-tracked `activeHeaderEntry` bucket id, forwarded by `Timeline.vue` — takes priority over `route.params.date` (below) so the highlight tracks scrolling, not just the last explicit navigation. */
+	activeBucketId?: string | null;
 }>();
 
 const { spliter } = useSplitter();
@@ -87,7 +89,7 @@ const years = computed(() => {
 	);
 });
 
-const currentBucketId = computed(() => (route.params.date as string | undefined) ?? "");
+const currentBucketId = computed(() => props.activeBucketId ?? (route.params.date as string | undefined) ?? "");
 const currentYear = computed(() => parseInt(currentBucketId.value.split("-")[0], 10));
 
 const isTouch = ref(isTouchDevice());

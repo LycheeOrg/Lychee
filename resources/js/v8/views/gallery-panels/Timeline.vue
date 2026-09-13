@@ -4,6 +4,28 @@
 	<WebauthnModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
+	<!--
+		Outside `UContextMenu` on purpose (mirrors `AlbumPanel.vue`'s own placement of
+		`AlbumHeader` before its `UContextMenu`, not inside it) — a right-click context menu
+		over the header wasn't meaningful anyway (it only ever acted on selected photos).
+
+		The outer `sticky top-0 z-50` div is load-bearing, not decorative: `TimelineHeader`'s
+		own `UHeader` already computes `position: sticky; top: 0` on itself (confirmed via
+		devtools), yet still scrolled off-screen with the rest of the page. Empirically, a
+		`position: sticky` element that is a DIRECT DESCENDANT of `<Collapse>`'s rendered
+		wrapper div never sticks, regardless of that wrapper's own (entirely unremarkable)
+		computed style — moving the sticky element out of `Collapse` entirely, or (as here)
+		promoting the sticky positioning to a plain div that wraps `Collapse` from the
+		outside, both reliably fix it. `z-50` matches `UHeader`'s own default so it still
+		stacks above `TimelineDatesV3.vue`'s sidebar (`z-20`) and the grid's pinned date bar
+		(`z-10`).
+	-->
+	<div class="sticky top-0 z-50">
+		<Collapse :when="!is_full_screen">
+			<TimelineHeader v-if="userStore.isLoaded && timelineStore.rootConfig && timelineStore.rootRights" />
+		</Collapse>
+	</div>
+
 	<UContextMenu :items="menuSections" :disabled="photosStore.photos.length === 0" class="contents">
 		<!--
 			No `h-svh overflow-y-auto`/`id="scrollArea"` wrapper here (unlike the v7 fork this
@@ -15,9 +37,6 @@
 			same reason.
 		-->
 		<div v-if="timelineStore.rootConfig && timelineStore.rootRights">
-			<Collapse :when="!is_full_screen">
-				<TimelineHeader v-if="userStore.isLoaded" />
-			</Collapse>
 			<div v-if="timelineStore.minPage > 1" class="flex justify-center pt-2">
 				<UButton
 					variant="ghost"
@@ -46,16 +65,22 @@
 			<!-- Feature 066 (I10, FR-066-15/NFR-066-06): flag-on virtualized
 			     replacement for the block above — same `photoClick`/`selectPhoto`/
 			     `contextMenuPhotoOpen` handlers, sourced from `TimelineState.ts`'s
-			     v3 state instead of `photosStore.photos` directly. -->
-			<PhotoGridVirtual
-				v-if="isTimelineSoaActive && layoutStore.config !== undefined"
-				source="timeline"
-				:selected-photos="selectedPhotosIds"
-				class="pt-4"
-				@clicked="photoClick"
-				@selected="selectPhoto"
-				@contexted="contextMenuPhotoOpen"
-			/>
+			     v3 state instead of `photosStore.photos` directly.
+			     `UContainer` matches `PhotoThumbPanelVirtual.vue`'s own wrapping of
+			     this same component on the album path — without it the grid had no
+			     side gutter at all, running edge-to-edge under `TimelineDatesV3.vue`'s
+			     fixed sidebar. -->
+			<UContainer v-if="isTimelineSoaActive && layoutStore.config !== undefined" id="lychee_view_content" class="w-full border-0">
+				<PhotoGridVirtual
+					source="timeline"
+					:selected-photos="selectedPhotosIds"
+					class="pt-4"
+					@clicked="photoClick"
+					@selected="selectPhoto"
+					@contexted="contextMenuPhotoOpen"
+					@active-bucket-changed="(id) => (activeBucketId = id)"
+				/>
+			</UContainer>
 			<!-- Photo panel -->
 			<PhotoPanel
 				v-if="photoStore.isLoaded"
@@ -80,6 +105,7 @@
 			<TimelineDates :dates="timelineStore.dates" v-if="!isTimelineSoaActive && !photoStore.isLoaded" @load="goToDate" />
 			<TimelineDatesV3
 				:buckets="timelineStore.bucketsV3"
+				:active-bucket-id="activeBucketId"
 				v-if="isTimelineSoaActive && !photoStore.isLoaded && timelineStore.bucketsV3 !== undefined"
 				@load="goToBucket"
 			/>
@@ -276,6 +302,9 @@ const isInitialLoading = ref(true);
  * reads) rather than re-deriving the flag here.
  */
 const isTimelineSoaActive = computed(() => timelineStore.isTimelineSoaActive);
+
+/** Bucket currently scrolled into view in `PhotoGridVirtual.vue` (its own `activeHeaderEntry`), forwarded to `TimelineDatesV3.vue` so the sidebar's highlighted entry tracks scrolling, not just `route.params.date` (which only changes on an explicit navigation/deep-link). */
+const activeBucketId = ref<string | null>(null);
 
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	if (entry.isIntersecting) {

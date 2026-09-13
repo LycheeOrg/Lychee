@@ -147,6 +147,8 @@ const emits = defineEmits<{
 	selected: [id: string, event: MouseEvent];
 	contexted: [id: string, event: MouseEvent];
 	toggleBuyMe: [id: string];
+	/** Timeline-only — see `activeHeaderEntry`'s own watcher below. */
+	activeBucketChanged: [bucketId: string | null];
 }>();
 
 const source = computed(() => props.source ?? "album");
@@ -439,10 +441,10 @@ function menuOpen(id: string, e: MouseEvent) {
 // generalized here from `rowsResult.rows`/`rowHeights` to the chunk-based
 // `layout.headerTops` this feature computes instead. Already source-generic
 // (`layout` itself branches above), so no Timeline-specific change needed.
-const activeHeaderLabel = computed<string | null>(() => {
+const activeHeaderEntry = computed<{ label: string; bucketId: string } | null>(() => {
 	const offset = (virtualizer.value.scrollOffset ?? 0) - scrollMargin.value;
 	const tops = layout.value.headerTops;
-	let current: { top: number; label: string } | null = null;
+	let current: { top: number; label: string; bucketId: string } | null = null;
 	for (const h of tops) {
 		if (h.top - uiHeaderHeightPx <= offset) {
 			current = h;
@@ -453,8 +455,28 @@ const activeHeaderLabel = computed<string | null>(() => {
 	if (current === null || offset < current.top + HEADER_ROW_HEIGHT - uiHeaderHeightPx) {
 		return null;
 	}
-	return current.label;
+	return current;
 });
+
+const activeHeaderLabel = computed<string | null>(() => activeHeaderEntry.value?.label ?? null);
+
+// Timeline-only (FR-066/T-067): the bucket id backing `activeHeaderLabel`
+// above, surfaced via `activeBucketChanged` so `Timeline.vue` can forward it
+// to `TimelineDatesV3.vue`'s own highlight — that sidebar previously only
+// ever tracked `route.params.date` (set once on navigation/deep-link), so
+// scrolling past a bucket boundary without clicking a date link never moved
+// the highlighted entry. Emitted (not read back from a store) since this is
+// purely a same-view UI concern between two sibling components under
+// `Timeline.vue`, not state anything else needs.
+watch(
+	activeHeaderEntry,
+	(entry) => {
+		if (source.value === "timeline") {
+			emits("activeBucketChanged", entry?.bucketId ?? null);
+		}
+	},
+	{ immediate: true },
+);
 
 // --- Feature 066: Timeline-only scroll-proximity prefetch (T-066-28) + deep-link resolution (T-066-30/31) ---
 
