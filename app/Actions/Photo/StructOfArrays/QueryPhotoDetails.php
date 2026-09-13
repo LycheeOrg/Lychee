@@ -9,6 +9,7 @@
 namespace App\Actions\Photo\StructOfArrays;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Eloquent\FixedQueryBuilder;
 use App\Enum\MetricsAccess;
 use App\Http\Resources\Models\ColourPaletteResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
@@ -20,6 +21,7 @@ use App\Models\User;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\PhotoBucketComputer;
+use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Optional;
@@ -66,6 +68,11 @@ class QueryPhotoDetails
 				} else {
 					$query->where('photo_album.bucket_id', '=', $bucket_id);
 				}
+			} elseif ($album instanceof TimelineAlbum) {
+				// SQL-pushdown bounded (NFR-066-01) - never the full-library
+				// PHP row scan self::resolveLiveBucketPhotoIds() uses for
+				// TagAlbum/PersonAlbum (left untouched, see below).
+				$this->applyTimelineBucketFilter($query, $album, $bucket_id);
 			} else {
 				// TagAlbum/PersonAlbum/BaseSmartAlbum have no stored
 				// `bucket_id` to filter by in SQL - resolve the matching ids
@@ -114,6 +121,35 @@ class QueryPhotoDetails
 		}
 
 		return $matching_ids;
+	}
+
+	/**
+	 * Curates `$query` (already scoped to {@see TimelineAlbum}'s candidate
+	 * photos by {@see ResolvesPhotoSource::resolvePhotoQuery()}) down to
+	 * exactly `$bucket_id`'s rows via a direct `WHERE` range on the raw
+	 * sort column - `PhotoBucketComputer::bucketDateRange()`'s SQL-pushdown
+	 * `[start, end)`, or `whereNull()` for the `"unknown"` sentinel - bounded
+	 * by the requested bucket's own size, never the full library
+	 * (NFR-066-01, FR-066-07).
+	 *
+	 * @param FixedQueryBuilder<Photo> $query
+	 */
+	private function applyTimelineBucketFilter(FixedQueryBuilder $query, TimelineAlbum $album, string $bucket_id): void
+	{
+		$sorting = $this->resolveEffectiveSorting($album);
+
+		if ($bucket_id === 'unknown') {
+			$query->whereNull($sorting->column->value);
+
+			return;
+		}
+
+		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
+		[$start, $end] = $this->bucket_computer->bucketDateRange($bucket_id, $granularity);
+
+		$query
+			->where($sorting->column->value, '>=', $start)
+			->where($sorting->column->value, '<', $end);
 	}
 
 	/**

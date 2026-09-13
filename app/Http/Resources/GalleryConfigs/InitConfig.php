@@ -100,6 +100,9 @@ class InitConfig extends Data
 
 	// Timeline settings
 	public bool $is_timeline_left_border_visible;
+	public int $timeline_lens_height;
+	public int $timeline_lens_falloff;
+	public int $timeline_lens_magnification;
 
 	// Site title & dropbox key if logged in as admin.
 	public string $title;
@@ -258,6 +261,9 @@ class InitConfig extends Data
 
 		// Timeline settings
 		$this->is_timeline_left_border_visible = request()->configs()->getValueAsBool('timeline_left_border_enabled');
+		$this->timeline_lens_height = request()->configs()->getValueAsInt('timeline_lens_height');
+		$this->timeline_lens_falloff = request()->configs()->getValueAsInt('timeline_lens_falloff');
+		$this->timeline_lens_magnification = request()->configs()->getValueAsInt('timeline_lens_magnification');
 
 		// Site title & dropbox key if logged in as admin.
 		// dd(request()->config());

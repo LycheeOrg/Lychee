@@ -225,16 +225,19 @@ class CacheKeyProviderTest extends AbstractTestCase
 
 	/**
 	 * No two distinct (album_id, user identity) combinations may collide
-	 * for either `photoBucketsKey()` or `photoRatiosKey()`.
+	 * for either `photoBucketsKey()` or `photoRatiosKey()`. Unlocked-album
+	 * state is held fixed here - see
+	 * `testPhotoBucketsKeyIsUniqueAcrossUnlockedDigest()` and siblings for
+	 * that dimension.
 	 */
 	public function testPhotoBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
 	{
-		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoBucketsKey($album_id, $user_id));
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoBucketsKey($album_id, $user_id, 'digest'));
 	}
 
 	public function testPhotoRatiosKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
 	{
-		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, $user_id));
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, 'all', $user_id, 'digest'));
 	}
 
 	/**
@@ -251,10 +254,10 @@ class CacheKeyProviderTest extends AbstractTestCase
 		foreach ($album_ids as $album_id) {
 			foreach ($user_ids as $user_id) {
 				foreach ([
-					$this->provider->photoBucketsKey($album_id, $user_id),
-					$this->provider->photoRatiosKey($album_id, $user_id),
-					$this->provider->photoDetailsKey($album_id, 'bucket:2024', $user_id),
-					$this->provider->photoDetailsKey($album_id, 'bucket:2025', $user_id),
+					$this->provider->photoBucketsKey($album_id, $user_id, 'digest'),
+					$this->provider->photoRatiosKey($album_id, 'all', $user_id, 'digest'),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2024', $user_id, 'digest'),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2025', $user_id, 'digest'),
 				] as $key) {
 					self::assertArrayNotHasKey($key, $keys, "duplicate key: {$key}");
 					$keys[$key] = true;
@@ -263,6 +266,51 @@ class CacheKeyProviderTest extends AbstractTestCase
 		}
 
 		self::assertCount(6 * 4, $keys);
+	}
+
+	/**
+	 * Security fix (CWE-524): every album's `photos()` - regular
+	 * {@see \App\Models\Album}, smart album, `TagAlbum`/`PersonAlbum`, and
+	 * `TimelineAlbum` alike - filters through
+	 * {@see \App\Policies\PhotoQueryPolicy::applySearchabilityFilter()}
+	 * keyed off `AlbumPolicy::getUnlockedAlbumIDs()` (session-scoped), so two
+	 * requests differing only in that state must never collide on the same
+	 * cache key - otherwise a guest who has unlocked a protected album could
+	 * populate a shared entry that leaks its photos to a guest who has not.
+	 * Mirrors `testAlbumChildrenDataKeyIsUniqueAcrossUnlockedDigest()`
+	 * (CodeRabbit finding on PR #4680) for the photo-listing tier.
+	 */
+	public function testPhotoBucketsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoBucketsKey('album1', null, 'digest-a');
+		$key_b = $this->provider->photoBucketsKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->photoBucketsKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testPhotoRatiosKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoRatiosKey('album1', 'all', null, 'digest-a');
+		$key_b = $this->provider->photoRatiosKey('album1', 'all', null, 'digest-b');
+		$key_empty = $this->provider->photoRatiosKey('album1', 'all', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testPhotoDetailsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoDetailsKey('album1', 'all', null, 'digest-a');
+		$key_b = $this->provider->photoDetailsKey('album1', 'all', null, 'digest-b');
+		$key_empty = $this->provider->photoDetailsKey('album1', 'all', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
 	}
 
 	public function testPhotoDetailsScopeDigestIsStableAcrossPhotoIdOrder(): void
