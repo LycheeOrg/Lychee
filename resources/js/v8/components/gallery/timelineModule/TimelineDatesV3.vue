@@ -23,9 +23,7 @@
 
 		<!-- Playhead: continuously tracks real scroll position. -->
 		<div class="absolute inset-x-0 h-0 pointer-events-none" :style="{ top: `${playheadTopPx}px` }">
-			<div
-				class="absolute left-2 right-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]"
-			/>
+			<div class="absolute left-2 right-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]" />
 		</div>
 
 		<!-- Lens: fisheye magnification of nearby dates while hovering — anchored to
@@ -39,21 +37,22 @@
 			:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 		>
 			<div
-				class="absolute inset-0 overflow-hidden ltr:border-s rtl:border-e border-default bg-default/85 backdrop-blur-sm ltr:mask-[linear-gradient(90deg,transparent,#000_26%)] rtl:mask-[linear-gradient(270deg,transparent,#000_26%)]"
+				class="absolute inset-0 overflow-hidden border-default bg-default/85 backdrop-blur-sm"
+				:class="{
+					'border-s mask-[linear-gradient(90deg,transparent,#000_26%)]': isLTR(),
+					'border-e mask-[linear-gradient(270deg,transparent,#000_26%)]': isRTL(),
+				}"
 			/>
-			<div
-				:dir
-				class="absolute inset-0 overflow-hidden rtl:text-left ltr:text-right"
-				>
+			<div :dir class="absolute inset-0 overflow-hidden rtl:text-left ltr:text-right">
 				<span
 					v-for="item in lens.items"
 					:key="item.bucketId"
 					class="absolute -translate-y-1/2 whitespace-nowrap font-mono z-30"
 					:class="{
-						'text-highlighted' : item.strong,
-						'text-muted' : !item.strong,
-						'right-3' : isLTR(),
-						'left-3' : isRTL(),
+						'text-highlighted': item.strong,
+						'text-muted': !item.strong,
+						'right-3': isLTR(),
+						'left-3': isRTL(),
 					}"
 					:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
 				>
@@ -62,12 +61,13 @@
 			</div>
 			<!-- Focal line inside the glass — the ruler edge across the magnified dates. -->
 			<div
-				class="absoluteh-0 pointer-events-none" :style="{ top: `${lens.focal}px` }"
+				class="absolute h-0 pointer-events-none"
+				:style="{ top: `${lens.focal}px` }"
 				:class="{
-					'left-[26%] right-0' : isLTR(),
-					'left-0 right-[26%]' : isRTL(),
+					'left-[26%] right-0': isLTR(),
+					'left-0 right-[26%]': isRTL(),
 				}"
-				>
+			>
 				<div class="absolute inset-0 ltr:right-2 rtl:left-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]" />
 			</div>
 		</div>
@@ -77,8 +77,8 @@
 			v-if="hovering && hoverBucket !== null"
 			class="absolute -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
 			:class="{
-				'right-53' : isLTR(),
-				'left-53' : isRTL(),
+				'right-53': isLTR(),
+				'left-53': isRTL(),
 			}"
 			:style="{ top: `${cursorY}px` }"
 		>
