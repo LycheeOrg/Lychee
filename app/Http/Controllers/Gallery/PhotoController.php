@@ -18,6 +18,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
@@ -201,6 +202,16 @@ class PhotoController extends Controller
 	public function update(EditPhotoRequest $request): PhotoResource
 	{
 		$photo = $request->photo();
+
+		// Captured before any mutation below: by the time PhotoSaved is
+		// dispatched (after save()), the DB row already holds the new
+		// values, so this is the only place the PREVIOUS Timeline sort date
+		// is still available - see PhotoSaved::$previous_dates.
+		$previous_dates = [
+			'created_at' => $photo->getRawOriginal('created_at'),
+			'taken_at' => $photo->getRawOriginal('taken_at'),
+		];
+
 		$photo->title = $request->title();
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
@@ -225,7 +236,15 @@ class PhotoController extends Controller
 		// immutable - recompute every album this photo is linked into
 		// whenever any of them actually changed. Explicit call site, not an
 		// Eloquent hook, per repo convention.
-		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at']), $photo->id);
+		$bucket_relevant_changed = $photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at']);
+		RecomputePhotoBucketsJob::dispatchIf($bucket_relevant_changed, $photo->id);
+
+		// RecomputePhotoBucketsJob (above) only reaches real albums via their
+		// `photo_album` pivot rows - Timeline is a smart album with no such
+		// row, so its own cached buckets/ratios/details need this separate,
+		// explicit signal whenever the sort date may have moved this photo
+		// into a different Timeline bucket.
+		PhotoSaved::dispatchIf($bucket_relevant_changed, [$photo->id], [$photo->id => $previous_dates]);
 
 		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 

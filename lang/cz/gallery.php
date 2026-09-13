@@ -138,6 +138,7 @@ return [
         'month' => 'Měsíc',
         'day' => 'Den',
         'hour' => 'Hodina',
+        'photos_count' => ':count photo|:count photos',
     ],
     'pagination' => [
         'infinite_scroll' => 'Nekonečné posouvání',

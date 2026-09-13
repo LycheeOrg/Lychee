@@ -12,6 +12,29 @@
 	background-image: url("/img/noise.png");
 }
 
+/* Hides the scrollbar (Firefox/IE via the property, Chrome/Safari via the pseudo-element) while keeping the element scrollable. */
+@utility no-scrollbar {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+/*
+  Nuxt UI ships a `--ui-text-toned` CSS var (and the `text-toned` utility it
+  backs) but no background equivalent — only `bg-muted`/`bg-elevated`/
+  `bg-accented`/`bg-inverted` exist (see node_modules/@nuxt/ui/dist/runtime/index.css).
+  `--ui-bg-toned` below mirrors `--ui-text-toned`'s own light/dark values
+  exactly (defined alongside this app's other `--ui-*` overrides further
+  down), so `bg-toned` reads as the same visual weight as `text-toned` when
+  used for a small fill (e.g. a marker dot) rather than text.
+*/
+@utility bg-toned {
+	background-color: var(--ui-bg-toned);
+}
+
 html {
 	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -196,6 +219,8 @@ body {
 	--ui-info: var(--ui-color-info-500);
 	--ui-warning: var(--ui-color-warning-500);
 	--ui-error: var(--ui-color-error-500);
+	/* See `bg-toned`'s own doc comment above — mirrors `--ui-text-toned`'s light value (neutral-600). */
+	--ui-bg-toned: var(--ui-color-neutral-600);
 }
 .dark {
 	--ui-color-neutral-50: var(--color-zinc-50);
@@ -215,6 +240,8 @@ body {
 	--ui-info: var(--ui-color-info-400);
 	--ui-warning: var(--ui-color-warning-400);
 	--ui-error: var(--ui-color-error-400);
+	/* See `bg-toned`'s own doc comment above — mirrors `--ui-text-toned`'s dark value (neutral-300). */
+	--ui-bg-toned: var(--ui-color-neutral-300);
 }
 
 /*

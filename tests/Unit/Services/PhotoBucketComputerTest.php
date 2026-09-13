@@ -268,4 +268,78 @@ class PhotoBucketComputerTest extends AbstractTestCase
 		$this->assertSame(TimelinePhotoGranularity::DAY, $computer->resolveGranularity(TimelinePhotoGranularity::DEFAULT));
 		$this->assertSame(TimelinePhotoGranularity::DAY, $computer->resolveGranularity(TimelinePhotoGranularity::DISABLED));
 	}
+
+	// ── bucketDateRange() (pure, Carbon-free) ───────────────────────
+
+	public function testBucketDateRangeYear(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-01-01 00:00:00', '2025-01-01 00:00:00'],
+			$computer->bucketDateRange('2024', TimelinePhotoGranularity::YEAR),
+		);
+	}
+
+	public function testBucketDateRangeMonth(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-03-01 00:00:00', '2024-04-01 00:00:00'],
+			$computer->bucketDateRange('2024-03', TimelinePhotoGranularity::MONTH),
+		);
+	}
+
+	public function testBucketDateRangeMonthDecemberRollsIntoNextYear(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-12-01 00:00:00', '2025-01-01 00:00:00'],
+			$computer->bucketDateRange('2024-12', TimelinePhotoGranularity::MONTH),
+		);
+	}
+
+	public function testBucketDateRangeDay(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-03-15 00:00:00', '2024-03-16 00:00:00'],
+			$computer->bucketDateRange('2024-03-15', TimelinePhotoGranularity::DAY),
+		);
+	}
+
+	public function testBucketDateRangeDayRollsIntoNextMonth(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-01-31 00:00:00', '2024-02-01 00:00:00'],
+			$computer->bucketDateRange('2024-01-31', TimelinePhotoGranularity::DAY),
+		);
+	}
+
+	public function testBucketDateRangeHour(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-03-15 14:00:00', '2024-03-15 15:00:00'],
+			$computer->bucketDateRange('2024-03-15-14', TimelinePhotoGranularity::HOUR),
+		);
+	}
+
+	public function testBucketDateRangeHourRollsIntoNextDay(): void
+	{
+		[$computer] = $this->makeComputer();
+		$this->assertSame(
+			['2024-03-15 23:00:00', '2024-03-16 00:00:00'],
+			$computer->bucketDateRange('2024-03-15-23', TimelinePhotoGranularity::HOUR),
+		);
+	}
+
+	public function testBucketDateRangeNeverTouchesConfig(): void
+	{
+		[$computer, $config_manager] = $this->makeComputer();
+		// No shouldReceive() set up at all: any config call would throw -
+		// bucketDateRange() is a pure function of its own arguments.
+		$computer->bucketDateRange('2024-03', TimelinePhotoGranularity::MONTH);
+		$this->assertTrue(true);
+	}
 }

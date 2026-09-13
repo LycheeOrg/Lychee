@@ -19,6 +19,7 @@
 namespace Tests\Feature_v3\Photo;
 
 use App\Enum\SizeVariantType;
+use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Face;
@@ -26,6 +27,7 @@ use App\Models\Person;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
@@ -354,5 +356,59 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos");
 		$this->assertOk($response);
 		$response->assertJson(['ids' => []]);
+	}
+
+	// ── bucket_ids[]/photo_ids[] windowing (F-066-06, S-066-04..07) ─
+
+	public function testOmittingBothWindowParamsPreservesWholeScopeBehaviour(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$p1 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+		$p2 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos");
+		$this->assertOk($response);
+		self::assertEqualsCanonicalizing([$p1->id, $p2->id], $response->json('ids'));
+	}
+
+	public function testBucketIdsWindowReturnsOnlyThatBucketsPhotos(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'created_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'year']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo_2024 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2024-05-01')]);
+		$photo_2022 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2022-05-01')]);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['bucket_ids' => ['2024']]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$photo_2024->id], 'bucket_ids' => ['2024']]);
+		self::assertNotContains($photo_2022->id, $response->json('ids'));
+	}
+
+	public function testBucketIdsAndPhotoIdsBothProvidedReturns422(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", [
+			'bucket_ids' => ['2024'],
+			'photo_ids' => [$photo->id],
+		]);
+		self::assertSame(422, $response->getStatusCode());
+	}
+
+	public function testPhotoIdsResolvesExactlyThatPhotoIncludingItsBucketId(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'created_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'year']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$target = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2024-05-01')]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2022-05-01')]);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['photo_ids' => [$target->id]]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$target->id], 'bucket_ids' => ['2024']]);
 	}
 }

@@ -12,6 +12,7 @@ use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Constants\FileSystem;
 use App\Enum\CacheTag;
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Http\Requests\Settings\GetAllConfigsRequest;
@@ -64,6 +65,24 @@ class SettingsController extends Controller
 		'title_bucket_prefix_length',
 	];
 
+	/**
+	 * Config keys whose change affects `TimelineAlbum`'s photo-listing
+	 * cache with no per-photo event to hook (visibility/sort/access
+	 * toggles read fresh on every request) - closes the coarse tag via
+	 * {@see PhotoBucketsRecomputed} (T-066-20; no blanket config-change
+	 * cache-flush mechanism existed for photo listings prior to this
+	 * feature - {@see self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS}/
+	 * {@see AlbumListingCacheFlushRequested} is this const's own structural
+	 * precedent, for album listings).
+	 */
+	public const TIMELINE_PHOTO_LISTING_COARSE_FLUSH_CONFIGS = [
+		'hide_nsfw_in_timeline',
+		'timeline_photos_order',
+		'timeline_photos_granularity',
+		'timeline_page_enabled',
+		'timeline_photos_public',
+	];
+
 	public const V8_CONFIGS = [
 		'site_logo',
 		'primary_color',
@@ -84,6 +103,9 @@ class SettingsController extends Controller
 		'photo_ken_burns_on_hover_enabled',
 		'photo_ken_burns_on_hover_scale',
 		'photo_ken_burns_on_hover_duration',
+		'timeline_lens_height',
+		'timeline_lens_falloff',
+		'timeline_lens_magnification',
 		'photo_share_card_enabled',
 		'flags_enabled',
 		'photo_flags_enabled',
@@ -178,6 +200,7 @@ class SettingsController extends Controller
 
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 		RecomputeRootAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
+		PhotoBucketsRecomputed::dispatchIf($configs->pluck('key')->intersect(self::TIMELINE_PHOTO_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty(), ['timeline']);
 
 		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);

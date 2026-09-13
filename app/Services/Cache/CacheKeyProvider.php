@@ -376,43 +376,137 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/buckets`: a pure
-	 * function of `(album_id, user identity)` — mirrors
-	 * {@see self::albumBucketsKey()}.
+	 * Fine-grained tag carried (in addition to {@see self::photoListingTag()})
+	 * by a bucket-windowed `ratios`/`details` cache entry - evicting it
+	 * alone flushes only that one bucket's cached entries for this album,
+	 * leaving every other cached bucket warm (FR-066-09, NFR-066-04). The
+	 * `buckets` tier itself never carries this tag (FR-066-09): it is
+	 * always whole-scope, so only the coarse tag and
+	 * {@see self::photoBucketsTierTag()} apply to it.
 	 */
-	public function photoBucketsKey(string $album_id, int|string|null $user_id): string
+	public function photoListingBucketTag(string $album_id, string $bucket_id): string
+	{
+		return "photo-listing-bucket:{$album_id}:{$bucket_id}";
+	}
+
+	/**
+	 * Dedicated tag carried (in addition to {@see self::photoListingTag()})
+	 * only by the `buckets` tier's own whole-scope cache entry for one
+	 * album - never by a `ratios`/`details` window entry. Lets an
+	 * invalidation that only needs to refresh whole-scope bucket counts
+	 * (e.g. Timeline's per-photo eviction) evict just this tag plus the
+	 * affected fine {@see self::photoListingBucketTag()}s, without also
+	 * evicting every unrelated cached `ratios`/`details` window via the
+	 * coarse tag those entries share with `buckets` (FR-066-09, NFR-066-04).
+	 */
+	public function photoBucketsTierTag(string $album_id): string
+	{
+		return "photo-listing-buckets-tier:{$album_id}";
+	}
+
+	/**
+	 * @param string[] $bucket_ids
+	 *
+	 * @return string[]
+	 */
+	public function photoListingBucketTags(string $album_id, array $bucket_ids): array
+	{
+		return array_map(fn (string $bucket_id): string => $this->photoListingBucketTag($album_id, $bucket_id), $bucket_ids);
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/buckets`: a pure
+	 * function of `(album_id, user identity, unlocked-album state)` —
+	 * mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see self::unlockedAlbumsDigest()}) -
+	 *                                every album's `photos()` (regular
+	 *                                {@see \App\Models\Album}, smart album,
+	 *                                `TagAlbum`/`PersonAlbum`, and
+	 *                                `TimelineAlbum` alike) filters through
+	 *                                {@see \App\Policies\PhotoQueryPolicy::applySearchabilityFilter()}
+	 *                                with this same state, so two sessions
+	 *                                with different unlocked albums must never
+	 *                                share a cache entry - a guest who has
+	 *                                unlocked a protected album must not leak
+	 *                                its photos to a guest who has not
+	 *                                (CWE-524)
+	 */
+	public function photoBucketsKey(string $album_id, int|string|null $user_id, string $unlocked_digest): string
 	{
 		$tag = $this->photoListingTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag}:buckets:{$user_tag}";
+		return "{$tag}:buckets:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos`, mirrors
 	 * {@see self::photoBucketsKey()}.
+	 *
+	 * @param string $scope_digest    see {@see self::photoRatiosScopeDigest()} -
+	 *                                distinguishes every distinct
+	 *                                `bucket_ids[]`/`photo_ids[]` window a
+	 *                                caller could request (or the whole-scope
+	 *                                request, digest `"all"`) so two different
+	 *                                windows for the same album never collide
+	 * @param string $unlocked_digest see {@see self::photoBucketsKey()}
 	 */
-	public function photoRatiosKey(string $album_id, int|string|null $user_id): string
+	public function photoRatiosKey(string $album_id, string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
 	{
 		$tag = $this->photoListingTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag}:ratios:{$user_tag}";
+		return "{$tag}:ratios:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Digest identifying the exact `ratios` request scope
+	 * ({@see \App\Http\Requests\Photo\GetPhotoRatiosRequest}), mirroring
+	 * {@see self::photoDetailsScopeDigest()} exactly: the sorted, hashed
+	 * `bucket_ids[]` list, or the sorted, hashed `photo_ids[]` list, or the
+	 * literal `"all"` sentinel when both are omitted (today's whole-scope
+	 * request, NFR-066-03).
+	 *
+	 * @param string[]|null $bucket_ids
+	 * @param string[]|null $photo_ids
+	 */
+	public function photoRatiosScopeDigest(?array $bucket_ids, ?array $photo_ids): string
+	{
+		if ($bucket_ids !== null) {
+			$ids = $bucket_ids;
+			sort($ids);
+
+			return 'buckets:' . hash('xxh3', json_encode($ids, JSON_THROW_ON_ERROR));
+		}
+
+		if ($photo_ids !== null) {
+			$ids = $photo_ids;
+			sort($ids);
+
+			return 'ids:' . hash('xxh3', json_encode($ids, JSON_THROW_ON_ERROR));
+		}
+
+		return 'all';
 	}
 
 	/**
 	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/details`: a pure
-	 * function of `(album_id, user identity, scope)` — `$scope_digest` must
-	 * distinguish every distinct `bucket_id`/`photo_ids[]` combination a
-	 * caller could request, so two different detail requests for the same
-	 * album never collide. See {@see self::photoDetailsScopeDigest()}.
+	 * function of `(album_id, user identity, scope, unlocked-album state)` —
+	 * `$scope_digest` must distinguish every distinct `bucket_id`/
+	 * `photo_ids[]` combination a caller could request, so two different
+	 * detail requests for the same album never collide. See
+	 * {@see self::photoDetailsScopeDigest()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::photoBucketsKey()}
 	 */
-	public function photoDetailsKey(string $album_id, string $scope_digest, int|string|null $user_id): string
+	public function photoDetailsKey(string $album_id, string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
 	{
 		$tag = $this->photoListingTag($album_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag}:details:{$scope_digest}:{$user_tag}";
+		return "{$tag}:details:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 
 	/**

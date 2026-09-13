@@ -2,7 +2,7 @@
 	<ImportFromLink v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_link_open" />
 	<ImportFromServer v-if="timelineStore.rootRights?.can_import_from_server" v-model:open="is_import_from_server_open" />
 	<DropBox v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_dropbox_open" />
-	<UHeader :toggle="false" class="z-10" :ui="{ root: 'border-b-0', center: 'flex' }">
+	<UHeader :toggle="false" :ui="{ root: 'border-b-0', center: 'flex' }">
 		<template #left>
 			<OpenLeftMenu />
 		</template>

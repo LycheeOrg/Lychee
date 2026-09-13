@@ -138,6 +138,7 @@ return [
         'month' => 'ماه',
         'day' => 'روز',
         'hour' => 'ساعت',
+        'photos_count' => ':count photo|:count photos',
     ],
     'pagination' => [
         'infinite_scroll' => 'پیمایش نامحدود',

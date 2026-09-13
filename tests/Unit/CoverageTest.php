@@ -57,6 +57,7 @@ class CoverageTest extends AbstractTestCase
 			'BEST_PICTURES',
 			'MY_RATED_PICTURES',
 			'MY_BEST_PICTURES',
+			'TIMELINE',
 		], SmartAlbumType::names());
 		self::assertEquals([
 			'UNSORTED' => 'unsorted',
@@ -73,6 +74,7 @@ class CoverageTest extends AbstractTestCase
 			'BEST_PICTURES' => 'best_pictures',
 			'MY_RATED_PICTURES' => 'my_rated_pictures',
 			'MY_BEST_PICTURES' => 'my_best_pictures',
+			'TIMELINE' => 'timeline',
 		], SmartAlbumType::array());
 
 		self::assertEquals('failure', JobStatus::FAILURE->name());

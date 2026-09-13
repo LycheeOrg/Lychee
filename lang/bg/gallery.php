@@ -138,6 +138,7 @@ return [
         'month' => 'Месец',
         'day' => 'Ден',
         'hour' => 'Час',
+        'photos_count' => ':count photo|:count photos',
     ],
     'pagination' => [
         'infinite_scroll' => 'Безкрайно превъртане',

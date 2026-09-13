@@ -13,7 +13,9 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
+use App\Enum\ColumnSortingPhotoType;
 use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Enum\TitleBucketMode;
 use App\Exceptions\Internal\LycheeLogicException;
@@ -23,6 +25,7 @@ use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Photo;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
+use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
@@ -96,9 +99,25 @@ trait ResolvesPhotoSource
 	 * `BaseSmartAlbum` has no per-album override and always resolves to the
 	 * instance-wide default instead, mirroring `BaseSmartAlbum`'s own
 	 * internal use of {@see PhotoSortingCriterion::createDefault()}.
+	 *
+	 * `TimelineAlbum` is the one `BaseSmartAlbum` with its own,
+	 * longstanding sort-config key (`timeline_photos_order`) - reproduces
+	 * {@see \App\Actions\Photo\Timeline::do()}'s sort resolution exactly:
+	 * restricted to `{CREATED_AT, TAKEN_AT}` (silently falling back to
+	 * `TAKEN_AT` for any other configured value), direction always `DESC`.
 	 */
 	private function resolveEffectiveSorting(AbstractAlbum $album): PhotoSortingCriterion
 	{
+		if ($album instanceof TimelineAlbum) {
+			$order = request()->configs()->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+
+			if (!in_array($order, [ColumnSortingPhotoType::CREATED_AT, ColumnSortingPhotoType::TAKEN_AT], true)) {
+				$order = ColumnSortingPhotoType::TAKEN_AT;
+			}
+
+			return new PhotoSortingCriterion($order->toColumnSortingType(), OrderSortingType::DESC);
+		}
+
 		if ($album instanceof BaseAlbum) {
 			return $album->getEffectivePhotoSorting();
 		}
