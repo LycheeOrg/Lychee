@@ -35,7 +35,7 @@
 		<div
 			v-if="hovering && lens.items.length > 0"
 			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-20"
-			:style="{ top: `${lens.top}px`, height: `${LENS_H}px` }"
+			:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 		>
 			<!-- Background only — the left-edge fade-to-transparent mask (revealing the
 			     glass on the rail's own side, on the right, while blending its far edge
@@ -111,6 +111,12 @@ const props = defineProps<{
 	totalHeight: number;
 	/** Continuous content-relative scroll position (same space as `bucketLayout`), for the playhead. */
 	scrollOffset: number;
+	/** Height of the fisheye lens in px — admin-configurable `timeline_lens_height`. */
+	lensHeight: number;
+	/** Steepness of the fisheye falloff curve — admin-configurable `timeline_lens_falloff` (already divided by 10 by the caller). Higher is a sharper transition. */
+	lensFalloff: number;
+	/** How much dates are enlarged at the lens's focal line — admin-configurable `timeline_lens_magnification` (already divided by 10 by the caller). */
+	lensMagnification: number;
 }>();
 
 const emits = defineEmits<{
@@ -250,9 +256,6 @@ const hoverBucket = computed(() => {
 	return bucketEntryById.value.get(layoutEntry.bucketId) ?? null;
 });
 
-const LENS_H = 230;
-const MAG = 5.5;
-
 type LensItem = { bucketId: string; label: string; y: number; opacity: number; weight: number; fs: number; strong: boolean };
 
 const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
@@ -260,10 +263,11 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 	if (!hovering.value || railH <= 0 || props.totalHeight <= 0) {
 		return { items: [], top: 0, focal: 0 };
 	}
+	const lensH = props.lensHeight;
 	const cy = cursorY.value;
-	const lensTop = Math.max(0, Math.min(railH - LENS_H, cy - LENS_H / 2));
+	const lensTop = Math.max(0, Math.min(railH - lensH, cy - lensH / 2));
 	const focal = cy - lensTop;
-	const halfSrc = LENS_H / 2 / MAG;
+	const halfSrc = lensH / 2 / props.lensMagnification;
 
 	const candidates: { bucketId: string; label: string; y: number; w: number; fs: number; d: number }[] = [];
 	for (const b of props.bucketLayout) {
@@ -273,11 +277,11 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 			continue;
 		}
 		const t = src / (halfSrc * 2.4);
-		const span = t < 0 ? focal : LENS_H - focal;
-		const out = (Math.tanh(t * 1.7) / Math.tanh(1.7)) * span;
+		const span = t < 0 ? focal : lensH - focal;
+		const out = (Math.tanh(t * props.lensFalloff) / Math.tanh(props.lensFalloff)) * span;
 		const w = 1 - Math.min(1, Math.abs(t) * 1.25);
 		const y = out + focal;
-		if (y < 8 || y > LENS_H - 8) {
+		if (y < 8 || y > lensH - 8) {
 			continue;
 		}
 		const entry = bucketEntryById.value.get(b.bucketId);

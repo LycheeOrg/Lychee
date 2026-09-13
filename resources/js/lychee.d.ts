@@ -191,7 +191,8 @@ declare namespace App {
 			| "five_stars"
 			| "best_pictures"
 			| "my_rated_pictures"
-			| "my_best_pictures";
+			| "my_best_pictures"
+			| "timeline";
 		export type StorageDiskType = "images" | "s3";
 		export type ThumbAlbumSubtitleType =
 			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
@@ -618,6 +619,9 @@ declare namespace App {
 					slideshow_timeout: number;
 					is_slideshow_enabled: boolean;
 					is_timeline_left_border_visible: boolean;
+					timeline_lens_height: number;
+					timeline_lens_falloff: number;
+					timeline_lens_magnification: number;
 					title: string;
 					site_logo: string;
 					dropbox_api_key: string;
