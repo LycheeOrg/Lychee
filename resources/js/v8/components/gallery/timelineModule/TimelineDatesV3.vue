@@ -297,6 +297,14 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 		const t = src / (halfSrc * 2.4);
 		const span = t < 0 ? focal : lensH - focal;
 		const out = (Math.tanh(t * props.lensFalloff) / Math.tanh(props.lensFalloff)) * span;
+
+		// ALSO TO BE CONSIDERED
+		// Square-root falloff rather than linear: its slope is steepest right at the focal point, so
+		// even a date only a hair away in time reads as visibly less prominent, instead of the near-1:1
+		// weight a linear falloff gives to anything close to the cursor. 1.118 keeps the same cutoff
+		// (w reaches 0 at |t| = 0.8) that the linear version used.
+		// const w = 1 - Math.min(1, Math.sqrt(Math.abs(t)) * 1.118);
+
 		const w = 1 - Math.min(1, Math.abs(t) * 1.25);
 		const y = out + focal;
 		if (y < 8 || y > lensH - 8) {
@@ -308,13 +316,69 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 		}
 		candidates.push({ bucketId: b.bucketId, label: entry.label, y, w, fs: 9.5 + w * 5, d: Math.abs(y - focal) });
 	}
-	// Collision cull: keep the focal label, then walk outwards dropping crowded rim items.
-	candidates.sort((a, b) => a.d - b.d);
+	// Collision cull: anchor on the focal label, then sweep outward in each direction in fixed
+	// spatial (y) order, checking spacing only against the last item kept in that direction.
+	// An earlier version sorted by distance-to-focal and greedily excluded against every kept
+	// item; for two dates close together in time (and so close in y), that let the "nearer to
+	// cursor" item flip between them on a sub-pixel cursor move, making the visible label swap
+	// unpredictably instead of settling. Sweeping in a fixed order removes that ambiguity.
+	candidates.sort((a, b) => a.y - b.y);
 	const kept: typeof candidates = [];
-	for (const c of candidates) {
-		const need = c.fs * 1.35;
-		if (kept.every((k) => Math.abs(k.y - c.y) >= Math.max(need, k.fs * 1.35))) {
-			kept.push(c);
+	if (candidates.length > 0) {
+		let focalIndex = 0;
+		for (let i = 1; i < candidates.length; i++) {
+			if (candidates[i].d < candidates[focalIndex].d) {
+				focalIndex = i;
+			}
+		}
+		const focalItem = candidates[focalIndex];
+		kept.push(focalItem);
+
+		// The immediate temporal neighbors are always shown, collision or not, so hovering a date
+		// always reveals what comes right before and after it, not just whichever labels happened
+		// to have room. If one would land close enough to overlap the focal label, nudge it outward
+		// just enough to stay readable — the lens is already a distorted fisheye view, so a small
+		// positional nudge here doesn't misrepresent anything the way it would on the real rail ticks.
+		let lastY = focalItem.y;
+		let lastFs = focalItem.fs;
+		if (focalIndex + 1 < candidates.length) {
+			const next = { ...candidates[focalIndex + 1] };
+			const needed = Math.max(next.fs, lastFs) * 1.35;
+			if (next.y - lastY < needed) {
+				next.y = lastY + needed;
+			}
+			kept.push(next);
+			lastY = next.y;
+			lastFs = next.fs;
+		}
+		for (let i = focalIndex + 2; i < candidates.length; i++) {
+			const c = candidates[i];
+			if (Math.abs(c.y - lastY) >= Math.max(c.fs, lastFs) * 1.35) {
+				kept.push(c);
+				lastY = c.y;
+				lastFs = c.fs;
+			}
+		}
+
+		lastY = focalItem.y;
+		lastFs = focalItem.fs;
+		if (focalIndex - 1 >= 0) {
+			const prev = { ...candidates[focalIndex - 1] };
+			const needed = Math.max(prev.fs, lastFs) * 1.35;
+			if (lastY - prev.y < needed) {
+				prev.y = lastY - needed;
+			}
+			kept.push(prev);
+			lastY = prev.y;
+			lastFs = prev.fs;
+		}
+		for (let i = focalIndex - 2; i >= 0; i--) {
+			const c = candidates[i];
+			if (Math.abs(c.y - lastY) >= Math.max(c.fs, lastFs) * 1.35) {
+				kept.push(c);
+				lastY = c.y;
+				lastFs = c.fs;
+			}
 		}
 	}
 	return {
@@ -322,7 +386,10 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 			bucketId: c.bucketId,
 			label: c.label,
 			y: c.y,
-			opacity: 0.34 + c.w * 0.66,
+			// Cubed rather than linear: its slope is steepest right at w = 1 (the focal date), so even a
+			// date only a hair away in time drops noticeably in opacity instead of reading almost as
+			// opaque as the one actually under the cursor.
+			opacity: 0.34 + Math.pow(c.w, 4) * 0.66,
 			weight: c.w > 0.55 ? 700 : 400,
 			fs: c.fs,
 			strong: c.w > 0.75,
