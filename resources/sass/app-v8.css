@@ -12,6 +12,16 @@
 	background-image: url("/img/noise.png");
 }
 
+/* Hides the scrollbar (Firefox/IE via the property, Chrome/Safari via the pseudo-element) while keeping the element scrollable. */
+@utility no-scrollbar {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 html {
 	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

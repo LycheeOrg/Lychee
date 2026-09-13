@@ -5,7 +5,16 @@
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
 	<UContextMenu :items="menuSections" :disabled="photosStore.photos.length === 0" class="contents">
-		<div v-if="timelineStore.rootConfig && timelineStore.rootRights" class="h-svh overflow-y-auto" id="scrollArea">
+		<!--
+			No `h-svh overflow-y-auto`/`id="scrollArea"` wrapper here (unlike the v7 fork this
+			was copied from): `PhotoGridVirtual.vue`'s `useWindowVirtualizer` tracks the real
+			`window`'s scroll position, so this page must let `window`/`document` scroll
+			directly - a nested scrolling div desyncs the virtualizer's visibility calc from
+			its own render offset, which hides rows (including the first) once the sync drifts.
+			`AlbumPanel.vue` (same virtualizer) already keeps this wrapper commented out for the
+			same reason.
+		-->
+		<div v-if="timelineStore.rootConfig && timelineStore.rootRights">
 			<Collapse :when="!is_full_screen">
 				<TimelineHeader v-if="userStore.isLoaded" />
 			</Collapse>

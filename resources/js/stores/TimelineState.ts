@@ -11,6 +11,24 @@ import { useSplitter } from "@/composables/album/splitter";
 
 const { spliter, merge } = useSplitter();
 
+/**
+ * Single-flight guard for `ensureBucketsV3()` (T-066 fix): `Timeline.vue`'s
+ * `refresh()` (`loadV3()`) and `PhotoGridVirtual.vue`'s own mount hook
+ * (`resolveTimelineDeepLink()`) both call `ensureBucketsV3()` independently,
+ * often close enough together that both read `this.bucketsV3 === undefined`
+ * before either has assigned it — the guard alone isn't enough once the
+ * function is `async`. Without this, the second (slower-resolving) call
+ * still runs its whole body, re-assigning `tilesV3`/`ratiosV3` to fresh
+ * all-undefined arrays *after* the first call's own `requestBucketWindow()`
+ * had already populated them — silently wiping every photo that had just
+ * loaded (`loadedBucketsV3` stays `true` throughout, since nothing here
+ * touches it, so no re-fetch ever repairs it; the grid was left permanently
+ * empty). Module-scoped (not store state) since it's pure async bookkeeping,
+ * never read by a template — same rationale as `PhotoGridVirtual.vue`'s own
+ * `timelineLayoutCache`.
+ */
+let ensureBucketsV3Promise: Promise<void> | null = null;
+
 export type TimelineStore = ReturnType<typeof useTimelineStore>;
 
 function _parseResponse(
@@ -184,15 +202,27 @@ export const useTimelineStore = defineStore("timeline-store", {
 				return;
 			}
 
-			const response = await PhotoChildrenV3Service.getBuckets("timeline");
-			const buckets = response.data;
-			const boundaries = computeTimelineBucketLayout(buckets);
-			const total = boundaries.reduce((sum, b) => sum + b.count, 0);
+			if (ensureBucketsV3Promise !== null) {
+				return ensureBucketsV3Promise;
+			}
 
-			this.bucketsV3 = buckets;
-			this.boundariesV3 = boundaries;
-			this.tilesV3 = new Array<TimelineTile>(total).fill(undefined);
-			this.ratiosV3 = new Array<number | undefined>(total).fill(undefined);
+			ensureBucketsV3Promise = (async () => {
+				const response = await PhotoChildrenV3Service.getBuckets("timeline");
+				const buckets = response.data;
+				const boundaries = computeTimelineBucketLayout(buckets);
+				const total = boundaries.reduce((sum, b) => sum + b.count, 0);
+
+				this.bucketsV3 = buckets;
+				this.boundariesV3 = boundaries;
+				this.tilesV3 = new Array<TimelineTile>(total).fill(undefined);
+				this.ratiosV3 = new Array<number | undefined>(total).fill(undefined);
+			})();
+
+			try {
+				await ensureBucketsV3Promise;
+			} finally {
+				ensureBucketsV3Promise = null;
+			}
 		},
 
 		/**
