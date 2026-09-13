@@ -234,7 +234,7 @@ class CacheKeyProviderTest extends AbstractTestCase
 
 	public function testPhotoRatiosKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
 	{
-		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, $user_id));
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, 'all', $user_id));
 	}
 
 	/**
@@ -252,7 +252,7 @@ class CacheKeyProviderTest extends AbstractTestCase
 			foreach ($user_ids as $user_id) {
 				foreach ([
 					$this->provider->photoBucketsKey($album_id, $user_id),
-					$this->provider->photoRatiosKey($album_id, $user_id),
+					$this->provider->photoRatiosKey($album_id, 'all', $user_id),
 					$this->provider->photoDetailsKey($album_id, 'bucket:2024', $user_id),
 					$this->provider->photoDetailsKey($album_id, 'bucket:2025', $user_id),
 				] as $key) {
