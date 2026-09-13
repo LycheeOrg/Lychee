@@ -9,6 +9,8 @@
 				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
 				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
 			>
+				<!-- <div class="absolute inset-0 bg-default/50 backdrop-blur mask-[linear-gradient(to_bottom,#000,transparent_50%)]" />
+				<div class="relative w-full h-full flex items-center font-semibold text-toned text-lg"> -->
 				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
 					{{ activeHeaderLabel }}
 				</div>

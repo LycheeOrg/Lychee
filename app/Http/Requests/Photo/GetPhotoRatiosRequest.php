@@ -77,6 +77,7 @@ class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 				'sometimes',
 				'prohibits:' . RequestAttribute::PHOTO_IDS_ATTRIBUTE,
 				'array',
+				'max:300',
 			],
 			RequestAttribute::BUCKET_IDS_ATTRIBUTE . '.*' => ['required', 'string'],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => [

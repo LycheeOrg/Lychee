@@ -1,7 +1,7 @@
 <template>
 	<div
 		ref="railRef"
-		class="sticky top-(--ui-header-height) h-[calc(100svh-var(--ui-header-height))] shrink-0 w-16 select-none touch-none ltr:border-s rtl:border-e border-default"
+		class="sticky top-(--ui-header-height) z-20 h-[calc(100svh-var(--ui-header-height))] shrink-0 w-16 select-none touch-none ltr:border-s rtl:border-e border-default"
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerUp"
@@ -29,21 +29,28 @@
 
 		<!-- Lens: fisheye magnification of nearby dates while hovering — anchored to
 		     the rail's own right edge (not `right-full`/outside it) so it fully
-		     covers the rail's resting-state ticks/labels underneath (the mask below
-		     is opaque over that entire region) instead of leaving them visible
+		     covers the rail's resting-state ticks/labels underneath (the background
+		     below is opaque over that entire region) instead of leaving them visible
 		     alongside a disconnected floating magnified copy. -->
 		<div
 			v-if="hovering && lens.items.length > 0"
-			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-10"
+			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-20"
 			:style="{ top: `${lens.top}px`, height: `${LENS_H}px` }"
 		>
+			<!-- Background only — the left-edge fade-to-transparent mask (revealing the
+			     glass on the rail's own side, on the right, while blending its far edge
+			     into the album content it floats over on the left) must NOT apply to the
+			     date labels below: a `mask` clips its entire subtree, so a label
+			     overflowing left into that fading 26% strip used to fade out right along
+			     with the background instead of staying legible above it. -->
 			<div
 				class="absolute inset-0 overflow-hidden ltr:border-s rtl:border-e border-default bg-default/85 backdrop-blur-sm mask-[linear-gradient(90deg,transparent,#000_26%)]"
-			>
+			/>
+			<div class="absolute inset-0 overflow-hidden">
 				<span
 					v-for="item in lens.items"
 					:key="item.bucketId"
-					class="absolute ltr:right-3 rtl:left-3 -translate-y-1/2 whitespace-nowrap font-mono"
+					class="absolute ltr:right-3 rtl:left-3 -translate-y-1/2 whitespace-nowrap font-mono z-30"
 					:class="item.strong ? 'text-highlighted' : 'text-muted'"
 					:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
 				>
@@ -59,7 +66,7 @@
 		<!-- Readout pill: exact date + count under the cursor. -->
 		<div
 			v-if="hovering && hoverBucket !== null"
-			class="absolute ltr:right-53 rtl:left-53 -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-10"
+			class="absolute ltr:right-53 rtl:left-53 -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
 			:style="{ top: `${cursorY}px` }"
 		>
 			{{ hoverBucket.label }}

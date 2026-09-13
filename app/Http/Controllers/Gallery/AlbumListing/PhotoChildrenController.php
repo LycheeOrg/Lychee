@@ -48,7 +48,8 @@ class PhotoChildrenController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		$key = $this->cache_key_provider->photoBucketsKey($album->get_id(), $user?->id);
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
+		$key = $this->cache_key_provider->photoBucketsKey($album->get_id(), $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -57,6 +58,7 @@ class PhotoChildrenController extends Controller
 			$key,
 			[
 				$this->cache_key_provider->photoListingTag($album->get_id()),
+				$this->cache_key_provider->photoBucketsTierTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
 			],
 			fn (): PhotoBucketResource => $this->query_photo_buckets->do($album, $user),
@@ -75,7 +77,8 @@ class PhotoChildrenController extends Controller
 		$photo_ids = $request->photoIds();
 
 		$scope_digest = $this->cache_key_provider->photoRatiosScopeDigest($bucket_ids, $photo_ids);
-		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $scope_digest, $user?->id);
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
+		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $scope_digest, $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -125,7 +128,8 @@ class PhotoChildrenController extends Controller
 		$bucket_id = $request->bucketId();
 
 		$scope_digest = $this->cache_key_provider->photoDetailsScopeDigest($bucket_id, $request->photoIds());
-		$key = $this->cache_key_provider->photoDetailsKey($album->get_id(), $scope_digest, $user?->id);
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
+		$key = $this->cache_key_provider->photoDetailsKey($album->get_id(), $scope_digest, $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 

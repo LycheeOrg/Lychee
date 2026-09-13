@@ -101,12 +101,16 @@ class ManagedCachePhotoListingInvalidator
 	 * Resolves each of `$photo_ids`' current Timeline bucket (per the
 	 * instance-wide `timeline_photos_order`/`timeline_photos_granularity`
 	 * config, mirroring {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource::resolveEffectiveSorting()}'s
-	 * `TimelineAlbum` branch) and evicts its fine tag, plus the coarse tag
-	 * unconditionally once (FR-066-09/FR-066-10) — Timeline's `buckets`
-	 * tier response (whole-library counts) depends on every photo, so it
-	 * must be invalidated on every relevant save/move regardless; only the
+	 * `TimelineAlbum` branch) and evicts its fine tag, plus
+	 * {@see CacheKeyProvider::photoBucketsTierTag()} unconditionally once
+	 * (FR-066-09/FR-066-10) — Timeline's `buckets` tier response
+	 * (whole-library counts) depends on every photo, so it must be
+	 * invalidated on every relevant save/move regardless; only the
 	 * *other* cached buckets' `ratios`/`details` entries are spared
-	 * (NFR-066-04).
+	 * (NFR-066-04). Evicting the dedicated tier tag rather than the coarse
+	 * {@see CacheKeyProvider::photoListingTag()} is what spares them: the
+	 * coarse tag is also carried by every `ratios`/`details` window, so
+	 * evicting it would flush every cached window regardless of bucket.
 	 *
 	 * Carbon-free (`[[feedback_avoid_carbon_server_side]]`): reads the raw
 	 * `created_at`/`taken_at` column value directly, truncated via
@@ -128,7 +132,7 @@ class ManagedCachePhotoListingInvalidator
 
 		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select($order->value)->get();
 
-		$tags = [$this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID)];
+		$tags = [$this->cache_key_provider->photoBucketsTierTag(self::TIMELINE_ALBUM_ID)];
 		foreach ($rows as $row) {
 			/** @var string|null $raw_date */
 			$raw_date = $row->{$order->value};
@@ -172,7 +176,10 @@ class ManagedCachePhotoListingInvalidator
 	 * {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource}) - every
 	 * `TagAlbum` whose tag set overlaps `$event->tag_ids` (the union of old
 	 * and new tags, see {@see PhotoTagsChanged}) must be evicted, since the
-	 * photo may have just entered or left its membership.
+	 * photo may have just entered or left its membership. The `untagged`
+	 * smart album is evicted unconditionally too: a photo enters it when its
+	 * last tag is removed and leaves it when its first tag is added, and
+	 * `$event->tag_ids` alone can't tell which of those happened.
 	 */
 	public function handlePhotoTagsChanged(PhotoTagsChanged $event): void
 	{
@@ -189,6 +196,8 @@ class ManagedCachePhotoListingInvalidator
 		if ($tag_album_ids !== []) {
 			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($tag_album_ids));
 		}
+
+		$this->cache->forgetTag($this->cache_key_provider->photoListingTag(SmartAlbumType::UNTAGGED->value));
 	}
 
 	/**

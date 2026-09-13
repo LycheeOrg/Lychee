@@ -128,23 +128,30 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 
 	// ── Timeline fine/coarse tag scoping (F-066-10, S-066-10/S-066-11) ──
 
-	public function testPhotoSavedEvictsOnlyTheTouchedTimelineBucketPlusCoarseTag(): void
+	public function testPhotoSavedEvictsOnlyTheTouchedTimelineBucketPlusBucketsTierTag(): void
 	{
 		$user = User::factory()->create();
 		$photo = Photo::factory()->owned_by($user)->create(['created_at' => new Carbon('2024-05-01')]);
 
 		$this->seedCache('k:timeline-2024', [$this->cache_key_provider->photoListingBucketTag('timeline', '2024')]);
 		$this->seedCache('k:timeline-2022', [$this->cache_key_provider->photoListingBucketTag('timeline', '2022')]);
+		$this->seedCache('k:timeline-buckets-tier', [$this->cache_key_provider->photoBucketsTierTag('timeline')]);
+		// Simulates an unrelated cached `ratios`/`details` window, which
+		// carries only the coarse tag (no fine bucket tag) e.g. a
+		// `photo_ids[]`-scoped request - must survive (this is the bug the
+		// dedicated buckets-tier tag fixes: the coarse tag must not be used
+		// to reach the buckets tier, since it would also evict this).
 		$this->seedCache('k:timeline-coarse', [$this->cache_key_provider->photoListingTag('timeline')]);
 
 		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id]));
 
 		$this->assertEvicted('k:timeline-2024');
 		$this->assertNotEvicted('k:timeline-2022');
-		$this->assertEvicted('k:timeline-coarse');
+		$this->assertEvicted('k:timeline-buckets-tier');
+		$this->assertNotEvicted('k:timeline-coarse');
 	}
 
-	public function testPhotoMovedEvictsOnlyTheTouchedTimelineBucketPlusCoarseTag(): void
+	public function testPhotoMovedEvictsOnlyTheTouchedTimelineBucketPlusBucketsTierTag(): void
 	{
 		$user = User::factory()->create();
 		$from = Album::factory()->as_root()->owned_by($user)->create();
@@ -153,13 +160,15 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 
 		$this->seedCache('k:timeline-2024', [$this->cache_key_provider->photoListingBucketTag('timeline', '2024')]);
 		$this->seedCache('k:timeline-2022', [$this->cache_key_provider->photoListingBucketTag('timeline', '2022')]);
+		$this->seedCache('k:timeline-buckets-tier', [$this->cache_key_provider->photoBucketsTierTag('timeline')]);
 		$this->seedCache('k:timeline-coarse', [$this->cache_key_provider->photoListingTag('timeline')]);
 
 		$this->listener->handlePhotoMoved(new PhotoMoved([$photo->id], $from->id, $to->id));
 
 		$this->assertEvicted('k:timeline-2024');
 		$this->assertNotEvicted('k:timeline-2022');
-		$this->assertEvicted('k:timeline-coarse');
+		$this->assertEvicted('k:timeline-buckets-tier');
+		$this->assertNotEvicted('k:timeline-coarse');
 	}
 
 	public function testPhotoDeletedEvictsTimelineCoarseTagOnlyNoFineBucketTag(): void
