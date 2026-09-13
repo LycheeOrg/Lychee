@@ -199,9 +199,9 @@ return [
         'timeline_albums_public' => 'عرض الخط الزمني للألبومات للمستخدمين المجهولين',
         'timeline_albums_granularity' => 'دقة التجميع الزمني للألبومات',
         'timeline_left_border_enabled' => 'تفعيل خط الحد الأيسر في الخطوط الزمنية',
-        'timeline_lens_height' => 'Timeline magnifying lens height (px)', // Will be translated via Weblate
-        'timeline_lens_falloff' => 'Timeline magnifying lens falloff', // Will be translated via Weblate
-        'timeline_lens_magnification' => 'Timeline magnifying lens zoom level', // Will be translated via Weblate
+        'timeline_lens_height' => 'Timeline magnifying lens height (px)',
+        'timeline_lens_falloff' => 'Timeline magnifying lens falloff',
+        'timeline_lens_magnification' => 'Timeline magnifying lens zoom level',
         'timeline_photo_date_format_year' => 'تنسيق التاريخ بدقة السنة للصور',
         'timeline_photo_date_format_month' => 'تنسيق التاريخ بدقة الشهر للصور',
         'timeline_photo_date_format_day' => 'تنسيق التاريخ بدقة اليوم للصور',
@@ -641,9 +641,9 @@ return [
         'timeline_albums_public' => '',
         'timeline_albums_granularity' => '',
         'timeline_left_border_enabled' => '',
-        'timeline_lens_height' => 'Range 100-400. How tall the fisheye magnifying lens is when hovering the timeline date rail.', // Will be translated via Weblate
-        'timeline_lens_falloff' => 'Range 5-50 (0.5-5.0). Steepness of the fisheye magnification curve. Higher values give a sharper transition between magnified and normal-size dates; lower values give a smoother one. Actual value used is (value / 10).', // Will be translated via Weblate
-        'timeline_lens_magnification' => 'Range 20-150 (2.0-15.0). How much dates are enlarged at the center of the fisheye lens. Actual multiplier used is (value / 10).', // Will be translated via Weblate
+        'timeline_lens_height' => 'Range 100-400. How tall the fisheye magnifying lens is when hovering the timeline date rail.',
+        'timeline_lens_falloff' => 'Range 5-50 (0.5-5.0). Steepness of the fisheye magnification curve. Higher values give a sharper transition between magnified and normal-size dates; lower values give a smoother one. Actual value used is (value / 10).',
+        'timeline_lens_magnification' => 'Range 20-150 (2.0-15.0). How much dates are enlarged at the center of the fisheye lens. Actual multiplier used is (value / 10).',
         'timeline_photo_date_format_year' => 'راجع <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
         'timeline_photo_date_format_month' => 'راجع <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',
         'timeline_photo_date_format_day' => 'راجع <a class="underline" href="https://www.php.net/manual/en/datetime.format.php">datetime.format.php</a>',

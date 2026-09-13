@@ -151,6 +151,47 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 		$this->assertNotEvicted('k:timeline-coarse');
 	}
 
+	public function testPhotoSavedWithPreviousDatesEvictsBothPreviousAndCurrentTimelineBucket(): void
+	{
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create(['created_at' => new Carbon('2024-05-01')]);
+
+		$this->seedCache('k:timeline-2024', [$this->cache_key_provider->photoListingBucketTag('timeline', '2024')]);
+		$this->seedCache('k:timeline-2022', [$this->cache_key_provider->photoListingBucketTag('timeline', '2022')]);
+		$this->seedCache('k:timeline-buckets-tier', [$this->cache_key_provider->photoBucketsTierTag('timeline')]);
+		$this->seedCache('k:timeline-coarse', [$this->cache_key_provider->photoListingTag('timeline')]);
+
+		// The photo's sort date moved from 2022 to (the now-saved) 2024 -
+		// both buckets' fine tags must go, not just the new one.
+		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id], [$photo->id => ['created_at' => '2022-01-01 00:00:00']]));
+
+		$this->assertEvicted('k:timeline-2024');
+		$this->assertEvicted('k:timeline-2022');
+		$this->assertEvicted('k:timeline-buckets-tier');
+		$this->assertNotEvicted('k:timeline-coarse');
+	}
+
+	public function testPhotoSavedWithUnresolvablePreviousBucketFallsBackToCoarseTag(): void
+	{
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create(['created_at' => new Carbon('2024-05-01')]);
+
+		$this->seedCache('k:timeline-2024', [$this->cache_key_provider->photoListingBucketTag('timeline', '2024')]);
+		$this->seedCache('k:timeline-2022', [$this->cache_key_provider->photoListingBucketTag('timeline', '2022')]);
+		$this->seedCache('k:timeline-coarse', [$this->cache_key_provider->photoListingTag('timeline')]);
+
+		// A previous-dates entry exists for this photo (so the caller does
+		// know a bucket-relevant column may have changed), but it doesn't
+		// cover the currently-configured sort column ('created_at') - the
+		// previous bucket genuinely can't be resolved, so the fallback is
+		// the coarse tag, not a guess at which specific bucket it was.
+		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id], [$photo->id => ['taken_at' => '2022-01-01 00:00:00']]));
+
+		$this->assertEvicted('k:timeline-2024');
+		$this->assertNotEvicted('k:timeline-2022');
+		$this->assertEvicted('k:timeline-coarse');
+	}
+
 	public function testPhotoMovedEvictsOnlyTheTouchedTimelineBucketPlusBucketsTierTag(): void
 	{
 		$user = User::factory()->create();

@@ -138,6 +138,7 @@ return [
         'month' => 'Mes',
         'day' => 'Día',
         'hour' => 'Hora',
+        'photos_count' => ':count photo|:count photos',
     ],
     'pagination' => [
         'infinite_scroll' => 'Desplazamiento infinito',

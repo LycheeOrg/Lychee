@@ -17,7 +17,7 @@
 			<span v-if="t.kind === 'year'" class="text-xs font-bold" :class="t.year === highlightBucketId?.year ? 'text-primary' : 'text-muted'">
 				{{ t.year }}
 			</span>
-			<span v-else class="block rounded-full bg-toned" :class="t.isQuarter ? 'w-2.5 h-[1.5px]' : 'w-1 h-1'" />
+			<span v-else class="block w-1 h-1 rounded-full bg-toned" />
 		</div>
 
 		<!-- Playhead: continuously tracks real scroll position. -->
@@ -37,14 +37,20 @@
 			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-20"
 			:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 		>
-			<!-- Background only — the left-edge fade-to-transparent mask (revealing the
-			     glass on the rail's own side, on the right, while blending its far edge
-			     into the album content it floats over on the left) must NOT apply to the
-			     date labels below: a `mask` clips its entire subtree, so a label
-			     overflowing left into that fading 26% strip used to fade out right along
-			     with the background instead of staying legible above it. -->
+			<!-- Background only — the fade-to-transparent mask (revealing the glass on
+			     the rail's own side, blending its far edge into the album content it
+			     floats over) must NOT apply to the date labels below: a `mask` clips
+			     its entire subtree, so a label overflowing into that fading 26% strip
+			     used to fade out right along with the background instead of staying
+			     legible above it. The gradient angle itself must flip per direction
+			     (`ltr:`/`rtl:`, not a single unprefixed `mask-[...]`): a bare `90deg`
+			     always fades transparent-at-left/opaque-at-right regardless of `dir`,
+			     which was correct for the rail's LTR right-edge placement but fully
+			     backwards once RTL moves the rail (and this lens) to the left edge —
+			     the glass ended up opaque over the content and transparent over the
+			     rail's own ticks. -->
 			<div
-				class="absolute inset-0 overflow-hidden ltr:border-s rtl:border-e border-default bg-default/85 backdrop-blur-sm mask-[linear-gradient(90deg,transparent,#000_26%)]"
+				class="absolute inset-0 overflow-hidden ltr:border-s rtl:border-e border-default bg-default/85 backdrop-blur-sm ltr:mask-[linear-gradient(90deg,transparent,#000_26%)] rtl:mask-[linear-gradient(270deg,transparent,#000_26%)]"
 			/>
 			<div class="absolute inset-0 overflow-hidden">
 				<span
@@ -54,7 +60,7 @@
 					:class="item.strong ? 'text-highlighted' : 'text-muted'"
 					:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
 				>
-					{{ item.label }}
+					<span dir="ltr">{{ item.label }}</span>
 				</span>
 			</div>
 			<!-- Focal line inside the glass — the ruler edge across the magnified dates. -->
@@ -69,8 +75,10 @@
 			class="absolute ltr:right-53 rtl:left-53 -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
 			:style="{ top: `${cursorY}px` }"
 		>
-			{{ hoverBucket.label }}
-			<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{ hoverBucket.count }} photos</em>
+			<span dir="ltr">{{ hoverBucket.label }}</span>
+			<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{
+				trans_choice("gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
+			}}</em>
 		</div>
 	</div>
 </template>
@@ -99,6 +107,7 @@
  * carried over.
  */
 import { useElementSize } from "@vueuse/core";
+import { trans_choice } from "laravel-vue-i18n";
 import { ref, computed } from "vue";
 
 const props = defineProps<{
@@ -166,7 +175,7 @@ function bucketAt(contentPx: number): { bucketId: string; top: number; height: n
 
 // --- Resting-state ticks (year labels + month dots) ---
 
-type Tick = { bucketId: string; kind: "year" | "month"; year: string; topPx: number; isQuarter: boolean };
+type Tick = { bucketId: string; kind: "year" | "month"; year: string; topPx: number };
 
 const ticks = computed<Tick[]>(() => {
 	const seenYears = new Set<string>();
@@ -188,13 +197,12 @@ const ticks = computed<Tick[]>(() => {
 
 		if (!seenYears.has(year)) {
 			seenYears.add(year);
-			out.push({ bucketId, kind: "year", year, topPx, isQuarter: false });
+			out.push({ bucketId, kind: "year", year, topPx });
 		} else if (month !== null) {
 			const key = `${year}-${month}`;
 			if (!seenMonths.has(key)) {
 				seenMonths.add(key);
-				// 1-indexed "MM" segment — Jan/Apr/Jul/Oct mark quarters, mirrors the mockup's `m%3===0` on a 0-indexed month.
-				out.push({ bucketId, kind: "month", year, topPx, isQuarter: (Number(month) - 1) % 3 === 0 });
+				out.push({ bucketId, kind: "month", year, topPx });
 			}
 		}
 	}

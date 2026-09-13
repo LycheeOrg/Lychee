@@ -66,7 +66,7 @@ class ManagedCachePhotoListingInvalidator
 			$this->cache->forgetTags($this->cache_key_provider->photoListingTags($album_ids));
 		}
 
-		$this->evictTimelineBucketsFor($event->photo_ids);
+		$this->evictTimelineBucketsFor($event->photo_ids, $event->previous_dates);
 	}
 
 	/**
@@ -116,9 +116,23 @@ class ManagedCachePhotoListingInvalidator
 	 * `created_at`/`taken_at` column value directly, truncated via
 	 * {@see PhotoBucketComputer::truncateRawDate()}.
 	 *
-	 * @param array<int,string> $photo_ids
+	 * A save that changes the configured sort column moves a photo OUT of
+	 * its previous bucket - re-reading only the (already-updated) DB row
+	 * only ever resolves the NEW bucket, leaving the old bucket's cached
+	 * `ratios`/`details` entries stale until expiry. `$previous_dates` (when
+	 * supplied by the caller, captured via `getRawOriginal()` before the
+	 * save landed) lets us evict that old bucket's fine tag too. When a
+	 * photo has an entry in `$previous_dates` but it doesn't cover the
+	 * currently-configured sort column, the previous bucket can't be
+	 * resolved at all - fall back to evicting the coarse
+	 * {@see CacheKeyProvider::photoListingTag()} (not the tier tag, already
+	 * evicted above unconditionally) since that coarse tag is also carried
+	 * by every `ratios`/`details` window regardless of bucket.
+	 *
+	 * @param array<int,string>                                          $photo_ids
+	 * @param array<string,array{created_at?:?string,taken_at?:?string}> $previous_dates keyed by photo id, see {@see \App\Events\PhotoSaved::$previous_dates}
 	 */
-	private function evictTimelineBucketsFor(array $photo_ids): void
+	private function evictTimelineBucketsFor(array $photo_ids, array $previous_dates = []): void
 	{
 		if ($photo_ids === []) {
 			return;
@@ -130,7 +144,7 @@ class ManagedCachePhotoListingInvalidator
 		}
 		$granularity = $this->bucket_computer->resolveGranularity(null);
 
-		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select($order->value)->get();
+		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select(['id', $order->value])->get();
 
 		$tags = [$this->cache_key_provider->photoBucketsTierTag(self::TIMELINE_ALBUM_ID)];
 		foreach ($rows as $row) {
@@ -138,6 +152,20 @@ class ManagedCachePhotoListingInvalidator
 			$raw_date = $row->{$order->value};
 			$bucket_id = $raw_date === null ? 'unknown' : $this->bucket_computer->truncateRawDate($raw_date, $granularity);
 			$tags[] = $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $bucket_id);
+
+			if (array_key_exists($row->id, $previous_dates)) {
+				$previous_entry = $previous_dates[$row->id];
+				if (array_key_exists($order->value, $previous_entry)) {
+					/** @var string|null $previous_raw */
+					$previous_raw = $previous_entry[$order->value];
+					$previous_bucket_id = $previous_raw === null ? 'unknown' : $this->bucket_computer->truncateRawDate($previous_raw, $granularity);
+					if ($previous_bucket_id !== $bucket_id) {
+						$tags[] = $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $previous_bucket_id);
+					}
+				} else {
+					$tags[] = $this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID);
+				}
+			}
 		}
 
 		$this->cache->forgetTags(array_unique($tags));
