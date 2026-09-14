@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -58,8 +59,9 @@ class PhotoResource extends Data
 	public ?PhotoRatingResource $rating = null;
 	public int $face_count;
 	public bool $is_validated;
+	public int|Optional $owner_id;
 
-	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
+	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants, bool $is_smart_album = false)
 	{
 		$this->id = $photo->id;
 		$this->album_id = $album_id;
@@ -83,6 +85,12 @@ class PhotoResource extends Data
 		$this->next_photo_id = null;
 		$this->previous_photo_id = null;
 		$this->face_count = $photo->face_count;
+		// Only needed for a smart album: unlike a regular Album/TagAlbum/
+		// PersonAlbum, its photos are no longer guaranteed all-owned-by-
+		// viewer once `SA_override_visibility` surfaces other users' photos
+		// too, so the frontend needs this to decide whether to show
+		// photo-editing UI (see `PhotoPanel.vue`'s `canEditCurrentPhoto`).
+		$this->owner_id = $is_smart_album ? $photo->owner_id : Optional::create();
 		$include_exif_data = request()->configs()->getValueAsBool('display_exif_data');
 		$this->preformatted = new PreformattedPhotoData($photo, $include_exif_data, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo, $include_exif_data);

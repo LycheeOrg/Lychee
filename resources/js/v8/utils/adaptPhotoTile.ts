@@ -146,6 +146,7 @@ export function adaptPhotoTile(i: number, ratios: PhotoRatioResource, album_id: 
 		// sake, so hover-prefetch stays inert on the SoA path by design.
 		face_count: 0,
 		is_validated: ratios.is_validateds[i],
+		owner_id: ratios.owner_ids[i],
 	};
 }
 

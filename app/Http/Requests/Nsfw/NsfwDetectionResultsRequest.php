@@ -29,7 +29,7 @@ class NsfwDetectionResultsRequest extends BaseApiRequest
 		$expected_key = config('services.nsfw_detection.api_key', '');
 		$provided_key = $this->header('X-API-Key', '');
 
-		return $expected_key !== '' && $provided_key === $expected_key;
+		return $expected_key !== '' && hash_equals($expected_key, $provided_key);
 	}
 
 	public function rules(): array

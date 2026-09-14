@@ -17,12 +17,13 @@ use Illuminate\Support\Collection;
  */
 trait HasPrepPhotoCollection
 {
-	private function toPhotoResources(Collection $photos, ?string $album_id, bool $should_downgrade): Collection
+	private function toPhotoResources(Collection $photos, ?string $album_id, bool $should_downgrade, bool $is_smart_album = false): Collection
 	{
 		return $photos->map(fn ($photo) => new PhotoResource(
 			photo: $photo,
 			album_id: $album_id,
 			should_downgrade_size_variants: $should_downgrade,
+			is_smart_album: $is_smart_album,
 		));
 	}
 

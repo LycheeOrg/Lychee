@@ -32,7 +32,7 @@
 						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 						<PhotoRatingOverlay />
 						<Dock
-							v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
+							v-if="canEditCurrentPhoto && !is_photo_edit_open"
 							:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"
@@ -65,18 +65,41 @@ import { useDebounceFn } from "@vueuse/core";
 import PhotoBox from "./PhotoBox.vue";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useUserStore } from "@/stores/UserState";
 import { useLtRorRtL } from "@/utils/Helpers.js";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
+const userStore = useUserStore();
 const { isLTR } = useLtRorRtL();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled, disable_swipe_effect } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active } = storeToRefs(togglableStore);
 
 const isLeftToRight = computed(() => isLTR());
+
+/**
+ * `albumStore.rights.can_edit` is album-wide, not per-photo. That's fine for
+ * a regular Album/TagAlbum/PersonAlbum (every photo shown there is already
+ * covered by that same right), but not for a smart album: its photos are no
+ * longer guaranteed all-owned-by-viewer once `SA_override_visibility` is
+ * enabled, yet `AlbumPolicy::canEdit()` always grants smart albums edit
+ * rights regardless of which photos it actually surfaces. So the dock also
+ * requires an owner-id match (`photoStore.photo.owner_id`, only populated
+ * for smart albums - see `PhotoResource.php`) whenever the current album is
+ * a smart album.
+ */
+const canEditCurrentPhoto = computed(() => {
+	if (!albumStore.rights?.can_edit) {
+		return false;
+	}
+	if (albumStore.smartAlbum !== undefined) {
+		return photoStore.photo?.owner_id === userStore.user?.id;
+	}
+	return true;
+});
 
 const props = defineProps<{
 	isMapVisible: boolean;

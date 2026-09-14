@@ -57,6 +57,7 @@ class AlbumPhotosController extends Controller
 				album_id: $album->get_id(),
 				should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
 				photo_timeline: $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
+				is_smart_album: true,
 			);
 		}
 

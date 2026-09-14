@@ -54,7 +54,7 @@
 					"
 				/>
 				<UButton
-					v-if="albumStore.rights?.can_edit"
+					v-if="canEditCurrentPhoto"
 					variant="ghost"
 					icon="lucide:pencil"
 					color="neutral"
@@ -95,7 +95,7 @@
 	<PhotoShareCard v-model:open="isPhotoShareCardOpen" />
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import DownloadPhoto from "@/v8/components/modals/DownloadPhoto.vue";
 import PhotoShareCard from "@/v8/components/modals/PhotoShareCard.vue";
 import { storeToRefs } from "pinia";
@@ -104,6 +104,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import GoBack from "./GoBack.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useUserStore } from "@/stores/UserState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
@@ -117,6 +118,7 @@ const emits = defineEmits<{
 
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
+const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
@@ -128,4 +130,22 @@ const { is_exif_disabled, is_slideshow_enabled, is_photo_share_card_enabled } = 
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();
 }
+
+/**
+ * `albumStore.rights.can_edit` is album-wide, not per-photo - fine for a
+ * regular Album/TagAlbum/PersonAlbum, but not for a smart album, whose
+ * photos are no longer guaranteed all-owned-by-viewer once
+ * `SA_override_visibility` is enabled while `AlbumPolicy::canEdit()` always
+ * grants smart albums edit rights regardless of which photos it surfaces.
+ * Mirrors `PhotoPanel.vue`'s own `canEditCurrentPhoto`.
+ */
+const canEditCurrentPhoto = computed(() => {
+	if (!albumStore.rights?.can_edit) {
+		return false;
+	}
+	if (albumStore.smartAlbum !== undefined) {
+		return photoStore.photo?.owner_id === userStore.user?.id;
+	}
+	return true;
+});
 </script>
