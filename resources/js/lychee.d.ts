@@ -1109,6 +1109,7 @@ declare namespace App {
 					rating: App.Http.Resources.Models.PhotoRatingResource | null;
 					face_count: number;
 					is_validated: boolean;
+					owner_id?: number;
 				};
 				export type PhotoStatisticsResource = {
 					visit_count: number;

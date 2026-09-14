@@ -44,11 +44,13 @@ class PaginatedPhotosResource extends Data
 		?string $album_id,
 		bool $should_downgrade,
 		?TimelinePhotoGranularity $photo_timeline = null,
+		bool $is_smart_album = false,
 	) {
 		$this->photos = $this->toPhotoResources(
 			photos: collect($paginated_photos?->items() ?? []),
 			album_id: $album_id,
-			should_downgrade: $should_downgrade
+			should_downgrade: $should_downgrade,
+			is_smart_album: $is_smart_album,
 		);
 		$this->current_page = $paginated_photos?->currentPage() ?? 1;
 		$this->last_page = $paginated_photos?->lastPage() ?? 1;
