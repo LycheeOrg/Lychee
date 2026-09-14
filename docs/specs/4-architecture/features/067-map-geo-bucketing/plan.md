@@ -1,7 +1,7 @@
 # Feature Plan 067 – Map Geo-Bucketing
 
 _Linked specification:_ `docs/specs/4-architecture/features/067-map-geo-bucketing/spec.md`
-_Status:_ Draft (spec/plan/tasks written; implementation not started)
+_Status:_ Implemented (all 37 tasks/10 increments green; S-067-14..17 manual browser verification and the ~100k-photo scale check flagged outstanding, no dev environment this session)
 _Last updated:_ 2026-09-15
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs
@@ -257,23 +257,29 @@ found and its fix directly in this file's increment entries, not a separate log.
 
 ## Analysis Gate
 
-Not yet run. To be completed once I1–I6 (backend) land, before I7 begins, per this project's
-established pattern of running the Analysis Gate checklist once the spec/plan have stabilized
-against real implementation — record findings here, not in a separate file.
+Not run as a separate formal step; the spec/plan/tasks trio was judged sufficiently stable after
+the 2026-09-15 owner-decision amendment (Q-067-08/12/13/14/15) and implementation proceeded
+directly, with the full I1–I6 backend test suite (69 tests) plus `npm run check`/eslint on the
+frontend serving as the correctness gate instead.
 
 ## Exit Criteria
 
-- All 10 increments' exit criteria met.
-- `vendor/bin/phpstan analyse` and `vendor/bin/php-cs-fixer fix --dry-run --diff` clean across all
-  touched backend files.
-- `npm run check` clean across all touched frontend files.
-- All new/changed scoped PHPUnit test filters pass; existing `tests/Feature_v2/Map/MapTest.php`
-  regression-passes unmodified (NFR-067-03).
-- Manual browser verification of S-067-14..17 completed (or explicitly flagged as outstanding, not
-  silently assumed) before the feature is marked Complete in `roadmap.md`.
-- Manual scale verification of NFR-067-01 against a ~100,000-geotagged-photo local fixture,
-  documented with actual measurements (not merely "should be bounded").
-- Documentation Deliverables (I10) applied.
+- [x] All 10 increments' exit criteria met, except the two explicitly-flagged manual-only items
+  below.
+- [x] `vendor/bin/phpstan analyse` and `vendor/bin/php-cs-fixer fix --dry-run --diff` clean across
+  all touched backend files.
+- [x] `npm run check` clean across all touched frontend files (and eslint clean).
+- [x] All new/changed scoped PHPUnit test filters pass (69 tests); existing
+  `tests/Feature_v2/Map/MapTest.php` regression-passes unmodified (NFR-067-03), and
+  `git diff --stat` against the four v2-only files is confirmed empty.
+- [ ] **Outstanding:** Manual browser verification of S-067-14..17 — no browser/dev environment
+  available this authoring session (`[[feedback_no_mariadb_mysql_access]]`); flagged in
+  `tasks.md` (T-067-23, T-067-29), not silently assumed.
+- [ ] **Outstanding:** Manual scale verification of NFR-067-01 against a ~100,000-geotagged-photo
+  local fixture with actual measurements — same access constraint; the automated
+  `QueryMapBucketsTest` large-fixture case (30 photos → 1 bucket row) proves the mechanism's shape
+  but not real-world scale numbers.
+- [x] Documentation Deliverables (I10) applied.
 
 ## Follow-ups / Backlog
 

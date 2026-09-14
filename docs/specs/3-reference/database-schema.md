@@ -108,7 +108,7 @@ Individual photos with metadata, EXIF data, and file information.
 - `is_public`: Public visibility flag
 - `is_highlighted`: Favorite flag
 - `taken_at`: Photo capture timestamp
-- `latitude`, `longitude`: GPS coordinates
+- `latitude`, `longitude`: GPS coordinates — composite index `(latitude, longitude)` (Feature 067; previously unindexed) serves the Map's bounding-box `WHERE` + grid `GROUP BY FLOOR(latitude/$cell), FLOOR(longitude/$cell)` queries (see `api-design.md`'s "API v3: Map Geo-Bucketing" section); a plain B-tree index, not a driver-specific spatial index type, chosen for portability across sqlite/mysql/mariadb/pgsql (sqlite has no spatial index without the SpatiaLite extension)
 
 **Relationships:**
 - Belongs to many `Album` through `photo_album` pivot table (many-to-many)

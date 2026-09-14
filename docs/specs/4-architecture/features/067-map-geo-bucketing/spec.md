@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft (spec/plan/tasks written; implementation not started) |
+| Status | Implemented (all 37 tasks green; S-067-14..17 manual browser verification and the ~100k-photo scale check flagged outstanding, no dev environment this session) |
 | Last updated | 2026-09-15 |
 | Owners | ildyria |
 | Linked plan | `docs/specs/4-architecture/features/067-map-geo-bucketing/plan.md` |

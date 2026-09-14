@@ -8,6 +8,7 @@
 
 namespace App\Services\Cache;
 
+use App\DTO\MapViewport;
 use App\DTO\SortingCriterion;
 use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
@@ -507,6 +508,85 @@ class CacheKeyProvider
 		$user_tag = $this->userTag($user_id);
 
 		return "{$tag}:details:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	// ── Map listing (Feature 067) ───────────────────────────────────
+
+	/**
+	 * Coarse tag carried by every cached Map (`buckets`/`Photos`/`tracks`)
+	 * entry for one scope — root (`$scope = 'root'`) or one album
+	 * (`$scope = $album_id`). Evicting it alone flushes every cached Map
+	 * response for that scope, across every user identity and viewport.
+	 */
+	public function mapListingTag(string $scope): string
+	{
+		return "map-listing:{$scope}";
+	}
+
+	/**
+	 * Coarse tag carried by every cached Map entry regardless of scope —
+	 * sufficient alone to flush the entire Map cache (FR-067-24), mirroring
+	 * {@see self::albumListingGlobalTag()}'s own precedent for the sibling
+	 * album-listing cache.
+	 */
+	public function mapListingGlobalTag(): string
+	{
+		return 'map-listing-global';
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/buckets`: a pure function of scope
+	 * (root or one album), the **snapped** viewport + zoom (NFR-067-04 —
+	 * an un-snapped raw viewport would make the cache layer pointless),
+	 * user identity, and unlocked-album state.
+	 *
+	 * @param string $scope           `'root'` or an album id
+	 * @param string $unlocked_digest see {@see self::unlockedAlbumsDigest()}
+	 */
+	public function mapBucketsKey(string $scope, MapViewport $snapped_viewport, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($scope);
+		$user_tag = $this->userTag($user_id);
+		$viewport_digest = $this->mapViewportDigest($snapped_viewport);
+
+		return "{$tag}:buckets:{$user_tag}:{$viewport_digest}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/Photos`, mirrors {@see self::mapBucketsKey()}.
+	 */
+	public function mapPhotosKey(string $scope, MapViewport $snapped_viewport, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($scope);
+		$user_tag = $this->userTag($user_id);
+		$viewport_digest = $this->mapViewportDigest($snapped_viewport);
+
+		return "{$tag}:photos:{$user_tag}:{$viewport_digest}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/tracks` — viewport-independent
+	 * (FR-067-13), unlike {@see self::mapBucketsKey()}/{@see self::mapPhotosKey()}.
+	 */
+	public function mapTracksKey(string $album_id, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:tracks:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Deterministic digest of a snapped viewport's bounds + zoom, embedded
+	 * in every viewport-scoped Map cache key.
+	 */
+	private function mapViewportDigest(MapViewport $snapped_viewport): string
+	{
+		return 'z:' . $snapped_viewport->zoom .
+			':n:' . $snapped_viewport->north .
+			':s:' . $snapped_viewport->south .
+			':e:' . $snapped_viewport->east .
+			':w:' . $snapped_viewport->west;
 	}
 
 	/**
