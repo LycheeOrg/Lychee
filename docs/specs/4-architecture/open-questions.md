@@ -6,11 +6,11 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-067-07 | 067 – Map Geo-Bucketing | High | FR-067-12 specs `should_downgrade` via `Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, ...)`, but today's `PositionData` classes use no Gate at all at root scope (raw `grants_full_photo_access` config) and `AlbumPolicy::CAN_ACCESS_FULL_PHOTO` (one check per request, not per photo) at album scope — literal FR-067-12 as written is neither, and mirrors `QueryPhotoDetails`'s unrelated per-photo tier instead. Options (A preferred): A) reproduce the real per-scope mechanism (root: config; album: one `AlbumPolicy::CAN_ACCESS_FULL_PHOTO` check); B) switch to genuine per-photo `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` as literally specced, a deliberate behavior change. | Open | 2026-09-13 | 2026-09-13 |
-| Q-067-08 | 067 – Map Geo-Bucketing | High | FR-067-02 specs a client-supplied `include_sub_albums` request boolean, but v2's `MapController::getData()` derives it server-side from the single **global** admin config `map_include_subalbums` (no per-album override row exists) — no client-controlled `include_sub_albums` parameter precedent exists anywhere else in this codebase (`flow_include_sub_albums` is config-only too). Options (A preferred): A) drop the request param, stay config-derived (byte-parity); B) keep it client-controlled (new capability, unrequested); C) optional param that falls back to the config default when omitted. | Open | 2026-09-13 | 2026-09-13 |
-| Q-067-09 | 067 – Map Geo-Bucketing | Medium | FR-067-15/16 wire cache invalidation only to `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`, with no invalidation path for map-relevant config changes (`hide_nsfw_in_map`, `grants_full_photo_access`, `map_include_subalbums`, `map_display`, `map_display_public`) or per-share permission-grant edits, unlike this project's own Q-053-05 precedent for a sibling listing cache. Separately, FR-067-16's own motivating case ("a location ... edit ... invalidates") cannot occur today: no endpoint edits `latitude`/`longitude` post-upload, and `PhotoController::update()`'s `PhotoSaved::dispatchIf($bucket_relevant_changed, ...)` gate excludes those columns entirely even if one existed. Options (A preferred): A) add config/permission-change invalidation mirroring Q-053-05 (flush root + warm album scope tags); B) accept TTL-only staleness for this dimension, documented; C) invalidate only the album-permission-grant case, leave global config on TTL-only. | Open | 2026-09-13 | 2026-09-13 |
-| Q-067-10 | 067 – Map Geo-Bucketing | Medium | FR-067-06's `cellSizeForZoom(int $zoom): float` is only described qualitatively ("e.g. halving per zoom level") — no base cell size, units, or concrete formula is pinned anywhere in spec/plan/tasks, yet S-067-01, NFR-067-01's scale verification, and T-067-01's monotonicity test all need real numbers to test against. Options (A preferred): A) pin concrete constants in the spec now, validated against the planned ~100k-photo fixture before I1; B) leave exact constants to be tuned empirically during I1/I3 implementation, spec keeps only the qualitative shape. | Open | 2026-09-13 | 2026-09-13 |
-| Q-067-11 | 067 – Map Geo-Bucketing | Medium | DO-067-06 makes `album_ids[]` a genuine per-photo field, but today's `PositionDataResource` stamps the same scope-level `$album_id` (`null` at root) onto every `PhotoResource` regardless of the photo's real containing album — so root-scope click-to-open-photo is reportedly already a no-op today. Options (A preferred): A) keep parity, `album_ids[]` stays uniformly `null` at root; B) resolve each photo's real album via the `photo_album` pivot in the already-bounded leaf-tier hydration pass — cheap and click-navigable, a real UX improvement; C) resolve only when a photo belongs to exactly one album, else `null`. | Open | 2026-09-13 | 2026-09-13 |
+| ~~Q-067-07~~ | 067 – Map Geo-Bucketing | High | FR-067-12 specs `should_downgrade` via `Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, ...)`, but today's `PositionData` classes use no Gate at all at root scope (raw `grants_full_photo_access` config) and `AlbumPolicy::CAN_ACCESS_FULL_PHOTO` (one check per request, not per photo) at album scope. | Resolved (superseded, not just fixed — Q-067-12: `should_downgrade` removed from this tier entirely; leaf-tier imagery is fetched from the existing v3 Asset endpoint, which never performs a full-vs-thumb split for the thumbnail-class variants Map uses) | 2026-09-13 | 2026-09-15 |
+| ~~Q-067-08~~ | 067 – Map Geo-Bucketing | High | FR-067-02 specs a client-supplied `include_sub_albums` request boolean, but v2's `MapController::getData()` derives it server-side from the single **global** admin config `map_include_subalbums` (no per-album override row exists). | Resolved (Option A — drop the request param, stay config-derived; owner: "Q-67-08: A") | 2026-09-13 | 2026-09-15 |
+| ~~Q-067-09~~ | 067 – Map Geo-Bucketing | Medium | FR-067-15/16 wire cache invalidation only to `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`, with no invalidation path for map-relevant **candidate-scope** config changes (`hide_nsfw_in_map`, `map_include_subalbums`, `map_display`, `map_display_public`). | Resolved (Option A — add config-change invalidation mirroring Q-053-05, new FR-067-24/S-067-19; owner: "Q-67-9: A") | 2026-09-13 | 2026-09-15 |
+| ~~Q-067-10~~ | 067 – Map Geo-Bucketing | Medium | FR-067-06's `cellSizeForZoom(int $zoom): float` is only described qualitatively ("e.g. halving per zoom level") — no base cell size, units, or concrete formula is pinned anywhere in spec/plan/tasks. | Resolved (Option A — pinned now: `cellSizeForZoom(int $zoom): float { return 360.0 / (2 ** $zoom); }`, one tile-width in degrees at Web-Mercator zoom `$zoom`; owner: "Q-67-10: A") | 2026-09-13 | 2026-09-15 |
+| ~~Q-067-11~~ | 067 – Map Geo-Bucketing | High | Q-067-12 made `MapPhotoResource.album_ids[]` structurally required to be each photo's real, viewer-accessible containing album id — needed a tie-break rule for multi-album photos and sub-album exactness. | Resolved (Option B — album scope constrains the `photo_album` join to the query's own already-authorized subtree, no extra access re-check; root scope joins `base_albums`/`computed_access_permissions`, applies `AlbumQueryPolicy::appendAccessibilityConditions()`, and collapses via `GROUP BY`/`MIN()` — no `Album` model hydration at all, mirroring `ResolvesPhotoSource::resolvePhotoQuery()`'s `BaseSmartAlbum` collapse pattern; owner: "Q-67-11: B", mechanism refined same day: "You can resolve that with joins and collapse. See on timeline v3 photo selection.") | 2026-09-13 | 2026-09-15 |
 | ~~Q-065-05~~ | 065 – Photo Listing Struct-of-Arrays Frontend Adoption | High | Should "is the SoA photo path active for this view" be one centralized flag consulted by the fetch dispatcher, render dispatcher, on-demand `details` fetch, and drag-select — with the `details` fetch explicitly skipped when false — or independently re-derived/tolerated at each call site? | Resolved (Option A — one centralized `isPhotoSoaActive` getter on `AlbumState.ts`; user: "Q-065-5: A") | 2026-09-06 | 2026-09-06 |
 | ~~Q-065-06~~ | 065 – Photo Listing Struct-of-Arrays Frontend Adoption | Medium | `AdaptedPhotoTile` (tier 2-derived) lacks `face_count` (hover face-prefetch) and file size (list-mode metadata row) — both read by the v2 tiles this feature forks. Accept as regressions (mirroring NG11's blur-up precedent), or request a Feature 064 amendment adding one or both fields to `ratios`? | Resolved (Option A — both accepted as documented regressions, added to NG11; user: "Q-065-6: A") | 2026-09-06 | 2026-09-06 |
 | ~~Q-064-01~~ | 064 – Photo Listing Struct-of-Arrays | High | `details` tier scoping mechanism for large albums — required `bucket_id` only vs. dual-mode `bucket_id`/`photo_ids[]` vs. plain pagination | Resolved (Option A — dual-mode confirmed; see Q-064-04 for the final, asymmetric cap design) | 2026-09-05 | 2026-09-05 |
@@ -182,9 +182,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
-### ❓ Q-067-07 · `should_downgrade` gate class/granularity mismatch in the leaf tier
+### ❓ Q-067-07 · `should_downgrade` gate class/granularity mismatch in the leaf tier ✅ RESOLVED (superseded)
 
-**Status:** Open  
+**Status:** Resolved — superseded by Q-067-12 (spec.md Appendix), 2026-09-15: `should_downgrade` removed from `MapPhotoResource` entirely. The Asset endpoint's own `GetPhotoAssetRequest` docblock confirms there is no full-vs-thumb access split for thumbnail-class variants (`SizeVariantAssetType`) in the first place — the choice between Option A/B below became moot once the tier stopped computing `should_downgrade` at all. Neither option was taken; see spec.md's Q-067-12 for the actual resolution.  
 **Feature:** F-067 – Map Geo-Bucketing  
 **Preferred option:** 🅰️ (**recommended**) Option A – Reproduce the real per-scope mechanism
 
@@ -221,9 +221,9 @@ Feature owner to choose A or B before I4 (`QueryMapPhotos::do()`) implementation
 
 ---
 
-### ❓ Q-067-08 · Client-controlled `include_sub_albums`, or server-derived from the existing global config?
+### ❓ Q-067-08 · Client-controlled `include_sub_albums`, or server-derived from the existing global config? ✅ RESOLVED
 
-**Status:** Open  
+**Status:** Resolved (Option A, 2026-09-15 — owner: "Q-67-08: A"; encoded in spec.md's FR-067-02/FR-067-04 and Appendix Q-067-08)  
 **Feature:** F-067 – Map Geo-Bucketing  
 **Preferred option:** 🅰️ (**recommended**) Option A – Drop the request param, stay config-derived
 
@@ -270,22 +270,22 @@ Feature owner to confirm whether a per-request sub-album toggle is actually want
 
 ---
 
-### ❓ Q-067-09 · No map-cache invalidation path for config/permission changes
+### ❓ Q-067-09 · No map-cache invalidation path for config changes ✅ RESOLVED
 
-**Status:** Open  
+**Status:** Resolved (Option A, 2026-09-15 — owner: "Q-67-9: A"; encoded in spec.md's new FR-067-24/S-067-19 and Appendix Q-067-14)  
 **Feature:** F-067 – Map Geo-Bucketing  
-**Preferred option:** 🅰️ (**recommended**) Option A – Add config/permission-change invalidation
+**Preferred option:** 🅰️ (**recommended**) Option A – Add config-change invalidation
 
 **Question**  
-FR-067-15/16 wire the new map caches' invalidation only to `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`. Nothing evicts the map cache when a map-relevant **config** changes — `hide_nsfw_in_map`, `grants_full_photo_access`, `map_include_subalbums`, `map_display`, `map_display_public` — or when an album's per-share/per-link permission grants change (the actual driver of album-scope `should_downgrade`, per Q-067-07). This project has an explicit precedent for exactly this gap: Q-053-05 added a coarse "flush all on global config change" rule for the sibling album-listing cache, for the same reason (no per-row hook to invalidate against a global setting). Separately — a smaller, related precision gap: FR-067-16's own motivating example ("a location ... edit ... invalidates its scope's ... cache") cannot happen today. No endpoint writes `latitude`/`longitude` on an existing photo (only `app/Actions/Photo/Pipes/Shared/GeodecodeLocation.php`/`HydrateMetadata.php` set it, at import time); and the one `PhotoSaved` dispatch site that fires on user edits, `PhotoController::update()` (`app/Http/Controllers/Gallery/PhotoController.php:217`), gates on `$photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at'])` — latitude/longitude aren't in that list, so even a hypothetical future location-edit reusing this same call site wouldn't fire `PhotoSaved` unless one of those four columns also changed.
+FR-067-15/16 wire the new map caches' invalidation only to `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`. Nothing evicts the map cache when a map-relevant **candidate-scope config** changes — `hide_nsfw_in_map`, `map_include_subalbums`, `map_display`, `map_display_public`. This project has an explicit precedent for exactly this gap: Q-053-05 added a coarse "flush all on global config change" rule for the sibling album-listing cache, for the same reason (no per-row hook to invalidate against a global setting). (This question originally also raised a `grants_full_photo_access`/per-share-permission-grant angle, driving `should_downgrade` staleness — that angle is now moot: Q-067-12 removed `should_downgrade` from this tier entirely, and the Asset endpoint's own authorization is checked fresh on every request, never cached, so a permission-grant change can never leave a stale *authorization* result in the map cache. Only the candidate-scope config keys above still matter.) Separately — a smaller, related precision gap: FR-067-16's own motivating example ("a location ... edit ... invalidates its scope's ... cache") cannot happen today. No endpoint writes `latitude`/`longitude` on an existing photo (only `app/Actions/Photo/Pipes/Shared/GeodecodeLocation.php`/`HydrateMetadata.php` set it, at import time); and the one `PhotoSaved` dispatch site that fires on user edits, `PhotoController::update()` (`app/Http/Controllers/Gallery/PhotoController.php:217`), gates on `$photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at'])` — latitude/longitude aren't in that list, so even a hypothetical future location-edit reusing this same call site wouldn't fire `PhotoSaved` unless one of those four columns also changed.
 
 ---
 
-#### 🅰️ (**recommended**) Option A – Add config/permission-change invalidation, mirroring Q-053-05
-- **Idea:** A config-change listener (or extending the existing one, if any) evicts the coarse root map-cache tag plus every warm album-scope map-cache tag whenever any of the five listed config keys change; an album permission/share-grant change evicts that album's scope tag specifically.
+#### 🅰️ (**recommended**) Option A – Add config-change invalidation, mirroring Q-053-05
+- **Idea:** A config-change listener (or extending the existing one, if any) evicts the coarse root map-cache tag plus every warm album-scope map-cache tag whenever any of the four listed config keys change.
 - **Spec impact:** New FR under I6, alongside FR-067-15/16; a coarse "flush everything warm" tag list, same cost class as Q-053-05's `album-listing-global` tag.
 - **Pros:**  
-  - ✅ No indefinitely-stale `should_downgrade`/NSFW-visibility results after an admin/owner changes a relevant setting.  
+  - ✅ No indefinitely-stale NSFW-visibility/candidate-scope results after an admin changes a relevant setting.  
   - ✅ Directly reuses an already-accepted pattern in this codebase (Q-053-05).
 - **Cons:**  
   - ❌ A config change now does more work (cache flush) than today's "just update the row."
@@ -293,33 +293,23 @@ FR-067-15/16 wire the new map caches' invalidation only to `PhotoSaved`/`PhotoMo
 ---
 
 #### 🅱️ Option B – Accept TTL-only staleness for this dimension
-- **Idea:** Document that config/permission-driven map staleness resolves only at TTL expiry, same as any other un-invalidated cache dimension.
+- **Idea:** Document that config-driven map staleness resolves only at TTL expiry, same as any other un-invalidated cache dimension.
 - **Spec impact:** NFR-067-XX documenting the accepted gap explicitly, not silently.
 - **Pros:**  
   - ✅ No new invalidation code to write/test.
-- **Cons:**  
-  - ❌ A permission/privacy-adjacent surface (who sees which size variants, NSFW visibility) stays wrong for up to a full TTL after an admin fixes it — worse than a cosmetic staleness gap.
-
----
-
-#### 🅲 Option C – Invalidate only the album-permission-grant case
-- **Idea:** Handle the album-scope `should_downgrade` permission-grant case (narrower, more clearly a per-album action already firing other events); leave the five global config keys on TTL-only, reasoning that admin-config changes are rare and admins already expect a settling delay.
-- **Spec impact:** Smaller new FR than Option A, scoped to permission grants only.
-- **Pros:**  
-  - ✅ Smaller surface than Option A.
 - **Cons:**  
   - ❌ `hide_nsfw_in_map` toggled off leaves NSFW photos hidden from the map cache until TTL — the exact kind of visibility bug Q-053-05 was written to prevent for the sibling feature.
 
 ---
 
 **Next action**  
-Feature owner to choose A, B, or C before I6 (`CacheKeyProvider`/`ManagedCachePhotoListingInvalidator` work); if B or C, correct FR-067-16's location-edit wording to not overclaim reachability it doesn't have.
+Feature owner to choose A or B before I6 (`CacheKeyProvider`/`ManagedCachePhotoListingInvalidator` work); if B, correct FR-067-16's location-edit wording to not overclaim reachability it doesn't have.
 
 ---
 
-### ❓ Q-067-10 · `cellSizeForZoom()` has no concrete formula anywhere
+### ❓ Q-067-10 · `cellSizeForZoom()` has no concrete formula anywhere ✅ RESOLVED
 
-**Status:** Open  
+**Status:** Resolved (Option A, 2026-09-15 — owner: "Q-67-10: A"; pinned as `cellSizeForZoom(int $zoom): float { return 360.0 / (2 ** $zoom); }`, encoded in spec.md's FR-067-06 and Appendix Q-067-13. Empirical spot-check against the ~100k-photo fixture deferred to I3/I4 implementation, flagged pending like this feature's other manual-verification gaps.)  
 **Feature:** F-067 – Map Geo-Bucketing  
 **Preferred option:** 🅰️ (**recommended**) Option A – Pin concrete constants in the spec now
 
@@ -354,51 +344,40 @@ Feature owner to pin `BASE_DEGREES`/halving formula (or explicitly defer per Opt
 
 ---
 
-### ❓ Q-067-11 · `album_ids[]` per-photo semantics at root scope
+### ❓ Q-067-11 · `album_ids[]` per-photo resolution — now load-bearing, not just a UX nicety ✅ RESOLVED
 
-**Status:** Open  
+**Status:** Resolved (Option B, 2026-09-15 — owner: "Q-67-11: B"; encoded in spec.md's FR-067-10 and Appendix Q-067-15. Concretely: album scope constrains the `photo_album` join to the query's own already-authorized scope — requested album, or its `_lft`/`_rgt` subtree when `include_sub_albums`, no extra per-sub-album access check, mirroring `all_photos()`'s existing behavior; root scope joins `photo_album` → `base_albums` → `computed_access_permissions`, applies `AlbumQueryPolicy::appendAccessibilityConditions()` (the query-builder form of `AlbumPolicy::canAccess()`, no `Album` model required), and collapses the resulting one-row-per-membership fan-out to one row per photo via `GROUP BY photos.id` + `MIN(photo_album.album_id)` — mirroring `ResolvesPhotoSource::resolvePhotoQuery()`'s existing `BaseSmartAlbum` branch, which collapses the same kind of fan-out via a `whereIn` existence test; `MIN()` is used here instead since the winning album id itself must survive. No Eloquent hydration anywhere in this tier, at either scope — mechanism corrected same day per owner follow-up: "You can resolve that with joins and collapse. See on timeline v3 photo selection.")  
 **Feature:** F-067 – Map Geo-Bucketing  
-**Preferred option:** 🅱️ (**recommended**) Option B – Resolve the real per-photo album id
+**Preferred option:** 🅰️ (**recommended**) Option A – First viewer-accessible album via the `photo_album` join
 
 **Question**  
-DO-067-06 defines `MapPhotoResource.album_ids[]` as `array<string|null>` — one value per photo. But today's `PositionDataResource` (`app/Http/Resources/Collections/PositionDataResource.php`) stamps the *scope's* `$album_id` (`null` for root, the requested album's id for album scope) onto every `PhotoResource` via `toPhotoResources(album_id: $album_id, ...)` — not the photo's actual containing album from the `photo_album` pivot. `Map.vue` reads this value into `data-album-id` on the popup `<img>` (`resources/js/v8/views/gallery-panels/Map.vue`, `open()`), apparently for click-to-navigate — meaning root-scope marker clicks are reportedly already inert today, since `album_id` is always `null` there regardless of which album a photo actually lives in.
+Originally framed as a UX-quality gap (today's `PositionDataResource` stamps the scope's own `$album_id` — `null` at root — onto every photo, rather than its real containing album). Q-067-12 (spec.md Appendix) upgraded this from optional to **mandatory**: `MapPhotoResource.album_ids[]` now feeds directly into `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` requests (Q-067-12's Asset-endpoint delegation), and `GetPhotoAssetRequest::isPhotoOfAlbum()` checks direct `photo_album` pivot membership against exactly the `album_id` given — no subtree walk, no fallback to "root". A `null` (or wrong) `album_id` there doesn't degrade gracefully to today's behavior; it 404s that marker's thumbnail outright. Two concrete sub-problems remain: (1) a photo belonging to multiple albums needs a tie-break when more than one is viewer-accessible; (2) at album scope with `include_sub_albums=true`, the resolved id must be the photo's own direct (sub-)album — not the originally-requested top album — since `isPhotoOfAlbum()` doesn't walk descendants either.
 
 ---
 
-#### 🅰️ Option A – Keep parity, stays uniformly `null` at root
-- **Idea:** `album_ids[]` mirrors today exactly: `null` for every photo at root scope, the requested album's id at album scope.
-- **Spec impact:** DO-067-06's field becomes effectively scope-uniform, not truly per-photo; no query change needed.
+#### 🅰️ (**recommended**) Option A – First viewer-accessible album via the `photo_album` join
+- **Idea:** In `QueryMapPhotos`'s leaf-cell `toBase()` pass, join `photo_album` and pick one album per photo — the first one both (a) present in that join and (b) passing `AlbumPolicy::CAN_ACCESS` for the current viewer. Deterministic tie-break (e.g. lowest album `id`/`_lft`) when more than one qualifies.
+- **Spec impact:** FR-067-10 gains the `photo_album` join + an access filter; `album_ids[]` is `null` only if genuinely no accessible album exists (shouldn't occur, since the photo already passed the scope's own searchability filter).
 - **Pros:**  
-  - ✅ Zero behavior change, zero extra query cost.
+  - ✅ Always resolves to something the Asset endpoint will actually accept — no silent 404s.  
+  - ✅ One join, still bounded by `(leaf cells) × LEAF_THRESHOLD` — no new unbounded query.
 - **Cons:**  
-  - ❌ Leaves today's presumably-inert root-scope click-to-navigate exactly as broken as it is now, despite the SoA field being named/typed as if it carries real per-photo data.
+  - ❌ The tie-break is arbitrary when a photo is genuinely multi-album — the "wrong" (but still valid/accessible) album may be shown in a breadcrumb-adjacent context later, if one is ever added.
 
 ---
 
-#### 🅱️ (**recommended**) Option B – Resolve the real per-photo album id
-- **Idea:** In `QueryMapPhotos`'s already-bounded hydration pass (`(leaf cells in viewport) × LEAF_THRESHOLD` rows, NFR-067-05), join/eager-load each photo's real containing album id from `photo_album` and populate `album_ids[]` with it.
-- **Spec impact:** FR-067-10 gains a join against `photo_album`, scoped to the same bounded row set it already hydrates — no new unbounded query.
+#### 🅱️ Option B – Prefer the album that produced this photo in the current query's own scope
+- **Idea:** Same join, but when resolving album scope's own subtree (or root's `resolveRootQuery()`), prefer the album that actually matched *this request's* candidate query over an unrelated album the photo also happens to belong to — falls back to Option A's rule only when the "natural" album isn't independently resolvable cheaply within the same `toBase()` pass.
+- **Spec impact:** Same join as Option A, plus scope-aware preference logic.
 - **Pros:**  
-  - ✅ Root-scope marker clicks become genuinely navigable — a real UX improvement, not just a schema-shape change.  
-  - ✅ Cost stays bounded by the same structural guarantee NFR-067-05 already requires.
+  - ✅ More intuitive result for the common case (album-scope browsing, sub-albums included).
 - **Cons:**  
-  - ❌ A photo belonging to multiple albums needs a tie-break rule (see Option C).  
-  - ❌ Small scope growth beyond "just reproduce `PositionData`."
-
----
-
-#### 🅲 Option C – Real id only when unambiguous
-- **Idea:** Populate the real album id only for a photo belonging to exactly one album; `null` when it belongs to more than one (ambiguous "which one").
-- **Spec impact:** Same join as Option B, plus a count check.
-- **Pros:**  
-  - ✅ Never guesses wrong when a photo is genuinely multi-album.
-- **Cons:**  
-  - ❌ Silently reintroduces the Option A gap for exactly the photos most likely to be viewed from a shared/root context.
+  - ❌ More logic for a case (root scope, multi-album photo) where "the natural album" isn't well-defined anyway — Option A already resolves correctly for the actually-load-bearing requirement (a working Asset URL), just with a less curated tie-break.
 
 ---
 
 **Next action**  
-Feature owner to choose before I4 (`QueryMapPhotos::do()`); low urgency relative to Q-067-07/08/09 since it's a UX-quality gap, not a correctness/security one.
+Feature owner to choose before I4 (`QueryMapPhotos::do()`) — this is now a hard implementation blocker for FR-067-09/Q-067-12, not an optional refinement.
 
 ---
 

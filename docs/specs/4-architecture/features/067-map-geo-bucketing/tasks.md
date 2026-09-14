@@ -1,7 +1,7 @@
 # Feature 067 Tasks – Map Geo-Bucketing
 
 _Status: Draft (spec/plan/tasks written; implementation not started)_
-_Last updated: 2026-09-13_
+_Last updated: 2026-09-15_
 
 > Keep this checklist aligned with `plan.md`'s increments. Stage tests before implementation,
 > record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -13,21 +13,23 @@ _Last updated: 2026-09-13_
 ### I1 – `MapViewport` DTO + request validation
 
 - [ ] T-067-01 – Write `MapViewportTest` covering `north`/`south`/`east`/`west`/`zoom` bounds
-  validation, `cellSizeForZoom()` monotonicity (smaller cell at higher zoom), `snapToGrid()`
+  validation, `cellSizeForZoom()` against the pinned formula `360.0 / (2 ** $zoom)` (Q-067-13, e.g.
+  zoom 0 → 360.0, zoom 10 → 0.3515625), monotonicity (smaller cell at higher zoom), `snapToGrid()`
   idempotency (snapping an already-snapped viewport is a no-op) and outward-only behavior
-  (FR-067-01, S-067-13).
+  (FR-067-01, FR-067-06, S-067-13).
   _Intent:_ Failing tests staged before `MapViewport` exists.
   _Verification commands:_ `php artisan test --filter=MapViewportTest` (expect failure/missing
   class).
 
 - [ ] T-067-02 – Implement `App\DTO\MapViewport` (`north`/`south`/`east`/`west`/`zoom`,
-  `cellSizeForZoom()`, `snapToGrid()`), Carbon-free (NFR-067-02).
+  `cellSizeForZoom(int $zoom): float { return 360.0 / (2 ** $zoom); }` per Q-067-13,
+  `snapToGrid()`), Carbon-free (NFR-067-02).
   _Verification commands:_ `php artisan test --filter=MapViewportTest`;
   `vendor/bin/phpstan analyse`; grep touched file for `Carbon`/`DateTime` imports (expect none).
 
 - [ ] T-067-03 – Add `HasMapViewportTrait` (bounds validation rules) and new
   `GetMapBucketsRequest`/`GetMapPhotosRequest`, both also using `HasAbstractAlbumTrait` for
-  `album_id`/new `include_sub_albums` (F-067-02).
+  `album_id` only — no `include_sub_albums` request parameter (Q-067-08) (FR-067-02).
   _Intent:_ Malformed viewport/zoom params rejected with 422.
   _Verification commands:_ `vendor/bin/phpstan analyse`;
   `php artisan test --filter=MapViewportTest`.
@@ -37,20 +39,21 @@ _Last updated: 2026-09-13_
 - [ ] T-067-04 – Write `ResolvesMapPhotoSourceTest` asserting `resolveRootQuery()`/
   `resolveAlbumQuery()` return the exact same candidate photo ids as today's
   `Albums\PositionData::do()`/`Album\PositionData::get()` for identical fixtures, including the
-  `include_sub_albums` branch (F-067-03, F-067-04, S-067-02).
+  sub-albums branch driven by `map_include_subalbums` config, not a request param (Q-067-08)
+  (FR-067-03, FR-067-04, S-067-02).
   _Intent:_ Failing tests staged before the trait exists.
   _Verification commands:_ `php artisan test --filter=ResolvesMapPhotoSourceTest` (expect
   failure/missing class).
 
 - [ ] T-067-05 – Implement `App\Actions\Map\ResolvesMapPhotoSource::resolveRootQuery()` —
   reproduces `PhotoQueryPolicy::applySearchabilityFilter()` + `hide_nsfw_in_map` + `origin: null`,
-  minus eager loads/`->get()` (F-067-03).
+  minus eager loads/`->get()` (FR-067-03).
   _Verification commands:_ `php artisan test --filter=ResolvesMapPhotoSourceTest`;
   `vendor/bin/phpstan analyse`.
 
 - [ ] T-067-06 – Implement `resolveAlbumQuery()` — reproduces `$album->photos()`/
   `$album->all_photos()` branching on `$includeSubAlbums`, minus eager loads/`->get()`; confirm
-  `AlbumPolicy::CAN_ACCESS_MAP` gate unchanged (F-067-04, S-067-03).
+  `AlbumPolicy::CAN_ACCESS_MAP` gate unchanged (FR-067-04, S-067-03).
   _Verification commands:_ `php artisan test --filter=ResolvesMapPhotoSourceTest`.
 
 ### I3 – Grid bucket aggregation (`QueryMapBuckets`)
@@ -59,7 +62,7 @@ _Last updated: 2026-09-13_
   antimeridian-crossing viewport (`west=170,east=-170`), negative lat/lng fixtures (southern/western
   hemisphere), an empty-scope fixture (all-empty arrays, not an error), and a large (order of
   thousands) single-region fixture asserting response row count equals distinct-cell count, not
-  photo count (F-067-05..08, NFR-067-01, S-067-01, S-067-04, S-067-06).
+  photo count (FR-067-05..08, NFR-067-01, S-067-01, S-067-04, S-067-06).
   _Intent:_ Failing tests staged before `QueryMapBuckets` exists.
   _Verification commands:_ `php artisan test --filter=QueryMapBucketsTest` (expect
   failure/missing class).
@@ -70,7 +73,7 @@ _Last updated: 2026-09-13_
 
 - [ ] T-067-09 – Implement `App\Actions\Map\QueryMapBuckets::do()`: `snapToGrid()` first,
   antimeridian-aware `WHERE`, portable `GROUP BY FLOOR(latitude/$cell), FLOOR(longitude/$cell)` +
-  `COUNT(*)`/`AVG(latitude)`/`AVG(longitude)`, `toBase()`-only, Carbon-free (F-067-05..08,
+  `COUNT(*)`/`AVG(latitude)`/`AVG(longitude)`, `toBase()`-only, Carbon-free (FR-067-05..08,
   NFR-067-01, NFR-067-02).
   _Verification commands:_ `php artisan test --filter=QueryMapBucketsTest`;
   `vendor/bin/phpstan analyse`; grep for `Carbon`/`DateTime` imports (expect none).
@@ -78,25 +81,37 @@ _Last updated: 2026-09-13_
 ### I4 – Leaf-cell photo resolution (`QueryMapPhotos`)
 
 - [ ] T-067-10 – Write `QueryMapPhotosTest` covering: a dense single-cell fixture (`count > 20`)
-  asserted entirely absent from the Photos tier's response (no hydration triggered for it), a
-  sparse fixture asserted fully present with field-accurate output, and `should_downgrade` parity
-  against a viewer without `CAN_ACCESS_FULL_PHOTO` (F-067-09..12, NFR-067-05, S-067-06, S-067-07,
-  S-067-09).
+  asserted entirely absent from the Photos tier's response (no row-fetch triggered for it), a
+  sparse fixture asserted fully present with field-accurate output including a resolved
+  `album_ids[i]`, and a multi-album-membership fixture exercising both scopes' tie-break rules
+  (Q-067-15): album scope resolves to an in-scope sub-album (not the top requested album) when the
+  photo lives deeper in the subtree; root scope resolves to the first `AlbumPolicy::CAN_ACCESS`-passing
+  album when the photo belongs to several, one of which the viewer cannot access
+  (FR-067-09..12, NFR-067-05, S-067-06, S-067-07, S-067-09).
   _Intent:_ Failing tests staged before `QueryMapPhotos` exists.
   _Verification commands:_ `php artisan test --filter=QueryMapPhotosTest` (expect
   failure/missing class).
 
 - [ ] T-067-11 – Implement `App\Http\Resources\V3\MapPhotoResource` — `ids[]`/`album_ids[]`/
-  `titles[]`/`taken_ats[]` (preformatted via `date_format_sidebar_taken_at`)/`latitudes[]`/
-  `longitudes[]`/`thumb_urls[]`/`thumb_urls_2x[]`/`small_urls[]`/`small_urls_2x[]` — no
-  tags/rating/palette/statistics (F-067-09, F-067-11).
+  `titles[]`/`taken_ats[]` (preformatted via `date_format_sidebar_taken_at`, native PHP `date()`
+  against the raw string column — no Carbon, no hydrated model, per NFR-067-02)/`latitudes[]`/
+  `longitudes[]` — no tags/rating/palette/statistics/size_variants and no URL fields at all;
+  leaf-tier imagery is fetched by the frontend from the existing v3 Asset endpoint via
+  `ThumbAssetService`, keyed on `ids[]`/`album_ids[]` (Q-067-12) (FR-067-09, FR-067-11).
   _Verification commands:_ `vendor/bin/phpstan analyse`.
 
 - [ ] T-067-12 – Implement `App\Actions\Map\QueryMapPhotos::do()`: aggregate pre-pass
-  (`HAVING COUNT(*) <= 20`, `toBase()`-only) to resolve leaf cells, then bounded Eloquent hydration
-  (`with(['size_variants' => ...whereBetween SMALL2X..THUMB...])`) restricted to those cells;
-  `should_downgrade` via `Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, ...)` (F-067-10, F-067-12,
-  NFR-067-05).
+  (`HAVING COUNT(*) <= 20`, `toBase()`-only) to resolve leaf cells, then a second, still
+  `toBase()`-only pass restricted to those cells, joining `photo_album` to resolve each photo's
+  `album_ids[i]` per Q-067-15's scope-dependent rule — album scope constrains the join to the
+  query's own already-authorized subtree (no extra access re-check); root scope joins
+  `photo_album` → `base_albums` → `computed_access_permissions`, applies
+  `AlbumQueryPolicy::appendAccessibilityConditions()` (query-builder form of `canAccess()`, no
+  `Album` model needed), and collapses via `GROUP BY photos.id` + `MIN(photo_album.album_id)` —
+  mirroring `ResolvesPhotoSource::resolvePhotoQuery()`'s `BaseSmartAlbum`-branch collapse pattern
+  (there a `whereIn` existence test; here `MIN()` since the winning album id must survive). No
+  `size_variants` join, no `should_downgrade` computation, no Eloquent hydration anywhere in this
+  tier (Q-067-12) (FR-067-09, FR-067-10, NFR-067-05).
   _Verification commands:_ `php artisan test --filter=QueryMapPhotosTest`;
   `vendor/bin/phpstan analyse`.
 
@@ -109,12 +124,12 @@ _Last updated: 2026-09-13_
 
 - [ ] T-067-14 – Add new controller wiring `GET /api/v3/Map/buckets`, `GET /api/v3/Map/Photos`,
   `GET /api/v3/Map/tracks` (`tracks()` reuses existing `TrackResource` unchanged, `album_id`
-  required) (F-067-05, F-067-09, F-067-13).
+  required) (FR-067-05, FR-067-09, FR-067-13).
   _Verification commands:_ `php artisan test --filter=MapListingV3Test`;
   `vendor/bin/phpstan analyse`; `vendor/bin/php-cs-fixer fix --dry-run --diff`.
 
 - [ ] T-067-15 – New migration adding a plain composite index on `photos(latitude, longitude)`,
-  no partial clause, no spatial index type (F-067-14, Q-067-03).
+  no partial clause, no spatial index type (FR-067-14, Q-067-03).
   _Verification commands:_ `php artisan migrate`; `php artisan migrate:rollback` (confirm clean
   reversibility); `php artisan migrate` again.
 
@@ -128,37 +143,50 @@ _Last updated: 2026-09-13_
   failure/missing method).
 
 - [ ] T-067-17 – Add `CacheKeyProvider::mapBucketsKey()`/`mapPhotosKey()`/`mapTracksKey()`/
-  `mapListingTag()` (scope + snapped-viewport + zoom + unlocked-albums-digest + user id) (F-067-15).
+  `mapListingTag()` (scope + snapped-viewport + zoom + unlocked-albums-digest + user id) (FR-067-15).
   _Verification commands:_ `php artisan test --filter=CacheKeyProviderTest`;
   `vendor/bin/phpstan analyse`.
 
 - [ ] T-067-18 – Wrap the three controller endpoints in `ManagedCacheService::rememberIf()`, same
-  pattern as `PhotoChildrenController` (F-067-15).
+  pattern as `PhotoChildrenController` (FR-067-15).
   _Verification commands:_ `php artisan test --filter=MapListingV3Test`.
 
 - [ ] T-067-19 – Write invalidation test cases: a save/move to a geotagged photo evicts its
   scope(s)' coarse map-cache tag while an unrelated scope's warm entry survives; a delete evicts the
-  same tag(s) (F-067-16, S-067-10, S-067-11).
+  same tag(s) (FR-067-16, S-067-10, S-067-11).
   _Intent:_ Failing tests staged before the listener branches exist.
   _Verification commands:_ `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
   (expect failure).
 
 - [ ] T-067-20 – Add map-scope-aware branches to the existing `PhotoSaved`/`PhotoMoved`/
   `PhotoDeleted` listener (root tag always evicted; each containing album's tag evicted if warm)
-  (F-067-16).
+  (FR-067-16).
   _Verification commands:_ `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`.
+
+- [ ] T-067-36 – Write config-change invalidation test: toggling `hide_nsfw_in_map` (and each of
+  `map_include_subalbums`/`map_display`/`map_display_public`) flushes every warm map-cache tag
+  (Q-067-14, FR-067-24, S-067-19).
+  _Intent:_ Failing test staged before the config-change listener exists.
+  _Verification commands:_ `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
+  (expect failure).
+
+- [ ] T-067-37 – Add a config-change listener flushing every warm map-cache tag (root's, plus every
+  warm album scope's) on any of the four config keys changing, mirroring Q-053-05's precedent
+  (Q-067-14, FR-067-24).
+  _Verification commands:_ `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`;
+  `vendor/bin/phpstan analyse`.
 
 ### I7 – Frontend service + `MapState.ts`
 
 - [ ] T-067-21 – New `resources/js/services/map-v3-service.ts`: `getBuckets()`/`getPhotos()`/
   `getTracks()`, axios-cache-interceptor conventions mirrored from
-  `photo-children-v3-service.ts` (F-067-17).
+  `photo-children-v3-service.ts` (FR-067-17).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-22 – New `resources/js/stores/MapState.ts`: `bucketsV3`/`photosV3`/`tracksV3`,
   `isMapSoaActive` getter (existing `is_struct_of_array_enabled` flag), debounced
   `requestViewport(bounds, zoom)` with dedup of identical/in-flight snapped-viewport requests
-  (F-067-18).
+  (FR-067-18).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-23 – Dev-console/code-review verification: panning/zooming triggers correct
@@ -171,25 +199,29 @@ _Last updated: 2026-09-13_
 ### I8 – `Map.vue` SoA rendering path
 
 - [ ] T-067-24 – Wire `moveend`/`zoomend` Leaflet listeners → `MapState.ts.requestViewport()`
-  (debounced) (F-067-19, S-067-14).
+  (debounced) (FR-067-19, S-067-14).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-25 – Render aggregate (count-badge) markers at cell centroid for cells above the leaf
-  threshold; click handler zooms the map in, never fetches members (F-067-20, S-067-15).
+  threshold; click handler zooms the map in, never fetches members (FR-067-20, S-067-15).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-26 – Render leaf-cell entries via the existing `clusterFunc()`/`.leaflet-marker-photo`
-  marker+popup template, reused byte-for-byte from the v2 path (F-067-21, S-067-16).
+  marker+popup template, reused byte-for-byte from the v2 path — except marker/popup image `src`
+  values, which now resolve asynchronously via `ThumbAssetService.acquire(albumId, photoId, type)`
+  (Q-067-12) instead of a baked URL string, since `MapPhotoResource` no longer supplies one; assign
+  the object URL once the promise resolves, same pattern `Thumb.vue` already uses (FR-067-21,
+  S-067-16).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-27 – Move GPX track loading to a one-time `MapState.ts` fetch (via the new `tracks`
   endpoint), decoupled from viewport-change refetches; `L.GPX` rendering/layer-control/color-palette
-  logic otherwise unchanged (F-067-22, S-067-17).
+  logic otherwise unchanged (FR-067-22, S-067-17).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-28 – Add `is_struct_of_array_enabled`-driven dispatcher in `Map.vue` between the old
   (`PositionData` fetch + `leaflet.markercluster`) and new (`MapState.ts` + aggregate/leaf markers)
-  paths, mirroring `Timeline.vue`'s dispatcher pattern (F-067-23).
+  paths, mirroring `Timeline.vue`'s dispatcher pattern (FR-067-23).
   _Verification commands:_ `npm run check` — pass.
 
 - [ ] T-067-29 – Manual browser verification of S-067-14 through S-067-17 (pan/zoom-triggered
@@ -201,7 +233,7 @@ _Last updated: 2026-09-13_
 
 - [ ] T-067-30 – Diff review confirming zero changes to `routes/api_v2.php`'s `/Map`/`/Map::provider`
   entries, `MapController.php`, `App\Actions\Albums\PositionData`, `App\Actions\Album\PositionData`,
-  and `Map.vue`'s v2 rendering branch (F-067-23, NFR-067-03, S-067-18).
+  and `Map.vue`'s v2 rendering branch (FR-067-23, NFR-067-03, S-067-18).
   _Verification commands:_ `git diff --stat -- routes/api_v2.php app/Http/Controllers/Gallery/MapController.php app/Actions/Albums/PositionData.php app/Actions/Album/PositionData.php` — expect empty.
 
 ### I10 – Documentation

@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/067-map-geo-bucketing/spec.md`
 _Status:_ Draft (spec/plan/tasks written; implementation not started)
-_Last updated:_ 2026-09-13
+_Last updated:_ 2026-09-15
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs
 > from `spec.md` where relevant, log any new high- or medium-impact questions in
@@ -37,8 +37,10 @@ track loading is decoupled from photo fetching without behavior change.
 - `App\Actions\Albums\PositionData`/`App\Actions\Album\PositionData` — read as the source of truth
   for exact root/album query semantics to reproduce in `ResolvesMapPhotoSource`; left otherwise
   untouched (v2 fallback).
-- `App\Policies\AlbumPolicy::CAN_ACCESS_MAP`, `App\Policies\PhotoPolicy::CAN_ACCESS_FULL_PHOTO` —
-  reused unchanged.
+- `App\Policies\AlbumPolicy::CAN_ACCESS_MAP`, `App\Policies\AlbumPolicy::CAN_ACCESS` (for
+  `album_ids[]` resolution, Q-067-15) — reused unchanged. `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` is
+  **not** used by this feature at all (Q-067-12: leaf-tier imagery is delegated to the existing
+  Asset endpoint, which never performs that check for thumbnail-class variants).
 - `App\Services\Cache\CacheKeyProvider`/`ManagedCacheService`/`ManagedCachePhotoListingInvalidator`
   — extended with map-specific key/tag methods and event-listener branches.
 - `App\Models\Track`/`App\Http\Resources\Models\TrackResource` — reused unchanged for the new
@@ -89,11 +91,13 @@ found and its fix directly in this file's increment entries, not a separate log.
 1. **I1 – `MapViewport` DTO + request validation**
    - _Goal:_ FR-067-01, FR-067-02.
    - _Preconditions:_ None (first code increment).
-   - _Steps:_ New `App\DTO\MapViewport` (`north`/`south`/`east`/`west`/`zoom`, `cellSize()`,
-     `snapToGrid()` — all pure, unit-testable). New `HasMapViewportTrait` (bounds validation) reused
+   - _Steps:_ New `App\DTO\MapViewport` (`north`/`south`/`east`/`west`/`zoom`,
+     `cellSizeForZoom(int $zoom): float { return 360.0 / (2 ** $zoom); }` (Q-067-13), `snapToGrid()`
+     — all pure, unit-testable). New `HasMapViewportTrait` (bounds validation) reused
      by `GetMapBucketsRequest`/`GetMapPhotosRequest`; both reuse `HasAbstractAlbumTrait` for
-     `album_id`/`include_sub_albums`. Tests first: `MapViewportTest` covering bounds validation,
-     `cellSizeForZoom()` monotonicity, `snapToGrid()` idempotency/stability.
+     `album_id` only — no `include_sub_albums` request parameter (Q-067-08: stays server-derived
+     from `map_include_subalbums`, exactly like `MapController::getData()` today). Tests first: `MapViewportTest` covering bounds validation,
+     `cellSizeForZoom()` monotonicity against the pinned formula, `snapToGrid()` idempotency/stability.
    - _Commands:_ `php artisan test --filter=MapViewportTest`, `vendor/bin/phpstan analyse`,
      `vendor/bin/php-cs-fixer fix --dry-run --diff`.
    - _Exit:_ Malformed viewport/zoom params correctly rejected (S-067-13); `MapViewport` pure
@@ -128,11 +132,26 @@ found and its fix directly in this file's increment entries, not a separate log.
    - _Goal:_ FR-067-09, FR-067-10, FR-067-11, FR-067-12, NFR-067-05.
    - _Preconditions:_ I3 (reuses the same grid/snapping logic).
    - _Steps:_ `QueryMapPhotos::do()` — aggregate pre-pass with `HAVING COUNT(*) <= 20` to resolve
-     leaf cells, then bounded Eloquent hydration (`with(['size_variants' => ...])`) restricted to
-     those cells. New `MapPhotoResource` (thin fields only, per FR-067-11); `should_downgrade` gate
-     reproduced exactly (FR-067-12). Tests first: a synthetic dense single-cell fixture
-     (`count > 20`) asserted absent from hydration entirely (NFR-067-05); a sparse fixture asserted
-     fully present and field-accurate.
+     leaf cells, then a second, still `toBase()`-only pass restricted to those cells joining
+     `photo_album` to resolve each photo's `album_ids[i]` (Q-067-15): album scope constrains the
+     join to albums within the query's own already-authorized scope (requested album, or its
+     `_lft`/`_rgt` subtree when `include_sub_albums`, no extra per-sub-album access check, mirroring
+     `all_photos()`); root scope has no such natural album, so it falls back to the first album
+     among the photo's containing albums that passes accessibility — resolved entirely in SQL, no
+     `Album` hydration: join `photo_album` → `base_albums` → `computed_access_permissions`, apply
+     `AlbumQueryPolicy::appendAccessibilityConditions()` (query-builder form of
+     `AlbumPolicy::canAccess()`, designed to run against exactly these two joined tables), collapse
+     via `GROUP BY photos.id` + `MIN(photo_album.album_id)` — mirroring
+     `ResolvesPhotoSource::resolvePhotoQuery()`'s existing `BaseSmartAlbum` branch, which collapses
+     the same photo-to-many-albums fan-out via a `whereIn` id-subquery (here `MIN()` instead, since
+     the winning album id itself must survive, not just an existence test) (Q-067-15). No
+     `size_variants` join at all (Q-067-12: leaf-tier imagery is fetched by the frontend from the
+     existing v3 Asset endpoint instead, so no `should_downgrade` computation exists in this tier);
+     no Eloquent hydration anywhere in this tier (NFR-067-05). New
+     `MapPhotoResource` (thin fields only, per FR-067-11). Tests first: a synthetic dense
+     single-cell fixture (`count > 20`) asserted absent from the response entirely (NFR-067-05); a
+     sparse fixture asserted fully present and field-accurate; a multi-album-membership fixture
+     exercising both scopes' tie-break rules.
    - _Commands:_ `php artisan test --filter=QueryMapPhotosTest`, `vendor/bin/phpstan analyse`.
    - _Exit:_ S-067-06 (leaf half), S-067-07, S-067-09 pass.
 
@@ -149,19 +168,22 @@ found and its fix directly in this file's increment entries, not a separate log.
      S-067-13 pass.
 
 6. **I6 – Cache wiring + invalidation**
-   - _Goal:_ FR-067-15, FR-067-16.
+   - _Goal:_ FR-067-15, FR-067-16, FR-067-24.
    - _Preconditions:_ I5.
    - _Steps:_ `CacheKeyProvider::mapBucketsKey()`/`mapPhotosKey()`/`mapTracksKey()`/`mapListingTag()`
      (scope + snapped-viewport + zoom + unlocked-albums-digest + user id). Controller wraps each
      endpoint in `ManagedCacheService::rememberIf()`, same pattern as `PhotoChildrenController`.
      `ManagedCachePhotoListingInvalidator` (or a new sibling listener) gains map-scope-aware
-     branches on `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`. Tests first: cache-key stability under
-     snapping (NFR-067-04); scope-tag eviction on save/move/delete, unrelated scope survives
-     (S-067-10, S-067-11).
+     branches on `PhotoSaved`/`PhotoMoved`/`PhotoDeleted`. A new config-change listener (Q-067-14)
+     flushes every warm map-cache tag (root's, plus every warm album scope's) when
+     `hide_nsfw_in_map`/`map_include_subalbums`/`map_display`/`map_display_public` changes,
+     mirroring Q-053-05's precedent. Tests first: cache-key stability under snapping (NFR-067-04);
+     scope-tag eviction on save/move/delete, unrelated scope survives (S-067-10, S-067-11); the four
+     config keys flush every warm tag (S-067-19).
    - _Commands:_ `php artisan test --filter=MapListingV3Test`,
      `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`,
      `vendor/bin/phpstan analyse`.
-   - _Exit:_ S-067-05, S-067-10, S-067-11 pass.
+   - _Exit:_ S-067-05, S-067-10, S-067-11, S-067-19 pass.
 
 7. **I7 – Frontend service + `MapState.ts`**
    - _Goal:_ FR-067-17, FR-067-18.
@@ -181,7 +203,9 @@ found and its fix directly in this file's increment entries, not a separate log.
    - _Steps:_ Wire `moveend`/`zoomend` Leaflet listeners → `MapState.ts.requestViewport()`
      (debounced). Render aggregate markers (count badge at centroid, click → zoom in, no fetch) for
      cells above the leaf threshold; render leaf-cell entries via the existing `clusterFunc()`/
-     `.leaflet-marker-photo` marker+popup template, byte-for-byte reused. Track loading moved to a
+     `.leaflet-marker-photo` marker+popup template, byte-for-byte reused except image `src`
+     resolution, which now goes through `ThumbAssetService.acquire()` (Q-067-12) instead of a
+     backend-supplied URL, resolved asynchronously per marker. Track loading moved to a
      one-time `MapState.ts` fetch, decoupled from viewport changes. `is_struct_of_array_enabled`-driven
      dispatcher between old (`PositionData` fetch + `leaflet.markercluster`) and new paths, mirroring
      `Timeline.vue`'s own dispatcher pattern.
@@ -219,7 +243,7 @@ found and its fix directly in this file's increment entries, not a separate log.
 | S-067-06 | I3, I4 | Aggregate-vs-leaf split at the threshold boundary. |
 | S-067-07 | I4 | Leaf tier completeness for small cells. |
 | S-067-08 | I2, I3, I4 | `hide_nsfw_in_map` isolation. |
-| S-067-09 | I4 | `should_downgrade` parity. |
+| S-067-09 | I4 | `album_ids[]` resolves only to viewer-accessible albums; Asset-endpoint delegation (Q-067-12). |
 | S-067-10 | I6 | Save/move cache invalidation. |
 | S-067-11 | I6 | Delete cache invalidation. |
 | S-067-12 | I5 | Tracks endpoint, viewport-independent. |
@@ -229,6 +253,7 @@ found and its fix directly in this file's increment entries, not a separate log.
 | S-067-16 | I8 | Leaf marker visual/popup parity. |
 | S-067-17 | I8 | Track loading decoupled from viewport. |
 | S-067-18 | I9 | v2 coexistence. |
+| S-067-19 | I6 | Config-change cache flush (Q-067-14). |
 
 ## Analysis Gate
 
