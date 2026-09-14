@@ -915,6 +915,7 @@ const heroColorConfig = computed<App.Http.Resources.Models.ConfigResource>(() =>
 	is_expert: false,
 	require_se: false,
 	order: null,
+	required_keys: [],
 }));
 
 // Live preview
