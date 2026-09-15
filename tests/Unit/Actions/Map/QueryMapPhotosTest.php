@@ -19,6 +19,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -89,6 +90,46 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 
 		self::assertSame([$photo->id], $resource->ids);
 		self::assertSame([$sub->id], $resource->album_ids);
+	}
+
+	/**
+	 * Regression: `$album->all_photos()` (`HasManyPhotosRecursively`) bakes
+	 * an `ORDER BY <effective sort column>` into its query as a side effect
+	 * of resolving the relation (`SortingDecorator` applied inside
+	 * `addEagerConstraints()`). Left in place, the `GROUP BY`
+	 * aggregate queries this class builds on top of it fail under
+	 * PostgreSQL ("column must appear in the GROUP BY clause or be used in
+	 * an aggregate function") — sqlite silently tolerates the mismatch,
+	 * so this test inspects the generated SQL directly rather than relying
+	 * on driver strictness to catch a regression.
+	 */
+	public function testAlbumScopeWithSubAlbumsCarriesNoOrderByOnTheAggregateQuery(): void
+	{
+		$root = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($sub)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		app(QueryMapPhotos::class)->do($root, $this->userMayUpload1, $viewport, true);
+		$log = DB::getQueryLog();
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		// The bug pattern specifically: an ORDER BY co-occurring with a GROUP BY
+		// in the *same* query - PostgreSQL rejects an ORDER BY column that is
+		// neither grouped nor aggregated. A plain ORDER BY with no GROUP BY in
+		// the same query (e.g. the album_ids[] tie-break pass's own, intentional
+		// `ORDER BY photo_id, _lft`) is unaffected and must not be flagged.
+		$grouped_and_ordered_queries = array_filter($log, function (array $q): bool {
+			$sql = strtolower($q['query']);
+
+			return str_contains($sql, 'group by') && str_contains($sql, 'order by');
+		});
+		self::assertSame([], array_values($grouped_and_ordered_queries), 'no GROUP BY aggregate query may also carry an ORDER BY on a non-grouped column');
 	}
 
 	/**

@@ -87,10 +87,22 @@ trait ResolvesMapPhotoSource
 	 * already be grid-snapped ({@see MapViewport::snapToGrid()}) — this
 	 * method does not snap it itself.
 	 *
+	 * Also clears any `ORDER BY` the query already carries: an
+	 * `include_sub_albums`-scope query built via `$album->all_photos()`
+	 * (`HasManyPhotosRecursively::addEagerConstraints()`) bakes in an
+	 * `ORDER BY <effective sort column>` as a side effect of resolving the
+	 * relation, which is meaningless for the `GROUP BY` aggregate queries
+	 * both {@see QueryMapBuckets} and {@see QueryMapPhotos} build on top of
+	 * this method — and actively breaks under PostgreSQL, which (unlike
+	 * sqlite) rejects an `ORDER BY` column that is neither grouped nor
+	 * aggregated.
+	 *
 	 * @param Relation<Photo,AbstractAlbum&\Illuminate\Database\Eloquent\Model,mixed>|Builder<Photo> $query
 	 */
 	private function applyBoundingBoxFilter(Relation|Builder $query, MapViewport $snapped): void
 	{
+		$query->reorder();
+
 		$query->whereBetween('latitude', [$snapped->south, $snapped->north]);
 
 		if ($snapped->west > $snapped->east) {

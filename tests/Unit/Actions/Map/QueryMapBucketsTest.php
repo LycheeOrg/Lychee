@@ -146,4 +146,39 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 		self::assertCount(1, $resource->bucket_ids, 'all 30 photos fall in the same grid cell, so exactly one bucket must be returned');
 		self::assertSame([30], $resource->counts);
 	}
+
+	/**
+	 * Regression: `$album->all_photos()` (`HasManyPhotosRecursively`) bakes
+	 * an `ORDER BY <effective sort column>` into its query as a side effect
+	 * of resolving the relation, breaking the `GROUP BY` aggregate query
+	 * under PostgreSQL ("column must appear in the GROUP BY clause or be
+	 * used in an aggregate function") — sqlite silently tolerates the
+	 * mismatch, so this inspects the generated SQL directly.
+	 */
+	public function testAlbumScopeWithSubAlbumsCarriesNoOrderByOnTheAggregateQuery(): void
+	{
+		$root = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($sub)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		app(QueryMapBuckets::class)->do($root, $this->userMayUpload1, $viewport, true);
+		$log = DB::getQueryLog();
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		// The bug pattern specifically: an ORDER BY co-occurring with a GROUP BY
+		// in the *same* query - PostgreSQL rejects an ORDER BY column that is
+		// neither grouped nor aggregated.
+		$grouped_and_ordered_queries = array_filter($log, function (array $q): bool {
+			$sql = strtolower($q['query']);
+
+			return str_contains($sql, 'group by') && str_contains($sql, 'order by');
+		});
+		self::assertSame([], array_values($grouped_and_ordered_queries), 'no GROUP BY aggregate query may also carry an ORDER BY on a non-grouped column');
+	}
 }
