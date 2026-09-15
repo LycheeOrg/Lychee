@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
 
 trait HasHeaderUrl
 {
-	protected function getHeaderUrl(AbstractAlbum $album): ?string
+	protected function getHeaderUrl(AbstractAlbum $album): ?SizeVariant
 	{
 		if (request()->configs()->getValueAsBool('use_album_compact_header')) {
 			return null;
@@ -37,7 +37,7 @@ trait HasHeaderUrl
 		return $this->getByQuery($album);
 	}
 
-	private function getByQuery(AbstractAlbum $album): ?string
+	private function getByQuery(AbstractAlbum $album): ?SizeVariant
 	{
 		$header_size_variant = null;
 
@@ -50,7 +50,7 @@ trait HasHeaderUrl
 		}
 
 		if ($header_size_variant !== null) {
-			return $header_size_variant->url;
+			return $header_size_variant;
 		}
 
 		/** @var Collection<int,Photo>|LengthAwarePaginator<int,Photo> $photos */
@@ -86,6 +86,6 @@ trait HasHeaderUrl
 			->where('photo_id', '=', $photo->photo_id)
 			->where('type', '>', SizeVariantType::ORIGINAL->value)
 			->orderBy('type', 'asc')
-			->first()?->url;
+			->first();
 	}
 }

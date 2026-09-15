@@ -21,6 +21,11 @@
 <meta property="og:description" content="{{ $page_description }}">
 <meta property="og:image" content="{{ $image_url }}">
 <meta property="og:url" content="{{ $page_url }}">
+<meta name="twitter:card" content="summary_large_image">
+@if($width !== 0 && $height !== 0)
+<meta property="og:image:width" content="{{ $width }}"  data-dynamic="true">
+<meta property="og:image:height" content="{{ $height }}"  data-dynamic="true">
+@endif
 
 @if(Features::active('nuxt_ui'))
 <link rel="icon" type="image/svg+xml" href="{{ URL::asset('img/logo4.svg') }}">
