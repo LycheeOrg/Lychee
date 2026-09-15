@@ -1,6 +1,11 @@
 import { defineStore } from "pinia";
 import { useLycheeStateStore } from "./LycheeState";
-import MapV3Service, { type MapBucketResource, type MapPhotoResource, type MapTrackResource, type MapViewportParams } from "@/services/map-v3-service";
+import MapV3Service, {
+	type MapBucketResource,
+	type MapPhotoResource,
+	type MapTrackResource,
+	type MapViewportParams,
+} from "@/services/map-v3-service";
 
 export type MapBounds = { north: number; south: number; east: number; west: number };
 
@@ -109,7 +114,10 @@ export const useMapStore = defineStore("map-store", {
 			const albumId = this.albumId ?? undefined;
 
 			try {
-				const [bucketsResponse, photosResponse] = await Promise.all([MapV3Service.getBuckets(viewport, albumId), MapV3Service.getPhotos(viewport, albumId)]);
+				const [bucketsResponse, photosResponse] = await Promise.all([
+					MapV3Service.getBuckets(viewport, albumId),
+					MapV3Service.getPhotos(viewport, albumId),
+				]);
 				this.bucketsV3 = bucketsResponse.data;
 				this.photosV3 = photosResponse.data;
 			} catch (error) {
