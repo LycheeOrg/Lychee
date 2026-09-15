@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Settings;
 
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoBucketsRecomputed;
 use App\Jobs\RecomputeRootAlbumBucketsJob;
 use Illuminate\Support\Facades\Event;
@@ -198,6 +199,80 @@ class UpdateSettingsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		Event::assertNotDispatched(PhotoBucketsRecomputed::class);
+	}
+
+	// ── Feature 067 (FR-067-24): Map coarse cache flush ──────────────
+
+	/** @return array<string,array<int,array<string,string>>> */
+	public static function mapListingCoarseFlushConfigsProvider(): array
+	{
+		return [
+			'hide_nsfw_in_map' => [['key' => 'hide_nsfw_in_map', 'value' => '1']],
+			'map_include_subalbums' => [['key' => 'map_include_subalbums', 'value' => '1']],
+			'map_display' => [['key' => 'map_display', 'value' => '1']],
+			'map_display_public' => [['key' => 'map_display_public', 'value' => '1']],
+		];
+	}
+
+	/**
+	 * @param array<string,string> $config
+	 */
+	#[DataProvider('mapListingCoarseFlushConfigsProvider')]
+	public function testChangingMapConfigDispatchesCoarseFlush(array $config): void
+	{
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(MapListingCacheFlushRequested::class);
+	}
+
+	/**
+	 * `file_name_hidden` is a level-1 (Supporter Edition) config — kept as
+	 * its own test rather than folded into the data provider above (which
+	 * runs unconditionally), mirroring
+	 * {@see self::testChangingTimelineGranularityConfigDispatchesJob()}.
+	 * CWE-200 fix: `QueryMapPhotos` blanks `titles[]` for guests based on
+	 * this key, but the map-photo cache key carries no `file_name_hidden`
+	 * dimension - a warm guest-scoped entry must be flushed on change or it
+	 * keeps leaking real titles.
+	 */
+	public function testChangingFileNameHiddenConfigDispatchesMapListingCoarseFlush(): void
+	{
+		$this->requireSe();
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'file_name_hidden',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(MapListingCacheFlushRequested::class);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchMapListingCoarseFlush(): void
+	{
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(MapListingCacheFlushRequested::class);
 	}
 
 	public function testUpdateSettingsGuest(): void

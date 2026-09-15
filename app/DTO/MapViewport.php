@@ -65,11 +65,31 @@ class MapViewport
 	{
 		$cell = $this->cellSize();
 
+		// `west > east` is this DTO's antimeridian-crossing convention (see
+		// `ResolvesMapPhotoSource`'s own `$snapped->west > $snapped->east`
+		// branch). Snapping each bound independently can collapse both onto
+		// the same grid line at a large enough cell size (e.g. west=170,
+		// east=-170 both snap to 0 at zoom 0/1), silently destroying that
+		// marker and turning a whole-world crossing viewport into a
+		// single-longitude one.
+		$is_crossing_antimeridian = $this->west > $this->east;
+
+		$snapped_east = self::snapUp($this->east, $cell);
+		$snapped_west = self::snapDown($this->west, $cell);
+
+		if ($is_crossing_antimeridian && $snapped_west <= $snapped_east) {
+			// The crossing marker didn't survive snapping: the true snapped
+			// range at this cell size is the entire world, so represent it
+			// as such explicitly rather than as a degenerate point/range.
+			$snapped_west = -180.0;
+			$snapped_east = 180.0;
+		}
+
 		return new self(
 			north: self::snapUp($this->north, $cell),
 			south: self::snapDown($this->south, $cell),
-			east: self::snapUp($this->east, $cell),
-			west: self::snapDown($this->west, $cell),
+			east: $snapped_east,
+			west: $snapped_west,
 			zoom: $this->zoom,
 		);
 	}

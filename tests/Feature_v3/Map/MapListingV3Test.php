@@ -15,9 +15,11 @@ namespace Tests\Feature_v3\Map;
 
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoSaved;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function Safe\preg_match;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -216,5 +218,51 @@ class MapListingV3Test extends BaseApiWithDataTest
 
 		$after = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams())->assertOk()->json('counts');
 		self::assertSame([2], $after);
+	}
+
+	/**
+	 * CWE-200 regression: `QueryMapPhotos` blanks `titles[]` for guests only
+	 * when it *computes* a response - the map-photo cache key carries no
+	 * `file_name_hidden` dimension, so a warm guest-scoped entry cached
+	 * while the setting was off must not keep leaking the real title to
+	 * guests once an admin turns it on. Goes through the real
+	 * `Settings::setConfigs` HTTP endpoint (not a direct event dispatch) to
+	 * exercise the actual production wiring end-to-end.
+	 */
+	public function testTogglingFileNameHiddenFlushesWarmGuestScopedTitleCache(): void
+	{
+		// file_name_hidden is a level-1 (Supporter Edition) config - the real
+		// Settings::setConfigs call below requires it.
+		$this->requireSe();
+		config(['features.enable-caching' => true]);
+		Configs::set('managed_cache_enabled', '1');
+		Configs::set('managed_cache_albums_enabled', '1');
+		Configs::set('file_name_hidden', '0');
+
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->with_title('Secret Location')->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+
+		// Guest, warm cache: file_name_hidden is off, real title is visible.
+		$before = $this->getJsonV3('Map/Photos', $this->defaultViewportParams())->assertOk()->json('titles');
+		self::assertSame(['Secret Location'], $before);
+
+		// Admin turns file_name_hidden on via the real Settings endpoint -
+		// must flush the warm guest-scoped cache entry above.
+		$this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				['key' => 'file_name_hidden', 'value' => '1'],
+			],
+		])->assertOk();
+		// actingAs() persists across subsequent calls on this test instance -
+		// log back out so the next request is genuinely unauthenticated
+		// again, not still running as the admin (who always sees titles
+		// regardless of file_name_hidden).
+		Auth::logout();
+
+		// Same guest, same viewport: must no longer see the real title.
+		$after = $this->getJsonV3('Map/Photos', $this->defaultViewportParams())->assertOk()->json('titles');
+		self::assertSame([''], $after, 'a warm guest-scoped cache entry must not keep leaking the real title after file_name_hidden is turned on');
+		self::assertNotSame($photo->title, $after[0]);
 	}
 }

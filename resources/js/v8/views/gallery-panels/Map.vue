@@ -76,7 +76,6 @@ const isLoading = ref(true);
 const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-lycheeStore.load();
 
 // Feature 067 (I8) — flag-on dispatcher, mirrors `TimelineState.ts`'s own
 // `isTimelineSoaActive` pattern. Delegates to `mapStore.isMapSoaActive` (the
@@ -429,7 +428,14 @@ function open() {
 		const photo: MapPhotoEntry = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
-			name: e.layer.photo.name,
+			// Photo titles are free-text and not HTML-escaped by the API (the
+			// JSON response is a raw-data contract, consumed by several
+			// different renderers - Vue template interpolation already
+			// auto-escapes on its own). `L.Util.template()`/`bindPopup()`
+			// below is not HTML-aware, so escaping must happen here, at the
+			// point of insertion - same reasoning as `escapeHtml(track.name)`
+			// elsewhere in this file.
+			name: escapeHtml(e.layer.photo.name),
 			url: e.layer.photo.url,
 			url2x: e.layer.photo.url2x,
 			taken_at: e.layer.photo.taken_at,
@@ -593,7 +599,12 @@ definePanelShortcuts({
 
 onMounted(() => {
 	leftMenuStore.left_menu_open = false;
-	loadMapProvider();
+	// `isMapSoaActive` (mapInit()'s v2/v3 dispatch) reads `lycheeStore`'s
+	// `is_struct_of_array_enabled`, which defaults to false until this load
+	// resolves - chained so mapInit() never runs against that default.
+	lycheeStore.load().then(() => {
+		loadMapProvider();
+	});
 });
 </script>
 <style lang="css">

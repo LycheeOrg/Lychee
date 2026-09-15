@@ -91,12 +91,22 @@ class SettingsController extends Controller
 	 * {@see self::TIMELINE_PHOTO_LISTING_COARSE_FLUSH_CONFIGS}'s own
 	 * precedent (itself mirroring {@see self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS}/
 	 * {@see \App\Events\AlbumListingCacheFlushRequested}, Q-053-05).
+	 *
+	 * `file_name_hidden` included: `QueryMapPhotos` blanks `titles[]` for
+	 * guests only when it actually computes a response
+	 * (`$hide_titles = ... && $user === null`) - the cache key it's stored
+	 * under carries no `file_name_hidden` dimension, so a warm guest-scoped
+	 * entry cached while the setting was off keeps serving real titles to
+	 * guests after an admin turns it on, until TTL expiry (CWE-200). Flushing
+	 * on change closes that window the same way the other three keys already
+	 * close theirs.
 	 */
 	public const MAP_LISTING_COARSE_FLUSH_CONFIGS = [
 		'hide_nsfw_in_map',
 		'map_include_subalbums',
 		'map_display',
 		'map_display_public',
+		'file_name_hidden',
 	];
 
 	public const V8_CONFIGS = [

@@ -118,14 +118,28 @@ export const useMapStore = defineStore("map-store", {
 					MapV3Service.getBuckets(viewport, albumId),
 					MapV3Service.getPhotos(viewport, albumId),
 				]);
+				// A newer viewport request can resolve first and move
+				// `lastRequestedKeyV3` on while this one is still in flight
+				// (e.g. a fast pan). If that happened, this response is stale -
+				// discard it instead of clobbering the newer viewport's data.
+				if (key !== this.lastRequestedKeyV3) {
+					return;
+				}
 				this.bucketsV3 = bucketsResponse.data;
 				this.photosV3 = photosResponse.data;
 			} catch (error) {
-				// Allow a retry of the same viewport on the next pan/zoom event.
-				this.lastRequestedKeyV3 = undefined;
+				if (key === this.lastRequestedKeyV3) {
+					// Allow a retry of the same viewport on the next pan/zoom event.
+					this.lastRequestedKeyV3 = undefined;
+				}
 				throw error;
 			} finally {
-				this.isLoadingV3 = false;
+				// Only the request that is still current clears the loading
+				// flag - otherwise a stale request's `finally` could flip it
+				// off while the superseding request is still in flight.
+				if (key === this.lastRequestedKeyV3) {
+					this.isLoadingV3 = false;
+				}
 			}
 		},
 

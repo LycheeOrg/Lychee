@@ -15,19 +15,23 @@ use App\Models\Album;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Query logic for `GET /api/v3/Map/Photos` (FR-067-09..12). Two-pass,
  * `toBase()`-only throughout (no Eloquent hydration, no `size_variants`
  * join, no `should_downgrade` computation - Q-067-12): an aggregate
- * pre-pass resolves which grid cells are "leaf" cells
- * (`HAVING COUNT(*) <= LEAF_THRESHOLD`), then a second pass fetches exactly
- * those cells' distinct photo rows, plus a separate join+collapse pass
- * resolving each photo's real, viewer-accessible containing album id
- * (Q-067-15). Cost is bounded by `(leaf cells in viewport) × LEAF_THRESHOLD`,
- * never by total scope size (NFR-067-05).
+ * pre-pass query resolves which grid cells are "leaf" cells
+ * (`HAVING COUNT(*) <= LEAF_THRESHOLD`), joined - not expanded into one
+ * OR-branch-per-cell predicate, which would otherwise make query size and
+ * parameter count scale with the total accessible photo count at high zoom
+ * (NFR-067-05) - into a second pass that fetches exactly those cells'
+ * distinct photo rows, plus a separate join+collapse pass resolving each
+ * photo's real, viewer-accessible containing album id (Q-067-15). Cost is
+ * bounded by `(leaf cells in viewport) × LEAF_THRESHOLD`, never by total
+ * scope size (NFR-067-05).
  */
 class QueryMapPhotos
 {
@@ -40,12 +44,7 @@ class QueryMapPhotos
 		$snapped = $viewport->snapToGrid();
 		$cell = $snapped->cellSize();
 
-		$leaf_cells = $this->resolveLeafCells($album, $user, $include_sub_albums, $snapped, $cell);
-		if (count($leaf_cells) === 0) {
-			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
-		}
-
-		$rows = $this->resolveLeafRows($album, $user, $include_sub_albums, $snapped, $leaf_cells, $cell);
+		$rows = $this->resolveLeafRows($album, $user, $include_sub_albums, $snapped, $cell);
 		if (count($rows) === 0) {
 			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
 		}
@@ -83,71 +82,64 @@ class QueryMapPhotos
 	}
 
 	/**
-	 * Pass 1: aggregate pre-pass resolving which grid cells are "leaf"
-	 * cells (`count <= LEAF_THRESHOLD`), `toBase()`-only.
-	 *
-	 * @return array<int,array{lat_cell:float,lng_cell:float}>
+	 * Un-materialized aggregate query resolving which grid cells are "leaf"
+	 * cells (`count <= LEAF_THRESHOLD`), `toBase()`-only - joined into
+	 * {@see self::resolveLeafRows()} rather than fetched into PHP, so its
+	 * row count never turns into per-row query predicates/bindings.
 	 */
-	private function resolveLeafCells(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, float $cell): array
+	private function buildLeafCellsQuery(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, float $cell): BaseBuilder
 	{
 		$query = $album === null ?
 			$this->resolveRootQuery($user) :
 			$this->resolveAlbumQuery($album, $include_sub_albums);
 		$this->applyBoundingBoxFilter($query, $snapped);
 
-		$rows = $query
-			->select([])
+		// See resolveDistinctPhotoRows()'s own doc comment: without this,
+		// a photo linked into more than one in-scope album would be
+		// double-counted here, wrongly excluding an otherwise-leaf cell
+		// (or admitting one that isn't) from LEAF_THRESHOLD's count.
+		$distinct_photos = $this->resolveDistinctPhotoRows($query);
+
+		return DB::query()
+			->fromSub($distinct_photos, 'distinct_photos')
 			->selectRaw('FLOOR(latitude / ?) as lat_cell, FLOOR(longitude / ?) as lng_cell', [$cell, $cell])
 			->groupBy('lat_cell', 'lng_cell')
-			->havingRaw('COUNT(*) <= ?', [self::LEAF_THRESHOLD])
-			->toBase()
-			->get();
-
-		$leaf_cells = [];
-		foreach ($rows as $row) {
-			$leaf_cells[] = ['lat_cell' => (float) $row->lat_cell, 'lng_cell' => (float) $row->lng_cell];
-		}
-
-		return $leaf_cells;
+			->havingRaw('COUNT(*) <= ?', [self::LEAF_THRESHOLD]);
 	}
 
 	/**
-	 * Pass 2: distinct photo rows restricted to exactly the leaf cells
-	 * resolved by {@see self::resolveLeafCells()} - `->distinct()` collapses
-	 * the row-per-membership fan-out an `include_sub_albums` album-scope
-	 * query's own `photo_album`/`albums` joins can otherwise produce for a
-	 * photo living in more than one in-scope sub-album (mirrors
-	 * `Album\PositionData::get()`'s own pre-existing fan-out for the exact
-	 * same join, left as-is there since it never dedupes either) - every
-	 * selected column here is invariant per photo, not per membership, so a
-	 * `SELECT DISTINCT` is a correct, cheap collapse.
-	 *
-	 * @param array<int,array{lat_cell:float,lng_cell:float}> $leaf_cells
+	 * Distinct photo rows restricted to exactly the leaf cells resolved by
+	 * {@see self::buildLeafCellsQuery()} - joined as a derived table on the
+	 * same `FLOOR(coordinate / cell)` bucket key the aggregate query itself
+	 * groups by, instead of materializing every leaf cell into PHP and
+	 * expanding it into an `OR`'d range predicate per cell: at a high zoom
+	 * each accessible photo can occupy its own leaf cell, so that approach
+	 * makes query size and bound-parameter count scale with the total
+	 * accessible photo count (NFR-067-05) rather than staying constant.
+	 * `->distinct()` collapses the row-per-membership fan-out an
+	 * `include_sub_albums` album-scope query's own `photo_album`/`albums`
+	 * joins can otherwise produce for a photo living in more than one
+	 * in-scope sub-album (mirrors `Album\PositionData::get()`'s own
+	 * pre-existing fan-out for the exact same join, left as-is there since
+	 * it never dedupes either) - every selected column here is invariant
+	 * per photo, not per membership, so a `SELECT DISTINCT` is a correct,
+	 * cheap collapse.
 	 *
 	 * @return array<int,\stdClass>
 	 */
-	private function resolveLeafRows(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, array $leaf_cells, float $cell): array
+	private function resolveLeafRows(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, float $cell): array
 	{
 		$query = $album === null ?
 			$this->resolveRootQuery($user) :
 			$this->resolveAlbumQuery($album, $include_sub_albums);
 		$this->applyBoundingBoxFilter($query, $snapped);
 
-		$query->where(function (Builder $outer) use ($leaf_cells, $cell): void {
-			foreach ($leaf_cells as $leaf_cell) {
-				$lat_lo = $leaf_cell['lat_cell'] * $cell;
-				$lat_hi = ($leaf_cell['lat_cell'] + 1) * $cell;
-				$lng_lo = $leaf_cell['lng_cell'] * $cell;
-				$lng_hi = ($leaf_cell['lng_cell'] + 1) * $cell;
+		$leaf_cells = $this->buildLeafCellsQuery($album, $user, $include_sub_albums, $snapped, $cell);
 
-				$outer->orWhere(function (Builder $inner) use ($lat_lo, $lat_hi, $lng_lo, $lng_hi): void {
-					$inner
-						->where('latitude', '>=', $lat_lo)
-						->where('latitude', '<', $lat_hi)
-						->where('longitude', '>=', $lng_lo)
-						->where('longitude', '<', $lng_hi);
-				});
-			}
+		$query->joinSub($leaf_cells, 'leaf_cells', function (JoinClause $join) use ($cell): void {
+			$join
+				->whereRaw('FLOOR(photos.latitude / ?) = leaf_cells.lat_cell', [$cell])
+				->whereRaw('FLOOR(photos.longitude / ?) = leaf_cells.lng_cell', [$cell]);
 		});
 
 		return $query

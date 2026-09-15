@@ -148,6 +148,47 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Regression: root scope's `applySearchabilityFilter()` `LEFT JOIN`s
+	 * `albums` unconditionally, so a photo linked into more than one album
+	 * fans out into one row per membership - left uncollapsed, a plain
+	 * `COUNT(*)` over that fanned-out row set double-counts such a photo.
+	 */
+	public function testRootScopePhotoInMultipleAlbumsIsCountedOnce(): void
+	{
+		$album_a = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$album_b = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album_a)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		$photo->albums()->attach($album_b->id);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
+		$resource = app(QueryMapBuckets::class)->do(null, $this->userMayUpload1, $viewport, false);
+
+		self::assertSame(['0:0'], $resource->bucket_ids);
+		self::assertSame([1], $resource->counts, 'a photo linked into 2 albums must be counted once, not twice');
+	}
+
+	/**
+	 * Same regression, album scope with `include_sub_albums=true`: a photo
+	 * linked into 2 different sub-albums within the requested subtree.
+	 */
+	public function testAlbumScopeWithSubAlbumsPhotoInMultipleSubAlbumsIsCountedOnce(): void
+	{
+		$root = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub_a = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+		$sub_b = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($sub_a)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		$photo->albums()->attach($sub_b->id);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
+		$resource = app(QueryMapBuckets::class)->do($root, $this->userMayUpload1, $viewport, true);
+
+		self::assertSame(['0:0'], $resource->bucket_ids);
+		self::assertSame([1], $resource->counts, 'a photo linked into 2 in-scope sub-albums must be counted once, not twice');
+	}
+
+	/**
 	 * Regression: `$album->all_photos()` (`HasManyPhotosRecursively`) bakes
 	 * an `ORDER BY <effective sort column>` into its query as a side effect
 	 * of resolving the relation, breaking the `GROUP BY` aggregate query

@@ -12,6 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\DTO\MapViewport;
 use App\Http\Resources\V3\MapBucketResource;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Query logic for `GET /api/v3/Map/buckets` (FR-067-05..08). Computes one
@@ -36,14 +37,21 @@ class QueryMapBuckets
 
 		$this->applyBoundingBoxFilter($query, $snapped);
 
-		$rows = $query
-			->select([])
+		// A photo linked into more than one album within scope (root, or
+		// an `include_sub_albums` subtree) fans out into one row per
+		// membership via the underlying query's own `LEFT JOIN albums`
+		// (see resolveDistinctPhotoRows()'s own doc comment) - collapse to
+		// one row per photo *before* aggregating, or such a photo would be
+		// double-counted in both its bucket's count and centroid.
+		$distinct_photos = $this->resolveDistinctPhotoRows($query);
+
+		$rows = DB::query()
+			->fromSub($distinct_photos, 'distinct_photos')
 			->selectRaw(
 				'FLOOR(latitude / ?) as lat_cell, FLOOR(longitude / ?) as lng_cell, COUNT(*) as bucket_count, AVG(latitude) as avg_lat, AVG(longitude) as avg_lng',
 				[$cell, $cell],
 			)
 			->groupBy('lat_cell', 'lng_cell')
-			->toBase()
 			->get();
 
 		$bucket_ids = [];

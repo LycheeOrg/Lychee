@@ -19,6 +19,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * Resolves the base candidate photo query for the Map's root (cross-library)
@@ -110,5 +111,32 @@ trait ResolvesMapPhotoSource
 		} else {
 			$query->whereBetween('longitude', [$snapped->west, $snapped->east]);
 		}
+	}
+
+	/**
+	 * Collapses `$query` (already bounding-box-filtered) down to one row per
+	 * distinct photo — `photos.id`/`latitude`/`longitude` only, all three
+	 * invariant per photo, never per membership. Required before any
+	 * grid-cell aggregation: both {@see \App\Actions\Albums\PositionData::do()}'s
+	 * own `applySearchabilityFilter()` (root scope) and `all_photos()`
+	 * (album scope with `include_sub_albums`) `LEFT JOIN albums`
+	 * unconditionally, so a photo linked into more than one album within
+	 * scope fans out into one row per membership — left as-is, a plain
+	 * `COUNT(*)`/`GROUP BY` over that fanned-out row set would double-count
+	 * such a photo in both its bucket's count and its cell's leaf-threshold
+	 * check. Returns the caller's own query builder type unchanged
+	 * (`toBase()`-only, no dedication to a specific subquery shape) so a
+	 * caller can wrap it with `DB::query()->fromSub(...)` before running its
+	 * own `GROUP BY` on top of the now-deduplicated row set.
+	 *
+	 * @param Relation<Photo,AbstractAlbum&\Illuminate\Database\Eloquent\Model,mixed>|Builder<Photo> $query
+	 */
+	private function resolveDistinctPhotoRows(Relation|Builder $query): BaseBuilder
+	{
+		return $query
+			->select([])
+			->selectRaw('photos.id as id, photos.latitude as latitude, photos.longitude as longitude')
+			->distinct()
+			->toBase();
 	}
 }

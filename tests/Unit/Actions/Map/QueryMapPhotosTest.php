@@ -133,6 +133,47 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Regression: `resolveLeafCells()`'s `HAVING COUNT(*) <= LEAF_THRESHOLD`
+	 * check must count *distinct photos*, not raw membership rows. Without
+	 * dedup, a cell whose distinct-photo count is comfortably under the
+	 * threshold can still be wrongly excluded from the leaf tier if enough
+	 * of its photos are each linked into 2 in-scope sub-albums (fanning out
+	 * the raw row count past the threshold) - `resolveLeafRows()`'s own
+	 * `->distinct()` already dedupes the *row output*, which is why a
+	 * single-photo case wouldn't actually exercise this failure mode; this
+	 * needs the inflated raw count to cross the threshold.
+	 */
+	public function testAlbumScopeWithSubAlbumsDoesNotExcludeALeafCellInflatedPastThresholdByMultiMembership(): void
+	{
+		$root = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub_a = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+		$sub_b = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
+
+		// 11 distinct photos, each linked into both sub-albums: distinct
+		// count 11 (<= LEAF_THRESHOLD, must stay a leaf cell), raw
+		// membership-row count 22 (> LEAF_THRESHOLD, would wrongly exclude
+		// it without the fix).
+		$expected_ids = [];
+		for ($i = 0; $i < 11; $i++) {
+			$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($sub_a)->create([
+				'latitude' => '10.000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
+				'longitude' => '10.000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
+			]);
+			$photo->albums()->attach($sub_b->id);
+			$expected_ids[] = $photo->id;
+		}
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
+		$resource = app(QueryMapPhotos::class)->do($root, $this->userMayUpload1, $viewport, true);
+
+		sort($expected_ids);
+		$actual_ids = $resource->ids;
+		sort($actual_ids);
+		self::assertSame($expected_ids, $actual_ids, 'a cell with 11 distinct photos must stay a leaf cell despite each having 2 in-scope memberships');
+	}
+
+	/**
 	 * Root scope: a photo belonging to several albums, one of which the
 	 * viewer cannot access, resolves only to an album the viewer can
 	 * actually access (S-067-09).
