@@ -40,6 +40,8 @@ class Meta extends Component
 	public bool $rss_enable;
 	public string $user_css_url;
 	public string $user_js_url;
+	public int $width = 0;
+	public int $height = 0;
 
 	private bool $access = true;
 	private ?AbstractAlbum $album = null;
@@ -98,13 +100,21 @@ class Meta extends Component
 			if ($this->album instanceof BaseAlbum) {
 				$this->page_description = $this->album->description ?? request()->configs()->getValueAsString('site_title');
 			}
-			$this->image_url = $this->getAlbumOgImageUrl($this->album) ?? $this->image_url;
+			$size_variant = $this->getAlbumOgImageUrl($this->album);
+			if ($size_variant !== null) {
+				$this->image_url = $size_variant->url;
+				$this->width = $size_variant->width;
+				$this->height = $size_variant->height;
+			}
 		}
 
 		if ($this->photo !== null) {
 			$this->page_title = $this->photo->title;
 			$this->page_description = $this->photo->description ?? request()->configs()->getValueAsString('site_title');
-			$this->image_url = $this->photo->size_variants->getMedium()?->url ?? $this->photo->size_variants->getSmall()?->url ?? $this->image_url;
+			$size_variant = $this->photo->size_variants->getMedium() ?? $this->photo->size_variants->getSmall2x() ?? $this->photo->size_variants->getSmall();
+			$this->image_url = $size_variant->url ?? $this->image_url;
+			$this->width = $size_variant->width ?? 0;
+			$this->height = $size_variant->height ?? 0;
 		}
 	}
 
@@ -138,9 +148,9 @@ class Meta extends Component
 	 *
 	 * @param AbstractAlbum $album
 	 *
-	 * @return string|null
+	 * @return SizeVariant|null
 	 */
-	private function getAlbumOgImageUrl(AbstractAlbum $album): ?string
+	private function getAlbumOgImageUrl(AbstractAlbum $album): ?SizeVariant
 	{
 		$source = request()->configs()->getValueAsEnum('sm_card_album_source', OgImageAlbumSourceType::class);
 
@@ -156,9 +166,9 @@ class Meta extends Component
 	 *
 	 * @param AbstractAlbum $album
 	 *
-	 * @return string|null
+	 * @return SizeVariant|null
 	 */
-	private function getCoverUrl(AbstractAlbum $album): ?string
+	private function getCoverUrl(AbstractAlbum $album): ?SizeVariant
 	{
 		if (!$album instanceof Album) {
 			return null;
@@ -173,7 +183,7 @@ class Meta extends Component
 			->where('photo_id', '=', $cover_id)
 			->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 			->orderBy('type', 'asc')
-			->first()?->url;
+			->first();
 	}
 
 	/**

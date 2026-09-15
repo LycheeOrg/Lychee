@@ -36,7 +36,7 @@ class HeadSmartAlbumResource extends Data
 		/** @disregard P1006 */
 		$this->policy = AlbumProtectionPolicy::ofSmartAlbum($smart_album);
 		$this->rights = new AlbumRightsResource($smart_album);
-		$url = $this->getHeaderUrl($smart_album);
+		$url = $this->getHeaderUrl($smart_album)?->url;
 		$this->preFormattedData = new PreFormattedAlbumData($smart_album, $url);
 	}
 
