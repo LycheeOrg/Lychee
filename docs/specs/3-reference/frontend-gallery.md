@@ -177,13 +177,14 @@ AlbumService.frame(albumId).then(response => {
 **Technical Details:**
 ```typescript
 // Leaflet integration
-import L from 'leaflet'
-import 'leaflet.markercluster'
-import '@lychee-org/leaflet.photo'
+import L from "leaflet";
+import "leaflet.markercluster/dist/leaflet.markercluster.js";
+import { clusterFunc } from "@/composables/photo";
 
-// Photo clustering and positioning
-photoLayer.value = L.photo.cluster().on('click', showPopup)
-map.value.fitBounds(calculatePhotoBounds())
+// Photo clustering and positioning - composables/photo.ts builds a custom
+// L.MarkerClusterGroup subclass (no external leaflet.photo package)
+photoLayer.value = clusterFunc().on("click", showPopup);
+map.value.fitBounds(calculatePhotoBounds());
 ```
 
 **Geographic Features:**

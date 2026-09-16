@@ -20,9 +20,10 @@ class MapViewportTest extends AbstractTestCase
 {
 	public function testCellSizeForZoomMatchesPinnedFormula(): void
 	{
-		self::assertSame(360.0, MapViewport::cellSizeForZoom(0));
-		self::assertSame(180.0, MapViewport::cellSizeForZoom(1));
-		self::assertEqualsWithDelta(0.3515625, MapViewport::cellSizeForZoom(10), 1e-9);
+		// Q-067-13 (amended): a 1/64th-tile at `$zoom`, i.e. one tile at `$zoom + 6`.
+		self::assertSame(5.625, MapViewport::cellSizeForZoom(0));
+		self::assertSame(2.8125, MapViewport::cellSizeForZoom(1));
+		self::assertEqualsWithDelta(0.0054931640625, MapViewport::cellSizeForZoom(10), 1e-9);
 	}
 
 	public function testCellSizeForZoomIsMonotonicallyDecreasing(): void

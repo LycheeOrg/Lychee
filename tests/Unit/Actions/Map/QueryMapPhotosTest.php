@@ -23,9 +23,10 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * T-067-10: covers {@see QueryMapPhotos} — the dense-cell exclusion
- * (NFR-067-05), sparse-cell field accuracy, and both scopes' `album_ids[]`
- * tie-break rules (Q-067-15, S-067-06, S-067-07, S-067-09).
+ * T-067-10: covers {@see QueryMapPhotos} — the viewport-over-cap exclusion
+ * (NFR-067-05, Q-067-13 amended), sparse-viewport field accuracy, and both
+ * scopes' `album_ids[]` tie-break rules (Q-067-15, S-067-06, S-067-07,
+ * S-067-09).
  */
 class QueryMapPhotosTest extends BaseApiWithDataTest
 {
@@ -35,13 +36,13 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 		request()->attributes->set('configs', app(ConfigManager::class));
 	}
 
-	public function testDenseCellIsEntirelyAbsentFromResponse(): void
+	public function testViewportOverCapReturnsEmptyResponse(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		for ($i = 0; $i < QueryMapPhotos::LEAF_THRESHOLD + 1; $i++) {
+		for ($i = 0; $i <= QueryMapPhotos::MAX_VIEWPORT_PHOTOS; $i++) {
 			Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create([
-				'latitude' => '10.000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
-				'longitude' => '10.000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
+				'latitude' => (string) (10.0 + $i * 0.0001),
+				'longitude' => (string) (10.0 + $i * 0.0001),
 			]);
 		}
 
@@ -49,10 +50,10 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
 		$resource = app(QueryMapPhotos::class)->do($album, $this->userMayUpload1, $viewport, false);
 
-		self::assertSame([], $resource->ids, 'a cell with count > LEAF_THRESHOLD must contribute zero entries');
+		self::assertSame([], $resource->ids, 'a viewport with more than MAX_VIEWPORT_PHOTOS distinct photos must contribute zero entries');
 	}
 
-	public function testSparseCellIsFullyPresentWithAccurateFields(): void
+	public function testSparseViewportIsFullyPresentWithAccurateFields(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->with_title('Eiffel Tower')->create([
@@ -96,12 +97,14 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 	 * Regression: `$album->all_photos()` (`HasManyPhotosRecursively`) bakes
 	 * an `ORDER BY <effective sort column>` into its query as a side effect
 	 * of resolving the relation (`SortingDecorator` applied inside
-	 * `addEagerConstraints()`). Left in place, the `GROUP BY`
-	 * aggregate queries this class builds on top of it fail under
-	 * PostgreSQL ("column must appear in the GROUP BY clause or be used in
-	 * an aggregate function") — sqlite silently tolerates the mismatch,
-	 * so this test inspects the generated SQL directly rather than relying
-	 * on driver strictness to catch a regression.
+	 * `addEagerConstraints()`) - `applyBoundingBoxFilter()`'s `reorder()`
+	 * call strips it. Left in place, a `GROUP BY` query built on top of it
+	 * (e.g. {@see \App\Actions\Map\QueryMapBuckets}, which shares this same
+	 * trait) fails under PostgreSQL ("column must appear in the GROUP BY
+	 * clause or be used in an aggregate function") — sqlite silently
+	 * tolerates the mismatch, so this test inspects the generated SQL
+	 * directly rather than relying on driver strictness to catch a
+	 * regression.
 	 */
 	public function testAlbumScopeWithSubAlbumsCarriesNoOrderByOnTheAggregateQuery(): void
 	{
@@ -133,26 +136,20 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Regression: `resolveLeafCells()`'s `HAVING COUNT(*) <= LEAF_THRESHOLD`
-	 * check must count *distinct photos*, not raw membership rows. Without
-	 * dedup, a cell whose distinct-photo count is comfortably under the
-	 * threshold can still be wrongly excluded from the leaf tier if enough
-	 * of its photos are each linked into 2 in-scope sub-albums (fanning out
-	 * the raw row count past the threshold) - `resolveLeafRows()`'s own
-	 * `->distinct()` already dedupes the *row output*, which is why a
-	 * single-photo case wouldn't actually exercise this failure mode; this
-	 * needs the inflated raw count to cross the threshold.
+	 * Regression: `buildDistinctPhotoRowsQuery()`'s `->distinct()` must
+	 * collapse a photo linked into more than one in-scope sub-album down to
+	 * one row - without it, both the `MAX_VIEWPORT_PHOTOS` cap check and the
+	 * returned row set would count/list such a photo once per membership.
 	 */
-	public function testAlbumScopeWithSubAlbumsDoesNotExcludeALeafCellInflatedPastThresholdByMultiMembership(): void
+	public function testAlbumScopeWithSubAlbumsCountsAMultiMembershipPhotoOnceNotOncePerMembership(): void
 	{
 		$root = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$sub_a = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
 		$sub_b = Album::factory()->children_of($root)->owned_by($this->userMayUpload1)->create();
 
 		// 11 distinct photos, each linked into both sub-albums: distinct
-		// count 11 (<= LEAF_THRESHOLD, must stay a leaf cell), raw
-		// membership-row count 22 (> LEAF_THRESHOLD, would wrongly exclude
-		// it without the fix).
+		// count 11, raw membership-row count 22 - the response must reflect
+		// the former, not the latter.
 		$expected_ids = [];
 		for ($i = 0; $i < 11; $i++) {
 			$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($sub_a)->create([
@@ -170,7 +167,7 @@ class QueryMapPhotosTest extends BaseApiWithDataTest
 		sort($expected_ids);
 		$actual_ids = $resource->ids;
 		sort($actual_ids);
-		self::assertSame($expected_ids, $actual_ids, 'a cell with 11 distinct photos must stay a leaf cell despite each having 2 in-scope memberships');
+		self::assertSame($expected_ids, $actual_ids, 'each of the 11 distinct photos must appear exactly once despite having 2 in-scope memberships');
 	}
 
 	/**

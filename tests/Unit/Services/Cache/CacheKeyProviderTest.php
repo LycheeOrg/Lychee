@@ -342,10 +342,28 @@ class CacheKeyProviderTest extends AbstractTestCase
 	 * fall inside the same snapped grid region must produce an identical
 	 * cache key.
 	 */
+	/**
+	 * @return array{0:MapViewport,1:MapViewport}
+	 */
+	private function twoDistinctViewportsInTheSameCell(int $zoom): array
+	{
+		// Both sit well within +-1 cell of the origin (comfortably under half a
+		// cell to either side), so `snapToGrid()`'s outward rounding collapses
+		// both to the exact same `[-cell, cell]` box on every bound - while
+		// still being two distinct, overlapping viewports. Derived from
+		// `cellSizeForZoom()` rather than hardcoded degrees, so this stays
+		// correct across any future `GRID_ZOOM_OFFSET` retuning (Q-067-13).
+		$cell = MapViewport::cellSizeForZoom($zoom);
+
+		$viewport_a = new MapViewport(north: 0.6 * $cell, south: -0.6 * $cell, east: 0.6 * $cell, west: -0.6 * $cell, zoom: $zoom);
+		$viewport_b = new MapViewport(north: 0.4 * $cell, south: -0.4 * $cell, east: 0.4 * $cell, west: -0.4 * $cell, zoom: $zoom);
+
+		return [$viewport_a, $viewport_b];
+	}
+
 	public function testMapBucketsKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
 	{
-		$viewport_a = new MapViewport(north: 10.1, south: -2.3, east: 20.4, west: -5.1, zoom: 5);
-		$viewport_b = new MapViewport(north: 9.9, south: -1.1, east: 19.9, west: -4.9, zoom: 5);
+		[$viewport_a, $viewport_b] = $this->twoDistinctViewportsInTheSameCell(5);
 
 		$key_a = $this->provider->mapBucketsKey('root', $viewport_a->snapToGrid(), null, 'digest');
 		$key_b = $this->provider->mapBucketsKey('root', $viewport_b->snapToGrid(), null, 'digest');
@@ -355,8 +373,7 @@ class CacheKeyProviderTest extends AbstractTestCase
 
 	public function testMapPhotosKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
 	{
-		$viewport_a = new MapViewport(north: 10.1, south: -2.3, east: 20.4, west: -5.1, zoom: 5);
-		$viewport_b = new MapViewport(north: 9.9, south: -1.1, east: 19.9, west: -4.9, zoom: 5);
+		[$viewport_a, $viewport_b] = $this->twoDistinctViewportsInTheSameCell(5);
 
 		$key_a = $this->provider->mapPhotosKey('root', $viewport_a->snapToGrid(), null, 'digest');
 		$key_b = $this->provider->mapPhotosKey('root', $viewport_b->snapToGrid(), null, 'digest');

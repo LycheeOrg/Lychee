@@ -58,9 +58,13 @@ track loading is decoupled from photo fetching without behavior change.
   (including for negative longitudes, relevant west of the prime meridian / south of the equator)
   across sqlite/mysql/mariadb/pgsql — to verify in I2's test matrix.
 - **Risks / Mitigations:**
-  - *Risk:* A fixed `LEAF_THRESHOLD=20` may render too many or too few individual markers at once
-    depending on real-world photo geographic density. *Mitigation:* documented as a Follow-up to
-    make configurable if real usage shows it wrong (Q-067-02) — not solved speculatively now.
+  - *Risk (materialized, Q-067-16):* A fixed per-cell `LEAF_THRESHOLD=20` did render too many
+    individual markers at once relative to real-world photo geographic density, and — combined
+    with cell *area* quartering per zoom level — made clusters near the threshold pop straight
+    from one badge to a scatter of markers in a single zoom step instead of splitting gradually.
+    *Resolution:* the Photos tier dropped per-cell grouping entirely in favor of a
+    `MAX_VIEWPORT_PHOTOS` viewport-total cap, handing the raw list to Leaflet's own client-side
+    clustering below it (Q-067-16) — no further tuning needed on this axis.
   - *Risk:* Grid-snapped viewport overfetch (querying a slightly larger area than the exact
     viewport, per Q-067-05) could matter at very coarse zoom levels (large cells) if that also
     correlates with very dense scopes. *Mitigation:* NFR-067-01's fixture-based verification should
@@ -283,8 +287,9 @@ frontend serving as the correctness gate instead.
 
 ## Follow-ups / Backlog
 
-- Consider making `LEAF_THRESHOLD` and/or the `cellSizeForZoom()` formula admin-configurable if
-  real deployments show the fixed values need per-instance tuning (Q-067-02).
+- Consider making `MAX_VIEWPORT_PHOTOS` (Q-067-16, superseded `LEAF_THRESHOLD`) and/or the
+  Buckets tier's `cellSizeForZoom()` formula admin-configurable if real deployments show the fixed
+  values need per-instance tuning (Q-067-02).
 - Consider a driver-specific spatial index (MySQL `SPATIAL`, PostgreSQL `GiST`) as an
   opt-in/advanced-deployment enhancement if the plain composite B-tree index proves insufficient at
   very large scale on a specific driver (Q-067-03).
