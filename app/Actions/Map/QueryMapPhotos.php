@@ -47,16 +47,19 @@ class QueryMapPhotos
 	{
 		$snapped = $viewport->snapToGrid();
 
-		$total = DB::query()
-			->fromSub($this->buildDistinctPhotoRowsQuery($album, $user, $include_sub_albums, $snapped), 'distinct_photos')
-			->count();
+		// A separate `count()` pre-check followed by an unbounded `get()`
+		// would leave a window where a photo added/moved into the viewport
+		// between the two queries pushes the actual row count past the cap -
+		// violating it instead of just returning it late. Fetching at most
+		// `MAX_VIEWPORT_PHOTOS + 1` rows in the one query both avoids that
+		// race and avoids ever running a separate full `COUNT(*)` over a
+		// potentially huge bounding box at low zoom.
+		$rows = $this->buildDistinctPhotoRowsQuery($album, $user, $include_sub_albums, $snapped)
+			->limit(self::MAX_VIEWPORT_PHOTOS + 1)
+			->get()
+			->all();
 
-		if ($total > self::MAX_VIEWPORT_PHOTOS) {
-			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
-		}
-
-		$rows = $this->buildDistinctPhotoRowsQuery($album, $user, $include_sub_albums, $snapped)->get()->all();
-		if (count($rows) === 0) {
+		if (count($rows) === 0 || count($rows) > self::MAX_VIEWPORT_PHOTOS) {
 			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
 		}
 
@@ -94,9 +97,11 @@ class QueryMapPhotos
 
 	/**
 	 * Every distinct photo in `$snapped`'s bounding box, `toBase()`-only, no
-	 * grid grouping - the caller decides individual-vs-aggregate rendering
-	 * by `count()`-ing this same query first (see {@see self::do()}).
-	 * `->distinct()` collapses the row-per-membership fan-out an
+	 * grid grouping - the caller ({@see self::do()}) bounds this with its own
+	 * `->limit(MAX_VIEWPORT_PHOTOS + 1)` and decides individual-vs-aggregate
+	 * rendering from the fetched row count directly, rather than running a
+	 * separate `count()` first (which would leave a TOCTOU window against
+	 * concurrent writes). `->distinct()` collapses the row-per-membership fan-out an
 	 * `include_sub_albums` album-scope query's own `photo_album`/`albums`
 	 * joins can otherwise produce for a photo living in more than one
 	 * in-scope sub-album (mirrors `Album\PositionData::get()`'s own
