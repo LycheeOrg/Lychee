@@ -59,7 +59,7 @@ class HeadTagAlbumResource extends Data
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($tag_album);
 		$this->rights = new AlbumRightsResource($tag_album);
-		$url = $this->getHeaderUrl($tag_album);
+		$url = $this->getHeaderUrl($tag_album)?->url;
 		$this->preFormattedData = new PreFormattedAlbumData($tag_album, $url);
 
 		if ($this->rights->can_edit) {
