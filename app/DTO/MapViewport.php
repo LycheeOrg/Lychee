@@ -28,15 +28,27 @@ class MapViewport
 	}
 
 	/**
-	 * One tile-width in decimal degrees at Web-Mercator zoom `$zoom`
-	 * (Q-067-13) — halves exactly once per zoom level, ties grid cell
-	 * boundaries to the same grid Leaflet's own tiles already use.
-	 * Zoom 0 -> 360.0 (whole world, one cell); zoom 10 -> ~0.35°; zoom 18 ->
-	 * ~0.0014°.
+	 * A 1/64th-tile-width in decimal degrees at Web-Mercator zoom `$zoom`
+	 * (Q-067-13, amended twice - one map tile, then a quarter-tile, both
+	 * still read as a whole neighborhood/town at typical browsing zooms:
+	 * a bucket several km wide lumped together photos that are clearly
+	 * separate on screen, and because cell *area* quarters every zoom
+	 * level, a cluster sitting just above `LEAF_THRESHOLD` had every one
+	 * of its sub-cells drop below threshold in the same zoom step -
+	 * looking like the cluster vanished, replaced instantly by a scatter
+	 * of individual markers). `GRID_ZOOM_OFFSET` clusters six extra zoom
+	 * levels finer than `$zoom` itself instead, still halving once per
+	 * zoom level and still tied to Leaflet's own tile grid (just a deeper
+	 * level of it), so `snapToGrid()`'s boundary math is unaffected. Zoom
+	 * 0 -> 5.625°; zoom 11 -> ~0.0027° (~300 m, block-sized rather than
+	 * the ~5 km town-sized cell the previous constant gave at that zoom);
+	 * zoom 18 -> ~0.0000021° (~2.4 m).
 	 */
+	private const GRID_ZOOM_OFFSET = 6;
+
 	public static function cellSizeForZoom(int $zoom): float
 	{
-		return 360.0 / (2 ** $zoom);
+		return 360.0 / (2 ** ($zoom + self::GRID_ZOOM_OFFSET));
 	}
 
 	/**

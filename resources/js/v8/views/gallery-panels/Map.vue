@@ -103,14 +103,22 @@ const photoLayer = ref<unknown>(undefined);
 const trackLayers = ref<Map<number, L.Layer>>(new Map());
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
-// Feature 067 (I8) — SoA path state. Mirrors `QueryMapPhotos::LEAF_THRESHOLD`
-// (Q-067-02: fixed constant, not exposed via the API).
-const LEAF_THRESHOLD = 20;
+// Feature 067 (I8) — SoA path state. `aggregateMarkers` renders when the
+// viewport's total photo count is over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS`
+// (server-decided, not mirrored client-side - see `renderAggregateMarkers()`);
+// under that cap, every individual photo is fed to the same
+// `clusterFunc()`/`leaflet.markercluster` machinery the v2 path already uses
+// instead (Q-067-13, amended).
 const aggregateMarkers = ref<L.Marker[]>([]);
-// Keyed by photo id so a re-render can be diffed/cleaned up precisely.
-const leafMarkers = ref<Map<string, L.Marker>>(new Map());
-// `ThumbAssetService.acquire()` releases for every currently-rendered leaf marker.
-const leafReleases = ref<(() => void)[]>([]);
+// `ThumbAssetService.acquire()` releases for every currently-rendered individual photo marker.
+const individualPhotoReleases = ref<(() => void)[]>([]);
+// Photo ids `ensureThumbnailLoaded()` has already kicked off a fetch for, in
+// the current render cycle - `ThumbAssetService.acquire()` itself dedupes
+// the underlying network request for a repeat call, but each `acquire()`
+// still needs its own matching `release()`; without this guard, a photo
+// used by both a standalone marker and a cluster badge (or several
+// clusters, across zoom levels) would leak one `release()` per redundant call.
+const requestedPhotoIds = ref<Set<string>>(new Set());
 // Mirrors `trackLayers` above, for the v3 (viewport-independent) track fetch.
 const trackLayersV3 = ref<Map<number, L.Layer>>(new Map());
 
@@ -185,17 +193,46 @@ function fetchData() {
 }
 
 // ── Feature 067 (I8): SoA (v3) rendering path ─────────────────────────
-// Viewport-driven buckets/leaf-photos, decoupled track loading, aggregate
-// vs. leaf marker split. Dispatched into from `mapInit()` above, mirroring
-// `Timeline.vue`'s own `isTimelineSoaActive`-driven dispatcher. The v2 path
-// above (`fetchData()`/`addContentsToMap()`/`data`) is untouched by any of
-// this (NFR-067-03).
+// Viewport-driven buckets/photos, decoupled track loading, aggregate-badge
+// vs. individually-clustered-photo split (Q-067-13, amended). Dispatched
+// into from `mapInit()` above, mirroring `Timeline.vue`'s own
+// `isTimelineSoaActive`-driven dispatcher. The v2 path above
+// (`fetchData()`/`addContentsToMap()`/`data`) is untouched by any of this
+// (NFR-067-03).
+
+/**
+ * Leaflet doesn't wrap longitude: at low zoom (e.g. the initial `fitWorld()`
+ * view), `getBounds()` can report `east`/`west` far outside [-180, 180]
+ * (spanning more than one copy of the globe). The API validates both against
+ * `between:-180,180` (`HasMapViewportTrait`), so raw bounds must be
+ * normalized before being sent. A span of a full world or more collapses to
+ * the whole-world range; otherwise `west` is wrapped into [-180, 180) and
+ * `east` is re-derived from it so the original span survives - if that
+ * pushes `east` past 180, wrapping it back around naturally produces
+ * `west > east`, `MapViewport::snapToGrid()`'s own antimeridian-crossing
+ * convention.
+ */
+function normalizeLongitudeBounds(west: number, east: number): { west: number; east: number } {
+	const span = east - west;
+	if (span >= 360) {
+		return { west: -180, east: 180 };
+	}
+
+	const normalizedWest = ((((west + 180) % 360) + 360) % 360) - 180;
+	let normalizedEast = normalizedWest + span;
+	if (normalizedEast > 180) {
+		normalizedEast -= 360;
+	}
+
+	return { west: normalizedWest, east: normalizedEast };
+}
 
 function currentBoundsAndZoom(): { bounds: MapBounds; zoom: number } | undefined {
 	if (map.value === undefined) return undefined;
 	const b = map.value.getBounds();
+	const { west, east } = normalizeLongitudeBounds(b.getWest(), b.getEast());
 	return {
-		bounds: { north: b.getNorth(), south: b.getSouth(), east: b.getEast(), west: b.getWest() },
+		bounds: { north: b.getNorth(), south: b.getSouth(), east, west },
 		zoom: map.value.getZoom(),
 	};
 }
@@ -241,20 +278,23 @@ function clearAggregateMarkers() {
 }
 
 /**
- * Cells whose `counts[i] > LEAF_THRESHOLD` (FR-067-20) — a plain count-badge
- * marker at the cell's centroid; clicking it zooms the map in, it never
- * fetches member photos.
+ * A plain count-badge marker at each bucket's centroid (FR-067-20); clicking
+ * it zooms the map in, it never fetches member photos. Only rendered when
+ * `/Map/Photos` came back empty (FR-067-09 amended: the viewport's total
+ * photo count was over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS`) - otherwise
+ * `renderIndividualPhotos()` owns the view and every bucket is skipped, even
+ * though `bucketsV3` itself is always populated regardless of that cap.
  */
 function renderAggregateMarkers() {
 	if (map.value === undefined) return;
 	clearAggregateMarkers();
 
 	const buckets = mapStore.bucketsV3;
-	if (buckets === undefined) return;
+	const photos = mapStore.photosV3;
+	if (buckets === undefined || (photos !== undefined && photos.ids.length > 0)) return;
 
 	for (let i = 0; i < buckets.bucket_ids.length; i++) {
 		const count = buckets.counts[i];
-		if (count <= LEAF_THRESHOLD) continue;
 
 		const lat = buckets.centroid_latitudes[i];
 		const lng = buckets.centroid_longitudes[i];
@@ -274,81 +314,115 @@ function renderAggregateMarkers() {
 	}
 }
 
-function clearLeafMarkers() {
-	leafMarkers.value.forEach((marker) => {
-		// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
-		photoLayer.value?.removeLayer(marker);
-	});
-	leafMarkers.value.clear();
-	leafReleases.value.forEach((release) => release());
-	leafReleases.value = [];
+function clearIndividualPhotos() {
+	// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
+	photoLayer.value?.clear();
+	individualPhotoReleases.value.forEach((release) => release());
+	individualPhotoReleases.value = [];
+	requestedPhotoIds.value = new Set();
+}
+
+// Sentinel distinguishing a v3 entry still awaiting its lazily-loaded
+// thumbnail from a v2 entry, which already carries a real URL synchronously.
+const UNRESOLVED_THUMBNAIL = "img/placeholder.png";
+
+function buildPhotoIconHtml(thumbnail: string): string {
+	return `<div style="background-image: url(${thumbnail});"></div>`;
 }
 
 /**
- * Cells at/under the leaf threshold (FR-067-21) — reuses the existing
- * `clusterFunc()`/`.leaflet-marker-photo` marker+popup template
- * byte-for-byte, except image `src`: `MapPhotoResource` supplies no URL at
- * all (Q-067-12), so every marker is added with a placeholder icon first,
- * then `ThumbAssetService.acquire()`'s object URL is assigned once it
- * resolves — same pattern `Thumb.vue` already uses.
+ * Fetches `entry`'s real thumbnail at most once per render cycle (guarded by
+ * `requestedPhotoIds` - see its own comment for why), calling `onResolved`
+ * once it's ready. Below `MAX_VIEWPORT_PHOTOS` (Q-067-13, amended) most
+ * photos in a typical viewport end up hidden inside a cluster badge, which
+ * only ever displays ONE representative child's thumbnail - eagerly
+ * fetching every photo regardless (the previous version of this code) meant
+ * paying for a `ThumbAssetService`/Asset-endpoint request per photo even
+ * though only a handful were ever actually shown (owner: "we are loading
+ * all the images even though some are clustered ... shouldn't we only load
+ * the images when needed?"). Callers decide *when* a photo is actually
+ * needed - see `renderIndividualPhotos()`'s marker `'add'` listener for
+ * standalone/spiderfied markers, and `iconCreateFunction` in `open()` for a
+ * cluster's representative child.
  */
-function renderLeafMarkers() {
+function ensureThumbnailLoaded(entry: MapPhotoEntry, onResolved: (objectUrl: string) => void): void {
+	// A photo with no resolvable containing album (S-067-09) has no
+	// `{album_id}` to key the Asset endpoint on - it keeps the placeholder icon.
+	if (entry.albumID === null || requestedPhotoIds.value.has(entry.photoID)) return;
+	requestedPhotoIds.value.add(entry.photoID);
+
+	const { promise, release } = ThumbAssetService.acquire(entry.albumID, entry.photoID, "small");
+	individualPhotoReleases.value.push(release);
+	promise
+		.then((objectUrl) => {
+			entry.thumbnail = objectUrl;
+			entry.url = objectUrl;
+			onResolved(objectUrl);
+		})
+		.catch(() => {
+			// Leave the placeholder icon in place - mirrors <Thumb>'s own failure handling.
+		});
+}
+
+/**
+ * Below `MAX_VIEWPORT_PHOTOS` (Q-067-13, amended), the backend ships every
+ * individual photo in the viewport with no server-side clustering at all -
+ * handed straight to the same `clusterFunc()`/`Cluster.add()` machinery the
+ * v2 (non-SoA) `addContentsToMap()` path already uses, so Leaflet's own
+ * pixel-radius clustering (graduated sizes, real thumbnails) does the work
+ * that a fixed SQL grid could only ever approximate (owner: "the clustering
+ * threshold is too wide"). Every marker starts on a shared placeholder icon
+ * (`MapPhotoResource` supplies no thumbnail URL at all, Q-067-12); a
+ * standalone/spiderfied marker's own `'add'` event - fired by Leaflet
+ * exactly when that specific marker (not a cluster standing in for it) is
+ * actually placed on the map - is what triggers `ensureThumbnailLoaded()`
+ * for it, so a photo hidden inside a cluster the whole time never gets
+ * fetched at all.
+ */
+function renderIndividualPhotos() {
 	if (map.value === undefined || photoLayer.value === undefined) return;
-	clearLeafMarkers();
+	clearIndividualPhotos();
 
 	const photos = mapStore.photosV3;
-	if (photos === undefined) return;
+	if (photos === undefined || photos.ids.length === 0) return;
 
-	for (let i = 0; i < photos.ids.length; i++) {
-		const photoID = photos.ids[i];
-		const albumID = photos.album_ids[i];
-		const name = photos.titles[i];
+	const entries: MapPhotoEntry[] = photos.ids.map((photoID, i) => ({
+		lat: photos.latitudes[i],
+		lng: photos.longitudes[i],
+		thumbnail: UNRESOLVED_THUMBNAIL,
+		url: "",
+		url2x: "",
+		name: photos.titles[i],
+		taken_at: photos.taken_ats[i],
+		albumID: photos.album_ids[i],
+		photoID,
+	}));
 
-		const marker: L.Marker & { photo?: MapPhotoEntry } = L.marker([photos.latitudes[i], photos.longitudes[i]], {
-			icon: L.divIcon({
-				html: '<div style="background-image: url(img/placeholder.png);"></div>',
-				className: "leaflet-marker-photo",
-				iconSize: [40, 40],
-			}),
-			title: name,
-		});
-		marker.photo = {
-			photoID,
-			albumID,
-			name,
-			url: "",
-			url2x: "",
-			taken_at: photos.taken_ats[i],
-		};
+	// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
+	photoLayer.value.add(entries);
 
-		// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
-		photoLayer.value.addLayer(marker);
-		leafMarkers.value.set(photoID, marker);
-
-		// A photo with no resolvable containing album (S-067-09) has no
-		// `{album_id}` to key the Asset endpoint on - it keeps the
-		// placeholder icon.
-		if (albumID === null) continue;
-
-		const { promise, release } = ThumbAssetService.acquire(albumID, photoID, "small");
-		leafReleases.value.push(release);
-		promise
-			.then((objectUrl) => {
-				marker.setIcon(
-					L.divIcon({
-						html: `<div style="background-image: url(${objectUrl});"></div>`,
-						className: "leaflet-marker-photo",
-						iconSize: [40, 40],
-					}),
-				);
-				if (marker.photo !== undefined) {
-					marker.photo.url = objectUrl;
-				}
-			})
-			.catch(() => {
-				// Leave the placeholder icon in place - mirrors <Thumb>'s own failure handling.
+	// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
+	const markers = photoLayer.value.getPhotoMarkers() as (L.Marker & { photo?: MapPhotoEntry })[];
+	markers.forEach((marker) => {
+		const loadIfNeeded = () => {
+			if (marker.photo === undefined) return;
+			ensureThumbnailLoaded(marker.photo, (objectUrl) => {
+				// @ts-expect-error refreshIconOptions is added by leaflet.markercluster's own L.Marker.include() and is not typed
+				marker.refreshIconOptions({ html: buildPhotoIconHtml(objectUrl) }, true);
 			});
-	}
+		};
+		// `.add()` above may already have synchronously placed a standalone
+		// marker on the map (leaflet.markercluster's bulk-add path) before this
+		// listener could be attached - `_map` (Leaflet's own internal "is this
+		// layer currently on the map" flag) catches that case; `.once('add', ...)`
+		// catches a marker that's clustered now but becomes standalone later,
+		// on a future zoom.
+		// @ts-expect-error `_map` is protected, but there's no public equivalent for "is this layer on the map right now"
+		if (marker._map !== undefined) {
+			loadIfNeeded();
+		}
+		marker.once("add", loadIfNeeded);
+	});
 }
 
 function clearTracksV3() {
@@ -398,14 +472,20 @@ function renderTracksV3() {
 	}
 }
 
-watch(
-	() => mapStore.bucketsV3,
-	() => renderAggregateMarkers(),
-);
-watch(
-	() => mapStore.photosV3,
-	() => renderLeafMarkers(),
-);
+/**
+ * `bucketsV3`/`photosV3` resolve together (`Promise.all` in
+ * `MapState.ts.fetchViewportNow()`), and which one actually renders depends
+ * on both (`renderAggregateMarkers()` only draws when `photosV3` is empty) -
+ * so either arriving re-evaluates both render functions, each a no-op
+ * unless it decides it owns the current viewport.
+ */
+function renderMarkersForCurrentViewport() {
+	renderAggregateMarkers();
+	renderIndividualPhotos();
+}
+
+watch(() => mapStore.bucketsV3, renderMarkersForCurrentViewport);
+watch(() => mapStore.photosV3, renderMarkersForCurrentViewport);
 watch(
 	() => mapStore.tracksV3,
 	() => renderTracksV3(),
@@ -416,15 +496,48 @@ onUnmounted(() => {
 		map.value.off("moveend zoomend", onMapViewportChanged);
 	}
 	clearAggregateMarkers();
-	clearLeafMarkers();
+	clearIndividualPhotos();
 	clearTracksV3();
 	mapStore.reset();
 });
 
+/**
+ * Cluster badges reuse the exact `.leaflet-marker-photo` HTML/CSS
+ * `composables/photo.ts`'s own default `iconCreateFunction` builds (byte for
+ * byte, including the zero-width space separating the thumbnail `<div>` from
+ * the count `<b>` - preserved for CSS/visual parity), but lazily loads the
+ * representative child's thumbnail instead of assuming it's already
+ * resolved - see `ensureThumbnailLoaded()`'s own doc comment for why.
+ * `cluster.setIcon()` (inherited from `L.Marker`) redraws the currently
+ * displayed badge once the fetch resolves - a no-op if the user has since
+ * zoomed away and this exact cluster object is no longer on screen.
+ */
+function photoClusterIconCreateFunction(cluster: L.MarkerCluster): L.DivIcon {
+	const representative = cluster.getAllChildMarkers()[0] as L.Marker & { photo?: MapPhotoEntry };
+	const thumbnail = representative.photo?.thumbnail ?? UNRESOLVED_THUMBNAIL;
+
+	// `photoLayer` is shared with the v2 (non-SoA) path, whose photos already
+	// carry a real, synchronously-available thumbnail URL - only a v3 entry
+	// still sitting on the shared placeholder sentinel needs lazy-loading at
+	// all (v2 clusters must not pay for a redundant `ThumbAssetService` fetch
+	// of an image it already has a perfectly good URL for).
+	if (representative.photo !== undefined && thumbnail === UNRESOLVED_THUMBNAIL) {
+		ensureThumbnailLoaded(representative.photo, () => {
+			cluster.setIcon(photoClusterIconCreateFunction(cluster));
+		});
+	}
+
+	return L.divIcon({
+		className: "leaflet-marker-photo",
+		html: `${buildPhotoIconHtml(thumbnail)}​<b>${cluster.getChildCount()}</b>`,
+		iconSize: [40, 40],
+	});
+}
+
 function open() {
 	// Define how the photos on the map should look
 	// @ts-expect-error Leaflet.Photo is not typed
-	photoLayer.value = clusterFunc().on("click", function (e: MapClickEvent) {
+	photoLayer.value = clusterFunc({ iconCreateFunction: photoClusterIconCreateFunction }).on("click", function (e: MapClickEvent) {
 		const photo: MapPhotoEntry = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
@@ -475,6 +588,16 @@ function open() {
 			})
 			.openPopup();
 	});
+
+	// Both `addContentsToMap()` (v2) and `renderIndividualPhotos()` (v3 SoA)
+	// call `.add(photos)` on this layer, which only adds member markers - it
+	// never attaches the layer GROUP itself to the map. Both used to rely on
+	// their own `.addTo(map.value)` for that (or, in an earlier v3 SoA
+	// iteration, skip it entirely via a bare `addLayer()`, silently making
+	// every individual photo invisible). Attaching it here once,
+	// unconditionally, covers every path.
+	// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
+	photoLayer.value.addTo(map.value);
 }
 
 /**

@@ -16,35 +16,46 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Query logic for `GET /api/v3/Map/Photos` (FR-067-09..12). Two-pass,
- * `toBase()`-only throughout (no Eloquent hydration, no `size_variants`
- * join, no `should_downgrade` computation - Q-067-12): an aggregate
- * pre-pass query resolves which grid cells are "leaf" cells
- * (`HAVING COUNT(*) <= LEAF_THRESHOLD`), joined - not expanded into one
- * OR-branch-per-cell predicate, which would otherwise make query size and
- * parameter count scale with the total accessible photo count at high zoom
- * (NFR-067-05) - into a second pass that fetches exactly those cells'
- * distinct photo rows, plus a separate join+collapse pass resolving each
- * photo's real, viewer-accessible containing album id (Q-067-15). Cost is
- * bounded by `(leaf cells in viewport) × LEAF_THRESHOLD`, never by total
- * scope size (NFR-067-05).
+ * Query logic for `GET /api/v3/Map/Photos` (FR-067-09..12). `toBase()`-only
+ * throughout (no Eloquent hydration, no `size_variants` join, no
+ * `should_downgrade` computation - Q-067-12).
+ *
+ * Superseded design (Q-067-13, amended): this used to group photos into the
+ * same SQL grid `QueryMapBuckets` uses and only return a cell's photos when
+ * that cell's own count was `<= LEAF_THRESHOLD` - a fixed grid can only ever
+ * approximate real pixel-radius clustering, and it never reproduced the old
+ * (v2/non-SoA) map's graduated cluster sizes with thumbnails (owner: "the
+ * clustering threshold is too wide"). Now this returns every distinct photo
+ * in the viewport with no grouping at all, but only when the viewport's
+ * total count is `<= MAX_VIEWPORT_PHOTOS`; the frontend hands that raw list
+ * straight to the same `leaflet.markercluster`-based clustering the v2 path
+ * already uses, instead of pre-bucketing photos into a grid server-side.
+ * Above the cap, this returns empty and the frontend falls back to
+ * `/Map/buckets`' aggregate count badges. Cost is bounded by
+ * `MAX_VIEWPORT_PHOTOS` rows fetched, never by total scope size (NFR-067-05).
  */
 class QueryMapPhotos
 {
 	use ResolvesMapPhotoSource;
 
-	public const LEAF_THRESHOLD = 20;
+	public const MAX_VIEWPORT_PHOTOS = 500;
 
 	public function do(?AbstractAlbum $album, ?User $user, MapViewport $viewport, bool $include_sub_albums): MapPhotoResource
 	{
 		$snapped = $viewport->snapToGrid();
-		$cell = $snapped->cellSize();
 
-		$rows = $this->resolveLeafRows($album, $user, $include_sub_albums, $snapped, $cell);
+		$total = DB::query()
+			->fromSub($this->buildDistinctPhotoRowsQuery($album, $user, $include_sub_albums, $snapped), 'distinct_photos')
+			->count();
+
+		if ($total > self::MAX_VIEWPORT_PHOTOS) {
+			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
+		}
+
+		$rows = $this->buildDistinctPhotoRowsQuery($album, $user, $include_sub_albums, $snapped)->get()->all();
 		if (count($rows) === 0) {
 			return new MapPhotoResource(ids: [], album_ids: [], titles: [], taken_ats: [], latitudes: [], longitudes: []);
 		}
@@ -82,40 +93,9 @@ class QueryMapPhotos
 	}
 
 	/**
-	 * Un-materialized aggregate query resolving which grid cells are "leaf"
-	 * cells (`count <= LEAF_THRESHOLD`), `toBase()`-only - joined into
-	 * {@see self::resolveLeafRows()} rather than fetched into PHP, so its
-	 * row count never turns into per-row query predicates/bindings.
-	 */
-	private function buildLeafCellsQuery(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, float $cell): BaseBuilder
-	{
-		$query = $album === null ?
-			$this->resolveRootQuery($user) :
-			$this->resolveAlbumQuery($album, $include_sub_albums);
-		$this->applyBoundingBoxFilter($query, $snapped);
-
-		// See resolveDistinctPhotoRows()'s own doc comment: without this,
-		// a photo linked into more than one in-scope album would be
-		// double-counted here, wrongly excluding an otherwise-leaf cell
-		// (or admitting one that isn't) from LEAF_THRESHOLD's count.
-		$distinct_photos = $this->resolveDistinctPhotoRows($query);
-
-		return DB::query()
-			->fromSub($distinct_photos, 'distinct_photos')
-			->selectRaw('FLOOR(latitude / ?) as lat_cell, FLOOR(longitude / ?) as lng_cell', [$cell, $cell])
-			->groupBy('lat_cell', 'lng_cell')
-			->havingRaw('COUNT(*) <= ?', [self::LEAF_THRESHOLD]);
-	}
-
-	/**
-	 * Distinct photo rows restricted to exactly the leaf cells resolved by
-	 * {@see self::buildLeafCellsQuery()} - joined as a derived table on the
-	 * same `FLOOR(coordinate / cell)` bucket key the aggregate query itself
-	 * groups by, instead of materializing every leaf cell into PHP and
-	 * expanding it into an `OR`'d range predicate per cell: at a high zoom
-	 * each accessible photo can occupy its own leaf cell, so that approach
-	 * makes query size and bound-parameter count scale with the total
-	 * accessible photo count (NFR-067-05) rather than staying constant.
+	 * Every distinct photo in `$snapped`'s bounding box, `toBase()`-only, no
+	 * grid grouping - the caller decides individual-vs-aggregate rendering
+	 * by `count()`-ing this same query first (see {@see self::do()}).
 	 * `->distinct()` collapses the row-per-membership fan-out an
 	 * `include_sub_albums` album-scope query's own `photo_album`/`albums`
 	 * joins can otherwise produce for a photo living in more than one
@@ -124,31 +104,19 @@ class QueryMapPhotos
 	 * it never dedupes either) - every selected column here is invariant
 	 * per photo, not per membership, so a `SELECT DISTINCT` is a correct,
 	 * cheap collapse.
-	 *
-	 * @return array<int,\stdClass>
 	 */
-	private function resolveLeafRows(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped, float $cell): array
+	private function buildDistinctPhotoRowsQuery(?AbstractAlbum $album, ?User $user, bool $include_sub_albums, MapViewport $snapped): BaseBuilder
 	{
 		$query = $album === null ?
 			$this->resolveRootQuery($user) :
 			$this->resolveAlbumQuery($album, $include_sub_albums);
 		$this->applyBoundingBoxFilter($query, $snapped);
 
-		$leaf_cells = $this->buildLeafCellsQuery($album, $user, $include_sub_albums, $snapped, $cell);
-
-		$query->joinSub($leaf_cells, 'leaf_cells', function (JoinClause $join) use ($cell): void {
-			$join
-				->whereRaw('FLOOR(photos.latitude / ?) = leaf_cells.lat_cell', [$cell])
-				->whereRaw('FLOOR(photos.longitude / ?) = leaf_cells.lng_cell', [$cell]);
-		});
-
 		return $query
 			->select([])
 			->selectRaw('photos.id as id, photos.title as title, photos.taken_at as taken_at, photos.latitude as latitude, photos.longitude as longitude')
 			->distinct()
-			->toBase()
-			->get()
-			->all();
+			->toBase();
 	}
 
 	/**
