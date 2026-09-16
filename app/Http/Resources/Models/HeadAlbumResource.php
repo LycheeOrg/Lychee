@@ -95,7 +95,7 @@ class HeadAlbumResource extends Data
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($album);
 		$this->rights = new AlbumRightsResource($album);
-		$url = $this->getHeaderUrl($album);
+		$url = $this->getHeaderUrl($album)?->url;
 		$this->preFormattedData = new PreFormattedAlbumData($album, $url);
 		$this->is_pinned = $album->is_pinned;
 		$this->breadcrumb = $breadcrumb;

@@ -80,11 +80,15 @@ class MetaTest extends AbstractTestCase
 		return new Meta();
 	}
 
-	private function makeSizeVariantMock(string $url): MockInterface&SizeVariant
+	private function makeSizeVariantMock(string $url, int $width = 800, int $height = 600): MockInterface&SizeVariant
 	{
 		$sv = \Mockery::mock(SizeVariant::class);
 		$sv->shouldReceive('offsetExists')->with('url')->andReturn(true);
 		$sv->shouldReceive('getAttribute')->with('url')->andReturn($url);
+		$sv->shouldReceive('offsetExists')->with('width')->andReturn(true);
+		$sv->shouldReceive('getAttribute')->with('width')->andReturn($width);
+		$sv->shouldReceive('offsetExists')->with('height')->andReturn(true);
+		$sv->shouldReceive('getAttribute')->with('height')->andReturn($height);
 
 		return $sv;
 	}
@@ -278,6 +282,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$photo = $this->makePhotoMock('No Description', null, $sizeVariants);
@@ -297,6 +302,7 @@ class MetaTest extends AbstractTestCase
 
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn($svSmall);
 
 		$photo = $this->makePhotoMock('Photo', 'Desc', $sizeVariants);
@@ -312,6 +318,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$photo = $this->makePhotoMock('Photo', 'Desc', $sizeVariants);
@@ -355,6 +362,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$album = \Mockery::mock(AbstractAlbum::class);
@@ -512,12 +520,14 @@ class MetaTest extends AbstractTestCase
 
 		session(['album' => $album]);
 
+		$svHeader = $this->makeSizeVariantMock('https://example.com/header.jpg', 1024, 768);
+
 		$meta = \Mockery::mock(Meta::class)
 			->makePartial()
 			->shouldAllowMockingProtectedMethods();
 		$meta->shouldReceive('getHeaderUrl')
 			->once()
-			->andReturn('https://example.com/header.jpg');
+			->andReturn($svHeader);
 		// Mockery 1.6.14 no-ops explicit magic-method calls (__construct/__clone) unless an
 		// expectation is registered for them; passthru() makes this call run the real constructor.
 		$meta->shouldReceive('__construct')->passthru();
@@ -525,6 +535,8 @@ class MetaTest extends AbstractTestCase
 
 		self::assertSame('https://example.com/header.jpg', $meta->image_url);
 		self::assertSame('Album', $meta->page_title);
+		self::assertSame(1024, $meta->width);
+		self::assertSame(768, $meta->height);
 	}
 
 	public function testAlbumWithCoverSourceSetsImageUrl(): void
