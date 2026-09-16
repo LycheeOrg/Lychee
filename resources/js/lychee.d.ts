@@ -1785,6 +1785,20 @@ declare namespace App {
 					grants_edit: boolean[];
 					grants_download: boolean[];
 				};
+				export type MapBucketResource = {
+					bucket_ids: string[];
+					counts: number[];
+					centroid_latitudes: number[];
+					centroid_longitudes: number[];
+				};
+				export type MapPhotoResource = {
+					ids: string[];
+					album_ids: (string | null)[];
+					titles: string[];
+					taken_ats: (string | null)[];
+					latitudes: number[];
+					longitudes: number[];
+				};
 				export type PhotoBucketResource = {
 					bucket_ids: string[];
 					counts: number[];

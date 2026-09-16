@@ -90,6 +90,12 @@ class RequestAttribute
 
 	public const IS_AND_ATTRIBUTE = 'is_and';
 
+	public const NORTH_ATTRIBUTE = 'north';
+	public const SOUTH_ATTRIBUTE = 'south';
+	public const EAST_ATTRIBUTE = 'east';
+	public const WEST_ATTRIBUTE = 'west';
+	public const ZOOM_ATTRIBUTE = 'zoom';
+
 	public const ALL_ATTRIBUTE = 'all';
 	public const INCLUDE_PENDING_ATTRIBUTE = 'include_pending';
 

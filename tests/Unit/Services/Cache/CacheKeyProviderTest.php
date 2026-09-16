@@ -19,6 +19,7 @@
 namespace Tests\Unit\Services\Cache;
 
 use App\DTO\AlbumSortingCriterion;
+use App\DTO\MapViewport;
 use App\Enum\AlbumListingScope;
 use App\Services\Cache\CacheKeyProvider;
 use Tests\AbstractTestCase;
@@ -332,5 +333,70 @@ class CacheKeyProviderTest extends AbstractTestCase
 	public function testPhotoListingTagIsDistinctPerAlbum(): void
 	{
 		self::assertNotSame($this->provider->photoListingTag('album-1'), $this->provider->photoListingTag('album-2'));
+	}
+
+	// ── Map listing key stability (Feature 067) ─────────────────────
+
+	/**
+	 * NFR-067-04, S-067-05: two overlapping-but-distinct raw viewports that
+	 * fall inside the same snapped grid region must produce an identical
+	 * cache key.
+	 */
+	public function testMapBucketsKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
+	{
+		$viewport_a = new MapViewport(north: 10.1, south: -2.3, east: 20.4, west: -5.1, zoom: 5);
+		$viewport_b = new MapViewport(north: 9.9, south: -1.1, east: 19.9, west: -4.9, zoom: 5);
+
+		$key_a = $this->provider->mapBucketsKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapBucketsKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertSame($key_a, $key_b);
+	}
+
+	public function testMapPhotosKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
+	{
+		$viewport_a = new MapViewport(north: 10.1, south: -2.3, east: 20.4, west: -5.1, zoom: 5);
+		$viewport_b = new MapViewport(north: 9.9, south: -1.1, east: 19.9, west: -4.9, zoom: 5);
+
+		$key_a = $this->provider->mapPhotosKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapPhotosKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertSame($key_a, $key_b);
+	}
+
+	public function testMapBucketsKeyDistinguishesDifferentSnappedRegions(): void
+	{
+		$viewport_a = new MapViewport(north: 10.0, south: 0.0, east: 10.0, west: 0.0, zoom: 5);
+		$viewport_b = new MapViewport(north: 40.0, south: 30.0, east: 40.0, west: 30.0, zoom: 5);
+
+		$key_a = $this->provider->mapBucketsKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapBucketsKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertNotSame($key_a, $key_b);
+	}
+
+	public function testMapBucketsKeyIsDistinctPerScope(): void
+	{
+		$viewport = (new MapViewport(north: 10.0, south: 0.0, east: 10.0, west: 0.0, zoom: 5))->snapToGrid();
+
+		$key_root = $this->provider->mapBucketsKey('root', $viewport, null, 'digest');
+		$key_album = $this->provider->mapBucketsKey('album-1', $viewport, null, 'digest');
+
+		self::assertNotSame($key_root, $key_album);
+	}
+
+	public function testMapTracksKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->mapTracksKey($album_id, $user_id, 'digest'));
+	}
+
+	public function testMapListingTagIsDistinctPerScope(): void
+	{
+		self::assertNotSame($this->provider->mapListingTag('root'), $this->provider->mapListingTag('album-1'));
+	}
+
+	public function testMapListingGlobalTagIsStable(): void
+	{
+		self::assertSame('map-listing-global', $this->provider->mapListingGlobalTag());
 	}
 }
