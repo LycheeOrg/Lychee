@@ -192,6 +192,8 @@ map.value.fitBounds(calculatePhotoBounds())
 - GPS track visualization
 - Responsive zoom and pan
 
+**Feature 067 (v3, SoA) path**: behind the same `is_struct_of_array_enabled` flag other v3 tiers use, `Map.vue` dispatches between the v2 behavior above (unchanged, `fetchData()`/`addContentsToMap()`) and a viewport-driven path sourced from `resources/js/stores/MapState.ts`. Leaflet's `moveend`/`zoomend` events call a debounced `requestViewport(bounds, zoom)`, which dedupes an identical/in-flight snapped-viewport request and fetches `GET /api/v3/Map/buckets` + `/Map/Photos` in parallel (`resources/js/services/map-v3-service.ts`). A bucket whose count exceeds the fixed leaf threshold (`20`) renders as a plain count-badge marker (click zooms in, never fetches members); a leaf-tier photo reuses the existing `clusterFunc()`/`.leaflet-marker-photo` template, with its marker image assigned asynchronously once `ThumbAssetService.acquire()`'s object URL resolves (no backend-supplied thumbnail URL in this tier, Q-067-12) — the same async-assignment pattern `Thumb.vue` uses. GPX tracks are fetched once per album (`MapState.ts.loadTracks()`), decoupled from pan/zoom. See `docs/specs/4-architecture/features/067-map-geo-bucketing/`.
+
 ---
 
 ### 7. Search View (`Search.vue`)

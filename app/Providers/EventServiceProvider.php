@@ -17,6 +17,7 @@ use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
+use App\Events\MapListingCacheFlushRequested;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
 use App\Events\Metrics\AlbumVisit;
@@ -41,6 +42,7 @@ use App\Events\UserGroupMembershipChanged;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
+use App\Listeners\ManagedCacheMapListingInvalidator;
 use App\Listeners\ManagedCachePhotoListingInvalidator;
 use App\Listeners\ManagedCacheUserListingInvalidator;
 use App\Listeners\MetricsListener;
@@ -182,5 +184,11 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoPersonsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoPersonsChanged');
 		Event::listen(PhotoRatingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoRatingChanged');
 		Event::listen(PhotoHighlightToggled::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoHighlightToggled');
+
+		// Managed-cache Map-listing invalidation (Feature 067)
+		Event::listen(PhotoSaved::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoMoved::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoMoved');
+		Event::listen(PhotoDeleted::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoDeleted');
+		Event::listen(MapListingCacheFlushRequested::class, ManagedCacheMapListingInvalidator::class . '@handleMapListingCacheFlushRequested');
 	}
 }

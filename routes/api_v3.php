@@ -61,3 +61,9 @@ Route::get('/Albums/{album_id}/rights', [Gallery\AlbumListing\AlbumChildrenContr
 Route::get('/Albums/{album_id}/Photos', [Gallery\AlbumListing\PhotoChildrenController::class, 'index']);
 Route::get('/Albums/{album_id}/Photos/buckets', [Gallery\AlbumListing\PhotoChildrenController::class, 'buckets']);
 Route::get('/Albums/{album_id}/Photos/details', [Gallery\AlbumListing\PhotoChildrenController::class, 'details']);
+
+// Map's bucket-tiered API (Feature 067), coexisting with the v2 `/Map` route
+// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);
+Route::get('/Map/Photos', [Gallery\MapListingController::class, 'photos']);
+Route::get('/Map/tracks', [Gallery\MapListingController::class, 'tracks']);
