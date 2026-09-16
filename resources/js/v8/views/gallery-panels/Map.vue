@@ -536,7 +536,6 @@ function photoClusterIconCreateFunction(cluster: L.MarkerCluster): L.DivIcon {
 
 function open() {
 	// Define how the photos on the map should look
-	// @ts-expect-error Leaflet.Photo is not typed
 	photoLayer.value = clusterFunc({ iconCreateFunction: photoClusterIconCreateFunction }).on("click", function (e: MapClickEvent) {
 		const photo: MapPhotoEntry = {
 			photoID: e.layer.photo.photoID,
