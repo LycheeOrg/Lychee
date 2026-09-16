@@ -42,7 +42,7 @@ class MapViewport
 	 * level of it), so `snapToGrid()`'s boundary math is unaffected. Zoom
 	 * 0 -> 5.625°; zoom 11 -> ~0.0027° (~300 m, block-sized rather than
 	 * the ~5 km town-sized cell the previous constant gave at that zoom);
-	 * zoom 18 -> ~0.0000021° (~2.4 m).
+	 * zoom 18 -> ~0.0000215° (~2.4 m).
 	 */
 	private const GRID_ZOOM_OFFSET = 6;
 
