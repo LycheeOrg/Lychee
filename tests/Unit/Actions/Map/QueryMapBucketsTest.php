@@ -61,15 +61,19 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
 		$resource = app(QueryMapBuckets::class)->do(null, $this->userMayUpload1, $viewport, false);
 
+		$cell = MapViewport::cellSizeForZoom(4);
+		$first_cell = ((int) floor(10.0 / $cell)) . ':' . ((int) floor(10.0 / $cell));
+		$second_cell = ((int) floor(40.0 / $cell)) . ':' . ((int) floor(40.0 / $cell));
+
 		$map = $this->toMap($resource);
-		self::assertArrayHasKey('0:0', $map);
-		self::assertArrayHasKey('1:1', $map);
-		self::assertSame(1, $map['0:0']['count']);
-		self::assertSame(1, $map['1:1']['count']);
-		self::assertEqualsWithDelta(10.0, $map['0:0']['lat'], 1e-6);
-		self::assertEqualsWithDelta(10.0, $map['0:0']['lng'], 1e-6);
-		self::assertEqualsWithDelta(40.0, $map['1:1']['lat'], 1e-6);
-		self::assertEqualsWithDelta(40.0, $map['1:1']['lng'], 1e-6);
+		self::assertArrayHasKey($first_cell, $map);
+		self::assertArrayHasKey($second_cell, $map);
+		self::assertSame(1, $map[$first_cell]['count']);
+		self::assertSame(1, $map[$second_cell]['count']);
+		self::assertEqualsWithDelta(10.0, $map[$first_cell]['lat'], 1e-6);
+		self::assertEqualsWithDelta(10.0, $map[$first_cell]['lng'], 1e-6);
+		self::assertEqualsWithDelta(40.0, $map[$second_cell]['lat'], 1e-6);
+		self::assertEqualsWithDelta(40.0, $map[$second_cell]['lng'], 1e-6);
 	}
 
 	public function testAntimeridianCrossingViewportReturnsPhotosOnBothSides(): void
@@ -164,7 +168,10 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
 		$resource = app(QueryMapBuckets::class)->do(null, $this->userMayUpload1, $viewport, false);
 
-		self::assertSame(['0:0'], $resource->bucket_ids);
+		$cell = MapViewport::cellSizeForZoom(4);
+		$expected_bucket_id = ((int) floor(10.0 / $cell)) . ':' . ((int) floor(10.0 / $cell));
+
+		self::assertSame([$expected_bucket_id], $resource->bucket_ids);
 		self::assertSame([1], $resource->counts, 'a photo linked into 2 albums must be counted once, not twice');
 	}
 
@@ -184,7 +191,10 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 		$viewport = new MapViewport(north: 45.0, south: 0.0, east: 45.0, west: 0.0, zoom: 4);
 		$resource = app(QueryMapBuckets::class)->do($root, $this->userMayUpload1, $viewport, true);
 
-		self::assertSame(['0:0'], $resource->bucket_ids);
+		$cell = MapViewport::cellSizeForZoom(4);
+		$expected_bucket_id = ((int) floor(10.0 / $cell)) . ':' . ((int) floor(10.0 / $cell));
+
+		self::assertSame([$expected_bucket_id], $resource->bucket_ids);
 		self::assertSame([1], $resource->counts, 'a photo linked into 2 in-scope sub-albums must be counted once, not twice');
 	}
 

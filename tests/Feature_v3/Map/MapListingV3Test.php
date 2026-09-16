@@ -13,6 +13,7 @@
 
 namespace Tests\Feature_v3\Map;
 
+use App\DTO\MapViewport;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoSaved;
 use App\Models\AccessPermission;
@@ -94,7 +95,10 @@ class MapListingV3Test extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams());
 		$this->assertOk($response);
-		$response->assertJson(['bucket_ids' => ['0:0'], 'counts' => [1]]);
+
+		$cell = MapViewport::cellSizeForZoom($this->defaultViewportParams()['zoom']);
+		$expected_bucket_id = ((int) floor(10.0 / $cell)) . ':' . ((int) floor(10.0 / $cell));
+		$response->assertJson(['bucket_ids' => [$expected_bucket_id], 'counts' => [1]]);
 	}
 
 	public function testRootScopePhotosReturnsLeafPhoto(): void

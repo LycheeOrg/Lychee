@@ -13,12 +13,14 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Response body of `GET /api/v3/Map/Photos` (FR-067-09). Struct-of-Arrays
- * per ADR-0009, populated **only** for grid cells whose own aggregate count
- * is `<=` {@see \App\Actions\Map\QueryMapPhotos::LEAF_THRESHOLD}. Purpose-built,
- * not a reuse of `PhotoResource` (FR-067-11) - no `tags`/`rating`/
- * `statistics`/`palette`/`size_variants` and no URL field at all: leaf-tier
- * marker imagery is fetched by the frontend directly from the existing v3
- * Asset endpoint, keyed on `ids[]`/`album_ids[]` (Q-067-12).
+ * per ADR-0009, populated **only** when the viewport's total photo count is
+ * `<=` {@see \App\Actions\Map\QueryMapPhotos::MAX_VIEWPORT_PHOTOS} (Q-067-13,
+ * amended - every distinct photo in the viewport, not a per-grid-cell
+ * subset); empty above that cap, in favor of `/Map/buckets`' aggregate count
+ * badges. Purpose-built, not a reuse of `PhotoResource` (FR-067-11) - no
+ * `tags`/`rating`/`statistics`/`palette`/`size_variants` and no URL field at
+ * all: marker imagery is fetched by the frontend directly from the existing
+ * v3 Asset endpoint, keyed on `ids[]`/`album_ids[]` (Q-067-12).
  */
 #[TypeScript()]
 class MapPhotoResource extends Data
