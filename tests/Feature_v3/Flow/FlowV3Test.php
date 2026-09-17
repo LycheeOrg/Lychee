@@ -118,6 +118,31 @@ class FlowV3Test extends BaseApiWithDataTest
 		self::assertNotNull($json['owner_names'][$index]);
 	}
 
+	public function testPublishedCreatedAtPreservesOriginalTimezoneNotAppDefault(): void
+	{
+		Configs::set('flow_public', true);
+		Configs::set('flow_strategy', 'opt-in');
+		Configs::set('date_format_flow_published', 'Y-m-d H:i:s');
+
+		// 19:00 in Tokyo (+09:00) is 10:00 UTC - clearly distinct from both the
+		// stored UTC instant and the app's own default timezone (UTC in
+		// tests), so a formatted output of "10:00:00" (or anything other than
+		// "19:00:00") would mean the original timezone was silently dropped.
+		$this->album4->published_at = Carbon::parse('2026-01-01T19:00:00+09:00');
+		$this->album4->save();
+
+		$response = $this->getJsonV3('Flow');
+		$this->assertOk($response);
+		$json = $response->json();
+
+		$index = array_search($this->album4->id, $json['ids'], true);
+		self::assertNotFalse($index);
+		self::assertSame('2026-01-01 19:00:00', $json['published_created_ats'][$index]);
+
+		Configs::set('flow_public', false);
+		Configs::set('flow_strategy', 'auto');
+	}
+
 	// ── Strategy toggle preserves data (Feature 068, FR-068-18, S-068-14) ──
 
 	public function testTogglingStrategyPreservesPublishedAtAndReordersCorrectly(): void

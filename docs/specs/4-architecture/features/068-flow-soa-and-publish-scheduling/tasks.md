@@ -323,3 +323,49 @@ _Last updated: 2026-09-17_
 - T-068-16's migration-testing approach is conditional on what precedent (if any) this repo has for
   testing migrations directly at implementation time — if none, code review of the `--pretend` output
   is the fallback verification.
+
+## Post-Implementation Review Fixes (2026-09-17)
+
+Three real bugs, found via targeted code review after the implementation pass above was already
+marked complete — none caught by the automated verification run at the time, since all three are
+correctness issues no `phpstan`/`vue-tsc`/existing-test-suite check happens to exercise:
+
+- **`FlowListController::buildFlowListResource()` dropped `published_at_orig_tz` entirely** — the
+  raw query selected `published_at` (UTC-normalized) but never its timezone companion, so
+  `strtotime()`/`date()` formatted every publish date in PHP's runtime default timezone instead of
+  the album's actually-recorded one (a publication near midnight in another timezone could show a
+  different date in v3 than in the byte-for-byte-supposed-to-match v2 resource). Fixed by widening
+  `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s `$full=true` column list with
+  `published_at_orig_tz` (safe, additive — mirrors that method's own existing precedent for
+  `is_nsfw`/`is_pinned`) and adding `FlowListController::resolvePublishedAt()`, which mirrors
+  `DateTimeWithTimezoneCast::get()`'s exact two-step behaviour: parse the raw value as UTC via
+  `Carbon::parse($raw, 'UTC')`, *then* `setTimezone()` — never parse the raw value directly as
+  `published_at_orig_tz`, since `UTCBasedTimes::asDateTime()` defines the stored value as UTC-relative
+  wall time regardless of what the original recording timezone was. New regression test
+  (`FlowV3Test::testPublishedCreatedAtPreservesOriginalTimezoneNotAppDefault`) — confirmed to
+  actually fail against the pre-fix code (`git stash` + re-run) before confirming it passes with the
+  fix, per `[[feedback_verify_before_declaring_fixed]]`.
+- **`AlbumCardV3.vue`'s top-images grid ignored `is_image_header_enabled`** — v2's own
+  `AlbumCard.vue` has the identical latent quirk (`v-if="header"` / plain `v-else` for `TopImages`,
+  with no `is_image_header_enabled` gate on the `v-else` branch at all), but the *setting's own name
+  and intent* — "no image header area at all" — means both the single-cover and the up-to-5-photo
+  grid variants should be gated by it, not just the single-cover one. v3 was fixed to do the
+  semantically-correct thing rather than faithfully reproduce v2's own bug (v2 itself is
+  intentionally untouched, per NFR-068-02 — this is a v3-only correctness improvement, not a v2
+  parity requirement). The loading skeleton was also gated on the same flag, since showing a
+  loading placeholder for an image area that will never render anything once loaded is misleading.
+- **`FlowState.ts` had a real race condition between `resetV3()` and in-flight requests** —
+  `loadV3()`/`requestCardPhotos()` both await a network call bracketed by an unconditional write to
+  store state; if `Flow.vue` unmounts (`resetV3()`, clearing `cardLoadStateV3`/`cardPhotosV3` to
+  empty maps) and remounts while an old request is still in flight, that stale request's own
+  duplicate-request guard becomes useless (it sees an empty map, not `"loading"`/`"loaded"`), so a
+  second, fresh request starts for the same album — whichever of the two resolves last wins,
+  potentially overwriting fresh data with stale success or failure data. Fixed with a
+  `generationV3` counter, bumped by `resetV3()`, captured before each await and re-checked before
+  every success/failure write in both actions — an obsolete generation discards its result entirely
+  instead of writing it.
+
+All three verified via `vendor/bin/phpstan analyse` / `vendor/bin/php-cs-fixer fix --dry-run --diff`
+(backend) and `npm run check` / `npx eslint` / `npx prettier --check` (frontend), all clean; the full
+`FlowV3Test`/`AlbumListV3Test`/`AlbumRootV3Test` suites regression-pass (54 tests) confirming the
+widened `joinBaseAlbumOwnerId()` column list introduces no downstream breakage.

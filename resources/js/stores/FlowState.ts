@@ -32,6 +32,18 @@ export const useFlowStateStore = defineStore("flow-store", {
 		// loading-state map driving the skeleton (FR-068-09).
 		cardPhotosV3: {} as Record<string, AdaptedPhotoTile[] | undefined>,
 		cardLoadStateV3: {} as Record<string, CardLoadState | undefined>,
+
+		// Bug fix: bumped by resetV3(). `loadV3()`/`requestCardPhotos()` both
+		// await a network request bracketed by an unconditional write to this
+		// store's state - if Flow.vue unmounts (resetV3()) and remounts while
+		// an old request is still in flight, that stale request's eventual
+		// success/failure would otherwise overwrite whatever a fresh request
+		// (started after the reset) already wrote, since resetV3()'s cleared
+		// maps make the old request's own duplicate-request guard useless
+		// (it sees an empty map, not "loading"/"loaded"). Both actions
+		// capture this value before awaiting and re-check it before writing
+		// their result, discarding it entirely if a reset happened meanwhile.
+		generationV3: 0,
 	}),
 	getters: {
 		isFlowSoaActive(): boolean {
@@ -40,7 +52,14 @@ export const useFlowStateStore = defineStore("flow-store", {
 	},
 	actions: {
 		async loadV3(): Promise<void> {
+			const generation = this.generationV3;
 			const response = await FlowService.getV3();
+			if (generation !== this.generationV3) {
+				// A reset happened while this request was in flight - discard
+				// it entirely rather than overwriting whatever a subsequent
+				// load (started after the reset) already wrote.
+				return;
+			}
 			this.flowV3 = adaptFlowTiles(response.data);
 			this.flowV3Loaded = true;
 		},
@@ -57,9 +76,20 @@ export const useFlowStateStore = defineStore("flow-store", {
 				return;
 			}
 
+			const generation = this.generationV3;
 			this.cardLoadStateV3[albumId] = "loading";
 			try {
 				const response = await PhotoChildrenV3Service.getRatios(albumId, { limit: FLOW_CAROUSEL_PHOTO_LIMIT });
+				if (generation !== this.generationV3) {
+					// Obsolete generation (resetV3() ran while this request was
+					// in flight) - the duplicate-request guard above can't
+					// catch this on its own, since resetV3() already cleared
+					// cardLoadStateV3 back to an empty map, making a fresh
+					// request for the same album id look unguarded. Discard
+					// this result rather than clobbering whatever the fresh
+					// request already wrote.
+					return;
+				}
 				const ratios = response.data;
 				const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, albumId));
 				// adaptPhotoTile() always sets next/previous_photo_id to null
@@ -74,12 +104,16 @@ export const useFlowStateStore = defineStore("flow-store", {
 				this.cardPhotosV3[albumId] = tiles;
 				this.cardLoadStateV3[albumId] = "loaded";
 			} catch {
+				if (generation !== this.generationV3) {
+					return;
+				}
 				this.cardPhotosV3[albumId] = [];
 				this.cardLoadStateV3[albumId] = "failed";
 			}
 		},
 
 		resetV3(): void {
+			this.generationV3++;
 			this.flowV3 = [];
 			this.flowV3Loaded = false;
 			this.cardPhotosV3 = {};

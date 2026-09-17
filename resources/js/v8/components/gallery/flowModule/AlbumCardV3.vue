@@ -7,7 +7,7 @@
 			'--top-images-height': props.config.image_header_height / 2 + 'rem',
 		}"
 	>
-		<AlbumCardSkeletonV3 v-if="loadState === 'loading' || loadState === 'idle'" />
+		<AlbumCardSkeletonV3 v-if="props.config.is_image_header_enabled && (loadState === 'loading' || loadState === 'idle')" />
 		<template v-else>
 			<div v-if="headerPhotoId !== undefined" class="w-full h-(--header-height) relative">
 				<Thumb :album-id="props.album.id" :photo-id="headerPhotoId" type="small" class="w-full h-full object-cover" @click="headerClicked" />
@@ -15,7 +15,10 @@
 					<UIcon name="lucide:eye-off" class="text-6xl text-white" />
 				</Blur>
 			</div>
-			<div v-else-if="photos.length > 0" class="w-full bg-neutral-800 flex h-(--header-height) gap-1 flex-wrap">
+			<div
+				v-else-if="props.config.is_image_header_enabled && photos.length > 0"
+				class="w-full bg-neutral-800 flex h-(--header-height) gap-1 flex-wrap"
+			>
 				<div
 					v-for="(photo, idx) in photos.slice(0, 5)"
 					:key="`top-${photo.id}`"

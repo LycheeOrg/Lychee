@@ -77,6 +77,7 @@ class FlowListController extends Controller
 			'v3_base_albums.owner_id',
 			'pc_base_album.created_at',
 			'pc_base_album.published_at',
+			'v3_base_albums.published_at_orig_tz',
 			'users.display_name',
 			'users.username',
 			'v3_stats.visit_count',
@@ -131,10 +132,9 @@ class FlowListController extends Controller
 			$num_children[] = (int) $row->num_children;
 			$min_max_texts[] = $this->resolveMinMaxText($row, $flow_min_max_enabled, $min_max_date_format, $flow_min_max_order);
 
-			$published_at_raw = $row->published_at ?? $row->created_at;
-			$timestamp = strtotime((string) $published_at_raw);
-			$published_created_ats[] = date($published_date_format, $timestamp);
-			$diff_published_created_ats[] = Carbon::createFromTimestamp($timestamp)->diffForHumans();
+			$published_at = $this->resolvePublishedAt($row);
+			$published_created_ats[] = $published_at->format($published_date_format);
+			$diff_published_created_ats[] = $published_at->diffForHumans();
 
 			$can_read_metrics = match ($metrics_access) {
 				MetricsAccess::PUBLIC => true,
@@ -188,6 +188,34 @@ class FlowListController extends Controller
 			fn (): string => Markdown::convert(trim($description))->getContent(),
 			ttl: $ttl,
 		);
+	}
+
+	/**
+	 * Resolves the publish/fallback instant in its correct original timezone,
+	 * mirroring `DateTimeWithTimezoneCast::get()`'s exact behaviour for a
+	 * fully-hydrated `$album->published_at` — required here since this
+	 * controller reads raw, non-Eloquent-hydrated rows (`toBase()`), which
+	 * bypass the cast entirely.
+	 *
+	 * `UTCBasedTimes::asDateTime()` defines a raw, timezone-less SQL datetime
+	 * string as relative to UTC, *not* `published_at_orig_tz` — the original
+	 * timezone is only ever applied as a second, explicit `setTimezone()`
+	 * step afterwards, exactly like the cast itself does. Parsing the raw
+	 * value directly as `published_at_orig_tz` would silently shift the
+	 * instant itself, not just its display timezone.
+	 *
+	 * `created_at` (the fallback for an opted-out album) has no orig-tz
+	 * companion of its own — `BaseAlbumImpl::$casts` casts it as a plain
+	 * `'datetime'`, which resolves to the application's default timezone,
+	 * not a per-row recorded one.
+	 */
+	private function resolvePublishedAt(object $row): Carbon
+	{
+		if ($row->published_at !== null) {
+			return Carbon::parse($row->published_at, 'UTC')->setTimezone((string) $row->published_at_orig_tz);
+		}
+
+		return Carbon::parse($row->created_at, 'UTC')->setTimezone(date_default_timezone_get());
 	}
 
 	/**
