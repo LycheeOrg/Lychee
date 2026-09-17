@@ -39,13 +39,26 @@ function buildMonthNames(locale: string, month: "long" | "short"): string[] {
 	return Array.from({ length: 12 }, (_, i) => formatter.format(new Date(Date.UTC(2023, i, 1))));
 }
 
-const isAppLanguageEnglish = getActiveLanguage().toLowerCase().startsWith("en");
-const localeForDateNames = isAppLanguageEnglish ? navigator.language : "en";
+// Computed lazily (on first call to `phpDateFormat`, not at module load) since
+// `getActiveLanguage()` instantiates laravel-vue-i18n's shared instance on first
+// touch: calling it here at module scope raced app-v8.ts's `app.use(i18nVue, ...)`
+// install whenever this module was pulled in before that ran, silently reverting
+// the active language to English mid-init.
+let dateNames: { day: string[]; dayShort: string[]; month: string[]; monthShort: string[] } | null = null;
 
-const DAY_NAMES = buildDayNames(localeForDateNames, "long");
-const DAY_NAMES_SHORT = buildDayNames(localeForDateNames, "short");
-const MONTH_NAMES = buildMonthNames(localeForDateNames, "long");
-const MONTH_NAMES_SHORT = buildMonthNames(localeForDateNames, "short");
+function getDateNames() {
+	if (dateNames === null) {
+		const isAppLanguageEnglish = getActiveLanguage().toLowerCase().startsWith("en");
+		const localeForDateNames = isAppLanguageEnglish ? navigator.language : "en";
+		dateNames = {
+			day: buildDayNames(localeForDateNames, "long"),
+			dayShort: buildDayNames(localeForDateNames, "short"),
+			month: buildMonthNames(localeForDateNames, "long"),
+			monthShort: buildMonthNames(localeForDateNames, "short"),
+		};
+	}
+	return dateNames;
+}
 
 function pad(value: number, length: number = 2): string {
 	return String(value).padStart(length, "0");
@@ -141,6 +154,8 @@ const LOCAL_TIMEZONE_IDENTIFIER = Intl.DateTimeFormat().resolvedOptions().timeZo
  * @param date   The date to format.
  */
 export function phpDateFormat(format: string, date: Date): string {
+	const { day: DAY_NAMES, dayShort: DAY_NAMES_SHORT, month: MONTH_NAMES, monthShort: MONTH_NAMES_SHORT } = getDateNames();
+
 	const year = date.getFullYear();
 	const month0 = date.getMonth();
 	const day = date.getDate();
