@@ -94,6 +94,7 @@ return [
     'error_load' => 'بارگذاری آلبوم‌ها ناموفق بود.',
     'error_load_ids' => 'بارگذاری شناسه‌های آلبوم ناموفق بود.',
     'error_patch' => 'به‌روزرسانی آلبوم‌ها ناموفق بود.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'انتقال مالکیت ناموفق بود.',
     'error_delete' => 'حذف آلبوم‌ها ناموفق بود.',
     'error_load_users' => 'بارگذاری کاربران ناموفق بود.',

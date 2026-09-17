@@ -94,6 +94,7 @@ return [
     'error_load' => 'فشل تحميل الألبومات.',
     'error_load_ids' => 'فشل تحميل معرفات الألبومات.',
     'error_patch' => 'فشل تحديث الألبومات.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'فشل نقل الملكية.',
     'error_delete' => 'فشل حذف الألبومات.',
     'error_load_users' => 'فشل تحميل المستخدمين.',

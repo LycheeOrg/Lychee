@@ -94,6 +94,7 @@ return [
     'error_load' => 'Albums laden is mislukt.',
     'error_load_ids' => 'Album-ID\'s laden is mislukt.',
     'error_patch' => 'Albums bijwerken is mislukt.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'Eigendom overdragen is mislukt.',
     'error_delete' => 'Albums verwijderen is mislukt.',
     'error_load_users' => 'Gebruikers laden is mislukt.',

@@ -99,6 +99,7 @@ return [
     'error_load' => 'Načtení alb se nezdařilo.',
     'error_load_ids' => 'Nepodařilo se načíst ID alb.',
     'error_patch' => 'Nepodařilo se aktualizovat alba.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'Nepodařilo se převést vlastnictví.',
     'error_delete' => 'Nepodařilo se smazat alba.',
     'error_load_users' => 'Nepodařilo se načíst uživatele.',

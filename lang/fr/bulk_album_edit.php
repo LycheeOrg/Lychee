@@ -94,6 +94,7 @@ return [
     'error_load' => 'Échec du chargement des albums.',
     'error_load_ids' => 'Échec du chargement des identifiants d’albums.',
     'error_patch' => 'Échec de la mise à jour des albums.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'Échec du transfert de propriété.',
     'error_delete' => 'Échec de la suppression des albums.',
     'error_load_users' => 'Échec du chargement des utilisateurs.',

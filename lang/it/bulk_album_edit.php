@@ -94,6 +94,7 @@ return [
     'error_load' => 'Failed to load albums.',
     'error_load_ids' => 'Failed to load album IDs.',
     'error_patch' => 'Failed to update albums.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'Failed to transfer ownership.',
     'error_delete' => 'Failed to delete albums.',
     'error_load_users' => 'Failed to load users.',

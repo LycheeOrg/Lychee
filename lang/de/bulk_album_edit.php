@@ -82,6 +82,7 @@ return [
     'error_load' => 'Alben konnten nicht geladen werden.',
     'error_load_ids' => 'Das Laden der Album-IDs ist fehlgeschlagen.',
     'error_patch' => 'Die Aktualisierung der Alben ist fehlgeschlagen.',
+    'error_missing_timezone' => 'Please select a timezone for the publish date.',
     'error_set_owner' => 'Die Eigentumsübertragung ist fehlgeschlagen.',
     'error_delete' => 'Das Löschen der Alben ist fehlgeschlagen.',
     'error_load_users' => 'Das Laden der Benutzer ist fehlgeschlagen.',
