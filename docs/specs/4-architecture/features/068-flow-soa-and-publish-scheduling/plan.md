@@ -13,11 +13,15 @@ _Last updated:_ 2026-09-17
 
 Flow reaches feature/performance parity with this app's other SoA-converted listings while gaining
 a genuinely new capability (a user-settable, timezone-aware publish date driving
-`flow_strategy=opt-in`). Success signals: (1) a v3 Flow page's response size no longer scales with
-album photo counts; (2) the Flow feed's live DOM node count stays bounded while scrolling; (3) Flow
-images respect viewport-proximity lazy-loading; (4) an album owner can set/clear a publish date from
-both the single-album and bulk-edit surfaces, visible only under `flow_strategy=opt-in`; (5) the v2
-Flow path and Landing Page's independent use of `published_at` are provably untouched throughout.
+`flow_strategy=opt-in`). Success signals: (1) the v3 Flow album-level listing loads in one
+unpaginated request whose size scales only with published-album count, never with any album's photo
+count — each album is its own "bucket equivalent" (Decision Card Q-068-04), not a paginated page;
+(2) the Flow feed's live DOM node count stays bounded while scrolling, driven purely by rendering
+windowing, not by re-fetching album metadata; (3) a card's photo preview loads lazily, only once
+scrolled into view, showing a loading skeleton until it resolves; (4) Flow images respect
+viewport-proximity lazy-loading; (5) an album owner can set/clear a publish date from both the
+single-album and bulk-edit surfaces, visible only under `flow_strategy=opt-in`; (6) the v2 Flow path
+and Landing Page's independent use of `published_at` are provably untouched throughout.
 
 **Blocking dependency (resolved):** Q-068-01 (reuse `published_at` vs. introduce a new column) was
 confirmed by the feature owner as Option A ("obviously A", 2026-09-17) — reuse and extend
@@ -83,17 +87,22 @@ directly in this file's increment entries, not a separate log.
 
 ## Increment Map
 
-1. **I1 – New v3 `Flow` SoA listing tier**
+1. **I1 – New v3 `Flow` SoA listing tier (unpaginated)**
    - _Goal:_ FR-068-01, FR-068-02.
    - _Preconditions:_ None (first code increment; independent of Q-068-01).
-   - _Steps:_ New `GET /api/v3/Flow` route; new `Gallery\FlowListController` (or extend
-     `FlowController` with a `v3Index()` method — decide during implementation which keeps
-     `FlowController` smaller); new `App\Http\Resources\V3\FlowListResource` reusing
-     `Flow::do()` unmodified, mapping the same album set into parallel arrays (mirrors
-     `AlbumListResource`'s coding style). Tests first: new `FlowV3Test` covering S-068-01.
+   - _Steps:_ New `GET /api/v3/Flow` route, **no `page`/cursor param** (Decision Card Q-068-04 — each
+     album is its own "bucket equivalent," loaded whole-scope in one request, mirroring
+     `GET /api/v3/Albums`'s unpaginated root/tag/person/pinned precedent, not v2's paginated fetch);
+     new `Gallery\FlowListController` (or extend `FlowController` with a `v3Index()` method — decide
+     during implementation which keeps `FlowController` smaller); new
+     `App\Http\Resources\V3\FlowListResource` reusing `Flow::do()` unmodified, mapping the same
+     album set into parallel arrays (mirrors `AlbumListResource`'s coding style). Tests first: new
+     `FlowV3Test` covering S-068-01 (asserting the response contains every album in scope in one
+     call, not a page of them).
    - _Commands:_ `php artisan test --filter=FlowV3Test`, `vendor/bin/phpstan analyse`,
      `vendor/bin/php-cs-fixer fix --dry-run --diff`.
-   - _Exit:_ `GET /api/v3/Flow` returns the same album set/order as v2, minus nested photos.
+   - _Exit:_ `GET /api/v3/Flow` returns the full album set/order matching v2 paged to exhaustion,
+     minus nested photos, in a single unpaginated response.
 
 2. **I2 – Capped photo preview (`ratios` tier `limit` param)**
    - _Goal:_ FR-068-03, FR-068-04, NFR-068-01.
@@ -109,14 +118,31 @@ directly in this file's increment entries, not a separate log.
 3. **I3 – Frontend v3 store + dynamically-measured virtualized rendering**
    - _Goal:_ FR-068-05, NFR-068-03.
    - _Preconditions:_ I1, I2.
-   - _Steps:_ New v3 store additions (DO-068-06) fetching `flowV3` (album-level arrays) and, per
-     card, `requestCardPhotos(albumId, limit)`; new virtualized card list using
-     `@tanstack/vue-virtual`'s `measureElement` mode (not `PhotoGridVirtual.vue`'s analytic mode);
-     card components (`AlbumCard.vue`, `CarouselImages.vue`, `TopImages.vue`, `HeaderImage.vue`)
-     adapted to consume the new per-card photo-preview fetch instead of a nested `photos` array.
+   - _Steps:_ New v3 store additions (DO-068-06): `flowV3` fetched once, whole-scope, on page load
+     (no pagination/cursor state to manage); a per-card loading-state map
+     (`"idle"|"loading"|"loaded"|"failed"`) and `requestCardPhotos(albumId, limit)`, triggered only
+     when a card enters the virtualizer's visible range ± overscan (never eagerly for every album);
+     new virtualized card list using `@tanstack/vue-virtual`'s `measureElement` mode (not
+     `PhotoGridVirtual.vue`'s analytic mode) — since every album is already loaded, the virtualizer
+     does rendering-window bookkeeping only, no "load more" trigger; card components (`AlbumCard.vue`,
+     `CarouselImages.vue`, `TopImages.vue`, `HeaderImage.vue`) adapted to consume the new per-card
+     photo-preview fetch instead of a nested `photos` array.
    - _Commands:_ `npm run check`.
-   - _Exit:_ Dev-console/manual verification: scrolling loads/unloads cards by proximity; DOM node
-     count stays bounded (flagged pending if no browser available this session).
+   - _Exit:_ Dev-console/manual verification: `/flow` fires exactly one `GET /api/v3/Flow` request on
+     load regardless of album count; scrolling loads/unloads *rendered* cards by proximity without
+     re-fetching album metadata; DOM node count stays bounded (flagged pending if no browser
+     available this session).
+
+3. **I3b – Per-card photo-preview loading skeleton**
+   - _Goal:_ FR-068-09, NFR-068-07.
+   - _Preconditions:_ I3.
+   - _Steps:_ Skeleton/placeholder markup for a card's carousel/header area while its loading-state is
+     `"loading"`; swap to real content on `"loaded"`; swap to an empty carousel (no infinite skeleton)
+     on `"failed"`. A card already `"loaded"` when scrolled back into view renders its real content
+     immediately, never re-shows the skeleton.
+   - _Commands:_ `npm run check`.
+   - _Exit:_ Manual verification of S-068-15/S-068-16 (flagged pending if no browser available this
+     session).
 
 4. **I4 – Lazy-loading + description caching (flag-independent quick wins)**
    - _Goal:_ FR-068-06, FR-068-07, NFR-068-04.
@@ -208,7 +234,7 @@ directly in this file's increment entries, not a separate log.
 | S-068-03 | I2 | Mutual-exclusion validation. |
 | S-068-04 | I2 | Whole-scope regression guard. |
 | S-068-05 | I3 | v2 fallback, flag off. |
-| S-068-06 | I3 | Bounded DOM, scroll up/down. |
+| S-068-06 | I1, I3 | One unpaginated fetch on load; bounded DOM while scrolling. |
 | S-068-07 | I4 | Lazy-loading. |
 | S-068-08 | I4 | Description-cache invalidation. |
 | S-068-09 | I7 | Field absent under `auto`. |
@@ -217,6 +243,8 @@ directly in this file's increment entries, not a separate log.
 | S-068-12 | I7 | Clear via `null`. |
 | S-068-13 | I6 | Landing Page regression guard. |
 | S-068-14 | I9 | Strategy-toggle data preservation. |
+| S-068-15 | I3b | Skeleton on first view, no re-show on scroll-back. |
+| S-068-16 | I3b | Failed fetch resolves to empty carousel, not a stuck skeleton. |
 
 ## Analysis Gate
 
@@ -233,7 +261,7 @@ full increment map (I1–I10) may proceed.
 - `npm run check` clean across all touched frontend files.
 - All new/changed scoped PHPUnit test filters pass; existing `PhotoRatiosV3Test` and Landing-Page-
   related suites regression-pass unmodified.
-- Manual browser verification of S-068-06, S-068-07, S-068-10, S-068-11 completed (or explicitly
+- Manual browser verification of S-068-06, S-068-07, S-068-10, S-068-11, S-068-15, S-068-16 completed (or explicitly
   flagged as outstanding, not silently assumed) before the feature is marked Complete in
   `roadmap.md`.
 - Documentation Deliverables (I10) applied.

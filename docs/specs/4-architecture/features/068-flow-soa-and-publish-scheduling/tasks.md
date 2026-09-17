@@ -13,14 +13,16 @@ _Last updated: 2026-09-17_
 
 ## Checklist
 
-### I1 – New v3 `Flow` SoA listing tier
+### I1 – New v3 `Flow` SoA listing tier (unpaginated)
 
-- [ ] T-068-01 – Write `FlowV3Test` covering S-068-01 (album set/order parity with v2) before the
-  new route/controller/resource exist (F-068-01, F-068-02, S-068-01).
-  _Intent:_ Failing test staged first.
+- [ ] T-068-01 – Write `FlowV3Test` covering S-068-01 (whole scope returned in one unpaginated
+  response, album set/order parity with v2 paged to exhaustion) before the new
+  route/controller/resource exist (F-068-01, F-068-02, S-068-01).
+  _Intent:_ Failing test staged first. Assert there is no `page`/cursor param accepted or needed.
   _Verification commands:_ `php artisan test --filter=FlowV3Test` (expect failure/missing route).
 
-- [ ] T-068-02 – Add `GET /api/v3/Flow` route and controller action, gated by
+- [ ] T-068-02 – Add `GET /api/v3/Flow` route and controller action (no `page`/cursor param — each
+  album is its own "bucket equivalent," loaded whole-scope, per Decision Card Q-068-04), gated by
   `is_struct_of_array_enabled` (F-068-01).
   _Verification commands:_ `vendor/bin/phpstan analyse`.
 
@@ -47,12 +49,15 @@ _Last updated: 2026-09-17_
 
 ### I3 – Frontend v3 store + dynamically-measured virtualized rendering
 
-- [ ] T-068-08 – New Flow v3 store additions: `flowV3` (album-level arrays), per-card
-  `requestCardPhotos(albumId, limit)` (DO-068-06, F-068-05).
+- [ ] T-068-08 – New Flow v3 store additions: `flowV3` (whole-scope album-level arrays, fetched once
+  on load, no pagination state), a per-card loading-state map (`"idle"|"loading"|"loaded"|"failed"`),
+  and `requestCardPhotos(albumId, limit)` (DO-068-06, F-068-05).
   _Verification commands:_ `npm run check`.
 
 - [ ] T-068-09 – New dynamically-measured (`measureElement`) virtualized card list, replacing
-  `Flow.vue`'s plain `v-for`/`TransitionGroup` when the SoA flag is on (F-068-05, NFR-068-03).
+  `Flow.vue`'s plain `v-for`/`TransitionGroup` when the SoA flag is on — rendering-window bookkeeping
+  only (every album is already loaded), triggering `requestCardPhotos()` only for cards entering the
+  visible range ± overscan (F-068-05, NFR-068-03).
   _Verification commands:_ `npm run check`.
 
 - [ ] T-068-10 – Adapt `AlbumCard.vue`/`CarouselImages.vue`/`TopImages.vue`/`HeaderImage.vue` to
@@ -60,8 +65,23 @@ _Last updated: 2026-09-17_
   `photos` array (F-068-04).
   _Verification commands:_ `npm run check`.
 
-- [ ] T-068-11 – Dev-console/manual verification: scrolling loads/unloads cards by proximity, DOM
-  node count stays bounded across many pages (S-068-06).
+- [ ] T-068-11 – Dev-console/manual verification: `/flow` fires exactly one `GET /api/v3/Flow`
+  request on load regardless of album count; scrolling renders/derenders cards by proximity without
+  re-fetching album metadata; DOM node count stays bounded (S-068-06).
+  _Verification commands:_ Manual, browser devtools (flag as pending if no dev environment available
+  this session).
+
+### I3b – Per-card photo-preview loading skeleton
+
+- [ ] T-068-11a – Add skeleton/placeholder markup for a card's carousel/header area while its
+  loading-state is `"loading"`; swap to real content on `"loaded"`; swap to an empty carousel (no
+  infinite skeleton) on `"failed"` (F-068-09, NFR-068-07, S-068-15, S-068-16).
+  _Verification commands:_ `npm run check`.
+
+- [ ] T-068-11b – Manual verification: a card scrolled into view for the first time shows the
+  skeleton then real content; a card already `"loaded"` and scrolled back into view shows real
+  content immediately, never re-shows the skeleton; a simulated failed fetch resolves to an empty
+  carousel, not a stuck skeleton (S-068-15, S-068-16).
   _Verification commands:_ Manual, browser devtools (flag as pending if no dev environment available
   this session).
 

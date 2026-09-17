@@ -70,14 +70,15 @@ owner confirmed Option A).
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-068-01 | New `GET /api/v3/Flow` returns a paginated Struct-of-Arrays tier for album-level fields (`ids`, `titles`, `descriptions`, `cover_ids`, `owner_names`, `is_nsfws`, `num_photos`, `num_children`, `min_max_texts`, `published_created_ats`, `diff_published_created_ats`, `statistics`), gated by `is_struct_of_array_enabled`, reusing `App\Actions\Albums\Flow::do()`'s existing query/policy/ordering logic unchanged. | A page of N albums returns exactly N parallel-array entries, same album set/order as the equivalent v2 `GET /api/Flow` call. | `is_struct_of_array_enabled` off → 404/route not hit, frontend uses v2. | Same auth/authorization failures as v2 `FlowRequest`. | None. | ADR-0009; this feature. |
-| FR-068-02 | New `App\Http\Resources\V3\FlowListResource` mirrors `AlbumListResource`'s (Feature 062) parallel-array coding style — manual per-field `foreach` accumulation, not Eloquent `map()`. | Field-for-field output matches `FlowItemResource`'s v2 data for the same album set (minus the nested `photos` collection). | N/A. | N/A. | None. | Precedent: `app/Http/Resources/V3/AlbumListResource.php`. |
-| FR-068-03 | `GetPhotoRatiosRequest`/`QueryPhotoRatios::do()` gain an optional `limit` param (whole-scope, non-bucket/non-photo-id callers only): caps the returned photo count to the first `limit` rows in the album's existing effective sort order. Omitted → unchanged existing (unbounded) behavior for every existing caller. | Flow's per-card carousel fetch requests e.g. `limit=12`; existing album-page callers (Feature 064/065) are unaffected when the param is absent. | `sometimes|integer|min:1`, `prohibits:bucket_ids,photo_ids` (mirrors Feature 066's mutual-exclusion pattern). | Invalid value → 422. | None. | Additive extension of Feature 064's `ratios` tier, precedent: Feature 066's `bucket_ids`/`photo_ids` additive params. |
-| FR-068-04 | Flow's per-card photo preview is fetched via the existing v3 `GET /api/v3/Albums/{album_id}/Photos?limit=N` (ratios tier, FR-068-03) + the existing v3 `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` endpoint for thumbnails — no nested `PhotoResource` objects embedded in the Flow response at all. | Card carousel/header images load via lazy `Asset` requests, not inline in the Flow payload. | N/A. | N/A. | None. | Reuses Feature 056/064 routes unmodified. |
-| FR-068-05 | The v8 Flow feed (`Flow.vue`, flag on) renders through `@tanstack/vue-virtual`'s DOM-measured (`measureElement`) mode, not the analytic/uniform-geometry mode `PhotoGridVirtual.vue` uses for photo grids — card height depends on variable text/photo content, not a WASM-packed layout. | Scrolling through many pages keeps live DOM nodes bounded to the visible range ± overscan; memory does not grow unboundedly with pages loaded. | N/A. | N/A. | None. | This feature; contrast with Feature 066's analytic layout (Decision Card Q-068-02). |
+| FR-068-01 | New `GET /api/v3/Flow` returns an **unpaginated**, flat Struct-of-Arrays listing for album-level fields (`ids`, `titles`, `descriptions`, `cover_ids`, `owner_names`, `is_nsfws`, `num_photos`, `num_children`, `min_max_texts`, `published_created_ats`, `diff_published_created_ats`, `statistics`), gated by `is_struct_of_array_enabled`, reusing `App\Actions\Albums\Flow::do()`'s existing query/policy/ordering logic unchanged — no `page`/cursor param, mirroring `GET /api/v3/Albums`'s (Feature 057/062) own unpaginated, `toBase()`-queried root/tag/person/pinned listings, **not** Timeline's aggregated-count `buckets` tier (each row here is already one whole album, not a reduced count). | The response returns every album in Flow's current scope/strategy in one call, same set/order as paging through the equivalent v2 `GET /api/Flow` to exhaustion. | `is_struct_of_array_enabled` off → 404/route not hit, frontend uses v2. | Same auth/authorization failures as v2 `FlowRequest`. | None. | ADR-0009; Decision Card Q-068-04; this feature. |
+| FR-068-02 | New `App\Http\Resources\V3\FlowListResource` mirrors `AlbumListResource`'s (Feature 057/062) parallel-array coding style — manual per-field `foreach` accumulation, not Eloquent `map()`, `toBase()` query, no Eloquent hydration. | Field-for-field output matches `FlowItemResource`'s v2 data for the same album set (minus the nested `photos` collection). | N/A. | N/A. | None. | Precedent: `app/Http/Resources/V3/AlbumListResource.php`. |
+| FR-068-03 | `GetPhotoRatiosRequest`/`QueryPhotoRatios::do()` gain an optional `limit` param (whole-scope, non-bucket/non-photo-id callers only): caps the returned photo count to the first `limit` rows in the album's existing effective sort order. Omitted → unchanged existing (unbounded) behavior for every existing caller. | Flow's per-card carousel fetch requests e.g. `limit=12`, fired only once that card scrolls into (or near) the viewport — never eagerly for every album returned by FR-068-01; existing album-page callers (Feature 064/065) are unaffected when the param is absent. | `sometimes|integer|min:1`, `prohibits:bucket_ids,photo_ids` (mirrors Feature 066's mutual-exclusion pattern). | Invalid value → 422. | None. | Additive extension of Feature 064's `ratios` tier, precedent: Feature 066's `bucket_ids`/`photo_ids` additive params. |
+| FR-068-04 | Flow's per-card photo preview is fetched via the existing v3 `GET /api/v3/Albums/{album_id}/Photos?limit=N` (ratios tier, FR-068-03) + the existing v3 `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` endpoint for thumbnails — no nested `PhotoResource` objects embedded in the Flow response at all. Each album from FR-068-01's flat listing is therefore this tier's own "bucket equivalent": one lazily-triggered photo fetch per album, keyed by album id, not by a date/title bucket id. | Card carousel/header images load via lazy `Asset` requests, not inline in the Flow payload. | N/A. | N/A. | None. | Reuses Feature 056/064 routes unmodified. |
+| FR-068-05 | The v8 Flow feed (`Flow.vue`, flag on) renders through `@tanstack/vue-virtual`'s DOM-measured (`measureElement`) mode, not the analytic/uniform-geometry mode `PhotoGridVirtual.vue` uses for photo grids — card height depends on variable text/photo content, not a WASM-packed layout. All album cards are already known (FR-068-01 loaded them in one shot); the virtualizer's job is purely rendering-window bookkeeping, not a data-fetch trigger. | Scrolling through the whole album list keeps live DOM nodes bounded to the visible range ± overscan; memory does not grow unboundedly with scroll distance. | N/A. | N/A. | None. | This feature; contrast with Feature 066's analytic layout (Decision Card Q-068-02). |
 | FR-068-06 | All Flow images (`HeaderImage.vue`, `TopImages.vue`, `CarouselImages.vue`) gain a native `loading="lazy"` attribute, applied unconditionally (independent of the SoA flag, applies to both v2 and v3 rendering paths). | Below-the-fold images are not fetched until scrolled near viewport, verifiable via browser devtools network tab. | N/A. | N/A. | None. | Quick, flag-independent win; NFR-068-04. |
 | FR-068-07 | `FlowItemResource`'s Markdown-converted `description` is cached per album (new `flowDescriptionTag($albumId)` managed-cache tag, reusing `ManagedCacheService`), invalidated whenever that album's `description` is saved. | Repeated Flow fetches touching the same album do not re-run `Markdown::convert()` for an unchanged description. | N/A. | N/A. | None. | Existing `ManagedCacheService`/`ManagedCachePhotoListingInvalidator`-style pattern. |
-| FR-068-08 | The v2 Flow routes, `FlowController`, `Flow::do()`, `FlowResource`/`FlowItemResource`/`InitResource`, and `Flow.vue`'s existing (non-virtualized) rendering path remain fully intact and reachable when `is_struct_of_array_enabled` is off. | Flag off → v2 behavior byte-identical to pre-feature. | N/A. | N/A. | None. | Mirrors Feature 065/066's own coexistence precedent. |
+| FR-068-08 | The v2 Flow routes, `FlowController`, `Flow::do()`, `FlowResource`/`FlowItemResource`/`InitResource`, and `Flow.vue`'s existing (non-virtualized, paginated) rendering path remain fully intact and reachable when `is_struct_of_array_enabled` is off. | Flag off → v2 behavior byte-identical to pre-feature. | N/A. | N/A. | None. | Mirrors Feature 065/066's own coexistence precedent. |
+| FR-068-09 | While a card's per-album photo fetch (FR-068-04) is in flight, that card renders a loading-skeleton/placeholder in its carousel/header area (fixed or estimated dimensions, no layout jump once real thumbnails arrive), instead of an empty or missing carousel. | Every card entering the viewport shows a skeleton immediately, replaced by real thumbnails once `ratios`/`Asset` resolve; a card whose album genuinely has zero photos (rare, per `Flow::do()`'s existing "exclude albums without photos" filter) never reaches this state. | N/A. | A failed photo fetch resolves to an empty carousel (no infinite skeleton), consistent with this app's existing error-handling posture for non-critical listing data. | None. | This feature; addresses the user's explicit ask for placeholders while photos load. |
 
 ### Part B — Publish-date scheduling for `flow_strategy=opt-in`
 
@@ -97,12 +98,13 @@ owner confirmed Option A).
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-068-01 | A v3 Flow page's response size for N albums must not scale with those albums' total photo counts — bounded by album-level fields plus each card's capped preview (`limit` param, FR-068-03). | Flow's v2 payload embeds every album's *entire* photo collection today — the single largest identified bottleneck. | Response-size comparison, v2 vs v3, for an album with a large photo count. | FR-068-01, FR-068-03. | Subagent research finding, this feature. |
+| NFR-068-01 | The v3 Flow listing's response size must not scale with any album's photo count — bounded by album-level fields only; each card's photo preview is a separate, capped (`limit`, FR-068-03), lazily-triggered request. Response size scaling with *total published-album count* (unpaginated, FR-068-01) is an accepted tradeoff, not a regression — the same one this codebase already accepts for root/tag/person/pinned album listings (Feature 057/062). | Flow's v2 payload embeds every album's *entire* photo collection today — the single largest identified bottleneck; album-count scaling is a pre-existing, accepted characteristic of every other unpaginated v3 album listing. | Response-size comparison, v2 vs v3, for an album with a large photo count. | FR-068-01, FR-068-03. | Subagent research finding; Decision Card Q-068-04. |
 | NFR-068-02 | Zero behavior change to the v2 Flow path when `is_struct_of_array_enabled` is off. | Coexistence requirement, mirrors every prior SoA-adoption feature. | Manual/regression check of `/flow` with the flag off; diff review of v2 files (expect zero changes). | Feature-flag machinery already shipped by Feature 065. | Mirrors Feature 066's own NFR precedent. |
 | NFR-068-03 | Live DOM node count for the Flow feed must stay bounded by the visible viewport ± overscan, not by total albums ever scrolled past in the session. | Unbounded DOM growth is the second largest identified bottleneck (no virtualization in `Flow.vue` today). | Manual browser check: DOM node count/memory usage after scrolling through many pages, flag on. | FR-068-05. | This feature. |
 | NFR-068-04 | Below-the-fold Flow images are not requested until scrolled near viewport. | No `loading="lazy"` exists anywhere in Flow's components today. | Manual browser devtools network-tab check. | FR-068-06. | This feature. |
 | NFR-068-05 | No Carbon usage introduced in any new backend code for this feature (migration, `BaseAlbumImpl` changes, request/DTO handling). | `[[feedback_avoid_carbon_server_side]]`. | Code review / grep for `Carbon`/`DateTime` imports in touched files (the existing `DateTimeWithTimezoneCast`/`UTCBasedTimes` machinery, which does use Carbon internally, is reused unmodified — this NFR applies to *new* code this feature adds). | — | Direct owner instruction (memory). |
 | NFR-068-06 | Zero behavior change to Landing Page's `resolveAutomaticFeaturedItems()`/`resolveLatestAlbumCover()` ordering, or to `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s existing join. | These call sites share `published_at` with Flow but are otherwise unrelated to this feature (Feature 054). | Existing `LandingPageResource`-related test suite regression-passes unmodified. | FR-068-12. | This feature. |
+| NFR-068-07 | A card's photo-preview loading skeleton must never persist indefinitely — it resolves to either real thumbnails or an empty carousel within one request round-trip, never left in a permanently-loading state on failure. | User-visible "stuck loading" states are a worse UX regression than the empty/eager-load behavior this feature replaces. | Manual check: simulate a failed/slow `ratios` request, confirm the skeleton clears. | FR-068-09. | This feature. |
 
 ## UI / Interaction Mock-ups
 
@@ -121,11 +123,16 @@ Bulk album edit (BulkEditFieldsDialog.vue), flow_strategy = opt-in
 │                        (row hidden entirely when auto)     │
 └───────────────────────────────────────────────────────────┘
 
-Flow feed (/flow), SoA flag on
+Flow feed (/flow), SoA flag on — all albums loaded in one unpaginated
+request (FR-068-01); only rendering + per-card photo fetch are windowed
 ┌─────────────────────────────────────────────┐
-│ [Album card A — measured height, on-screen] │  ← live DOM node
-│ [Album card B — measured height, on-screen] │  ← live DOM node
-│ ░░░ (off-screen cards: not rendered) ░░░     │  ← virtualized away
+│ [Album card A — real thumbnails, resolved]  │  ← live DOM node
+│ [Album card B — ▓▓▓▓ skeleton, loading] │  ← live DOM node, entered
+│                                               │     viewport just now,
+│                                               │     ratios/Asset in flight
+│ ░░░ (off-screen cards: not rendered,         │  ← virtualized away
+│      but already known — no re-fetch needed  │     (rendering-only,
+│      to "load more" on scroll-back-up) ░░░   │     no data gap)
 │  images: loading="lazy", carousel capped     │
 │  to first `limit` photos via v3 ratios tier  │
 └─────────────────────────────────────────────┘
@@ -135,14 +142,16 @@ Flow feed (/flow), SoA flag on
 
 | Scenario ID | Description / Expected outcome |
 |-------------|--------------------------------|
-| S-068-01 | `GET /api/v3/Flow` returns the same album set/order as `GET /api/Flow` for an identical viewer/config, minus nested photo objects. |
+| S-068-01 | `GET /api/v3/Flow` returns every album in scope in one unpaginated response, same set/order as paging `GET /api/Flow` to exhaustion, minus nested photo objects. |
 | S-068-02 | `GET /api/v3/Albums/{album_id}/Photos?limit=5` for a 50-photo album returns exactly 5 photo entries, in the album's existing effective sort order. |
 | S-068-03 | `GET /api/v3/Albums/{album_id}/Photos?limit=5&bucket_ids[]=x` → 422 (mutually exclusive, mirrors Feature 066's pattern). |
 | S-068-04 | `GET /api/v3/Albums/{album_id}/Photos` (whole-scope, no `limit`) returns byte-identical output to pre-feature — regression guard for Feature 064/065/066 callers. |
 | S-068-05 | Flag off → `Flow.vue` uses the v2 store/service/rendering path, unchanged from pre-feature. |
-| S-068-06 | Flag on → scrolling the Flow feed through many pages keeps DOM node count bounded; scrolling back up re-shows previously-loaded cards without re-fetching. |
+| S-068-06 | Flag on → loading `/flow` fires exactly one `GET /api/v3/Flow` request regardless of album count; scrolling never re-triggers it; DOM node count stays bounded to the visible range ± overscan throughout. |
 | S-068-07 | Flow images (header/carousel) do not fire network requests until scrolled near viewport, flag on or off. |
 | S-068-08 | Editing an album's description while `flow_strategy=opt-in` invalidates that album's cached Markdown conversion; the next Flow fetch reflects the new description. |
+| S-068-15 | A card entering the viewport for the first time renders a loading skeleton immediately, then real thumbnails once its `ratios`/`Asset` requests resolve; a card already scrolled past and back into view does not re-show the skeleton (its photos are already loaded/cached). |
+| S-068-16 | A card whose photo fetch fails (simulated) resolves to an empty carousel, not a permanently-stuck skeleton. |
 | S-068-09 | `flow_strategy=auto`: single-album edit form and bulk-edit dialog both omit the publish-date field entirely. |
 | S-068-10 | `flow_strategy=opt-in`: single-album edit sets a publish date + timezone; the album subsequently appears in Flow, ordered by that instant. |
 | S-068-11 | `flow_strategy=opt-in`: bulk-editing 3 albums with a publish date opts all 3 in at the same instant. |
@@ -161,10 +170,11 @@ Flow feed (/flow), SoA flag on
   `UpdateAlbumRequestTest`/`PatchBulkAlbumRequestTest` cases for `published_at` (S-068-09 through
   S-068-12); existing Landing-Page-related test coverage regression-run unmodified (S-068-13).
 - **UI (JS):** `npm run check` (vue-tsc + eslint) for all changed/new frontend files. Scroll/DOM-bound
-  virtualization, lazy-image-loading, and the two edit forms' date-field UX (S-068-06, S-068-07,
-  S-068-10, S-068-11) require manual browser verification — flagged pending if no dev environment is
-  available in the authoring/implementation session, per `[[feedback_no_mariadb_mysql_access]]` and
-  this repo's established precedent (Features 063/065/066/067).
+  virtualization, lazy-image-loading, per-card skeleton-to-real-content transitions, and the two edit
+  forms' date-field UX (S-068-06, S-068-07, S-068-10, S-068-11, S-068-15, S-068-16) require manual
+  browser verification — flagged pending if no dev environment is available in the
+  authoring/implementation session, per `[[feedback_no_mariadb_mysql_access]]` and this repo's
+  established precedent (Features 063/065/066/067).
 - **Docs/Contracts:** `docs/specs/3-reference/api-design.md` updated for the new `GET /api/v3/Flow`
   route and the `ratios` tier's new `limit` param.
 
@@ -179,14 +189,14 @@ Flow feed (/flow), SoA flag on
 | DO-068-03 | `App\Http\Requests\Album\HasPublishedAt` contract + `HasPublishedAtTrait`, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`. | Backend |
 | DO-068-04 | `BulkAlbumPatchData::$published_at: ?Carbon` (validated ISO-8601-with-offset string, coerced during `fromValidated()`). | Backend |
 | DO-068-05 | `App\Http\Resources\GalleryConfigs\InitConfig::$is_flow_opt_in_strategy: bool`. | Backend |
-| DO-068-06 | `FlowState.ts`-equivalent v3 store additions: `flowV3` (SoA arrays), per-card `requestCardPhotos(albumId, limit)`. | Frontend |
+| DO-068-06 | `FlowState.ts`-equivalent v3 store additions: `flowV3` (whole-scope SoA arrays, fetched once), per-card `requestCardPhotos(albumId, limit)` + per-card loading-state map (`"idle"\|"loading"\|"loaded"\|"failed"`) driving the skeleton (FR-068-09). | Frontend |
 | DO-068-07 | `AlbumProperties.vue`/`BulkEditFieldsDialog.vue` new publish-date field state (`is_published_at_modified`, date/timezone refs), mirroring `PhotoEdit.vue`'s existing `is_taken_at_modified` pattern. | Frontend |
 
 ### API Routes / Services
 
 | ID | Transport | Description | Notes |
 |----|-----------|--------------|-------|
-| API-068-01 | REST `GET /api/v3/Flow` | Paginated album-level SoA tier for the Flow feed. | New route; gated by `is_struct_of_array_enabled`. |
+| API-068-01 | REST `GET /api/v3/Flow` | Unpaginated, whole-scope album-level SoA listing for the Flow feed (one request, no `page` param). | New route; gated by `is_struct_of_array_enabled`; mirrors `GET /api/v3/Albums`'s unpaginated precedent. |
 | API-068-02 | REST `GET /api/v3/Albums/{album_id}/Photos?limit=N` | Capped whole-scope photo preview (existing `ratios` tier, `limit` param additive). | Extends Feature 064's route (API-064-02). |
 | API-068-03 | REST `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` | Lazy per-photo thumbnail fetch for Flow cards. | Reuses Feature 056's route unmodified. |
 | API-068-04 | REST `PATCH /Album` | Gains optional `published_at` field. | Extends existing v2 route, `UpdateAlbumRequest`. |
@@ -210,8 +220,9 @@ uncommitted scale fixtures.
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-068-01 | Flow feed, virtualized (flag on) | Scrolling loads/unloads cards by proximity to viewport; off-screen cards are not live DOM nodes. |
-| UI-068-02 | Flow feed, v2 fallback (flag off) | Unchanged `Flow.vue` behavior, all loaded cards remain live DOM nodes. |
+| UI-068-01 | Flow feed, virtualized (flag on) | All albums loaded in one request; scrolling renders/derenders cards by proximity to viewport (rendering-only), off-screen cards are not live DOM nodes. |
+| UI-068-02 | Flow feed, v2 fallback (flag off) | Unchanged `Flow.vue` behavior — paginated fetch, all loaded cards remain live DOM nodes. |
+| UI-068-07 | Card photo-preview loading | Card enters viewport → skeleton placeholder renders immediately, replaced by real thumbnails once `ratios`/`Asset` resolve (FR-068-09). |
 | UI-068-03 | Single-album edit, opt-in strategy | Publish-date checkbox + datetime + timezone row visible and editable. |
 | UI-068-04 | Single-album edit, auto strategy | Publish-date field entirely absent from the form. |
 | UI-068-05 | Bulk edit dialog, opt-in strategy | Publish-date row visible in the metadata section. |
@@ -289,6 +300,8 @@ ui_states:
     description: Bulk edit dialog, opt-in strategy
   - id: UI-068-06
     description: Bulk edit dialog, auto strategy
+  - id: UI-068-07
+    description: Card photo-preview loading skeleton
 ```
 
 ## Appendix
@@ -390,7 +403,41 @@ lazy-loading + virtualization) without a new API shape?**
   practice of doing safe wins before harder work first.
 - **Resolution date:** 2026-09-17 (decided directly for this spec, mirrors Q-066-02's precedent of a
   design choice resolved without owner round-trip).
-- **Spec impact:** FR-068-01 through FR-068-08, NFR-068-01 through NFR-068-04.
+- **Spec impact:** FR-068-01 through FR-068-09, NFR-068-01 through NFR-068-04, NFR-068-07. (Refined
+  by Q-068-04, below — the album-level tier's own shape was revisited after this decision.)
+
+**Q-068-04 — Should the v3 Flow album-level tier be paginated (mirroring v2's page-based fetch), or
+loaded whole-scope in one request (each album its own "bucket equivalent"), with per-card photo
+fetch + loading placeholders driven purely by scroll position?**
+
+- **Context:** Raised directly by the feature owner after Q-068-02/FR-068-01's first draft, which
+  carried over v2's `LengthAwarePaginator`/page-based fetch for the album-level tier out of habit.
+  The owner asked: could each album instead be treated like a bucket — load every published album's
+  metadata up front (cheap, scalar fields only), virtual-scroll over the resulting list, and fetch a
+  given card's photos only once it scrolls into view, showing a placeholder meanwhile?
+- **Options considered:** (A) Keep v2's page-based fetch for the album-level tier too (original
+  FR-068-01 draft) — an intersection-observer sentinel triggers `GET /api/v3/Flow?page=N`, exactly
+  like `Flow.vue` does today. (B) Load the entire album-level listing in one unpaginated request
+  (mirrors `GET /api/v3/Albums`'s existing root/tag/person/pinned precedent, Feature 057/062 — not
+  Timeline's aggregated-`buckets`-tier precedent, since here each row is already one whole album, not
+  a reduced count), with the virtualizer doing rendering-only windowing and each card's photo fetch
+  (already windowed per FR-068-03/04) gaining an explicit loading-skeleton state.
+- **Decision:** (B). It is a strictly better fit than the original (A) draft: `GET /api/v3/Albums`
+  already proves this codebase treats whole-album-listing tiers as unpaginated-by-default (only the
+  *photo* tiers inside an album get windowed, per Feature 064/066's own precedent) — carrying v2's
+  pagination into the v3 tier was an unexamined holdover, not a deliberate choice. (B) also simplifies
+  the frontend materially: no page cursor to track, no "load more" trigger for album metadata, no
+  re-fetch-on-scroll-back-up gap — only the per-card photo fetch and its skeleton state are
+  scroll-driven, exactly matching FR-068-03/04's design, which needed no change.
+- **Accepted tradeoff:** response size for the album-level tier now scales with total published-album
+  count, not a bounded page. This is the same tradeoff Feature 057/062 already accept for root/tag/
+  person/pinned listings (see NFR-068-01) — not a new risk class introduced here.
+- **Resolution date:** 2026-09-17 (feature owner: "Should it be paginated? Couldn't we make each album
+  a bucket equivalent? ... load all the published albums with virtual scroll and then when an album is
+  in view we load the photos? Using place holders while the photos are loading?").
+- **Spec impact:** FR-068-01 (rewritten, unpaginated), FR-068-05 (clarified: rendering-only
+  windowing), new FR-068-09 (loading-skeleton requirement), new NFR-068-07 (skeleton must resolve, not
+  hang), NFR-068-01 (clarified: album-count scaling accepted), new scenarios S-068-15/16.
 
 **Q-068-03 — One combined feature doc (Part A + Part B), or split into two features?**
 
