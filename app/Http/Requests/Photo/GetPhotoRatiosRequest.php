@@ -31,6 +31,13 @@ use Illuminate\Support\Facades\Gate;
  * `bucket_id`/`photo_ids[]` pair, minus `required_without`: unlike `details`,
  * omitting both here is meaningful (today's whole-scope behaviour,
  * NFR-066-03), not an error.
+ *
+ * Optional `limit` (Feature 068, FR-068-03): caps the returned photo count to
+ * the first `limit` rows in the album's existing effective sort order.
+ * Mutually exclusive with `bucket_ids[]`/`photo_ids[]` (a bucket/photo-id
+ * window is already a bound; capping it further has no defined meaning).
+ * Omitted, like `bucket_ids[]`/`photo_ids[]`, preserves today's whole-scope
+ * behaviour byte-for-byte.
  */
 class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 {
@@ -40,6 +47,7 @@ class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 	private ?array $bucket_ids = null;
 	/** @var string[]|null */
 	private ?array $photo_ids = null;
+	private ?int $limit = null;
 
 	/**
 	 * @return string[]|null
@@ -55,6 +63,11 @@ class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function photoIds(): ?array
 	{
 		return $this->photo_ids;
+	}
+
+	public function limit(): ?int
+	{
+		return $this->limit;
 	}
 
 	/**
@@ -87,6 +100,12 @@ class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 				'max:300',
 			],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::LIMIT_ATTRIBUTE => [
+				'sometimes',
+				'prohibits:' . RequestAttribute::BUCKET_IDS_ATTRIBUTE . ',' . RequestAttribute::PHOTO_IDS_ATTRIBUTE,
+				'integer',
+				'min:1',
+			],
 		];
 	}
 
@@ -118,5 +137,9 @@ class GetPhotoRatiosRequest extends BaseApiRequest implements HasAbstractAlbum
 		/** @var string[]|null $photo_ids */
 		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? null;
 		$this->photo_ids = $photo_ids;
+
+		/** @var int|null $limit */
+		$limit = $values[RequestAttribute::LIMIT_ATTRIBUTE] ?? null;
+		$this->limit = $limit;
 	}
 }

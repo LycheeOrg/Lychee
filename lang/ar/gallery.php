@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'تعيين وضع الجدول الزمني للألبوم',
             'photo_timeline' => 'تعيين وضع الجدول الزمني للصورة',
             'layout' => 'تعيين تخطيط الصورة',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'العلامات',
             'show_tags' => 'تعيين العلامات للعرض',
             'tags_required' => 'العلامات مطلوبة.',

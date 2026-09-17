@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Mode chronologique de l’album',
             'photo_timeline' => 'Mode chronologique des photos',
             'layout' => 'Disposition des photos',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Étiquettes',
             'show_tags' => 'Définir les étiquettes à afficher',
             'tags_required' => 'Les étiquettes sont obligatoires.',

@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Establecer el modo de línea de tiempo del álbum',
             'photo_timeline' => 'Establecer el modo de línea de tiempo de fotos',
             'layout' => 'Establecer el diseño de la foto',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Etiquetas',
             'show_tags' => 'Establecer etiquetas para mostrar',
             'tags_required' => 'Se requieren etiquetas.',

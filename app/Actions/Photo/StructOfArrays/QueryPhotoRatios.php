@@ -50,13 +50,18 @@ class QueryPhotoRatios
 	}
 
 	/**
-	 * @param string[]|null $bucket_ids mutually exclusive with `$photo_ids` -
+	 * @param string[]|null $bucket_ids mutually exclusive with `$photo_ids`/`$limit` -
 	 *                                  both `null` preserves today's
 	 *                                  whole-scope behaviour byte-for-byte
 	 *                                  (NFR-066-03)
-	 * @param string[]|null $photo_ids  mutually exclusive with `$bucket_ids`
+	 * @param string[]|null $photo_ids  mutually exclusive with `$bucket_ids`/`$limit`
+	 * @param int|null      $limit      mutually exclusive with `$bucket_ids`/`$photo_ids`
+	 *                                  (Feature 068, FR-068-03) - caps the
+	 *                                  returned rows to the first `$limit` in
+	 *                                  the already-applied effective sort
+	 *                                  order; `null` is a no-op
 	 */
-	public function do(AbstractAlbum $album, ?User $user, ?array $bucket_ids = null, ?array $photo_ids = null): PhotoRatioResource
+	public function do(AbstractAlbum $album, ?User $user, ?array $bucket_ids = null, ?array $photo_ids = null, ?int $limit = null): PhotoRatioResource
 	{
 		$sorting = $this->resolveEffectiveSorting($album);
 		$is_regular_album = $album instanceof Album;
@@ -133,6 +138,10 @@ class QueryPhotoRatios
 		// pre-sort by - `buildResource()` computes it live per row below
 		// instead, off the same effective-sort-ordered rows.
 		(new SortingDecorator($query))->orderPhotosBy($sorting->column, $sorting->order)->applyOrdering();
+
+		if ($limit !== null) {
+			$query->limit($limit);
+		}
 
 		$rows = $query->select($select)->selectRaw(implode(', ', $selects_raw))->toBase()->get();
 

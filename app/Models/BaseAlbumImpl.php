@@ -8,9 +8,11 @@
 
 namespace App\Models;
 
+use App\Casts\DateTimeWithTimezoneCast;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\DTO\EffectiveAccessPermission;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
@@ -101,6 +103,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
  * @property Carbon|null                      $published_at
+ * @property string|null                      $published_at_orig_tz
  * @property string                           $title
  * @property string                           $title_base
  * @property int                              $title_index
@@ -145,7 +148,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * @mixin \Eloquent
  */
-class BaseAlbumImpl extends Model implements HasRandomID
+class BaseAlbumImpl extends Model implements HasRandomID, HasUTCBasedTimes
 {
 	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<BaseAlbumImpl> */
 	use HasRandomIDAndLegacyTimeBasedID;
@@ -183,6 +186,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'id' => null,
 		'created_at' => null,
 		'updated_at' => null,
+		'published_at' => null,
+		'published_at_orig_tz' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
 		'title_base' => '',
 		'title_index' => 0,
@@ -206,7 +211,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'id' => RandomID::ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'published_at' => 'datetime',
+		'published_at' => DateTimeWithTimezoneCast::class,
+		'published_at_orig_tz' => 'string',
 		'slug' => 'string',
 		'is_nsfw' => 'boolean',
 		'is_pinned' => 'boolean',

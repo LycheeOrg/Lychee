@@ -64,6 +64,7 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 			'grants_full_photo_access' => ['sometimes', 'boolean'],
 			'grants_download' => ['sometimes', 'boolean'],
 			'grants_upload' => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			'published_at' => ['sometimes', 'nullable', 'date'],
 		];
 	}
 
@@ -81,6 +82,7 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 					'album_thumb_aspect_ratio', 'album_timeline', 'photo_timeline',
 					'is_nsfw', 'is_public', 'is_link_required',
 					'grants_full_photo_access', 'grants_download', 'grants_upload',
+					'published_at',
 				];
 
 				$has_any = false;
@@ -107,6 +109,7 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 			'album_thumb_aspect_ratio', 'album_timeline', 'photo_timeline',
 			'is_nsfw', 'is_public', 'is_link_required',
 			'grants_full_photo_access', 'grants_download', 'grants_upload',
+			'published_at',
 		];
 
 		$present = [];

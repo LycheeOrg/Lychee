@@ -66,6 +66,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Thumb Aspect Ratio',
     'field_album_timeline' => 'Album Timeline',
     'field_photo_timeline' => 'Photo Timeline',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'Sensitive',
     'field_is_public' => 'Public',
     'field_is_link_required' => 'Link Required',

@@ -66,6 +66,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Sideforhold for miniatyrbilde',
     'field_album_timeline' => 'Albumtidslinje',
     'field_photo_timeline' => 'Bildetidslinje',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'Følsomt',
     'field_is_public' => 'Offentlig',
     'field_is_link_required' => 'Lenke påkrevd',

@@ -43,6 +43,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
  * @property Carbon|null                      $published_at
+ * @property string|null                      $published_at_orig_tz
  * @property string|null                      $description
  * @property bool                             $is_nsfw
  * @property bool                             $is_pinned

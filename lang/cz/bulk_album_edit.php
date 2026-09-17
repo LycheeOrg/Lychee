@@ -69,6 +69,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Poměr stran miniatur',
     'field_album_timeline' => 'Časová osa alba',
     'field_photo_timeline' => 'Časová osa fotografie',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'Citlivý obsah',
     'field_is_public' => 'Veřejný',
     'field_is_link_required' => 'Vyžaduje odkaz',

@@ -66,6 +66,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'نسبت ابعاد بندانگشتی',
     'field_album_timeline' => 'جدول زمانی آلبوم',
     'field_photo_timeline' => 'جدول زمانی عکس',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'حساس',
     'field_is_public' => 'عمومی',
     'field_is_link_required' => 'نیازمند لینک',

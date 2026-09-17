@@ -16,6 +16,7 @@ namespace Tests\Feature_v2\BulkAlbumEdit;
 use App\Events\AlbumSaved;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -241,5 +242,38 @@ class PatchTest extends BaseApiWithDataTest
 		$this->album1->refresh();
 		$this->assertSame('only description changed', $this->album1->description);
 		$this->assertSame($originalCopyright, $this->album1->copyright, 'copyright should not have changed');
+	}
+
+	// ── published_at (Feature 068, FR-068-16, S-068-11) ──────────────
+
+	public function testPatchPublishedAtSetsSameInstantForMultipleAlbums(): void
+	{
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id, $this->album2->id],
+			'published_at' => '2026-09-17T10:00:00+02:00',
+		]);
+		$this->assertNoContent($response);
+
+		$expected = Carbon::parse('2026-09-17T10:00:00+02:00');
+		self::assertTrue($expected->eq($this->album1->fresh()->published_at));
+		self::assertTrue($expected->eq($this->album2->fresh()->published_at));
+	}
+
+	public function testPatchPublishedAtCanBeClearedWithNull(): void
+	{
+		$this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id],
+			'published_at' => '2026-09-17T10:00:00+02:00',
+		]);
+
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id],
+			'published_at' => null,
+		]);
+		$this->assertNoContent($response);
+
+		$fresh = $this->album1->fresh();
+		self::assertNull($fresh->published_at);
+		self::assertNull($fresh->published_at_orig_tz);
 	}
 }

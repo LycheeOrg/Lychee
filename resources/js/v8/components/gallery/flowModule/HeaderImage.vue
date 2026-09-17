@@ -5,16 +5,23 @@
 				:src="header.medium?.url ?? header.small?.url ?? '/img/no_images.svg'"
 				:alt="props.title"
 				class="w-full object-cover"
+				loading="lazy"
 				@click="emits('clicked')"
 			/>
 		</template>
 		<template v-else-if="image_header_cover === 'fit'">
-			<img alt="image background" class="absolute w-full h-full object-cover object-center" :src="header.thumb?.url ?? '/img/no_images.svg'" />
+			<img
+				alt="image background"
+				class="absolute w-full h-full object-cover object-center"
+				:src="header.thumb?.url ?? '/img/no_images.svg'"
+				loading="lazy"
+			/>
 			<div class="w-full h-full bg-repeat absolute bg-noise backdrop-blur-3xl blur-3xl"></div>
 			<img
 				:src="header.medium?.url ?? header.small?.url ?? '/img/no_images.svg'"
 				:alt="props.title"
 				class="w-full h-(--header-height) absolute object-contain"
+				loading="lazy"
 				@click="emits('clicked')"
 			/>
 		</template>
@@ -23,6 +30,7 @@
 			:src="header.medium?.url ?? header.small?.url ?? '/img/no_images.svg'"
 			:alt="props.title"
 			class="w-full h-(--header-height) object-cover"
+			loading="lazy"
 			@click="emits('clicked')"
 		/>
 		<Blur v-if="props.isNsfw">

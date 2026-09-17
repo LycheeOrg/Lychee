@@ -91,6 +91,33 @@
 					</USelectMenu>
 				</UFormField>
 			</div>
+			<UFormField v-if="is_model_album && is_flow_opt_in_strategy" :label="$t('gallery.album.properties.flow_publish_date')">
+				<div class="flex items-center gap-2">
+					<UTooltip :text="$t('gallery.album.properties.flow_publish_date_toggle')">
+						<UCheckbox v-model="is_published_at_enabled" />
+					</UTooltip>
+					<input
+						id="publishedAtDate"
+						v-model="publishedAtDateLocal"
+						type="datetime-local"
+						step="1"
+						:disabled="!is_published_at_enabled"
+						:class="{
+							'border-0 p-0 border-b hover:border-b-primary-400 focus:border-b-primary-400 bg-transparent': true,
+							'border-dashed': !is_published_at_enabled,
+						}"
+					/>
+					<USelectMenu
+						v-model="publishedAtTzOption"
+						:items="timeZoneOptions"
+						label-key="label"
+						:disabled="!is_published_at_enabled"
+						class="w-72"
+					>
+						<template #item-label="{ item }">{{ item.label }}</template>
+					</USelectMenu>
+				</div>
+			</UFormField>
 			<div v-if="is_expert_mode" class="flex flex-wrap gap-4">
 				<UFormField v-if="is_model_album" :label="$t('gallery.album.properties.album_timeline')">
 					<USelectMenu v-model="albumTimeline" :items="albumTimelineOptions" label-key="label" class="w-72">
@@ -150,6 +177,7 @@ import {
 	SelectBuilders,
 	timelinePhotoGranularityOptions,
 	timelineAlbumGranularityOptions,
+	timeZoneOptions,
 } from "@/config/constants";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
@@ -173,7 +201,7 @@ const props = defineProps<{
 
 const LycheeState = useLycheeStateStore();
 const albumStore = useAlbumStore();
-const { is_se_enabled, is_se_preview_enabled } = storeToRefs(LycheeState);
+const { is_se_enabled, is_se_preview_enabled, is_flow_opt_in_strategy } = storeToRefs(LycheeState);
 
 const photosStore = usePhotosStore();
 
@@ -247,6 +275,46 @@ const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(unde
 const header_id = ref<HeaderOption | undefined>(undefined);
 const cover_id = ref<HeaderOption | null | undefined>(undefined);
 const is_and = ref<boolean>(false);
+
+// Feature 068 (FR-068-15): Flow publish date, mirrors PhotoEdit.vue's
+// taken_at checkbox + datetime-local + timezone-select pattern exactly.
+const is_published_at_enabled = ref<boolean>(false);
+const publishedAtDate = ref<Date | undefined>(undefined);
+const publishedAtTz = ref<string | undefined>(undefined);
+const publishedAtTzOption = computed<SelectOption<string> | undefined>({
+	get: () => timeZoneOptions.find((o) => o.value === publishedAtTz.value),
+	set: (v) => {
+		publishedAtTz.value = v?.value;
+	},
+});
+// Native <input type="datetime-local"> uses "YYYY-MM-DDTHH:mm:ss" in local time, with no timezone.
+function dateToLocalInputValue(d: Date | undefined): string {
+	if (d === undefined) return "";
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+const publishedAtDateLocal = computed<string>({
+	get: () => dateToLocalInputValue(publishedAtDate.value),
+	set: (v) => {
+		publishedAtDate.value = v ? new Date(v) : undefined;
+	},
+});
+function browserUtcOffset(): string {
+	const minutes = -new Date().getTimezoneOffset();
+	const sign = minutes >= 0 ? "+" : "-";
+	const abs = Math.abs(minutes);
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+// Default to "now" (in the browser's own timezone) the first time the
+// checkbox is enabled with no existing date - there is no EXIF-like source
+// to pre-fill from, unlike PhotoEdit.vue's taken_at.
+watch(is_published_at_enabled, (enabled) => {
+	if (enabled && publishedAtDate.value === undefined) {
+		publishedAtDate.value = new Date();
+		publishedAtTz.value = browserUtcOffset();
+	}
+});
 
 const photoTimelineOptions = computed(() => {
 	if (is_se_enabled.value) {
@@ -345,6 +413,17 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	tags.value = editable.tags;
 	is_and.value = editable.is_and ?? false;
 
+	if (editable.published_at === null || editable.published_at === undefined) {
+		is_published_at_enabled.value = false;
+		publishedAtDate.value = undefined;
+		publishedAtTz.value = undefined;
+	} else {
+		is_published_at_enabled.value = true;
+		const raw = editable.published_at;
+		publishedAtDate.value = new Date(raw.slice(0, 19));
+		publishedAtTz.value = raw.slice(19);
+	}
+
 	if (editable.persons && editable.persons.length > 0) {
 		is_person_album.value = true;
 		selectedPersons.value = editable.persons as App.Http.Resources.Models.PersonResource[];
@@ -399,6 +478,10 @@ function saveAlbum() {
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
 		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
+		published_at:
+			is_published_at_enabled.value && publishedAtDate.value !== undefined
+				? dateToLocalInputValue(publishedAtDate.value) + (publishedAtTz.value ?? "")
+				: null,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
@@ -496,6 +579,9 @@ watch(
 		tags,
 		is_and,
 		selectedPersons,
+		is_published_at_enabled,
+		publishedAtDate,
+		publishedAtTz,
 	],
 	() => {
 		if (isLoading.value) {

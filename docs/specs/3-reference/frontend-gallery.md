@@ -100,14 +100,25 @@ const photos = computed(() => favourites.photos ?? [])
 **Purpose**: Instagram-style infinite scroll feed showing photos from recent albums.
 
 **Key Features:**
-- **Infinite Scroll**: Lazy-loaded content as user scrolls
+- **Infinite Scroll**: Lazy-loaded content as user scrolls (v2 path, flag off)
 - **Card-Based Layout**: Albums displayed as cards with hero images
 - **Lightbox Integration**: Full-screen photo viewer with navigation
 - **Touch Optimized**: Gesture support for mobile devices
-- **Performance Optimized**: Intersection observer for efficient loading
+- **Performance Optimized**: Intersection observer for efficient loading (v2), dynamically-measured
+  virtualization (v3, see below)
 - **Sensitive Handling**: Blur/consent system for sensitive content
 
 **Navigation:** `/flow`
+
+**v3 path (Feature 068, `is_struct_of_array_enabled` flag):** `Flow.vue` branches its entire
+template, not just the inner list, between the v2 path above and a v3 path that loads every album
+in the caller's current Flow scope in one unpaginated request (`FlowState.ts`'s `loadV3()`) and
+renders it through a dynamically-measured (`measureElement`) `useWindowVirtualizer` list — no
+"load more," no scroll-triggered fetch for album metadata. Each card (`AlbumCardV3.vue`, forked from
+`AlbumCard.vue` since the v2 card family expects pre-resolved photo URLs the SoA payload doesn't
+carry) fetches its own capped photo preview the moment it mounts, via the existing per-album `ratios`
+tier's new `limit` param, rendering thumbnails through the shared `<Thumb>` Asset-endpoint wrapper
+and showing a loading skeleton (`AlbumCardSkeletonV3.vue`) meanwhile.
 
 **Technical Details:**
 ```typescript
@@ -332,7 +343,16 @@ The album module handles all album-related UI components and interactions.
 
 ### Flow Module (`flowModule/`)
 
-The flow module implements the Instagram-style infinite scroll interface.
+The flow module implements the Instagram-style infinite scroll interface. `AlbumCard.vue`/
+`CarouselImages.vue`/`TopImages.vue`/`HeaderImage.vue` below are exclusively the v2 (flag-off)
+rendering path; `Blur.vue`/`LigtBox.vue` are shared by both paths unmodified.
+
+**`AlbumCardV3.vue`** (Feature 068, v3/SoA path)
+- Forked from `AlbumCard.vue`, not a shared edit — reads an `AdaptedFlowTile` (album-level SoA
+  fields, no nested photos) instead of a full `FlowItemResource`
+- Renders its own capped photo preview (fetched on mount via `FlowState.requestCardPhotos()`)
+  through the shared `<Thumb>` Asset-endpoint wrapper, not pre-resolved `size_variants.*.url` strings
+- Shows `AlbumCardSkeletonV3.vue` while that fetch is in flight
 
 **`AlbumCard.vue`**
 - Card-style album display for flow view
@@ -524,6 +544,7 @@ All gallery modes support comprehensive keyboard shortcuts:
 - Components use `import()` for code splitting
 - Images loaded progressively with intersection observer
 - Virtual scrolling for large photo sets — `PhotoGridVirtual.vue` (`albumModule/Virtualized/`) windows rendering via `@tanstack/vue-virtual`, analytic (non-DOM-measured) WASM layout, behind the `is_struct_of_array_enabled` flag. Feature 065 wired the per-album photo grid this way; Feature 066 extended the same component (`source: "album"|"timeline"` prop) to the global Timeline view (`Timeline.vue`), adding incremental, bucket-windowed data fetching (`TimelineState.ts`'s v3 fields/actions) and layout-mode-correct placeholder sizing for not-yet-loaded date buckets, since a whole library — unlike one album — can't be fetched at once. See `docs/specs/4-architecture/features/066-timeline-struct-of-arrays/` and `docs/specs/4-architecture/features/065-photo-listing-struct-of-arrays-adoption/`.
+- Virtual scrolling for the Flow feed — Feature 068's v3 path uses a **separate, dynamically-measured** virtualizer (`Flow.vue`, `@tanstack/vue-virtual`'s `useWindowVirtualizer` + `measureElement`), not `PhotoGridVirtual.vue`'s analytic/WASM mode, since a Flow card's height depends on variable text/photo content rather than a packed photo layout — the first DOM-measured (`ResizeObserver`-driven) virtualizer in this codebase's v8 stack. All albums in scope are loaded in one unpaginated request up front (`FlowState.ts`'s `loadV3()`); only DOM rendering and each card's own photo-preview fetch are windowed. See `docs/specs/4-architecture/features/068-flow-soa-and-publish-scheduling/`.
 
 ### Caching Strategy
 - Thumbnail caching at multiple resolutions

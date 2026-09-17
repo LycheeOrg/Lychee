@@ -66,6 +66,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Ratio d’aspect des vignettes',
     'field_album_timeline' => 'Chronologie de l’album',
     'field_photo_timeline' => 'Chronologie des photos',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'Sensible',
     'field_is_public' => 'Public',
     'field_is_link_required' => 'Lien requis',

@@ -57,6 +57,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Seitenverhältnis des Vorschaubilds',
     'field_album_timeline' => 'Album-Chronologie',
     'field_photo_timeline' => 'Foto-Zeitleiste',
+    'field_published_at' => 'Flow Publish Date',
     'field_is_nsfw' => 'Empfindlich',
     'field_is_public' => 'Öffentlich',
     'field_is_link_required' => 'Link erforderlich',

@@ -1,7 +1,7 @@
 # Feature Plan 068 – Flow Struct-of-Arrays & Publish-Date Scheduling
 
 _Linked specification:_ `docs/specs/4-architecture/features/068-flow-soa-and-publish-scheduling/spec.md`
-_Status:_ Draft
+_Status:_ Implemented (28 of 33 tasks green; T-068-11b manual browser check outstanding)
 _Last updated:_ 2026-09-17
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs
@@ -205,8 +205,10 @@ Record any drift found and its fix directly in this file's increment entries, no
    - _Goal:_ FR-068-13, FR-068-14, FR-068-15.
    - _Preconditions:_ I5.
    - _Steps:_ `HasPublishedAt` contract + trait, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`,
-     `UpdateAlbumRequest` rule (`present|nullable|date` — matches this endpoint's own majority
-     convention, not `sometimes`) + `processValidatedValues()` wiring;
+     `UpdateAlbumRequest` rule (`sometimes|nullable|date` — confirmed by regression-testing against
+     the real `AlbumUpdateTest`/`AlbumUpdateFocusTest` suites, per Decision Card Q-068-08; `present`
+     breaks every existing caller that doesn't yet send this brand-new key) + `processValidatedValues()`
+     wiring;
      `InitConfig::$is_flow_opt_in_strategy` + `LycheeState.ts` field; `AlbumProperties.vue`'s new
      publish-date field (checkbox + `datetime-local` + timezone select), mirroring `PhotoEdit.vue`'s
      `taken_at` pattern; `UpdateAbumData`/`AlbumService.updateAlbum()` extended with `published_at`.
