@@ -51,17 +51,21 @@ export const useFlowStateStore = defineStore("flow-store", {
 		},
 	},
 	actions: {
-		async loadV3(): Promise<void> {
+		async loadV3(): Promise<"loaded" | "obsolete"> {
 			const generation = this.generationV3;
 			const response = await FlowService.getV3();
 			if (generation !== this.generationV3) {
 				// A reset happened while this request was in flight - discard
 				// it entirely rather than overwriting whatever a subsequent
-				// load (started after the reset) already wrote.
-				return;
+				// load (started after the reset) already wrote. Report this
+				// distinctly from a genuinely empty result so the caller
+				// (Flow.vue) doesn't mistake an obsolete/cancelled load for
+				// "no albums" and redirect away.
+				return "obsolete";
 			}
 			this.flowV3 = adaptFlowTiles(response.data);
 			this.flowV3Loaded = true;
+			return "loaded";
 		},
 
 		/**

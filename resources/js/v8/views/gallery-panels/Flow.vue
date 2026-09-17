@@ -162,8 +162,15 @@ function setSelectionV3(albumId: string, photoId: string) {
 	// The clicked photo (e.g. an explicit cover) may fall outside the
 	// card's already-loaded, capped preview - fetch it directly rather
 	// than silently opening nothing or the wrong photo.
+	const generation = flowState.generationV3;
 	PhotoChildrenV3Service.getRatios(albumId, { photoIds: [photoId] })
 		.then((response) => {
+			// resetV3() (e.g. this component unmounting) may have run while
+			// this request was in flight - discard a now-obsolete response
+			// rather than routing to/selecting a photo from a torn-down view.
+			if (generation !== flowState.generationV3) {
+				return;
+			}
 			const ratios = response.data;
 			if (ratios.ids.length === 0) {
 				return;
@@ -171,6 +178,9 @@ function setSelectionV3(albumId: string, photoId: string) {
 			openSelectionV3(albumId, adaptPhotoTile(0, ratios, albumId));
 		})
 		.catch((e) => {
+			if (generation !== flowState.generationV3) {
+				return;
+			}
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		});
 }
@@ -211,8 +221,8 @@ function loadV3() {
 	isLoading.value = true;
 	return flowState
 		.loadV3()
-		.then(() => {
-			if (flowState.flowV3.length === 0) {
+		.then((status) => {
+			if (status === "loaded" && flowState.flowV3.length === 0) {
 				router.push({ name: "login" });
 			}
 		})

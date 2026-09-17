@@ -364,7 +364,9 @@ function doEditFields(): void {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_missing_timezone"), life: 3000 });
 			return;
 		}
-		payload[f.key] = date + tz;
+		// A `datetime-local` input value omits seconds when they are zero
+		// (`YYYY-MM-DDTHH:mm`), but the backend requires `Y-m-d\TH:i:sP`.
+		payload[f.key] = `${date.length === 16 ? `${date}:00` : date}${tz}`;
 	}
 
 	BulkAlbumEditService.patchAlbums(payload as Parameters<typeof BulkAlbumEditService.patchAlbums>[0])
