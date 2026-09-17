@@ -196,7 +196,29 @@ function openSelectionV3(albumId: string, photo: AdaptedPhotoTile) {
 	}
 
 	selectedAlbumIdV3.value = albumId;
+	selectPhotoV3(albumId, photo);
+}
+
+/**
+ * Sets the lightbox's current v3 photo and prefetches tier-3 `details` (G5)
+ * for it and its immediate neighbors - a `cardPhotosV3` tile is only ever
+ * `ratios`-derived (size_variants/description/EXIF/etc. all placeholders)
+ * until this resolves, mutating `photo` (and any found neighbors) in place,
+ * which `photoStore.photo` already references. Called on every v3 photo
+ * change (`openSelectionV3()`, `next()`, `previous()`), not just the
+ * initial open - otherwise only the first photo's immediate neighbors ever
+ * get resolved, and hopping further (e.g. next twice) lands on a tile whose
+ * placeholders were never filled in. Mirrors `PhotoState.ts`'s own `load()`,
+ * which re-runs this same neighbor prefetch on every `photoId` change for
+ * the same reason.
+ */
+function selectPhotoV3(albumId: string, photo: AdaptedPhotoTile) {
 	photoStore.photo = photo;
+
+	const cardPhotos = flowState.cardPhotosV3[albumId];
+	const neighborIds = [photo.previous_photo_id, photo.next_photo_id].filter((id): id is string => id !== null && id !== undefined);
+	const neighborTiles = cardPhotos?.filter((p) => neighborIds.includes(p.id)) ?? [];
+	void flowState.loadPhotoDetailsV3(albumId, [photo, ...neighborTiles]);
 }
 
 function load() {
@@ -326,8 +348,12 @@ function next() {
 	}
 
 	if (flowState.isFlowSoaActive) {
-		const photos = selectedAlbumIdV3.value !== undefined ? flowState.cardPhotosV3[selectedAlbumIdV3.value] : undefined;
-		photoStore.photo = photos?.find((photo) => photo.id === photoStore.photo?.next_photo_id);
+		const albumId = selectedAlbumIdV3.value;
+		const photo =
+			albumId !== undefined ? flowState.cardPhotosV3[albumId]?.find((photo) => photo.id === photoStore.photo?.next_photo_id) : undefined;
+		if (albumId !== undefined && photo !== undefined) {
+			selectPhotoV3(albumId, photo);
+		}
 		return;
 	}
 
@@ -340,8 +366,12 @@ function previous() {
 	}
 
 	if (flowState.isFlowSoaActive) {
-		const photos = selectedAlbumIdV3.value !== undefined ? flowState.cardPhotosV3[selectedAlbumIdV3.value] : undefined;
-		photoStore.photo = photos?.find((photo) => photo.id === photoStore.photo?.previous_photo_id);
+		const albumId = selectedAlbumIdV3.value;
+		const photo =
+			albumId !== undefined ? flowState.cardPhotosV3[albumId]?.find((photo) => photo.id === photoStore.photo?.previous_photo_id) : undefined;
+		if (albumId !== undefined && photo !== undefined) {
+			selectPhotoV3(albumId, photo);
+		}
 		return;
 	}
 

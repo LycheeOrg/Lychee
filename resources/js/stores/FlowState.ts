@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import FlowService from "@/services/flow-service";
 import PhotoChildrenV3Service from "@/services/photo-children-v3-service";
 import { adaptFlowTiles, type AdaptedFlowTile } from "@/v8/utils/adaptFlowTile";
-import { adaptPhotoTile, type AdaptedPhotoTile } from "@/v8/utils/adaptPhotoTile";
+import { adaptPhotoTile, mergePhotoDetail, type AdaptedPhotoTile } from "@/v8/utils/adaptPhotoTile";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 export type FlowStateStore = ReturnType<typeof useFlowStateStore>;
@@ -32,6 +32,11 @@ export const useFlowStateStore = defineStore("flow-store", {
 		// loading-state map driving the skeleton (FR-068-09).
 		cardPhotosV3: {} as Record<string, AdaptedPhotoTile[] | undefined>,
 		cardLoadStateV3: {} as Record<string, CardLoadState | undefined>,
+
+		// On-demand tier-3 (`details`) fetch dedup, mirrors `AlbumState.ts`'s/
+		// `TimelineState.ts`'s own `photoDetailsResolvedIds` - see
+		// `loadPhotoDetailsV3()`.
+		photoDetailsResolvedIdsV3: {} as Record<string, boolean>,
 
 		// Bug fix: bumped by resetV3(). `loadV3()`/`requestCardPhotos()` both
 		// await a network request bracketed by an unconditional write to this
@@ -116,12 +121,69 @@ export const useFlowStateStore = defineStore("flow-store", {
 			}
 		},
 
+		/**
+		 * On-demand tier-3 (`details`) fetch (G5) for a card's lightbox
+		 * selection - mirrors `AlbumState.ts`'s/`TimelineState.ts`'s own
+		 * `loadPhotoDetails()` (same dedup-by-id, same in-place
+		 * `mergePhotoDetail()` merge, same 300-id chunking), called by
+		 * `Flow.vue`'s `openSelectionV3()` since a `cardPhotosV3` tile is
+		 * only ever `ratios`-derived (never merged with `details` the way
+		 * an opened album's own photo listing is) - without this, the
+		 * lightbox has no real image URL to render. `tiles` is passed in
+		 * (rather than looked up from `cardPhotosV3`) so this works
+		 * uniformly whether the tile lives there or is a one-off fetched
+		 * outside the card's capped preview (`Flow.vue`'s own direct-fetch
+		 * fallback for a photo id outside it, e.g. an explicit cover) -
+		 * either way, mutating the exact object `photoStore.photo` already
+		 * references updates it in place with zero extra wiring, the same
+		 * way `AlbumState.ts`'s/`TimelineState.ts`'s in-place merges do for
+		 * their own already-referenced `photosState.photos` elements. Each
+		 * Flow card is its own distinct album, so the request is scoped per
+		 * `albumId` rather than to one shared photo listing.
+		 */
+		async loadPhotoDetailsV3(albumId: string, tiles: AdaptedPhotoTile[]): Promise<void> {
+			const generation = this.generationV3;
+			const idsToFetch = [...new Set(tiles.map((p) => p.id))].filter((id) => !this.photoDetailsResolvedIdsV3[id]);
+			if (idsToFetch.length === 0) {
+				return;
+			}
+
+			const CHUNK_SIZE = 300;
+			const chunks: string[][] = [];
+			for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
+				chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
+			}
+
+			try {
+				const responses = await Promise.all(chunks.map((chunk) => PhotoChildrenV3Service.getDetails(albumId, { photoIds: chunk })));
+				if (generation !== this.generationV3) {
+					return;
+				}
+
+				for (const response of responses) {
+					const detail = response.data;
+					for (let i = 0; i < detail.ids.length; i++) {
+						const photo = tiles.find((p) => p.id === detail.ids[i]);
+						if (photo !== undefined) {
+							mergePhotoDetail(photo, detail, i);
+						}
+					}
+				}
+				for (const id of idsToFetch) {
+					this.photoDetailsResolvedIdsV3[id] = true;
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		},
+
 		resetV3(): void {
 			this.generationV3++;
 			this.flowV3 = [];
 			this.flowV3Loaded = false;
 			this.cardPhotosV3 = {};
 			this.cardLoadStateV3 = {};
+			this.photoDetailsResolvedIdsV3 = {};
 		},
 	},
 });
