@@ -1,0 +1,409 @@
+# Feature 068 – Flow Struct-of-Arrays & Publish-Date Scheduling
+
+| Field | Value |
+|-------|-------|
+| Status | Draft |
+| Last updated | 2026-09-17 |
+| Owners | ildyria |
+| Linked plan | `docs/specs/4-architecture/features/068-flow-soa-and-publish-scheduling/plan.md` |
+| Linked tasks | `docs/specs/4-architecture/features/068-flow-soa-and-publish-scheduling/tasks.md` |
+| Roadmap entry | #068 |
+
+> Guardrail: This specification is the single normative source of truth for the feature. Track
+> high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md),
+> encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no
+> per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for
+> architecturally significant clarifications.
+
+## Overview
+
+The v8 Flow page (`/flow`, `resources/js/v8/views/gallery-panels/Flow.vue`) is the one remaining
+gallery listing surface still running on the pre-SoA v2 API shape: `App\Actions\Albums\Flow::do()`
+eager-loads every album's *entire* photo collection (all size variants, palette, tags, rating,
+faces) on every paginated fetch, and the frontend renders every loaded album card as a permanent,
+non-virtualized DOM node with eagerly-loaded images. Features 057/062/064/066 already established a
+proven Struct-of-Arrays (SoA) pattern (ADR-0009) for exactly this class of problem elsewhere in the
+app; this feature ports Flow onto that pattern (Part A) while keeping the v2 path fully intact and
+reachable, exactly like those precedents.
+
+Independently, this feature also gives `flow_strategy=opt-in` (introduced by the Flow module but
+never wired to any UI) an actual way to set the per-album date it orders/gates by (Part B). Research
+during spec drafting found that the column this needs — `base_albums.published_at` — **already
+exists**, already drives Flow's opt-in ordering, and is **also** independently used by the Landing
+Page's "automatic featured items"/"latest album cover" ordering (Feature 054). The originally
+proposed new `flow_datetime`/`flow_datetime_tz` columns are therefore **not** the design used here —
+`published_at` is reused and extended in place instead (Decision Card Q-068-01, resolved 2026-09-17,
+owner confirmed Option A).
+
+## Goals
+
+- Flow's per-page listing and each card's photo preview are served through a v3 SoA shape,
+  coexisting with the v2 path behind the existing `is_struct_of_array_enabled` flag, with response
+  size bounded by album-level fields plus a small capped photo preview per card — never a full
+  nested photo/size-variant/tag/face graph per album.
+- The v8 Flow feed renders through a dynamically-measured virtualizer so DOM/memory usage is bounded
+  by the visible viewport, not by total albums ever scrolled past.
+- All Flow images gain native lazy-loading, independent of the SoA flag.
+- `base_albums.published_at` gains a timezone-aware companion column and is settable from both the
+  single-album edit form and the bulk album edit dialog, visible only when `flow_strategy=opt-in`.
+- The v2 Flow path and Landing Page's existing `published_at`-ordering behavior remain fully intact
+  and byte-identical throughout.
+
+## Non-Goals
+
+- Renaming/forking `published_at` into a Flow-specific column (rejected — see Q-068-01; it is shared
+  with Landing Page's Feature 054 ordering, which this feature does not touch beyond gaining the same
+  new UI-settable control for free).
+- Any change to `flow_strategy=auto`'s ordering (`created_at`) — untouched.
+- A dedicated "publish now" one-click action, or any automatic backfill of `published_at` for albums
+  that were never opted in — out of scope.
+- Removing or deprecating the v2 Flow routes/controller/action/resources/`Flow.vue` rendering path —
+  they stay, flag-gated, mirroring every prior SoA-adoption feature (062/064/066).
+- Changing `flow_include_photos_from_children`'s existing (already-flagged-as-not-recommended)
+  behavior, or any of Flow's other existing config toggles.
+- A `scope=own|shared` split, bucket-windowing, or any deep-link mechanism — Flow has no per-owner
+  split and no date-bucketed navigation UI to preserve (unlike Timeline/Feature 066).
+
+## Functional Requirements
+
+### Part A — Struct-of-Arrays & rendering performance
+
+| ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
+|----|-------------|--------------|-----------------|--------------|--------------------|--------|
+| FR-068-01 | New `GET /api/v3/Flow` returns a paginated Struct-of-Arrays tier for album-level fields (`ids`, `titles`, `descriptions`, `cover_ids`, `owner_names`, `is_nsfws`, `num_photos`, `num_children`, `min_max_texts`, `published_created_ats`, `diff_published_created_ats`, `statistics`), gated by `is_struct_of_array_enabled`, reusing `App\Actions\Albums\Flow::do()`'s existing query/policy/ordering logic unchanged. | A page of N albums returns exactly N parallel-array entries, same album set/order as the equivalent v2 `GET /api/Flow` call. | `is_struct_of_array_enabled` off → 404/route not hit, frontend uses v2. | Same auth/authorization failures as v2 `FlowRequest`. | None. | ADR-0009; this feature. |
+| FR-068-02 | New `App\Http\Resources\V3\FlowListResource` mirrors `AlbumListResource`'s (Feature 062) parallel-array coding style — manual per-field `foreach` accumulation, not Eloquent `map()`. | Field-for-field output matches `FlowItemResource`'s v2 data for the same album set (minus the nested `photos` collection). | N/A. | N/A. | None. | Precedent: `app/Http/Resources/V3/AlbumListResource.php`. |
+| FR-068-03 | `GetPhotoRatiosRequest`/`QueryPhotoRatios::do()` gain an optional `limit` param (whole-scope, non-bucket/non-photo-id callers only): caps the returned photo count to the first `limit` rows in the album's existing effective sort order. Omitted → unchanged existing (unbounded) behavior for every existing caller. | Flow's per-card carousel fetch requests e.g. `limit=12`; existing album-page callers (Feature 064/065) are unaffected when the param is absent. | `sometimes|integer|min:1`, `prohibits:bucket_ids,photo_ids` (mirrors Feature 066's mutual-exclusion pattern). | Invalid value → 422. | None. | Additive extension of Feature 064's `ratios` tier, precedent: Feature 066's `bucket_ids`/`photo_ids` additive params. |
+| FR-068-04 | Flow's per-card photo preview is fetched via the existing v3 `GET /api/v3/Albums/{album_id}/Photos?limit=N` (ratios tier, FR-068-03) + the existing v3 `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` endpoint for thumbnails — no nested `PhotoResource` objects embedded in the Flow response at all. | Card carousel/header images load via lazy `Asset` requests, not inline in the Flow payload. | N/A. | N/A. | None. | Reuses Feature 056/064 routes unmodified. |
+| FR-068-05 | The v8 Flow feed (`Flow.vue`, flag on) renders through `@tanstack/vue-virtual`'s DOM-measured (`measureElement`) mode, not the analytic/uniform-geometry mode `PhotoGridVirtual.vue` uses for photo grids — card height depends on variable text/photo content, not a WASM-packed layout. | Scrolling through many pages keeps live DOM nodes bounded to the visible range ± overscan; memory does not grow unboundedly with pages loaded. | N/A. | N/A. | None. | This feature; contrast with Feature 066's analytic layout (Decision Card Q-068-02). |
+| FR-068-06 | All Flow images (`HeaderImage.vue`, `TopImages.vue`, `CarouselImages.vue`) gain a native `loading="lazy"` attribute, applied unconditionally (independent of the SoA flag, applies to both v2 and v3 rendering paths). | Below-the-fold images are not fetched until scrolled near viewport, verifiable via browser devtools network tab. | N/A. | N/A. | None. | Quick, flag-independent win; NFR-068-04. |
+| FR-068-07 | `FlowItemResource`'s Markdown-converted `description` is cached per album (new `flowDescriptionTag($albumId)` managed-cache tag, reusing `ManagedCacheService`), invalidated whenever that album's `description` is saved. | Repeated Flow fetches touching the same album do not re-run `Markdown::convert()` for an unchanged description. | N/A. | N/A. | None. | Existing `ManagedCacheService`/`ManagedCachePhotoListingInvalidator`-style pattern. |
+| FR-068-08 | The v2 Flow routes, `FlowController`, `Flow::do()`, `FlowResource`/`FlowItemResource`/`InitResource`, and `Flow.vue`'s existing (non-virtualized) rendering path remain fully intact and reachable when `is_struct_of_array_enabled` is off. | Flag off → v2 behavior byte-identical to pre-feature. | N/A. | N/A. | None. | Mirrors Feature 065/066's own coexistence precedent. |
+
+### Part B — Publish-date scheduling for `flow_strategy=opt-in`
+
+| ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
+|----|-------------|--------------|-----------------|--------------|--------------------|--------|
+| FR-068-10 | `base_albums` gains `published_at_orig_tz` (`string(31)`, nullable) alongside the existing `published_at` (`dateTime(0)`, nullable, already indexed) — **no rename**. Migration backfills `published_at_orig_tz = date_default_timezone_get()` for every row where `published_at IS NOT NULL` (mirrors the exact backfill precedent in `2021_06_01_181900_refactor_timestamps_anew.php` for `taken_at`/`taken_at_orig_tz`). | Existing non-null `published_at` rows gain a valid timezone label; new rows always write both columns together. | N/A (migration only). | N/A. | None. | Q-068-01. |
+| FR-068-11 | `BaseAlbumImpl` gains `implements HasUTCBasedTimes` (the `UTCBasedTimes` trait is already `use`d by this class, so its required methods already exist); `published_at`'s cast changes from plain `'datetime'` to `DateTimeWithTimezoneCast::class`; `published_at_orig_tz` is added to the class's explicit `$attributes` default array (`null`), per this class's own documented requirement that all attributes be listed explicitly. | `$album->published_at` returns a `Carbon` in its originally-recorded timezone, same as `Photo::taken_at` today. | N/A. | Missing `published_at_orig_tz` for a non-null `published_at` throws `LycheeDomainException` (existing cast behavior — guards against exactly the bug class in `[[project_datetimewithtimezonecast_dirty_check_bug]]`; both columns must share the same explicit precision digit). | None. | `app/Casts/DateTimeWithTimezoneCast.php`; NFR-068-05. |
+| FR-068-12 | Zero behavior change to `AlbumQueryPolicy::joinBaseAlbumOwnerId()`, `LandingPageResource`'s two `orderBy('base_albums.published_at', 'DESC')` call sites (`resolveAutomaticFeaturedItems()`, `resolveLatestAlbumCover()`), or `Flow.php`'s existing `published_at` column references — all operate on the raw SQL column via `DB::table()`/`joinSub()`, unaffected by the PHP-side Eloquent cast change. | Landing Page automatic-featured-items/latest-cover ordering and Flow's opt-in ordering/gating are unchanged before/after this feature. | Existing `LandingPageResource`/`Flow` test suites regression-pass unmodified. | N/A. | None. | NFR-068-06. |
+| FR-068-13 | `UpdateAlbumRequest` (`PATCH /Album`) gains an optional `published_at` field (new `HasPublishedAt` contract + trait, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`), validated `sometimes|nullable|date` (ISO-8601 string with an explicit UTC offset, e.g. `2026-09-17T10:00:00+02:00`, mirroring how `PhotoEdit.vue`/`PhotoService` already send `taken_at`). Key absent → existing value untouched; key present with `null` → clears both `published_at`/`published_at_orig_tz`. | Owner sets/clears an album's publish date via the API; the cast splits the submitted instant into `(published_at, published_at_orig_tz)` on write. | Non-parseable/ambiguous (no-offset) string → 422. | N/A. | None. | Mirrors `taken_at`'s existing single-album edit precedent (`PhotoEdit.vue`/`PhotoService::update()`). |
+| FR-068-14 | `App\Http\Resources\GalleryConfigs\InitConfig` gains `is_flow_opt_in_strategy: bool = flow_enabled && flow_strategy===FlowStrategy::OPT_IN`, surfaced to `LycheeState.ts`, so the frontend can gate the publish-date field's visibility without a dedicated round-trip. | Toggling `flow_strategy` in admin settings changes `is_flow_opt_in_strategy` on the next config fetch; both edit surfaces (FR-068-15/17) react to it. | N/A. | N/A. | None. | Mirrors `is_se_enabled`'s existing derivation pattern in the same class. |
+| FR-068-15 | `AlbumProperties.vue` (single-album edit form) gains a "Flow publish date" field — checkbox-gated `datetime-local` input + timezone `USelectMenu`, mirroring `PhotoEdit.vue`'s `taken_at` editing UX exactly (toggle checkbox, disabled/dashed-border styling when off, combined ISO+offset string built on save) — visible only when `is_flow_opt_in_strategy` is true. Not gated by `is_expert_mode` (this is a primary control for a feature the admin explicitly opted into, not a power-user knob). | Owner toggles the checkbox on, picks a date/time + timezone, saves; the album becomes visible in an opt-in Flow ordered by that instant. | Save disabled/no-op while the checkbox is on and the date field is empty (mirrors `taken_at`'s existing disabled-save guard). | Save failure surfaces the existing generic album-update error toast. | None. | S-068-10. |
+| FR-068-16 | `PatchBulkAlbumRequest`/`BulkAlbumPatchData` gain an optional `published_at` field (`sometimes|nullable|date`, same validation as FR-068-13), added to the `after()`/`processValidatedValues()` optional-fields lists; each targeted album's `published_at`/`published_at_orig_tz` is set to the one submitted instant/timezone when present. | Bulk-selecting N albums and submitting a publish date opts all N in at once, at the same absolute instant. | Same `date` validation as FR-068-13; `at least one optional field` guard already covers it (no separate change needed). | Partial-failure behavior matches this endpoint's existing per-field semantics (no special-casing). | None. | Mirrors every other `BulkAlbumPatchData` field's existing pattern. |
+| FR-068-17 | `BulkEditFieldsDialog.vue` gains a new "date field" UI category — the dialog's first date-typed field (checkbox + `datetime-local` + timezone select row), added to the metadata section alongside `textFields`/`enumFields`/`sortingPairs`, visible only when `is_flow_opt_in_strategy` is true. | Bulk-editing albums shows the publish-date row only when the opt-in strategy is active; submitting it PATCHes `published_at` for every checked album. | N/A. | N/A. | None. | S-068-11. |
+| FR-068-18 | Switching `flow_strategy` back to `auto` does not clear any album's stored `published_at`/`published_at_orig_tz` — `Flow.php`'s `AUTO` branch already ignores the column entirely (`orderByDesc('pc_base_album.created_at')`), so data is preserved for a future re-opt-in and for Landing Page's independent, strategy-agnostic use of the same field. | Toggling strategy back and forth never silently drops previously-set publish dates. | N/A. | N/A. | None. | Existing `Flow.php` `match` behavior, unchanged. |
+
+## Non-Functional Requirements
+
+| ID | Requirement | Driver | Measurement | Dependencies | Source |
+|----|-------------|--------|-------------|--------------|--------|
+| NFR-068-01 | A v3 Flow page's response size for N albums must not scale with those albums' total photo counts — bounded by album-level fields plus each card's capped preview (`limit` param, FR-068-03). | Flow's v2 payload embeds every album's *entire* photo collection today — the single largest identified bottleneck. | Response-size comparison, v2 vs v3, for an album with a large photo count. | FR-068-01, FR-068-03. | Subagent research finding, this feature. |
+| NFR-068-02 | Zero behavior change to the v2 Flow path when `is_struct_of_array_enabled` is off. | Coexistence requirement, mirrors every prior SoA-adoption feature. | Manual/regression check of `/flow` with the flag off; diff review of v2 files (expect zero changes). | Feature-flag machinery already shipped by Feature 065. | Mirrors Feature 066's own NFR precedent. |
+| NFR-068-03 | Live DOM node count for the Flow feed must stay bounded by the visible viewport ± overscan, not by total albums ever scrolled past in the session. | Unbounded DOM growth is the second largest identified bottleneck (no virtualization in `Flow.vue` today). | Manual browser check: DOM node count/memory usage after scrolling through many pages, flag on. | FR-068-05. | This feature. |
+| NFR-068-04 | Below-the-fold Flow images are not requested until scrolled near viewport. | No `loading="lazy"` exists anywhere in Flow's components today. | Manual browser devtools network-tab check. | FR-068-06. | This feature. |
+| NFR-068-05 | No Carbon usage introduced in any new backend code for this feature (migration, `BaseAlbumImpl` changes, request/DTO handling). | `[[feedback_avoid_carbon_server_side]]`. | Code review / grep for `Carbon`/`DateTime` imports in touched files (the existing `DateTimeWithTimezoneCast`/`UTCBasedTimes` machinery, which does use Carbon internally, is reused unmodified — this NFR applies to *new* code this feature adds). | — | Direct owner instruction (memory). |
+| NFR-068-06 | Zero behavior change to Landing Page's `resolveAutomaticFeaturedItems()`/`resolveLatestAlbumCover()` ordering, or to `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s existing join. | These call sites share `published_at` with Flow but are otherwise unrelated to this feature (Feature 054). | Existing `LandingPageResource`-related test suite regression-passes unmodified. | FR-068-12. | This feature. |
+
+## UI / Interaction Mock-ups
+
+```
+Single-album edit (AlbumProperties.vue), flow_strategy = opt-in
+┌───────────────────────────────────────────────────────────┐
+│ Flow publish date                                          │
+│  ☑  [ 2026-09-17T10:00:00 ▾ ]  [ Europe/Paris        ▾ ]   │
+│      (unchecked → field disabled, dashed border, no value) │
+└───────────────────────────────────────────────────────────┘
+Field is entirely absent from the form when flow_strategy = auto.
+
+Bulk album edit (BulkEditFieldsDialog.vue), flow_strategy = opt-in
+┌───────────────────────────────────────────────────────────┐
+│ ☐ Flow publish date   [ 2026-09-17T10:00:00 ▾ ] [ UTC ▾ ]  │
+│                        (row hidden entirely when auto)     │
+└───────────────────────────────────────────────────────────┘
+
+Flow feed (/flow), SoA flag on
+┌─────────────────────────────────────────────┐
+│ [Album card A — measured height, on-screen] │  ← live DOM node
+│ [Album card B — measured height, on-screen] │  ← live DOM node
+│ ░░░ (off-screen cards: not rendered) ░░░     │  ← virtualized away
+│  images: loading="lazy", carousel capped     │
+│  to first `limit` photos via v3 ratios tier  │
+└─────────────────────────────────────────────┘
+```
+
+## Branch & Scenario Matrix
+
+| Scenario ID | Description / Expected outcome |
+|-------------|--------------------------------|
+| S-068-01 | `GET /api/v3/Flow` returns the same album set/order as `GET /api/Flow` for an identical viewer/config, minus nested photo objects. |
+| S-068-02 | `GET /api/v3/Albums/{album_id}/Photos?limit=5` for a 50-photo album returns exactly 5 photo entries, in the album's existing effective sort order. |
+| S-068-03 | `GET /api/v3/Albums/{album_id}/Photos?limit=5&bucket_ids[]=x` → 422 (mutually exclusive, mirrors Feature 066's pattern). |
+| S-068-04 | `GET /api/v3/Albums/{album_id}/Photos` (whole-scope, no `limit`) returns byte-identical output to pre-feature — regression guard for Feature 064/065/066 callers. |
+| S-068-05 | Flag off → `Flow.vue` uses the v2 store/service/rendering path, unchanged from pre-feature. |
+| S-068-06 | Flag on → scrolling the Flow feed through many pages keeps DOM node count bounded; scrolling back up re-shows previously-loaded cards without re-fetching. |
+| S-068-07 | Flow images (header/carousel) do not fire network requests until scrolled near viewport, flag on or off. |
+| S-068-08 | Editing an album's description while `flow_strategy=opt-in` invalidates that album's cached Markdown conversion; the next Flow fetch reflects the new description. |
+| S-068-09 | `flow_strategy=auto`: single-album edit form and bulk-edit dialog both omit the publish-date field entirely. |
+| S-068-10 | `flow_strategy=opt-in`: single-album edit sets a publish date + timezone; the album subsequently appears in Flow, ordered by that instant. |
+| S-068-11 | `flow_strategy=opt-in`: bulk-editing 3 albums with a publish date opts all 3 in at the same instant. |
+| S-068-12 | Clearing an album's publish date (submitting `null`) removes it from an opt-in Flow (goes back to being excluded, per `Flow.php`'s existing `whereNotNull` gate) without affecting its `created_at`-based display fallback. |
+| S-068-13 | Landing Page's "automatic featured items" / "latest album cover" ordering is unchanged before/after this feature, for a fixture with a mix of published/unpublished albums. |
+| S-068-14 | Switching `flow_strategy` from `opt-in` back to `auto` and back to `opt-in` again preserves every album's previously-set publish date. |
+
+## Test Strategy
+
+- **Core (query/action layer):** New/extended PHPUnit coverage for `FlowListResource`, the `ratios`
+  tier's new `limit` param, `BaseAlbumImpl`'s cast change (dirty-checking parity, per
+  `[[project_datetimewithtimezonecast_dirty_check_bug]]`'s lesson), and the migration's backfill
+  logic — scoped `--filter=` runs, per `[[feedback_no_full_test_suite]]`.
+- **REST:** New `tests/Feature_v3/Flow/` suite covering S-068-01 through S-068-04; existing
+  `PhotoRatiosV3Test` regression-run unmodified to prove the `limit` param is additive; new/extended
+  `UpdateAlbumRequestTest`/`PatchBulkAlbumRequestTest` cases for `published_at` (S-068-09 through
+  S-068-12); existing Landing-Page-related test coverage regression-run unmodified (S-068-13).
+- **UI (JS):** `npm run check` (vue-tsc + eslint) for all changed/new frontend files. Scroll/DOM-bound
+  virtualization, lazy-image-loading, and the two edit forms' date-field UX (S-068-06, S-068-07,
+  S-068-10, S-068-11) require manual browser verification — flagged pending if no dev environment is
+  available in the authoring/implementation session, per `[[feedback_no_mariadb_mysql_access]]` and
+  this repo's established precedent (Features 063/065/066/067).
+- **Docs/Contracts:** `docs/specs/3-reference/api-design.md` updated for the new `GET /api/v3/Flow`
+  route and the `ratios` tier's new `limit` param.
+
+## Interface & Contract Catalogue
+
+### Domain Objects
+
+| ID | Description | Modules |
+|----|-------------|---------|
+| DO-068-01 | `App\Http\Resources\V3\FlowListResource` — album-level SoA parallel arrays. | Backend |
+| DO-068-02 | `GetPhotoRatiosRequest` gains `limit(): ?int` accessor, `sometimes|integer|min:1` + mutual-exclusion validation. | Backend |
+| DO-068-03 | `App\Http\Requests\Album\HasPublishedAt` contract + `HasPublishedAtTrait`, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`. | Backend |
+| DO-068-04 | `BulkAlbumPatchData::$published_at: ?Carbon` (validated ISO-8601-with-offset string, coerced during `fromValidated()`). | Backend |
+| DO-068-05 | `App\Http\Resources\GalleryConfigs\InitConfig::$is_flow_opt_in_strategy: bool`. | Backend |
+| DO-068-06 | `FlowState.ts`-equivalent v3 store additions: `flowV3` (SoA arrays), per-card `requestCardPhotos(albumId, limit)`. | Frontend |
+| DO-068-07 | `AlbumProperties.vue`/`BulkEditFieldsDialog.vue` new publish-date field state (`is_published_at_modified`, date/timezone refs), mirroring `PhotoEdit.vue`'s existing `is_taken_at_modified` pattern. | Frontend |
+
+### API Routes / Services
+
+| ID | Transport | Description | Notes |
+|----|-----------|--------------|-------|
+| API-068-01 | REST `GET /api/v3/Flow` | Paginated album-level SoA tier for the Flow feed. | New route; gated by `is_struct_of_array_enabled`. |
+| API-068-02 | REST `GET /api/v3/Albums/{album_id}/Photos?limit=N` | Capped whole-scope photo preview (existing `ratios` tier, `limit` param additive). | Extends Feature 064's route (API-064-02). |
+| API-068-03 | REST `GET /api/v3/Asset/{album_id}/{photo_id}/{size_variant}` | Lazy per-photo thumbnail fetch for Flow cards. | Reuses Feature 056's route unmodified. |
+| API-068-04 | REST `PATCH /Album` | Gains optional `published_at` field. | Extends existing v2 route, `UpdateAlbumRequest`. |
+| API-068-05 | REST `PATCH /Albums::bulk` (or this endpoint's actual existing path) | Gains optional `published_at` field. | Extends `PatchBulkAlbumRequest`/`BulkAlbumPatchData`. |
+
+### CLI Commands / Flags
+
+None.
+
+### Telemetry Events
+
+None — mirrors this app's existing "no telemetry for listing/editing features" precedent (Features 063/065/066).
+
+### Fixtures & Sample Data
+
+No new committed fixtures. A large-photo-count album (dozens/hundreds of photos) is useful for
+manually verifying NFR-068-01's payload-size claim, mirroring prior SoA features' own precedent for
+uncommitted scale fixtures.
+
+### UI States
+
+| ID | State | Trigger / Expected outcome |
+|----|-------|---------------------------|
+| UI-068-01 | Flow feed, virtualized (flag on) | Scrolling loads/unloads cards by proximity to viewport; off-screen cards are not live DOM nodes. |
+| UI-068-02 | Flow feed, v2 fallback (flag off) | Unchanged `Flow.vue` behavior, all loaded cards remain live DOM nodes. |
+| UI-068-03 | Single-album edit, opt-in strategy | Publish-date checkbox + datetime + timezone row visible and editable. |
+| UI-068-04 | Single-album edit, auto strategy | Publish-date field entirely absent from the form. |
+| UI-068-05 | Bulk edit dialog, opt-in strategy | Publish-date row visible in the metadata section. |
+| UI-068-06 | Bulk edit dialog, auto strategy | Publish-date row entirely absent. |
+
+## Telemetry & Observability
+
+None — no telemetry events are introduced by this feature.
+
+## Documentation Deliverables
+
+- `docs/specs/3-reference/api-design.md` — document `GET /api/v3/Flow` and the `ratios` tier's new
+  `limit` param.
+- `docs/specs/4-architecture/knowledge-map.md` — record Flow's SoA adoption and the shared
+  `published_at`/`published_at_orig_tz` pattern.
+- `docs/specs/3-reference/frontend-gallery.md` — document the Flow feed's dynamically-measured
+  virtualization mechanism (contrast with `PhotoGridVirtual.vue`'s analytic mode).
+- `docs/specs/4-architecture/roadmap.md` — add Feature 068's entry.
+
+## Fixtures & Sample Data
+
+No new committed fixtures (see Fixtures & Sample Data above under the Interface Catalogue).
+
+## Spec DSL
+
+```
+domain_objects:
+  - id: DO-068-01
+    name: FlowListResource
+  - id: DO-068-02
+    name: GetPhotoRatiosRequest (extended)
+    fields:
+      - name: limit
+        type: integer
+        constraints: "optional, min:1, prohibits bucket_ids/photo_ids"
+  - id: DO-068-03
+    name: HasPublishedAt contract/trait
+  - id: DO-068-04
+    name: BulkAlbumPatchData.published_at
+  - id: DO-068-05
+    name: InitConfig.is_flow_opt_in_strategy
+  - id: DO-068-06
+    name: Flow frontend v3 store additions
+  - id: DO-068-07
+    name: Publish-date field UI state (single + bulk edit)
+routes:
+  - id: API-068-01
+    method: GET
+    path: /api/v3/Flow
+  - id: API-068-02
+    method: GET
+    path: /api/v3/Albums/{album_id}/Photos
+  - id: API-068-03
+    method: GET
+    path: /api/v3/Asset/{album_id}/{photo_id}/{size_variant}
+  - id: API-068-04
+    method: PATCH
+    path: /Album
+  - id: API-068-05
+    method: PATCH
+    path: /Albums (bulk)
+cli_commands: []
+telemetry_events: []
+fixtures: []
+ui_states:
+  - id: UI-068-01
+    description: Flow feed, virtualized (flag on)
+  - id: UI-068-02
+    description: Flow feed, v2 fallback (flag off)
+  - id: UI-068-03
+    description: Single-album edit, opt-in strategy
+  - id: UI-068-04
+    description: Single-album edit, auto strategy
+  - id: UI-068-05
+    description: Bulk edit dialog, opt-in strategy
+  - id: UI-068-06
+    description: Bulk edit dialog, auto strategy
+```
+
+## Appendix
+
+### Decision Cards
+
+### ❓ Q-068-01 · Reuse `published_at`, or introduce a new `flow_datetime` column? ✅ RESOLVED
+
+**Status:** Resolved — 🅰️ Option A (owner: "obviously A", 2026-09-17)
+**Feature:** F-068 – Flow Struct-of-Arrays & Publish-Date Scheduling
+**Preferred option:** 🅰️ (**recommended**) Option A – Reuse and extend `published_at` in place
+
+**Question**
+The request that motivated this feature assumed a new `flow_datetime`/`flow_datetime_tz` column pair
+was needed. Research found `base_albums.published_at` already exists (added by
+`2025_06_14_121958_add_flow_config.php`), already drives `Flow.php`'s opt-in ordering/gating, and is
+**also** independently used by `LandingPageResource::resolveAutomaticFeaturedItems()`/
+`resolveLatestAlbumCover()` (`orderBy('base_albums.published_at', 'DESC')`, Feature 054) and by
+`AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s shared join. It currently has no timezone awareness
+(plain `'datetime'` cast) and no write path (no UI, no request-validation rule anywhere). Should this
+feature reuse and extend that existing column, or introduce the originally-proposed new one?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Reuse and extend `published_at` in place
+
+- **Idea:** Add only the missing `published_at_orig_tz` companion column (`string(31)`, nullable) and
+  swap `published_at`'s cast to `DateTimeWithTimezoneCast::class` (mirrors `Photo::taken_at`'s
+  existing pattern). No rename, no new column.
+- **Spec impact:** FR-068-10 through FR-068-18 are written against this option as-is.
+- **Pros:**
+  - ✅ One single "editorial publish instant" concept, not two overlapping ones with unclear precedence.
+  - ✅ Landing Page's "automatic" featured-items mode gets the same new UI-settable control for free,
+    at zero extra implementation cost.
+  - ✅ Smallest possible schema/behavior diff — one additive column, one cast change.
+- **Cons:**
+  - ❌ The field the UI exposes is literally named "publish date," not "Flow date" — a possible (minor)
+    naming/mental-model mismatch with how this conversation originally framed the feature.
+  - ❌ Any future feature that wants a *Flow-only* semantic (distinct from Landing Page's use) would
+    need its own column later anyway.
+
+---
+
+#### 🅱️ Option B – New, additional `flow_datetime`/`flow_datetime_orig_tz` columns
+
+- **Idea:** Introduce the new columns as originally proposed; migrate `Flow.php`'s opt-in
+  ordering/gating to them; leave `published_at`/Landing Page untouched.
+- **Spec impact:** FR-068-10 through FR-068-18 would need a full rewrite against a new column; Q-068-03's
+  scope boundary (Part B is schema-additive only) would need revisiting.
+- **Pros:**
+  - ✅ Matches the exact wording of the original request.
+  - ✅ Flow's own semantics can evolve independently of Landing Page's, if they ever should diverge.
+- **Cons:**
+  - ❌ Forks one concept ("when did this get published") into two overlapping columns/names on the
+    same table, with no clear rule for which one wins if they're ever both set differently.
+  - ❌ Landing Page keeps its own field permanently un-settable from any UI — the exact gap this
+    feature exists to close, just left open for a second, unrelated feature.
+
+---
+
+#### 🅲 Option C – New `flow_datetime`, and migrate Landing Page's ordering to it too
+
+- **Idea:** Introduce `flow_datetime` and also repoint `LandingPageResource`'s two ordering call
+  sites and `AlbumQueryPolicy::joinBaseAlbumOwnerId()`'s join at it — a true rename in effect.
+- **Spec impact:** Expands this feature's scope to include Landing Page's ordering behavior, which is
+  currently a Non-Goal.
+- **Pros:**
+  - ✅ Ends with one column, correctly named for what it now represents.
+- **Cons:**
+  - ❌ Widest blast radius of the three — touches a feature (054) this spec otherwise leaves alone.
+  - ❌ No part of the original request asked for Landing Page changes.
+
+---
+
+**Resolution:** Option A confirmed by the feature owner ("obviously A") — `published_at` is reused and
+extended in place, no `flow_datetime` column is introduced. FR-068-10 through FR-068-18 stand as
+written. `plan.md`'s Analysis Gate and I5 blocker, and `open-questions.md`'s Q-068-01 row, updated to
+reflect this resolution; Part B implementation may now proceed.
+
+**Q-068-02 — Full v3 SoA conversion of Flow (Part A), or a smaller fix (server-side photo cap +
+lazy-loading + virtualization) without a new API shape?**
+
+- **Context:** Concrete bottlenecks found: unbounded per-album nested photo eager-loading, no
+  virtualization, no lazy image loading. The user explicitly asked "see if we can implement Struct of
+  Array in it," and this repo has an established, proven SoA pattern (ADR-0009; Features 057/062/
+  064/066) for exactly this class of listing.
+- **Options considered:** (A) Minimal fix — cap the `photos` eager-load server-side inside
+  `Flow.php`/`FlowItemResource` (e.g. `photos()->limit(N)`), add `loading="lazy"`, virtualize the
+  card list — no new route, no SoA shape, smallest diff. (B) Full SoA conversion — new v3 `Flow`
+  listing tier (album-level parallel arrays) + reuse of the existing v3 photo tiers (capped `limit`
+  param, FR-068-03) for per-card previews, gated by `is_struct_of_array_enabled`, coexisting with v2
+  exactly like Features 064/065/066.
+- **Decision:** (B), matching the explicit ask and this repo's now-established architectural
+  pattern — a minimal fix would leave Flow as the one remaining AoS/non-SoA listing surface,
+  an inconsistency future work would have to explain. The Increment Map in `plan.md` still sequences
+  the flag-independent quick wins (lazy-loading, virtualization of the *existing* v2 payload) before
+  the larger SoA increments, since they deliver most of the perceived speedup immediately and
+  de-risk the harder architecture work that follows — mirrors this repo's own increment-ordering
+  practice of doing safe wins before harder work first.
+- **Resolution date:** 2026-09-17 (decided directly for this spec, mirrors Q-066-02's precedent of a
+  design choice resolved without owner round-trip).
+- **Spec impact:** FR-068-01 through FR-068-08, NFR-068-01 through NFR-068-04.
+
+**Q-068-03 — One combined feature doc (Part A + Part B), or split into two features?**
+
+- **Context:** Part A (performance/SoA) and Part B (publish-date scheduling) are independently
+  implementable — neither depends on the other. Prior precedent in this repo splits docs when
+  backend/frontend halves ship at genuinely different times (061/063, 064/065), and combines them
+  when scoped together as one effort (066).
+- **Decision:** One combined doc (this one), because the user asked for "feature 68" covering the
+  whole conversation in a single request. FR/NFR IDs are grouped into two clearly separated ranges
+  (Part A: 01–08/01–04; Part B: 10–18/05–06) precisely so this can be split into two features later
+  (e.g. if the owner wants to ship Part B — a small, self-contained schema+UI change — well ahead of
+  Part A's larger SoA work) without renumbering. The Increment Map in `plan.md` orders Part B's
+  increments first for exactly this reason: it is the smaller, more concretely-scoped half and can
+  ship independently while Part A's SoA work proceeds.
+- **Resolution date:** 2026-09-17.
+- **Spec impact:** Doc structure only; no FR/NFR impact.
