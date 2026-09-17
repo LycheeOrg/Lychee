@@ -258,9 +258,24 @@ function onBoolChange(key: string, val: boolean): void {
 	editEnabled.value[key] = true;
 }
 
+// Mirrors AlbumProperties.vue's own `browserUtcOffset()` - a bare
+// datetime-local value has no timezone of its own, so one must be picked
+// before it can be sent; defaulting to the browser's own offset here keeps
+// `doEditFields()` from ever appending an empty (offset-less) suffix.
+function browserUtcOffset(): string {
+	const minutes = -new Date().getTimezoneOffset();
+	const sign = minutes >= 0 ? "+" : "-";
+	const abs = Math.abs(minutes);
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+
 function onDateChange(key: string, val: string | null): void {
 	editDateValues.value[key] = val;
 	editEnabled.value[key] = true;
+	if (val !== null && (editDateTzValues.value[key] === null || editDateTzValues.value[key] === undefined)) {
+		editDateTzValues.value[key] = browserUtcOffset();
+	}
 }
 
 function onDateTzChange(key: string, val: string | null): void {
@@ -332,12 +347,25 @@ function doEditFields(): void {
 			payload[f.key] = editBoolValues.value[f.key];
 		}
 	});
-	dateFields.forEach((f) => {
-		if (editEnabled.value[f.key] === true) {
-			const date = editDateValues.value[f.key];
-			payload[f.key] = date === null || date === "" ? null : date + (editDateTzValues.value[f.key] ?? "");
+	for (const f of dateFields) {
+		if (editEnabled.value[f.key] !== true) {
+			continue;
 		}
-	});
+		const date = editDateValues.value[f.key];
+		if (date === null || date === "") {
+			payload[f.key] = null;
+			continue;
+		}
+		const tz = editDateTzValues.value[f.key];
+		if (tz === null || tz === undefined) {
+			// Block submission rather than silently sending an offset-less
+			// value the backend would otherwise interpret in its own
+			// default timezone.
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_missing_timezone"), life: 3000 });
+			return;
+		}
+		payload[f.key] = date + tz;
+	}
 
 	BulkAlbumEditService.patchAlbums(payload as Parameters<typeof BulkAlbumEditService.patchAlbums>[0])
 		.then(() => {

@@ -261,10 +261,11 @@ class PatchTest extends BaseApiWithDataTest
 
 	public function testPatchPublishedAtCanBeClearedWithNull(): void
 	{
-		$this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+		$setupResponse = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
 			'album_ids' => [$this->album1->id],
 			'published_at' => '2026-09-17T10:00:00+02:00',
 		]);
+		$this->assertNoContent($setupResponse);
 
 		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
 			'album_ids' => [$this->album1->id],

@@ -19,17 +19,13 @@
 				v-else-if="props.config.is_image_header_enabled && photos.length > 0"
 				class="w-full bg-neutral-800 flex h-(--header-height) gap-1 flex-wrap"
 			>
-				<div
-					v-for="(photo, idx) in photos.slice(0, 5)"
-					:key="`top-${photo.id}`"
-					class="relative shrink grow flex-1/4 h-(--top-images-height)"
-				>
+				<div v-for="photo in photos.slice(0, 5)" :key="`top-${photo.id}`" class="relative shrink grow flex-1/4 h-(--top-images-height)">
 					<Thumb
 						:album-id="props.album.id"
 						:photo-id="photo.id"
 						type="small"
 						class="object-cover h-full w-full"
-						@click="carouselClicked(idx)"
+						@click="carouselClicked(photo.id)"
 					/>
 					<Blur v-if="props.album.isNsfw" />
 				</div>
@@ -38,13 +34,13 @@
 				v-if="props.config.is_image_header_enabled && props.config.is_carousel_enabled && photos.length > 1"
 				class="w-full bg-neutral-800 overflow-x-scroll flex pt-1 gap-1"
 			>
-				<div v-for="(photo, idx) in carouselPhotos" :key="`carousel-${photo.id}`" class="block shrink-0 grow relative">
+				<div v-for="photo in carouselPhotos" :key="`carousel-${photo.id}`" class="block shrink-0 grow relative">
 					<Thumb
 						:album-id="props.album.id"
 						:photo-id="photo.id"
 						type="thumb"
 						class="h-(--carousel-height) w-full object-cover"
-						@click="carouselClicked(props.config.is_highlight_first_picture ? idx + 1 : idx)"
+						@click="carouselClicked(photo.id)"
 					/>
 					<Blur v-if="props.album.isNsfw" />
 				</div>
@@ -146,7 +142,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-	setSelection: [albumId: string, idx: number];
+	setSelection: [albumId: string, photoId: string];
 }>();
 
 const flowState = useFlowStateStore();
@@ -160,11 +156,13 @@ onMounted(() => {
 });
 
 function headerClicked() {
-	emits("setSelection", props.album.id, 0);
+	if (headerPhotoId.value !== undefined) {
+		emits("setSelection", props.album.id, headerPhotoId.value);
+	}
 }
 
-function carouselClicked(idx: number) {
-	emits("setSelection", props.album.id, idx);
+function carouselClicked(photoId: string) {
+	emits("setSelection", props.album.id, photoId);
 }
 
 const hasMore = computed(() => props.config.is_compact_mode_enabled && props.config.is_image_header_enabled);

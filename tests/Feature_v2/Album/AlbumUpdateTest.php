@@ -871,10 +871,11 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 
 	public function testUpdateAlbumClearsPublishedAtWithNull(): void
 	{
-		$this->actingAs($this->userMayUpload1)->patchJson('Album', [
+		$setupResponse = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
 			...$this->basePatchPayload(),
 			'published_at' => '2026-09-17T10:00:00+02:00',
 		]);
+		$this->assertOk($setupResponse);
 
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
 			...$this->basePatchPayload(),

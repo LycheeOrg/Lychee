@@ -81,6 +81,10 @@ import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import ScrollTop from "@/v8/components/ScrollTop.vue";
 import FlowService from "@/services/flow-service";
+import PhotoChildrenV3Service from "@/services/photo-children-v3-service";
+import { adaptPhotoTile, type AdaptedPhotoTile } from "@/v8/utils/adaptPhotoTile";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -101,6 +105,7 @@ const { isLTR } = useLtRorRtL();
 
 const userStore = useUserStore();
 const photoStore = usePhotoStore();
+const toast = useAppToast();
 const lycheeStore = useLycheeStateStore();
 const flowState = useFlowStateStore();
 const router = useRouter();
@@ -141,15 +146,37 @@ function setSelection(album: App.Http.Resources.Flow.FlowItemResource, idxPhoto:
 	photoStore.photo = album.photos[idxPhoto];
 }
 
-function setSelectionV3(albumId: string, idxPhoto: number) {
+function setSelectionV3(albumId: string, photoId: string) {
 	if (config.value === undefined) {
 		console.error("Config is not defined, cannot set selection.");
 		return;
 	}
 
 	const photos = flowState.cardPhotosV3[albumId];
-	const photo = photos?.[idxPhoto];
-	if (photo === undefined) {
+	const photo = photos?.find((p) => p.id === photoId);
+	if (photo !== undefined) {
+		openSelectionV3(albumId, photo);
+		return;
+	}
+
+	// The clicked photo (e.g. an explicit cover) may fall outside the
+	// card's already-loaded, capped preview - fetch it directly rather
+	// than silently opening nothing or the wrong photo.
+	PhotoChildrenV3Service.getRatios(albumId, { photoIds: [photoId] })
+		.then((response) => {
+			const ratios = response.data;
+			if (ratios.ids.length === 0) {
+				return;
+			}
+			openSelectionV3(albumId, adaptPhotoTile(0, ratios, albumId));
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		});
+}
+
+function openSelectionV3(albumId: string, photo: AdaptedPhotoTile) {
+	if (config.value === undefined) {
 		return;
 	}
 
@@ -180,15 +207,22 @@ function load() {
 	});
 }
 
-async function loadV3() {
+function loadV3() {
 	isLoading.value = true;
-	await flowState.loadV3();
-	isLoading.value = false;
-	isInitialLoading.value = false;
-
-	if (flowState.flowV3.length === 0) {
-		router.push({ name: "login" });
-	}
+	return flowState
+		.loadV3()
+		.then(() => {
+			if (flowState.flowV3.length === 0) {
+				router.push({ name: "login" });
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			isLoading.value = false;
+			isInitialLoading.value = false;
+		});
 }
 
 function registerSentinel() {
@@ -247,8 +281,7 @@ onMounted(async () => {
 	}
 
 	if (flowState.isFlowSoaActive) {
-		await loadV3();
-		return;
+		return loadV3();
 	}
 
 	load();

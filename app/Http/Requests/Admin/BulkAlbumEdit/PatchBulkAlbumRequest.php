@@ -64,7 +64,11 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 			'grants_full_photo_access' => ['sometimes', 'boolean'],
 			'grants_download' => ['sometimes', 'boolean'],
 			'grants_upload' => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
-			'published_at' => ['sometimes', 'nullable', 'date'],
+			// An explicit UTC offset is required (`date_format:...P`, not the
+			// looser `date` rule) - an offset-less value would otherwise be
+			// silently interpreted in the application's default timezone by
+			// `Carbon::parse()`, recording the wrong `published_at_orig_tz`.
+			'published_at' => ['sometimes', 'nullable', 'date_format:Y-m-d\TH:i:sP'],
 		];
 	}
 
