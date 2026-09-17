@@ -72,6 +72,13 @@ confirmed by the feature owner as Option A ("obviously A", 2026-09-17) — reuse
   - *Risk:* No local dev/browser environment available in the authoring session — all
     scroll-behavior/lazy-loading/date-field UX must be manually verified later, not assumed correct
     from typechecks alone (mirrors Features 063/065/066/067's own documented gap).
+  - *Risk:* A card's skeleton-to-real-content height change (I3b) may cause visible scroll jank if the
+    skeleton's estimated height diverges meaningfully from the real, loaded content's height while the
+    card is partially in view — unlike Feature 066's analytically-known placeholder sizing, this
+    feature has no equivalent scroll-compensation mechanism (NFR-068-08). *Mitigation:* accepted as a
+    deferred risk; assess visually during I3b's manual verification (T-068-11b) and escalate to a
+    Follow-up increment only if actually observed, rather than pre-building compensation logic for an
+    unconfirmed problem.
 
 ## Implementation Drift Gate
 
@@ -79,20 +86,23 @@ Before marking any increment complete, re-read the touched files' current state 
 being authored) and confirm: (a) no Eloquent model events/mutators were introduced for derived state
 (`[[feedback_no_hooks_explicit_writes]]`); (b) no Carbon import was introduced in any *new* backend
 code (NFR-068-05 — the existing cast/trait machinery's own internal Carbon usage is unaffected); (c)
-`published_at`/`published_at_orig_tz` share the same explicit datetime precision digit, per
-`[[project_datetimewithtimezonecast_dirty_check_bug]]`'s lesson; (d) `make phpstan` /
-`vendor/bin/php-cs-fixer fix --dry-run --diff` / `npm run check` are clean for every changed file
-before moving to the next increment, not batched at the end. Record any drift found and its fix
-directly in this file's increment entries, not a separate log.
+`DateTimeWithTimezoneCast`'s existing `compare()` method (the dirty-checking half of
+`[[project_datetimewithtimezonecast_dirty_check_bug]]`'s fix) is reused unmodified, not reimplemented
+— note the *other* half of that historical bug (mismatched precision between two real `dateTime`
+columns) does not apply to `published_at`/`published_at_orig_tz`, since only one of the pair is a
+`dateTime` column; (d) `make phpstan` / `vendor/bin/php-cs-fixer fix --dry-run --diff` / `npm run
+check` are clean for every changed file before moving to the next increment, not batched at the end.
+Record any drift found and its fix directly in this file's increment entries, not a separate log.
 
 ## Increment Map
 
 1. **I1 – New v3 `Flow` SoA listing tier (unpaginated)**
    - _Goal:_ FR-068-01, FR-068-02.
    - _Preconditions:_ None (first code increment; independent of Q-068-01).
-   - _Steps:_ New `GET /api/v3/Flow` route, **no `page`/cursor param** (Decision Card Q-068-04 — each
-     album is its own "bucket equivalent," loaded whole-scope in one request, mirroring
-     `GET /api/v3/Albums`'s unpaginated root/tag/person/pinned precedent, not v2's paginated fetch);
+   - _Steps:_ New `GET /api/v3/Flow` route, **no `page`/cursor param, `flow_max_items` not applied**
+     (Decision Cards Q-068-04/Q-068-06 — each album is its own "bucket equivalent," loaded whole-scope
+     in one request, mirroring `GET /api/v3/Albums`'s unpaginated root/tag/person/pinned precedent,
+     not v2's paginated fetch; `flow_max_items` stays meaningful only for the untouched v2 path);
      new `Gallery\FlowListController` (or extend `FlowController` with a `v3Index()` method — decide
      during implementation which keeps `FlowController` smaller); new
      `App\Http\Resources\V3\FlowListResource` reusing `Flow::do()` unmodified, mapping the same
@@ -118,10 +128,13 @@ directly in this file's increment entries, not a separate log.
 3. **I3 – Frontend v3 store + dynamically-measured virtualized rendering**
    - _Goal:_ FR-068-05, NFR-068-03.
    - _Preconditions:_ I1, I2.
-   - _Steps:_ New v3 store additions (DO-068-06): `flowV3` fetched once, whole-scope, on page load
+   - _Steps:_ New `FLOW_CAROUSEL_PHOTO_LIMIT = 12` constant (DO-068-08, Q-068-07 — fixed, no config
+     key); new v3 store additions (DO-068-06): `flowV3` fetched once, whole-scope, on page load
      (no pagination/cursor state to manage); a per-card loading-state map
-     (`"idle"|"loading"|"loaded"|"failed"`) and `requestCardPhotos(albumId, limit)`, triggered only
-     when a card enters the virtualizer's visible range ± overscan (never eagerly for every album);
+     (`"idle"|"loading"|"loaded"|"failed"`), a per-card photo-data cache keyed by album id, and
+     `requestCardPhotos(albumId, limit=FLOW_CAROUSEL_PHOTO_LIMIT)`, triggered only when a card enters
+     the virtualizer's visible range ± overscan (never eagerly for every album) and skipped entirely
+     if that album id is already cached;
      new virtualized card list using `@tanstack/vue-virtual`'s `measureElement` mode (not
      `PhotoGridVirtual.vue`'s analytic mode) — since every album is already loaded, the virtualizer
      does rendering-window bookkeeping only, no "load more" trigger; card components (`AlbumCard.vue`,
@@ -151,8 +164,9 @@ directly in this file's increment entries, not a separate log.
    - _Steps:_ Add `loading="lazy"` to every `<img>` in `HeaderImage.vue`/`TopImages.vue`/
      `CarouselImages.vue`; add `flowDescriptionTag($albumId)` cache wrapping
      `Markdown::convert()` in `FlowItemResource`/`FlowListResource`, invalidated on album `description`
-     save (extend the existing album-save cache-invalidation listener, no new hook — per
-     `[[feedback_no_hooks_explicit_writes]]`, call explicitly at the existing save call site).
+     save — at **both** description-save call sites, `UpdateAlbumRequest` (single) and
+     `PatchBulkAlbumRequest` (bulk), not just the single-album path (no new hook — per
+     `[[feedback_no_hooks_explicit_writes]]`, call explicitly at each existing save call site).
    - _Commands:_ `npm run check`; `php artisan test --filter=` (whichever suite covers album-save
      cache invalidation).
    - _Exit:_ Network tab confirms lazy-loading (flagged pending if no browser available this
@@ -161,13 +175,19 @@ directly in this file's increment entries, not a separate log.
 5. **I5 – `published_at_orig_tz` column + cast wiring**
    - _Goal:_ FR-068-10, FR-068-11, FR-068-12, NFR-068-05, NFR-068-06.
    - _Preconditions:_ None (Q-068-01 confirmed as Option A by the feature owner, 2026-09-17).
-   - _Steps:_ New migration: add `published_at_orig_tz` (`string(31)`, nullable) to `base_albums`,
-     backfill `date_default_timezone_get()` for existing non-null `published_at` rows; add
-     `HasUTCBasedTimes` to `BaseAlbumImpl`'s `implements` clause; change `published_at`'s cast to
-     `DateTimeWithTimezoneCast::class`; add `published_at_orig_tz` to the explicit `$attributes`
-     array. Tests first: a `BaseAlbumImplTest`/extension of existing model tests verifying the cast
-     round-trips correctly and dirty-checking works across the precision-parity lesson from
-     `[[project_datetimewithtimezonecast_dirty_check_bug]]`.
+   - _Steps:_ New migration (closest precedent: `2025_01_24_200235_add_initial_taken_at.php` — a
+     plain schema-add + simple backfill, not the larger historical
+     `2021_06_01_181900_refactor_timestamps_anew.php`): add `published_at_orig_tz` (`string(31)`,
+     nullable) to `base_albums`, backfill `date_default_timezone_get()` for existing non-null
+     `published_at` rows — a best-effort approximation (the admin's *current* default timezone at
+     migration time, not necessarily whatever was in effect when each historical row was actually
+     set), documented as such, mirroring the same accepted approximation `taken_at_orig_tz`'s own
+     historical backfill made; add `HasUTCBasedTimes` to `BaseAlbumImpl`'s `implements` clause;
+     change `published_at`'s cast to `DateTimeWithTimezoneCast::class`; add `published_at_orig_tz` to
+     the explicit `$attributes` array. Tests first: a `BaseAlbumImplTest`/extension of existing model
+     tests verifying the cast round-trips correctly and dirty-checking works (reusing the cast's
+     already-shipped `compare()` method — see Implementation Drift Gate above for why the *other*
+     half of that historical bug, precision mismatch, doesn't apply to this column pair).
    - _Commands:_ `php artisan test --filter=BaseAlbumImplTest` (or the actual closest existing test
      class name, found during implementation), `vendor/bin/phpstan analyse`.
    - _Exit:_ Existing `published_at` reads/writes (Flow, Landing Page, `AlbumQueryPolicy`) unchanged;
@@ -185,7 +205,8 @@ directly in this file's increment entries, not a separate log.
    - _Goal:_ FR-068-13, FR-068-14, FR-068-15.
    - _Preconditions:_ I5.
    - _Steps:_ `HasPublishedAt` contract + trait, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`,
-     `UpdateAlbumRequest` rule (`sometimes|nullable|date`) + `processValidatedValues()` wiring;
+     `UpdateAlbumRequest` rule (`present|nullable|date` — matches this endpoint's own majority
+     convention, not `sometimes`) + `processValidatedValues()` wiring;
      `InitConfig::$is_flow_opt_in_strategy` + `LycheeState.ts` field; `AlbumProperties.vue`'s new
      publish-date field (checkbox + `datetime-local` + timezone select), mirroring `PhotoEdit.vue`'s
      `taken_at` pattern; `UpdateAbumData`/`AlbumService.updateAlbum()` extended with `published_at`.
@@ -272,5 +293,8 @@ full increment map (I1–I10) may proceed.
   once real Flow usage/traffic patterns are observed (flagged as a Risk above).
 - Consider a "publish now" one-click convenience action for the publish-date field, if requested
   after this feature ships (explicitly out of scope here).
+- If skeleton-to-real-content scroll jank (NFR-068-08) is observed during I3b's manual verification,
+  design and add explicit scroll-compensation logic (mirroring Feature 066's
+  `cumulativeChunkHeightAbove()` approach) as a follow-up increment.
 - If Q-068-01 is instead resolved as Option B/C, this plan's I5–I9 need a full rewrite against a real
   new `flow_datetime` column, and Landing Page's ordering scope must be separately re-planned.

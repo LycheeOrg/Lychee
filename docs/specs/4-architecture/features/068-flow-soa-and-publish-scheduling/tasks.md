@@ -21,9 +21,9 @@ _Last updated: 2026-09-17_
   _Intent:_ Failing test staged first. Assert there is no `page`/cursor param accepted or needed.
   _Verification commands:_ `php artisan test --filter=FlowV3Test` (expect failure/missing route).
 
-- [ ] T-068-02 – Add `GET /api/v3/Flow` route and controller action (no `page`/cursor param — each
-  album is its own "bucket equivalent," loaded whole-scope, per Decision Card Q-068-04), gated by
-  `is_struct_of_array_enabled` (F-068-01).
+- [ ] T-068-02 – Add `GET /api/v3/Flow` route and controller action (no `page`/cursor param, no
+  `flow_max_items` cap applied — each album is its own "bucket equivalent," loaded whole-scope, per
+  Decision Cards Q-068-04/Q-068-06), gated by `is_struct_of_array_enabled` (F-068-01).
   _Verification commands:_ `vendor/bin/phpstan analyse`.
 
 - [ ] T-068-03 – Implement `App\Http\Resources\V3\FlowListResource` (parallel-array accumulation,
@@ -49,9 +49,12 @@ _Last updated: 2026-09-17_
 
 ### I3 – Frontend v3 store + dynamically-measured virtualized rendering
 
-- [ ] T-068-08 – New Flow v3 store additions: `flowV3` (whole-scope album-level arrays, fetched once
-  on load, no pagination state), a per-card loading-state map (`"idle"|"loading"|"loaded"|"failed"`),
-  and `requestCardPhotos(albumId, limit)` (DO-068-06, F-068-05).
+- [ ] T-068-08 – Add `FLOW_CAROUSEL_PHOTO_LIMIT = 12` frontend constant (DO-068-08, no config key,
+  Q-068-07). New Flow v3 store additions: `flowV3` (whole-scope album-level arrays, fetched once on
+  load, no pagination state), a per-card loading-state map (`"idle"|"loading"|"loaded"|"failed"`), a
+  per-card photo-data cache keyed by album id (centralized, not component-local — required for
+  S-068-15), and `requestCardPhotos(albumId, limit=FLOW_CAROUSEL_PHOTO_LIMIT)`, which no-ops if that
+  album id is already cached (DO-068-06, F-068-04, F-068-05).
   _Verification commands:_ `npm run check`.
 
 - [ ] T-068-09 – New dynamically-measured (`measureElement`) virtualized card list, replacing
@@ -62,7 +65,8 @@ _Last updated: 2026-09-17_
 
 - [ ] T-068-10 – Adapt `AlbumCard.vue`/`CarouselImages.vue`/`TopImages.vue`/`HeaderImage.vue` to
   consume the new per-card photo-preview fetch (via `ratios?limit=N` + `Asset`) instead of a nested
-  `photos` array (F-068-04).
+  `photos` array; confirm `Blur.vue`'s NSFW blur trigger still reads off `is_nsfws[i]` correctly in
+  the new card path (F-068-04, F-068-02).
   _Verification commands:_ `npm run check`.
 
 - [ ] T-068-11 – Dev-console/manual verification: `/flow` fires exactly one `GET /api/v3/Flow`
@@ -93,10 +97,13 @@ _Last updated: 2026-09-17_
   browser available).
 
 - [ ] T-068-13 – Add `flowDescriptionTag($albumId)` managed-cache wrapping `Markdown::convert()` in
-  `FlowItemResource`/`FlowListResource`; invalidate explicitly at the existing album-description-save
-  call site (no model hook, per `[[feedback_no_hooks_explicit_writes]]`) (F-068-07, S-068-08).
+  `FlowItemResource`/`FlowListResource`; invalidate explicitly at **every** description-save call
+  site — `UpdateAlbumRequest`'s single-album path AND `PatchBulkAlbumRequest`'s bulk-edit path both
+  write `description` and must both trigger invalidation (no model hook, per
+  `[[feedback_no_hooks_explicit_writes]]`) (F-068-07, S-068-08).
   _Verification commands:_ `php artisan test --filter=` (whichever suite covers album-save cache
-  invalidation, found during implementation).
+  invalidation, found during implementation) — add a bulk-edit-specific case if the existing suite
+  only covers the single-album path.
 
 ### I5 – `published_at_orig_tz` column + cast wiring
 
@@ -105,15 +112,18 @@ _Last updated: 2026-09-17_
   _Verification commands:_ None (documentation check). Confirmed 2026-09-17, owner: "obviously A."
 
 - [ ] T-068-15 – Write a model test asserting `published_at`'s cast round-trips a timezone-aware
-  instant correctly, and that dirty-checking works across the precision-parity lesson from
-  `[[project_datetimewithtimezonecast_dirty_check_bug]]`, before implementing the cast change
-  (F-068-10, F-068-11, NFR-068-05).
+  instant correctly, and that dirty-checking works via the cast's already-shipped `compare()` method
+  (F-068-10, F-068-11, NFR-068-05). Note: `[[project_datetimewithtimezonecast_dirty_check_bug]]`'s
+  *precision-mismatch* half doesn't apply here (only one of the two new columns is a `dateTime`); its
+  *dirty-check* half (the `compare()` fix) is what this test actually exercises.
   _Verification commands:_ `php artisan test --filter=` (new/closest existing `BaseAlbumImpl`-related
   test class) — expect failure first.
 
-- [ ] T-068-16 – New migration: add `published_at_orig_tz` (`string(31)`, nullable) to
-  `base_albums`; backfill `date_default_timezone_get()` for existing non-null `published_at` rows
-  (F-068-10).
+- [ ] T-068-16 – New migration (precedent: `2025_01_24_200235_add_initial_taken_at.php`): add
+  `published_at_orig_tz` (`string(31)`, nullable) to `base_albums`; backfill
+  `date_default_timezone_get()` for existing non-null `published_at` rows — document in the migration
+  itself that this is a best-effort approximation (current default timezone at migration time, not
+  necessarily what was in effect historically) (F-068-10).
   _Verification commands:_ `php artisan migrate --pretend` review; scoped migration test if this
   repo has a precedent for testing migrations directly (else code review only).
 
@@ -143,8 +153,8 @@ _Last updated: 2026-09-17_
   _Verification commands:_ `php artisan test --filter=UpdateAlbumRequestTest` — expect failure first.
 
 - [ ] T-068-21 – Add `HasPublishedAt` contract + trait, `RequestAttribute::PUBLISHED_AT_ATTRIBUTE`,
-  `UpdateAlbumRequest` rule (`sometimes|nullable|date`) + `processValidatedValues()` wiring
-  (F-068-13).
+  `UpdateAlbumRequest` rule (`present|nullable|date` — matches this endpoint's own convention, not
+  `sometimes`) + `processValidatedValues()` wiring (F-068-13).
   _Verification commands:_ `php artisan test --filter=UpdateAlbumRequestTest`; `vendor/bin/phpstan
   analyse`.
 
