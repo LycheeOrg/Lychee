@@ -22,6 +22,7 @@ enum OmnipayProviderType: string
 	case DUMMY = 'Dummy';
 	case MOLLIE = 'Mollie';
 	case PAYPAL = 'PayPal';
+	case PAYZUM = 'Payzum';
 	case STRIPE = 'Stripe';
 
 	/**
@@ -48,6 +49,7 @@ enum OmnipayProviderType: string
 		return match ($this) {
 			OmnipayProviderType::DUMMY => ['apiKey'],
 			OmnipayProviderType::MOLLIE => ['apiKey', 'profileId'],
+			OmnipayProviderType::PAYZUM => ['apiKey', 'webhookSecret'],
 			OmnipayProviderType::STRIPE => ['apiKey', 'publishableKey', 'disabled'], // we set disabled to prevent it from showing up.
 			OmnipayProviderType::PAYPAL => ['clientId', 'secret'],
 		};
