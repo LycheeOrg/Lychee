@@ -15,9 +15,11 @@ import LeftMenu from "@/v7/menus/LeftMenu.vue";
 import Error from "@/v7/views/Error.vue";
 import EmbedCodeDialog from "@/v7/components/forms/album/EmbedCodeDialog.vue";
 import { disableCtrlA } from "@/utils/keybindings-utils";
+import { useDocumentTitle } from "@/composables/useDocumentTitle";
 import ConfirmDialog from "primevue/confirmdialog";
 
 disableCtrlA();
+useDocumentTitle();
 </script>
 
 <style lang="css">

@@ -24,9 +24,11 @@ import Error from "@/v8/views/Error.vue";
 import EmbedCodeDialog from "@/v8/components/forms/album/EmbedCodeDialog.vue";
 import SpotlightSearch from "@/v8/components/modals/SpotlightSearch.vue";
 import { disableCtrlA } from "@/utils/keybindings-utils";
+import { useDocumentTitle } from "@/composables/useDocumentTitle";
 import { theme } from "@/v8/style/theme";
 
 disableCtrlA();
+useDocumentTitle();
 </script>
 
 <style>
