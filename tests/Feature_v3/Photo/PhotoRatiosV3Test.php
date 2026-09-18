@@ -411,4 +411,53 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson(['ids' => [$target->id], 'bucket_ids' => ['2024']]);
 	}
+
+	// ── limit (Feature 068, FR-068-03, S-068-02..04) ────────────────
+
+	public function testLimitReturnsExactlyNInEffectiveSortOrder(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'created_at']);
+		DB::table('configs')->where('key', '=', 'sorting_photos_order')->update(['value' => 'DESC']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$oldest = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2022-01-01')]);
+		$middle = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2023-01-01')]);
+		$newest = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => new Carbon('2024-01-01')]);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['limit' => 2]);
+		$this->assertOk($response);
+		self::assertSame([$newest->id, $middle->id], $response->json('ids'));
+		self::assertNotContains($oldest->id, $response->json('ids'));
+	}
+
+	public function testLimitAndBucketIdsBothProvidedReturns422(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", [
+			'limit' => 5,
+			'bucket_ids' => ['2024'],
+		]);
+		self::assertSame(422, $response->getStatusCode());
+	}
+
+	public function testLimitAndPhotoIdsBothProvidedReturns422(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", [
+			'limit' => 5,
+			'photo_ids' => [$photo->id],
+		]);
+		self::assertSame(422, $response->getStatusCode());
+	}
+
+	public function testInvalidLimitReturns422(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['limit' => 0]);
+		self::assertSame(422, $response->getStatusCode());
+	}
 }

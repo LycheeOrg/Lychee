@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Set album timeline mode',
             'photo_timeline' => 'Set photo timeline mode',
             'layout' => 'Set photo layout',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Tags',
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tags are required.',

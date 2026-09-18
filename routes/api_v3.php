@@ -33,6 +33,14 @@ Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetCon
 // Struct-of-Arrays JSON collection endpoint (ADR-0009).
 Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
 
+// Unpaginated Struct-of-Arrays listing for the Flow feed (Feature 068,
+// API-068-01) - each album is its own "bucket equivalent," loaded
+// whole-scope in one request; per-card photo previews are fetched
+// separately via the existing `/Albums/{album_id}/Photos?limit=N` route
+// below, coexisting with the v2 `GET /Flow` route (routes/api_v2.php)
+// behind `is_struct_of_array_enabled`.
+Route::get('/Flow', [Gallery\FlowListController::class, 'index']);
+
 // Flat Struct-of-Arrays listing of album access permissions for the bulk-share page.
 Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);
 

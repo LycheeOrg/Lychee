@@ -72,6 +72,33 @@
 						</div>
 					</template>
 
+					<template v-if="is_flow_opt_in_strategy">
+						<div v-for="field in dateFields" :key="field.key" class="flex items-start gap-3">
+							<UCheckbox v-model="editEnabled[field.key]" class="mt-2 shrink-0" />
+							<UFormField :label="$t('bulk_album_edit.' + field.label)" class="flex-1">
+								<div class="flex items-center gap-2">
+									<input
+										:id="field.key"
+										:value="editDateValues[field.key] ?? ''"
+										type="datetime-local"
+										step="1"
+										class="border-0 p-0 border-b hover:border-b-primary-400 focus:border-b-primary-400 bg-transparent"
+										@input="(e: Event) => onDateChange(field.key, (e.target as HTMLInputElement).value || null)"
+									/>
+									<USelectMenu
+										:model-value="findOption(timeZoneOptions, editDateTzValues[field.key] ?? null)"
+										:items="timeZoneOptions"
+										label-key="label"
+										size="sm"
+										@update:model-value="(v: SelectOption<string> | undefined) => onDateTzChange(field.key, v?.value ?? null)"
+									>
+										<template #item-label="{ item }">{{ item.label }}</template>
+									</USelectMenu>
+								</div>
+							</UFormField>
+						</div>
+					</template>
+
 					<p class="font-semibold text-sm mt-2">{{ $t("bulk_album_edit.section_visibility") }}</p>
 
 					<div class="grid grid-cols-2 gap-3 text-sm">
@@ -134,6 +161,7 @@ import {
 	aspectRatioOptions,
 	timelinePhotoGranularityOptions,
 	timelineAlbumGranularityOptions,
+	timeZoneOptions,
 	type SelectOption,
 } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -151,12 +179,17 @@ const visible = defineModel<boolean>("visible", { default: false });
 
 const toast = useAppToast();
 
-const { is_se_enabled, is_se_preview_enabled } = storeToRefs(useLycheeStateStore());
+const { is_se_enabled, is_se_preview_enabled, is_flow_opt_in_strategy } = storeToRefs(useLycheeStateStore());
 
 const editEnabled = ref<Record<string, boolean>>({});
 const editTextValues = ref<Record<string, string | null>>({});
 const editEnumValues = ref<Record<string, string | null>>({});
 const editBoolValues = ref<Record<string, boolean>>({});
+// Feature 068 (FR-068-17): this dialog's first date-typed field - the
+// datetime-local string and its timezone offset are tracked separately,
+// combined into one ISO string only at submit time (onDateChange/doEditFields).
+const editDateValues = ref<Record<string, string | null>>({});
+const editDateTzValues = ref<Record<string, string | null>>({});
 
 const textFields = [
 	{ key: "description", label: "field_description" },
@@ -184,6 +217,8 @@ const sortingPairs = [
 	col: { key: string; label: string; options: SelectOption<string>[] };
 	order: { key: string; label: string; options: SelectOption<string>[] };
 }[];
+
+const dateFields = [{ key: "published_at", label: "field_published_at" }];
 
 const boolFields = [
 	{ key: "is_nsfw", label: "field_is_nsfw", red: true, seOnly: false },
@@ -223,12 +258,39 @@ function onBoolChange(key: string, val: boolean): void {
 	editEnabled.value[key] = true;
 }
 
+// Mirrors AlbumProperties.vue's own `browserUtcOffset()` - a bare
+// datetime-local value has no timezone of its own, so one must be picked
+// before it can be sent; defaulting to the browser's own offset here keeps
+// `doEditFields()` from ever appending an empty (offset-less) suffix.
+function browserUtcOffset(): string {
+	const minutes = -new Date().getTimezoneOffset();
+	const sign = minutes >= 0 ? "+" : "-";
+	const abs = Math.abs(minutes);
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+
+function onDateChange(key: string, val: string | null): void {
+	editDateValues.value[key] = val;
+	editEnabled.value[key] = true;
+	if (val !== null && (editDateTzValues.value[key] === null || editDateTzValues.value[key] === undefined)) {
+		editDateTzValues.value[key] = browserUtcOffset();
+	}
+}
+
+function onDateTzChange(key: string, val: string | null): void {
+	editDateTzValues.value[key] = val;
+	editEnabled.value[key] = true;
+}
+
 watch(visible, (val) => {
 	if (val) {
 		const enabled: Record<string, boolean> = {};
 		const textVals: Record<string, string | null> = {};
 		const enumVals: Record<string, string | null> = {};
 		const boolVals: Record<string, boolean> = {};
+		const dateVals: Record<string, string | null> = {};
+		const dateTzVals: Record<string, string | null> = {};
 		textFields.forEach((f) => {
 			enabled[f.key] = false;
 			textVals[f.key] = null;
@@ -247,10 +309,17 @@ watch(visible, (val) => {
 			enabled[f.key] = false;
 			boolVals[f.key] = false;
 		});
+		dateFields.forEach((f) => {
+			enabled[f.key] = false;
+			dateVals[f.key] = null;
+			dateTzVals[f.key] = null;
+		});
 		editEnabled.value = enabled;
 		editTextValues.value = textVals;
 		editEnumValues.value = enumVals;
 		editBoolValues.value = boolVals;
+		editDateValues.value = dateVals;
+		editDateTzValues.value = dateTzVals;
 	}
 });
 
@@ -278,6 +347,27 @@ function doEditFields(): void {
 			payload[f.key] = editBoolValues.value[f.key];
 		}
 	});
+	for (const f of dateFields) {
+		if (editEnabled.value[f.key] !== true) {
+			continue;
+		}
+		const date = editDateValues.value[f.key];
+		if (date === null || date === "") {
+			payload[f.key] = null;
+			continue;
+		}
+		const tz = editDateTzValues.value[f.key];
+		if (tz === null || tz === undefined) {
+			// Block submission rather than silently sending an offset-less
+			// value the backend would otherwise interpret in its own
+			// default timezone.
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_missing_timezone"), life: 3000 });
+			return;
+		}
+		// A `datetime-local` input value omits seconds when they are zero
+		// (`YYYY-MM-DDTHH:mm`), but the backend requires `Y-m-d\TH:i:sP`.
+		payload[f.key] = `${date.length === 16 ? `${date}:00` : date}${tz}`;
+	}
 
 	BulkAlbumEditService.patchAlbums(payload as Parameters<typeof BulkAlbumEditService.patchAlbums>[0])
 		.then(() => {

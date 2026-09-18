@@ -134,6 +134,9 @@ class AlbumController extends Controller
 		$album->photo_layout = $request->photoLayout();
 		$album->is_pinned = $request->is_pinned();
 		$album->cover_id = $request->coverPhoto()?->id;
+		if ($request->publishedAtProvided()) {
+			$album->published_at = $request->publishedAt();
+		}
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();

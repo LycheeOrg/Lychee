@@ -15,6 +15,7 @@ use App\Enum\AlbumHeaderSize;
 use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\FacePermissionMode;
+use App\Enum\FlowStrategy;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
 use App\Enum\PhotoHighlightVisibilityType;
@@ -103,6 +104,9 @@ class InitConfig extends Data
 	public int $timeline_lens_height;
 	public int $timeline_lens_falloff;
 	public int $timeline_lens_magnification;
+
+	// Flow settings (Feature 068, FR-068-14).
+	public bool $is_flow_opt_in_strategy;
 
 	// Site title & dropbox key if logged in as admin.
 	public string $title;
@@ -264,6 +268,10 @@ class InitConfig extends Data
 		$this->timeline_lens_height = request()->configs()->getValueAsInt('timeline_lens_height');
 		$this->timeline_lens_falloff = request()->configs()->getValueAsInt('timeline_lens_falloff');
 		$this->timeline_lens_magnification = request()->configs()->getValueAsInt('timeline_lens_magnification');
+
+		// Flow settings
+		$this->is_flow_opt_in_strategy = request()->configs()->getValueAsBool('flow_enabled') &&
+			request()->configs()->getValueAsEnum('flow_strategy', FlowStrategy::class) === FlowStrategy::OPT_IN;
 
 		// Site title & dropbox key if logged in as admin.
 		// dd(request()->config());

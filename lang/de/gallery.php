@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Zeitstrahl-Modus des Albums festlegen',
             'photo_timeline' => 'Zeitstrahl-Modus der Fotos festlegen',
             'layout' => 'Fotolayout festlegen',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Tags',
             'show_tags' => 'Anzuzeigende Tags festlegen',
             'tags_required' => 'Tags sind erforderlich.',

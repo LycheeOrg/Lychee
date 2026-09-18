@@ -425,6 +425,7 @@ declare namespace App {
 					cover_id: string | null;
 					album_timeline: App.Enum.TimelineAlbumGranularity | null;
 					photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+					published_at: string | null;
 					tags: string[];
 					persons: App.Http.Resources.Models.Utils.PersonNameResource[];
 					is_and: boolean;
@@ -622,6 +623,7 @@ declare namespace App {
 					timeline_lens_height: number;
 					timeline_lens_falloff: number;
 					timeline_lens_magnification: number;
+					is_flow_opt_in_strategy: boolean;
 					title: string;
 					site_logo: string;
 					dropbox_api_key: string;
@@ -1784,6 +1786,20 @@ declare namespace App {
 					ids: string[];
 					grants_edit: boolean[];
 					grants_download: boolean[];
+				};
+				export type FlowListResource = {
+					ids: string[];
+					titles: string[];
+					descriptions: string[];
+					cover_ids: (string | null)[];
+					owner_names: (string | null)[];
+					is_nsfws: boolean[];
+					num_photos: number[];
+					num_children: number[];
+					min_max_texts: (string | null)[];
+					published_created_ats: string[];
+					diff_published_created_ats: string[];
+					statistics: (App.Http.Resources.Models.AlbumStatisticsResource | null)[];
 				};
 				export type MapBucketResource = {
 					bucket_ids: string[];

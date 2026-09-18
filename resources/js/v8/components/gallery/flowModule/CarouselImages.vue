@@ -5,6 +5,7 @@
 				:src="photo.size_variants.thumb?.url ?? '/img/no_images.svg'"
 				:alt="photo.title"
 				class="h-(--carousel-height) w-full object-cover"
+				loading="lazy"
 				@click="emits('clicked', idx + 1)"
 			/>
 			<Blur v-if="props.isNsfw" />

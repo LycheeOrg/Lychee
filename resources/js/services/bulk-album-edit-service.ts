@@ -32,6 +32,8 @@ export type PatchPayload = {
 	grants_full_photo_access?: boolean;
 	grants_download?: boolean;
 	grants_upload?: boolean;
+	// Feature 068 (FR-068-16): ISO-8601 string with an explicit offset, or null to clear.
+	published_at?: string | null;
 };
 
 export type SetOwnerPayload = {

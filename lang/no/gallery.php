@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Angi tidslinjemodus for album',
             'photo_timeline' => 'Angi tidslinjemodus for bilder',
             'layout' => 'Angi bildeoppsett',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Tagger',
             'show_tags' => 'Angi tagger som skal vises',
             'tags_required' => 'Tagger er obligatoriske.',

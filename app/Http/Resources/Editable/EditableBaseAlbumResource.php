@@ -39,6 +39,10 @@ class EditableBaseAlbumResource extends Data
 	public ?string $cover_id;
 	public ?TimelineAlbumGranularity $album_timeline;
 	public ?TimelinePhotoGranularity $photo_timeline;
+	// Feature 068 (FR-068-15): ISO-8601 string with offset, or null. Only ever
+	// set for a real Album (Flow/Landing Page both only ever query Album, never
+	// TagAlbum/PersonAlbum) - null for the other two, same as license/header_id/etc above.
+	public ?string $published_at;
 
 	/** @var string[] */
 	public array $tags = [];
@@ -65,6 +69,7 @@ class EditableBaseAlbumResource extends Data
 		$this->album_timeline = null;
 		$this->photo_timeline = $album->photo_timeline;
 		$this->is_pinned = $album->is_pinned;
+		$this->published_at = null;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;
@@ -74,6 +79,7 @@ class EditableBaseAlbumResource extends Data
 			$this->cover_id = $album->cover_id;
 			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
 			$this->album_timeline = $album->album_timeline;
+			$this->published_at = $album->published_at?->toIso8601String();
 			// Note: this is the album's own descriptive tags (Feature 050), unrelated
 			// to the photo-matching criteria tags populated below for TagAlbum.
 			$this->tags = $album->tags->map(fn ($t) => $t->name)->all();

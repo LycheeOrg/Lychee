@@ -16,6 +16,7 @@ use App\Enum\OrderSortingType;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
+use Illuminate\Support\Carbon;
 
 /**
  * Typed payload for a bulk partial-update of album metadata and visibility.
@@ -47,6 +48,9 @@ class BulkAlbumPatchData
 	public ?AspectRatioType $album_thumb_aspect_ratio;
 	public ?TimelineAlbumGranularity $album_timeline;
 	public ?TimelinePhotoGranularity $photo_timeline;
+	// Feature 068 (FR-068-16): null here is ambiguous between "not present"
+	// and "present, clearing the value" - always disambiguate via has().
+	public ?Carbon $published_at;
 	// Boolean fields: null here means "not present in the request"
 	public ?bool $is_nsfw;
 	public ?bool $is_public;
@@ -69,6 +73,7 @@ class BulkAlbumPatchData
 	 * @param ?AspectRatioType          $album_thumb_aspect_ratio
 	 * @param ?TimelineAlbumGranularity $album_timeline
 	 * @param ?TimelinePhotoGranularity $photo_timeline
+	 * @param ?Carbon                   $published_at
 	 * @param ?bool                     $is_nsfw
 	 * @param ?bool                     $is_public
 	 * @param ?bool                     $is_link_required
@@ -90,6 +95,7 @@ class BulkAlbumPatchData
 		?AspectRatioType $album_thumb_aspect_ratio,
 		?TimelineAlbumGranularity $album_timeline,
 		?TimelinePhotoGranularity $photo_timeline,
+		?Carbon $published_at,
 		?bool $is_nsfw,
 		?bool $is_public,
 		?bool $is_link_required,
@@ -110,6 +116,7 @@ class BulkAlbumPatchData
 		$this->album_thumb_aspect_ratio = $album_thumb_aspect_ratio;
 		$this->album_timeline = $album_timeline;
 		$this->photo_timeline = $photo_timeline;
+		$this->published_at = $published_at;
 		$this->is_nsfw = $is_nsfw;
 		$this->is_public = $is_public;
 		$this->is_link_required = $is_link_required;
@@ -143,6 +150,7 @@ class BulkAlbumPatchData
 			album_thumb_aspect_ratio: array_key_exists('album_thumb_aspect_ratio', $values) ? AspectRatioType::tryFrom($values['album_thumb_aspect_ratio']) : null,
 			album_timeline: array_key_exists('album_timeline', $values) ? TimelineAlbumGranularity::tryFrom($values['album_timeline']) : null,
 			photo_timeline: array_key_exists('photo_timeline', $values) ? TimelinePhotoGranularity::tryFrom($values['photo_timeline']) : null,
+			published_at: array_key_exists('published_at', $values) && $values['published_at'] !== null ? Carbon::parse($values['published_at']) : null,
 			is_nsfw: array_key_exists('is_nsfw', $values) ? filter_var($values['is_nsfw'], FILTER_VALIDATE_BOOLEAN) : null,
 			is_public: array_key_exists('is_public', $values) ? filter_var($values['is_public'], FILTER_VALIDATE_BOOLEAN) : null,
 			is_link_required: array_key_exists('is_link_required', $values) ? filter_var($values['is_link_required'], FILTER_VALIDATE_BOOLEAN) : null,
