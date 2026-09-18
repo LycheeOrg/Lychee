@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import FlowService from "@/services/flow-service";
-import PhotoChildrenV3Service from "@/services/photo-children-v3-service";
+import PhotoChildrenV3Service, { type PhotoDetailResource } from "@/services/photo-children-v3-service";
 import { adaptFlowTiles, type AdaptedFlowTile } from "@/v8/utils/adaptFlowTile";
 import { adaptPhotoTile, mergePhotoDetail, type AdaptedPhotoTile } from "@/v8/utils/adaptPhotoTile";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -33,10 +33,17 @@ export const useFlowStateStore = defineStore("flow-store", {
 		cardPhotosV3: {} as Record<string, AdaptedPhotoTile[] | undefined>,
 		cardLoadStateV3: {} as Record<string, CardLoadState | undefined>,
 
-		// On-demand tier-3 (`details`) fetch dedup, mirrors `AlbumState.ts`'s/
-		// `TimelineState.ts`'s own `photoDetailsResolvedIds` - see
-		// `loadPhotoDetailsV3()`.
-		photoDetailsResolvedIdsV3: {} as Record<string, boolean>,
+		// On-demand tier-3 (`details`) fetch cache, keyed by photo id - see
+		// `loadPhotoDetailsV3()`. Unlike `AlbumState.ts`'s/`TimelineState.ts`'s
+		// own boolean-only `photoDetailsResolvedIds`, this stores the actual
+		// resolved detail payload (plus its row index into it): a Flow card's
+		// tile isn't the single, stable object those two stores' own
+		// `photosState.photos` array element is - `Flow.vue`'s direct-fetch
+		// fallback (a photo id outside a card's capped preview) builds a
+		// brand-new `adaptPhotoTile()` instance every time it's opened, so a
+		// bare "already resolved" flag would permanently skip re-merging into
+		// that fresh, still-placeholder-only instance on a second open.
+		photoDetailsCacheV3: {} as Record<string, { detail: PhotoDetailResource; index: number } | undefined>,
 
 		// Bug fix: bumped by resetV3(). `loadV3()`/`requestCardPhotos()` both
 		// await a network request bracketed by an unconditional write to this
@@ -142,12 +149,27 @@ export const useFlowStateStore = defineStore("flow-store", {
 		 * `albumId` rather than to one shared photo listing.
 		 */
 		async loadPhotoDetailsV3(albumId: string, tiles: AdaptedPhotoTile[]): Promise<void> {
-			const generation = this.generationV3;
-			const idsToFetch = [...new Set(tiles.map((p) => p.id))].filter((id) => !this.photoDetailsResolvedIdsV3[id]);
+			const idsToFetch: string[] = [];
+			for (const tile of tiles) {
+				const cached = this.photoDetailsCacheV3[tile.id];
+				if (cached !== undefined) {
+					// Already resolved by a previous call - merge the cached
+					// payload straight into this tile rather than re-fetching.
+					// `tile` may be a brand-new object even for an already-
+					// resolved id (Flow.vue's direct-fetch fallback builds a
+					// fresh `adaptPhotoTile()` instance every time a photo
+					// outside a card's capped preview is reopened), so this
+					// merge can't be skipped just because the id is resolved.
+					mergePhotoDetail(tile, cached.detail, cached.index);
+				} else if (!idsToFetch.includes(tile.id)) {
+					idsToFetch.push(tile.id);
+				}
+			}
 			if (idsToFetch.length === 0) {
 				return;
 			}
 
+			const generation = this.generationV3;
 			const CHUNK_SIZE = 300;
 			const chunks: string[][] = [];
 			for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
@@ -163,14 +185,17 @@ export const useFlowStateStore = defineStore("flow-store", {
 				for (const response of responses) {
 					const detail = response.data;
 					for (let i = 0; i < detail.ids.length; i++) {
-						const photo = tiles.find((p) => p.id === detail.ids[i]);
+						const id = detail.ids[i];
+						// Cache the payload (by id, before marking it resolved
+						// is even a separate step - the cache entry's presence
+						// *is* "resolved") so a tile rebuilt later for this same
+						// id - see the comment above - can still be merged.
+						this.photoDetailsCacheV3[id] = { detail, index: i };
+						const photo = tiles.find((p) => p.id === id);
 						if (photo !== undefined) {
 							mergePhotoDetail(photo, detail, i);
 						}
 					}
-				}
-				for (const id of idsToFetch) {
-					this.photoDetailsResolvedIdsV3[id] = true;
 				}
 			} catch (error) {
 				console.error(error);
@@ -183,7 +208,7 @@ export const useFlowStateStore = defineStore("flow-store", {
 			this.flowV3Loaded = false;
 			this.cardPhotosV3 = {};
 			this.cardLoadStateV3 = {};
-			this.photoDetailsResolvedIdsV3 = {};
+			this.photoDetailsCacheV3 = {};
 		},
 	},
 });
