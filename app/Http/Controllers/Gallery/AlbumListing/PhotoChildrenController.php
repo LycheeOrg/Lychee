@@ -75,8 +75,9 @@ class PhotoChildrenController extends Controller
 		$user = Auth::user();
 		$bucket_ids = $request->bucketIds();
 		$photo_ids = $request->photoIds();
+		$limit = $request->limit();
 
-		$scope_digest = $this->cache_key_provider->photoRatiosScopeDigest($bucket_ids, $photo_ids);
+		$scope_digest = $this->cache_key_provider->photoRatiosScopeDigest($bucket_ids, $photo_ids, $limit);
 		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 		$key = $this->cache_key_provider->photoRatiosKey($album->get_id(), $scope_digest, $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
@@ -86,7 +87,7 @@ class PhotoChildrenController extends Controller
 			$enabled,
 			$key,
 			$this->photoRatiosTags($album->get_id(), $bucket_ids, $user?->id),
-			fn (): PhotoRatioResource => $this->query_photo_ratios->do($album, $user, $bucket_ids, $photo_ids),
+			fn (): PhotoRatioResource => $this->query_photo_ratios->do($album, $user, $bucket_ids, $photo_ids, $limit),
 			ttl: $ttl,
 		);
 	}

@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'تنظیم حالت جدول زمانی آلبوم',
             'photo_timeline' => 'تنظیم حالت جدول زمانی عکس',
             'layout' => 'تنظیم چیدمان عکس',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'برچسب‌ها',
             'show_tags' => 'تنظیم برچسب‌های قابل نمایش',
             'tags_required' => 'برچسب‌ها الزامی هستند.',

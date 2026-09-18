@@ -17,6 +17,7 @@
 				:src="photo.size_variants.small?.url ?? '/img/no_images.svg'"
 				:alt="photo.title"
 				class="object-cover h-full w-full"
+				loading="lazy"
 				@click="emits('clicked', idx)"
 			/>
 			<Blur v-if="props.isNsfw" />

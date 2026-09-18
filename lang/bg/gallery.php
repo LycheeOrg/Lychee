@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Задай времева линия за албума',
             'photo_timeline' => 'Задай времева линия за снимките',
             'layout' => 'Задай оформление на снимките',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Тагове',
             'show_tags' => 'Задай тагове за показване',
             'tags_required' => 'Таговете са задължителни.',

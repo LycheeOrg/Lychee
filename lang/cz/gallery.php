@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Nastavit režim časové osy alba',
             'photo_timeline' => 'Nastavit režim časové osy fotografií',
             'layout' => 'Nastavit rozložení fotografií',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Štítky',
             'show_tags' => 'Nastavit zobrazované štítky',
             'tags_required' => 'Štítky jsou povinné.',

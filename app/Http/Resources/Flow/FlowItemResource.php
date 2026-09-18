@@ -16,6 +16,8 @@ use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
+use App\Services\Cache\CacheKeyProvider;
+use App\Services\Cache\ManagedCacheService;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -59,7 +61,7 @@ class FlowItemResource extends Data
 		$this->id = $album->id;
 		$this->title = $album->title;
 		$this->owner_name = Auth::check() ? $album->owner->name : null;
-		$this->description = Markdown::convert(trim($album->description ?? ''))->getContent();
+		$this->description = $this->resolveDescription($album->id, $album->description ?? '');
 
 		$this->setPhotos($album);
 		$should_downgrade = $album->cover !== null && !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]);
@@ -134,6 +136,31 @@ class FlowItemResource extends Data
 
 		$this->photos = resolve(Collection::class);
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Markdown-converted `description`, cached per album (Feature 068,
+	 * FR-068-07), reused identically by {@see \App\Http\Controllers\Gallery\FlowListController}
+	 * for the v3 tier.
+	 */
+	private function resolveDescription(string $album_id, string $description): string
+	{
+		if ($description === '') {
+			return '';
+		}
+
+		$cache = resolve(ManagedCacheService::class);
+		$cache_key_provider = resolve(CacheKeyProvider::class);
+		$enabled = request()->configs()->getValueAsBool('managed_cache_albums_enabled');
+		$ttl = request()->configs()->getValueAsInt('managed_cache_ttl');
+
+		return $cache->rememberIf(
+			$enabled,
+			$cache_key_provider->flowDescriptionKey($album_id),
+			[$cache_key_provider->flowDescriptionTag($album_id)],
+			fn (): string => Markdown::convert(trim($description))->getContent(),
+			ttl: $ttl,
+		);
 	}
 
 	private function setMinMax(Album $album): void

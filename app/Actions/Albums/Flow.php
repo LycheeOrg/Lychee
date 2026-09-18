@@ -34,9 +34,15 @@ final class Flow
 	/**
 	 * Returns a query builder for albums with published_at not null, ordered by published_at desc.
 	 *
+	 * @param bool $with_relations whether to eager-load covers/statistics/photos for full v2
+	 *                             hydration (`true`, the default, preserves this method's original
+	 *                             behaviour byte-for-byte) or skip them entirely for a lean,
+	 *                             album-level-only query (`false`, used by the v3 SoA listing tier,
+	 *                             Feature 068/FR-068-01)
+	 *
 	 * @return AlbumBuilder
 	 */
-	public function do(): AlbumBuilder
+	public function do(bool $with_relations = true): AlbumBuilder
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -46,7 +52,7 @@ final class Flow
 
 		/** @var Album|null $base */
 		$base = $this->getBase($flow_base);
-		$base_query = $this->getQuery($base, true);
+		$base_query = $this->getQuery($base, $with_relations);
 
 		$hide_nsfw = $this->config_manager->getValueAsBool('hide_nsfw_in_flow');
 		if ($hide_nsfw) {

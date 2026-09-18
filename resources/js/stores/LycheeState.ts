@@ -17,6 +17,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		slideshow_timeout: 5,
 		is_slideshow_enabled: true,
 
+		// Flow settings (Feature 068)
+		is_flow_opt_in_strategy: false,
+
 		// configs for nsfw
 		are_nsfw_visible: false,
 		is_nsfw_background_blurred: false,
@@ -215,6 +218,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.timeline_lens_height = data.timeline_lens_height;
 					this.timeline_lens_falloff = data.timeline_lens_falloff;
 					this.timeline_lens_magnification = data.timeline_lens_magnification;
+
+					this.is_flow_opt_in_strategy = data.is_flow_opt_in_strategy;
 
 					this.title = data.title;
 					this.site_logo = data.site_logo;

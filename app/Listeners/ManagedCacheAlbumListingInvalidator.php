@@ -46,6 +46,10 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		// Feature 068 (FR-068-07): AlbumSaved fires for both the single-album
+		// edit and bulk-edit paths (BulkEditAlbumsAction::do() dispatches it
+		// too), so this one handler covers both description-save call sites.
+		$this->cache->forgetTags($this->cache_key_provider->flowDescriptionTags($event->album_ids));
 	}
 
 	public function handleAlbumDeleted(AlbumDeleted $event): void

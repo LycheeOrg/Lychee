@@ -227,6 +227,8 @@ return [
             'album_timeline' => '设置相册时间线模式',
             'photo_timeline' => '设置照片时间线模式',
             'layout' => '设置照片布局',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => '标签',
             'show_tags' => '设置要显示的标签',
             'tags_required' => '标签为必填项。',

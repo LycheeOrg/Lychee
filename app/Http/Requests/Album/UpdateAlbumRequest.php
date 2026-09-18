@@ -19,6 +19,7 @@ use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
+use App\Contracts\Http\Requests\HasPublishedAt;
 use App\Contracts\Http\Requests\HasTags;
 use App\Contracts\Http\Requests\HasTimelineAlbum;
 use App\Contracts\Http\Requests\HasTimelinePhoto;
@@ -47,6 +48,7 @@ use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\Requests\Traits\HasPublishedAtTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTimelineAlbumTrait;
 use App\Http\Requests\Traits\HasTimelinePhotoTrait;
@@ -61,12 +63,13 @@ use App\Rules\RandomIDRule;
 use App\Rules\SlugRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTags
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTags, HasPublishedAt
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -83,6 +86,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasTimelinePhotoTrait;
 	use HasIsPinnedTrait;
 	use HasTagsTrait;
+	use HasPublishedAtTrait;
 
 	private bool $tags_provided = false;
 	private ?Photo $cover_photo = null;
@@ -166,6 +170,16 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
+			// Feature 068 (FR-068-13): `sometimes`, not `present` - confirmed via
+			// the existing AlbumUpdateTest/AlbumUpdateFocusTest regression suite
+			// (11 failures on a `present` attempt): every *existing* caller of
+			// this endpoint (today's v8 frontend included, until T-068-24 lands)
+			// omits this brand-new key entirely, exactly the same reason
+			// `slug`/`tags` above are `sometimes` rather than `present` - a
+			// field no caller has ever been asked to send cannot retroactively
+			// become mandatory without breaking every caller that hasn't been
+			// updated yet.
+			RequestAttribute::PUBLISHED_AT_ATTRIBUTE => ['sometimes', 'nullable', 'date'],
 		];
 	}
 
@@ -215,6 +229,11 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 
 		$slug = $values[RequestAttribute::SLUG_ATTRIBUTE] ?? null;
 		$album->slug = ($slug !== '' ? $slug : null);
+
+		$this->published_at_provided = array_key_exists(RequestAttribute::PUBLISHED_AT_ATTRIBUTE, $values);
+		/** @var string|null $published_at */
+		$published_at = $values[RequestAttribute::PUBLISHED_AT_ATTRIBUTE] ?? null;
+		$this->published_at = $published_at !== null ? Carbon::parse($published_at) : null;
 
 		/** @var string|null $cover_id */
 		$cover_id = $values[RequestAttribute::COVER_ID_ATTRIBUTE];

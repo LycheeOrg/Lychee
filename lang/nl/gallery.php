@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Stel album tijdlijnmodus in',
             'photo_timeline' => 'Stel foto tijdlijnmodus in',
             'layout' => 'Stel foto-indeling in',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Tags',
             'show_tags' => 'Stel tags in om te tonen',
             'tags_required' => 'Tags zijn vereist.',

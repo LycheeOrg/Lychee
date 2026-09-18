@@ -116,6 +116,23 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->assertNotEvicted('k:global');
 	}
 
+	public function testAlbumSavedEvictsFlowDescriptionTagForSavedAlbumOnly(): void
+	{
+		// Feature 068 (FR-068-07): AlbumSaved fires for both the single-album
+		// and bulk-edit paths - one handler, one test covers both.
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$other_album = Album::factory()->as_root()->owned_by($user)->create();
+
+		$this->seedCache('k:flow-description', [$this->cache_key_provider->flowDescriptionTag($album->id)]);
+		$this->seedCache('k:other-flow-description', [$this->cache_key_provider->flowDescriptionTag($other_album->id)]);
+
+		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
+
+		$this->assertEvicted('k:flow-description');
+		$this->assertNotEvicted('k:other-flow-description');
+	}
+
 	public function testAlbumSavedForRootAlbumEvictsRootTagOnce(): void
 	{
 		$user = User::factory()->create();

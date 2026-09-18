@@ -49,6 +49,36 @@ class CacheKeyProvider
 	}
 
 	/**
+	 * Feature 068 (FR-068-07): tags the cached Markdown-converted
+	 * `description` for one album's Flow card, evicted whenever that
+	 * album's `description` is saved.
+	 */
+	public function flowDescriptionTag(string $album_id): string
+	{
+		return "flow-description:{$album_id}";
+	}
+
+	/**
+	 * @param string[] $album_ids
+	 *
+	 * @return string[]
+	 */
+	public function flowDescriptionTags(array $album_ids): array
+	{
+		return array_map($this->flowDescriptionTag(...), $album_ids);
+	}
+
+	/**
+	 * Cache key for one album's Flow-card Markdown-converted description.
+	 * A pure function of `album_id` alone — the rendered content does not
+	 * depend on the viewer.
+	 */
+	public function flowDescriptionKey(string $album_id): string
+	{
+		return $this->flowDescriptionTag($album_id) . ':html';
+	}
+
+	/**
 	 * @param ?string $parent_id `null` denotes the root album listing
 	 */
 	public function albumChildrenTag(?string $parent_id): string
@@ -466,14 +496,15 @@ class CacheKeyProvider
 	 * Digest identifying the exact `ratios` request scope
 	 * ({@see \App\Http\Requests\Photo\GetPhotoRatiosRequest}), mirroring
 	 * {@see self::photoDetailsScopeDigest()} exactly: the sorted, hashed
-	 * `bucket_ids[]` list, or the sorted, hashed `photo_ids[]` list, or the
-	 * literal `"all"` sentinel when both are omitted (today's whole-scope
-	 * request, NFR-066-03).
+	 * `bucket_ids[]` list, or the sorted, hashed `photo_ids[]` list, or a
+	 * `limit:N` marker (Feature 068, FR-068-03), or the literal `"all"`
+	 * sentinel when all three are omitted (today's whole-scope request,
+	 * NFR-066-03).
 	 *
 	 * @param string[]|null $bucket_ids
 	 * @param string[]|null $photo_ids
 	 */
-	public function photoRatiosScopeDigest(?array $bucket_ids, ?array $photo_ids): string
+	public function photoRatiosScopeDigest(?array $bucket_ids, ?array $photo_ids, ?int $limit = null): string
 	{
 		if ($bucket_ids !== null) {
 			$ids = $bucket_ids;
@@ -487,6 +518,10 @@ class CacheKeyProvider
 			sort($ids);
 
 			return 'ids:' . hash('xxh3', json_encode($ids, JSON_THROW_ON_ERROR));
+		}
+
+		if ($limit !== null) {
+			return 'limit:' . $limit;
 		}
 
 		return 'all';

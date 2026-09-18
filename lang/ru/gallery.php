@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Установить режим временной шкалы альбома',
             'photo_timeline' => 'Установить режим временной шкалы фотографий',
             'layout' => 'Установить макет фотографий',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Теги',
             'show_tags' => 'Установить отображаемые теги',
             'tags_required' => 'Теги обязательны.',

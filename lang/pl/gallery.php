@@ -227,6 +227,8 @@ return [
             'album_timeline' => 'Ustawianie trybu osi czasu albumu',
             'photo_timeline' => 'Ustawianie trybu osi czasu zdjęć',
             'layout' => 'Ustawianie układu zdjęć',
+            'flow_publish_date' => 'Flow publish date',
+            'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',
             'tags' => 'Tagi',
             'show_tags' => 'Ustawianie wyświetlania tagów',
             'tags_required' => 'Wymagane są znaczniki.',

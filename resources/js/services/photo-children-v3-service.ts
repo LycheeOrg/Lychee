@@ -11,12 +11,13 @@ export type PhotoDetailsScope = { bucketId: string } | { photoIds: string[] };
 /**
  * `ratios`' own optional, mutually exclusive scoping (FR-066-06) — `bucketIds`
  * (uncapped, any number of buckets in one request) or `photoIds` (capped at
- * 300 server-side, mirrors `PhotoDetailsScope`'s own `{photoIds}` variant).
- * Omitting the scope entirely preserves today's whole-scope behaviour
- * byte-for-byte (NFR-066-03) — every existing album caller of `getRatios()`
- * keeps calling it with zero arguments.
+ * 300 server-side, mirrors `PhotoDetailsScope`'s own `{photoIds}` variant), or
+ * `limit` (Feature 068, FR-068-03) — caps the whole-scope result to the first
+ * N rows, used by Flow's per-card photo preview. Omitting the scope entirely
+ * preserves today's whole-scope behaviour byte-for-byte (NFR-066-03) — every
+ * existing album caller of `getRatios()` keeps calling it with zero arguments.
  */
-export type PhotoRatiosScope = { bucketIds: string[] } | { photoIds: string[] };
+export type PhotoRatiosScope = { bucketIds: string[] } | { photoIds: string[] } | { limit: number };
 
 /**
  * Consumes Feature 064's three `GET /api/v3/Albums/{album_id}/Photos*`
@@ -52,10 +53,13 @@ const PhotoChildrenV3Service = {
 				const sortedIds = [...scope.bucketIds].sort();
 				param = `?${sortedIds.map((id) => `bucket_ids[]=${encodeURIComponent(id)}`).join("&")}`;
 				cacheDigest = `_buckets_${sortedIds.join(",")}`;
-			} else {
+			} else if ("photoIds" in scope) {
 				const sortedIds = [...scope.photoIds].sort();
 				param = `?${sortedIds.map((id) => `photo_ids[]=${encodeURIComponent(id)}`).join("&")}`;
 				cacheDigest = `_ids_${sortedIds.join(",")}`;
+			} else {
+				param = `?limit=${scope.limit}`;
+				cacheDigest = `_limit_${scope.limit}`;
 			}
 		}
 
