@@ -77,7 +77,7 @@ class Oauth
 			throw new UnauthorizedException('User not found!');
 		}
 
-		if (User::query()->where('username', '=', $user->getNickname() ?: $user->getName() ?: $user->getEmail() ?: $user->getId())
+		if (User::query()->where('username', '=', $this->determineUsername($user))
 			->when(
 				$user->getEmail() !== null && $user->getEmail() !== '',
 				fn ($q) => $q->orWhere('email', '=', $user->getEmail())
@@ -87,7 +87,7 @@ class Oauth
 
 		$create = resolve(Create::class);
 		$new_user = $create->do(
-			username: $user->getNickname() ?: $user->getName() ?: $user->getEmail() ?: $user->getId(),
+			username: $this->determineUsername($user),
 			email: $user->getEmail(),
 			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
 			may_upload: $this->config_manager->getValueAsBool('grant_new_user_upload_rights'),
@@ -101,6 +101,25 @@ class Oauth
 			oauth_id: $user->getId());
 
 		return true;
+	}
+
+	/**
+	 * Determines the username of an OAuth-authenticated user.
+	 * In priority order, prefers: nickname, name, email, ID.
+	 *
+	 * @param ContractsUser $user
+	 *
+	 * @return string
+	 */
+	private function determineUsername(ContractsUser $user): string
+	{
+		foreach ([$user->getNickname(), $user->getName(), $user->getEmail()] as $candidate) {
+			if ($candidate !== null && $candidate !== '') {
+				return $candidate;
+			}
+		}
+
+		return $user->getId();
 	}
 
 	/**
