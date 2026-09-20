@@ -206,12 +206,22 @@ class CacheKeyProvider
 		return "{$album_children_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
 	}
 
-	public function tagAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
+	/**
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()} -
+	 *                                only the v3 `/Albums/tags` caller
+	 *                                passes a real digest (a locked
+	 *                                TagAlbum's `cover_ids` entry, #4704,
+	 *                                depends on it); the legacy v2 `Top`
+	 *                                caller leaves it empty since v2's own
+	 *                                {@see \App\Http\Resources\Models\ThumbAlbumResource}
+	 *                                output does not go through this key
+	 */
+	public function tagAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, string $unlocked_digest = ''): string
 	{
 		$tag_albums_listing_tag = $this->tagAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
@@ -232,9 +242,10 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * @param ?AlbumListingScope $scope see {@see self::personAlbumsListingKey()}
+	 * @param ?AlbumListingScope $scope           see {@see self::personAlbumsListingKey()}
+	 * @param string             $unlocked_digest see {@see self::tagAlbumsListingKey()}
 	 */
-	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order, ?AlbumListingScope $scope = null): string
+	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order, ?AlbumListingScope $scope = null, string $unlocked_digest = ''): string
 	{
 		$pinned_albums_listing_tag = $this->pinnedAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
@@ -242,7 +253,7 @@ class CacheKeyProvider
 		$order_value = $order?->value ?? 'null';
 		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}{$scope_suffix}";
+		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}{$scope_suffix}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
@@ -286,15 +297,22 @@ class CacheKeyProvider
 	 * user identity plus the exact `(with_parent_id, for_bulk_edit)` flag
 	 * combination requested, so no two distinct combinations or users ever
 	 * collide.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see AlbumPolicy::getUnlockedAlbumIDs()}) -
+	 *                                a locked album's `cover_ids` entry
+	 *                                (#4704) depends on this state, so two
+	 *                                different unlock states must never
+	 *                                collide on the same key
 	 */
-	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit): string
+	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit, string $unlocked_digest = ''): string
 	{
 		$album_listing_v3_tag = $this->albumListingV3Tag();
 		$user_tag = $this->userTag($user_id);
 		$with_parent_id_value = $with_parent_id ? '1' : '0';
 		$for_bulk_edit_value = $for_bulk_edit ? '1' : '0';
 
-		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}";
+		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
@@ -316,11 +334,15 @@ class CacheKeyProvider
 	 *
 	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
 	 *                                album ids ({@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}) -
-	 *                                only meaningful (non-empty) for a TagAlbum/PersonAlbum,
-	 *                                whose matching-albums result set this state actually
-	 *                                curates; mirrors {@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}'s
-	 *                                own key convention. Empty for a regular Album, whose
-	 *                                own direct-children listing does not depend on it.
+	 *                                for a TagAlbum/PersonAlbum this state
+	 *                                also curates the matching-albums result
+	 *                                set itself (mirrors
+	 *                                {@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}'s
+	 *                                own key convention); for every album
+	 *                                type it additionally governs a locked
+	 *                                child's `cover_ids` entry (#4704) — two
+	 *                                different unlock states must never
+	 *                                collide on the same key
 	 */
 	public function albumChildrenDataKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
 	{
@@ -362,13 +384,17 @@ class CacheKeyProvider
 	/**
 	 * Cache key for `GET /api/v3/Albums/root`,
 	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()} -
+	 *                                a locked root album's `cover_ids` entry
+	 *                                (#4704) depends on this state
 	 */
-	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id): string
+	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id, string $unlocked_digest = ''): string
 	{
 		$album_children_tag = $this->albumChildrenTag(null);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$album_children_tag}:root-children-data:{$scope->value}:{$user_tag}";
+		return "{$album_children_tag}:root-children-data:{$scope->value}:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 
 	/**

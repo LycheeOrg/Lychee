@@ -18,9 +18,11 @@
 
 namespace Tests\Feature_v3\Album;
 
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -170,6 +172,83 @@ class AlbumListV3Test extends BaseApiWithDataTest
 
 		$response->assertOk();
 		self::assertContains($locked_album->id, $response->json('ids'));
+	}
+
+	// ── locked-album cover visibility (#4704) ────────────────────
+
+	/**
+	 * Mirrors {@see \Tests\Feature_v2\Album\AlbumsTest::testLockedAlbumHidesThumbByDefault()}:
+	 * a password-protected, not-yet-unlocked album must still resolve to a
+	 * `null` cover here too — `resolveCoverId()` alone (privilege priority)
+	 * is not enough, the lock state must gate it.
+	 */
+	public function testLockedAlbumHidesCoverByDefault(): void
+	{
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertNull($json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumShowsCoverWhenGlobalConfigEnabled(): void
+	{
+		Configs::set('show_cover_of_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$photo = Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertSame($photo->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumShowsSelectedCoverWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		$selected_cover = Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		$locked_album->cover_id = $selected_cover->id;
+		$locked_album->save();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertSame($selected_cover->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumHidesAutoSelectedCoverEvenWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertNull($json['cover_ids'][$idx], 'an auto-selected cover must not leak through the manual-cover-only setting');
 	}
 
 	/**
