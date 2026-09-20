@@ -136,7 +136,7 @@ Mastodon requires a domain configuration:
 ],
 ```
 
-### Keycloak, Authelia, Authentik
+### Keycloak, Authelia, Authentik, Kanidm
 
 These providers require a base URL:
 
@@ -147,6 +147,11 @@ These providers require a base URL:
     // Other settings...
 ],
 ```
+
+### Kanidm
+
+Kanidm enables PKCE by default. If you have explicitly disabled it, you can set
+env var `KANIDM_ENABLE_PKCE` to `false`.
 
 ## Internal Implementation Details
 
