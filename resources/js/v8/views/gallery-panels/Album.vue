@@ -142,7 +142,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import UploadPanel from "@/v8/components/modals/UploadPanel.vue";
 import CameraCapture from "@/v8/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/v8/components/forms/album/AlbumCreateDialog.vue";
-import { useScrollable } from "@/composables/album/scrollable";
+import { useScrollable } from "@/v8/composables/album/scrollable";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import AlbumPanel from "@/v8/components/gallery/albumModule/AlbumPanel.vue";
