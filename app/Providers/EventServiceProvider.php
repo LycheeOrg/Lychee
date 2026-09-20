@@ -65,6 +65,7 @@ use SocialiteProviders\Authentik\AuthentikExtendSocialite;
 use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
+use SocialiteProviders\Kanidm\KanidmExtendSocialite;
 use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
@@ -89,6 +90,7 @@ class EventServiceProvider extends ServiceProvider
 			FacebookExtendSocialite::class . '@handle',
 			GitHubExtendSocialite::class . '@handle',
 			GoogleExtendSocialite::class . '@handle',
+			KanidmExtendSocialite::class . '@handle',
 			// Mastodon is provided directly.
 			MicrosoftExtendSocialite::class . '@handle',
 			NextcloudExtendSocialite::class . '@handle',

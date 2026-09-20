@@ -155,7 +155,7 @@ declare namespace App {
 		export type NsfwSensitiveNoAlbumAction = "skip" | "moderate";
 		export type NsfwStatus = "pending" | "failed" | "review" | "visible";
 		export type OauthProvidersType =
-			"amazon" | "apple" | "authelia" | "authentik" | "facebook" | "github" | "google" | "mastodon" | "microsoft" | "nextcloud" | "keycloak";
+			"amazon" | "apple" | "authelia" | "authentik" | "facebook" | "github" | "google" | "kanidm" | "mastodon" | "microsoft" | "nextcloud" | "keycloak";
 		export type OgImageAlbumSourceType = "header" | "cover";
 		export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 		export type OrderSortingType = "ASC" | "DESC";

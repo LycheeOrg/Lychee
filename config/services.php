@@ -124,6 +124,14 @@ return [
 		'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/redirect'),
 	],
 
+	'kanidm' => [
+		'client_id' => env('KANIDM_CLIENT_ID'),
+		'client_secret' => env('KANIDM_CLIENT_SECRET'),
+		'redirect' => env('KANIDM_REDIRECT_URI'),
+		'base_url' => env('KANIDM_BASE_URL'),
+		'enable_pkce' => env('KANIDM_ENABLE_PKCE', true),
+	],
+
 	'mastodon' => [
 		'domain' => env('MASTODON_DOMAIN'),
 		'client_id' => env('MASTODON_ID'),
