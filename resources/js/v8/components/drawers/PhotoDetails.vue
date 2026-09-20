@@ -170,7 +170,8 @@
 				{{ $t("gallery.photo.details.location") }}
 			</h2>
 			<MapInclude
-				v-if="props.isMapVisible"
+				v-if="props.isMapVisible && photoStore.photo!.precomputed.has_location"
+				:key="photoStore.photo!.id"
 				:latitude="photoStore.photo!.precomputed.latitude"
 				:longitude="photoStore.photo!.precomputed.longitude"
 			/>
