@@ -23,6 +23,7 @@ use App\Http\Resources\V3\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\AlbumBucketComputer;
@@ -91,8 +92,9 @@ class AlbumRootController extends Controller
 		$scope = $request->scope();
 		/** @var User|null $user */
 		$user = Auth::user();
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
-		$key = $this->cache_key_provider->rootAlbumChildrenDataKey($scope, $user?->id);
+		$key = $this->cache_key_provider->rootAlbumChildrenDataKey($scope, $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -189,12 +191,13 @@ class AlbumRootController extends Controller
 		$created_ats = [];
 		$min_taken_ats = [];
 		$max_taken_ats = [];
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
-			$cover_ids[] = AlbumListController::resolveCoverId($row, $user);
+			$cover_ids[] = AlbumListController::resolveCoverId($row, $user, $unlocked_album_ids);
 			// For shared scope, the bucket_id field carries the
 			// row's own owner_id (never the persisted date/title column) so
 			// grouping response rows by bucket_id reproduces the buckets

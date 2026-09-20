@@ -11,6 +11,7 @@ namespace App\Actions\Album\StructOfArrays\Traits;
 use App\Http\Controllers\Gallery\AlbumListController;
 use App\Http\Resources\V3\AlbumCategoryResource;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Collection;
 
 /**
@@ -24,7 +25,7 @@ use Illuminate\Support\Collection;
 trait BuildsAlbumCategoryResource
 {
 	/**
-	 * @param Collection<int,object{id:string,title:string,cover_id:?string,owner_id:int,auto_cover_id_max_privilege?:?string,auto_cover_id_least_privilege?:?string}> $rows
+	 * @param Collection<int,object{id:string,title:string,cover_id:?string,owner_id:int,auto_cover_id_max_privilege?:?string,auto_cover_id_least_privilege?:?string,password?:?string}> $rows
 	 */
 	private function toCategoryResource(Collection $rows, bool $resolve_cover = false, ?User $user = null): AlbumCategoryResource
 	{
@@ -32,10 +33,12 @@ trait BuildsAlbumCategoryResource
 		$titles = [];
 		$cover_ids = [];
 		$owner_ids = [];
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$titles[] = $row->title;
-			$cover_ids[] = $resolve_cover ? AlbumListController::resolveCoverId($row, $user) : $row->cover_id;
+			$raw_cover_id = $resolve_cover ? AlbumListController::rawCoverId($row, $user) : $row->cover_id;
+			$cover_ids[] = AlbumListController::applyLockedCoverGate($raw_cover_id, $row, $unlocked_album_ids);
 			$owner_ids[] = (string) $row->owner_id;
 		}
 

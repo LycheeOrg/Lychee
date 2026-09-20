@@ -47,8 +47,9 @@ class AlbumTagController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 		$sorting = AlbumSortingCriterion::createDefault();
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
-		$key = $this->cache_key_provider->tagAlbumsListingKey($user?->id, $sorting);
+		$key = $this->cache_key_provider->tagAlbumsListingKey($user?->id, $sorting, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -71,7 +72,7 @@ class AlbumTagController extends Controller
 		(new SortingDecorator($query))->orderBy($sorting->column->fallbackForCategoryAlbumListing(), $sorting->order)->applyOrdering();
 
 		$rows = $query
-			->select(['tag_albums.id', 'base_albums.title', 'tag_albums.cover_id', 'base_albums.owner_id'])
+			->select(['tag_albums.id', 'base_albums.title', 'tag_albums.cover_id', 'base_albums.owner_id', 'computed_access_permissions.password'])
 			->toBase()
 			->get();
 

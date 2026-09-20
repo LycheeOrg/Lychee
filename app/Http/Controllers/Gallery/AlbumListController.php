@@ -14,6 +14,7 @@ use App\Http\Resources\V3\AlbumListBulkEditFieldsResource;
 use App\Http\Resources\V3\AlbumListResource;
 use App\Models\Album;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
@@ -42,8 +43,9 @@ class AlbumListController extends Controller
 		$user = Auth::user();
 		$with_parent_id = $request->withParentId();
 		$for_bulk_edit = $request->forBulkEdit();
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
-		$key = $this->cache_key_provider->albumListingV3Key($user?->id, $with_parent_id, $for_bulk_edit);
+		$key = $this->cache_key_provider->albumListingV3Key($user?->id, $with_parent_id, $for_bulk_edit, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -74,6 +76,7 @@ class AlbumListController extends Controller
 			'albums.auto_cover_id_max_privilege',
 			'albums.auto_cover_id_least_privilege',
 			'base_albums.owner_id',
+			'computed_access_permissions.password',
 		]);
 
 		if ($with_parent_id) {
@@ -130,7 +133,7 @@ class AlbumListController extends Controller
 	/**
 	 * Create the light object.
 	 *
-	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string}> $rows
+	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,password:?string}> $rows
 	 *
 	 * @return AlbumListResource
 	 */
@@ -141,13 +144,14 @@ class AlbumListController extends Controller
 		$lft = [];
 		$rgt = [];
 		$cover_ids = [];
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$titles[] = $row->title;
 			$lft[] = (int) $row->_lft;
 			$rgt[] = (int) $row->_rgt;
-			$cover_ids[] = self::resolveCoverId($row, $user);
+			$cover_ids[] = self::resolveCoverId($row, $user, $unlocked_album_ids);
 		}
 
 		return new AlbumListResource(
@@ -263,8 +267,25 @@ class AlbumListController extends Controller
 	 * explicit `cover_id` first, else `auto_cover_id_max_privilege` for an
 	 * admin/owner viewer, else `auto_cover_id_least_privilege`. Operates on
 	 * already-selected columns only — no relation load, no extra query.
+	 *
+	 * Then gated through {@see self::applyLockedCoverGate()} for a
+	 * password-protected album the viewer hasn't unlocked, per #4704.
+	 *
+	 * @param array<int,string> $unlocked_album_ids {@see AlbumPolicy::getUnlockedAlbumIDs()}, computed once per request/batch by the caller
 	 */
-	public static function resolveCoverId(object $row, ?User $user): ?string
+	public static function resolveCoverId(object $row, ?User $user, array $unlocked_album_ids): ?string
+	{
+		return self::applyLockedCoverGate(self::rawCoverId($row, $user), $row, $unlocked_album_ids);
+	}
+
+	/**
+	 * The cover priority rule alone, with no lock-awareness — {@see self::resolveCoverId()}'s
+	 * own first step, split out so {@see \App\Actions\Album\StructOfArrays\Traits\BuildsAlbumCategoryResource}
+	 * can gate a `TagAlbum` row's already-final `cover_id` through
+	 * {@see self::applyLockedCoverGate()} without going through the
+	 * auto-cover fallback (which a `TagAlbum` row has no columns for).
+	 */
+	public static function rawCoverId(object $row, ?User $user): ?string
 	{
 		if ($row->cover_id !== null) {
 			return $row->cover_id;
@@ -275,5 +296,34 @@ class AlbumListController extends Controller
 		}
 
 		return $row->auto_cover_id_least_privilege;
+	}
+
+	/**
+	 * Mirrors {@see \App\Http\Resources\Models\ThumbAlbumResource::shallShowLockedCover()}
+	 * (#4704) for the v3 struct-of-arrays listings: a password-protected
+	 * album the viewer hasn't unlocked yields `null` unless
+	 * `show_cover_of_locked_albums` is on, or `show_selected_cover_on_locked_albums`
+	 * is on and the cover was manually chosen (`cover_id` explicitly set,
+	 * as opposed to an auto-selected fallback).
+	 *
+	 * @param object{id:string,cover_id:?string,password?:?string} $row
+	 * @param array<int,string>                                    $unlocked_album_ids
+	 */
+	public static function applyLockedCoverGate(?string $cover_id, object $row, array $unlocked_album_ids): ?string
+	{
+		$is_locked = ($row->password ?? null) !== null && !in_array($row->id, $unlocked_album_ids, true);
+		if (!$is_locked) {
+			return $cover_id;
+		}
+
+		if (request()->configs()->getValueAsBool('show_cover_of_locked_albums')) {
+			return $cover_id;
+		}
+
+		if ($row->cover_id !== null && request()->configs()->getValueAsBool('show_selected_cover_on_locked_albums')) {
+			return $row->cover_id;
+		}
+
+		return null;
 	}
 }
