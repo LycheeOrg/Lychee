@@ -13,6 +13,7 @@ use App\Http\Controllers\Gallery\AlbumListController;
 use App\Http\Resources\V3\AlbumDataResource;
 use App\Models\Album;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -114,12 +115,13 @@ class BuildAlbumDataResource
 		$created_ats = [];
 		$min_taken_ats = [];
 		$max_taken_ats = [];
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
-			$cover_ids[] = AlbumListController::resolveCoverId($row, $user);
+			$cover_ids[] = AlbumListController::resolveCoverId($row, $user, $unlocked_album_ids);
 			$bucket_ids[] = $row->bucket_id ?? 'unknown';
 			$owner_ids[] = (string) $row->owner_id;
 			$is_password_requireds[] = $row->password !== null;

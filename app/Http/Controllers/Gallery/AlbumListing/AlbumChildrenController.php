@@ -183,18 +183,15 @@ class AlbumChildrenController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		// TagAlbum/PersonAlbum "matching albums" results are curated by
-		// AlbumPolicy::getUnlockedAlbumIDs() (session-scoped), which can
-		// change between requests from the very same user/identity - the
-		// cache key must vary with it too, mirroring the pre-existing
+		// AlbumPolicy::getUnlockedAlbumIDs() (session-scoped) affects this
+		// response two ways: for TagAlbum/PersonAlbum it curates which
+		// albums match at all (mirrors the pre-existing
 		// AlbumRepository::getMatchingAlbumsForTagPaginated()/...ForPersonPaginated()
-		// convention exactly. A regular Album's own direct-children listing
-		// does not depend on this state at all (visibility is governed by
-		// applyVisibilityFilter() alone), so it always gets the same, empty
-		// digest.
-		$unlocked_digest = ($album instanceof TagAlbum || $album instanceof PersonAlbum)
-			? $this->cache_key_provider->unlockedAlbumsDigest()
-			: '';
+		// convention); for every album type, a locked child's `cover_ids`
+		// entry (#4704) depends on it too. Either way the cache key must
+		// vary with it, so it is always computed, never conditionally
+		// skipped for a regular Album.
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
 		$key = $this->cache_key_provider->albumChildrenDataKey($album->get_id(), $user?->id, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');

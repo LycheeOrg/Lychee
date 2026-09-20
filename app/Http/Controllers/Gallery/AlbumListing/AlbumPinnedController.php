@@ -50,8 +50,9 @@ class AlbumPinnedController extends Controller
 		$scope = $request->scope();
 		$pinned_col = $this->config_manager->getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class);
 		$pinned_order = $this->config_manager->getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class);
+		$unlocked_digest = $this->cache_key_provider->unlockedAlbumsDigest();
 
-		$key = $this->cache_key_provider->pinnedAlbumsListingKey($user?->id, $pinned_col, $pinned_order, $scope);
+		$key = $this->cache_key_provider->pinnedAlbumsListingKey($user?->id, $pinned_col, $pinned_order, $scope, $unlocked_digest);
 		$enabled = $request->configs()->getValueAsBool('managed_cache_albums_enabled');
 		$ttl = $request->configs()->getValueAsInt('managed_cache_ttl');
 
@@ -85,6 +86,7 @@ class AlbumPinnedController extends Controller
 				'albums.auto_cover_id_max_privilege',
 				'albums.auto_cover_id_least_privilege',
 				'base_albums.owner_id',
+				'computed_access_permissions.password',
 			])
 			->toBase()
 			->get();

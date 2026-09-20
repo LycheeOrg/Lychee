@@ -215,6 +215,99 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		self::assertArrayNotHasKey('placeholder', $json);
 	}
 
+	// ── locked-album cover visibility (#4704) ────────────────────
+
+	/**
+	 * Mirrors {@see \Tests\Feature_v2\Album\AlbumsTest::testLockedAlbumHidesThumbByDefault()}:
+	 * a password-protected, not-yet-unlocked child album must resolve to a
+	 * `null` cover_id here too, even though its parent is public.
+	 */
+	public function testLockedChildAlbumHidesCoverByDefault(): void
+	{
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+		$this->recompute($parent);
+
+		$locked = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($locked)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked)->create();
+		$this->recompute($locked);
+
+		$response = $this->getJsonV3("Albums/{$parent->id}");
+		$this->assertOk($response);
+		$json = $response->json();
+		$idx = array_search($locked->id, $json['ids'], true);
+		self::assertNotFalse($idx);
+		self::assertTrue($json['is_password_requireds'][$idx]);
+		self::assertNull($json['cover_ids'][$idx]);
+	}
+
+	public function testLockedChildAlbumShowsCoverWhenGlobalConfigEnabled(): void
+	{
+		Configs::set('show_cover_of_locked_albums', true);
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+		$this->recompute($parent);
+
+		$locked = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($locked)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked)->create();
+		$this->recompute($locked);
+
+		$response = $this->getJsonV3("Albums/{$parent->id}");
+		$this->assertOk($response);
+		$json = $response->json();
+		$idx = array_search($locked->id, $json['ids'], true);
+		self::assertNotFalse($idx);
+		self::assertSame($photo->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedChildAlbumShowsSelectedCoverWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+		$this->recompute($parent);
+
+		$locked = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($locked)->create();
+		$selected_cover = Photo::factory()->owned_by($this->userMayUpload1)->in($locked)->create();
+		$locked->cover_id = $selected_cover->id;
+		$locked->save();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked)->create();
+		$this->recompute($locked);
+
+		$response = $this->getJsonV3("Albums/{$parent->id}");
+		$this->assertOk($response);
+		$json = $response->json();
+		$idx = array_search($locked->id, $json['ids'], true);
+		self::assertNotFalse($idx);
+		self::assertSame($selected_cover->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedChildAlbumHidesAutoSelectedCoverEvenWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($parent)->create();
+		$this->recompute($parent);
+
+		$locked = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($locked)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked)->create();
+		$this->recompute($locked);
+
+		$response = $this->getJsonV3("Albums/{$parent->id}");
+		$this->assertOk($response);
+		$json = $response->json();
+		$idx = array_search($locked->id, $json['ids'], true);
+		self::assertNotFalse($idx);
+		self::assertNull($json['cover_ids'][$idx], 'an auto-selected cover must not leak through the manual-cover-only setting');
+	}
+
 	// ── Edge branches ─────────────────────────────────────────────
 
 	public function testZeroChildrenParentReturnsEmptyArrays(): void
