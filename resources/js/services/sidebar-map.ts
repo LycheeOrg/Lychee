@@ -7,24 +7,13 @@ import AlbumService from "./album-service";
 import Constants from "./constants";
 
 export default class SidebarMap {
-	layer: string;
-	attribution: string;
 	resizeObserver: ResizeObserver | undefined;
 
-	constructor() {
-		this.layer = "";
-		this.attribution = "";
-		this.resizeObserver = undefined;
-	}
-
-	displayOnMap(latitude: number, longitude: number) {
-		// The map is recreated from scratch on every call, so any observer
-		// watching the previous instance's container must be cleaned up first.
+	displayOnMap(latitude: number, longitude: number, layer: string, attribution: string) {
+		// The map is torn down and rebuilt from scratch on every call (see
+		// container._leaflet_id reset below), so any observer watching the
+		// previous instance's container must be disconnected first.
 		this.resizeObserver?.disconnect();
-
-		const mapData = document.getElementById("leaflet_map_single_photo");
-		this.layer = mapData?.dataset.layer ?? "";
-		this.attribution = mapData?.dataset.provider ?? "";
 
 		// Leaflet searches for icon in same directory as js file -> paths needs
 		// to be overwritten
@@ -45,19 +34,21 @@ export default class SidebarMap {
 
 		const myMap = L.map("leaflet_map_single_photo").setView([latitude, longitude], 13);
 
-		L.tileLayer(this.layer, {
-			attribution: this.attribution,
+		L.tileLayer(layer, {
+			attribution: attribution,
 			referrerPolicy: "origin",
 		}).addTo(myMap);
 
 		// Add Marker to map, direction is not set
 		L.marker([latitude, longitude]).addTo(myMap);
 
-		// On first open, the sidebar's own show/expand transition may not have
-		// finished laying out #leaflet_map_single_photo yet, so Leaflet can
-		// measure a stale (e.g. zero) size at construction time and never
-		// re-measure, leaving the tiles blank. Re-measure once layout settles,
-		// and keep watching so any later resize (e.g. window resize) is caught too.
+		// The sidebar this map lives in is always mounted and shown/hidden via
+		// CSS (an offcanvas transition), not conditional DOM mounting. When the
+		// map is created before that transition/layout settles, Leaflet caches
+		// a stale container size (e.g. zero) at construction time and never
+		// re-measures on its own, leaving the tile pane blank with no errors.
+		// Force a re-measure once layout settles, and keep watching for any
+		// later size change (sidebar animation, window resize, etc).
 		requestAnimationFrame(() => myMap.invalidateSize());
 		this.resizeObserver = new ResizeObserver(() => myMap.invalidateSize());
 		this.resizeObserver.observe(myMap.getContainer());
@@ -85,8 +76,8 @@ export function useSidebarMap(latitudeValue: number | null, longitudeValue: numb
 	}
 
 	function load() {
-		if (latitude.value && longitude.value && map.value) {
-			map.value.displayOnMap(latitude.value, longitude.value);
+		if (latitude.value && longitude.value && map.value && map_provider.value) {
+			map.value.displayOnMap(latitude.value, longitude.value, map_provider.value.layer, map_provider.value.attribution);
 		}
 	}
 
