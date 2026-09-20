@@ -77,7 +77,7 @@ class Oauth
 			throw new UnauthorizedException('User not found!');
 		}
 
-		if (User::query()->where('username', '=', $user->getName() ?? $user->getEmail() ?? $user->getId())
+		if (User::query()->where('username', '=', $user->getNickname() ?: $user->getName() ?: $user->getEmail() ?: $user->getId())
 			->when(
 				$user->getEmail() !== null && $user->getEmail() !== '',
 				fn ($q) => $q->orWhere('email', '=', $user->getEmail())
@@ -87,7 +87,7 @@ class Oauth
 
 		$create = resolve(Create::class);
 		$new_user = $create->do(
-			username: $user->getName() ?? $user->getEmail() ?? $user->getId(),
+			username: $user->getNickname() ?: $user->getName() ?: $user->getEmail() ?: $user->getId(),
 			email: $user->getEmail(),
 			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
 			may_upload: $this->config_manager->getValueAsBool('grant_new_user_upload_rights'),
