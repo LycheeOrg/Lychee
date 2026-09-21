@@ -21,8 +21,20 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 	onMounted(() => window.addEventListener("scroll", onScroll, { passive: true }));
 	onUnmounted(() => window.removeEventListener("scroll", onScroll));
 
-	async function setScroll(_v: void, iter = 0) {
-		if (path.value === undefined) {
+	// setScroll() retries itself via setTimeout while waiting for content to render.
+	// A fresh top-level call (no `gen` passed in) always supersedes whatever chain
+	// came before it, so a scheduled retry left over from a previous album/photo
+	// (or from before this view unmounted) becomes a no-op instead of acting on
+	// state that now belongs to something else.
+	let currentGeneration = 0;
+	let isMounted = true;
+	onUnmounted(() => {
+		isMounted = false;
+	});
+
+	async function setScroll(_v: void, iter = 0, gen?: number) {
+		const myGeneration = gen ?? ++currentGeneration;
+		if (!isMounted || myGeneration !== currentGeneration || path.value === undefined) {
 			return;
 		}
 
@@ -33,13 +45,18 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 				// still be rendering). Retry instead of falling back to the saved scroll
 				// position so that we scroll correctly once it appears.
 				if (iter < 50) {
-					setTimeout(() => setScroll(_v, iter + 1), 100);
+					setTimeout(() => setScroll(_v, iter + 1, myGeneration), 100);
+					return;
 				}
+
+				// Give up waiting for the thumbnail: clear the pending target so a later
+				// setScroll() call doesn't repeat this branch forever, and fall through to
+				// the saved-offset-or-top fallback below.
+				toggleableStore.rememberScrollThumb(undefined);
+			} else {
+				toggleableStore.recoverAndResetScrollThumb(thumbPhotoElement);
 				return;
 			}
-
-			toggleableStore.recoverAndResetScrollThumb(thumbPhotoElement);
-			return;
 		}
 
 		// No remembered position (e.g. this album has never been scrolled before):
@@ -56,7 +73,7 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 		// (and scrolling as far as we can) after 50 tries (5s).
 		const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 		if (maxScroll < target && iter < 50) {
-			setTimeout(() => setScroll(_v, iter + 1), 100);
+			setTimeout(() => setScroll(_v, iter + 1, myGeneration), 100);
 			return;
 		}
 
