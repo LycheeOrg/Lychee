@@ -176,4 +176,4 @@ For developers who want to understand the OAuth implementation in Lychee:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: September 20, 2026*
