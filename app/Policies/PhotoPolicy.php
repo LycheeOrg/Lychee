@@ -167,7 +167,7 @@ class PhotoPolicy extends BasePolicy
 		if (
 			Photo::query()
 			->whereIn('id', $photo_ids)
-			->join(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
+			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
 			->whereNull(PA::ALBUM_ID)
 			->count() > 0
 		) {
