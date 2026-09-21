@@ -30,6 +30,7 @@ use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Controller responsible for the config.
@@ -181,8 +182,16 @@ class SharingController extends Controller
 	 */
 	public function delete(DeleteSharingRequest $request): void
 	{
-		$base_album_id = $request->perm()->base_album_id;
-		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+		$perm = $request->perm();
+		$base_album_id = $perm->base_album_id;
+		$user_id = $perm->user_id;
+		AccessPermission::query()->where('id', '=', $perm->id)->delete();
+
+		// Also clear for given user/null combination in the album_user_thumbs table
+		DB::table('album_user_thumbs')
+			->where('base_album_id', '=', $base_album_id)
+			->where('user_id', '=', $user_id)
+			->delete();
 
 		AccessPermissionChanged::dispatch($base_album_id);
 	}
