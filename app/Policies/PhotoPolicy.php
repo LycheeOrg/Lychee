@@ -95,6 +95,10 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
+		if ($photo->is_validated !== true) {
+			return false;
+		}
+
 		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canDownload($user, $a));
 	}
 

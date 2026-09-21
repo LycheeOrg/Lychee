@@ -378,6 +378,7 @@ class LandingPageResource extends Data
 		// Get random photo from album
 		$photo = Photo::query()
 			->with(['size_variants'])
+			->where('is_validated', true)
 			->whereHas('albums', static function ($query) use ($album): void {
 				$query->whereKey($album->id);
 			})
