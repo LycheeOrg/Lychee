@@ -348,7 +348,7 @@ const virtualizer = useWindowVirtualizer(
 	computed(() => ({
 		count: chunks.value.length,
 		estimateSize: (index: number) => chunks.value[index]?.size ?? 0,
-		overscan: 2,
+		overscan: 8,
 		getItemKey: (index: number) => chunks.value[index]?.key ?? index,
 		scrollMargin: scrollMargin.value,
 	})),
@@ -540,7 +540,7 @@ defineExpose({ scrollToPixelOffset });
 
 // --- Feature 066: Timeline-only scroll-proximity prefetch (T-066-28) + deep-link resolution (T-066-30/31) ---
 
-/** How many buckets beyond the currently-visible range to eagerly fetch — a cheap, fixed overscan-like margin (mirrors the virtualizer's own `overscan: 2` chunk margin, one level up at bucket granularity). */
+/** How many buckets beyond the currently-visible range to eagerly fetch — a cheap, fixed overscan-like margin (mirrors the virtualizer's own `overscan: 8` chunk margin, one level up at bucket granularity). */
 const BUCKET_PREFETCH_MARGIN = 1;
 
 const visibleBucketIndices = computed<number[]>(() => {

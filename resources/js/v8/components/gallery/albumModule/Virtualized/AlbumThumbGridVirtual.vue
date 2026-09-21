@@ -168,7 +168,7 @@ const virtualizer = useWindowVirtualizer(
 	computed(() => ({
 		count: rowsResult.value.rows.length,
 		estimateSize: (index: number) => rowsResult.value.rowHeights[index] ?? 0,
-		overscan: 4,
+		overscan: 8,
 		getItemKey: (index: number) => rowsResult.value.rows[index]?.key ?? index,
 		scrollMargin: scrollMargin.value,
 	})),
