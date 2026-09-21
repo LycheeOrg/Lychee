@@ -362,6 +362,13 @@ x-common-env:
   # GOOGLE_CLIENT_SECRET_FILE=/run/secrets/google_client_secret
   # GOOGLE_REDIRECT_URI=/auth/google/redirect
 
+  # KANIDM_BASE_URL=
+  # KANIDM_CLIENT_ID=
+  # KANIDM_CLIENT_SECRET=
+  # KANIDM_CLIENT_SECRET_FILE=/run/secrets/kanidm_client_secret
+  # KANIDM_REDIRECT_URI=/auth/kanidm/redirect
+  # KANIDM_ENABLE_PKCE=true
+
   # MASTODON_DOMAIN=https://mastodon.social
   # MASTODON_ID=
   # MASTODON_SECRET=
