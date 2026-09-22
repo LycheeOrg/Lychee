@@ -191,7 +191,7 @@ class SharingController extends Controller
 		// Also clear for given user/null combination in the album_user_thumbs table
 		DB::table('album_user_thumbs')
 			->whereIn('photo_id',
-			 DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->where(PA::ALBUM_ID, '=', $base_album_id)
+				DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->where(PA::ALBUM_ID, '=', $base_album_id)
 			)
 			->where('user_id', '=', $user_id)
 			->delete();
