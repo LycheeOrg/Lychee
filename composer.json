@@ -88,7 +88,7 @@
         "php-http/message": "^1.12",
         "revolution/socialite-mastodon": "^1.4",
         "socialiteproviders/amazon": "^4.1",
-        "socialiteproviders/apple": "^5.6",
+        "socialiteproviders/apple": "^6.0",
         "socialiteproviders/authelia": "^4.0",
         "socialiteproviders/authentik": "^5.2",
         "socialiteproviders/facebook": "^4.1",
