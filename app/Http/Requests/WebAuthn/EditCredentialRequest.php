@@ -9,9 +9,11 @@
 namespace App\Http\Requests\WebAuthn;
 
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laragear\WebAuthn\Models\WebAuthnCredential;
 
@@ -22,10 +24,22 @@ class EditCredentialRequest extends BaseApiRequest
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * The credential is resolved from a client-provided ID, and credential IDs
+	 * are not secret: the unauthenticated `WebAuthn::login/options` endpoint
+	 * hands them out for any given username.
+	 * Hence, being allowed to edit one's own settings is not sufficient; the
+	 * caller must also own the credential, unless they are an administrator.
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_EDIT, [User::class]);
+		if (!Gate::check(UserPolicy::CAN_EDIT, [User::class])) {
+			return false;
+		}
+
+		$user = Auth::user();
+
+		return $user?->may_administrate === true || intval($this->credential->user_id) === $user?->id;
 	}
 
 	public function rules(): array
@@ -40,7 +54,11 @@ class EditCredentialRequest extends BaseApiRequest
 	{
 		/** @var string $id */
 		$id = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->credential = WebAuthnCredential::query()->findOrFail($id);
+		/** @var User $user */
+		$user = Auth::user() ?? throw new UnauthenticatedException();
+		// Look the credential up through the relationship so that a user can
+		// only ever edit their own credentials.
+		$this->credential = $user->webAuthnCredentials()->findOrFail($id);
 		$this->alias = $values[RequestAttribute::ALIAS_ATTRIBUTE];
 	}
 
