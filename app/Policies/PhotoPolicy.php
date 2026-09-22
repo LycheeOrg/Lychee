@@ -164,6 +164,20 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
+		// Unsorted photos are only editable by the owner or admin.
+		// This is checked by the query above.
+		// If any of the photos are unsorted at this point, we fail.
+		// Better safe than sorry.
+		if (
+			Photo::query()
+			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
+			->whereNull('album_id')
+			->whereIn('photos.id', $photo_ids)
+			->count() > 0
+		) {
+			return false;
+		}
+
 		$parents_id = DB::table(PA::PHOTO_ALBUM)
 			->select(PA::ALBUM_ID)
 			->whereIn(PA::PHOTO_ID, $photo_ids)
