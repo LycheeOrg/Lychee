@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="searchStore.isSearching" />
 
-	<div class="h-svh overflow-y-hidden">
+	<div :class="searchStore.isSearchSoaActive ? 'min-h-svh' : 'h-svh overflow-y-hidden'">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
 			<SearchHeader
@@ -13,11 +13,19 @@
 				@clear-scope="clearScope"
 			/>
 		</Collapse>
+		<!-- `overflow-y-auto` + a fixed height are applied on the v2 path only.
+		     The v3 path renders through `PhotoGridVirtual`, whose
+		     `useWindowVirtualizer` tracks the real window scroll position — a
+		     nested scroll container desyncs its visibility calculation
+		     entirely. Exactly the pitfall `Timeline.vue` and `Flow.vue` both
+		     document; fixed the same way, by dropping the wrapper on the
+		     virtualized branch rather than by fighting the virtualizer. -->
 		<div
 			:class="{
-				'relative flex flex-wrap content-start w-full justify-start overflow-y-auto': true,
-				'h-svh': is_full_screen,
-				'h-[calc(100vh-3.5rem)]': !is_full_screen,
+				'relative flex flex-wrap content-start w-full justify-start': true,
+				'overflow-y-auto': !searchStore.isSearchSoaActive,
+				'h-svh': !searchStore.isSearchSoaActive && is_full_screen,
+				'h-[calc(100vh-3.5rem)]': !searchStore.isSearchSoaActive && !is_full_screen,
 			}"
 		>
 			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" @clear-scope="clearScope" />
@@ -225,7 +233,8 @@ function getStartPage(): number {
 }
 
 function onSearch(terms: string, updateQuery = true, startPage = 1): Promise<void> {
-	const promise = searchStore.search(terms, startPage).then(() => {
+	const search = searchStore.isSearchSoaActive ? searchStore.searchV3(terms) : searchStore.search(terms, startPage);
+	const promise = search.then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
@@ -326,7 +335,9 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 });
 
 async function refresh() {
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchStore.refresh()]);
+	const searchRefresh =
+		searchStore.isSearchSoaActive && searchStore.searchTerm !== undefined ? searchStore.searchV3(searchStore.searchTerm) : searchStore.refresh();
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchRefresh]);
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }

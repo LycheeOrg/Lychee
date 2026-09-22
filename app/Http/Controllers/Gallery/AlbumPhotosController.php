@@ -55,7 +55,6 @@ class AlbumPhotosController extends Controller
 			return new PaginatedPhotosResource(
 				paginated_photos: $album->getPhotos(),
 				album_id: $album->get_id(),
-				should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
 				photo_timeline: $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
 				is_smart_album: true,
 			);
@@ -79,7 +78,6 @@ class AlbumPhotosController extends Controller
 			return new PaginatedPhotosResource(
 				paginated_photos: $paginated_photos,
 				album_id: $album->id,
-				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 				photo_timeline: $album->photo_timeline,
 			);
 		}
@@ -100,7 +98,6 @@ class AlbumPhotosController extends Controller
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginator,
 			album_id: $album->id,
-			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			photo_timeline: $album->photo_timeline);
 	}
 }

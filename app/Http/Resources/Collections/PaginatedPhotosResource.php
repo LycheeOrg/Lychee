@@ -42,14 +42,14 @@ class PaginatedPhotosResource extends Data
 	public function __construct(
 		?LengthAwarePaginator $paginated_photos,
 		?string $album_id,
-		bool $should_downgrade,
 		?TimelinePhotoGranularity $photo_timeline = null,
 		bool $is_smart_album = false,
 	) {
+		$photos = collect($paginated_photos?->items() ?? []);
 		$this->photos = $this->toPhotoResources(
-			photos: collect($paginated_photos?->items() ?? []),
+			photos: $photos,
 			album_id: $album_id,
-			should_downgrade: $should_downgrade,
+			should_downgrade: $this->resolveDowngradeMap($photos),
 			is_smart_album: $is_smart_album,
 		);
 		$this->current_page = $paginated_photos?->currentPage() ?? 1;

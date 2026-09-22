@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Mindestens %s Zeichen erforderlich.',
         'photos' => 'Fotos (%s)',
         'albums' => 'Alben (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Erweiterte Suche',
             'search_button' => 'Suchen',

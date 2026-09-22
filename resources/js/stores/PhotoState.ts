@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumStore } from "./AlbumState";
 import { useTimelineStore } from "./TimelineState";
+import { useSearchStore } from "./SearchState";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -81,13 +82,31 @@ export const usePhotoStore = defineStore("photo-store", {
 			// gates are mutually exclusive in practice (a v3 album tile's
 			// `album_id` is never `"timeline"`), but checked as a clean
 			// `else if` regardless — never both in the same call.
+			//
+			// Feature 069: a search-sourced tile is `ratios`-lightweight in the
+			// same way and needs the same resolution, but it cannot be
+			// recognised by its `album_id` the way a Timeline tile can — a
+			// search tile carries a *real* album id (FR-069-04), indistinguishable
+			// from an album-browsing tile's. It is identified by membership in
+			// the search store's own tile list instead.
+			//
+			// That branch is checked **first**, and the ordering is load-bearing:
+			// an album-scoped search leaves `albumStore` holding that origin
+			// album, so `isPhotoSoaActive` can be true on the search route too.
+			// Falling through to it would fetch details from
+			// `/Albums/{origin}/Photos/details`, which is wrong for any result
+			// outside that album and silently returns nothing for it.
 			if (this.photo !== undefined) {
 				const albumStore = useAlbumStore();
 				const timelineStore = useTimelineStore();
+				const searchStore = useSearchStore();
 				const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
 					(id): id is string => id !== null && id !== undefined,
 				);
-				if (albumStore.isPhotoSoaActive) {
+				const photoId = this.photo.id;
+				if (searchStore.isSearchSoaActive && searchStore.photoTilesV3.some((tile) => tile.id === photoId)) {
+					void searchStore.loadPhotoDetailsV3(ids);
+				} else if (albumStore.isPhotoSoaActive) {
 					void albumStore.loadPhotoDetails(ids);
 				} else if (timelineStore.isTimelineSoaActive && this.photo.album_id === "timeline") {
 					void timelineStore.loadPhotoDetailsV3(ids);

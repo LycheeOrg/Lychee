@@ -48,7 +48,6 @@ class PositionData
 			title: $album->get_title(),
 			photos: $photo_relation->get(),
 			track_url: $album instanceof Album ? $album->track_url : null,
-			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			tracks: $album instanceof Album ? $album->tracks : collect(),
 		);
 	}

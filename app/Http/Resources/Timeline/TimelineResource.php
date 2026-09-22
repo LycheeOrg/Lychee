@@ -76,13 +76,18 @@ class TimelineResource extends Data
 	 */
 	public static function fromData(LengthAwarePaginator $photos): self
 	{
-		$config_manager = resolve(ConfigManager::class);
-		$should_downgrade = !$config_manager->getValueAsBool('grants_full_photo_access');
+		// Feature 070 (FR-070-07): per photo, from real permission rows. The
+		// `grants_full_photo_access` config this used to read only seeds newly
+		// created shares; reading it as a gate over-granted.
+		/** @var \App\Models\User|null $user */
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$should_downgrade = resolve(\App\Actions\Photo\StructOfArrays\ResolvesPhotoGrants::class)
+			->downgradeMap(collect($photos->items()), $user);
 
 		/** @disregard Undefined method withQueryString() (stupid intelephense) */
 		return new self(
 			/** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
-			photos: $photos->through(fn ($p) => new PhotoResource($p, null, $should_downgrade)),
+			photos: $photos->through(fn ($p) => new PhotoResource($p, null, $should_downgrade[$p->id] ?? true)),
 		);
 	}
 }
