@@ -12,6 +12,7 @@ use App\Actions\Album\ListAlbums;
 use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\PhotoAlbum as PA;
 use App\Events\AccessPermissionChanged;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Exceptions\Internal\LycheeLogicException;
@@ -27,9 +28,11 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Controller responsible for the config.
@@ -181,8 +184,33 @@ class SharingController extends Controller
 	 */
 	public function delete(DeleteSharingRequest $request): void
 	{
-		$base_album_id = $request->perm()->base_album_id;
-		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+		$perm = $request->perm();
+		$base_album_id = $perm->base_album_id;
+		$user_id = $perm->user_id;
+		$group_id = $perm->user_group_id;
+		AccessPermission::query()->where('id', '=', $perm->id)->delete();
+
+		// Also clear for given user/null combination in the album_user_thumbs table
+		DB::table('album_user_thumbs')
+			->whereIn('photo_id',
+				DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->where(PA::ALBUM_ID, '=', $base_album_id)
+			)
+			->when(
+				$user_id === null && $group_id === null,
+				fn (Builder $q) => $q->whereNull('user_id')
+			)
+			->when(
+				$user_id !== null,
+				fn (Builder $q) => $q->where('user_id', '=', $user_id)
+			)
+			->when(
+				$group_id !== null,
+				fn (Builder $q) => $q->whereIn(
+					'album_user_thumbs.user_id',
+					DB::table('users_user_groups')
+					->select('users_user_groups.user_id')
+					->where('users_user_groups.user_group_id', '=', $group_id)))
+			->delete();
 
 		AccessPermissionChanged::dispatch($base_album_id);
 	}
