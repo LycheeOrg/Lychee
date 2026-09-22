@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
-use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
@@ -20,8 +19,6 @@ use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
-use App\Policies\AlbumPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
 

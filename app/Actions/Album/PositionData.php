@@ -12,9 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Album;
-use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Gate;
 
 class PositionData
 {

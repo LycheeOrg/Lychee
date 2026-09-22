@@ -13,7 +13,6 @@ use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Photo;
-use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;

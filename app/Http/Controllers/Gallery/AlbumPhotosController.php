@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Gallery;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
@@ -17,12 +16,10 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use App\Repositories\PhotoRepository;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Controller for returning paginated photos.

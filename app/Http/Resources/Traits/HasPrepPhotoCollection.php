@@ -61,7 +61,7 @@ trait HasPrepPhotoCollection
 	 * — deny by default (NFR-070-03).
 	 *
 	 * @param Collection<int,\App\Models\Photo> $photos
-	 * @param array<string,bool>                 $should_downgrade keyed by photo id
+	 * @param array<string,bool>                $should_downgrade keyed by photo id
 	 *
 	 * @return Collection<int,PhotoResource>
 	 */
