@@ -1,6 +1,6 @@
 # Current Session
 
-_Last updated: 2026-08-28_
+_Last updated: 2026-09-23_
 
 ## Active Features
 
@@ -15,6 +15,19 @@ _Last updated: 2026-08-28_
 Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` (commit `fab22c04`), not on this branch — intentionally skipped per user instruction; not tracked here.
 
 ## Session Summary
+
+### Security fix – GHSA-x6f7-qp5q-w37f (Feature 030, increment I40, 2026-09-23)
+
+**Request:** read the advisory and propose + implement a fix (no commit).
+
+**Defect:** `POST /Face/batch` and `POST /FaceDetection/scan` accept an optional `album_id`. Both authorizers returned early on the album gate alone, so an authenticated non-admin could pass an unrelated album they own while naming another user's `face_ids`/`photo_ids` and have the request pass — reassigning a foreign face's person, or marking a foreign photo `pending` and queuing its scan. Spec FR-030-47 (c)/(d) encoded that early return, so the spec was fixed alongside the code.
+
+**Fix:** explicit IDs are now always authorized per object (`CAN_ASSIGN_FACE_ON_PHOTO` / `CAN_TRIGGER_SCAN_ON_PHOTO`); `album_id` only narrows a request that already passed — it must additionally clear the album gate *and* contain every selected photo (new `AuthorizePhotosBelongToAlbumTrait`, one pivot query). `FaceDetectionService::dispatchPhotos()` now ANDs the ID and album predicates instead of `if/else`. New spec requirement FR-030-48 + scenarios S-030-66…69; tasks T-030-104…106.
+
+**Gotcha:** `PhotoPolicy::canEdit()` reads `$photo->albums`, and Laravel only arms `Model::shouldBeStrict()` lazy-load prevention on result sets with more than one row — so the pre-existing single-object tests never hit it. Both authorizers now eager-load `albums`.
+
+**Gates:** `UnrelatedAlbumBypassTest` (13 new tests), `FaceBatchTest`, `FaceDetectionTest`, `PublicModeTest`, `PrivateModeTest`, `PrivacyPreservingModeTest`, `RestrictedModeTest` all green; `php-cs-fixer fix` applied; `make phpstan` 0 errors. Not committed, per instruction.
+
 
 ### Feature 059 – Embed Metadata in Original/RAW File — Implemented (new session, 2026-08-28)
 
