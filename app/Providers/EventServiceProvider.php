@@ -47,6 +47,7 @@ use App\Listeners\ManagedCachePhotoListingInvalidator;
 use App\Listeners\ManagedCacheUserListingInvalidator;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
+use App\Listeners\PurgeAlbumUserThumbsOnMembershipChange;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
@@ -175,6 +176,9 @@ class EventServiceProvider extends ServiceProvider
 
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
+
+		// Cached tag/person/smart-album cover purge on access revocation
+		Event::listen(UserGroupMembershipChanged::class, PurgeAlbumUserThumbsOnMembershipChange::class . '@handle');
 
 		// Managed-cache photo-listing invalidation
 		Event::listen(PhotoSaved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoSaved');
