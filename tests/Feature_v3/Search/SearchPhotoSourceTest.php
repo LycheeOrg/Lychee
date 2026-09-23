@@ -17,7 +17,9 @@ use App\Actions\Search\PhotoSearch;
 use App\Actions\Search\SearchTokenParser;
 use App\Actions\Search\StructOfArrays\SearchPhotoSource;
 use App\Constants\PhotoAlbum as PA;
+use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -116,6 +118,36 @@ class SearchPhotoSourceTest extends BaseApiWithDataTest
 		$album_ids = $this->source->resolveAlbumIds([$this->photo1->id], null, $this->userMayUpload1);
 
 		self::assertSame($this->album1->id, $album_ids[$this->photo1->id]);
+	}
+
+	/**
+	 * `applySearchabilityFilter()` admits a photo the viewer owns regardless of
+	 * whether any of its containing albums is reachable (`PhotoQueryPolicy`'s
+	 * `orWhere('photos.owner_id', ...)` escape). Such a photo can therefore
+	 * carry an in-subtree membership the viewer cannot access at all, and
+	 * `album_ids[i]` must not name it (FR-069-04) — it feeds the `{album_id}`
+	 * segment of the Asset URL, which would then 403 on every thumbnail.
+	 */
+	public function testAlbumIdsSkipsAnInaccessibleSubtreeAlbumEvenWhenItSortsFirst(): void
+	{
+		// Created first, so it takes the lower `_lft` of the two and would win
+		// a pure `_lft` tie-break.
+		$foreign = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
+		$own = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($own)->create();
+		DB::table(PA::PHOTO_ALBUM)->insert([
+			['photo_id' => $photo->id, 'album_id' => $foreign->id],
+		]);
+		// Written last: `children_of()` copies the parent's owner, and the
+		// nested-set writes that follow each further album/photo creation
+		// rewrite the row again.
+		DB::table('base_albums')->where('id', '=', $foreign->id)->update(['owner_id' => $this->userNoUpload->id]);
+
+		Auth::login($this->userMayUpload1);
+
+		$album_ids = $this->source->resolveAlbumIds([$photo->id], $this->album1, $this->userMayUpload1);
+
+		self::assertSame($own->id, $album_ids[$photo->id]);
 	}
 
 	// ── S-069-12 — origin subtree scoping ───────────────────────────

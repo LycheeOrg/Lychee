@@ -44,6 +44,15 @@ export const useSearchStore = defineStore("search-store", {
 		// fresh search. `_syncPhotosStoreV3()` compacts into `photosStore` only
 		// for lightbox compatibility, mirroring `TimelineState.ts`'s own split.
 		photoTilesV3: [] as AdaptedPhotoTile[],
+		/**
+		 * Parallel to `photoTilesV3`, feeding the analytic layout's WASM
+		 * primitives. Held here rather than read off `AlbumState` on the search
+		 * route: an unscoped search leaves that array empty (every tile would
+		 * fall back to a 1:1 ratio), and an album-scoped search leaves it
+		 * holding the *origin album's* ratios — index-aligned to the wrong
+		 * photos, which is worse than empty.
+		 */
+		photoRatiosV3: [] as number[],
 		albumTilesV3: [] as AdaptedAlbumTile[],
 		/** True when the result hit the `search_result_limit` cap (FR-069-02). */
 		isTruncatedV3: false,
@@ -77,6 +86,7 @@ export const useSearchStore = defineStore("search-store", {
 
 		resetV3() {
 			this.photoTilesV3 = [];
+			this.photoRatiosV3 = [];
 			this.albumTilesV3 = [];
 			this.isTruncatedV3 = false;
 			this.photoDetailsResolvedIdsV3 = new Set<string>();
@@ -105,6 +115,7 @@ export const useSearchStore = defineStore("search-store", {
 				this.requestToken++;
 				albumsStore.albums = [];
 				photosStore.photos = [];
+				photosStore.sourceV3 = undefined;
 				return Promise.resolve();
 			}
 
@@ -209,6 +220,7 @@ export const useSearchStore = defineStore("search-store", {
 
 					const photos = photosResponse.data;
 					this.photoTilesV3 = photos.ids.map((_, i) => adaptPhotoTile(i, photos, photos.album_ids[i]));
+					this.photoRatiosV3 = photos.ratios;
 					this.isTruncatedV3 = photos.is_truncated;
 					this.photoDetailsResolvedIdsV3 = new Set<string>();
 
@@ -271,6 +283,7 @@ export const useSearchStore = defineStore("search-store", {
 			const photosStore = usePhotosStore();
 			photosStore.photos = this.photoTilesV3;
 			photosStore.photosTimeline = undefined;
+			photosStore.sourceV3 = "search";
 			photosStore.rebuildNavigationLinks();
 		},
 

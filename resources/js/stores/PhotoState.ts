@@ -87,8 +87,11 @@ export const usePhotoStore = defineStore("photo-store", {
 			// same way and needs the same resolution, but it cannot be
 			// recognised by its `album_id` the way a Timeline tile can — a
 			// search tile carries a *real* album id (FR-069-04), indistinguishable
-			// from an album-browsing tile's. It is identified by membership in
-			// the search store's own tile list instead.
+			// from an album-browsing tile's. Nor is membership in the search
+			// store's own tile list enough — that list outlives the search route
+			// (only an explicit clear empties it), so a photo that is in both a
+			// search result and the album being browsed would match it. The tile
+			// is identified by who last wrote `photosStore.photos` instead.
 			//
 			// That branch is checked **first**, and the ordering is load-bearing:
 			// an album-scoped search leaves `albumStore` holding that origin
@@ -103,8 +106,7 @@ export const usePhotoStore = defineStore("photo-store", {
 				const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
 					(id): id is string => id !== null && id !== undefined,
 				);
-				const photoId = this.photo.id;
-				if (searchStore.isSearchSoaActive && searchStore.photoTilesV3.some((tile) => tile.id === photoId)) {
+				if (searchStore.isSearchSoaActive && photosState.sourceV3 === "search") {
 					void searchStore.loadPhotoDetailsV3(ids);
 				} else if (albumStore.isPhotoSoaActive) {
 					void albumStore.loadPhotoDetails(ids);

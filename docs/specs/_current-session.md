@@ -1,14 +1,28 @@
 # Current Session
 
-_Last updated: 2026-09-22_
+_Last updated: 2026-09-23_
 
 ## Active Features
 
-- **Feature 069 – Search Struct-of-Arrays**: **Implemented.** 47 of 48 tasks `[x]`; the one remaining (T-069-44) is a browser-only manual check that was not performed — no dev environment available this session. Branch `search-v3`, uncommitted.
+- **Feature 069 – Search Struct-of-Arrays**: **Implemented, review follow-ups applied.** 53 of 55 tasks `[x]`; the two remaining (T-069-44, T-069-55) are browser-only manual checks that were not performed — no dev environment available. Branch `search-v3`, PR [#4777](https://github.com/LycheeOrg/Lychee/pull/4777), uncommitted.
 
 No other features are Active or Paused. Features 062, 064/065, 066, 067 and 068 are Completed — see roadmap.md.
 
 ## Session Summary
+
+### Feature 069 — Review follow-ups from PR #4777 (2026-09-23)
+
+Six review findings were raised on the PR; all six were verified against the code and all six were real. Fixed, with the spec extended (FR-069-23…27, S-069-33…38) and the tasks recorded as increment I14 (T-069-48…55).
+
+- **Cache invalidation was photo-only (security).** `ManagedCacheSearchListingInvalidator` was wired to six photo events and no album or permission ones, so a cached `/Search/albums` result kept being replayed after a share was revoked — a cache hit never re-runs the browsability filter. Eight more events now evict it. The new `ManagedCacheSearchListingInvalidatorTest` asserts the *registration* (via the dispatcher's raw listener map), since the handler itself is one unconditional line.
+- **`album_ids` could name an inaccessible album.** `SearchPhotoSource::resolveForSubtree()` trusted the origin's subtree bound alone, but `appendSearchabilityConditions()` admits a viewer-owned photo regardless of its albums' reachability — so a photo could report an album the viewer cannot enter, 403-ing its own Asset URL. It now applies the same accessibility predicate the unscoped branch does. **Feature 067's `QueryMapPhotos::resolveAlbumIdsForSubtree()` has the identical gap** (this code was modelled on it) and was left untouched as out of scope — worth a follow-up.
+- **Search tiles laid out from the wrong ratios.** `PhotoGridVirtual` read `albumStore.photoRatiosV3` for `source="search"`: empty unscoped, another album's numbers when scoped. `SearchState` now keeps its own.
+- **v3 album hits were invisible to selection, the context menu and the empty-state check**, all of which still read `albumsStore`. `useSelection()` gained an optional album-pool override rather than writing search results into the browsing store (FR-069-20 forbids that).
+- **A refresh on an album-scoped search could replace the results** with the origin album's own photos — `albumStore.refresh()` repopulates the shared photo store and was racing the search. It is now awaited first.
+- **Tier-3 details could be routed to the wrong loader.** The search branch matched on tile id, and `SearchState` outlives the search route, so a photo in both a search result and the album being browsed hit the search loader and left the album tile unresolved. `PhotosState` now records which v3 store last wrote `photos`.
+
+Verified: `SearchPhotoSourceTest`, `QuerySearch*Test`, `SearchV3*Test`, all four `ManagedCache*InvalidatorTest` classes, `make phpstan`, `npm run check`, `npx eslint`, `prettier --check`. Both browser-only scenarios remain unverified and are recorded as such.
+
 
 ### Feature 069 – Search Struct-of-Arrays — Specced, planned and implemented end to end (2026-09-22)
 

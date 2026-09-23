@@ -143,6 +143,14 @@ _Last updated: 2026-09-22_
 - [x] T-069-30 – Wire invalidation tags for photo/album mutation.  
   _Verification commands:_ `php artisan test --filter=SearchV3CacheTest`, `make phpstan`
 
+- [x] T-069-48 – Failing test: `ManagedCacheSearchListingInvalidatorTest` (S-069-33, S-069-34).  
+  _Intent:_ Dispatch each album-data and access-permission event through the **real** dispatcher, not the listener directly — the listener body is one line, so the thing actually under test is the `EventServiceProvider` registration.  
+  _Verification commands:_ `php artisan test --filter=ManagedCacheSearchListingInvalidatorTest`
+
+- [x] T-069-49 – Register the album-data and access-permission events on `ManagedCacheSearchListingInvalidator` (FR-069-23, FR-069-24).  
+  _Intent:_ T-069-30 wired the photo half only; the album half of the search cache was never invalidated, so a revoked grant could be replayed from cache (FR-069-24).  
+  _Verification commands:_ `php artisan test --filter=ManagedCacheSearchListingInvalidatorTest`, `php artisan test --filter=SearchV3CacheTest`, `make phpstan`
+
 ### I9 – REST scenario + parity tests (NFR-069-06/07)
 
 - [x] T-069-31 – `SearchV3PhotosTest` + `SearchV3AlbumsTest` (S-069-01).  
@@ -219,8 +227,35 @@ _Last updated: 2026-09-22_
   _Verification commands:_ `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, `make phpstan`, scoped `php artisan test --filter=…` runs for every touched test class  
   _Notes:_ Never run `php artisan test` unfiltered or a whole `--testsuite=`; always scope to `--filter=<ClassName>`.
 
+### I14 – Review follow-ups (PR #4777)
+
+- [x] T-069-50 – Failing test + fix: origin-scoped `album_ids` must skip an inaccessible in-subtree album (FR-069-25, S-069-35).  
+  _Intent:_ `resolveForSubtree()` trusted the subtree bound alone; the viewer-owned-photo escape in `appendSearchabilityConditions()` makes that unsound.  
+  _Verification commands:_ `php artisan test --filter=SearchPhotoSourceTest`, `make phpstan`
+
+- [x] T-069-51 – Keep the photo tier's `ratios` in `SearchState` and feed them to the analytic layout (FR-069-26, S-069-36).  
+  _Intent:_ `PhotoGridVirtual` was reading `albumStore.photoRatiosV3` for `source="search"` — empty on an unscoped search, another album's numbers on a scoped one.  
+  _Verification commands:_ `npm run check`
+
+- [x] T-069-52 – Resolve album selection, the context-menu gate and `noData` from `albumTilesV3` on the v3 path (FR-069-26, S-069-37).  
+  _Intent:_ `useSelection()` gains an optional album-pool override rather than the v3 path writing into `AlbumsState` (FR-069-20 forbids that).  
+  _Verification commands:_ `npm run check`
+
+- [x] T-069-53 – Await the scoped album's refresh before starting the search request (FR-069-27, S-069-38).  
+  _Verification commands:_ `npm run check`
+
+- [x] T-069-54 – Route the tier-3 details fetch by who last wrote `photosStore.photos`, not by tile-id membership.  
+  _Intent:_ `SearchState` is only cleared explicitly, so after navigating from a search into an album a photo present in both routed its details fetch to the search loader and left the album tile unresolved.  
+  _Verification commands:_ `npm run check`
+
+- [ ] T-069-55 – Manual browser verification of S-069-36, S-069-37, S-069-38.  
+  _Verification commands:_ manual  
+  _Notes:_ Same constraint as T-069-44 — leave unchecked while no browser/dev environment is available.
+
 ## Notes / TODOs
 
 - T-069-44 is the one genuinely browser-only task; every other verification is automated.
+- T-069-48/49 are numbered after I13 but belong to I8: they close a gap found in T-069-30 after the rest of the feature had shipped.
+- I14 collects the fixes made in response to the review on PR #4777; each one is a defect in already-written Feature 069 code, not new scope.
 - Increment I3 touches shipped Feature 064/066 code. It must stay strictly additive — if it cannot, stop and log a question rather than reshaping working code.
 - The `is_truncated` flag lives on the tier-2 photo resource only; the album tier is uncapped, matching v2's own unbounded album behaviour.

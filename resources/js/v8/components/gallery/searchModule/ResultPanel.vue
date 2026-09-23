@@ -1,5 +1,5 @@
 <template>
-	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0 && photosStore.photos.length === 0" class="contents">
+	<UContextMenu :items="menuSections" :disabled="!hasResults" class="contents">
 		<!-- v3 Struct-of-Arrays path (Feature 069). No UPagination at all:
 		     the photo tier is whole-scope, virtualized, and bounded by the
 		     `search_result_limit` cap rather than by a page size. -->
@@ -8,6 +8,7 @@
 				:header="albumHeaderV3"
 				:selected-albums="selectedAlbumsIds"
 				@clicked="albumSelect"
+				@selected="albumSelect"
 				@contexted="contextMenuAlbumOpen"
 			/>
 			<template v-if="photosStore.photos.length > 0">
@@ -136,7 +137,21 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
-const { selectedPhotosIds, selectedAlbumsIds, photoSelect: selectPhoto, albumSelect } = useSelection(photosStore, albumsStore, togglableStore);
+// On the v3 path the album hits never reach `albumsStore` (FR-069-20), so both
+// the selection pool and the "is there anything to act on" gate above have to
+// read them from the search store instead.
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() =>
+	searchStore.isSearchSoaActive ? searchStore.albumTilesV3 : undefined,
+);
+
+const hasResults = computed<boolean>(() => (searchAlbumsV3.value ?? albumsStore.albums).length > 0 || photosStore.photos.length > 0);
+
+const {
+	selectedPhotosIds,
+	selectedAlbumsIds,
+	photoSelect: selectPhoto,
+	albumSelect,
+} = useSelection(photosStore, albumsStore, togglableStore, searchAlbumsV3);
 
 const { Menu } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 

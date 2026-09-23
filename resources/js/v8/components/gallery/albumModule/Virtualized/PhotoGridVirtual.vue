@@ -108,6 +108,7 @@ import { useRoute } from "vue-router";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useTimelineStore } from "@/stores/TimelineState";
+import { useSearchStore } from "@/stores/SearchState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { isTouchDevice, ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
@@ -170,6 +171,7 @@ const source = computed(() => props.source ?? "album");
 const route = useRoute();
 const albumStore = useAlbumStore();
 const timelineStore = useTimelineStore();
+const searchStore = useSearchStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
 const catalogStore = useCatalogStore();
@@ -245,6 +247,14 @@ const targetAndGap = computed<{ target: number; gap: number }>(() => {
 const ratingFilterActive = computed(() => source.value === "album" && photosStore.photoRatingFilter !== null);
 const filteredPhotoIds = computed(() => (ratingFilterActive.value ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null));
 
+// `photosStore.photos` is whichever v3 store last compacted into it, so the
+// parallel ratio array has to follow the same source. Search keeps its own
+// (`SearchState.photoRatiosV3`): on the search route `albumStore` still holds
+// the scoped origin album, so reading its ratios here would silently feed the
+// layout another album's numbers — and an unscoped search would feed it none,
+// collapsing every justified/masonry tile to the `?? 1` square fallback.
+const ratiosV3 = computed(() => (source.value === "search" ? searchStore.photoRatiosV3 : albumStore.photoRatiosV3));
+
 // Also gated on the album's own `is_photo_timeline_enabled` display toggle —
 // mirrors the flag-off `AlbumPanel.vue`'s identical
 // `albumStore.config.is_photo_timeline_enabled` prop passed to
@@ -292,7 +302,7 @@ const layoutResult = computed(() => {
 	return computeVisiblePhotoLayout(
 		mode.value,
 		photosStore.photos,
-		albumStore.photoRatiosV3,
+		ratiosV3.value,
 		albumStore.photoBoundariesV3,
 		showHeaders.value,
 		ratingFilterActive.value,

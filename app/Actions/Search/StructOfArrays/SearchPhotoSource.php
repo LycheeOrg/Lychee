@@ -89,27 +89,48 @@ class SearchPhotoSource
 		}
 
 		return $origin !== null
-			? $this->resolveForSubtree($photo_ids, $origin)
+			? $this->resolveForSubtree($photo_ids, $origin, $user)
 			: $this->resolveForRoot($photo_ids, $user);
 	}
 
 	/**
-	 * Origin-scoped search: every candidate already lies inside `$origin`'s
-	 * own authorized subtree, so the tie-break is simply the in-scope album
-	 * with the lowest `_lft` — no per-descendant access re-check, matching
-	 * `applySearchabilityFilter()`'s own `origin` handling.
+	 * Origin-scoped search: candidates are narrowed to `$origin`'s own subtree,
+	 * then tie-broken by lowest `_lft`.
+	 *
+	 * Lying inside an authorized subtree is *not* on its own enough to make an
+	 * album accessible: `appendUnreachableAlbumsCondition()` does test the
+	 * photo's own album, but `appendSearchabilityConditions()` OR-s that whole
+	 * test away for a photo the viewer owns. So a viewer-owned photo can be
+	 * admitted while one of its in-subtree memberships is an album the viewer
+	 * cannot enter at all — and naming that album in `album_ids[i]` would
+	 * 403 every Asset URL built from it (FR-069-04). The same accessibility
+	 * predicate {@see self::resolveForRoot()} applies is therefore applied
+	 * here too, with the same admin short-circuit.
+	 *
+	 * A photo left with no accessible in-subtree album falls back to the
+	 * `unsorted` smart album in {@see QuerySearchPhotos}, which is where the
+	 * owner escape above puts it anyway (Q-069-11).
 	 *
 	 * @param string[] $photo_ids
 	 *
 	 * @return array<string,string>
 	 */
-	private function resolveForSubtree(array $photo_ids, Album $origin): array
+	private function resolveForSubtree(array $photo_ids, Album $origin, ?User $user): array
 	{
-		$rows = DB::table(PA::PHOTO_ALBUM)
+		$query = DB::table(PA::PHOTO_ALBUM)
 			->join('albums', 'albums.id', '=', PA::ALBUM_ID)
 			->whereIn(PA::PHOTO_ID, $photo_ids)
 			->where('albums._lft', '>=', $origin->_lft)
-			->where('albums._rgt', '<=', $origin->_rgt)
+			->where('albums._rgt', '<=', $origin->_rgt);
+
+		if ($user?->may_administrate !== true) {
+			$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+			$query->join('base_albums', 'base_albums.id', '=', PA::ALBUM_ID);
+			$this->album_query_policy->joinSubComputedAccessPermissions($query, PA::ALBUM_ID, 'left', '', false, $user);
+			$query->where(fn ($q) => $this->album_query_policy->appendAccessibilityConditions($q, $user, $unlocked_album_ids));
+		}
+
+		$rows = $query
 			->orderBy(PA::PHOTO_ID)
 			->orderBy('albums._lft')
 			->select([PA::PHOTO_ID . ' as photo_id', PA::ALBUM_ID . ' as album_id'])

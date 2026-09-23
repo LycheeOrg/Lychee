@@ -310,7 +310,17 @@ function clearScope() {
 	}
 }
 
-const noData = computed<boolean>(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
+// Mirrors `ResultPanel.vue`: on the v3 path the album hits live in the search
+// store only (FR-069-20), and this instance feeds the context menu's own
+// `selectors`, so it has to resolve against the same pool the panel does.
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() =>
+	searchStore.isSearchSoaActive ? searchStore.albumTilesV3 : undefined,
+);
+
+// `albumsStore.albums` is only populated on the v2 path; the v3 album hits are
+// store-local (FR-069-20), so an album-only v3 result would otherwise report
+// "nothing found" while its albums are rendered right below.
+const noData = computed<boolean>(() => (searchAlbumsV3.value ?? albumsStore.albums).length === 0 && photosStore.photos.length === 0);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
 	if (albumStore.config !== undefined) {
@@ -335,9 +345,16 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 });
 
 async function refresh() {
-	const searchRefresh =
-		searchStore.isSearchSoaActive && searchStore.searchTerm !== undefined ? searchStore.searchV3(searchStore.searchTerm) : searchStore.refresh();
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchRefresh]);
+	// `albumStore.refresh()` is not just a header refresh: for a scoped search it
+	// goes through `AlbumState.load()`, which resets and repopulates the shared
+	// photos store. Run to completion *before* the search starts, or its photos
+	// can land after the search has already published its own results and
+	// silently replace them — the same ordering `onMounted()` below already
+	// relies on when it awaits `onSearch()`.
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	await (searchStore.isSearchSoaActive && searchStore.searchTerm !== undefined
+		? searchStore.searchV3(searchStore.searchTerm)
+		: searchStore.refresh());
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
@@ -372,6 +389,7 @@ const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPh
 	photosStore,
 	albumsStore,
 	togglableStore,
+	searchAlbumsV3,
 );
 
 const { toggleHighlight, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, albumId, toast, lycheeStore);
