@@ -9,7 +9,6 @@
 namespace App\Http\Requests\WebAuthn;
 
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -37,9 +36,22 @@ class EditCredentialRequest extends BaseApiRequest
 			return false;
 		}
 
+		/** @var User $user */
 		$user = Auth::user();
 
-		return $user?->may_administrate === true || intval($this->credential->user_id) === $user?->id;
+		return $user->may_administrate === true || $this->isOwnedBy($user);
+	}
+
+	/**
+	 * Checks whether the resolved credential belongs to the given user.
+	 *
+	 * @param User $user
+	 *
+	 * @return bool
+	 */
+	private function isOwnedBy(User $user): bool
+	{
+		return $user->webAuthnCredentials()->whereKey($this->credential->getKey())->exists();
 	}
 
 	public function rules(): array
@@ -54,11 +66,7 @@ class EditCredentialRequest extends BaseApiRequest
 	{
 		/** @var string $id */
 		$id = $values[RequestAttribute::ID_ATTRIBUTE];
-		/** @var User $user */
-		$user = Auth::user() ?? throw new UnauthenticatedException();
-		// Look the credential up through the relationship so that a user can
-		// only ever edit their own credentials.
-		$this->credential = $user->webAuthnCredentials()->findOrFail($id);
+		$this->credential = WebAuthnCredential::query()->findOrFail($id);
 		$this->alias = $values[RequestAttribute::ALIAS_ATTRIBUTE];
 	}
 
