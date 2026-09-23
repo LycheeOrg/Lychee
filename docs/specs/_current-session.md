@@ -28,6 +28,23 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 **Gates:** `UnrelatedAlbumBypassTest` (13 new tests), `FaceBatchTest`, `FaceDetectionTest`, `PublicModeTest`, `PrivateModeTest`, `PrivacyPreservingModeTest`, `RestrictedModeTest` all green; `php-cs-fixer fix` applied; `make phpstan` 0 errors. Not committed, per instruction.
 
+### Feature 056 – Asset Endpoint: cached-cover access leak, second pass (2026-09-22, branch `fix-caching-again`)
+
+**Input:** a security retest of commit `8e84d7667` ("Fix remaining links when removing an Access Permission"). It confirmed the submitted direct-user PoC is fixed, but reproduced the same leak through a different door: share the private source album **publicly**, let an *authenticated* viewer materialise a TagAlbum cover, then revoke the public permission — `SharingController::delete()` purged only `user_id IS NULL` rows, while `CachesAlbumUserThumb` had stored the viewer's row under their own `Auth::id()`. `GET /api/v3/Asset/...` kept returning the private thumbnail bytes.
+
+**Root cause:** `GetPhotoAssetRequest::isComputedAlbumThumb()` (FR-056-08) accepts an `album_user_thumbs` row as proof that the photo represents the album, short-circuiting the permission-filtered `photos()` query. That exception exists to tolerate staleness of the album's *membership* condition; it does not distinguish that from staleness of the *permissions* on the album the photo lives in. A row is keyed by whoever materialised it, never by the grant that let them — so no purge narrowed by the revoked permission's user/group can be correct.
+
+**Decision (ADR-0010, owner call mid-session):** do **not** add a per-request visibility re-check to `isComputedAlbumThumb()`. That endpoint is hit once per rendered thumbnail and the extra query was rejected on cost. The invariant moves entirely to the write side: every revocation path purges. Alternative A (read-side re-check) was implemented and verified first, then reverted on that instruction; the trade-off and its residual risk are recorded in the ADR's Alternatives/Negative sections.
+
+**Built:** `App\Actions\Sharing\PurgeAlbumUserThumbs` (`forBaseAlbums()`/`forUsers()`), whose docblock doubles as the register of call sites and of the paths already covered elsewhere. Wired into `SharingController::delete()` (replacing the narrowed purge), `Propagate::overwrite()` (descendants whose own permissions it wipes), `UserGroupsController::delete()` (members read before the group is dropped), and a new `PurgeAlbumUserThumbsOnMembershipChange` listener on `UserGroupMembershipChanged`.
+
+**Two revocation paths found that had never purged at all** and are the reason a read-side check looked attractive: `UserGroupsManagementController::removeUser()` and `UserGroupsController::delete()` revoke every access a group granted without deleting a single `access_permissions` row, so no permission-keyed purge is reachable from them. Both now purge by member id. `Propagate::overwrite()` was a third. Verified *not* to need a call: photo deletion (FK `photo_id` cascades), `User::delete()`, `Actions\Album\Delete`, and photo membership changes (`RecomputeAlbumUserThumbsOnPhotoChange`'s job recomputes each cached viewer through a permission-filtered query).
+
+**Tests:** 6 added, each confirmed red against the unfixed code and green after — `SharingTest` (public-permission purge, group-permission purge, unrelated-album rows left alone, propagate-overwrite purge), `UserGroupMembershipTest` (remove-from-group), `UserGroupTest` (delete-group).
+
+**Docs:** spec 056 FR-056-09 + S-056-18/19; ADR-0010; knowledge-map entries for the action and the second `UserGroupMembershipChanged` listener.
+
+**Test-infrastructure friction:** `vendor/` was behind `composer.lock` (missing `socialiteproviders/kanidm`) — `composer install` fixed it. Killing a backgrounded `php artisan test` leaves the child `phpunit` process alive holding `database/database.sqlite`; every subsequent run then dies in `setUp()` with `ModelDBException: Updating user failed`, whose real cause (`SQLSTATE[HY000]: database is locked`) is only visible by running `vendor/bin/phpunit` directly rather than through `artisan test`. Kill the phpunit PID, not just the wrapper. Relatedly, one test initially failed for an unrelated reason worth remembering: `AlbumQueryPolicy` reads `$user->user_groups`, a lazily loaded relation, so a fixture's in-memory `User` keeps stale group membership across `actingAs()` calls within one test — re-read the model after changing membership.
 
 ### Feature 059 – Embed Metadata in Original/RAW File — Implemented (new session, 2026-08-28)
 
@@ -385,7 +402,6 @@ spec.md/plan.md/tasks.md/open-questions.md all updated in place; `Last updated` 
 
 ## Next Steps
 
-<<<<<<< HEAD
 1. Feature 054 is done — no follow-up required unless the deferred-to-backlog items (true modular section builder, mosaic/grid-first layout, second About image slot, testimonials block, shared `AlbumHeaderPanel.vue`/landing position-class utility) are picked up as a future feature. See tasks.md's T-054-62 note for the small set of Branch & Scenario Matrix rows verified only at the automated-test level rather than re-clicked through a browser.
 2. Feature 052 is done — no follow-up required unless broader `ManagedCacheService` adoption (deferred per spec Non-Goals) is picked up as a future feature.
 2. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
@@ -401,7 +417,6 @@ None blocking. Q-054-01..19 resolved 2026-08-10 (spec-drafting session, see spec
 
 - Feature 054: [spec.md](4-architecture/features/054-configurable-landing-page/spec.md) · [plan.md](4-architecture/features/054-configurable-landing-page/plan.md) · [tasks.md](4-architecture/features/054-configurable-landing-page/tasks.md) (implemented, T-054-01..63 all `[x]`)
 - Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`)
-=======
 1. Feature 053 is implemented and quality-gated (phpstan/cs-fixer green via targeted tests) — a full non-`--filter` `php artisan test` run is still recommended before treating it as fully end-to-end verified (deferred this session per explicit instruction).
 2. Feature 052 is otherwise done — no further follow-up unless broader `ManagedCacheService` adoption beyond Feature 053 (e.g. photo-listing caching, deferred per Feature 053's Non-Goals) is picked up later.
 3. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
@@ -417,7 +432,6 @@ None blocking. Q-053-01..13 all resolved 2026-08-08/09 (see spec.md and open-que
 
 - Feature 053: [spec.md](4-architecture/features/053-album-listing-caching/spec.md) · [plan.md](4-architecture/features/053-album-listing-caching/plan.md) · [tasks.md](4-architecture/features/053-album-listing-caching/tasks.md) (implemented, T-053-01..24 all `[x]`; full-suite `php artisan test` run still outstanding)
 - Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`; T-052-05/06 resumed and completed as Feature 053's T-053-01)
->>>>>>> master
 - Feature 049: [spec.md](4-architecture/features/049-nuxt-ui-migration/spec.md) · [plan.md](4-architecture/features/049-nuxt-ui-migration/plan.md) · [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md) · [ADR-0005](6-decisions/ADR-0005-nuxt-ui-migration.md)
 - Feature 048: [spec.md](4-architecture/features/048-fix-multi-group-permissions/spec.md) · [plan.md](4-architecture/features/048-fix-multi-group-permissions/plan.md) · [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md)
 - Open questions: [open-questions.md](4-architecture/open-questions.md) (Q-053-01..13, Q-052-01..07, Q-049-01..03, Q-048-01 — all resolved)
