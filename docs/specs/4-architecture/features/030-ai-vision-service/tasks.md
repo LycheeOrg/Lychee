@@ -757,6 +757,27 @@ _Last updated: 2026-04-11_
   - `php artisan test --filter=AlbumPolicyFaceTest`
   - `make phpstan`
 
+### I40 — Bind `album_id` to explicitly selected objects (GHSA-x6f7-qp5q-w37f)
+
+- [x] T-030-104 – Add failing regression tests for the unrelated-album authorization bypass (FR-030-48, S-030-66 … S-030-69).
+  _Intent:_ New `tests/AssistedVision/FacePermissions/UnrelatedAlbumBypassTest.php` (privacy-preserving mode). Attacker `userMayUpload2` owns `album2`/`photo2` and `subAlbum2`/`subPhoto2`; victim `userNoUpload` owns `album3`/`photo3`. Cover: foreign `face_ids` with an unrelated owned `album_id` → 403 and unchanged `person_id`; foreign `face_ids` without `album_id` → 403; mixed-owner `face_ids` with own `album_id` → 403 and no partial write; own face with a foreign or own-but-unrelated `album_id` → 403; own face with the matching `album_id` → 200; `photo_ids` unassign against a foreign photo → 403; the same matrix on `POST /FaceDetection/scan` asserting `face_scan_status` and `Queue::assertNothingPushed()`; plus a service-level check that `dispatchPhotos()` intersects IDs and album.
+  _Verification commands:_
+  - `php artisan test --filter=UnrelatedAlbumBypassTest`
+
+- [x] T-030-105 – Authorize every explicitly selected object and bind `album_id` to it (FR-030-48 (a), (b); FR-030-47 (c), (d)).
+  _Intent:_ New `App\Http\Requests\Traits\Authorize\AuthorizePhotosBelongToAlbumTrait` with `allPhotosBelongToAlbum(Collection $photos, string $album_id)`, resolving membership in a single `photo_album` pivot query. `BatchFaceRequest::authorize()`: resolve the selected photos once (`face_ids` → `Face::with('photo.albums')`, else `Photo::with('albums')`), deny on an empty selection, run `CAN_ASSIGN_FACE_ON_PHOTO` on every photo, then — only when `album_id` is present — require `CAN_BATCH_FACE_OPS` **and** album membership. `ScanPhotosRequest::authorize()`: same shape with `CAN_TRIGGER_SCAN_ON_PHOTO` / `CAN_TRIGGER_SCAN_ON_ALBUM`; the album gate alone remains the path for an album-wide scan with no `photo_ids`. `albums` is eager-loaded because `PhotoPolicy::canEdit()` reads `$photo->albums` and strict mode forbids lazy loading on multi-row result sets.
+  _Verification commands:_
+  - `php artisan test --filter=UnrelatedAlbumBypassTest`
+  - `php artisan test --filter=FaceBatchTest`
+  - `php artisan test --filter=PrivacyPreservingModeTest`
+  - `make phpstan`
+
+- [x] T-030-106 – Intersect the explicit-ID and album predicates in the scan query (FR-030-48 (c)).
+  _Intent:_ `FaceDetectionService::dispatchPhotos()` applies `whereIn('id', $photo_ids)` and the `whereHas('albums', …)` album predicate as two independent `AND` conditions instead of an `if/else`, and returns `0` when neither is supplied so a missing scope can never select the whole library.
+  _Verification commands:_
+  - `php artisan test --filter=UnrelatedAlbumBypassTest`
+  - `php artisan test --filter=FaceDetectionTest`
+
 ## Notes / TODOs
 
 **Q-030-01 through Q-030-53 have been resolved.** All decisions are encoded in spec.md normative sections.
@@ -779,3 +800,5 @@ _Last updated: 2026-04-11_
 **I38 added (2026-04-11):** Denormalized face and photo counter columns on `persons` and `photos`; FaceObserver to maintain them; PersonResource updated to read columns directly. Tasks T-030-93 through T-030-97.
 
 **I39 added (2026-04-11):** Per-resource face access rights in `PhotoPolicy` and `AlbumPolicy`; `PhotoRightsResource` and `AlbumRightsResource` extended with face flags; all `// TODO: FacePermissionMode` gaps in request authorizers closed. Resolves Q-030-63 and Q-030-72. Q-030-77/78/79 raised and resolved same day. Tasks T-030-98 through T-030-103.
+
+**I40 added (2026-09-23):** Fix for GHSA-x6f7-qp5q-w37f — an unrelated album supplied as `album_id` authorized batch face operations and scan dispatch on another user's faces/photos. `album_id` now only narrows a request that already passed per-object authorization. Spec: FR-030-48, FR-030-47 (c)/(d), S-030-66 … S-030-69. Tasks T-030-104 through T-030-106.

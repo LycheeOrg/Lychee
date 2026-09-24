@@ -10,6 +10,7 @@ namespace App\Http\Requests\Face;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\Authorize\AuthorizePhotosBelongToAlbumTrait;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
@@ -25,33 +26,45 @@ use Illuminate\Validation\Validator;
  */
 class ScanPhotosRequest extends BaseApiRequest
 {
+	use AuthorizePhotosBelongToAlbumTrait;
+
 	private ?array $photo_ids = null;
 	private ?Album $album = null;
 	private bool $force = false;
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * An album-wide scan is authorized against that album only. As soon as
+	 * explicit `photo_ids` are given, every one of them is authorized
+	 * individually; a supplied `album_id` then only narrows the selection down
+	 * and never replaces those per-photo checks (see GHSA-x6f7-qp5q-w37f).
 	 */
 	public function authorize(): bool
 	{
-		if ($this->album !== null) {
-			return Gate::check(AlbumPolicy::CAN_TRIGGER_SCAN_ON_ALBUM, [AbstractAlbum::class, $this->album]);
+		if ($this->photo_ids === null || count($this->photo_ids) === 0) {
+			return $this->album !== null &&
+				Gate::check(AlbumPolicy::CAN_TRIGGER_SCAN_ON_ALBUM, [AbstractAlbum::class, $this->album]);
 		}
 
 		// Per-photo check: deny if any photo fails the gate.
-		$photo_ids = $this->input('photo_ids', []);
-		if (count($photo_ids) === 0) {
+		$photos = Photo::with('albums')->whereIn('id', $this->photo_ids)->get();
+		if ($photos->count() === 0) {
 			return false;
 		}
 
-		$photos = Photo::whereIn('id', $photo_ids)->get();
 		foreach ($photos as $photo) {
 			if (!Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)) {
 				return false;
 			}
 		}
 
-		return true;
+		if ($this->album === null) {
+			return true;
+		}
+
+		return Gate::check(AlbumPolicy::CAN_TRIGGER_SCAN_ON_ALBUM, [AbstractAlbum::class, $this->album]) &&
+			$this->allPhotosBelongToAlbum($photos, $this->album->id);
 	}
 
 	/**
