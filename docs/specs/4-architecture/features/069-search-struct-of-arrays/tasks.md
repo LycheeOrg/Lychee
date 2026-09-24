@@ -248,7 +248,11 @@ _Last updated: 2026-09-22_
   _Intent:_ `SearchState` is only cleared explicitly, so after navigating from a search into an album a photo present in both routed its details fetch to the search loader and left the album tile unresolved.  
   _Verification commands:_ `npm run check`
 
-- [ ] T-069-55 – Manual browser verification of S-069-36, S-069-37, S-069-38.  
+- [x] T-069-56 – Count only interactable entries in `selectEverything()` (FR-069-26, S-069-39).  
+  _Intent:_ The branch conditions counted the raw pools while the assignments filtered by `canInteractAlbum()`/`canInteractPhoto()`. Latent before this feature — the browsing pool is usually uniformly interactable — but the v3 search pool spans owners, so mixed rights are normal there.  
+  _Verification commands:_ `npm run check`
+
+- [ ] T-069-55 – Manual browser verification of S-069-36, S-069-37, S-069-38, S-069-39.  
   _Verification commands:_ manual  
   _Notes:_ Same constraint as T-069-44 — leave unchecked while no browser/dev environment is available.
 

@@ -264,30 +264,45 @@ export function useSelection(
 		lastAlbumClicked.value = albumId;
 	}
 
+	/**
+	 * Every branch below compares "how many are selected" against "how many
+	 * there are", and then assigns only the ones the user may actually act on.
+	 * Those two have to be the same pool. `canInteractAlbum()` is per-album, so
+	 * a pool holding read-only entries makes every raw count too high: a flip
+	 * would clear one side and select nothing on the other, and no later flip
+	 * could ever see a "full" selection to flip back from. Both pools are
+	 * therefore narrowed once, up front, and nothing reads the raw arrays.
+	 *
+	 * Latent before Feature 069 — the browsing pool is usually uniformly
+	 * interactable — but the v3 search pool spans owners, so mixed rights are
+	 * the normal case there.
+	 */
 	function selectEverything(): void {
-		const filteredPhotos = photosStore.filteredPhotos;
-		if (selectedPhotosIds.value.length === filteredPhotos.length && selectableAlbums.value.length > 0) {
+		const photos = photosStore.filteredPhotos.filter(canInteractPhoto);
+		const albums = selectableAlbums.value.filter(canInteractAlbum);
+
+		if (selectedPhotosIds.value.length === photos.length && albums.length > 0) {
 			// Flip and select albums
 			selectedPhotosIds.value = [];
-			selectedAlbumsIds.value = selectableAlbums.value.filter(canInteractAlbum).map((a) => a.id);
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 			return;
 		}
-		if (selectedAlbumsIds.value.length === selectableAlbums.value.length && filteredPhotos.length > 0) {
+		if (selectedAlbumsIds.value.length === albums.length && photos.length > 0) {
 			selectedAlbumsIds.value = [];
-			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
+			selectedPhotosIds.value = photos.map((p) => p.id);
 			// Flip and select photos
 			return;
 		}
-		if (selectedAlbumsIds.value.length > 0 && selectableAlbums.value.length > 0) {
-			selectedAlbumsIds.value = selectableAlbums.value.filter(canInteractAlbum).map((a) => a.id);
+		if (selectedAlbumsIds.value.length > 0 && albums.length > 0) {
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 			return;
 		}
-		if (filteredPhotos.length > 0) {
-			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
+		if (photos.length > 0) {
+			selectedPhotosIds.value = photos.map((p) => p.id);
 			return;
 		}
-		if (selectableAlbums.value.length > 0) {
-			selectedAlbumsIds.value = selectableAlbums.value.filter(canInteractAlbum).map((a) => a.id);
+		if (albums.length > 0) {
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 		}
 	}
 

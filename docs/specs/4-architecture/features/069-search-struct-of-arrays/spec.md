@@ -176,6 +176,7 @@ The truncation hint (UI-069-03) appears only when `is_truncated` is true; when f
 | S-069-36 | v3 search, justified or masonry layout ⇒ tiles are laid out from the search response's own `ratios`, not the browsed album's (FR-069-26). |
 | S-069-37 | v3 search matching albums but no photos ⇒ the albums render, are selectable, have a working context menu, and the view does not report "nothing found" (FR-069-26). |
 | S-069-38 | Refresh on an album-scoped v3 search ⇒ the search results stay on screen, not the origin album's own photos (FR-069-27). |
+| S-069-39 | v3 search result mixing albums the viewer may act on with read-only ones ⇒ select-all selects exactly the actionable ones, and flipping between the album and photo halves keeps working (FR-069-26). |
 
 ## Test Strategy
 
