@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Minst %s tegn kreves.',
         'photos' => 'Bilder (%s)',
         'albums' => 'Album (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Avansert søk',
             'search_button' => 'Søk',

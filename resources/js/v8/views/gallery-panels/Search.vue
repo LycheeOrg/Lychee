@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="searchStore.isSearching" />
 
-	<div class="h-svh overflow-y-hidden">
+	<div :class="searchStore.isSearchSoaActive ? 'min-h-svh' : 'h-svh overflow-y-hidden'">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
 			<SearchHeader
@@ -13,11 +13,19 @@
 				@clear-scope="clearScope"
 			/>
 		</Collapse>
+		<!-- `overflow-y-auto` + a fixed height are applied on the v2 path only.
+		     The v3 path renders through `PhotoGridVirtual`, whose
+		     `useWindowVirtualizer` tracks the real window scroll position — a
+		     nested scroll container desyncs its visibility calculation
+		     entirely. Exactly the pitfall `Timeline.vue` and `Flow.vue` both
+		     document; fixed the same way, by dropping the wrapper on the
+		     virtualized branch rather than by fighting the virtualizer. -->
 		<div
 			:class="{
-				'relative flex flex-wrap content-start w-full justify-start overflow-y-auto': true,
-				'h-svh': is_full_screen,
-				'h-[calc(100vh-3.5rem)]': !is_full_screen,
+				'relative flex flex-wrap content-start w-full justify-start': true,
+				'overflow-y-auto': !searchStore.isSearchSoaActive,
+				'h-svh': !searchStore.isSearchSoaActive && is_full_screen,
+				'h-[calc(100vh-3.5rem)]': !searchStore.isSearchSoaActive && !is_full_screen,
 			}"
 		>
 			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" @clear-scope="clearScope" />
@@ -225,7 +233,8 @@ function getStartPage(): number {
 }
 
 function onSearch(terms: string, updateQuery = true, startPage = 1): Promise<void> {
-	const promise = searchStore.search(terms, startPage).then(() => {
+	const search = searchStore.isSearchSoaActive ? searchStore.searchV3(terms) : searchStore.search(terms, startPage);
+	const promise = search.then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
@@ -301,7 +310,17 @@ function clearScope() {
 	}
 }
 
-const noData = computed<boolean>(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
+// Mirrors `ResultPanel.vue`: on the v3 path the album hits live in the search
+// store only (FR-069-20), and this instance feeds the context menu's own
+// `selectors`, so it has to resolve against the same pool the panel does.
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() =>
+	searchStore.isSearchSoaActive ? searchStore.albumTilesV3 : undefined,
+);
+
+// `albumsStore.albums` is only populated on the v2 path; the v3 album hits are
+// store-local (FR-069-20), so an album-only v3 result would otherwise report
+// "nothing found" while its albums are rendered right below.
+const noData = computed<boolean>(() => (searchAlbumsV3.value ?? albumsStore.albums).length === 0 && photosStore.photos.length === 0);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
 	if (albumStore.config !== undefined) {
@@ -326,7 +345,16 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 });
 
 async function refresh() {
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchStore.refresh()]);
+	// `albumStore.refresh()` is not just a header refresh: for a scoped search it
+	// goes through `AlbumState.load()`, which resets and repopulates the shared
+	// photos store. Run to completion *before* the search starts, or its photos
+	// can land after the search has already published its own results and
+	// silently replace them — the same ordering `onMounted()` below already
+	// relies on when it awaits `onSearch()`.
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	await (searchStore.isSearchSoaActive && searchStore.searchTerm !== undefined
+		? searchStore.searchV3(searchStore.searchTerm)
+		: searchStore.refresh());
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
@@ -361,6 +389,7 @@ const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPh
 	photosStore,
 	albumsStore,
 	togglableStore,
+	searchAlbumsV3,
 );
 
 const { toggleHighlight, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, albumId, toast, lycheeStore);
