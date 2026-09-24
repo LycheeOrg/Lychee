@@ -18,20 +18,18 @@ use App\Http\Resources\V3\PhotoDetailResource;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
-use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\PhotoBucketComputer;
 use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Optional;
 
 /**
  * Query logic for `GET /api/v3/Albums/{album_id}/Photos/details`.
  *
  * Unlike {@see QueryPhotoBuckets}/{@see QueryPhotoRatios}, this tier does
- * use Eloquent hydration (with `size_variants`/`palette`/`statistics`/
- * `tags`/`albums` eager-loaded) — a deliberate, scoped exception to the
+ * use Eloquent hydration (with `size_variants`/`palette`/`statistics`/`tags`
+ * eager-loaded) — a deliberate, scoped exception to the
  * other two tiers' `toBase()`-only discipline: reusing
  * `SizeVariantsResouce`/`ColourPaletteResource`/`PhotoStatisticsResource`
  * exactly as-is requires those classes' hydrated-`Photo`-model constructor,
@@ -49,6 +47,7 @@ class QueryPhotoDetails
 	public function __construct(
 		private readonly ConfigManager $config_manager,
 		private readonly PhotoBucketComputer $bucket_computer,
+		private readonly ResolvesPhotoGrants $resolve_photo_grants,
 	) {
 	}
 
@@ -87,7 +86,34 @@ class QueryPhotoDetails
 		}
 
 		/** @var Collection<int,Photo> $photos */
-		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags', 'albums'])->get();
+		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags'])->get();
+
+		return $this->buildResource($photos, $user);
+	}
+
+	/**
+	 * Entry point for a photo source that is not an album at all — Feature
+	 * 069's search tiers, whose candidate set comes from
+	 * {@see \App\Actions\Search\StructOfArrays\SearchPhotoSource} rather than
+	 * from {@see ResolvesPhotoSource}.
+	 *
+	 * Strictly additive: {@see self::do()} is untouched, and both entry points
+	 * converge on the same {@see self::buildResource()} projection, so the two
+	 * tiers can never drift apart in shape. There is no `bucket_id` branch here
+	 * because search has no bucket tier (spec.md NG1) — the caller always scopes
+	 * by an explicit, already-capped `photo_ids[]`.
+	 *
+	 * @param FixedQueryBuilder<Photo> $query     a query already filtered to the caller's visible candidate set
+	 * @param string[]                 $photo_ids ids not in the candidate set are silently curated away, never a 4xx
+	 */
+	public function fromQuery(FixedQueryBuilder $query, ?User $user, array $photo_ids): PhotoDetailResource
+	{
+		/** @var Collection<int,Photo> $photos */
+		$photos = $query
+			->select('photos.*')
+			->whereIn('photos.id', $photo_ids)
+			->with(['size_variants', 'palette', 'statistics', 'tags'])
+			->get();
 
 		return $this->buildResource($photos, $user);
 	}
@@ -165,6 +191,11 @@ class QueryPhotoDetails
 		$metrics_enabled = $this->config_manager->getValueAsBool('metrics_enabled');
 		$metrics_access = $this->config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
+		// One grouped query for the whole page, replacing a per-photo policy
+		// evaluation that lazy-loaded each containing album's
+		// `access_permissions` (6 queries for 4 photos, measured).
+		$should_downgrade_by_id = $this->resolve_photo_grants->downgradeMap($photos, $user);
+
 		$ids = [];
 		$descriptions = [];
 		$tags = [];
@@ -211,8 +242,11 @@ class QueryPhotoDetails
 			$face_counts[] = $photo->face_count;
 
 			$palette[] = ColourPaletteResource::fromModel($photo->palette);
-			$should_downgrade = !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]);
-			$size_variants[] = new SizeVariantsResouce($photo, $should_downgrade);
+			// Batched equivalent of `PhotoPolicy::canAccessFullPhoto()`, resolved
+			// for the whole page in one query by `ResolvesPhotoGrants`.
+			// `canSee()` needs no check here - every row reaching this point
+			// survived the tier's own visibility-filtered candidate query.
+			$size_variants[] = new SizeVariantsResouce($photo, $should_downgrade_by_id[$photo->id] ?? true);
 
 			// The one genuinely per-row (not per-request) gate here -
 			// `metrics_access=owner` depends on *this row's* owner_id, not

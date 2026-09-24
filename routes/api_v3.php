@@ -70,6 +70,20 @@ Route::get('/Albums/{album_id}/Photos', [Gallery\AlbumListing\PhotoChildrenContr
 Route::get('/Albums/{album_id}/Photos/buckets', [Gallery\AlbumListing\PhotoChildrenController::class, 'buckets']);
 Route::get('/Albums/{album_id}/Photos/details', [Gallery\AlbumListing\PhotoChildrenController::class, 'details']);
 
+// Search's Struct-of-Arrays API (Feature 069), coexisting with the v2
+// `/Search` route (routes/api_v2.php) behind the same
+// `is_struct_of_array_enabled` flag — v7 and `SpotlightSearch.vue` keep using
+// v2. A dedicated family rather than a pseudo-album on the `/Albums/...`
+// routes (Q-069-01): search is not an album scope, and its result has an album
+// half as well as a photo half. Literal `/Photos/details` and `/albums/rights`
+// segments are registered before their parents, as elsewhere in this file.
+// Deliberately no `/Search/Photos/buckets` — search is the one photo tier with
+// no bucket level (spec.md NG1, ADR-0010).
+Route::get('/Search/Photos', [Gallery\SearchListingController::class, 'photos']);
+Route::get('/Search/Photos/details', [Gallery\SearchListingController::class, 'details']);
+Route::get('/Search/albums', [Gallery\SearchListingController::class, 'albums']);
+Route::get('/Search/albums/rights', [Gallery\SearchListingController::class, 'albumRights']);
+
 // Map's bucket-tiered API (Feature 067), coexisting with the v2 `/Map` route
 // (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
 Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);

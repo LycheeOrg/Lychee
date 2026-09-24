@@ -142,7 +142,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import UploadPanel from "@/v8/components/modals/UploadPanel.vue";
 import CameraCapture from "@/v8/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/v8/components/forms/album/AlbumCreateDialog.vue";
-import { useScrollable } from "@/composables/album/scrollable";
+import { useScrollable } from "@/v8/composables/album/scrollable";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import AlbumPanel from "@/v8/components/gallery/albumModule/AlbumPanel.vue";
@@ -344,6 +344,14 @@ function goBack() {
 	}
 
 	is_album_edit_open.value = false;
+
+	// Going up to the parent (rather than drilling into a subalbum) means we're done
+	// with this album for now: forget its scroll position so a later, fresh visit
+	// starts at the top instead of resuming a possibly stale position.
+	if (albumId.value !== undefined) {
+		delete togglableStore.scroll_memory[albumId.value];
+	}
+
 	if (albumStore.modelAlbum !== undefined && albumStore.modelAlbum.parent_id !== null) {
 		router.push({ name: albumRoutes().album, params: { albumId: albumStore.modelAlbum.parent_id } });
 	} else {

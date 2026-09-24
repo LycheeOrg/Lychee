@@ -155,7 +155,18 @@ declare namespace App {
 		export type NsfwSensitiveNoAlbumAction = "skip" | "moderate";
 		export type NsfwStatus = "pending" | "failed" | "review" | "visible";
 		export type OauthProvidersType =
-			"amazon" | "apple" | "authelia" | "authentik" | "facebook" | "github" | "google" | "mastodon" | "microsoft" | "nextcloud" | "keycloak";
+			| "amazon"
+			| "apple"
+			| "authelia"
+			| "authentik"
+			| "facebook"
+			| "github"
+			| "google"
+			| "kanidm"
+			| "mastodon"
+			| "microsoft"
+			| "nextcloud"
+			| "keycloak";
 		export type OgImageAlbumSourceType = "header" | "cover";
 		export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 		export type OrderSortingType = "ASC" | "DESC";
@@ -1867,6 +1878,27 @@ declare namespace App {
 					taken_ats: (string | null)[];
 					created_ats: string[];
 					taken_at_orig_tzs: (string | null)[];
+					rating_avgs?: number[];
+					rating_users?: (number | null)[];
+					thumb_infos?: (string | null)[];
+					tags?: string[][];
+				};
+				export type SearchPhotoResource = {
+					ids: string[];
+					album_ids: string[];
+					titles: string[];
+					types: string[];
+					ratios: number[];
+					owner_ids: number[];
+					is_highlighteds: boolean[];
+					is_validateds: boolean[];
+					is_videos: boolean[];
+					is_raws: boolean[];
+					is_live_photos: boolean[];
+					taken_ats: (string | null)[];
+					created_ats: string[];
+					taken_at_orig_tzs: (string | null)[];
+					is_truncated: boolean;
 					rating_avgs?: number[];
 					rating_users?: (number | null)[];
 					thumb_infos?: (string | null)[];

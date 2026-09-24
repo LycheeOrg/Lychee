@@ -73,7 +73,6 @@ class PersonPhotosController extends Controller
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginated,
 			album_id: null,
-			should_downgrade: false,
 			photo_timeline: null
 		);
 	}

@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'حداقل %s کاراکتر مورد نیاز است.',
         'photos' => 'عکس‌ها (%s)',
         'albums' => 'آلبوم‌ها (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'جستجوی پیشرفته',
             'search_button' => 'جستجو',

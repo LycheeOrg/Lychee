@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'الحد الأدنى %s من الأحرف المطلوبة.',
         'photos' => 'الصور (%s)',
         'albums' => 'الألبومات (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'البحث المتقدم',
             'search_button' => 'بحث',

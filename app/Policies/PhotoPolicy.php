@@ -95,6 +95,10 @@ class PhotoPolicy extends BasePolicy
 			return true;
 		}
 
+		if ($photo->is_validated !== true) {
+			return false;
+		}
+
 		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canDownload($user, $a));
 	}
 
@@ -158,6 +162,20 @@ class PhotoPolicy extends BasePolicy
 			->count() === count($photo_ids)
 		) {
 			return true;
+		}
+
+		// Unsorted photos are only editable by the owner or admin.
+		// This is checked by the query above.
+		// If any of the photos are unsorted at this point, we fail.
+		// Better safe than sorry.
+		if (
+			Photo::query()
+			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
+			->whereNull('album_id')
+			->whereIn('photos.id', $photo_ids)
+			->count() > 0
+		) {
+			return false;
 		}
 
 		$parents_id = DB::table(PA::PHOTO_ALBUM)
