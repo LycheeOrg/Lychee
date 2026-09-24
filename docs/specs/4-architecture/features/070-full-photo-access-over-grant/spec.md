@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Draft |
-| Last updated | 2026-09-22 |
+| Last updated | 2026-09-24 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -54,6 +54,7 @@ Nothing in the test suite covered this behaviour before Feature 069 — which is
 | FR-070-07 | The v2 Timeline (`TimelineResource::fromData()`) applies FR-070-01 per photo. | — | — | — | — | Q-069-13 |
 | FR-070-08 | The four collection resources take a per-photo map instead of one boolean, so a single value can no longer be applied to a whole response by construction. | `PhotoResource`'s own per-photo `bool` parameter is unchanged. | A photo absent from the map is downgraded (deny by default). | — | — | Design |
 | FR-070-09 | An admin is never downgraded. | — | — | — | — | Existing policy |
+| FR-070-10 | The RSS feed (`Actions\RSS\Generate`) applies FR-070-01 per photo. A downgraded, non-video photo with a medium derivative carries the best one (medium2x, else medium) as its `<enclosure>` and description `<img>`, with that variant's file size as the enclosure length; otherwise the original, exactly as `SizeVariantsResouce` exposes it. | Granted viewer gets the original. | — | Ungranted guest gets medium2x/medium, never the original. | — | GHSA-m9h3-925m-vvpp |
 
 ## Non-Functional Requirements
 
@@ -78,6 +79,7 @@ Nothing in the test suite covered this behaviour before Feature 069 — which is
 | S-070-08 | A photo id missing from the resolved map ⇒ downgraded. |
 | S-070-09 | Unsorted photo (no album) owned by the viewer ⇒ not downgraded. |
 | S-070-10 | Existing v2 tests that assert real `original.url` file paths keep passing. |
+| S-070-11 | RSS feed, public album grant OFF, guest ⇒ enclosure and `<img>` use medium2x (medium when medium2x is absent); the original path never appears. Grant ON or owner ⇒ original. No medium derivative ⇒ original (same as the album API). |
 
 ## Behavioural Change Register
 
@@ -90,6 +92,7 @@ Each row is a deliberate, owner-visible change.
 | Map root position data | config decides | per photo | **restricts** |
 | Embed stream | config decides | per photo | **restricts** |
 | v2 Timeline | config decides | per photo | **restricts** |
+| RSS feed | original always emitted | per photo | **restricts** (GHSA-m9h3-925m-vvpp) |
 | v2 Album Photos, album branches | the containing album's grant, once per request | per photo | **relaxes** for a photo that is also in another granting album (fixes an under-grant) |
 
 The final row is the only one that widens access. It is included because leaving two mechanisms in place is what allowed the confusion, and because under-granting a photo the viewer is genuinely entitled to is also a defect — flagged here explicitly so it can be vetoed.
