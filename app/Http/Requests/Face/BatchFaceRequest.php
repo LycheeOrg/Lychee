@@ -10,14 +10,19 @@ namespace App\Http\Requests\Face;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\Authorize\AuthorizePhotosBelongToAlbumTrait;
 use App\Models\Album;
 use App\Models\Face;
+use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class BatchFaceRequest extends BaseApiRequest
 {
+	use AuthorizePhotosBelongToAlbumTrait;
+
 	public array $face_ids = [];
 	public string $action;
 	public ?string $person_id = null;
@@ -25,38 +30,53 @@ class BatchFaceRequest extends BaseApiRequest
 	public array $photo_ids = [];
 	private ?Album $album = null;
 
+	/**
+	 * The batch endpoint always operates on an explicit list of faces or photos.
+	 *
+	 * Every selected object is therefore authorized individually; a supplied
+	 * `album_id` is an additional constraint, never a substitute for those
+	 * per-object checks (see GHSA-x6f7-qp5q-w37f).
+	 */
 	public function authorize(): bool
 	{
-		if ($this->album !== null) {
-			return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, $this->album]);
+		$photos = $this->selectedPhotos();
+		if ($photos->count() === 0) {
+			return false;
 		}
 
-		$face_ids = $this->input('face_ids', []);
-		$photo_ids = $this->input('photo_ids', []);
-
-		if (count($face_ids) > 0) {
-			$faces = Face::with('photo')->whereIn('id', $face_ids)->get();
-			foreach ($faces as $face) {
-				if (!Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)) {
-					return false;
-				}
+		foreach ($photos as $photo) {
+			if (!Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $photo)) {
+				return false;
 			}
+		}
 
+		if ($this->album === null) {
 			return true;
 		}
 
-		if (count($photo_ids) > 0) {
-			$photos = \App\Models\Photo::whereIn('id', $photo_ids)->get();
-			foreach ($photos as $photo) {
-				if (!Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $photo)) {
-					return false;
-				}
-			}
+		return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, $this->album]) &&
+			$this->allPhotosBelongToAlbum($photos, $this->album->id);
+	}
 
-			return true;
+	/**
+	 * Resolve the photos carrying the explicitly selected objects.
+	 *
+	 * @return Collection<int,Photo>
+	 */
+	private function selectedPhotos(): Collection
+	{
+		if (count($this->face_ids) > 0) {
+			/** @var Collection<int,Photo> */
+			return Face::with('photo.albums')
+				->whereIn('id', $this->face_ids)
+				->get()
+				->pluck('photo')
+				->filter(fn (?Photo $photo): bool => $photo !== null)
+				->unique('id')
+				->values();
 		}
 
-		return false;
+		return Photo::with('albums')->whereIn('id', $this->photo_ids)->get();
 	}
 
 	public function rules(): array

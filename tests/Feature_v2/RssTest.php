@@ -18,9 +18,11 @@
 
 namespace Tests\Feature_v2;
 
+use App\Enum\SizeVariantType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use App\Repositories\ConfigManager;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -321,6 +323,112 @@ class RssTest extends BaseApiWithDataTest
 			Configs::set('rss_enable', $init_rss);
 			Configs::set('hide_nsfw_in_rss', $init_nsfw);
 		}
+	}
+
+	/**
+	 * GHSA-m9h3-925m-vvpp (FR-070-10): a public album whose share withholds
+	 * full-resolution access must not leak the original file through the feed.
+	 * The item carries the best authorized derivative (medium2x) instead, both
+	 * as the `<enclosure>` and as the `<img>` in the description.
+	 */
+	public function testRSSDeniesOriginalWhenTheAlbumGrantIsOff(): void
+	{
+		$content = $this->fetchFeedAsGuestWithAlbumGrant(false);
+
+		$this->assertStringNotContainsString($this->shortPathOf($this->subPhoto4, SizeVariantType::ORIGINAL), $content, 'feed must not expose the original');
+		$medium2x = $this->shortPathOf($this->subPhoto4, SizeVariantType::MEDIUM2X);
+		$this->assertSame(2, substr_count($content, $medium2x), 'enclosure and <img> must both carry medium2x');
+		$this->assertStringContainsString('length="' . $this->subPhoto4->size_variants->getSizeVariant(SizeVariantType::MEDIUM2X)->filesize . '"', $content, 'enclosure length must be the derivative\'s');
+	}
+
+	public function testRSSExposesOriginalWhenTheAlbumGrantIsOn(): void
+	{
+		$content = $this->fetchFeedAsGuestWithAlbumGrant(true);
+
+		$this->assertSame(2, substr_count($content, $this->shortPathOf($this->subPhoto4, SizeVariantType::ORIGINAL)), 'enclosure and <img> must both carry the original');
+	}
+
+	/**
+	 * Mirrors the album API: with no medium derivative to fall back to, the
+	 * original is what `Album::photos` exposes too, so the feed does the same.
+	 */
+	public function testRSSFallsBackToOriginalWithoutMediumDerivative(): void
+	{
+		$this->subPhoto4->size_variants->getSizeVariant(SizeVariantType::MEDIUM2X)->delete();
+		$this->subPhoto4->size_variants->getSizeVariant(SizeVariantType::MEDIUM)->delete();
+
+		$content = $this->fetchFeedAsGuestWithAlbumGrant(false);
+
+		$this->assertSame(2, substr_count($content, $this->shortPathOf($this->subPhoto4, SizeVariantType::ORIGINAL)));
+	}
+
+	/**
+	 * Falls back to medium when medium2x does not exist.
+	 */
+	public function testRSSUsesMediumWhenMedium2xIsMissing(): void
+	{
+		$this->subPhoto4->size_variants->getSizeVariant(SizeVariantType::MEDIUM2X)->delete();
+
+		$content = $this->fetchFeedAsGuestWithAlbumGrant(false);
+
+		$this->assertStringNotContainsString($this->shortPathOf($this->subPhoto4, SizeVariantType::ORIGINAL), $content);
+		$this->assertSame(2, substr_count($content, $this->shortPathOf($this->subPhoto4, SizeVariantType::MEDIUM)));
+	}
+
+	/**
+	 * The owner is never downgraded, whatever the album grant says.
+	 */
+	public function testRSSOwnerKeepsOriginalWhenTheAlbumGrantIsOff(): void
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_config_value = $config_manager->getValue('rss_enable');
+
+		try {
+			Configs::set('rss_enable', '1');
+			$this->perm44->grants_full_photo_access = false;
+			$this->perm44->save();
+
+			$content = $this->actingAs($this->userLocked)->get('/feed')->getContent();
+			self::assertIsString($content);
+			$this->assertSame(2, substr_count($content, $this->shortPathOf($this->subPhoto4, SizeVariantType::ORIGINAL)));
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+		}
+	}
+
+	/**
+	 * Fetches the feed as a guest after setting `subAlbum4`'s public
+	 * full-photo grant. `subPhoto4` lives in that public album, owned by
+	 * `userLocked`, so a guest reaches it without owning it.
+	 */
+	private function fetchFeedAsGuestWithAlbumGrant(bool $granted): string
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_config_value = $config_manager->getValue('rss_enable');
+
+		try {
+			Configs::set('rss_enable', '1');
+			$this->perm44->grants_full_photo_access = $granted;
+			$this->perm44->save();
+
+			$response = $this->get('/feed');
+			$this->assertOk($response);
+			$content = $response->getContent();
+			self::assertIsString($content);
+			// Guard against vacuous passes: the photo must be in the feed at all.
+			$this->assertStringContainsString(route('gallery', ['albumId' => $this->subAlbum4->id, 'photoId' => $this->subPhoto4->id]), $content, 'subPhoto4 must be in the feed');
+
+			return $content;
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+		}
+	}
+
+	private function shortPathOf(Photo $photo, SizeVariantType $type): string
+	{
+		$size_variant = SizeVariant::query()->where('photo_id', '=', $photo->id)->where('type', '=', $type)->firstOrFail();
+
+		return $size_variant->short_path;
 	}
 
 	/**

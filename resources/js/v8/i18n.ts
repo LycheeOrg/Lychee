@@ -9,7 +9,7 @@
 // the backend's Settings::getLanguages reads via `scandir(lang/)` for `supported_locale`
 // (see config/app.php). Deriving `availableLocales` from this glob instead of a network
 // call keeps it in sync with the actually-bundled translations for free.
-const langs = import.meta.glob("../../../lang/*.json");
+const langs = import.meta.glob<{ default: Record<string, string> }>("../../../lang/*.json");
 
 const PHP_LANG_FILE = /^\.\.\/\.\.\/\.\.\/lang\/php_(.+)\.json$/;
 

@@ -1,7 +1,7 @@
 # Feature 070 Tasks – Fix Full-Photo-Access Over-Grant
 
 _Status: Draft_  
-_Last updated: 2026-09-22_
+_Last updated: 2026-09-24_
 
 > Stage tests before implementation. Mark `[x]` immediately after each passes.
 
@@ -40,6 +40,12 @@ _Last updated: 2026-09-22_
 - [x] T-070-10 – `EmbedStreamResource` + `TimelineResource::fromData()` take the map.  
   _Verification:_ as above, `make phpstan`
 
+### I7 – RSS feed (FR-070-10, GHSA-m9h3-925m-vvpp)
+- [x] T-070-15 – Failing tests: S-070-11 (grant off → medium2x, medium fallback; grant on, owner, no-medium → original).  
+  _Verification:_ `php artisan test --filter=RssTest`
+- [x] T-070-16 – `Generate` resolves `downgradeMap()` and serves the authorized variant.  
+  _Verification:_ `php artisan test --filter=RssTest`, `--filter=FullPhotoAccessOverGrantTest`, `make phpstan`, `php-cs-fixer`
+
 ### I6 – Coverage and gates
 - [ ] T-070-11 – Query-count assertions per surface (S-070-07, NFR-070-01).  
   _Verification:_ per-surface test filters
@@ -57,4 +63,5 @@ _Last updated: 2026-09-22_
 - **D-070-A — one test class, not five.** The plan listed a test class per surface (`SearchFullPhotoAccessV2Test`, `AlbumPhotosFullPhotoAccessTest`, ...). Implemented as a single `tests/Feature_v2/FullPhotoAccessOverGrantTest.php` with a method per surface: all seven share one setup (config ON, grant OFF, non-owner) and one response-walking helper, so five classes would have been five copies of the same scaffolding.
 - **D-070-B — the parameter was removed, not retyped.** The plan (R4) assumed changing `bool` to `array` would make every stale call site a static error. It does not: the project runs phpstan at **level 3**, where `argument.type` is not reported (verified — a direct `--level=6` run does flag it). Removing the parameter instead makes call sites fail with `argument.unknown`, which **is** reported at level 3. That turned the gate into the driver of the refactor rather than a rubber stamp.
 - **D-070-C — scope grew from five surfaces to seven.** `PersonPhotosController` passed `should_downgrade: false` (an unconditional grant, strictly worse than the config-driven ones) and `FlowItemResource` used an album-wide gate. Neither was in the spec's list; both were surfaced by D-070-B's mechanism.
+- **D-070-E — RSS added as an eighth surface (2026-09-24).** Reported via GHSA-m9h3-925m-vvpp: `Generate` joined and emitted `SizeVariantType::ORIGINAL` unconditionally. The advisory suggested scoping the decision to the item's link album; FR-070-01's per-photo rule was applied instead so the feed agrees with every other surface. Two extra queries per feed (grants, medium variants), independent of item count.
 - **D-070-D — AGENTS.md says "PHPStan level 6 minimum" but `phpstan.neon` sets `level: 3`.** Not changed here (out of scope, repo-wide blast radius) but recorded: it is why D-070-B was necessary.
