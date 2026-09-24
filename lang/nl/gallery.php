@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Minimaal %s tekens vereist.',
         'photos' => 'Foto’s (%s)',
         'albums' => 'Albums (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Geavanceerd zoeken',
             'search_button' => 'Zoeken',

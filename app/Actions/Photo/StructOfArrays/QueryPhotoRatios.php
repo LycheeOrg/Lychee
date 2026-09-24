@@ -14,7 +14,6 @@ use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\OrderSortingType;
 use App\Enum\PhotoThumbInfoType;
-use App\Enum\SizeVariantType;
 use App\Enum\VisibilityType;
 use App\Http\Resources\V3\PhotoRatioResource;
 use App\Models\Album;
@@ -40,6 +39,7 @@ use Spatie\LaravelData\Optional;
  */
 class QueryPhotoRatios
 {
+	use JoinsRatioSizeVariants;
 	use ResolvesPhotoSource;
 
 	public function __construct(
@@ -106,7 +106,7 @@ class QueryPhotoRatios
 		if ($is_regular_album) {
 			$select[] = 'photo_album.bucket_id';
 		}
-		$selects_raw = ['COALESCE(sv_original.ratio, sv_medium.ratio, sv_small.ratio, 1) as ratio'];
+		$selects_raw = [self::RATIO_SELECT_RAW];
 
 		if ($can_read_ratings && $user !== null) {
 			$query->leftJoin('photo_ratings as pr', function (JoinClause $join) use ($user): void {
@@ -146,28 +146,6 @@ class QueryPhotoRatios
 		$rows = $query->select($select)->selectRaw(implode(', ', $selects_raw))->toBase()->get();
 
 		return $this->buildResource($rows, $can_read_ratings, $user !== null, $thumb_infos_on, $tags_on, $blank_titles, $is_regular_album, $sorting, $album);
-	}
-
-	/**
-	 * Adds the three `type`-filtered `size_variants` `LEFT JOIN`s the ratio
-	 * resolution requires — deliberately does NOT reproduce
-	 * {@see \App\Models\Photo::getAspectRatioAttribute()}'s video-forces-1
-	 * special case: a video's real ratio wins whenever any of the three
-	 * exists.
-	 *
-	 * @param FixedQueryBuilder<Photo> $query
-	 */
-	private function joinRatioSizeVariants(FixedQueryBuilder $query): void
-	{
-		$query->leftJoin('size_variants as sv_original', function (JoinClause $join): void {
-			$join->on('sv_original.photo_id', '=', 'photos.id')->where('sv_original.type', '=', SizeVariantType::ORIGINAL->value);
-		});
-		$query->leftJoin('size_variants as sv_medium', function (JoinClause $join): void {
-			$join->on('sv_medium.photo_id', '=', 'photos.id')->where('sv_medium.type', '=', SizeVariantType::MEDIUM->value);
-		});
-		$query->leftJoin('size_variants as sv_small', function (JoinClause $join): void {
-			$join->on('sv_small.photo_id', '=', 'photos.id')->where('sv_small.type', '=', SizeVariantType::SMALL->value);
-		});
 	}
 
 	/**

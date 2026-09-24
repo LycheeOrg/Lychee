@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Je třeba zadat alespoň %s znaků.',
         'photos' => 'Fotografie (%s)',
         'albums' => 'Alba (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Pokročilé vyhledávání',
             'search_button' => 'Hledat',
