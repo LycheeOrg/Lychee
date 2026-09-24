@@ -56,6 +56,7 @@ return [
         'album_decoration' => 'Show decorations on album cover (sub-album and/or photo count)',
         'album_decoration_direction' => 'Align album decorations horizontally or vertically',
         'photo_overlay' => 'Default image overlay information',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Round the corners of photo and album thumbnails',
         'album_border_enabled' => 'Show a border around photo and album thumbnails',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

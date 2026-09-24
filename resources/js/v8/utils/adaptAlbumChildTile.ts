@@ -31,6 +31,9 @@ export const DEFAULT_ALBUM_CHILD_RIGHTS: App.Http.Resources.Rights.AlbumRightsRe
  */
 export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 	cover_id: string | null;
+	/** Raw tier-2 values (Feature 071 date scrubber); `formatted_min_max` is the display form. */
+	min_taken_at: string | null;
+	max_taken_at: string | null;
 };
 
 /**
@@ -169,5 +172,7 @@ export function adaptAlbumChildTile(
 		rights: rights,
 		timeline: null,
 		cover_id: childrenV3.cover_ids[i],
+		min_taken_at: childrenV3.min_taken_ats[i],
+		max_taken_at: childrenV3.max_taken_ats[i],
 	};
 }

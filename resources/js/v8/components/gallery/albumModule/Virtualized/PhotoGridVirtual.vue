@@ -128,6 +128,7 @@ import {
 	type TimelineLayoutCacheEntry,
 } from "@/v8/composables/photo/analyticPhotoLayout";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
+import { deriveDayScrubEntries, formatDayLabel, tileDayKey, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 
@@ -162,8 +163,10 @@ const emits = defineEmits<{
 	 * (buckets vs totalHeight) update.
 	 */
 	timelineLayoutChanged: [payload: { buckets: { bucketId: string; top: number; height: number }[]; totalHeight: number }];
-	/** Timeline-only — raw content-relative scroll offset (`offset` below), for the rail's continuous playhead. Fires on every scroll tick by nature; keep consumers of this to a single cheap style binding. */
+	/** Timeline, and album mode while the date scrubber has entries (Feature 071) — raw content-relative scroll offset (`offset` below), for the rail's continuous playhead. Fires on every scroll tick by nature; keep consumers of this to a single cheap style binding. */
 	scrollOffsetChanged: [offset: number];
+	/** Album mode only (Feature 071, FR-071-08): day-level rail entries derived from each laid-out tile's date, in the same pixel space as `scrollOffsetChanged`. */
+	scrubberLayoutChanged: [payload: DateScrubLayout];
 }>();
 
 const source = computed(() => props.source ?? "album");
@@ -549,10 +552,41 @@ watch(
 	{ immediate: true },
 );
 
+// --- Album date scrubber (Feature 071) ---
+
+/**
+ * Day-level rail entries for album mode (ADR-0011): each tile's date (field
+ * picked server-side, `AlbumConfig.photo_date_scrubber_field`) paired with its
+ * laid-out `top`. Recomputed only when the layout itself changes, never per
+ * scroll tick (NFR-071-03). `null` when the album's photo ordering is not
+ * date-based.
+ */
+const scrubberLayout = computed<DateScrubLayout | null>(() => {
+	const field = (albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null;
+	if (source.value !== "album" || field === null) {
+		return null;
+	}
+	const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
+	const items = layoutResult.value.positioned.map((p) => ({ day: tileDayKey(p.photo, field), top: p.box.top }));
+	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, (day) => formatDayLabel(day, format));
+});
+
+watch(
+	scrubberLayout,
+	(scrubber) => {
+		if (scrubber !== null) {
+			emits("scrubberLayoutChanged", scrubber);
+		}
+	},
+	{ immediate: true },
+);
+
+const emitsScrollOffset = computed(() => source.value === "timeline" || (scrubberLayout.value?.entries.length ?? 0) > 0);
+
 watch(
 	contentScrollOffset,
 	(offset) => {
-		if (source.value === "timeline") {
+		if (emitsScrollOffset.value) {
 			emits("scrollOffsetChanged", offset);
 		}
 	},

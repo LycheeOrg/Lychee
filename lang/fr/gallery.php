@@ -184,6 +184,10 @@ return [
             'upload_failed' => 'Could not upload one or more tracks',
             'name_required' => 'Name is required',
         ],
+        'date_scrubber' => [
+            'toggle' => 'Show/hide the date scrubber',
+            'albums_count' => ':count album|:count albums',
+        ],
         'hero' => [
             'created' => 'Créé le',
             'copyright' => 'Copyright',
@@ -227,6 +231,10 @@ return [
             'aspect_ratio' => 'Définir le ratio des miniatures',
             'album_timeline' => 'Mode chronologique de l’album',
             'photo_timeline' => 'Mode chronologique des photos',
+            'date_scrubber' => 'Date scrubber',
+            'date_scrubber_default' => 'Default',
+            'date_scrubber_enabled' => 'Enabled',
+            'date_scrubber_disabled' => 'Disabled',
             'layout' => 'Disposition des photos',
             'flow_publish_date' => 'Flow publish date',
             'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',

@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Mostrar decoraciones en la portada del álbum (subálbum y/o recuento de fotos)',
         'album_decoration_direction' => 'Alinear las decoraciones del álbum horizontal o verticalmente',
         'photo_overlay' => 'Información de superposición de imágenes predeterminada',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Redondear las esquinas de las miniaturas de fotos y álbumes',
         'album_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos y álbumes',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
