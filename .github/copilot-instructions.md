@@ -32,10 +32,11 @@ This file provides quick hints for GitHub Copilot during real-time code completi
 - the <template> comes first, then <script lang="ts">, then <style>.
 - axios requests should be in the services/ directory and make use of `${Constants.getApiUrl()}` to specify the base URL.
 
-# Documentation Conventions
+# Documentation Conventions (docs/*)
 
 - Use Markdown format for documentation.
-- At the bottom of the file, add an hr line followed by "*Last updated: [date of the update]*" 
+- At the bottom of the file, add an hr line followed by "*Last updated: [date of the update]*"
+- This convention does not apply to version.md file.
 
 # Testing Conventions
 
