@@ -140,7 +140,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			// Original rather than whatever the viewer would otherwise render.
 			const prefersHighestQuality = useLycheeStateStore().is_photo_viewer_highest_quality_enabled;
 			const hasMedium = this.photo?.size_variants.medium !== null;
-			const hasOriginal = this.photo?.size_variants.original !== null;
+			const hasOriginal = !!this.photo?.size_variants.original?.url;
 
 			if (this.photo?.precomputed.is_livephoto === true) {
 				if (prefersHighestQuality) {
