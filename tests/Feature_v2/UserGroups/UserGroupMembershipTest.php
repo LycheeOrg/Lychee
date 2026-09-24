@@ -8,6 +8,7 @@
 
 namespace Tests\Feature_v2\UserGroups;
 
+use App\Models\AlbumUserThumb;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UserGroupMembershipTest extends BaseApiWithDataTest
@@ -109,6 +110,32 @@ class UserGroupMembershipTest extends BaseApiWithDataTest
 			'group_id' => $this->group1->id,
 		]);
 		$this->assertOk($response);
+	}
+
+	/**
+	 * Leaving a group revokes every album access that group granted without
+	 * deleting a single `access_permissions` row, so none of the
+	 * permission-side purges in `SharingController::delete()` are reached.
+	 * `GetPhotoAssetRequest::isComputedAlbumThumb()` treats a surviving
+	 * `album_user_thumbs` row as proof that the photo represents the album and
+	 * serves its bytes without re-checking permissions, so the row must be
+	 * dropped here (see `App\Actions\Sharing\PurgeAlbumUserThumbs`).
+	 */
+	public function testRemoveUserFromGroupPurgesTheirCachedAlbumThumbs(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userWithGroup1->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+
+		$response = $this->actingAs($this->userWithGroupAdmin)->deleteJson('/UserGroups/Users', [
+			'user_id' => $this->userWithGroup1->id,
+			'group_id' => $this->group1->id,
+		]);
+		$this->assertOk($response);
+
+		self::assertSame(0, AlbumUserThumb::query()->where('user_id', '=', $this->userWithGroup1->id)->count());
 	}
 
 	public function testUpdateUserRoleUnauthorized(): void
