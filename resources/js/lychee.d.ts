@@ -1882,6 +1882,27 @@ declare namespace App {
 					thumb_infos?: (string | null)[];
 					tags?: string[][];
 				};
+				export type SearchPhotoResource = {
+					ids: string[];
+					album_ids: string[];
+					titles: string[];
+					types: string[];
+					ratios: number[];
+					owner_ids: number[];
+					is_highlighteds: boolean[];
+					is_validateds: boolean[];
+					is_videos: boolean[];
+					is_raws: boolean[];
+					is_live_photos: boolean[];
+					taken_ats: (string | null)[];
+					created_ats: string[];
+					taken_at_orig_tzs: (string | null)[];
+					is_truncated: boolean;
+					rating_avgs?: number[];
+					rating_users?: (number | null)[];
+					thumb_infos?: (string | null)[];
+					tags?: string[][];
+				};
 			}
 		}
 	}

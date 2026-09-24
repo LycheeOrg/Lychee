@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Spatie\LaravelData\Optional;
 
 /**
  * Shared plumbing for the two `/rights` query variants (a real Album's
@@ -24,6 +25,11 @@ use Illuminate\Support\Facades\DB;
  * is a real per-request check (Album) or always `false` (no single shared
  * parent's `access_permissions` could uniformly apply to a dynamically-matched,
  * disparately-parented set).
+ *
+ * `$owner_id` is widened to `string|Optional` (Feature 069): a search result set
+ * spans arbitrarily many parents, so there is no single owning album to name and
+ * the key is omitted from the payload entirely — the same resolution
+ * `/Albums/root/rights` already reached for root (Q-062-16).
  *
  * Takes {@see AlbumQueryPolicy} as an explicit parameter rather than reading
  * it off `$this` — a trait has no constructor of its own, and reaching into
@@ -39,7 +45,7 @@ trait GrantsAlbumRights
 	 *
 	 * @param Builder<Album> $query
 	 */
-	final protected function allGranted(Builder $query, string $owner_id, bool $can_delete_children): AlbumRightsResource
+	final protected function allGranted(Builder $query, string|Optional $owner_id, bool $can_delete_children): AlbumRightsResource
 	{
 		$ids = $query->select(['albums.id'])->toBase()->pluck('id')->all();
 		$count = count($ids);
@@ -63,7 +69,7 @@ trait GrantsAlbumRights
 	 *
 	 * @param Builder<Album> $query
 	 */
-	final protected function grantsResource(AlbumQueryPolicy $album_query_policy, Builder $query, ?User $user, string $owner_id, bool $can_delete_children): AlbumRightsResource
+	final protected function grantsResource(AlbumQueryPolicy $album_query_policy, Builder $query, ?User $user, string|Optional $owner_id, bool $can_delete_children): AlbumRightsResource
 	{
 		$album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', 'grants_', true, $user);
 

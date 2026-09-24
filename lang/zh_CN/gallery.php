@@ -52,6 +52,7 @@ return [
         'minimum_chars' => '至少需要 %s 个字符。',
         'photos' => '照片（%s）',
         'albums' => '相册（%s）',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Advanced Search',
             'search_button' => 'Search',

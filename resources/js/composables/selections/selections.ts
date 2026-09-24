@@ -1,28 +1,44 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
 import { getModKey } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, type ComputedRef } from "vue";
 import { useAlbumActions } from "@/composables/album/albumActions";
 import { PhotosStore } from "@/stores/PhotosState";
 import { AlbumsStore } from "@/stores/AlbumsState";
 
-export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore, togglableStore: TogglablesStateStore) {
+export function useSelection(
+	photosStore: PhotosStore,
+	albumsStore: AlbumsStore,
+	togglableStore: TogglablesStateStore,
+	/**
+	 * Replaces `albumsStore.selectableAlbums` as the pool every album-side
+	 * selection resolves against. Feature 069's v3 search keeps its album hits
+	 * store-locally rather than in the browsing store (FR-069-20), so on that
+	 * path `selectableAlbums` holds either nothing or the previously browsed
+	 * albums — never what the user is actually looking at. A `undefined` value
+	 * (the default, and what the override itself yields off the v3 path) keeps
+	 * the browsing store, so every existing caller is unchanged.
+	 */
+	overrideSelectableAlbums?: ComputedRef<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>,
+) {
 	const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
+
+	const selectableAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
+		() => overrideSelectableAlbums?.value ?? albumsStore.selectableAlbums,
+	);
 
 	const { selectedPhotosIds, selectedAlbumsIds } = storeToRefs(togglableStore);
 	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
 		selectedPhotosIds.value.length === 1 ? (photosStore.photos.find((p) => p.id === selectedPhotosIds.value[0]) ?? undefined) : undefined,
 	);
 	const selectedAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource | undefined>(() =>
-		selectedAlbumsIds.value.length === 1
-			? (albumsStore.selectableAlbums.find((a) => a.id === selectedAlbumsIds.value[0]) ?? undefined)
-			: undefined,
+		selectedAlbumsIds.value.length === 1 ? (selectableAlbums.value.find((a) => a.id === selectedAlbumsIds.value[0]) ?? undefined) : undefined,
 	);
 	const selectedPhotos = computed<App.Http.Resources.Models.PhotoResource[]>(
 		() => photosStore.photos.filter((p) => selectedPhotosIds.value.includes(p.id)) ?? [],
 	);
-	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
-		() => albumsStore.selectableAlbums?.filter((a) => selectedAlbumsIds.value.includes(a.id)) ?? [],
+	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(() =>
+		selectableAlbums.value.filter((a) => selectedAlbumsIds.value.includes(a.id)),
 	);
 
 	// We save the last clicked photo/album ID so we can do selections with shift.
@@ -55,7 +71,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 	 */
 	function pruneSelection(): void {
 		selectedPhotosIds.value = selectedPhotosIds.value.filter((id) => photosStore.photos.some((p) => p.id === id));
-		selectedAlbumsIds.value = selectedAlbumsIds.value.filter((id) => albumsStore.selectableAlbums.some((a) => a.id === id));
+		selectedAlbumsIds.value = selectedAlbumsIds.value.filter((id) => selectableAlbums.value.some((a) => a.id === id));
 	}
 
 	function addToPhotoSelection(photoId: string): void {
@@ -181,7 +197,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		e.preventDefault();
 		e.stopPropagation();
 
-		const album = albumsStore.selectableAlbums.find((a) => a.id === albumId);
+		const album = selectableAlbums.value.find((a) => a.id === albumId);
 		if (!album || canInteractAlbum(album) === false) {
 			return;
 		}
@@ -215,7 +231,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		}
 
 		// Find indices in the selectableAlbums array for range selection
-		const albums = albumsStore.selectableAlbums;
+		const albums = selectableAlbums.value;
 		const currentIdx = albums.findIndex((a) => a.id === albumId);
 		const lastIdx = lastAlbumClicked.value !== undefined ? albums.findIndex((a) => a.id === lastAlbumClicked.value) : -1;
 
@@ -248,30 +264,45 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		lastAlbumClicked.value = albumId;
 	}
 
+	/**
+	 * Every branch below compares "how many are selected" against "how many
+	 * there are", and then assigns only the ones the user may actually act on.
+	 * Those two have to be the same pool. `canInteractAlbum()` is per-album, so
+	 * a pool holding read-only entries makes every raw count too high: a flip
+	 * would clear one side and select nothing on the other, and no later flip
+	 * could ever see a "full" selection to flip back from. Both pools are
+	 * therefore narrowed once, up front, and nothing reads the raw arrays.
+	 *
+	 * Latent before Feature 069 — the browsing pool is usually uniformly
+	 * interactable — but the v3 search pool spans owners, so mixed rights are
+	 * the normal case there.
+	 */
 	function selectEverything(): void {
-		const filteredPhotos = photosStore.filteredPhotos;
-		if (selectedPhotosIds.value.length === filteredPhotos.length && albumsStore.selectableAlbums.length > 0) {
+		const photos = photosStore.filteredPhotos.filter(canInteractPhoto);
+		const albums = selectableAlbums.value.filter(canInteractAlbum);
+
+		if (selectedPhotosIds.value.length === photos.length && albums.length > 0) {
 			// Flip and select albums
 			selectedPhotosIds.value = [];
-			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 			return;
 		}
-		if (selectedAlbumsIds.value.length === albumsStore.selectableAlbums.length && filteredPhotos.length > 0) {
+		if (selectedAlbumsIds.value.length === albums.length && photos.length > 0) {
 			selectedAlbumsIds.value = [];
-			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
+			selectedPhotosIds.value = photos.map((p) => p.id);
 			// Flip and select photos
 			return;
 		}
-		if (selectedAlbumsIds.value.length > 0 && albumsStore.selectableAlbums.length > 0) {
-			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
+		if (selectedAlbumsIds.value.length > 0 && albums.length > 0) {
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 			return;
 		}
-		if (filteredPhotos.length > 0) {
-			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
+		if (photos.length > 0) {
+			selectedPhotosIds.value = photos.map((p) => p.id);
 			return;
 		}
-		if (albumsStore.selectableAlbums.length > 0) {
-			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
+		if (albums.length > 0) {
+			selectedAlbumsIds.value = albums.map((a) => a.id);
 		}
 	}
 
