@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumStore } from "./AlbumState";
 import { useTimelineStore } from "./TimelineState";
+import { useLycheeStateStore } from "./LycheeState";
 import { useSearchStore } from "./SearchState";
 
 export enum ImageViewMode {
@@ -154,17 +155,25 @@ export const usePhotoStore = defineStore("photo-store", {
 				return ImageViewMode.Raw;
 			}
 
+			// When enabled, prefer the highest-quality variant that exists for
+			// this photo (Original, falling back to Medium) instead of always
+			// preferring Medium - e.g. so a mobile long-press-save captures
+			// Original rather than whatever the viewer would otherwise render.
+			const prefersHighestQuality = useLycheeStateStore().is_photo_viewer_highest_quality_enabled;
+			const hasMedium = this.photo?.size_variants.medium !== null;
+			const hasOriginal = !!this.photo?.size_variants.original?.url;
+
 			if (this.photo?.precomputed.is_livephoto === true) {
-				if (this.photo?.size_variants.medium !== null) {
-					return ImageViewMode.LivePhotoMedium;
+				if (prefersHighestQuality) {
+					return hasOriginal ? ImageViewMode.LivePhotoOriginal : ImageViewMode.LivePhotoMedium;
 				}
-				return ImageViewMode.LivePhotoOriginal;
+				return hasMedium ? ImageViewMode.LivePhotoMedium : ImageViewMode.LivePhotoOriginal;
 			}
 
-			if (this.photo?.size_variants.medium !== null) {
-				return ImageViewMode.Medium;
+			if (prefersHighestQuality) {
+				return hasOriginal ? ImageViewMode.Original : ImageViewMode.Medium;
 			}
-			return ImageViewMode.Original;
+			return hasMedium ? ImageViewMode.Medium : ImageViewMode.Original;
 		},
 		srcSetMedium(): string {
 			const medium = this.photo?.size_variants.medium ?? null;

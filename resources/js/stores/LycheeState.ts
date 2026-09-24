@@ -30,6 +30,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
 		can_rotate: false,
 		can_autoplay: false,
+		is_photo_viewer_highest_quality_enabled: false,
 		is_exif_disabled: false,
 		is_favourite_enabled: false,
 		photo_previous_next_size: "small" as App.Enum.SmallLargeType,
@@ -196,6 +197,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.image_overlay_type = data.image_overlay_type;
 					this.can_rotate = data.can_rotate;
 					this.can_autoplay = data.can_autoplay;
+					this.is_photo_viewer_highest_quality_enabled = data.is_photo_viewer_highest_quality_enabled;
 					this.is_exif_disabled = data.is_exif_disabled;
 					this.is_favourite_enabled = data.is_favourite_enabled;
 
