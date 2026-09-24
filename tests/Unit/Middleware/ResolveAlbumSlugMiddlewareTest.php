@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Middleware;
 
+use App\Constants\RandomID;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Middleware\ResolveAlbumSlug;
 use Illuminate\Database\Query\Builder;
@@ -30,8 +31,8 @@ use Tests\AbstractTestCase;
 /**
  * Complements {@see ResolveAlbumSlugTest} (a real-DB feature test covering
  * the main API paths) with mocked, DB-free tests for the branches only
- * reachable via the `albumId` route parameter and via edge-case input
- * values (empty strings mixed into arrays).
+ * reachable via the `albumId`/`album_id` route parameters and via edge-case
+ * input values (empty strings mixed into arrays).
  */
 class ResolveAlbumSlugMiddlewareTest extends AbstractTestCase
 {
@@ -51,6 +52,52 @@ class ResolveAlbumSlugMiddlewareTest extends AbstractTestCase
 		$middleware->handle($request, fn () => new Response('ok'));
 
 		self::assertEquals('resolvedid123456789012345', $route->parameter('albumId'));
+	}
+
+	/**
+	 * The v3 API (and a handful of v2 routes such as
+	 * `/Album/{album_id}/people`) spell the route segment `album_id`, not
+	 * `albumId`, and read it back with `$this->route('album_id')` in
+	 * `prepareForValidation()`. `Request::input()` never sees route
+	 * parameters, so this shape needs its own explicit resolution pass.
+	 */
+	public function testResolvesSlugFromSnakeCaseRouteParameter(): void
+	{
+		$builder = \Mockery::mock(Builder::class);
+		$builder->shouldReceive('where')->once()->with('slug', '=', 'my-slug')->andReturnSelf();
+		$builder->shouldReceive('value')->once()->with('id')->andReturn('resolvedid123456789012345');
+		DB::shouldReceive('table')->once()->with('base_albums')->andReturn($builder);
+
+		$request = Request::create('/api/v3/Albums/my-slug/buckets', 'GET');
+		$route = new Route(['GET'], 'api/v3/Albums/{album_id}/buckets', fn () => null);
+		$route->bind($request);
+		$request->setRouteResolver(fn () => $route);
+
+		$middleware = new ResolveAlbumSlug();
+		$middleware->handle($request, fn () => new Response('ok'));
+
+		self::assertEquals('resolvedid123456789012345', $route->parameter(RequestAttribute::ALBUM_ID_ATTRIBUTE));
+	}
+
+	/**
+	 * A real ID of {@see \App\Constants\RandomID::ID_LENGTH} characters in a
+	 * snake_case route segment must pass through untouched and without
+	 * hitting the database.
+	 */
+	public function testLeavesRealIdInSnakeCaseRouteParameterUntouched(): void
+	{
+		DB::shouldReceive('table')->never();
+
+		$real_id = str_repeat('a', RandomID::ID_LENGTH);
+		$request = Request::create('/api/v3/Albums/' . $real_id, 'GET');
+		$route = new Route(['GET'], 'api/v3/Albums/{album_id}', fn () => null);
+		$route->bind($request);
+		$request->setRouteResolver(fn () => $route);
+
+		$middleware = new ResolveAlbumSlug();
+		$middleware->handle($request, fn () => new Response('ok'));
+
+		self::assertEquals($real_id, $route->parameter(RequestAttribute::ALBUM_ID_ATTRIBUTE));
 	}
 
 	public function testSkipsEmptyStringParamsAndInvalidArrayItems(): void
