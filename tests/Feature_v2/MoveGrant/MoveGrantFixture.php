@@ -31,12 +31,15 @@ trait MoveGrantFixture
 	}
 
 	/**
-	 * Share $album with the attacker with exactly the listed grants.
+	 * Share $album with the attacker with exactly the listed grants, replacing any previous share.
 	 *
 	 * @param string[] $grants subset of edit, move, delete, upload, download, full
 	 */
 	protected function grant(Album $album, array $grants): AccessPermission
 	{
+		// Replace any previous share of $album with the attacker (one row per user and album).
+		AccessPermission::query()->where('base_album_id', '=', $album->id)->where('user_id', '=', $this->attacker->id)->delete();
+
 		return AccessPermission::factory()->for_user($this->attacker)->for_album($album)->visible()->create([
 			'grants_edit' => in_array('edit', $grants, true),
 			'grants_move' => in_array('move', $grants, true),

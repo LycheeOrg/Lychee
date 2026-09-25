@@ -17,6 +17,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-072-09~~ | 072 – Edit-Grant Escalation | High | Meaning of `grants_move` on album P: "content of P (sub-albums, photos) may be moved out of P" — not "P itself may be moved". Album::move currently checks the grant on the moved album itself; should check its parent. | Resolved (Option A — content semantics; owner, 2026-09-25: "yes that is the intent"). Spec FR-072-03/03b/13/20/21; ADR-0011; docs/specs/1-concepts/permissions.md. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-10~~ | 072 – Edit-Grant Escalation | High | An edit-only collaborator can change the owner's album protection policy (`SetAlbumProtectionPolicyRequest` checks only `CAN_EDIT`): make it public with full-photo access + download, then fetch originals as a public visitor. Same escalation class as GHSA-pw32. Fold into Feature 072? | Resolved (Option A — ownership required; owner, 2026-09-25: "Yes ownership required."). Spec FR-072-40; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-11~~ | 072 – Edit-Grant Escalation | Medium | Delete is inconsistent: `DELETE /Album` checks `grants_delete` on the album itself (`canDeleteById`), while the UI's `can_delete` and merge check it on the parent (`canDelete`). Which is intended? | Resolved (owner, 2026-09-25: album delete checks grants_delete on the parent; photo delete on the containing album). Spec FR-072-41/42; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-12~~ | 072 – Edit-Grant Escalation | High | Move/copy/merge authorization runs per hydrated album/photo (`Gate::check` loops, per-album permission loads, per-album parent-grant queries): query count grows with batch size. Rewrite as aggregate `…ById` SQL checks? | Resolved (Option A — aggregate `…ById` checks; owner, 2026-09-25). Spec FR-072-18, NFR-072-07. | 2026-09-25 | 2026-09-25 |
 | ~~Q-069-14~~ | 069 – Search Struct-of-Arrays | — | ~~`ConfigManager` is never bound in the container~~ — **the premise was false.** It is bound as `scoped()` by the global `ResolveConfigs` middleware. The 88 `configs` queries were a test-harness artifact of calling the action directly, bypassing middleware. | **Withdrawn (invalid), 2026-09-22.** Through a real HTTP request the same call issues 13 queries total, with **one** full `configs` load. Binding it as a singleton would have been actively harmful under FrankenPHP worker mode. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-13~~ | 069 – Search Struct-of-Arrays | High | Q-069-12 established that v2 reads `configs.grants_full_photo_access` — a **seed value for newly created shares** — as a runtime authorization gate. | Resolved (owner, 2026-09-22: "Fix the over-grants.") — **Option B, widened**: implemented as **Feature 070** across all affected surfaces. The count grew from 5 to 7 during implementation: `PersonPhotosController` passed `should_downgrade: false` unconditionally, and `FlowItemResource` used an album-wide gate. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-12~~ | 069 – Search Struct-of-Arrays | High | v2's search computes `should_downgrade` **once per request** from the raw `grants_full_photo_access` config, ignoring ownership and per-album share grants; the v3 tier evaluates `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **per photo**. | Resolved (owner, 2026-09-22): **v2 is the defect — it grants full-resolution access more widely than it should.** v3's per-photo check is authoritative. Re-classified Medium → High: this is a rights over-grant, not a cosmetic divergence. See Q-069-13 for whether v2 itself gets fixed. | 2026-09-22 | 2026-09-22 |
@@ -369,6 +370,30 @@ Found while documenting permissions. `SetAlbumProtectionPolicyRequest::authorize
 
 **Option C — keep as is, document it**
 - ❌ Leaves a known escalation open.
+
+---
+
+### ~~Q-072-12~~ · Aggregate authorization for move/copy/merge ✅ RESOLVED
+
+**Status:** Resolved (Option A; owner, 2026-09-25). Spec FR-072-18, NFR-072-07.  
+**Feature:** F-072  
+**Priority:** High (owner: "We are aiming for speed, hydration is heavy.")
+
+**Context**  
+The four request classes authorize by looping `Gate::check()` over hydrated models: `current_user_permissions()` loads each album's permission rows, `canMoveAlbum()` issues one query per album, `PhotoPolicy::canMove()`/`canAccessFullPhoto()`/`canDownload()` walk each photo's albums. The replaced traits had the same shape. The actions themselves (`Move`, `Merge`, `MoveOrDuplicate`) still need the models, so hydration of sources/target stays; the authorization overhead is what can go.
+
+**Option A (recommended) — aggregate `…ById` checks, constant query count**
+- `AlbumPolicy`: one private helper "grant X on the parent of every non-owned album" (shared by `canDeleteById` and a new `canMoveAlbumsById`), one helper "grant X on every album" (shared by `canDeleteContentById` and a new `canMoveContentById`).
+- `PhotoPolicy::canMoveById()`: owner shortcut + one `EXISTS` query "every non-owned photo has a containing album granting move" (copy); `Photo::move` checks `canMoveContentById([from_album])`.
+- Cross-owner guards read `owner_id` from rows the checks already fetch; photo full-access + download via the existing batched `ResolvesPhotoGrants` (one grouped query).
+- Query-count tests: authorization cost independent of batch size.
+- Delete the two unused legacy traits.
+- ✅ Fixed, small number of queries per request; mirrors the existing `…ById` pattern.
+- ❌ Policy logic duplicated between model-based (`canMove`, UI rights) and `…ById` variants; parity tests needed.
+
+**Option B — keep per-model checks, only eager-load permissions**
+- ✅ Smaller change.
+- ❌ Still grows with batch size (parent-grant and per-photo grant lookups).
 
 ---
 

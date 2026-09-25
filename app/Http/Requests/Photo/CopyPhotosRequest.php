@@ -44,9 +44,7 @@ class CopyPhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	{
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()
-			->with(['size_variants', 'albums'])
-			->findOrFail($photos_ids);
+		$this->photos = Photo::query()->findOrFail($photos_ids);
 		/** @var string|null */
 		$target_album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
 		$this->album = $target_album_id === null ?

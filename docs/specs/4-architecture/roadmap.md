@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 072 | Move Grant & Edit-Grant Escalation Fix | In progress — implemented, manual browser check pending | High (security) | ildyria | 2026-09-25 | 2026-09-25 | 23/25 tasks. New `grants_move` share grant (content semantics, Q-072-09: moving an album needs the grant on its parent), cross-owner guards on Photo::copy/move and Album::move/merge, editable-only destination pickers, v8 share UI + rights. Protection policy owner-only (Q-072-10); album delete checks the parent's delete grant (Q-072-11). Open: T-072-20 manual browser check. Fixes GHSA-pw32-v9r5-85hc and GHSA-jp9x-63pp-pv4v (embargoed). See `features/072-edit-grant-escalation/`. |
+| 072 | Move Grant & Edit-Grant Escalation Fix | In progress — implemented, manual browser check pending | High (security) | ildyria | 2026-09-25 | 2026-09-25 | 25/27 tasks. New `grants_move` share grant (content semantics, Q-072-09: moving an album needs the grant on its parent), cross-owner guards on Photo::copy/move and Album::move/merge, editable-only destination pickers, v8 share UI + rights. Protection policy owner-only (Q-072-10); album delete checks the parent's delete grant (Q-072-11). Aggregate (batch-size-independent) authorization (Q-072-12). Open: T-072-20 manual browser check. Fixes GHSA-pw32-v9r5-85hc and GHSA-jp9x-63pp-pv4v (embargoed). See `features/072-edit-grant-escalation/`. |
 
 ## Paused Features
 

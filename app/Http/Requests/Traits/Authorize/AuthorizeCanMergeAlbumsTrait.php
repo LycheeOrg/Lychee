@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Traits\Authorize;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -32,18 +33,15 @@ trait AuthorizeCanMergeAlbumsTrait
 			return false;
 		}
 
-		foreach ($this->albums as $album) {
-			if (!Gate::check(AlbumPolicy::CAN_MOVE, [AbstractAlbum::class, $album])) {
-				return false;
-			}
-			if (!Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $album])) {
-				return false;
-			}
-			if (!$this->mayReparentAcrossOwners($album, $this->album)) {
-				return false;
-			}
+		// Aggregate checks (Q-072-12): a fixed number of queries, whatever the batch size.
+		$album_ids = $this->albums->map(fn (Album $album): string => $album->id)->all();
+		if (!Gate::check(AlbumPolicy::CAN_MOVE_CONTENT_ID, [AbstractAlbum::class, $album_ids])) {
+			return false;
+		}
+		if (!Gate::check(AlbumPolicy::CAN_DELETE_ID, [AbstractAlbum::class, $album_ids])) {
+			return false;
 		}
 
-		return true;
+		return $this->albums->every(fn (Album $album): bool => $this->mayReparentAcrossOwners($album, $this->album));
 	}
 }

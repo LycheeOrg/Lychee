@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Traits\Authorize;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -31,15 +32,12 @@ trait AuthorizeCanMoveAlbumsTrait
 			return false;
 		}
 
-		foreach ($this->albums as $album) {
-			if (!Gate::check(AlbumPolicy::CAN_MOVE_ALBUM, [AbstractAlbum::class, $album])) {
-				return false;
-			}
-			if (!$this->mayReparentAcrossOwners($album, $this->album)) {
-				return false;
-			}
+		// Aggregate check (Q-072-12): a fixed number of queries, whatever the batch size.
+		$album_ids = $this->albums->map(fn (Album $album): string => $album->id)->all();
+		if (!Gate::check(AlbumPolicy::CAN_MOVE_ALBUMS_ID, [AbstractAlbum::class, $album_ids])) {
+			return false;
 		}
 
-		return true;
+		return $this->albums->every(fn (Album $album): bool => $this->mayReparentAcrossOwners($album, $this->album));
 	}
 }

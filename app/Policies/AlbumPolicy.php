@@ -44,6 +44,8 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_MOVE = 'canMove';
 	public const CAN_MOVE_ALBUM = 'canMoveAlbum';
+	public const CAN_MOVE_ALBUMS_ID = 'canMoveAlbumsById';
+	public const CAN_MOVE_CONTENT_ID = 'canMoveContentById';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_DELETE_ID = 'canDeleteById';
 	public const CAN_SHARE = 'canShare';
@@ -538,8 +540,8 @@ class AlbumPolicy extends BasePolicy
 	 *  - the user owns it and has the upload privilege, or
 	 *  - a user or group permission on its parent grants delete.
 	 *
-	 * An album without parent (root album, tag album, person album) can only
-	 * be deleted by its owner.
+	 * An album without parent (root, tag, person album) can only be deleted
+	 * by its owner.
 	 *
 	 * @param User              $user
 	 * @param array<int,string> $album_ids
@@ -549,6 +551,67 @@ class AlbumPolicy extends BasePolicy
 	 * @throws QueryBuilderException
 	 */
 	public function canDeleteById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnParentsById($user, $album_ids, APC::GRANTS_DELETE);
+	}
+
+	/**
+	 * Checks whether the designated albums themselves may be moved
+	 * (Feature 072, Q-072-09, Q-072-12): aggregate counterpart of
+	 * {@link AlbumPolicy::canMoveAlbum()}, the move grant on each parent.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 */
+	public function canMoveAlbumsById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnParentsById($user, $album_ids, APC::GRANTS_MOVE);
+	}
+
+	/**
+	 * Checks whether the user may delete the *content* (photos) of every
+	 * designated album. Used for deleting photos, with the albums containing
+	 * them (Q-072-11).
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function canDeleteContentById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnAllById($user, $album_ids, APC::GRANTS_DELETE);
+	}
+
+	/**
+	 * Checks whether the user may move the *content* (photos, sub-albums) out of
+	 * every designated album (Feature 072, Q-072-12): aggregate counterpart of
+	 * {@link AlbumPolicy::canMove()} for regular, tag and person albums.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 */
+	public function canMoveContentById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnAllById($user, $album_ids, APC::GRANTS_MOVE);
+	}
+
+	/**
+	 * True when every designated album is either owned by the user (who then
+	 * needs the upload privilege) or has a parent on which a user or group
+	 * permission carries $grant. Albums without parent: owner only.
+	 *
+	 * Two queries, whatever the number of albums.
+	 *
+	 * @param array<int,string> $album_ids
+	 */
+	private function hasGrantOnParentsById(User $user, array $album_ids, string $grant): bool
 	{
 		$album_ids = $this->uniquify($album_ids);
 
@@ -579,56 +642,56 @@ class AlbumPolicy extends BasePolicy
 		/** @var array<int,string> $parent_ids */
 		$parent_ids = $foreign->pluck('parent_id')->unique()->values()->all();
 
-		return $this->canDeleteContentById($user, $parent_ids);
+		return $parent_ids === [] || $this->countGrantedById($user, $parent_ids, $grant) === count($parent_ids);
 	}
 
 	/**
-	 * Checks whether the user may delete the *content* (photos, sub-albums) of
-	 * every designated album: the user owns all of them and has the upload
-	 * privilege, or a user or group permission on each of them grants delete.
+	 * True when every designated album is either owned by the user (who then
+	 * needs the upload privilege) or carries $grant in a user or group
+	 * permission. Two queries, whatever the number of albums.
 	 *
-	 * Used for deleting photos, with the albums containing them (Q-072-11).
-	 *
-	 * @param User              $user
 	 * @param array<int,string> $album_ids
-	 *
-	 * @return bool
-	 *
-	 * @throws QueryBuilderException
 	 */
-	public function canDeleteContentById(User $user, array $album_ids): bool
+	private function hasGrantOnAllById(User $user, array $album_ids, string $grant): bool
 	{
 		$album_ids = $this->uniquify($album_ids);
-		$num_albums = count($album_ids);
 
-		if ($num_albums === 0) {
+		if ($album_ids === []) {
 			return $user->may_upload;
 		}
 
-		if (
-			BaseAlbumImpl::query()
+		/** @var array<int,string> $owned_ids */
+		$owned_ids = BaseAlbumImpl::query()
 			->whereIn('id', $album_ids)
 			->where('owner_id', '=', $user->id)
-			->count() === $num_albums
-		) {
-			return $user->may_upload;
+			->pluck('id')
+			->all();
+
+		if ($owned_ids !== [] && !$user->may_upload) {
+			return false;
 		}
 
-		if (
-			AccessPermission::query()
-			->select(APC::BASE_ALBUM_ID)
+		$foreign_ids = array_values(array_diff($album_ids, $owned_ids));
+
+		return $foreign_ids === [] || $this->countGrantedById($user, $foreign_ids, $grant) === count($foreign_ids);
+	}
+
+	/**
+	 * Number of the designated albums on which a user or group permission of
+	 * $user carries $grant.
+	 *
+	 * @param array<int,string> $album_ids
+	 */
+	private function countGrantedById(User $user, array $album_ids, string $grant): int
+	{
+		return AccessPermission::query()
 			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
 			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
 					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
 			)
-			->where(APC::GRANTS_DELETE, '=', true)
+			->where($grant, '=', true)
 			->distinct()
-			->count() === $num_albums
-		) {
-			return true;
-		}
-
-		return false;
+			->count(APC::BASE_ALBUM_ID);
 	}
 
 	/**

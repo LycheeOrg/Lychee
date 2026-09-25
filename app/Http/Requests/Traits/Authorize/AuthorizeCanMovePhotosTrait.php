@@ -39,30 +39,33 @@ trait AuthorizeCanMovePhotosTrait
 			return false;
 		}
 
-		/** @var Photo $photo */
-		foreach ($this->photos as $photo) {
-			if (!Gate::check(PhotoPolicy::CAN_MOVE, [Photo::class, $photo])) {
-				return false;
-			}
-			if (!$this->mayPlacePhotoIn($photo, $target)) {
-				return false;
-			}
+		// Aggregate checks (Q-072-12): a fixed number of queries, whatever the batch size.
+		$photo_ids = $this->photos->map(fn (Photo $photo): string => $photo->id)->all();
+		if (!Gate::check(PhotoPolicy::CAN_MOVE_ID, [Photo::class, $photo_ids])) {
+			return false;
 		}
 
-		return true;
+		$crossing_ids = $this->photosLeavingTheirOwner($target);
+
+		return $crossing_ids === [] || Gate::check(PhotoPolicy::CAN_ACCESS_FULL_AND_DOWNLOAD_ID, [Photo::class, $crossing_ids]);
 	}
 
 	/**
-	 * True when $photo stays within its owner's albums (or goes to their
-	 * unsorted), or when the user already holds full-photo access and download.
+	 * Photos that would land in an album of another owner than theirs. Photos
+	 * staying within their owner's albums (or going to their unsorted) are fine.
+	 *
+	 * @return string[]
 	 */
-	protected function mayPlacePhotoIn(Photo $photo, ?Album $target): bool
+	protected function photosLeavingTheirOwner(?Album $target): array
 	{
-		if ($target === null || $target->owner_id === $photo->owner_id) {
-			return true;
+		if ($target === null) {
+			return [];
 		}
 
-		return Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]) &&
-			Gate::check(PhotoPolicy::CAN_DOWNLOAD, [Photo::class, $photo]);
+		return $this->photos
+			->filter(fn (Photo $photo): bool => $photo->owner_id !== $target->owner_id)
+			->map(fn (Photo $photo): string => $photo->id)
+			->values()
+			->all();
 	}
 }

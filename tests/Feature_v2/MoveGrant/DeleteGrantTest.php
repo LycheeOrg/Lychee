@@ -18,8 +18,10 @@
 
 namespace Tests\Feature_v2\MoveGrant;
 
+use App\Constants\PhotoAlbum as PA;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -102,5 +104,25 @@ class DeleteGrantTest extends BaseApiWithDataTest
 	{
 		$this->grant($this->album1, ['delete']);
 		$this->assertForbidden($this->deletePhoto($this->subPhoto1, $this->subAlbum1));
+	}
+
+	/** A photo in two albums: delete is needed on both; delete on one of them is not enough. */
+	public function testPhotoInAnAlbumWithoutDeleteCannotBeDeleted(): void
+	{
+		$victim_other = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		DB::table(PA::PHOTO_ALBUM)->insert(['photo_id' => $this->photo1->id, 'album_id' => $victim_other->id]);
+		$this->grant($this->album1, ['delete']);
+		$this->grant($victim_other, ['edit']);
+
+		$this->assertForbidden($this->deletePhoto($this->photo1, $this->album1));
+	}
+
+	/** A photo in a delete-granted album and in an album the user owns: delete on both. */
+	public function testPhotoInGrantedAndOwnedAlbumsCanBeDeleted(): void
+	{
+		DB::table(PA::PHOTO_ALBUM)->insert(['photo_id' => $this->photo1->id, 'album_id' => $this->attacker_album->id]);
+		$this->grant($this->album1, ['delete']);
+
+		$this->assertNoContent($this->deletePhoto($this->photo1, $this->album1));
 	}
 }
