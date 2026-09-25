@@ -598,6 +598,7 @@ declare namespace App {
 					image_overlay_type: App.Enum.ImageOverlayType;
 					can_rotate: boolean;
 					can_autoplay: boolean;
+					is_photo_viewer_highest_quality_enabled: boolean;
 					is_exif_disabled: boolean;
 					is_favourite_enabled: boolean;
 					photo_previous_next_size: App.Enum.SmallLargeType;
