@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 072 | Move Grant & Edit-Grant Escalation Fix | Ready for implementation | High (security) | ildyria | 2026-09-25 | 2026-09-25 | Spec drafted: one new `grants_move` share grant separating Move/Copy/Merge from Edit (backfilled from `grants_edit`), cross-owner guards, destination picker filtered to editable albums (ADR-0011). All questions resolved; plan (12 increments) and tasks (23) drafted, analysis gate passed. 0/23 tasks. Fixes GHSA-pw32-v9r5-85hc and GHSA-jp9x-63pp-pv4v (embargoed). See `features/072-edit-grant-escalation/`. |
 
 ## Paused Features
 

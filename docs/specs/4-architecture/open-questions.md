@@ -6,6 +6,14 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-072-01~~ | 072 – Edit-Grant Escalation | High | `Photo::copy`/`Photo::move` by a non-owner: when must the user already hold full-photo access + download on the photo? Only when the destination belongs to someone other than the photo's owner, or always? | Resolved (Option A — guard applies only when destination owner ≠ photo owner; owner, 2026-09-25: "Q-72-1: A"). Spec FR-072-12, S-072-22..24; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-02~~ | 072 – Edit-Grant Escalation | High | ~~`Album::move` within one owner's albums: keep `CAN_EDIT`, or also require `CAN_DELETE`?~~ | Superseded (owner, 2026-09-25: "separate Move/Copy/Merge from Edit") — sources now require the new move grant (FR-072-13); neither edit nor delete. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-03~~ | 072 – Edit-Grant Escalation | Medium | ~~`Photo::move` source: keep `CAN_EDIT`, or require `CAN_DELETE`?~~ | Superseded (same owner direction) — `from_album` now requires the new move grant (FR-072-11). | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-04~~ | 072 – Edit-Grant Escalation | High | Shape of the new grant: one `grants_move` covering Move/Copy/Merge, or separate flags? | Resolved (Option A — one `grants_move` for Move/Copy/Merge; Merge also needs delete; owner, 2026-09-25). Spec FR-072-01, NG9; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-05~~ | 072 – Edit-Grant Escalation | High | Which right is required on the **target** album of Move/Copy/Merge? | Resolved (Option A — target keeps `CAN_EDIT`; owner, 2026-09-25). Spec FR-072-17; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-06~~ | 072 – Edit-Grant Escalation | High | Must enabling the move grant also enable full-photo access and download on the share? | Resolved (Option A — no coupling; owner, 2026-09-25). Spec NG7, FR-072-22; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-07~~ | 072 – Edit-Grant Escalation | High | Backfill of `grants_move` for existing shares. | Resolved (Option A — backfill `grants_move = grants_edit`; owner, 2026-09-25). Spec FR-072-02; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-08~~ | 072 – Edit-Grant Escalation | High | How does the destination picker learn the valid targets for a given selection? | Resolved (owner, 2026-09-25: "C however the destination album needs to be filtered") — no source-aware endpoint; picker filtered to albums the user can edit (target right), cross-owner rejections surface as 403. Spec FR-072-30..34, NG8; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-069-14~~ | 069 – Search Struct-of-Arrays | — | ~~`ConfigManager` is never bound in the container~~ — **the premise was false.** It is bound as `scoped()` by the global `ResolveConfigs` middleware. The 88 `configs` queries were a test-harness artifact of calling the action directly, bypassing middleware. | **Withdrawn (invalid), 2026-09-22.** Through a real HTTP request the same call issues 13 queries total, with **one** full `configs` load. Binding it as a singleton would have been actively harmful under FrankenPHP worker mode. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-13~~ | 069 – Search Struct-of-Arrays | High | Q-069-12 established that v2 reads `configs.grants_full_photo_access` — a **seed value for newly created shares** — as a runtime authorization gate. | Resolved (owner, 2026-09-22: "Fix the over-grants.") — **Option B, widened**: implemented as **Feature 070** across all affected surfaces. The count grew from 5 to 7 during implementation: `PersonPhotosController` passed `should_downgrade: false` unconditionally, and `FlowItemResource` used an album-wide gate. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-12~~ | 069 – Search Struct-of-Arrays | High | v2's search computes `should_downgrade` **once per request** from the raw `grants_full_photo_access` config, ignoring ownership and per-album share grants; the v3 tier evaluates `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **per photo**. | Resolved (owner, 2026-09-22): **v2 is the defect — it grants full-resolution access more widely than it should.** v3's per-photo check is authoritative. Re-classified Medium → High: this is a rights over-grant, not a cosmetic divergence. See Q-069-13 for whether v2 itself gets fixed. | 2026-09-22 | 2026-09-22 |
@@ -196,6 +204,191 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-072-01~~ · When does a non-owner need full access + download to copy/move a photo? ✅ RESOLVED
+
+**Status:** Resolved (Option A; owner, 2026-09-25: "Q-72-1: A"). Spec FR-072-12; residual path accepted as S-072-22; ADR-0011.  
+**Feature:** F-072 – Fix Edit-Grant Escalation via Copy, Move and Merge  
+**Priority:** High — decides the fix for GHSA-pw32-v9r5-85hc
+
+**Context**  
+Owning an album gives full-photo access and download on every photo in it. Copying or moving someone else's photo into your own album therefore turns an edit-only share into access to the original. The fix requires `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` and `CAN_DOWNLOAD` on the photo; the question is when.
+
+**Option A (recommended) — only when the destination's owner differs from the photo's owner**
+- ✅ Closes the advisory: copying into your own album needs rights you already have.
+- ✅ Move-granted collaborators can still reorganise photos between the owner's own albums without full access.
+- ❌ Residual path: a collaborator with the move grant on two of the owner's albums can move a photo from a restricted album into a public, full-access album of the same owner. That is the owner's own sharing setup, but it may surprise them.
+
+**Option B — always, for any non-owner**
+- ✅ Simplest rule; no residual path.
+- ❌ The move grant becomes useless without full access + download; "reorganise without originals" is impossible.
+
+**Option C — forbid cross-owner copy/move entirely for non-owners**
+- ✅ Simple, no policy lookups beyond ownership.
+- ❌ Blocks a legitimate case: a user who can already download a photo copying it into their own album.
+
+---
+
+### ~~Q-072-04~~ · One move grant, or several? ✅ RESOLVED
+
+**Status:** Resolved (Option A — one `grants_move` for Move/Copy/Merge; Merge also needs delete; owner, 2026-09-25). Spec FR-072-01, NG9; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+Owner direction: separate Move/Copy/Merge from Edit for more granularity. The share line already has six checkboxes (read, full, download, upload, edit, delete).
+
+**Option A (recommended) — one `grants_move` covering Move, Copy and Merge**
+- ✅ One column, one checkbox, one policy ability; easy to explain ("may reorganise").
+- ✅ Merge still also needs delete (it deletes the source), so the destructive part keeps its own gate.
+- ❌ Cannot allow Copy while forbidding Move.
+
+**Option B — `grants_move` (Move, Merge) + `grants_copy` (Copy)**
+- ✅ Copy never removes anything from the owner's albums, so it can be granted more freely.
+- ❌ Two columns and checkboxes; after the cross-owner guard, Copy and Move carry the same leak risk, so the split buys little security.
+
+**Option C — three flags (Move, Copy, Merge)**
+- ✅ Maximum granularity.
+- ❌ Merge already requires delete; a third flag mostly duplicates "move + delete". Eight checkboxes per share line.
+
+---
+
+### ~~Q-072-05~~ · Which right is required on the target album? ✅ RESOLVED
+
+**Status:** Resolved (Option A — target keeps `CAN_EDIT`; owner, 2026-09-25). Spec FR-072-17; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+Today the target of all four operations needs `CAN_EDIT`. Adding photos to an album is otherwise governed by `CAN_UPLOAD` (`UploadPhotoRequest`); adding a sub-album by `CAN_EDIT` (`AddAlbumRequest`).
+
+**Option A (recommended) — keep `CAN_EDIT` on the target**
+- ✅ No change to who can be a target; smallest behavioural change.
+- ✅ Matches how sub-albums are created today.
+- ❌ A user with upload but no edit on an album can upload into it but not move photos into it.
+
+**Option B — `CAN_UPLOAD` for photo targets, `CAN_EDIT` for album targets**
+- ✅ Consistent with the existing meaning of "may add photos".
+- ❌ Changes who can be a photo target in both directions (upload-only gains, edit-only-without-upload loses).
+
+**Option C — the move grant on the target too**
+- ✅ One grant governs both ends.
+- ❌ Owners must grant move on every album that should receive content; confusing with upload.
+
+---
+
+### ~~Q-072-06~~ · Must the move grant imply full-photo access and download? ✅ RESOLVED
+
+**Status:** Resolved (Option A — no coupling; owner, 2026-09-25). Spec NG7, FR-072-22; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+Your initial idea was to force full-photo access when Move/Merge is enabled. With the cross-owner guards (FR-072-12, FR-072-14, FR-072-16), content can only leave the owner's albums if the user already has full access + download (photos) or owns it (albums), so the coupling is no longer needed for security.
+
+**Option A (recommended) — no coupling**
+- ✅ Owners can let a collaborator reorganise without handing out originals, which is exactly the granularity this feature adds.
+- ✅ Security holds through the guards, not through share configuration.
+- ❌ Collaborators with move but no full access cannot copy the owner's photos into their own albums.
+
+**Option B — ticking Move forces Full + Download (UI and server validation)**
+- ✅ A move-granted collaborator can always copy into their own albums.
+- ❌ Removes the "reorganise without originals" combination; couples checkboxes, which is confusing.
+- ❌ Still does not allow cross-owner **album** moves (ownership transfer stays owner-only).
+
+---
+
+### ~~Q-072-07~~ · Backfill `grants_move` for existing shares? ✅ RESOLVED
+
+**Status:** Resolved (Option A — backfill `grants_move = grants_edit`; owner, 2026-09-25). Spec FR-072-02; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Option A (recommended) — `grants_move = grants_edit` for existing rows**
+- ✅ Collaborators keep reorganising the owner's albums as today; only the cross-owner escalations disappear.
+- ✅ No surprise for owners who relied on edit collaborators curating.
+- ❌ Owners who never meant to allow reorganising must untick Move afterwards.
+
+**Option B — `false` for all existing rows**
+- ✅ Strictest: every move right must be granted explicitly.
+- ❌ Every existing edit collaborator silently loses Move/Copy/Merge on upgrade.
+
+**Option C — `grants_move = grants_edit AND grants_delete`**
+- ✅ Matches what the UI already showed as `can_move` (delete-gated), so visible behaviour is preserved for UI users.
+- ❌ `can_move` was delete-on-parent, not delete-on-this-share, so the mapping is only approximate.
+
+---
+
+### ~~Q-072-08~~ · How does the picker learn the valid targets? ✅ RESOLVED
+
+**Status:** Resolved (owner, 2026-09-25: "C however the destination album needs to be filtered") — no source-aware endpoint; picker filtered to albums the user can edit (target right), cross-owner rejections surface as 403. Spec FR-072-30..34, NG8; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+v2 `GET Album::getTargetListAlbums` takes `album_ids` and applies only a reachability filter (it already lists albums the user cannot edit). The v8 flag-on path builds the list client-side from `GET /api/v3/Albums` (visibility-filtered, no per-album rights) via `AlbumListState.getExcludedTargetIds()`. Valid targets now depend on the sources' owners and on per-photo full/download rights.
+
+**Option A (recommended) — server-side, source-aware target list**
+- v2 `getTargetListAlbums` gains `photo_ids[]` (+ optional `from_album_id`) and filters with the same policy code as the action requests.
+- New v3 `GET /api/v3/Albums/targets?album_ids[]=…|photo_ids[]=…` returns `{ ids: string[], can_target_root: bool }`; `SearchTargetAlbum.vue` intersects `albumListStore.rows` with `ids`, keeping breadcrumbs/covers from the store.
+- ✅ Rules live in one place (NFR-072-02); list/authorize parity is testable (S-072-19).
+- ❌ One extra request when a dialog opens.
+
+**Option B — per-row flags on `/api/v3/Albums` + client-side rules**
+- Add `owner_ids`/`can_edits` to the listing and re-implement the cross-owner rules in TypeScript.
+- ✅ No extra request.
+- ❌ Duplicates authorization in TS; the photo rule needs per-photo full/download grants that the listing cannot carry. Drift risk.
+
+**Option C — keep the picker unfiltered; rely on 403**
+- ✅ No UI change.
+- ❌ Users keep picking targets that always fail; rejected by owner ("this will require a UI change").
+
+---
+
+### ~~Q-072-02~~ · Should every `Album::move` require delete on the source? ⤴ SUPERSEDED
+
+**Superseded** by owner direction, 2026-09-25: "I still want to separate Move/Copy/Merge from Edit." Album sources require the new move grant (spec FR-072-13). Text kept below for history.
+
+**Status:** Open  
+**Feature:** F-072 – Fix Edit-Grant Escalation via Copy, Move and Merge  
+**Priority:** High
+
+**Context**  
+Cross-owner moves will require `CAN_TRANSFER` (FR-072-03) regardless. This question is about moves that do not change ownership (same owner, or to root). Moving an album takes it out of its parent, which is currently never checked. The UI already hides Move and Merge unless `can_move`, which `AlbumRightsResource` computes as `CAN_DELETE`; the server only checks `CAN_EDIT`.
+
+**Option A (recommended) — require `CAN_DELETE` on each source**
+- ✅ Server matches what the UI already enforces; no visible change for UI users.
+- ✅ Removing an album from its parent needs the same right as deleting it from there.
+- ✅ Existing `testMoveAlbumAuthorizedUser` holds `grants_delete` on the parent and stays green.
+- ❌ Direct API clients with edit-only shares lose same-owner moves.
+
+**Option B — keep `CAN_EDIT` for same-owner moves**
+- ✅ No change beyond the cross-owner rule.
+- ❌ Server and UI keep disagreeing; an edit-only collaborator can still detach the owner's album from its parent.
+
+---
+
+### ~~Q-072-03~~ · Should `Photo::move` require delete on the source album? ⤴ SUPERSEDED
+
+**Superseded** by the same owner direction. `from_album` requires the new move grant (spec FR-072-11). Text kept below for history.
+
+**Status:** Open  
+**Feature:** F-072 – Fix Edit-Grant Escalation via Copy, Move and Merge  
+**Priority:** Medium
+
+**Context**  
+`Photo::move` removes the photo from `from_album`. Once Q-072-01 applies, a user without full access + download can no longer move the photo into another owner's album, so a move either lands in another album of the photo's owner or in the owner's unsorted (move to root). Nothing is lost or leaked either way.
+
+**Option A (recommended) — keep `CAN_EDIT` on the source**
+- ✅ Nothing leaves the owner's space after Q-072-01; this is reorganising, not deleting.
+- ✅ No change for collaborators who curate shared albums today.
+- ❌ An edit-only collaborator can empty a shared album into the owner's unsorted.
+
+**Option B — require `CAN_DELETE` on `from_album`**
+- ✅ Removing a photo from an album needs the same right as deleting it from there.
+- ❌ Photo move becomes unavailable to edit-only collaborators; the UI gates it on `can_edit` today, so the menu would offer an action that then fails unless the UI is changed too.
+
+---
 
 ### ~~Q-069-12~~ · v2 over-grants full-resolution access; v3's per-photo check is correct ✅ RESOLVED
 
