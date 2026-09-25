@@ -135,8 +135,7 @@ class PhotoPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the photo may be moved or copied by the current user
-	 * (Feature 072, FR-072-04).
+	 * Checks whether the photo may be moved or copied by the current user.
 	 *
 	 * A photo is movable if the user owns it and has the upload privilege,
 	 * or if any album containing it is movable (see {@link AlbumPolicy::canMove()}).
@@ -160,7 +159,7 @@ class PhotoPolicy extends BasePolicy
 
 	/**
 	 * Aggregate counterpart of {@link PhotoPolicy::canMove()} for a batch of
-	 * photos (Feature 072, Q-072-12): every photo is validated and either owned
+	 * photos: every photo is validated and either owned
 	 * by the user (with the upload privilege) or contained in an album whose
 	 * content the user may move (owned with the upload privilege, or a user or
 	 * group permission granting move). Three queries, whatever the batch size.
@@ -190,8 +189,8 @@ class PhotoPolicy extends BasePolicy
 
 	/**
 	 * Aggregate counterpart of {@link PhotoPolicy::canAccessFullPhoto()} &&
-	 * {@link PhotoPolicy::canDownload()} for a batch of photos (Feature 072,
-	 * cross-owner guard, Q-072-12): every photo is owned by the user, or has a
+	 * {@link PhotoPolicy::canDownload()} for a batch of photos (cross-owner
+	 * guard): every photo is owned by the user, or has a
 	 * containing album granting full-photo access and one granting download
 	 * (album owned by the user, or a user, group or public permission).
 	 * Three queries, whatever the batch size.
@@ -377,7 +376,7 @@ class PhotoPolicy extends BasePolicy
 			->groupBy(PA::ALBUM_ID)
 			->pluck('album_id')->all();
 
-		// Feature 072 (Q-072-11): a photo is content of its albums: the delete grant is checked on them.
+		// A photo is content of its albums: the delete grant is checked on them.
 		return $this->album_policy->canDeleteContentById($user, $parent_ids);
 	}
 

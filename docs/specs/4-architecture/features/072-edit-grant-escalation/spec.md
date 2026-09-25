@@ -32,7 +32,7 @@ This feature does three things:
 2. **Guards every operation that changes ownership or containment across owners**, so no grant combination can be escalated into full-photo access, download, ownership or deletion.
 3. **Filters the destination picker** to albums the user may actually use as a target. Today it lists every *visible* album, including ones where every attempt fails.
 
-Affected modules: persistence (`access_permissions` column + backfill), policies (new ability, new query condition), REST (4 action requests, sharing requests/resources, album target listings), v8 UI (sharing dialogs, target picker, context menus). The v7 UI keeps working but does not expose the new grant.
+Affected modules: persistence (`access_permissions` column + backfill), policies (new ability, new query condition), REST (4 action requests, sharing requests/resources, album target listings), v8 UI (sharing dialogs, target picker, context menus). The v7 UI keeps working but does not expose the new grant (it sends `grants_move = grants_edit`).
 
 ## Goals
 
@@ -47,7 +47,7 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 - **NG1 — Edit does not imply full-photo access.** Rejected: it silently widens every existing edit share where the owner withheld originals, and does nothing for album ownership takeover or merge deletion.
 - **NG2 — Photo ownership is not re-anchored.** Tying photo rights to the photo owner instead of the album owner would break album owners' access to collaborator uploads (uploads are owned by the uploader, not the album owner).
 - **NG3 — No clean-up of existing cross-owner links.** Links already created through these endpoints cannot be told apart from legitimate ones (collaborator uploads also produce albums containing other users' photos).
-- **NG4 — v7 UI does not expose the new grant.** v7 keeps sending share create/edit requests without it; the server treats the field as optional and leaves the stored value unchanged on edit.
+- **NG4 — v7 UI does not expose the new grant.** v7 has no Move checkbox; in v7, move is the same right as edit, so every v7 share create/edit sends `grants_move` equal to `grants_edit` (same rule as the FR-072-02 backfill).
 - **NG5 — `Album::transfer`, photo delete, and tag/person albums are unchanged.** Tag and person albums are not containers in `photo_album`, so they do not confer grants through `PhotoPolicy::reduction()`.
 - **NG6 — Public/link shares never grant move.** The column is always `false` for public permissions and is not shown in the public-sharing UI.
 - **NG7 — The move grant does not imply full-photo access or download** (Q-072-06). The share checkboxes stay independent.
@@ -67,7 +67,7 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 | FR-072-03 | The move grant covers an album's **content** (its photos and sub-albums), never the album itself. `AlbumPolicy::CAN_MOVE` on album P ("content of P may be moved out"): owner with `may_upload`, or a user/group permission on P with `grants_move = true`; smart/root albums follow `may_upload`. | — | — | — | — | ADR-0011, Q-072-09 (A) |
 | FR-072-03b | `AlbumPolicy::CAN_MOVE_ALBUM` on album X ("X itself may be moved"): owner of X with `may_upload`, or a user/group permission on X's **parent** with `grants_move = true` (mirrors `canDelete()`). A root album can only be moved by its owner. | — | — | — | — | Q-072-09 (A) |
 | FR-072-04 | `PhotoPolicy::CAN_MOVE` on a photo: photo owner with `may_upload`, or `AlbumPolicy::CAN_MOVE` on any album containing it (same reduction as `PhotoPolicy::canEdit()`). | — | — | — | — | ADR-0011 |
-| FR-072-05 | `POST /api/v2/Sharing` (single and bulk) and `PATCH /api/v2/Sharing` accept an optional `grants_move` boolean. Absent on create → `false`; absent on edit → stored value unchanged. `AccessPermissionResource` returns it. `PUT /api/v2/Sharing` (propagate to children) copies it like the other grants. | v8 sends it. | Must be boolean when present. | 422 on non-boolean. | — | NG4 |
+| FR-072-05 | `POST /api/v2/Sharing` (single and bulk) and `PATCH /api/v2/Sharing` require a `grants_move` boolean. `AccessPermissionResource` returns it. `PUT /api/v2/Sharing` (propagate to children) copies it like the other grants. | v8 sends its checkbox; v7 sends `grants_edit`. | Required boolean. | 422 when missing or non-boolean. | — | NG4 |
 | FR-072-06 | `AccessPermission::withGrantFullPermissionsToUser()` sets `grants_move = true`; `ofPublic()`/`ofPublicHidden()` set it `false`. | — | — | — | — | NG6 |
 
 ### Operation authorization
@@ -147,7 +147,7 @@ Fixture: **V** (victim) owns album **VA** (with unshared child **VC**, photo **P
 | S-072-17 | `getTargetListAlbums` and `/api/v3/Albums` `can_edits` for A: VB (edit) and AA (own) targetable; an album V shares with A read-only is visible but not targetable. |
 | S-072-18 | Move on VA, no full/download: AA is listed in the photo copy picker (A can edit AA), and copying P into it returns 403 (NG8). |
 | S-072-19 | Parity: for every album in the fixture, the SQL editability condition equals `AlbumPolicy::canEdit()` (owner with/without `may_upload`, user grant, group grant, public grant). |
-| S-072-20 | v7-style share edit without `grants_move` leaves the stored value unchanged; create without it stores `false`. |
+| S-072-20 | Share create or edit without `grants_move` is rejected (422). |
 | S-072-21 | `AlbumRightsResource`: edit-only → `can_move=false`, `can_merge=false`; move only → `can_move=true`, `can_merge=false`; move + delete → both `true`. v3 `/rights` returns the matching `grants_move[i]`. |
 | S-072-22 | Residual path (accepted, Q-072-01 A): move on VA, edit on VB where VB is shared publicly with full access; A moves P from VA to VB → 204. |
 | S-072-23 | A owns photo Q uploaded into VA (collaborator upload); A copies Q into AA → 204 (A owns the photo; guard does not apply). |
@@ -254,8 +254,8 @@ routes:
   - {method: POST, path: /api/v2/Photo::move, change: authorization}
   - {method: POST, path: /api/v2/Album::move, change: authorization}
   - {method: POST, path: /api/v2/Album::merge, change: authorization}
-  - {method: POST, path: /api/v2/Sharing, change: optional grants_move}
-  - {method: PATCH, path: /api/v2/Sharing, change: optional grants_move}
+  - {method: POST, path: /api/v2/Sharing, change: required grants_move}
+  - {method: PATCH, path: /api/v2/Sharing, change: required grants_move}
   - {method: PUT, path: /api/v2/Sharing, change: propagates grants_move}
   - {method: GET, path: /api/v2/Album::getTargetListAlbums, change: editable-only filter}
   - {method: GET, path: /api/v3/Albums, change: can_edits column}

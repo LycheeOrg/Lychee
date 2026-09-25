@@ -7,7 +7,7 @@ export type AlbumListRow = {
 	_lft: number;
 	_rgt: number;
 	coverId: string | null;
-	/** Whether the viewer may edit the album, i.e. use it as a move/copy/merge target (Feature 072). */
+	/** Whether the viewer may edit the album, i.e. use it as a move/copy/merge target. */
 	canEdit: boolean;
 };
 

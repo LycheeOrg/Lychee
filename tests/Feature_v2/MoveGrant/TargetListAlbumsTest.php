@@ -22,8 +22,7 @@ use App\Models\Album;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — `Album::getTargetListAlbums` only lists editable albums
- * (FR-072-30/32, S-072-17/18).
+ * `Album::getTargetListAlbums` only lists editable albums.
  */
 class TargetListAlbumsTest extends BaseApiWithDataTest
 {
@@ -54,7 +53,7 @@ class TargetListAlbumsTest extends BaseApiWithDataTest
 		return array_values(array_filter(array_column($response->json(), 'id')));
 	}
 
-	/** S-072-17 / S-072-18 — photo pickers call without sources. */
+	/** Photo pickers call without sources. */
 	public function testOnlyEditableAlbumsAreListed(): void
 	{
 		$ids = $this->targetIds(null);
@@ -63,7 +62,7 @@ class TargetListAlbumsTest extends BaseApiWithDataTest
 		self::assertNotContains($this->victim_readonly->id, $ids);
 	}
 
-	/** Move grant on the source's parent opens the album move picker (FR-072-13, Q-072-09). */
+	/** Move grant on the source's parent opens the album move picker. */
 	public function testMoveGrantOnParentOpensThePicker(): void
 	{
 		$this->grant($this->album1, ['move']);

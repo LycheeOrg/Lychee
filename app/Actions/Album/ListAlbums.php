@@ -33,7 +33,7 @@ class ListAlbums
 	private const SHORTEN_BY = 80;
 
 	/**
-	 * @param bool $editable_only restrict to albums the user may edit, i.e. valid move/copy/merge targets (Feature 072, FR-072-32)
+	 * @param bool $editable_only restrict to albums the user may edit, i.e. valid move/copy/merge targets
 	 *
 	 * @return TAlbumSaved[]
 	 */

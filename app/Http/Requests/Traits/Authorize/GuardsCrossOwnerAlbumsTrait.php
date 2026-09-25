@@ -14,7 +14,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Cross-owner guard for album move/merge (Feature 072, FR-072-14/16).
+ * Cross-owner guard for album move/merge.
  *
  * Putting an album under an album of another owner hands its whole subtree
  * to that owner (`Album::fixOwnershipOfChildren()`), which is a transfer.

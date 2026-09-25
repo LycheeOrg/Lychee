@@ -85,7 +85,7 @@ class AlbumListController extends Controller
 
 		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
 
-		// Feature 072 (FR-072-33): edit grant resolved in the same query; ownership
+		// Edit grant resolved in the same query; ownership
 		// and admin are resolved from already-known values in toAlbumListResource().
 		if ($user !== null && $user->may_administrate !== true) {
 			$query->selectSub($this->album_query_policy->editGrantQuery(DB::query(), $user, 'albums.id')->limit(1), 'edit_grant');
@@ -176,7 +176,7 @@ class AlbumListController extends Controller
 
 	/**
 	 * Same rule as {@see AlbumPolicy::canEdit()} for a regular album, from the
-	 * row's `owner_id` and the `edit_grant` sub-query (Feature 072, FR-072-31).
+	 * row's `owner_id` and the `edit_grant` sub-query.
 	 */
 	private static function canEdit(object $row, ?User $user): bool
 	{

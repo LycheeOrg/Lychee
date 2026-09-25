@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Gate;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — the SQL editability condition equals `AlbumPolicy::canEdit()`
- * for every album (FR-072-31, NFR-072-02, S-072-19).
+ * The SQL editability condition equals `AlbumPolicy::canEdit()`
+ * for every album.
  */
 class EditableConditionParityTest extends BaseApiWithDataTest
 {

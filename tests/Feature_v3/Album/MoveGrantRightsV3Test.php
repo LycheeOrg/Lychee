@@ -24,7 +24,7 @@ use App\Models\Album;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — v3 `/rights` move signals (FR-072-20, Q-072-09).
+ * v3 `/rights` move signals.
  *
  * The move grant covers an album's content: `can_move_children` comes from the
  * grant on the parent, `grants_move[i]` from the grant on child i itself.

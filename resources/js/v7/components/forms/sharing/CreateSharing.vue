@@ -77,6 +77,7 @@ function create() {
 		grants_full_photo_access: grantsFullPhotoAccess.value,
 		grants_upload: grantsUpload.value,
 		grants_edit: grantsEdit.value,
+		grants_move: grantsEdit.value,
 		grants_delete: grantsDelete.value,
 	};
 

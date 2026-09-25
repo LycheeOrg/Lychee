@@ -20,7 +20,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * `can_move_children` are whole-response (uniform across every direct
  * child, since both checks key off `parent_id`, which is `album_id` itself
  * for every direct child); `grants_edit`/`grants_download`/`grants_move` are
- * per-child, index-aligned with `ids`. Feature 072 (Q-072-09): the move grant
+ * per-child, index-aligned with `ids`. The move grant
  * covers an album's content, so `can_move_children` (moving a child) comes
  * from the grant on the parent, while `grants_move[i]` (moving child i's own
  * content, as merge does) comes from the grant on the child. `grants_upload`/`grants_full_photo_access` and

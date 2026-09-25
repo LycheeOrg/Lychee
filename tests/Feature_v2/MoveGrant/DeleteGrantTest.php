@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — the delete grant covers an album's content (Q-072-11, FR-072-41/42).
+ * The delete grant covers an album's content.
  *
  * album1 (A) contains photo1 (photo A) and subAlbum1 (AA, containing subPhoto1).
  */

@@ -50,7 +50,7 @@ class AlbumRightsResource extends Data
 		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $abstract_album]);
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $abstract_album]);
 		$this->can_delete = Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstract_album]);
-		// Feature 072 (Q-072-09): the move grant on an album covers its content.
+		// The move grant on an album covers its content.
 		// can_move: this album may be moved (grant on its parent).
 		// can_move_content: its photos and sub-albums may be moved out (grant on the album;
 		// smart albums follow the upload privilege).

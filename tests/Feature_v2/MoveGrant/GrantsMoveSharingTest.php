@@ -22,7 +22,7 @@ use App\Models\AccessPermission;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — `grants_move` on the sharing API (FR-072-05, S-072-20).
+ * `grants_move` on the sharing API.
  */
 class GrantsMoveSharingTest extends BaseApiWithDataTest
 {
@@ -63,12 +63,10 @@ class GrantsMoveSharingTest extends BaseApiWithDataTest
 		return AccessPermission::query()->findOrFail($perm_id)->grants_move;
 	}
 
-	public function testCreateWithoutGrantsMoveStoresFalse(): void
+	public function testCreateWithoutGrantsMoveIsRejected(): void
 	{
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Sharing', $this->createPayload());
-		$this->assertOk($response);
-		$response->assertJsonPath('0.grants_move', false);
-		self::assertFalse($this->storedMove($response->json('0.id')));
+		$this->assertUnprocessable($response);
 	}
 
 	public function testCreateWithGrantsMoveStoresTrue(): void
@@ -85,15 +83,17 @@ class GrantsMoveSharingTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 	}
 
-	/** v7 clients do not send the field: the stored value is left alone. */
-	public function testEditWithoutGrantsMoveKeepsStoredValue(): void
+	public function testEditWithoutGrantsMoveIsRejected(): void
 	{
-		self::assertTrue($this->storedMove($this->perm1->id));
-
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', $this->editPayload());
-		$this->assertOk($response);
-		$response->assertJsonPath('grants_move', true);
+		$this->assertUnprocessable($response);
 		self::assertTrue($this->storedMove($this->perm1->id));
+	}
+
+	public function testEditWithNonBooleanGrantsMoveIsRejected(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', $this->editPayload(['grants_move' => 'nope']));
+		$this->assertUnprocessable($response);
 	}
 
 	public function testEditWithGrantsMoveUpdatesIt(): void

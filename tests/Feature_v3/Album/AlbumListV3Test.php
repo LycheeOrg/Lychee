@@ -557,7 +557,7 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		self::assertContains($new_album_id, $after_ids);
 	}
 
-	// ── Feature 072: can_edits (FR-072-33, S-072-17, NFR-072-04) ─────
+	// ── can_edits ─────
 
 	public function testCanEditsReflectEditRightsPerAlbum(): void
 	{

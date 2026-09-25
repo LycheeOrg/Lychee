@@ -131,7 +131,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 
 		self::assertTrue($json['can_delete_children']);
-		// Feature 072: moving children follows grants_move on the parent, not grants_delete.
+		// Moving children follows grants_move on the parent, not grants_delete.
 		self::assertFalse($json['can_move_children']);
 		// The grant is on the parent, not the child -> no per-child grant.
 		self::assertFalse($json['grants_edit'][0]);
@@ -256,6 +256,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 			'grants_full_photo_access' => false,
 			'grants_upload' => false,
 			'grants_edit' => false,
+			'grants_move' => false,
 			'grants_delete' => true,
 		]);
 		self::assertSame(200, $share_response->getStatusCode());

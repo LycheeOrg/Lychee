@@ -72,7 +72,7 @@ export function combineAlbumChildRights(
 	mayUpload: boolean | undefined,
 ): App.Http.Resources.Rights.AlbumRightsResource {
 	const can_delete = isOwner || rightsV3.can_delete_children;
-	// Feature 072 (Q-072-09): the move grant covers an album's content. Moving the child
+	// The move grant covers an album's content. Moving the child
 	// itself follows the grant on the parent (AlbumPolicy::canMoveAlbum); moving the child's
 	// own content follows the grant on the child (AlbumPolicy::canMove). Merge empties then deletes.
 	const can_move = (isOwner && (mayUpload ?? false)) || rightsV3.can_move_children;

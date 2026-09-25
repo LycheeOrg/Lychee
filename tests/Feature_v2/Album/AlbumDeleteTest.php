@@ -34,7 +34,7 @@ class AlbumDeleteTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
-		// Feature 072 (Q-072-11): deleting subAlbum1 follows the delete grant on its parent album1.
+		// Deleting subAlbum1 follows the delete grant on its parent album1.
 		AccessPermission::query()->where('id', '=', $this->perm1->id)->update(['grants_delete' => false]);
 		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->subAlbum1->id],
@@ -55,7 +55,7 @@ class AlbumDeleteTest extends BaseApiWithDataTest
 
 	public function testDeleteAlbumAuthorizedUser(): void
 	{
-		// Feature 072 (Q-072-11): perm1 grants delete on album1, i.e. on its content:
+		// perm1 grants delete on album1, i.e. on its content:
 		// its sub-album may be deleted, album1 itself may not.
 		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->album1->id],

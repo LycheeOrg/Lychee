@@ -13,7 +13,7 @@ use App\Models\Album;
 use App\Models\User;
 
 /**
- * Feature 072 fixture on top of {@link \Tests\Feature_v2\Base\BaseApiWithDataTest}.
+ * Move-grant fixture on top of {@link \Tests\Feature_v2\Base\BaseApiWithDataTest}.
  *
  * Victim V = userMayUpload1 (owns album1 = VA, its unshared child subAlbum1 = VC,
  * photo1 = P). Attacker A = a fresh `may_upload` user owning attacker_album (AA).

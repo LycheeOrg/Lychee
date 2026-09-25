@@ -22,7 +22,7 @@ use App\Models\Album;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — `Album::move` authorization (FR-072-13/14/17/18).
+ * `Album::move` authorization.
  */
 class AlbumMoveGrantTest extends BaseApiWithDataTest
 {
@@ -34,7 +34,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		$this->createMoveGrantFixture();
 	}
 
-	/** S-072-08 — GHSA-jp9x-63pp-pv4v move reproduction. */
+	/** GHSA-jp9x-63pp-pv4v move reproduction. */
 	public function testEditOnlyCannotMoveVictimAlbumUnderOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -51,7 +51,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		$this->assertForbidden($this->actingAs($this->attacker)->getJsonWithData('Album::albums', ['album_id' => $this->subAlbum1->id]));
 	}
 
-	/** S-072-09 — cross-owner move needs ownership, not just the move grant. */
+	/** Cross-owner move needs ownership, not just the move grant. */
 	public function testMoveGrantCannotMoveVictimAlbumUnderOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit', 'move', 'delete']);
@@ -65,7 +65,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->album1->id, $this->parentOf($this->subAlbum1));
 	}
 
-	/** Edit alone no longer allows reorganising (FR-072-13). */
+	/** Edit alone no longer allows reorganising. */
 	public function testEditOnlyCannotMoveToRoot(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -78,7 +78,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->album1->id, $this->parentOf($this->subAlbum1));
 	}
 
-	/** Q-072-09 — the move grant covers content: a grant on the album itself does not let it be moved. */
+	/** The move grant covers content: a grant on the album itself does not let it be moved. */
 	public function testMoveGrantOnTheAlbumItselfDoesNotAllowMovingIt(): void
 	{
 		$this->grant($this->subAlbum1, ['move']);
@@ -91,7 +91,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->album1->id, $this->parentOf($this->subAlbum1));
 	}
 
-	/** Q-072-09 — a root album has no parent: only its owner may move it. */
+	/** A root album has no parent: only its owner may move it. */
 	public function testMoveGrantCannotMoveARootAlbum(): void
 	{
 		$victim_other = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
@@ -106,7 +106,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertNull($this->parentOf($this->album1));
 	}
 
-	/** S-072-10 — move grant on the parent allows moving a child to root, owner unchanged. */
+	/** Move grant on the parent allows moving a child to root, owner unchanged. */
 	public function testMoveGrantOnParentCanMoveChildToRoot(): void
 	{
 		$this->grant($this->album1, ['move']);
@@ -120,7 +120,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->userMayUpload1->id, $this->ownerOf($this->subAlbum1));
 	}
 
-	/** Same-owner move with move on the source's parent and edit on target (FR-072-17). */
+	/** Same-owner move with move on the source's parent and edit on target. */
 	public function testMoveGrantCanMoveBetweenAlbumsOfSameOwner(): void
 	{
 		$victim_other = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
@@ -136,7 +136,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->userMayUpload1->id, $this->ownerOf($this->subAlbum1));
 	}
 
-	/** Target still requires edit (FR-072-17). */
+	/** Target still requires edit. */
 	public function testTargetWithoutEditIsRejected(): void
 	{
 		$victim_other = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
@@ -150,7 +150,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
-	/** An owner may still give their own album away (S-072-11 in spec's register: gift). */
+	/** An owner may still give their own album away. */
 	public function testOwnerCanMoveOwnAlbumIntoForeignEditableAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -163,7 +163,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->userMayUpload1->id, $this->ownerOf($this->attacker_album));
 	}
 
-	/** Batch is all-or-nothing (FR-072-18). */
+	/** Batch is all-or-nothing. */
 	public function testBatchWithOneForbiddenSourceMovesNothing(): void
 	{
 		$own_other = Album::factory()->as_root()->owned_by($this->attacker)->create();
@@ -177,7 +177,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		self::assertNull($this->parentOf($own_other));
 	}
 
-	/** S-072-16 — admin bypass. */
+	/** Admin bypass. */
 	public function testAdminCanMoveAcrossOwners(): void
 	{
 		$response = $this->actingAs($this->admin)->postJson('Album::move', [

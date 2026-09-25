@@ -16,7 +16,7 @@ use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Authorization of `Photo::copy` (Feature 072, FR-072-10/12/17), also the
+ * Authorization of `Photo::copy`, also the
  * photo part of `Photo::move`.
  *
  * Target: edit. Each photo: move grant, and — when it lands in an album of
@@ -39,7 +39,7 @@ trait AuthorizeCanMovePhotosTrait
 			return false;
 		}
 
-		// Aggregate checks (Q-072-12): a fixed number of queries, whatever the batch size.
+		// Aggregate checks: a fixed number of queries, whatever the batch size.
 		$photo_ids = $this->photos->map(fn (Photo $photo): string => $photo->id)->all();
 		if (!Gate::check(PhotoPolicy::CAN_MOVE_ID, [Photo::class, $photo_ids])) {
 			return false;

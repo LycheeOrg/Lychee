@@ -14,10 +14,10 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Authorization of `Album::move` (Feature 072, FR-072-13/14/17).
+ * Authorization of `Album::move`.
  *
  * Target: edit. Each source: move grant on its parent (the album is content
- * of its parent, Q-072-09), and ownership when it changes owner.
+ * of its parent), and ownership when it changes owner.
  */
 trait AuthorizeCanMoveAlbumsTrait
 {
@@ -32,7 +32,7 @@ trait AuthorizeCanMoveAlbumsTrait
 			return false;
 		}
 
-		// Aggregate check (Q-072-12): a fixed number of queries, whatever the batch size.
+		// Aggregate check: a fixed number of queries, whatever the batch size.
 		$album_ids = $this->albums->map(fn (Album $album): string => $album->id)->all();
 		if (!Gate::check(AlbumPolicy::CAN_MOVE_ALBUMS_ID, [AbstractAlbum::class, $album_ids])) {
 			return false;

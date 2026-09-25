@@ -37,7 +37,7 @@ class QueryRightsForAlbum
 		}
 
 		$can_delete_children = $this->parentGrants($album, $user, APC::GRANTS_DELETE);
-		// Feature 072 (Q-072-09): a child is content of this album, so moving it
+		// A child is content of this album, so moving it
 		// follows the move grant on this album, like delete.
 		$can_move_children = $this->parentGrants($album, $user, APC::GRANTS_MOVE);
 

@@ -31,7 +31,7 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		// Feature 072 (FR-072-13): the source albums must be movable, not merely editable.
+		// The source albums must be movable, not merely editable.
 		// Photo pickers pass no source album.
 		if ($this->albums->isEmpty()) {
 			return true;

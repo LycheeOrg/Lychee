@@ -102,6 +102,7 @@ class PhotoRotateTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$new_album_id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,

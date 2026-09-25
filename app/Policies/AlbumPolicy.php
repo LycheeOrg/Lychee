@@ -304,14 +304,14 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * Checks whether the user may move or copy the *content* of the album
-	 * (its photos and sub-albums) out of it (Feature 072, FR-072-03).
+	 * (its photos and sub-albums) out of it.
 	 * This does not allow moving the album itself, see {@link AlbumPolicy::canMoveAlbum()}.
 	 *
 	 * Separate from {@link AlbumPolicy::canEdit()}: the content is movable if
 	 *  - the user is the owner of the album and has the upload privilege, or
 	 *  - a user or group permission on the album grants move.
 	 *
-	 * Public permissions never grant move (NG6).
+	 * Public permissions never grant move.
 	 * The root album and smart albums follow the upload privilege, like canEdit.
 	 *
 	 * @param User               $user
@@ -334,7 +334,7 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the album itself may be moved (Feature 072, FR-072-03b).
+	 * Checks whether the album itself may be moved.
 	 *
 	 * Like {@link AlbumPolicy::canDelete()}, this is decided by the parent:
 	 * an album is part of its parent's content, so moving it requires
@@ -432,7 +432,7 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Checks whether the user may change the protection policy of the album:
 	 * public visibility, link requirement, password, NSFW flag and the grants
-	 * of the public share (Feature 072, Q-072-10).
+	 * of the public share.
 	 *
 	 * This is a sharing decision, so it is reserved to the owner, like sharing
 	 * with users. Smart albums have no owner: only admins (via `before()`).
@@ -532,8 +532,7 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the designated albums may be deleted by the current user
-	 * (Feature 072, Q-072-11).
+	 * Checks whether the designated albums may be deleted by the current user.
 	 *
 	 * An album is part of its parent's content, so, like
 	 * {@link AlbumPolicy::canDelete()}, each album is deletable if
@@ -556,9 +555,9 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the designated albums themselves may be moved
-	 * (Feature 072, Q-072-09, Q-072-12): aggregate counterpart of
-	 * {@link AlbumPolicy::canMoveAlbum()}, the move grant on each parent.
+	 * Checks whether the designated albums themselves may be moved:
+	 * aggregate counterpart of {@link AlbumPolicy::canMoveAlbum()}, the move
+	 * grant on each parent.
 	 *
 	 * @param User              $user
 	 * @param array<int,string> $album_ids
@@ -573,7 +572,7 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Checks whether the user may delete the *content* (photos) of every
 	 * designated album. Used for deleting photos, with the albums containing
-	 * them (Q-072-11).
+	 * them.
 	 *
 	 * @param User              $user
 	 * @param array<int,string> $album_ids
@@ -589,7 +588,7 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * Checks whether the user may move the *content* (photos, sub-albums) out of
-	 * every designated album (Feature 072, Q-072-12): aggregate counterpart of
+	 * every designated album: aggregate counterpart of
 	 * {@link AlbumPolicy::canMove()} for regular, tag and person albums.
 	 *
 	 * @param User              $user

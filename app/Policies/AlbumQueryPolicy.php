@@ -579,7 +579,7 @@ class AlbumQueryPolicy
 	}
 
 	/**
-	 * Restricts an album query to albums the user may edit (Feature 072, FR-072-31).
+	 * Restricts an album query to albums the user may edit.
 	 *
 	 * SQL equivalent of {@link AlbumPolicy::canEdit()} for regular albums:
 	 *  - the user is an admin, or

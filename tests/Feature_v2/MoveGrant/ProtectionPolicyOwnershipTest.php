@@ -22,7 +22,7 @@ use App\Models\AccessPermission;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — the protection policy is reserved to the owner (Q-072-10, FR-072-40).
+ * The protection policy is reserved to the owner.
  */
 class ProtectionPolicyOwnershipTest extends BaseApiWithDataTest
 {

@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — `Photo::copy` / `Photo::move` authorization (FR-072-10/11/12/17/18).
+ * `Photo::copy` / `Photo::move` authorization.
  *
  * P = photo1, owned by userMayUpload1 (V), in album1.
  */
@@ -75,7 +75,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		]);
 	}
 
-	/** S-072-01 — GHSA-pw32-v9r5-85hc reproduction. */
+	/** GHSA-pw32-v9r5-85hc reproduction. */
 	public function testEditOnlyCannotCopyVictimPhotoIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -84,7 +84,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame([$this->album1->id], $this->albumsOf($this->photo1));
 	}
 
-	/** S-072-02 — same, with encrypted image links. */
+	/** Same, with encrypted image links. */
 	public function testEditOnlyCannotCopyWithSecureImageLinks(): void
 	{
 		Configs::set('secure_image_link_enabled', '1');
@@ -94,7 +94,6 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame([$this->album1->id], $this->albumsOf($this->photo1));
 	}
 
-	/** S-072-03 */
 	public function testEditOnlyCannotMoveVictimPhotoIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -103,7 +102,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame([$this->album1->id], $this->albumsOf($this->photo1));
 	}
 
-	/** S-072-04 — edit alone no longer reorganises. */
+	/** Edit alone no longer reorganises. */
 	public function testEditOnlyCannotMoveBetweenVictimAlbums(): void
 	{
 		$this->grant($this->album1, ['edit']);
@@ -112,7 +111,6 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		$this->assertForbidden($this->move([$this->photo1->id], $this->album1, $this->victim_other));
 	}
 
-	/** S-072-05 */
 	public function testMoveGrantCanMoveBetweenVictimAlbums(): void
 	{
 		$this->grant($this->album1, ['move']);
@@ -122,7 +120,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame([$this->victim_other->id], $this->albumsOf($this->photo1));
 	}
 
-	/** S-072-06 — cross-owner without full access + download. */
+	/** Cross-owner without full access + download. */
 	public function testMoveGrantCannotCopyIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['move']);
@@ -140,7 +138,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		$this->assertForbidden($this->copy([$this->photo1->id], $this->attacker_album));
 	}
 
-	/** S-072-07 — the user already holds full access + download: nothing new is gained. */
+	/** The user already holds full access + download: nothing new is gained. */
 	public function testMoveFullAndDownloadCanCopyIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['move', 'full', 'download']);
@@ -149,7 +147,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertEqualsCanonicalizing([$this->album1->id, $this->attacker_album->id], $this->albumsOf($this->photo1));
 	}
 
-	/** S-072-15 — batch is all-or-nothing. */
+	/** Batch is all-or-nothing. */
 	public function testBatchWithOneForbiddenPhotoCopiesNothing(): void
 	{
 		$own_album = Album::factory()->as_root()->owned_by($this->attacker)->create();
@@ -160,7 +158,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame([$own_album->id], $this->albumsOf($own_photo));
 	}
 
-	/** S-072-22 — accepted residual path: same owner, target shared publicly with full access. */
+	/** Accepted residual path: same owner, target shared publicly with full access. */
 	public function testMoveGrantCanMoveIntoOwnersPublicAlbum(): void
 	{
 		AccessPermission::factory()->public()->visible()->grants_full_photo()->for_album($this->victim_other)->create();
@@ -170,7 +168,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		$this->assertNoContent($this->move([$this->photo1->id], $this->album1, $this->victim_other));
 	}
 
-	/** S-072-23 — a collaborator's own upload in the victim's album. */
+	/** A collaborator's own upload in the victim's album. */
 	public function testOwnPhotoInVictimAlbumCanBeCopiedIntoOwnAlbum(): void
 	{
 		$own_photo = Photo::factory()->owned_by($this->attacker)->in($this->album1)->create();
@@ -179,7 +177,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		$this->assertNoContent($this->copy([$own_photo->id], $this->attacker_album));
 	}
 
-	/** S-072-24 — move to root lands in the photo owner's unsorted. */
+	/** Move to root lands in the photo owner's unsorted. */
 	public function testMoveGrantCanMoveToRoot(): void
 	{
 		$this->grant($this->album1, ['move']);
@@ -189,7 +187,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		self::assertSame($this->userMayUpload1->id, Photo::query()->findOrFail($this->photo1->id)->owner_id);
 	}
 
-	/** S-072-16 — admin bypass. */
+	/** Admin bypass. */
 	public function testAdminCanCopyAcrossOwners(): void
 	{
 		$response = $this->actingAs($this->admin)->postJson('Photo::copy', [

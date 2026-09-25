@@ -97,14 +97,13 @@ class SharingController extends Controller
 	public function edit(EditSharingRequest $request): AccessPermissionResource
 	{
 		$perm = $request->perm();
-		$grants_move = $request->grantsMove();
 		$perm->update([
 			'grants_full_photo_access' => $request->permResource()->grants_full_photo_access,
 			'grants_download' => $request->permResource()->grants_download,
 			'grants_upload' => $request->permResource()->grants_upload,
 			'grants_edit' => $request->permResource()->grants_edit,
 			'grants_delete' => $request->permResource()->grants_delete,
-			'grants_move' => $grants_move ?? $perm->grants_move,
+			'grants_move' => $request->permResource()->grants_move,
 		]);
 
 		AccessPermissionChanged::dispatch($perm->base_album_id);

@@ -29,8 +29,8 @@ use Illuminate\Support\Facades\Gate;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — `AlbumPolicy::CAN_MOVE` (content), `AlbumPolicy::CAN_MOVE_ALBUM`
- * (the album itself, grant on its parent) and `PhotoPolicy::CAN_MOVE` (FR-072-03/04, Q-072-09).
+ * `AlbumPolicy::CAN_MOVE` (content), `AlbumPolicy::CAN_MOVE_ALBUM`
+ * (the album itself, grant on its parent) and `PhotoPolicy::CAN_MOVE`.
  */
 class MovePolicyTest extends BaseApiWithDataTest
 {
@@ -91,7 +91,7 @@ class MovePolicyTest extends BaseApiWithDataTest
 
 	public function testPublicGrantNeverAllowsMove(): void
 	{
-		// NG6: a public permission never confers move, even if the column were set.
+		// A public permission never confers move, even if the column were set.
 		AccessPermission::query()->where('id', '=', $this->perm4->id)->update(['grants_move' => true]);
 		self::assertFalse($this->canMoveAlbum($this->userMayUpload2, $this->album4));
 	}

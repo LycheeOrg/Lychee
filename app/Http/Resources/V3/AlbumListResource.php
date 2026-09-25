@@ -33,7 +33,7 @@ class AlbumListResource extends Data
 	public array $_rgt;
 	/** @var (string|null)[] */
 	public array $cover_ids;
-	/** @var bool[] Whether the viewer may edit each album, i.e. use it as a move/copy/merge target (Feature 072, FR-072-33). */
+	/** @var bool[] Whether the viewer may edit each album, i.e. use it as a move/copy/merge target. */
 	public array $can_edits;
 	/** @var (string|null)[]|null `null` when `with_parent_id=false`; otherwise index-aligned, `null` per-entry for a root album (never omitted). */
 	public ?array $parent_ids;

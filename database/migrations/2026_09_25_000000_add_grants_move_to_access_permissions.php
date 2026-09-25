@@ -12,9 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Feature 072 (FR-072-01/02): Move, Copy and Merge get their own grant,
- * separate from `grants_edit`. Existing shares keep what edit allowed them
- * before (Q-072-07): `grants_move` is backfilled from `grants_edit`.
+ * Move, Copy and Merge get their own grant, separate from `grants_edit`. Existing shares keep what edit allowed them
+ * before: `grants_move` is backfilled from `grants_edit`.
  */
 return new class() extends Migration {
 	public function up(): void

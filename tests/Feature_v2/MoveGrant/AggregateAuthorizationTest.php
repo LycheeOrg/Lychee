@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Gate;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — aggregate (`…ById`) authorization (Q-072-12).
+ * Aggregate (`…ById`) authorization.
  *
  * Parity: every aggregate check agrees with its per-model policy counterpart,
  * for every album/photo of the fixture and a spread of users.

@@ -21,8 +21,7 @@ namespace Tests\Feature_v2\MoveGrant;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 072 — v2 `AlbumRightsResource::can_move`/`can_move_content`/`can_merge`
- * (FR-072-20, S-072-21, Q-072-09).
+ * v2 `AlbumRightsResource::can_move`/`can_move_content`/`can_merge`.
  *
  * Album head rights describe subAlbum1; `CAN_DELETE` on it comes from
  * `grants_delete` on its parent album1.

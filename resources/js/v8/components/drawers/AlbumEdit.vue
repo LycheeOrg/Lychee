@@ -149,7 +149,7 @@ const canMove = computed(() => albumStore.config?.is_model_album && albumStore.r
 // Gated exactly like `canMove`: hidden for smart/tag/person albums.
 const canTracks = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_edit);
 const trackCount = computed(() => albumStore.modelAlbum?.tracks?.length ?? 0);
-// Feature 072 (Q-072-10): the protection policy is a sharing decision, reserved to the owner
+// The protection policy is a sharing decision, reserved to the owner
 // (admins for smart albums) — exactly what `can_transfer` expresses.
 const canChangeVisibility = computed(() => albumStore.rights?.can_transfer ?? false);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);

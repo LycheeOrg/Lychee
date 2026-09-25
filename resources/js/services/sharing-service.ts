@@ -9,8 +9,7 @@ export type CreateSharingData = {
 	grants_upload: boolean;
 	grants_edit: boolean;
 	grants_delete: boolean;
-	// Optional: the v7 UI does not send it (Feature 072, NG4).
-	grants_move?: boolean;
+	grants_move: boolean;
 };
 
 export type EditSharingData = {
@@ -20,8 +19,7 @@ export type EditSharingData = {
 	grants_upload: boolean;
 	grants_edit: boolean;
 	grants_delete: boolean;
-	// Optional: the v7 UI does not send it (Feature 072, NG4).
-	grants_move?: boolean;
+	grants_move: boolean;
 };
 
 export type PropagateSharingData = {
