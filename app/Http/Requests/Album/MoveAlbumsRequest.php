@@ -12,7 +12,7 @@ use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasAlbums;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumAlbumsTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanMoveAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
@@ -27,7 +27,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	use HasAlbumTrait;
 	/** @phpstan-use HasAlbumsTrait<Album> */
 	use HasAlbumsTrait;
-	use AuthorizeCanEditAlbumAlbumsTrait;
+	use AuthorizeCanMoveAlbumsTrait;
 
 	/**
 	 * {@inheritDoc}

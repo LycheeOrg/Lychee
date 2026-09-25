@@ -28,6 +28,7 @@ class AccessPermissionResource extends Data
 		public bool $grants_upload = false,
 		public bool $grants_edit = false,
 		public bool $grants_delete = false,
+		public bool $grants_move = false,
 	) {
 	}
 
@@ -45,7 +46,8 @@ class AccessPermissionResource extends Data
 			grants_download: $access_permission->grants_download,
 			grants_upload: $access_permission->grants_upload,
 			grants_edit: $access_permission->grants_edit,
-			grants_delete: $access_permission->grants_delete
+			grants_delete: $access_permission->grants_delete,
+			grants_move: $access_permission->grants_move,
 		);
 	}
 }

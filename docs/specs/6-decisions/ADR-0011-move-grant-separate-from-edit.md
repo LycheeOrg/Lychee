@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-25
 - **Related features/specs:** Feature 072 (docs/specs/4-architecture/features/072-edit-grant-escalation/spec.md)
-- **Related open questions:** Q-072-01, Q-072-02, Q-072-03 (superseded), Q-072-04, Q-072-05, Q-072-06, Q-072-07, Q-072-08
+- **Related open questions:** Q-072-01, Q-072-02, Q-072-03 (superseded), Q-072-04 … Q-072-11
 
 ## Context
 
@@ -13,13 +13,16 @@ Affected modules: persistence (`access_permissions`), policies, REST request aut
 
 ## Decision
 
-1. **One new share grant, `grants_move`,** governs Move, Copy and Merge. It is separate from `grants_edit`. The sources of these operations require `CAN_MOVE`; Merge additionally requires `CAN_DELETE` on its sources. Targets keep requiring `CAN_EDIT`.
+1. **One new share grant, `grants_move`,** governs Move, Copy and Merge. It is separate from `grants_edit` and covers an album's **content** (its photos and sub-albums), never the album itself (Q-072-09): moving album X needs the grant on X's parent, exactly like delete. Photo move/copy need it on the source album; merge needs it on the source (content leaves) plus delete on the source's parent. Targets keep requiring `CAN_EDIT`.
 2. **Cross-owner guards apply regardless of grants:**
    - placing someone else's photo into an album whose owner differs from the photo's owner requires already holding full-photo access and download on it (moves within the photo owner's albums, and to their unsorted, need only the move grant);
    - moving or merging an album into another owner's album requires owning the source (`CAN_TRANSFER`).
 3. **No coupling** between the move grant and full-photo access/download; the guards provide the security.
 4. **Backfill:** existing permissions get `grants_move = grants_edit`.
 5. **Destination picker:** filtered to albums the user can edit; not source-aware. Guard rejections surface as 403.
+
+6. **Delete follows the same content semantics** (Q-072-11): deleting an album needs `grants_delete` on its parent (root album: owner only); deleting a photo needs it on the album containing it.
+7. **Sharing decisions stay with the owner** (Q-072-10): the protection policy (public, link, password, NSFW, public grants) is owner-only, like per-user sharing; smart albums admin-only.
 
 General rule going forward: *an operation that changes ownership or containment must require the rights its effect confers, not only the right to edit.*
 

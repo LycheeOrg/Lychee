@@ -33,9 +33,11 @@ class ListAlbums
 	private const SHORTEN_BY = 80;
 
 	/**
+	 * @param bool $editable_only restrict to albums the user may edit, i.e. valid move/copy/merge targets (Feature 072, FR-072-32)
+	 *
 	 * @return TAlbumSaved[]
 	 */
-	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
+	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null, bool $editable_only = false): array
 	{
 		/** @var ?User $user */
 		$user = Auth::user();
@@ -58,6 +60,9 @@ class ListAlbums
 			$user,
 			$unlocked_album_ids
 		);
+		if ($editable_only) {
+			$this->album_query_policy->appendEditableCondition($unfiltered, $user);
+		}
 		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);

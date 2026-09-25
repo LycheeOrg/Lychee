@@ -844,6 +844,7 @@ declare namespace App {
 					grants_upload: boolean;
 					grants_edit: boolean;
 					grants_delete: boolean;
+					grants_move: boolean;
 				};
 				export type AdminStatsResource = {
 					photos_count: number;
@@ -1383,6 +1384,8 @@ declare namespace App {
 					can_download: boolean;
 					can_upload: boolean;
 					can_move: boolean;
+					can_move_content: boolean;
+					can_merge: boolean;
 					can_delete: boolean;
 					can_transfer: boolean;
 					can_access_original: boolean;
@@ -1722,6 +1725,7 @@ declare namespace App {
 					grants_uploads: (boolean | null)[];
 					grants_edits: (boolean | null)[];
 					grants_deletes: (boolean | null)[];
+					grants_moves: (boolean | null)[];
 				};
 				export type AlbumBucketResource = {
 					bucket_ids: string[];
@@ -1788,6 +1792,7 @@ declare namespace App {
 					_lft: number[];
 					_rgt: number[];
 					cover_ids: (string | null)[];
+					can_edits: boolean[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
 				};
@@ -1798,6 +1803,7 @@ declare namespace App {
 					ids: string[];
 					grants_edit: boolean[];
 					grants_download: boolean[];
+					grants_move: boolean[];
 				};
 				export type FlowListResource = {
 					ids: string[];

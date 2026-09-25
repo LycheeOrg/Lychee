@@ -14,6 +14,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-072-06~~ | 072 – Edit-Grant Escalation | High | Must enabling the move grant also enable full-photo access and download on the share? | Resolved (Option A — no coupling; owner, 2026-09-25). Spec NG7, FR-072-22; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-07~~ | 072 – Edit-Grant Escalation | High | Backfill of `grants_move` for existing shares. | Resolved (Option A — backfill `grants_move = grants_edit`; owner, 2026-09-25). Spec FR-072-02; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-08~~ | 072 – Edit-Grant Escalation | High | How does the destination picker learn the valid targets for a given selection? | Resolved (owner, 2026-09-25: "C however the destination album needs to be filtered") — no source-aware endpoint; picker filtered to albums the user can edit (target right), cross-owner rejections surface as 403. Spec FR-072-30..34, NG8; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-09~~ | 072 – Edit-Grant Escalation | High | Meaning of `grants_move` on album P: "content of P (sub-albums, photos) may be moved out of P" — not "P itself may be moved". Album::move currently checks the grant on the moved album itself; should check its parent. | Resolved (Option A — content semantics; owner, 2026-09-25: "yes that is the intent"). Spec FR-072-03/03b/13/20/21; ADR-0011; docs/specs/1-concepts/permissions.md. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-10~~ | 072 – Edit-Grant Escalation | High | An edit-only collaborator can change the owner's album protection policy (`SetAlbumProtectionPolicyRequest` checks only `CAN_EDIT`): make it public with full-photo access + download, then fetch originals as a public visitor. Same escalation class as GHSA-pw32. Fold into Feature 072? | Resolved (Option A — ownership required; owner, 2026-09-25: "Yes ownership required."). Spec FR-072-40; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-11~~ | 072 – Edit-Grant Escalation | Medium | Delete is inconsistent: `DELETE /Album` checks `grants_delete` on the album itself (`canDeleteById`), while the UI's `can_delete` and merge check it on the parent (`canDelete`). Which is intended? | Resolved (owner, 2026-09-25: album delete checks grants_delete on the parent; photo delete on the containing album). Spec FR-072-41/42; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-069-14~~ | 069 – Search Struct-of-Arrays | — | ~~`ConfigManager` is never bound in the container~~ — **the premise was false.** It is bound as `scoped()` by the global `ResolveConfigs` middleware. The 88 `configs` queries were a test-harness artifact of calling the action directly, bypassing middleware. | **Withdrawn (invalid), 2026-09-22.** Through a real HTTP request the same call issues 13 queries total, with **one** full `configs` load. Binding it as a singleton would have been actively harmful under FrankenPHP worker mode. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-13~~ | 069 – Search Struct-of-Arrays | High | Q-069-12 established that v2 reads `configs.grants_full_photo_access` — a **seed value for newly created shares** — as a runtime authorization gate. | Resolved (owner, 2026-09-22: "Fix the over-grants.") — **Option B, widened**: implemented as **Feature 070** across all affected surfaces. The count grew from 5 to 7 during implementation: `PersonPhotosController` passed `should_downgrade: false` unconditionally, and `FlowItemResource` used an album-wide gate. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-12~~ | 069 – Search Struct-of-Arrays | High | v2's search computes `should_downgrade` **once per request** from the raw `grants_full_photo_access` config, ignoring ownership and per-album share grants; the v3 tier evaluates `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **per photo**. | Resolved (owner, 2026-09-22): **v2 is the defect — it grants full-resolution access more widely than it should.** v3's per-photo check is authoritative. Re-classified Medium → High: this is a rights over-grant, not a cosmetic divergence. See Q-069-13 for whether v2 itself gets fixed. | 2026-09-22 | 2026-09-22 |
@@ -342,6 +345,69 @@ v2 `GET Album::getTargetListAlbums` takes `album_ids` and applies only a reachab
 **Option C — keep the picker unfiltered; rely on 403**
 - ✅ No UI change.
 - ❌ Users keep picking targets that always fail; rejected by owner ("this will require a UI change").
+
+---
+
+### ~~Q-072-10~~ · Edit-only collaborators can widen public access via the protection policy ✅ RESOLVED
+
+**Status:** Resolved (owner, 2026-09-25). Spec FR-072-40.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+Found while documenting permissions. `SetAlbumProtectionPolicyRequest::authorize()` only checks `AlbumPolicy::CAN_EDIT`, yet the action sets the album's public permission row: `is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`, password. An edit-only collaborator can therefore publish the owner's album with full-photo access and download, then obtain the originals as a public (or logged-in) viewer. Same class as GHSA-pw32: edit escalated into original/download access.
+
+**Option A (recommended) — protection policy requires ownership**
+- Use `AlbumPolicy::CAN_SHARE_WITH_USERS`-style ownership (owner or admin), like per-user sharing already is.
+- ✅ Sharing decisions stay with the owner, consistently for public and per-user shares.
+- ❌ Edit collaborators can no longer toggle NSFW or change the password.
+
+**Option B — edit may change NSFW/password, but not widen public grants**
+- Owner required whenever a grant or visibility would become more permissive.
+- ✅ Keeps harmless edits available.
+- ❌ More branching; the password and link-required flags still affect access.
+
+**Option C — keep as is, document it**
+- ❌ Leaves a known escalation open.
+
+---
+
+### ~~Q-072-11~~ · Is `grants_delete` about the album's content or the album itself? ✅ RESOLVED
+
+**Status:** Resolved (owner, 2026-09-25). Spec FR-072-41/42.  
+**Feature:** F-072  
+**Priority:** Medium
+
+**Context**  
+`AlbumPolicy::canDelete()` (UI `can_delete`, merge) checks `grants_delete` on the album's **parent**: content semantics, like the move grant (Q-072-09). `AlbumPolicy::canDeleteById()` (used by `DELETE /api/v2/Album`) checks it on the **album itself**. So `grants_delete` on album P lets a collaborator delete P through the API, while the UI only offers deleting P's sub-albums. Photo delete checks the grant on the containing album (content semantics).
+
+**Option A (recommended) — content semantics everywhere**
+- `canDeleteById()` checks the grant on each album's parent (root album: owner only), like `canDelete()` and the move grant.
+- ✅ One meaning for delete and move; the UI and API agree.
+- ❌ Collaborators with delete on P lose the ability to delete P itself through the API.
+
+**Option B — keep both**
+- ❌ The UI and API disagree about the same grant.
+
+---
+
+### ~~Q-072-09~~ · Does `grants_move` on an album cover its content, or the album itself? ✅ RESOLVED
+
+**Status:** Resolved (Option A; owner, 2026-09-25). Spec FR-072-03/03b/13/20/21; ADR-0011.  
+**Feature:** F-072  
+**Priority:** High
+
+**Context**  
+Owner, 2026-09-25: "`can_move` on an album means its sub-albums and photos can be moved from this album. It does NOT mean that this album can be moved." Photo move/copy and merge already follow this; `Album::move`, the album-move picker authorization and the UI "move this album" gates currently check the grant on the moved album itself.
+
+**Option A (recommended, owner's stated intent) — container semantics everywhere**
+- `Album::move` of X requires `grants_move` on X's parent (root album: owner only), mirroring how `grants_delete` on the parent governs deleting X.
+- Album rights expose two flags: "can move this album" (grant on its parent) and "can move content out of this album" (grant on the album).
+- ✅ One consistent meaning, same shape as delete.
+- ❌ Rework of Album::move authorization, target-list authorization, v2/v3 rights and their tests.
+
+**Option B — keep the mixed meaning**
+- ❌ The same grant means different things for photos and albums.
 
 ---
 

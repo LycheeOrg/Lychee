@@ -7,6 +7,8 @@ export type AlbumListRow = {
 	_lft: number;
 	_rgt: number;
 	coverId: string | null;
+	/** Whether the viewer may edit the album, i.e. use it as a move/copy/merge target (Feature 072). */
+	canEdit: boolean;
 };
 
 export type AlbumTreeNode = AlbumListRow & {
@@ -14,8 +16,8 @@ export type AlbumTreeNode = AlbumListRow & {
 	children: AlbumTreeNode[];
 };
 
-function toRows(ids: string[], titles: string[], _lft: number[], _rgt: number[], coverIds: (string | null)[]): AlbumListRow[] {
-	return ids.map((id, i) => ({ id, title: titles[i], _lft: _lft[i], _rgt: _rgt[i], coverId: coverIds[i] }));
+function toRows(ids: string[], titles: string[], _lft: number[], _rgt: number[], coverIds: (string | null)[], canEdits: boolean[]): AlbumListRow[] {
+	return ids.map((id, i) => ({ id, title: titles[i], _lft: _lft[i], _rgt: _rgt[i], coverId: coverIds[i], canEdit: canEdits[i] ?? false }));
 }
 
 // Nested-set stack reconstruction: rows are visited in ascending `lft` order; the stack holds
@@ -60,6 +62,7 @@ export const useAlbumListStore = defineStore("album-list-store", {
 		_lft: [] as number[],
 		_rgt: [] as number[],
 		coverIds: [] as (string | null)[],
+		canEdits: [] as boolean[],
 		isLoaded: false as boolean,
 		error: undefined as unknown,
 		_loadPromise: undefined as Promise<void> | undefined,
@@ -92,6 +95,7 @@ export const useAlbumListStore = defineStore("album-list-store", {
 					this._lft = response.data._lft;
 					this._rgt = response.data._rgt;
 					this.coverIds = response.data.cover_ids;
+					this.canEdits = response.data.can_edits;
 					this.isLoaded = true;
 				})
 				.catch((error: unknown) => {
@@ -123,7 +127,7 @@ export const useAlbumListStore = defineStore("album-list-store", {
 		},
 
 		rows(state): AlbumListRow[] {
-			return toRows(state.ids, state.titles, state._lft, state._rgt, state.coverIds);
+			return toRows(state.ids, state.titles, state._lft, state._rgt, state.coverIds, state.canEdits);
 		},
 
 		tree(): AlbumTreeNode[] {

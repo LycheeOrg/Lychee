@@ -36,7 +36,7 @@ class AlbumAccessPermissionListController extends Controller
 	}
 
 	/**
-	 * @return Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string}>
+	 * @return Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string,grants_move:?string}>
 	 */
 	private function queryRows(User $user): Collection
 	{
@@ -66,6 +66,7 @@ class AlbumAccessPermissionListController extends Controller
 				'access_permissions.grants_upload',
 				'access_permissions.grants_edit',
 				'access_permissions.grants_delete',
+				'access_permissions.grants_move',
 			])
 			->leftJoinSub($base_albums_sub, 'base_albums', 'base_albums.id', '=', 'albums.id')
 			->leftJoinSub($owner_users_sub, 'owner_users', 'owner_users.id', '=', 'base_albums.owner_id')
@@ -90,7 +91,7 @@ class AlbumAccessPermissionListController extends Controller
 	}
 
 	/**
-	 * @param Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string}> $rows
+	 * @param Collection<int,object{album_id:string,album_title:string,_lft:string,_rgt:string,owner_id:string,owner_name:string,permission_id:?string,user_id:?string,user_name:?string,group_id:?string,group_name:?string,grants_full_photo_access:?string,grants_download:?string,grants_upload:?string,grants_edit:?string,grants_delete:?string,grants_move:?string}> $rows
 	 */
 	private function buildResource(Collection $rows): AlbumAccessPermissionResource
 	{
@@ -110,6 +111,7 @@ class AlbumAccessPermissionListController extends Controller
 		$grants_uploads = [];
 		$grants_edits = [];
 		$grants_deletes = [];
+		$grants_moves = [];
 
 		foreach ($rows as $row) {
 			$has_permission = $row->permission_id !== null;
@@ -130,6 +132,7 @@ class AlbumAccessPermissionListController extends Controller
 			$grants_uploads[] = $has_permission ? DbBool::parse($row->grants_upload) : null;
 			$grants_edits[] = $has_permission ? DbBool::parse($row->grants_edit) : null;
 			$grants_deletes[] = $has_permission ? DbBool::parse($row->grants_delete) : null;
+			$grants_moves[] = $has_permission ? DbBool::parse($row->grants_move) : null;
 		}
 
 		return new AlbumAccessPermissionResource(
@@ -149,6 +152,7 @@ class AlbumAccessPermissionListController extends Controller
 			grants_uploads: $grants_uploads,
 			grants_edits: $grants_edits,
 			grants_deletes: $grants_deletes,
+			grants_moves: $grants_moves,
 		);
 	}
 }

@@ -34,6 +34,8 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 	use HasAccessPermissionTrait;
 	use HasAccessPermissionResourceTrait;
 
+	protected ?bool $grants_move = null;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,6 +56,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_EDIT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_DELETE_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::GRANTS_MOVE_ATTRIBUTE => ['sometimes', 'boolean'],
 		];
 	}
 
@@ -73,5 +76,18 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 			grants_full_photo_access: static::toBoolean($values[RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),
 		);
+
+		$this->grants_move = array_key_exists(RequestAttribute::GRANTS_MOVE_ATTRIBUTE, $values) ?
+			static::toBoolean($values[RequestAttribute::GRANTS_MOVE_ATTRIBUTE]) :
+			null;
+	}
+
+	/**
+	 * The requested move grant, or `null` when the client did not send it
+	 * (v7 clients; Feature 072, NG4) — the stored value is then left unchanged.
+	 */
+	public function grantsMove(): ?bool
+	{
+		return $this->grants_move;
 	}
 }

@@ -72,6 +72,8 @@ class AlbumMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
+		// Feature 072: moving subAlbum1 follows the move grant on its parent album1.
+		AccessPermission::query()->where('id', '=', $this->perm1->id)->update(['grants_move' => false]);
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::move', [
 			'album_id' => null,
 			'album_ids' => [$this->subAlbum1->id],

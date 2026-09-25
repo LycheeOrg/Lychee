@@ -27,6 +27,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
+	public const CAN_MOVE = 'canMove';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
@@ -127,6 +128,30 @@ class PhotoPolicy extends BasePolicy
 		}
 
 		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canEdit($user, $a));
+	}
+
+	/**
+	 * Checks whether the photo may be moved or copied by the current user
+	 * (Feature 072, FR-072-04).
+	 *
+	 * A photo is movable if the user owns it and has the upload privilege,
+	 * or if any album containing it is movable (see {@link AlbumPolicy::canMove()}).
+	 *
+	 * @param User  $user
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function canMove(User $user, Photo $photo): bool
+	{
+		if ($photo->is_validated !== true) {
+			return false;
+		}
+		if ($this->isOwner($user, $photo) && $user->may_upload) {
+			return true;
+		}
+
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canMove($user, $a));
 	}
 
 	/**
@@ -252,7 +277,8 @@ class PhotoPolicy extends BasePolicy
 			->groupBy(PA::ALBUM_ID)
 			->pluck('album_id')->all();
 
-		return $this->album_policy->canDeleteById($user, $parent_ids);
+		// Feature 072 (Q-072-11): a photo is content of its albums: the delete grant is checked on them.
+		return $this->album_policy->canDeleteContentById($user, $parent_ids);
 	}
 
 	/**

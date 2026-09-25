@@ -85,6 +85,12 @@ class AlbumListController extends Controller
 
 		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
 
+		// Feature 072 (FR-072-33): edit grant resolved in the same query; ownership
+		// and admin are resolved from already-known values in toAlbumListResource().
+		if ($user !== null && $user->may_administrate !== true) {
+			$query->selectSub($this->album_query_policy->editGrantQuery(DB::query(), $user, 'albums.id')->limit(1), 'edit_grant');
+		}
+
 		if ($for_bulk_edit) {
 			$query->leftJoin('users', 'users.id', '=', 'base_albums.owner_id');
 			$this->album_query_policy->joinBaseAlbumBulkEditFields($query, 'albums.id', 'bulk_');
@@ -133,7 +139,7 @@ class AlbumListController extends Controller
 	/**
 	 * Create the light object.
 	 *
-	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,password:?string}> $rows
+	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,password:?string,owner_id:string,edit_grant?:?string}> $rows
 	 *
 	 * @return AlbumListResource
 	 */
@@ -144,6 +150,7 @@ class AlbumListController extends Controller
 		$lft = [];
 		$rgt = [];
 		$cover_ids = [];
+		$can_edits = [];
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		foreach ($rows as $row) {
@@ -152,6 +159,7 @@ class AlbumListController extends Controller
 			$lft[] = (int) $row->_lft;
 			$rgt[] = (int) $row->_rgt;
 			$cover_ids[] = self::resolveCoverId($row, $user, $unlocked_album_ids);
+			$can_edits[] = self::canEdit($row, $user);
 		}
 
 		return new AlbumListResource(
@@ -160,9 +168,26 @@ class AlbumListController extends Controller
 			lft: $lft,
 			rgt: $rgt,
 			cover_ids: $cover_ids,
+			can_edits: $can_edits,
 			parent_ids: null,
 			bulk_edit: null,
 		);
+	}
+
+	/**
+	 * Same rule as {@see AlbumPolicy::canEdit()} for a regular album, from the
+	 * row's `owner_id` and the `edit_grant` sub-query (Feature 072, FR-072-31).
+	 */
+	private static function canEdit(object $row, ?User $user): bool
+	{
+		if ($user === null) {
+			return false;
+		}
+		if ($user->may_administrate === true) {
+			return true;
+		}
+
+		return ($user->may_upload && (int) $row->owner_id === $user->id) || $row->edit_grant !== null;
 	}
 
 	/**

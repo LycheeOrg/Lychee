@@ -446,7 +446,10 @@ definePanelShortcuts({
 		goBack();
 	},
 	// privileged album/photo actions
-	m: () => (photoStore.isLoaded ? albumStore.rights?.can_edit && toggleMove() : albumStore.rights?.can_move && hasSelection() && toggleMove()),
+	m: () =>
+		photoStore.isLoaded
+			? albumStore.rights?.can_move_content && toggleMove()
+			: albumStore.rights?.can_move_content && hasSelection() && toggleMove(),
 	delete: () =>
 		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
 	backspace: () =>

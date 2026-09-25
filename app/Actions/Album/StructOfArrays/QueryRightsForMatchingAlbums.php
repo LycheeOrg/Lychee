@@ -36,10 +36,10 @@ class QueryRightsForMatchingAlbums
 		// No single shared parent's access_permissions could uniformly
 		// apply to a dynamically-matched, disparately-parented set.
 		if ($is_admin) {
-			return $this->allGranted($query, (string) $album->owner_id, false);
+			return $this->allGranted($query, (string) $album->owner_id, false, false);
 		}
 
-		return $this->grantsResource($this->album_query_policy, $query, $user, (string) $album->owner_id, false);
+		return $this->grantsResource($this->album_query_policy, $query, $user, (string) $album->owner_id, false, false);
 	}
 
 	public function emptyResource(TagAlbum|PersonAlbum $album): AlbumRightsResource
@@ -51,6 +51,7 @@ class QueryRightsForMatchingAlbums
 			ids: [],
 			grants_edit: [],
 			grants_download: [],
+			grants_move: [],
 		);
 	}
 }

@@ -68,8 +68,9 @@ function loadV3() {
 	albumListStore.ensureLoaded().then(() => {
 		const roots = albumIds.value ?? [];
 		const excluded = albumListStore.getExcludedTargetIds(roots);
+		// Feature 072 (FR-072-30): only albums the viewer may edit can receive content.
 		const rows: TargetOption[] = albumListStore.rows
-			.filter((row) => !excluded.has(row.id))
+			.filter((row) => row.canEdit && !excluded.has(row.id))
 			.map((row) => {
 				const breadcrumb = albumListStore.buildBreadcrumb(row.id);
 				return {

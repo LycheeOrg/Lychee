@@ -12,7 +12,7 @@ use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosAlbumTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanMovePhotosTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
@@ -23,7 +23,7 @@ class CopyPhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
 	use HasPhotosTrait;
 	use HasAlbumTrait;
-	use AuthorizeCanEditPhotosAlbumTrait;
+	use AuthorizeCanMovePhotosTrait;
 
 	/**
 	 * {@inheritDoc}

@@ -65,7 +65,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$json = $response->json();
 
-		foreach (['owner_id', 'can_delete_children', 'can_move_children', 'ids', 'grants_edit', 'grants_download'] as $field) {
+		foreach (['owner_id', 'can_delete_children', 'can_move_children', 'ids', 'grants_edit', 'grants_download', 'grants_move'] as $field) {
 			self::assertArrayHasKey($field, $json);
 		}
 		self::assertIsString($json['owner_id']);
@@ -131,9 +131,11 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 		$json = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$parent->id}/rights")->assertOk()->json();
 
 		self::assertTrue($json['can_delete_children']);
-		self::assertTrue($json['can_move_children']);
+		// Feature 072: moving children follows grants_move on the parent, not grants_delete.
+		self::assertFalse($json['can_move_children']);
 		// The grant is on the parent, not the child -> no per-child grant.
 		self::assertFalse($json['grants_edit'][0]);
+		self::assertFalse($json['grants_move'][0]);
 	}
 
 	// ── Multi-group overlap correctness (T-061-31, the critical test) ──

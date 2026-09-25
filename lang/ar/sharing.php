@@ -37,6 +37,7 @@ return [
         'download' => 'يمنح حق التنزيل',
         'upload' => 'يمنح حق التحميل',
         'edit' => 'يمنح حق التعديل',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'يمنح حق الحذف',
     ],
 ];

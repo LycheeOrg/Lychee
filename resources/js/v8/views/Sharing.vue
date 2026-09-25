@@ -72,6 +72,7 @@
 								<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
 								<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
 								<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+								<UTooltip :text="$t('sharing.grants.move')"><UIcon name="lucide:folder" /></UTooltip>
 								<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 								<UTooltip :text="$t('dialogs.button.delete')"><UIcon name="lucide:user-minus" /></UTooltip>
 							</div>
@@ -180,6 +181,7 @@ function adaptPermissionRow(data: AccessPermissionResource, i: number): Permissi
 		grants_upload: data.grants_uploads[i] ?? false,
 		grants_edit: data.grants_edits[i] ?? false,
 		grants_delete: data.grants_deletes[i] ?? false,
+		grants_move: data.grants_moves[i] ?? false,
 	};
 }
 

@@ -41,7 +41,8 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			return Auth::user()?->may_administrate === true;
 		}
 
-		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]);
+		// Feature 072 (Q-072-10): a sharing decision, reserved to the owner (admins for smart albums).
+		return Gate::check(AlbumPolicy::CAN_CHANGE_PROTECTION_POLICY, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

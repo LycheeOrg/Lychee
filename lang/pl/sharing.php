@@ -37,6 +37,7 @@ return [
         'download' => 'Zapewnia pobieranie',
         'upload' => 'Zapewnia dodawanie zdjęć',
         'edit' => 'Zapewnia edycje',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Zapewnia usuwanie',
     ],
 ];

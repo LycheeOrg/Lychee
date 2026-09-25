@@ -89,6 +89,7 @@ class RequestAttribute
 	public const GRANTS_UPLOAD_ATTRIBUTE = 'grants_upload';
 	public const GRANTS_EDIT_ATTRIBUTE = 'grants_edit';
 	public const GRANTS_DELETE_ATTRIBUTE = 'grants_delete';
+	public const GRANTS_MOVE_ATTRIBUTE = 'grants_move';
 
 	public const IS_AND_ATTRIBUTE = 'is_and';
 

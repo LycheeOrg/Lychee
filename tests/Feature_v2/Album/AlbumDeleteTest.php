@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\AccessPermission;
 use App\Models\Statistics;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -33,6 +34,8 @@ class AlbumDeleteTest extends BaseApiWithDataTest
 		]);
 		$this->assertUnauthorized($response);
 
+		// Feature 072 (Q-072-11): deleting subAlbum1 follows the delete grant on its parent album1.
+		AccessPermission::query()->where('id', '=', $this->perm1->id)->update(['grants_delete' => false]);
 		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->subAlbum1->id],
 		]);
@@ -52,14 +55,21 @@ class AlbumDeleteTest extends BaseApiWithDataTest
 
 	public function testDeleteAlbumAuthorizedUser(): void
 	{
+		// Feature 072 (Q-072-11): perm1 grants delete on album1, i.e. on its content:
+		// its sub-album may be deleted, album1 itself may not.
 		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
 			'album_ids' => [$this->album1->id],
 		]);
+		$this->assertForbidden($response);
+
+		$response = $this->actingAs($this->userMayUpload2)->deleteJson('Album', [
+			'album_ids' => [$this->subAlbum1->id],
+		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJson('Albums');
+		$response = $this->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertDontSee($this->album1->id);
-		$this->assertEquals(0, Statistics::where('album_id', $this->album1->id)->count());
+		$response->assertDontSee($this->subAlbum1->id);
+		$this->assertEquals(0, Statistics::where('album_id', $this->subAlbum1->id)->count());
 	}
 }

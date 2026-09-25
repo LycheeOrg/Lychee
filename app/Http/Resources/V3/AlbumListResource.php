@@ -33,6 +33,8 @@ class AlbumListResource extends Data
 	public array $_rgt;
 	/** @var (string|null)[] */
 	public array $cover_ids;
+	/** @var bool[] Whether the viewer may edit each album, i.e. use it as a move/copy/merge target (Feature 072, FR-072-33). */
+	public array $can_edits;
 	/** @var (string|null)[]|null `null` when `with_parent_id=false`; otherwise index-aligned, `null` per-entry for a root album (never omitted). */
 	public ?array $parent_ids;
 	public ?AlbumListBulkEditFieldsResource $bulk_edit;
@@ -43,6 +45,7 @@ class AlbumListResource extends Data
 	 * @param int[]                $lft
 	 * @param int[]                $rgt
 	 * @param (string|null)[]      $cover_ids
+	 * @param bool[]               $can_edits
 	 * @param (string|null)[]|null $parent_ids
 	 */
 	public function __construct(
@@ -51,6 +54,7 @@ class AlbumListResource extends Data
 		array $lft,
 		array $rgt,
 		array $cover_ids,
+		array $can_edits,
 		?array $parent_ids,
 		?AlbumListBulkEditFieldsResource $bulk_edit = null,
 	) {
@@ -59,6 +63,7 @@ class AlbumListResource extends Data
 		$this->_lft = $lft;
 		$this->_rgt = $rgt;
 		$this->cover_ids = $cover_ids;
+		$this->can_edits = $can_edits;
 		$this->parent_ids = $parent_ids;
 		$this->bulk_edit = $bulk_edit;
 	}

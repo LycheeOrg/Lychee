@@ -38,6 +38,7 @@ class Share
 		$perm->grants_upload = $access_permission_resource->grants_upload;
 		$perm->grants_edit = $access_permission_resource->grants_edit;
 		$perm->grants_delete = $access_permission_resource->grants_delete;
+		$perm->grants_move = $access_permission_resource->grants_move;
 		$perm->load('user');
 		$perm->load('album');
 		$perm->load('user_group');
