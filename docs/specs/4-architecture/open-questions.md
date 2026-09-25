@@ -6,6 +6,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-072-13~~ | 072 – Edit-Grant Escalation | High | Pre-release details in commits already pushed to a public branch: how are they removed? | Resolved (Option C — removed from the tree only; the PR is squash-merged and the branch deleted; owner, 2026-09-26). | 2026-09-26 | 2026-09-26 |
 | ~~Q-072-01~~ | 072 – Edit-Grant Escalation | High | `Photo::copy`/`Photo::move` by a non-owner: when must the user already hold full-photo access + download on the photo? Only when the destination belongs to someone other than the photo's owner, or always? | Resolved (Option A — guard applies only when destination owner ≠ photo owner; owner, 2026-09-25: "Q-72-1: A"). Spec FR-072-12, S-072-22..24; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-02~~ | 072 – Edit-Grant Escalation | High | ~~`Album::move` within one owner's albums: keep `CAN_EDIT`, or also require `CAN_DELETE`?~~ | Superseded (owner, 2026-09-25: "separate Move/Copy/Merge from Edit") — sources now require the new move grant (FR-072-13); neither edit nor delete. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-03~~ | 072 – Edit-Grant Escalation | Medium | ~~`Photo::move` source: keep `CAN_EDIT`, or require `CAN_DELETE`?~~ | Superseded (same owner direction) — `from_album` now requires the new move grant (FR-072-11). | 2026-09-25 | 2026-09-25 |
@@ -15,7 +16,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-072-07~~ | 072 – Edit-Grant Escalation | High | Backfill of `grants_move` for existing shares. | Resolved (Option A — backfill `grants_move = grants_edit`; owner, 2026-09-25). Spec FR-072-02; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-08~~ | 072 – Edit-Grant Escalation | High | How does the destination picker learn the valid targets for a given selection? | Resolved (owner, 2026-09-25: "C however the destination album needs to be filtered") — no source-aware endpoint; picker filtered to albums the user can edit (target right), cross-owner rejections surface as 403. Spec FR-072-30..34, NG8; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-09~~ | 072 – Edit-Grant Escalation | High | Meaning of `grants_move` on album P: "content of P (sub-albums, photos) may be moved out of P" — not "P itself may be moved". Album::move currently checks the grant on the moved album itself; should check its parent. | Resolved (Option A — content semantics; owner, 2026-09-25: "yes that is the intent"). Spec FR-072-03/03b/13/20/21; ADR-0011; docs/specs/1-concepts/permissions.md. | 2026-09-25 | 2026-09-25 |
-| ~~Q-072-10~~ | 072 – Edit-Grant Escalation | High | An edit-only collaborator can change the owner's album protection policy (`SetAlbumProtectionPolicyRequest` checks only `CAN_EDIT`): make it public with full-photo access + download, then fetch originals as a public visitor. Same escalation class as GHSA-pw32. Fold into Feature 072? | Resolved (Option A — ownership required; owner, 2026-09-25: "Yes ownership required."). Spec FR-072-40; ADR-0011. | 2026-09-25 | 2026-09-25 |
+| ~~Q-072-10~~ | 072 – Edit-Grant Escalation | High | Should the album protection policy (`SetAlbumProtectionPolicyRequest`, today `CAN_EDIT`) require ownership, like per-user sharing? | Resolved (Option A — ownership required; owner, 2026-09-25: "Yes ownership required."). Spec FR-072-40; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-11~~ | 072 – Edit-Grant Escalation | Medium | Delete is inconsistent: `DELETE /Album` checks `grants_delete` on the album itself (`canDeleteById`), while the UI's `can_delete` and merge check it on the parent (`canDelete`). Which is intended? | Resolved (owner, 2026-09-25: album delete checks grants_delete on the parent; photo delete on the containing album). Spec FR-072-41/42; ADR-0011. | 2026-09-25 | 2026-09-25 |
 | ~~Q-072-12~~ | 072 – Edit-Grant Escalation | High | Move/copy/merge authorization runs per hydrated album/photo (`Gate::check` loops, per-album permission loads, per-album parent-grant queries): query count grows with batch size. Rewrite as aggregate `…ById` SQL checks? | Resolved (Option A — aggregate `…ById` checks; owner, 2026-09-25). Spec FR-072-18, NFR-072-07. | 2026-09-25 | 2026-09-25 |
 | ~~Q-069-14~~ | 069 – Search Struct-of-Arrays | — | ~~`ConfigManager` is never bound in the container~~ — **the premise was false.** It is bound as `scoped()` by the global `ResolveConfigs` middleware. The 88 `configs` queries were a test-harness artifact of calling the action directly, bypassing middleware. | **Withdrawn (invalid), 2026-09-22.** Through a real HTTP request the same call issues 13 queries total, with **one** full `configs` load. Binding it as a singleton would have been actively harmful under FrankenPHP worker mode. | 2026-09-22 | 2026-09-22 |
@@ -209,17 +210,35 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-072-13~~ · Removing pre-release details from public history ✅ RESOLVED
+
+**Status:** Resolved (Option C; owner, 2026-09-26: the PR is squash-merged and the branch deleted at merge). Details removed from the tree; history left as is.
+
+**Context.** Feature 072's early commits were pushed to a public branch with an open PR. They contain advisory identifiers and reproduction details that must stay private until release. Deleting them in a new commit is not enough: the old commits stay reachable by SHA and through the PR's refs.
+
+**Option A (recommended) — move the work to the advisory's private fork.** Sanitize the tree, squash the branch into the advisory's temporary private fork, close the public PR, delete the public branch, and ask GitHub Support to purge the PR and the exposed commits.
+- ✅ Full details stay private until release; the fix is published together with the advisory.
+- ❌ Needs GitHub Support for the purge; review moves to the private fork.
+
+**Option B — rewrite the public branch.** Sanitize, rewrite the branch as clean commit(s), force-push, close the PR and open a new one; ask GitHub Support to purge the old PR and commits.
+- ✅ Review stays public and on the usual flow.
+- ❌ The fix stays public before release (it still hints at the issue); force-push to a shared branch.
+
+**Option C — sanitize going forward only.** Remove the details in a new commit and release quickly.
+- ✅ No history rewrite.
+- ❌ The exposed commits stay public: the finding is not addressed.
+
 ### ~~Q-072-01~~ · When does a non-owner need full access + download to copy/move a photo? ✅ RESOLVED
 
 **Status:** Resolved (Option A; owner, 2026-09-25: "Q-72-1: A"). Spec FR-072-12; residual path accepted as S-072-22; ADR-0011.  
 **Feature:** F-072 – Fix Edit-Grant Escalation via Copy, Move and Merge  
-**Priority:** High — decides the fix for GHSA-pw32-v9r5-85hc
+**Priority:** High
 
 **Context**  
-Owning an album gives full-photo access and download on every photo in it. Copying or moving someone else's photo into your own album therefore turns an edit-only share into access to the original. The fix requires `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` and `CAN_DOWNLOAD` on the photo; the question is when.
+Owning an album gives full-photo access and download on every photo in it, so placing a photo into an album of another owner must require those rights on the photo. The fix requires `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` and `CAN_DOWNLOAD` on the photo; the question is when.
 
 **Option A (recommended) — only when the destination's owner differs from the photo's owner**
-- ✅ Closes the advisory: copying into your own album needs rights you already have.
+- ✅ Copying into your own album needs rights you already have.
 - ✅ Move-granted collaborators can still reorganise photos between the owner's own albums without full access.
 - ❌ Residual path: a collaborator with the move grant on two of the owner's albums can move a photo from a restricted album into a public, full-access album of the same owner. That is the owner's own sharing setup, but it may surprise them.
 
@@ -349,14 +368,14 @@ v2 `GET Album::getTargetListAlbums` takes `album_ids` and applies only a reachab
 
 ---
 
-### ~~Q-072-10~~ · Edit-only collaborators can widen public access via the protection policy ✅ RESOLVED
+### ~~Q-072-10~~ · Should the protection policy require ownership? ✅ RESOLVED
 
 **Status:** Resolved (owner, 2026-09-25). Spec FR-072-40.  
 **Feature:** F-072  
 **Priority:** High
 
 **Context**  
-Found while documenting permissions. `SetAlbumProtectionPolicyRequest::authorize()` only checks `AlbumPolicy::CAN_EDIT`, yet the action sets the album's public permission row: `is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`, password. An edit-only collaborator can therefore publish the owner's album with full-photo access and download, then obtain the originals as a public (or logged-in) viewer. Same class as GHSA-pw32: edit escalated into original/download access.
+Found while documenting permissions. `SetAlbumProtectionPolicyRequest::authorize()` only checks `AlbumPolicy::CAN_EDIT`, yet the action sets the album's public permission row: `is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`, password. Changing it is a sharing decision, which elsewhere is reserved to the owner.
 
 **Option A (recommended) — protection policy requires ownership**
 - Use `AlbumPolicy::CAN_SHARE_WITH_USERS`-style ownership (owner or admin), like per-user sharing already is.

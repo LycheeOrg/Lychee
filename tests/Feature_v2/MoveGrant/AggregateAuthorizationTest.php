@@ -41,6 +41,8 @@ class AggregateAuthorizationTest extends BaseApiWithDataTest
 {
 	use MoveGrantFixture;
 
+	private Album $locked_album;
+
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -51,6 +53,10 @@ class AggregateAuthorizationTest extends BaseApiWithDataTest
 		$this->grant($this->album2, ['edit']);
 		$this->grant($this->album1, ['full', 'download']);
 		AccessPermission::query()->where('id', '=', $this->perm4->id)->update(['grants_full_photo_access' => true, 'grants_download' => true]);
+		// A locked (password-protected, not unlocked) public album granting full + download.
+		$this->locked_album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($this->locked_album)->create();
+		AccessPermission::factory()->public()->locked()->visible()->for_album($this->locked_album)->create(['grants_full_photo_access' => true, 'grants_download' => true]);
 	}
 
 	/**
@@ -84,6 +90,17 @@ class AggregateAuthorizationTest extends BaseApiWithDataTest
 	}
 
 	public function testPhotoAggregatesMatchPolicy(): void
+	{
+		$this->assertPhotoAggregatesMatchPolicy();
+	}
+
+	public function testPhotoAggregatesMatchPolicyOnceUnlocked(): void
+	{
+		resolve(AlbumPolicy::class)->unlock($this->locked_album);
+		$this->assertPhotoAggregatesMatchPolicy();
+	}
+
+	private function assertPhotoAggregatesMatchPolicy(): void
 	{
 		foreach ($this->users() as $user) {
 			$this->actingAs($user);

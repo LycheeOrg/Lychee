@@ -7,13 +7,11 @@ _Last updated:_ 2026-09-25
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and ADR-0011 have been updated.
 
-> **Embargo:** GHSA-pw32-v9r5-85hc and GHSA-jp9x-63pp-pv4v are unpublished. Do not push this branch publicly before the release that fixes them.
-
 ## Vision & Success Criteria
 
 Move, Copy and Merge get their own share grant, and no grant combination can be escalated into full-photo access, download, ownership or deletion. Success:
 
-- The three advisory reproductions (S-072-01, S-072-08, S-072-11) fail before the change and pass after.
+- S-072-01, S-072-08 and S-072-11 fail before the change and pass after.
 - Every S-072 scenario has a passing test (backend) or a recorded manual check (v8 UI).
 - Existing move/merge/copy/sharing tests stay green with fixture-only changes (NFR-072-05).
 - `make phpstan` 0 errors, `php-cs-fixer` clean, `npm run check` clean.
@@ -66,14 +64,14 @@ Once all tasks are `[x]`: map each FR to its test/class in a table appended here
    - Implement `AlbumPolicy::canMove()`, `PhotoPolicy::canMove()`.
    - _Commands:_ `php artisan test --filter=MovePolicyTest`.
 3. **I3 – `Album::move`** (FR-072-13, 14, 17, 18; S-072-08, 09, 10, 16)
-   - Failing tests first (advisory reproduction included).
+   - Failing tests first.
    - Dedicated authorization: `CAN_EDIT` on target, `CAN_MOVE` on each source, cross-owner guard helper (`sourceNeedsTransfer(Album $source, ?Album $target): bool`).
    - _Commands:_ `--filter=AlbumMoveGrantTest`, `--filter=AlbumMoveTest`.
 4. **I4 – `Album::merge`** (FR-072-15, 16, 17, 18; S-072-11..14)
    - Failing tests first; reuse I3's guard helper; add `CAN_DELETE`.
    - _Commands:_ `--filter=AlbumMergeGrantTest`, `--filter=AlbumMergeTest`, `--filter=MergeAlbumRequestTest`, `--filter=MultiGroupPermissionMergeTest`.
 5. **I5 – `Photo::copy` / `Photo::move`** (FR-072-10, 11, 12, 17, 18; S-072-01..07, 15, 22..24)
-   - Failing tests first (advisory reproduction with `secure_image_link_enabled`).
+   - Failing tests first (including `secure_image_link_enabled`).
    - Guard helper: `photoNeedsFullAccess(Photo $photo, ?Album $target, User $user): bool` (false for owner, root target, or same owner).
    - _Commands:_ `--filter=PhotoMoveGrantTest`, `--filter=PhotoCopyTest`, `--filter=PhotoMoveTest`, `--filter=MoveOrDuplicateTest`.
 6. **I6 – Sharing API** (FR-072-05; S-072-20)
@@ -81,7 +79,7 @@ Once all tasks are `[x]`: map each FR to its test/class in a table appended here
    - Update every `grants_delete` touchpoint (R1).
    - _Commands:_ `--filter=SharingTest`, `--filter=AlbumSharingTest`, `--filter=GrantsMoveSharingTest`.
 7. **I7 – Rights resources** (FR-072-20; S-072-21)
-   - Tests first on v2 `AlbumRightsResource` (`can_move`, `can_merge`) and v3 `/rights` (`grants_move[]`, no `can_move_children`).
+   - Tests first on v2 `AlbumRightsResource` (`can_move`, `can_merge`) and v3 `/rights` (`grants_move[]` added alongside `can_move_children`, which now comes from `grants_move` on the parent).
    - Update `GrantsAlbumRights`, `QueryRightsForAlbum`, `AlbumRootController::rights`, matching/search rights.
    - _Commands:_ `--filter=MoveGrantRightsTest`, plus existing v3 rights test classes.
 8. **I8 – Editability SQL helper + v2 target list** (FR-072-30, 31, 32; S-072-17, 19)
@@ -104,9 +102,9 @@ Once all tasks are `[x]`: map each FR to its test/class in a table appended here
 
 | Scenario ID | Increment / Task | Notes |
 |-------------|------------------|-------|
-| S-072-01, 02, 03, 04, 05, 06, 07, 15, 22, 23, 24 | I5 / T-072-08, T-072-09 | 01/02 are the GHSA-pw32 reproduction |
-| S-072-08, 09, 10 | I3 / T-072-04, T-072-05 | 08 is the GHSA-jp9x move reproduction |
-| S-072-11, 12, 13, 14 | I4 / T-072-06, T-072-07 | 11 is the GHSA-jp9x merge reproduction |
+| S-072-01, 02, 03, 04, 05, 06, 07, 15, 22, 23, 24 | I5 / T-072-08, T-072-09 | |
+| S-072-08, 09, 10 | I3 / T-072-04, T-072-05 | |
+| S-072-11, 12, 13, 14 | I4 / T-072-06, T-072-07 | |
 | S-072-16 | I3–I5 | admin case in each test class |
 | S-072-17 | I8 / T-072-14, I9 / T-072-16 | v2 and v3 |
 | S-072-18 | I5 / T-072-08, I11 / T-072-20 | action 403 (backend); picker listing AA (manual) |
@@ -137,10 +135,9 @@ Findings addressed before implementation:
 
 ## Follow-ups / Backlog
 
-- Advisory housekeeping on GitHub: affected range `<= 7.9.0`, GHSA-jp9x package name, add `Photo::move`/`Album::merge` to GHSA-pw32, set patched version.
 - Release notes: `can_move` now follows the move grant, not delete (R4); existing shares get `grants_move = grants_edit`.
 - v7 sharing UI does not show the grant (NG4); reconsider if v7 is kept longer than planned.
 
 ## Intent Log
 
-- 2026-09-25: triage of both advisories → `vuln.md` (repo root, untracked, embargoed) → spec drafted with Option 3 (guards only) → owner asked for a separate move grant and a filtered picker → spec reworked; Q-072-01..08 answered (02/03 superseded) → ADR-0011 → plan and tasks.
+- 2026-09-25: triage → spec drafted with Option 3 (guards only) → owner asked for a separate move grant and a filtered picker → spec reworked; Q-072-01..08 answered (02/03 superseded) → ADR-0011 → plan and tasks.

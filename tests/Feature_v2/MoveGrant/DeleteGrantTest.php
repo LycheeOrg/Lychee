@@ -19,9 +19,12 @@
 namespace Tests\Feature_v2\MoveGrant;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -84,6 +87,14 @@ class DeleteGrantTest extends BaseApiWithDataTest
 	public function testOwnerCanDeleteOwnRootAlbum(): void
 	{
 		$this->assertNoContent($this->deleteAlbum($this->attacker_album));
+	}
+
+	/** Without the upload privilege, an owner may not delete: the UI flag agrees with the batch check. */
+	public function testOwnerWithoutUploadCannotDeleteOwnAlbum(): void
+	{
+		self::assertFalse(Gate::forUser($this->userNoUpload)->check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $this->album3]));
+		$this->assertForbidden($this->actingAs($this->userNoUpload)->deleteJson('Album', ['album_ids' => [$this->album3->id]]));
+		self::assertTrue($this->albumExists($this->album3));
 	}
 
 	public function testBatchWithOneForbiddenAlbumDeletesNothing(): void

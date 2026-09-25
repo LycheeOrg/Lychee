@@ -75,7 +75,7 @@ class PhotoMoveGrantTest extends BaseApiWithDataTest
 		]);
 	}
 
-	/** GHSA-pw32-v9r5-85hc reproduction. */
+	/** Edit alone does not allow copying into one's own album. */
 	public function testEditOnlyCannotCopyVictimPhotoIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);

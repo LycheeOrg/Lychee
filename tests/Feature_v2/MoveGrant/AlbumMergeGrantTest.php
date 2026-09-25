@@ -52,7 +52,7 @@ class AlbumMergeGrantTest extends BaseApiWithDataTest
 		return DB::table(PA::PHOTO_ALBUM)->where(PA::ALBUM_ID, '=', $album->id)->pluck(PA::PHOTO_ID)->all();
 	}
 
-	/** GHSA-jp9x-63pp-pv4v merge reproduction. */
+	/** Edit alone does not allow merging. */
 	public function testEditOnlyCannotMergeVictimAlbumIntoOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);

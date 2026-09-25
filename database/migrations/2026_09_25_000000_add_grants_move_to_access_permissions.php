@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Move, Copy and Merge get their own grant, separate from `grants_edit`. Existing shares keep what edit allowed them
- * before: `grants_move` is backfilled from `grants_edit`.
+ * before: `grants_move` is backfilled from `grants_edit` on user and group rows. Public rows keep `false`: a
+ * public permission never grants move.
  */
 return new class() extends Migration {
 	public function up(): void
@@ -22,7 +23,9 @@ return new class() extends Migration {
 			$table->boolean('grants_move')->nullable(false)->default(false)->after('grants_delete');
 		});
 
-		DB::table('access_permissions')->update(['grants_move' => DB::raw('grants_edit')]);
+		DB::table('access_permissions')
+			->where(fn ($q) => $q->whereNotNull('user_id')->orWhereNotNull('user_group_id'))
+			->update(['grants_move' => DB::raw('grants_edit')]);
 	}
 
 	public function down(): void

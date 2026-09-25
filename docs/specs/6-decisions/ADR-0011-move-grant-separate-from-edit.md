@@ -7,7 +7,7 @@
 
 ## Context
 
-Owning an album gives full rights over every photo in it: `AlbumPolicy::canAccessFullPhoto()` and `canDownload()` short-circuit on album ownership, and `PhotoPolicy` ORs grants over all albums containing a photo. `Photo::copy`, `Photo::move`, `Album::move` and `Album::merge` only checked `CAN_EDIT`, so an edit-only collaborator could place someone else's photos or albums under their own ownership and obtain originals, downloads, subtree ownership, or delete the source (GHSA-pw32-v9r5-85hc, GHSA-jp9x-63pp-pv4v).
+Owning an album gives full rights over every photo in it: `AlbumPolicy::canAccessFullPhoto()` and `canDownload()` short-circuit on album ownership, and `PhotoPolicy` ORs grants over all albums containing a photo. `Photo::copy`, `Photo::move`, `Album::move` and `Album::merge` only checked `CAN_EDIT`, although their effects (containment, ownership, deletion) go beyond editing.
 
 Affected modules: persistence (`access_permissions`), policies, REST request authorization, sharing API, v8 sharing UI and destination picker.
 
@@ -18,7 +18,7 @@ Affected modules: persistence (`access_permissions`), policies, REST request aut
    - placing someone else's photo into an album whose owner differs from the photo's owner requires already holding full-photo access and download on it (moves within the photo owner's albums, and to their unsorted, need only the move grant);
    - moving or merging an album into another owner's album requires owning the source (`CAN_TRANSFER`).
 3. **No coupling** between the move grant and full-photo access/download; the guards provide the security.
-4. **Backfill:** existing permissions get `grants_move = grants_edit`.
+4. **Backfill:** existing user and group permissions get `grants_move = grants_edit`; public permissions keep `false`.
 5. **Destination picker:** filtered to albums the user can edit; not source-aware. Guard rejections surface as 403.
 
 6. **Delete follows the same content semantics** (Q-072-11): deleting an album needs `grants_delete` on its parent (root album: owner only); deleting a photo needs it on the album containing it.
@@ -49,7 +49,7 @@ General rule going forward: *an operation that changes ownership or containment 
 
 ## Security / Privacy Impact
 
-- Closes two high-severity CWE-863 advisories and two related, unreported vectors (`Photo::move`, merge photo relinking).
+- Authorization of move, copy and merge now matches their effect (CWE-863).
 - Trust boundary: an album owner's rights over foreign photos in their album can only be obtained through operations that already required equivalent rights on those photos.
 - Links created before the fix are not cleaned up (indistinguishable from collaborator uploads).
 
@@ -62,4 +62,3 @@ General rule going forward: *an operation that changes ownership or containment 
 
 - Related spec sections: `docs/specs/4-architecture/features/072-edit-grant-escalation/spec.md` (FR-072-01..34, NG6–NG9)
 - Related ADRs: ADR-0004 (multi-group permission merge)
-- Related advisories: GHSA-pw32-v9r5-85hc, GHSA-jp9x-63pp-pv4v (embargoed)

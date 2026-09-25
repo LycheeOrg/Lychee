@@ -21,19 +21,19 @@ _Last updated: 2026-09-25_
   _Verification:_ `php artisan test --filter=MovePolicyTest`, `make phpstan`
 
 ### I3 – `Album::move`
-- [x] T-072-04 – Failing tests: S-072-08 (advisory), S-072-09, S-072-10, admin (S-072-16) (F-072-13, F-072-14, F-072-17, F-072-18).  
+- [x] T-072-04 – Failing tests: S-072-08, S-072-09, S-072-10, admin (S-072-16) (F-072-13, F-072-14, F-072-17, F-072-18).  
   _Verification:_ `php artisan test --filter=AlbumMoveGrantTest`
 - [x] T-072-05 – `MoveAlbumsRequest` dedicated authorization + `sourceNeedsTransfer()` helper.  
   _Verification:_ `--filter=AlbumMoveGrantTest`, `--filter=AlbumMoveTest`, `make phpstan`
 
 ### I4 – `Album::merge`
-- [x] T-072-06 – Failing tests: S-072-11 (advisory), S-072-12, S-072-13, S-072-14, admin (F-072-15, F-072-16).  
+- [x] T-072-06 – Failing tests: S-072-11, S-072-12, S-072-13, S-072-14, admin (F-072-15, F-072-16).  
   _Verification:_ `php artisan test --filter=AlbumMergeGrantTest`
 - [x] T-072-07 – `MergeAlbumsRequest` dedicated authorization (move + delete + guard).  
   _Verification:_ `--filter=AlbumMergeGrantTest`, `--filter=AlbumMergeTest`, `--filter=MergeAlbumRequestTest`, `make phpstan`
 
 ### I5 – `Photo::copy` / `Photo::move`
-- [x] T-072-08 – Failing tests: S-072-01/02 (advisory, `secure_image_link_enabled`), S-072-03..07, S-072-15, S-072-18 (action side), S-072-22..24, admin (F-072-10, F-072-11, F-072-12).  
+- [x] T-072-08 – Failing tests: S-072-01/02 (`secure_image_link_enabled`), S-072-03..07, S-072-15, S-072-18 (action side), S-072-22..24, admin (F-072-10, F-072-11, F-072-12).  
   _Verification:_ `php artisan test --filter=PhotoMoveGrantTest`
 - [x] T-072-09 – `CopyPhotosRequest`/`MovePhotosRequest` dedicated authorization + `photoNeedsFullAccess()` helper.  
   _Verification:_ `--filter=PhotoMoveGrantTest`, `--filter=PhotoCopyTest`, `--filter=PhotoMoveTest`, `--filter=MoveOrDuplicateTest`, `make phpstan`
@@ -47,7 +47,7 @@ _Last updated: 2026-09-25_
 ### I7 – Rights resources
 - [x] T-072-12 – Failing tests: S-072-21 on v2 `AlbumRightsResource` and v3 `/rights` (F-072-20).  
   _Verification:_ `php artisan test --filter=MoveGrantRightsTest`
-- [x] T-072-13 – v2 `can_move`/`can_merge`; v3 `grants_move[]` replacing `can_move_children` (`GrantsAlbumRights`, `QueryRightsForAlbum`, `AlbumRootController`, matching/search rights).  
+- [x] T-072-13 – v2 `can_move`/`can_merge`; v3 `grants_move[]` added alongside `can_move_children` (now from `grants_move` on the parent) (`GrantsAlbumRights`, `QueryRightsForAlbum`, `AlbumRootController`, matching/search rights).  
   _Verification:_ `--filter=MoveGrantRightsTest` and existing v3 rights test classes, `make phpstan`
 
 ### I8 – Editability filter + v2 target list
@@ -89,7 +89,7 @@ _Last updated: 2026-09-25_
 - [x] T-072-22 – Quality gate: `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, `make phpstan`, every `--filter=` above sequentially; drift gate report in plan.md.
 
 ## Notes / TODOs
-- `vuln.md` at the repo root is untracked and embargoed; do not stage it.
+- `vuln.md` at the repo root is untracked; do not stage it.
 - No migration tests (the backfill is exercised only through the consuming code).
 
 ## Deviations from the plan
@@ -100,7 +100,10 @@ _Last updated: 2026-09-25_
 - **D-072-D — `can_move` on smart albums.** Restricting `can_move_content` to regular albums would have hidden photo Move/Copy in Unsorted/Recent; smart albums follow `may_upload`, as the backend does. `can_merge` stays regular-album only.
 - **D-072-E — FR-072-34 kept today's dialog behaviour** (close on confirm, global 403 toast) instead of keeping dialogs open.
 - **D-072-F — assertion changes outside fixtures (NFR-072-05 findings):** `MergeAlbumRequestTest` mocked Gate count 4 → 6 (merge checks edit + move + delete, `authorize()` runs twice in that test); `AlbumMoveTest::testMoveAlbumUnauthorizedForbidden` now removes `grants_move` from `perm1` first, because a move grant on the parent legitimately allows moving the child; `AlbumListV3Test` key-set gains `can_edits`; `AlbumChildrenRightsV3Test` expects `can_move_children=false` when only delete is granted on the parent.
-- **D-072-G — findings during documentation, then fixed:** Q-072-10 (edit-only collaborators could widen public access through `Album::updateProtectionPolicy`) → owner-only; Q-072-11 (`DELETE /Album` checked the grant on the album itself) → parent. `AlbumDeleteTest` adjusted: deleting a shared root album with delete on that album is now 403 (its sub-album is deleted instead), and the forbidden case removes `grants_delete` from `perm1` first; `SetAlbumProtectionPolicyRequestTest` mock expects the new ability.
+- **D-072-G — findings during documentation, then fixed:** Q-072-10 (`Album::updateProtectionPolicy` required only edit) → owner-only; Q-072-11 (`DELETE /Album` checked the grant on the album itself) → parent. `AlbumDeleteTest` adjusted: deleting a shared root album with delete on that album is now 403 (its sub-album is deleted instead), and the forbidden case removes `grants_delete` from `perm1` first; `SetAlbumProtectionPolicyRequestTest` mock expects the new ability.
 - **D-072-H — documentation:** `docs/specs/1-concepts/permissions.md` gained "What Each Grant Allows" with examples (owner request), and two inaccurate lines were corrected (grants are not inherited by child albums; `grants_edit` no longer covers moving).
 - **D-072-I — Q-072-12 aggregate authorization.** Rule unchanged: deleting a photo needs delete on every album containing it (as owner, or through `grants_delete`); one album without delete refuses the request. Only the counting changed: the old check required "owns all" or "granted on all", so a photo in one owned and one delete-granted album was refused although both albums allow delete; it is now accepted. Pinned by `DeleteGrantTest` (both mixed cases). The grant-query count test covers the album grants (the old per-album move lookup filtered on `grants_move`); the old photo path lazy-loaded permission rows without a grant filter, so the photo cost test pins the new behaviour rather than proving the old one grew. The full-access + download aggregate follows `PhotoPolicy` (user, group, public rows and album ownership), not `ResolvesPhotoGrants`, whose `computed_access_permissions` drops group rows when a user row exists and ignores album ownership.
 - **D-072-J — `grants_move` required on share create and edit (owner decision, 2026-09-26).** Was optional (absent → `false` on create, stored value kept on edit, the latter through a separate `?bool` beside `AccessPermissionResource`). Now required on `POST`/`PATCH /api/v2/Sharing`; in v7 move equals edit, so the v7 sharing forms (`ShareLine`, `CreateSharing`, `BulkSharingModal`, `AlbumCreateShareDialog`) send `grants_move: grants_edit`. The controller reads `permResource()->grants_move` like the other grants.
+- **D-072-K — backfill limited to user and group rows (review finding, 2026-09-26).** The unrestricted `UPDATE` also set `grants_move` on public rows with `grants_edit = true`. `AlbumPolicy::canMove()` ignores public rows, but the v3 rights paths (`GrantsAlbumRights::grantsResource()`, `AlbumRootController::queryRights()`) take `MAX(grants_move)` over the computed sub-query, which includes the public row when the user has no own or group row, so v8 would offer Move/Merge and the server would answer 403. Public rows now keep `false` (NG6). Databases that already ran the old migration keep the bad public rows.
+- **D-072-L — `AlbumPolicy::canDelete()` requires `may_upload` for owners (review finding, 2026-09-26).** It returned `true` for any owner while `canDeleteById()` (the enforced check) required `may_upload`, so the UI offered Delete and the server answered 403. Pinned by `DeleteGrantTest::testOwnerWithoutUploadCannotDeleteOwnAlbum`.
+- **D-072-M — aggregate full-access/download check honours album passwords (review finding, 2026-09-26).** `PhotoPolicy::countPhotosWithAlbumGrant()` now counts a public permission only when it has no password or its album is unlocked, like `AlbumPolicy::canAccess()`. `AggregateAuthorizationTest` gained a password-protected public album, checked both locked and unlocked.

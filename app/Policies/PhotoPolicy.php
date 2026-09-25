@@ -192,7 +192,8 @@ class PhotoPolicy extends BasePolicy
 	 * {@link PhotoPolicy::canDownload()} for a batch of photos (cross-owner
 	 * guard): every photo is owned by the user, or has a
 	 * containing album granting full-photo access and one granting download
-	 * (album owned by the user, or a user, group or public permission).
+	 * (album owned by the user, or a user, group or public permission; a public
+	 * permission with a password only once the album is unlocked).
 	 * Three queries, whatever the batch size.
 	 *
 	 * @param User     $user
@@ -223,7 +224,8 @@ class PhotoPolicy extends BasePolicy
 	/**
 	 * Number of the designated photos contained in at least one album that the
 	 * user owns (when $owned_album_counts) or on which a user or group (or public,
-	 * when $public_counts) permission carries $grant.
+	 * when $public_counts and the album has no password or is unlocked)
+	 * permission carries $grant.
 	 *
 	 * @param string[] $photo_ids
 	 */
@@ -231,6 +233,7 @@ class PhotoPolicy extends BasePolicy
 	{
 		/** @var int[] $group_ids */
 		$group_ids = $user->user_groups->pluck('id')->all();
+		$unlocked_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		return DB::table(PA::PHOTO_ALBUM)
 			->join('base_albums', 'base_albums.id', '=', PA::ALBUM_ID)
@@ -245,7 +248,15 @@ class PhotoPolicy extends BasePolicy
 					->where(fn ($q3) => $q3
 						->where('grant_perm.' . APC::USER_ID, '=', $user->id)
 						->orWhereIn('grant_perm.' . APC::USER_GROUP_ID, $group_ids)
-						->when($public_counts, fn ($q4) => $q4->orWhere(fn ($q5) => $q5->whereNull('grant_perm.' . APC::USER_ID)->whereNull('grant_perm.' . APC::USER_GROUP_ID)))
+						->when($public_counts, fn ($q4) => $q4->orWhere(fn ($q5) => $q5
+							->whereNull('grant_perm.' . APC::USER_ID)
+							->whereNull('grant_perm.' . APC::USER_GROUP_ID)
+							// Like AlbumPolicy::canAccess(): a password-protected public share counts only once unlocked.
+							->where(fn ($q6) => $q6
+								->whereNull('grant_perm.' . APC::PASSWORD)
+								->orWhereIn('grant_perm.' . APC::BASE_ALBUM_ID, $unlocked_ids)
+							)
+						))
 					)
 				)
 			)

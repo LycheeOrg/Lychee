@@ -11,20 +11,9 @@
 
 > Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](../../open-questions.md); resolved answers are encoded in the normative sections below.
 
-> **Embargo:** this spec describes two unpublished security advisories (GHSA-pw32-v9r5-85hc, GHSA-jp9x-63pp-pv4v). Do not push it to a public branch before the fix is released.
-
 ## Overview
 
-A user who was granted only **edit** on someone else's album can use four endpoints to gain rights the owner never gave them:
-
-| Endpoint | Effect today with an edit-only share | Advisory |
-|----------|---------------------------------------|----------|
-| `POST /api/v2/Photo::copy` | Links the owner's photo into the attacker's own album. The attacker now owns an album containing it, so they get the **original** and **download**, still have them after the share is revoked, and can re-share them publicly. | GHSA-pw32-v9r5-85hc |
-| `POST /api/v2/Photo::move` | Same as copy, and also removes the photo from the owner's album. | not reported (found during triage) |
-| `POST /api/v2/Album::move` | Moves the owner's album under the attacker's album; `fixOwnershipOfChildren()` hands the **whole subtree** (including unshared children) to the attacker, which again gives originals and downloads of every photo in it. | GHSA-jp9x-63pp-pv4v |
-| `POST /api/v2/Album::merge` | Deletes the owner's source album hierarchy without a delete grant, and relinks its photos into the target (same original/download leak as copy when the target is the attacker's). | GHSA-jp9x-63pp-pv4v (deletion); leak not reported |
-
-The shared root cause: owning an album gives full rights over **every** photo in it (`AlbumPolicy::canAccessFullPhoto()`/`canDownload()` short-circuit on album ownership, and `PhotoPolicy` ORs grants over all containing albums), while these endpoints only check `CAN_EDIT` (`AuthorizeCanEditPhotosAlbumTrait`, `AuthorizeCanEditAlbumAlbumsTrait`). Each operation's authorization is narrower than its effect.
+`Photo::copy`, `Photo::move`, `Album::move` and `Album::merge` were authorized with the edit grant only, although their effects go beyond editing: they change which albums contain a photo and, for albums, who owns a subtree or whether it still exists. Since album ownership confers full rights over every photo the album contains (`AlbumPolicy::canAccessFullPhoto()`/`canDownload()` short-circuit on it), the authorization of these operations must match their effect.
 
 This feature does three things:
 
@@ -40,7 +29,7 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 2. Move, Copy and Merge are governed by a grant separate from Edit.
 3. The destination picker only lists albums the user can target.
 4. Existing collaborators keep their current reorganising workflows within the owner's albums.
-5. Regression coverage for every advisory reproduction and the vectors found during triage.
+5. Regression coverage for every scenario below.
 
 ## Non-Goals
 
@@ -63,7 +52,7 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry | Source |
 |----|-------------|--------------|-----------------|--------------|-----------|--------|
 | FR-072-01 | `access_permissions` gains one boolean `grants_move` column, default `false`. It governs Move, Copy and Merge. | — | — | — | — | Q-072-04 (A), ADR-0011 |
-| FR-072-02 | Migration backfills existing rows with `grants_move = grants_edit`. | Existing edit collaborators keep reorganising within the owner's albums. | — | — | — | Q-072-07 (A) |
+| FR-072-02 | Migration backfills existing user and group rows with `grants_move = grants_edit`; public rows keep `false` (NG6). | Existing edit collaborators keep reorganising within the owner's albums. | — | — | — | Q-072-07 (A) |
 | FR-072-03 | The move grant covers an album's **content** (its photos and sub-albums), never the album itself. `AlbumPolicy::CAN_MOVE` on album P ("content of P may be moved out"): owner with `may_upload`, or a user/group permission on P with `grants_move = true`; smart/root albums follow `may_upload`. | — | — | — | — | ADR-0011, Q-072-09 (A) |
 | FR-072-03b | `AlbumPolicy::CAN_MOVE_ALBUM` on album X ("X itself may be moved"): owner of X with `may_upload`, or a user/group permission on X's **parent** with `grants_move = true` (mirrors `canDelete()`). A root album can only be moved by its owner. | — | — | — | — | Q-072-09 (A) |
 | FR-072-04 | `PhotoPolicy::CAN_MOVE` on a photo: photo owner with `may_upload`, or `AlbumPolicy::CAN_MOVE` on any album containing it (same reduction as `PhotoPolicy::canEdit()`). | — | — | — | — | ADR-0011 |
@@ -76,10 +65,10 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 |----|-------------|--------------|-----------------|--------------|-----------|--------|
 | FR-072-10 | `Photo::copy` requires `PhotoPolicy::CAN_MOVE` on every photo (replaces `CAN_EDIT`). | — | — | 403; no `photo_album` row written. | — | ADR-0011 |
 | FR-072-11 | `Photo::move` requires `AlbumPolicy::CAN_MOVE` on `from_album` and `PhotoPolicy::CAN_MOVE` on every photo (replaces `CAN_EDIT`). | — | — | 403; no link removed or added. | — | ADR-0011 |
-| FR-072-12 | **Cross-owner photo guard.** For `Photo::copy` and `Photo::move`, when the destination album's owner differs from the photo's owner, a non-owner of the photo must also hold `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **and** `PhotoPolicy::CAN_DOWNLOAD` on it. Moving to root (unsorted) never triggers the guard: the photo lands in its owner's unsorted. | Same-owner reorganising needs only the move grant; a user who can already download the photo copies it into another owner's album. | — | 403. | — | GHSA-pw32-v9r5-85hc, Q-072-01 (A) |
+| FR-072-12 | **Cross-owner photo guard.** For `Photo::copy` and `Photo::move`, when the destination album's owner differs from the photo's owner, a non-owner of the photo must also hold `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **and** `PhotoPolicy::CAN_DOWNLOAD` on it. Moving to root (unsorted) never triggers the guard: the photo lands in its owner's unsorted. | Same-owner reorganising needs only the move grant; a user who can already download the photo copies it into another owner's album. | — | 403. | — | Q-072-01 (A) |
 | FR-072-13 | `Album::move` requires `AlbumPolicy::CAN_MOVE_ALBUM` on every source album, i.e. the move grant on its parent (replaces `CAN_EDIT`). Moving to root is allowed with `CAN_MOVE` alone; ownership does not change. | — | — | 403; nothing reparented. | — | ADR-0011 |
-| FR-072-14 | **Cross-owner album guard.** `Album::move` with a non-null target: every source whose owner differs from the target's owner requires `AlbumPolicy::CAN_TRANSFER` (owner only). Subtree ownership is uniform (`Transfer` re-roots, `Move`/`Merge` call `fixOwnershipOfChildren()`), so checking the source covers its descendants. | Owner may still give their own album away by moving it into someone else's album. | — | 403; no `owner_id` changed. | — | GHSA-jp9x-63pp-pv4v |
-| FR-072-15 | `Album::merge` requires `AlbumPolicy::CAN_MOVE` (its content leaves it: grant on the source) **and** `AlbumPolicy::CAN_DELETE` (it is deleted: grant on its parent) on every source album. | — | — | 403; nothing relinked or deleted. | — | GHSA-jp9x-63pp-pv4v |
+| FR-072-14 | **Cross-owner album guard.** `Album::move` with a non-null target: every source whose owner differs from the target's owner requires `AlbumPolicy::CAN_TRANSFER` (owner only). Subtree ownership is uniform (`Transfer` re-roots, `Move`/`Merge` call `fixOwnershipOfChildren()`), so checking the source covers its descendants. | Owner may still give their own album away by moving it into someone else's album. | — | 403; no `owner_id` changed. | — | — |
+| FR-072-15 | `Album::merge` requires `AlbumPolicy::CAN_MOVE` (its content leaves it: grant on the source) **and** `AlbumPolicy::CAN_DELETE` (it is deleted: grant on its parent) on every source album. | — | — | 403; nothing relinked or deleted. | — | — |
 | FR-072-16 | `Album::merge` applies FR-072-14's cross-owner guard to every source. This also closes the photo leak through merge. | Owner may merge their own album into someone else's album. | — | 403. | — | Triage |
 | FR-072-17 | The **target** of all four operations keeps requiring `AlbumPolicy::CAN_EDIT` (root target: `may_upload`, unchanged). | — | — | 403. | — | Q-072-05 (A) |
 | FR-072-18 | All checks run in each request's `authorize()`, before any mutation. A batch is all-or-nothing. Authorization is **aggregate** (Q-072-12): `AlbumPolicy::canMoveAlbumsById`/`canMoveContentById`/`canDeleteById`/`canDeleteContentById` and `PhotoPolicy::canMoveById`/`canAccessFullAndDownloadById` issue a fixed number of queries whatever the batch size; cross-owner guards read `owner_id` from the already-hydrated models. Dedicated traits: `AuthorizeCanMoveAlbumsTrait`, `AuthorizeCanMergeAlbumsTrait`, `AuthorizeCanMovePhotosTrait`, `GuardsCrossOwnerAlbumsTrait`; the legacy `AuthorizeCanEditPhotosAlbumTrait`/`AuthorizeCanEditAlbumAlbumsTrait` are deleted. | — | — | 403, database unchanged. | — | Q-072-12 (A) |
@@ -124,21 +113,21 @@ Affected modules: persistence (`access_permissions` column + backfill), policies
 
 ## Branch & Scenario Matrix
 
-Fixture: **V** (victim) owns album **VA** (with unshared child **VC**, photo **P**) and album **VB**. **A** (attacker, `may_upload`) owns album **AA**. V shares VA and VB with A. "Edit-only" = `grants_edit=true`, all other grants `false`.
+Fixture: **V** (owner) owns album **VA** (with unshared child **VC**, photo **P**) and album **VB**. **A** (collaborator, `may_upload`) owns album **AA**. V shares VA and VB with A. "Edit-only" = `grants_edit=true`, all other grants `false`.
 
 | Scenario ID | Description / Expected outcome |
 |-------------|--------------------------------|
-| S-072-01 | Edit-only on VA: A copies P into AA → 403. (GHSA-pw32 reproduction) |
+| S-072-01 | Edit-only on VA: A copies P into AA → 403. |
 | S-072-02 | Same with `secure_image_link_enabled=true` → 403. |
 | S-072-03 | Edit-only on VA: A moves P from VA into AA → 403. |
 | S-072-04 | Edit-only on VA and VB: A moves P from VA to VB → 403 (no move grant). |
 | S-072-05 | Move on VA, edit on VB: A moves P from VA to VB → 204 (same owner). |
 | S-072-06 | Move on VA: A copies P into AA → 403 (cross-owner, no full/download). |
 | S-072-07 | Move + full + download on VA: A copies P into AA → 204. |
-| S-072-08 | Edit-only on VA: A moves VA under AA → 403; VA/VC keep `owner_id = V`; VC details still 403 for A. (GHSA-jp9x move reproduction) |
+| S-072-08 | Edit-only on VA: A moves VA under AA → 403; VA/VC keep `owner_id = V`; VC details still 403 for A. |
 | S-072-09 | Move on VA: A moves VC under AA → 403 (cross-owner needs `CAN_TRANSFER`). |
 | S-072-10 | Move on VA: A moves VC to root → 204, owner unchanged. Move on VC itself: 403 (Q-072-09). Move on VA: moving VA itself → 403 (root album, owner only). |
-| S-072-11 | Edit-only on VA: A merges VA into AA → 403; VA/VC still exist. (GHSA-jp9x merge reproduction) |
+| S-072-11 | Edit-only on VA: A merges VA into AA → 403; VA/VC still exist. |
 | S-072-12 | Move + delete on VA: A merges VA into AA → 403 (cross-owner); AA gains no link to P. |
 | S-072-13 | Move + delete on VA, edit on VB: A merges VA into VB → 204 (same owner). |
 | S-072-14 | A merges own album AB into VB (edit on VB) → 204; AB's content now V's (gift). |
@@ -240,7 +229,6 @@ None.
 - roadmap.md entry; knowledge-map note on "album ownership confers photo rights" and the endpoints guarding it.
 - [ADR-0011](../../../6-decisions/ADR-0011-move-grant-separate-from-edit.md): move grant separate from edit, and the cross-owner guard rule.
 - `docs/specs/3-reference/api-design.md`: `grants_move` on sharing, `can_edits` on `/api/v3/Albums`, `can_merge` on rights.
-- Advisory housekeeping (outside the repo): affected range `<= 7.9.0`, GHSA-jp9x package name, add `Photo::move`/`Album::merge` to GHSA-pw32.
 
 ## Spec DSL
 

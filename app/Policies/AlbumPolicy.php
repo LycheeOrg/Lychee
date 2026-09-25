@@ -392,7 +392,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($this->isOwner($user, $abstract_album)) {
-			return true;
+			return $user->may_upload;
 		}
 
 		if (

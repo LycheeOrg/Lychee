@@ -34,7 +34,7 @@ class AlbumMoveGrantTest extends BaseApiWithDataTest
 		$this->createMoveGrantFixture();
 	}
 
-	/** GHSA-jp9x-63pp-pv4v move reproduction. */
+	/** Edit alone does not allow moving an album under one's own. */
 	public function testEditOnlyCannotMoveVictimAlbumUnderOwnAlbum(): void
 	{
 		$this->grant($this->album1, ['edit']);
