@@ -42,7 +42,7 @@ return [
         'shift_mode_use_classic' => 'Zahleneingabe verwenden',
         'shift_x' => 'Horizontale Verschiebung (:value)',
         'shift_x_direction_options' => [
-            'left' => 'Left',
+            'left' => 'Links',
             'right' => 'Right',
         ],
         'shift_y' => 'Vertical Shift (:value)',
