@@ -12,6 +12,8 @@ use App\DTO\UrlValidatedDTO;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
+
+use function Safe\inet_ntop;
 use function Safe\inet_pton;
 use function Safe\parse_url;
 
@@ -244,8 +246,9 @@ class UrlValidation
 			return false;
 		}
 
-		$embedded_v4 = inet_ntop($embedded);
-		if ($embedded_v4 === false) {
+		try {
+			$embedded_v4 = inet_ntop($embedded);
+		} catch (NetworkException) {
 			return true; // undecodable embedded address — fail closed
 		}
 
