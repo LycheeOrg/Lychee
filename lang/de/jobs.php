@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -12,7 +11,7 @@ return [
     'success' => 'Erfolgreich',
     'failure' => 'Fehlgeschlagen',
     'started' => 'Gestartet',
-    'col_date' => 'Date',
+    'col_date' => 'Datum',
     'col_status' => 'Status',
     'col_username' => 'User',
     'col_job' => 'Job',
