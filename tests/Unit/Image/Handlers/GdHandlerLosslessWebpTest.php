@@ -28,7 +28,7 @@ use Tests\AbstractTestCase;
 use Tests\Constants\TestConstants;
 
 /**
- * Lossless WebP on GD builds whose libgd lacks `gdWebpLossless` (Q-071-07).
+ * Lossless WebP on GD builds whose libgd lacks `gdWebpLossless` (Q-073-07).
  */
 class GdHandlerLosslessWebpTest extends AbstractTestCase
 {

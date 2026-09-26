@@ -49,7 +49,7 @@ Each variant type has configurable dimensions and quality settings:
 ],
 ```
 
-### Output Format and Quality (Feature 071)
+### Output Format and Quality (Feature 073)
 
 Two settings in **Settings → Image Processing** control how generated variants (`thumb`, `thumb2x`, `small`, `small2x`, `medium`, `medium2x`) are encoded:
 

@@ -22,8 +22,8 @@ use App\Models\Configs;
 use Tests\AbstractTestCase;
 
 /**
- * Validates the configs introduced/re-typed by Feature 071 as they are
- * stored by the migrations (S-071-07, S-071-08).
+ * Validates the configs introduced/re-typed by Feature 073 as they are
+ * stored by the migrations (S-073-07, S-073-08).
  */
 class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 {

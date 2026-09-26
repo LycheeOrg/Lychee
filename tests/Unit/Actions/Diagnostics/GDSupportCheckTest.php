@@ -26,7 +26,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 
 /**
- * Lossless WebP warning of the GD diagnostic (Q-071-07).
+ * Lossless WebP warning of the GD diagnostic (Q-073-07).
  */
 class GDSupportCheckTest extends AbstractTestCase
 {

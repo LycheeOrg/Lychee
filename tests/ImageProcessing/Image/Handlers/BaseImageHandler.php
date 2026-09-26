@@ -296,7 +296,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-01, S-071-02: default format keeps the pre-feature extensions,
+	 * S-073-01, S-073-02: default format keeps the pre-feature extensions,
 	 * and each file's content matches its extension.
 	 */
 	public function testSizeVariantFormatOriginalKeepsExtensions(): void
@@ -312,7 +312,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-05: jpeg format forces .jpeg on small/medium of a PNG original.
+	 * S-073-05: jpeg format forces .jpeg on small/medium of a PNG original.
 	 */
 	public function testSizeVariantFormatJpegFromPng(): void
 	{
@@ -326,7 +326,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-03: webp format with lossy quality writes lossy WebP for every generated variant.
+	 * S-073-03: webp format with lossy quality writes lossy WebP for every generated variant.
 	 */
 	public function testSizeVariantFormatWebpLossy(): void
 	{
@@ -363,7 +363,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-04: webp format with quality 0 writes lossless WebP.
+	 * S-073-04: webp format with quality 0 writes lossless WebP.
 	 */
 	public function testSizeVariantFormatWebpLossless(): void
 	{
@@ -376,7 +376,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-06: quality 0 on a format without a lossless mode still writes a valid JPEG,
+	 * S-073-06: quality 0 on a format without a lossless mode still writes a valid JPEG,
 	 * including the auto-rotated original which goes through the same save path.
 	 */
 	public function testSizeVariantFormatJpegLosslessClamps(): void
