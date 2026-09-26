@@ -150,10 +150,8 @@ function printPlural(data: LiveMetrics) {
 }
 
 function titlize(title: string) {
-	// Strip HTML tags from the title to prevent XSS attacks and ensure proper display
-	const tmp = document.createElement("div");
-	tmp.innerHTML = title;
-	title = tmp.textContent || tmp.innerText || "";
+	// Never parse the title as HTML (even a detached element fetches <img src> and fires onerror).
+	// Escaping is done by assigning textContent below.
 	// Truncate the title if it's too long
 	const t = title.length > 20 ? title.substring(0, 20) + "..." : title;
 

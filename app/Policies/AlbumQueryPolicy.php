@@ -510,6 +510,7 @@ class AlbumQueryPolicy
 	 * - grants_upload => MAX as the shared setting takes priority
 	 * - grants_edit => MAX as the shared setting takes priority
 	 * - grants_delete => MAX as the shared setting takes priority
+	 * - grants_move => MAX as the shared setting takes priority
 	 *
 	 * @param bool      $full whether to select full columns
 	 * @param User|null $user the current user, or null if not authenticated
@@ -526,6 +527,7 @@ class AlbumQueryPolicy
 
 		if ($full) {
 			$select[] = APC::GRANTS_DELETE;
+			$select[] = APC::GRANTS_MOVE;
 			$select[] = APC::GRANTS_EDIT;
 			$select[] = APC::GRANTS_DOWNLOAD;
 			$select[] = APC::GRANTS_FULL_PHOTO_ACCESS;
@@ -574,6 +576,67 @@ class AlbumQueryPolicy
 							)
 					)
 			)->when(!$full, fn (BaseBuilder $q) => $q->groupBy(APC::BASE_ALBUM_ID, APC::IS_LINK_REQUIRED, APC::PASSWORD));
+	}
+
+	/**
+	 * Restricts an album query to albums the user may edit.
+	 *
+	 * SQL equivalent of {@link AlbumPolicy::canEdit()} for regular albums:
+	 *  - the user is an admin, or
+	 *  - the user owns the album and has the upload privilege, or
+	 *  - a user, group or public permission on the album grants edit.
+	 *
+	 * Only sub-queries on `albums.id` are used, so the condition does not
+	 * depend on which joins the calling query already carries.
+	 *
+	 * @param AlbumBuilder|BaseBuilder $query
+	 * @param User|null                $user
+	 */
+	public function appendEditableCondition(AlbumBuilder|BaseBuilder $query, ?User $user): void
+	{
+		if ($user?->may_administrate === true) {
+			return;
+		}
+
+		if ($user === null) {
+			$query->whereRaw('1 = 0');
+
+			return;
+		}
+
+		$query->where(fn ($q) => $q
+			->when(
+				$user->may_upload,
+				fn ($q1) => $q1->orWhereIn('albums.id', fn ($q2) => $q2->select('id')->from('base_albums')->where('owner_id', '=', $user->id))
+			)
+			->orWhereExists(fn ($q3) => $this->editGrantQuery($q3, $user, 'albums.id'))
+		);
+	}
+
+	/**
+	 * Fills $query with the `access_permissions` rows granting edit on the
+	 * album in column $album_id_column to $user: their own rows, their
+	 * groups' rows, and the public row.
+	 *
+	 * @param BaseBuilder $query
+	 * @param User        $user
+	 * @param string      $album_id_column
+	 */
+	public function editGrantQuery(BaseBuilder $query, User $user, string $album_id_column): BaseBuilder
+	{
+		/** @var int[] $user_groups */
+		$user_groups = $user->user_groups->map(fn ($g) => $g->id)->all();
+
+		return $query
+			->from(APC::ACCESS_PERMISSIONS, 'edit_perm')
+			->selectRaw('1')
+			->whereColumn('edit_perm.' . APC::BASE_ALBUM_ID, '=', $album_id_column)
+			->where('edit_perm.' . APC::GRANTS_EDIT, '=', true)
+			->where(fn ($q) => $q
+				->where('edit_perm.' . APC::USER_ID, '=', $user->id)
+				->orWhereIn('edit_perm.' . APC::USER_GROUP_ID, $user_groups)
+				->orWhere(fn ($q2) => $q2->whereNull('edit_perm.' . APC::USER_ID)->whereNull('edit_perm.' . APC::USER_GROUP_ID))
+			);
 	}
 
 	/**
