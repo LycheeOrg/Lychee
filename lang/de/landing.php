@@ -18,9 +18,9 @@ return [
         'scroll_down' => 'Nach unten scrollen',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Entdecken',
+        'explore_caption' => 'Galerie ansehen',
+        'contact_caption' => 'Kontaktieren Sie uns',
     ],
     'studio' => [
         'welcome_back' => 'Willkommen zurück',
