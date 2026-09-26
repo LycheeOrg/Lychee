@@ -13,8 +13,8 @@ return [
     'view_public_gallery' => 'Öffentliche Galerie anzeigen',
     'contact' => 'Kontakt',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
+        'about' => 'Über',
+        'featured' => 'Aktuelle Arbeiten',
         'scroll_down' => 'Scroll down',
     ],
     'meridian' => [
