@@ -66,6 +66,8 @@ export function adaptCategoryTile(
 		rights: rights,
 		timeline: null,
 		cover_id: data.cover_ids[i],
+		min_taken_at: null,
+		max_taken_at: null,
 	};
 }
 

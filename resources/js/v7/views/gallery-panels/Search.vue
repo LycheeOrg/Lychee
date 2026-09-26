@@ -294,6 +294,10 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		photo_layout: "justified",
 		is_album_timeline_enabled: false,
 		is_photo_timeline_enabled: false,
+		is_date_scrubber_enabled: false,
+		photo_date_scrubber_field: null,
+		album_date_scrubber_field: null,
+		date_scrubber_label_format: "j M Y",
 	};
 });
 

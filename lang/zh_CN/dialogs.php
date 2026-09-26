@@ -48,6 +48,7 @@ return [
         'album' => '相册快捷键',
         'slideshow' => '开始/停止幻灯片',
         'toggle' => '切换面板',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => '照片快捷键',
         'previous' => '上一张',
         'next' => '下一张',

@@ -48,6 +48,7 @@ return [
         'album' => 'Zkratky pro Album',
         'slideshow' => 'Start/Stop Prohlížení',
         'toggle' => 'Přepnout panel',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Zkratky pro foto',
         'previous' => 'Předchozí foto',
         'next' => 'Další foto',

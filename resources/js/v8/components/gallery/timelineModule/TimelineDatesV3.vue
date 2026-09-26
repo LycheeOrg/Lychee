@@ -31,62 +31,96 @@
 		     covers the rail's resting-state ticks/labels underneath (the background
 		     below is opaque over that entire region) instead of leaving them visible
 		     alongside a disconnected floating magnified copy. -->
-		<div
-			v-if="hovering && lens.items.length > 0"
-			class="absolute ltr:right-0 rtl:left-0 w-50 pointer-events-none z-20"
-			:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
+		<Transition
+			enter-active-class="transition duration-200 ease-out motion-reduce:transition-none"
+			enter-from-class="opacity-0 scale-x-50"
+			leave-active-class="transition duration-150 ease-in motion-reduce:transition-none"
+			leave-to-class="opacity-0 scale-x-50"
 		>
 			<div
-				class="absolute inset-0 overflow-hidden border-default bg-default/85 backdrop-blur-sm"
-				:class="{
-					'border-s mask-[linear-gradient(90deg,transparent,#000_26%)]': isLTR(),
-					'border-e mask-[linear-gradient(270deg,transparent,#000_26%)]': isRTL(),
-				}"
-			/>
-			<div :dir class="absolute inset-0 overflow-hidden rtl:text-left ltr:text-right">
-				<span
-					v-for="item in lens.items"
-					:key="item.bucketId"
-					class="absolute -translate-y-1/2 whitespace-nowrap font-mono z-30"
-					:class="{
-						'text-highlighted': item.strong,
-						'text-muted': !item.strong,
-						'right-3': isLTR(),
-						'left-3': isRTL(),
-					}"
-					:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
-				>
-					{{ item.label }}
-				</span>
-			</div>
-			<!-- Focal line inside the glass — the ruler edge across the magnified dates. -->
-			<div
-				class="absolute h-0 pointer-events-none"
-				:style="{ top: `${lens.focal}px` }"
-				:class="{
-					'left-[26%] right-0': isLTR(),
-					'left-0 right-[26%]': isRTL(),
-				}"
+				v-if="isLensVisible"
+				class="absolute w-50 pointer-events-none z-20"
+				:class="isLTR() ? 'right-0 origin-right' : 'left-0 origin-left'"
+				:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 			>
-				<div class="absolute inset-0 ltr:right-2 rtl:left-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]" />
+				<div
+					class="absolute inset-0 overflow-hidden border-default bg-default/85 backdrop-blur-sm"
+					:class="{
+						'border-s mask-[linear-gradient(90deg,transparent,#000_26%)]': isLTR(),
+						'border-e mask-[linear-gradient(270deg,transparent,#000_26%)]': isRTL(),
+					}"
+				/>
+				<div :dir class="absolute inset-0 overflow-hidden rtl:text-left ltr:text-right">
+					<span
+						v-for="item in lens.items"
+						:key="item.bucketId"
+						class="absolute -translate-y-1/2 whitespace-nowrap font-mono z-30"
+						:class="{
+							'text-highlighted': item.strong,
+							'text-muted': !item.strong,
+							'right-3': isLTR(),
+							'left-3': isRTL(),
+						}"
+						:style="{ top: `${item.y}px`, fontSize: `${item.fs}px`, opacity: item.opacity, fontWeight: item.weight }"
+					>
+						{{ item.label }}
+					</span>
+				</div>
+				<!-- Focal line inside the glass — the ruler edge across the magnified dates. -->
+				<div
+					class="absolute h-0 pointer-events-none"
+					:style="{ top: `${lens.focal}px` }"
+					:class="{
+						'left-[26%] right-0': isLTR(),
+						'left-0 right-[26%]': isRTL(),
+					}"
+				>
+					<div class="absolute inset-0 ltr:right-2 rtl:left-2 -top-px h-0.5 rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)]" />
+				</div>
 			</div>
-		</div>
+		</Transition>
 
-		<!-- Readout pill: exact date + count under the cursor. -->
-		<div
-			v-if="hovering && hoverBucket !== null"
-			class="absolute -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20"
-			:class="{
-				'right-53': isLTR(),
-				'left-53': isRTL(),
-			}"
-			:style="{ top: `${cursorY}px` }"
+		<!-- No date close enough to magnify: keep a glowing focal line on the rail itself so the
+		     hovered position stays visible, and draw it in from the rail's inner edge. -->
+		<Transition
+			enter-active-class="transition duration-200 ease-out motion-reduce:transition-none"
+			enter-from-class="opacity-0 scale-x-0"
+			leave-active-class="transition duration-150 ease-in motion-reduce:transition-none"
+			leave-to-class="opacity-0 scale-x-0"
 		>
-			<span :dir>{{ hoverBucket.label }}</span>
-			<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{
-				trans_choice("gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
-			}}</em>
-		</div>
+			<div
+				v-if="hovering && !isLensVisible"
+				class="absolute inset-x-2 -translate-y-px h-px rounded-full bg-primary shadow-[0_0_10px_var(--ui-primary)] pointer-events-none z-20"
+				:class="isLTR() ? 'origin-right' : 'origin-left'"
+				:style="{ top: `${cursorY}px` }"
+			/>
+		</Transition>
+
+		<!-- Readout pill: exact date + count under the cursor. Sits beside the lens while it is open,
+		     otherwise right next to the rail. -->
+		<Transition
+			enter-active-class="transition-opacity duration-150 ease-out motion-reduce:transition-none"
+			enter-from-class="opacity-0"
+			leave-active-class="transition-opacity duration-150 ease-in motion-reduce:transition-none"
+			leave-to-class="opacity-0"
+		>
+			<div
+				v-if="hovering && hoverBucket !== null"
+				class="absolute -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20 transition-[left,right] duration-200 ease-out motion-reduce:transition-none"
+				:class="{
+					'right-53': isLTR() && isLensVisible,
+					'right-18': isLTR() && !isLensVisible,
+					'left-53': isRTL() && isLensVisible,
+					'left-18': isRTL() && !isLensVisible,
+				}"
+				:style="{ top: `${cursorY}px` }"
+			>
+				<span :dir>{{ hoverBucket.label }}</span>
+				<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{
+					trans_choice(props.countLabelKey ?? "gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
+				}}</em>
+			</div>
+		</Transition>
 	</div>
 </template>
 <script setup lang="ts">
@@ -136,6 +170,10 @@ const props = defineProps<{
 	lensFalloff: number;
 	/** How much dates are enlarged at the lens's focal line — admin-configurable `timeline_lens_magnification` (already divided by 10 by the caller). */
 	lensMagnification: number;
+	/** Feature 071: pluralized lang key for the readout pill's count — album views counting sub-albums pass their own. */
+	countLabelKey?: string;
+	/** Feature 071 (FR-071-12): content-space tops of the album grid's bucket section headers. When given, the rail draws one dot per bucket separator instead of one per month. */
+	separatorTops?: number[];
 }>();
 
 const emits = defineEmits<{
@@ -183,9 +221,13 @@ function bucketAt(contentPx: number): { bucketId: string; top: number; height: n
 	return list[lo];
 }
 
-// --- Resting-state ticks (year labels + month dots) ---
+// --- Resting-state ticks (year labels + month dots, or one dot per album bucket separator) ---
 
 type Tick = { bucketId: string; kind: "year" | "month"; year: string; topPx: number };
+
+function clampTickPx(contentTop: number): number {
+	return Math.min(railHeight.value - 10, Math.max(10, topPxFor(contentTop)));
+}
 
 const ticks = computed<Tick[]>(() => {
 	const seenYears = new Set<string>();
@@ -202,13 +244,12 @@ const ticks = computed<Tick[]>(() => {
 		const segments = bucketId.split("-");
 		const year = segments[0];
 		const month = segments.length > 1 ? segments[1] : null;
-		const raw = topPxFor(layoutEntry.top);
-		const topPx = Math.min(railHeight.value - 10, Math.max(10, raw));
+		const topPx = clampTickPx(layoutEntry.top);
 
 		if (!seenYears.has(year)) {
 			seenYears.add(year);
 			out.push({ bucketId, kind: "year", year, topPx });
-		} else if (month !== null) {
+		} else if (month !== null && props.separatorTops === undefined) {
 			const key = `${year}-${month}`;
 			if (!seenMonths.has(key)) {
 				seenMonths.add(key);
@@ -216,6 +257,8 @@ const ticks = computed<Tick[]>(() => {
 			}
 		}
 	}
+	// Album rail (FR-071-12): one dot per grid bucket separator, drawn like a month dot.
+	props.separatorTops?.forEach((top, i) => out.push({ bucketId: `separator-${i}`, kind: "month", year: "", topPx: clampTickPx(top) }));
 
 	// Collision avoidance: a bucket's raw pixel position can land a month tick
 	// right on top of a year label (e.g. a year with very few photos, or many
@@ -398,6 +441,8 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 		focal,
 	};
 });
+
+const isLensVisible = computed(() => hovering.value && lens.value.items.length > 0);
 
 // --- Pointer interaction: hover, drag-scrub, click/release-to-jump ---
 

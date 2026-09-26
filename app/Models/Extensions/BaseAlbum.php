@@ -46,6 +46,7 @@ use Illuminate\Support\Carbon;
  * @property string|null                      $published_at_orig_tz
  * @property string|null                      $description
  * @property bool                             $is_nsfw
+ * @property bool|null                        $is_date_scrubber_enabled
  * @property bool                             $is_pinned
  * @property string|null                      $copyright
  * @property PhotoLayoutType|null             $photo_layout

@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Покажи декорации на корицата на албума (брой подалбуми и/или снимки)',
         'album_decoration_direction' => 'Подравни декорациите на албума хоризонтално или вертикално',
         'photo_overlay' => 'Информация по подразбиране за изображението',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Заоблете ъглите на миниатюрите на снимки и албуми',
         'album_border_enabled' => 'Показване на рамка около миниатюрите на снимки и албуми',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

@@ -57,6 +57,18 @@
 					<UButton icon="lucide:heart" color="neutral" variant="ghost" />
 				</RouterLink>
 				<UButton
+					v-if="isDateScrubberAvailable"
+					icon="lucide:calendar-range"
+					color="neutral"
+					variant="ghost"
+					class="hidden sm:inline-flex"
+					:class="{ 'text-primary': !isDateScrubberHidden }"
+					:title="$t('gallery.album.date_scrubber.toggle')"
+					:aria-label="$t('gallery.album.date_scrubber.toggle')"
+					:aria-pressed="!isDateScrubberHidden"
+					@click="toggleDateScrubberHidden"
+				/>
+				<UButton
 					v-if="albumStore.config?.is_search_accessible"
 					icon="lucide:search"
 					color="neutral"
@@ -94,6 +106,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "@/composables/album/albumActions";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
 import { trans } from "laravel-vue-i18n";
 import type { DropdownMenuItem } from "@nuxt/ui";
 
@@ -102,6 +115,8 @@ const lycheeStore = useLycheeStateStore();
 const favourites = useFavouriteStore();
 const albumStore = useAlbumStore();
 const orderManagementStore = useOrderManagementStore();
+// Feature 071 (FR-071-07): viewer show/hide for the album date scrubber rail.
+const { isAvailable: isDateScrubberAvailable, isHidden: isDateScrubberHidden, toggleHidden: toggleDateScrubberHidden } = useAlbumDateScrubberState();
 
 const { dropbox_api_key, is_favourite_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const { canInteractPhoto } = useAlbumActions();

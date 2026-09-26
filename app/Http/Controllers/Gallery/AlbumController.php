@@ -140,6 +140,9 @@ class AlbumController extends Controller
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 
 		if ($request->tagsProvided()) {
 			$tag_models = Tag::from($request->tags());
@@ -210,6 +213,9 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 		$album->is_pinned = $request->is_pinned();
 		$album->is_and = $request->is_and();
 		$album->save();
@@ -244,6 +250,9 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 		$album->is_pinned = $request->is_pinned();
 		$album->is_and = $request->is_and();
 		$album->save();

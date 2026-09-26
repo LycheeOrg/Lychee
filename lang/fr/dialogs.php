@@ -49,6 +49,7 @@ return [
         'album' => 'Raccourcis album',
         'slideshow' => 'Démarrer/Arrêter le diaporama',
         'toggle' => 'Afficher/masquer le panneau',
+        'toggle_date_scrubber' => 'Afficher/masquer le sélecteur de dates',
         'photo' => 'Raccourcis photo',
         'previous' => 'Photo précédente',
         'next' => 'Photo suivante',

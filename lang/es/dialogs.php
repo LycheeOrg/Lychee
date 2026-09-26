@@ -48,6 +48,7 @@ return [
         'album' => 'Atajos de álbum',
         'slideshow' => 'Iniciar/Detener presentación de diapositivas',
         'toggle' => 'Panel de alternancia',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Atajos de fotos',
         'previous' => 'Foto anterior',
         'next' => 'Siguiente foto',

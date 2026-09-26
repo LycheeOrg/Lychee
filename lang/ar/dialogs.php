@@ -49,6 +49,7 @@ return [
         'album' => 'اختصارات الألبوم',
         'slideshow' => 'بدء/إيقاف عرض الشرائح',
         'toggle' => 'تبديل اللوحة',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'اختصارات الصورة',
         'previous' => 'الصورة السابقة',
         'next' => 'الصورة التالية',

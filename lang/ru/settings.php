@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Показывать украшения на обложке альбома (под-альбом и/или количество фото)',
         'album_decoration_direction' => 'Выравнивание украшений альбома по горизонтали или вертикали',
         'photo_overlay' => 'Информация по умолчанию для наложения на изображение',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Скруглять углы миниатюр фотографий и альбомов',
         'album_border_enabled' => 'Показывать рамку вокруг миниатюр фотографий и альбомов',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
