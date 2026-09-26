@@ -43,7 +43,7 @@ return [
         'shift_x' => 'Horizontale Verschiebung (:value)',
         'shift_x_direction_options' => [
             'left' => 'Links',
-            'right' => 'Right',
+            'right' => 'Richtig',
         ],
         'shift_y' => 'Vertical Shift (:value)',
         'shift_y_direction_options' => [
