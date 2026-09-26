@@ -31,7 +31,7 @@ return [
     'claim_by_selfie_description' => 'Lade ein Selfie hoch, um dein Profil zu finden und zu verknüpfen.',
     'claims' => [
         'success' => 'Die Verknüpfung mit Ihrem Profil war erfolgreich.',
-        'no_face' => 'No face detected in the selfie.',
+        'no_face' => 'Auf dem Selfie wurde kein Gesicht erkannt.',
         'no_match' => 'No matching person found.',
         'already_claimed' => 'This person is already linked to another user.',
         'low_confidence' => 'Match confidence too low. Please try a clearer photo.',
