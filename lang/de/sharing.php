@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -11,8 +10,8 @@ return [
     'album_title' => 'Albumtitel',
     'username' => 'Benutzername',
     'no_data' => 'Die Freigabeliste ist leer.',
-    'filter_placeholder' => 'Search by album title...',
-    'hide_empty' => 'Hide albums without shares',
+    'filter_placeholder' => 'Nach Albumtitel suchen...',
+    'hide_empty' => 'Alben ohne Freigaben ausblenden',
     'screen_too_small' => 'This page requires a larger screen.',
     'share' => 'Teilen',
     'add_new_access_permission' => 'Eine neue Zugangsberechtigung hinzufügen',
