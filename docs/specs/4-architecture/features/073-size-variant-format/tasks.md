@@ -41,6 +41,12 @@ _Last updated: 2026-09-26_
   - `php artisan test --filter="GdHandlerLosslessWebpTest|GDSupportCheckTest"`  
   - `make phpstan`
 
+- [x] T-073-10 – Maintainer review follow-ups (FR-073-01, FR-073-11, NFR-073-03; Q-073-08).  
+  _Intent:_ enum instead of the `'webp'` literal in `ImagickHandler` and `GDSupportCheck`; `size_variant_format` as an expert setting (plus a test assertion); new English `compression_quality` texts in every locale; removal of the unused `SizeVariantFormat::extension()`; docs aligned with the maintainer's `Schema::hasTable` guard and naming-strategy refactor.  
+  _Verification commands:_  
+  - `php artisan test --filter="SizeVariantFormat|PhotosAddHandlerGDTest|GDSupportCheckTest|GdHandlerLosslessWebpTest|LangTest|ConfigsTest"`  
+  - `make phpstan`
+
 ## Notes / TODOs
 - The Imagick variants of the `BaseImageHandler` cases (`PhotosAddHandlerImagickTest`) are skipped when `ext-imagick` is not installed and are covered by CI on the pull request. The GD variants and all unit tests were run locally.
 - T-073-08 local results: `php-cs-fixer` clean, PHPStan `[OK] No errors`, Unit and ImageProcessing suites without regressions against the 7.9.0 baseline, `tests/Feature_v2/Settings` and `Install` green, `migrate:rollback --step=2` followed by `migrate` round-trips both migrations.

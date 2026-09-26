@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Enum\SizeVariantFormat;
 use App\Image\Handlers\GdHandler;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
@@ -74,7 +75,7 @@ class GDSupportCheck implements DiagnosticPipe
 		}
 
 		return !$this->config_manager->hasImagick() &&
-			$this->config_manager->getValueAsString('size_variant_format') === 'webp' &&
+			$this->config_manager->getValueAsString('size_variant_format') === SizeVariantFormat::WEBP->value &&
 			$this->config_manager->getValueAsInt('compression_quality') === 0 &&
 			!$this->supportsLosslessWebp();
 	}

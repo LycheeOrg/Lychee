@@ -34,6 +34,7 @@ class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 
 		self::assertEquals('original', $config->value);
 		self::assertEquals('original|jpeg|webp', $config->type_range);
+		self::assertTrue((bool) $config->is_expert);
 	}
 
 	public function testCompressionQuality(): void

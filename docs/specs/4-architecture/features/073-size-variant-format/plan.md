@@ -40,7 +40,7 @@ After CI is green: map FR-073-01..10 to classes/tests in the table below, and co
 | Requirement | Implementation | Test |
 |-------------|----------------|------|
 | FR-073-01 | `2026_09_26_000001_add_size_variant_format_config.php` | `SizeVariantFormatConfigSanityTest` |
-| FR-073-02/03/04/05 | `SizeVariantFormat::extension()`, `BaseSizeVariantNamingStrategy::generateExtension()` | `BaseImageHandler::testSizeVariantFormat*` |
+| FR-073-02/03/04/05 | `BaseSizeVariantNamingStrategy::generateExtension()`/`generatedExtension()` | `BaseImageHandler::testSizeVariantFormat*` |
 | FR-073-06/10 | `2026_09_26_000002_bound_compression_quality.php` | `SizeVariantFormatConfigSanityTest` |
 | FR-073-07/08 | `BaseImageHandler::resolveQuality()`/`isLossless()`, `GdHandler::save()`, `ImagickHandler::save()` | `BaseImageHandler::testSizeVariantFormatWebpLossless`, `…JpegLosslessClamps` |
 | FR-073-09 | `GdHandler::save()` | `PhotosAddHandlerGDTest` (inherited cases) |

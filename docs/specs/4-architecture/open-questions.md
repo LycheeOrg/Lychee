@@ -6,6 +6,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-073-08~~ | 073 – Size-Variant Format | Low | After the maintainer's refactor of `BaseSizeVariantNamingStrategy` (commit a9d34495), `SizeVariantFormat::extension()` has no caller. Delete it, route the new `match` through it, or keep it? | Resolved (Option A — delete; the maintainer's `generatedExtension()` owns the mapping; owner, 2026-09-27) | 2026-09-27 | 2026-09-27 |
 | ~~Q-073-07~~ | 073 – Size-Variant Format | Medium | Review of PR #4790: `IMG_WEBP_LOSSLESS` exists only when libgd defines `gdWebpLossless` (libgd ≥ 2.3.3), while `imagewebp()` exists with any WebP-enabled GD (PHP allows external libgd ≥ 2.1.0). With quality `0` + `webp` on such builds, GD raises `Undefined constant`. How should GD behave? | Resolved (Option C — clear `MediaFileOperationException` plus a `GDSupportCheck` warning; owner, 2026-09-26; FR-073-07, FR-073-11) | 2026-09-26 | 2026-09-26 |
 | ~~Q-073-06~~ | 073 – Size-Variant Format | Medium | Review of PR #4790 (CodeRabbit): with `size_variant_format = jpeg`, GD still writes PNG bytes into `.jpeg` files for PNG originals (the Q-073-04 quirk now reaches `small`/`medium` too, and the setting explicitly promises JPEG). Revisit Q-073-04? | Resolved (Option A — GD encodes by target extension for every format; owner, 2026-09-26: "a mismatch between extension and real format is worse than any other possible problem"; supersedes Q-073-04; FR-073-09) | 2026-09-26 | 2026-09-26 |
 | ~~Q-073-05~~ | 073 – Size-Variant Format | Medium | Upstream issue LycheeOrg/Lychee#1888 asks for a **per-size** quality (e.g. medium 90 / small 80 / thumb 70); Feature 073 ships one global quality (N-073-06). Extend 073, or ship 073 as a partial answer and do per-size quality as a follow-up? | Resolved (Option A — ship 073 as is, PR references #1888 as partially addressed, per-size quality is a follow-up; owner, 2026-09-26: "Выбираю А") | 2026-09-26 | 2026-09-26 |
@@ -221,6 +222,18 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-073-08~~ · Unused `SizeVariantFormat::extension()` ✅ RESOLVED
+
+**Status:** Resolved by the owner, 2026-09-27 — Option A.  
+**Feature:** F-073  
+**Priority:** Low
+
+- **Option A (chosen) — delete the method.** Dead code, and the maintainer's `generatedExtension()` is now the single place that maps the enum to `.jpeg`/`.webp`.
+- **Option B — use it inside `generatedExtension()`.** It would keep the mapping on the enum, but it rewrites code the maintainer had just refactored.
+- **Option C — keep it unused.** Dead code that reviewers or tooling would flag later.
+
+---
 
 ### ~~Q-073-07~~ · Lossless WebP on GD builds without `IMG_WEBP_LOSSLESS` ✅ RESOLVED
 

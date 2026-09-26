@@ -12,6 +12,7 @@ use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\MediaFile;
 use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantFormat;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
@@ -284,7 +285,7 @@ class ImagickHandler extends BaseImageHandler
 		try {
 			$format = strtolower(ltrim($file->getExtension(), '.'));
 			$this->im_image->setImageCompressionQuality($this->resolveQuality());
-			if ($format === 'webp' && $this->isLossless()) {
+			if ($format === SizeVariantFormat::WEBP->value && $this->isLossless()) {
 				$this->im_image->setOption('webp:lossless', 'true');
 			}
 			$profiles = $this->im_image->getImageProfiles('icc', true);

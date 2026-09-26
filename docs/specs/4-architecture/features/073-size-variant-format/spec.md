@@ -19,7 +19,7 @@ This feature adds an admin setting that selects the output format of generated s
 
 ## Goals
 
-- G1: Admins can switch generated size variants to WebP (or force JPEG) from **Settings → Image Processing**, with no file or DB edits.
+- G1: Admins can switch generated size variants to WebP (or force JPEG) from **Settings → Image Processing** (expert mode), with no file or DB edits.
 - G2: Admins can request lossless encoding by setting `compression_quality` to `0`.
 - G3: The default configuration produces byte-identical file naming to today (`original`), so upgrading changes nothing until an admin opts in.
 
@@ -36,17 +36,17 @@ This feature adds an admin setting that selects the output format of generated s
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-073-01 | New config `size_variant_format`, category `Image Processing`, `type_range` `original\|jpeg\|webp`, default `original`, non-expert. | Setting appears in Settings and persists. | Any value outside the range is rejected by the generic `Configs::sanity()` enum branch with the standard error message. | n/a | None (config change only). | Owner request 2026-09-26; Q-073-03 |
+| FR-073-01 | New config `size_variant_format`, category `Image Processing`, `type_range` `original\|jpeg\|webp`, default `original`, expert setting (`is_expert = true`): it only shows in the expert view of Settings, because it assumes knowledge of image formats/codecs (maintainer review). | Setting appears in Settings and persists. | Any value outside the range is rejected by the generic `Configs::sanity()` enum branch with the standard error message. | n/a | None (config change only). | Owner request 2026-09-26; Q-073-03 |
 | FR-073-02 | When `size_variant_format` is `webp`, every **generated** size variant (`thumb`, `thumb2x`, `small`, `small2x`, `medium`, `medium2x`) is written with the `.webp` extension and WebP content, for photos and non-photo media (video frames, PDF renders) alike. | New uploads and regenerations produce `.webp` files. | n/a | If the handler cannot write WebP, the existing `MediaFileOperationException('Failed to save image')` path applies. `GDSupportCheck` already reports GD builds without WebP. | None. | Owner request |
 | FR-073-03 | When `size_variant_format` is `jpeg`, every generated size variant is written with the `.jpeg` extension, including `small`/`medium` of non-JPEG originals. | `.jpeg` paths are produced. | n/a | As FR-073-02. | None. | Owner request |
 | FR-073-04 | When `size_variant_format` is `original`, extension selection is exactly the pre-feature behaviour: `thumb`/`thumb2x` and all non-photo variants use `.jpeg`, while `small`/`medium` families inherit the original's extension. | No behaviour change. | n/a | n/a | None. | G3; Q-073-03 |
-| FR-073-05 | `ORIGINAL`, `RAW`, and `PLACEHOLDER` extensions are never affected by `size_variant_format`. | Originals keep their extension; placeholders stay `.webp`. | n/a | n/a | None. | N-073-03, N-073-05 |
+| FR-073-05 | `ORIGINAL`, `RAW`, and `PLACEHOLDER` extensions are never affected by `size_variant_format`. | Originals keep their extension; placeholders are always `.webp`, including those of videos (they previously got `.jpeg` paths; the file is encoded into the DB either way, so this is not user-visible). | n/a | n/a | None. | N-073-03, N-073-05 |
 | FR-073-06 | `compression_quality` is re-typed from `positive` to `int:0:100`. `1–100` is the lossy quality. `0` means lossless. | Settings renders a bounded number field (existing `int:` branch in `ConfigGroup.vue`). | Values outside `0–100` or non-digits are rejected by the existing bounded-int branch of `Configs::sanity()`. | n/a | None. | Owner request ("0 or lossless as lossless"); Q-073-01 |
 | FR-073-07 | With `compression_quality = 0`, WebP output is encoded losslessly: `IMG_WEBP_LOSSLESS` on GD, `webp:lossless=true` on Imagick. | WebP files carry a `VP8L` chunk. | n/a | On GD builds whose libgd lacks `gdWebpLossless` (libgd < 2.3.3; `IMG_WEBP_LOSSLESS` undefined), saving throws `MediaFileOperationException('Lossless WebP encoding is not supported by this GD build; …')`. There is no silent lossy fallback (Q-073-07). | None. | Owner request; Q-073-07 |
 | FR-073-08 | With `compression_quality = 0`, formats without a lossless mode (JPEG, and any other re-encode such as an auto-rotated original) are encoded at the maximum quality, `100`. | JPEG output is valid and maximum quality. | n/a | n/a | None. | Q-073-02 |
 | FR-073-09 | GD's `save()` encodes by the **target** file extension for every supported format (`.jpg`/`.jpeg`/`.png`/`.gif`/`.webp`) and falls back to the source type for other extensions. The content-format guarantee therefore applies only to the listed extensions, which cover every extension GD-generated size variants can get except an original's own extension under `original`. Imagick already writes by extension. | A `.jpeg` thumb of a PNG original contains JPEG bytes. Transparency is lost in JPEG targets, as with Imagick. | n/a | Encoder failures (`Safe\Exceptions\ImageException`) are wrapped in `MediaFileOperationException('Failed to save image')`. | None. | Q-073-06 (supersedes Q-073-04) |
 | FR-073-10 | The existing up-migration value of `compression_quality` is preserved. The down-migration restores `positive` and rewrites a stored `0` to `100`, so the old validator accepts it. | Round-trip migration is safe. | n/a | n/a | None. | Constitution: reversible migrations |
-| FR-073-11 | `GDSupportCheck` warns when Imagick is not in use, `size_variant_format = webp`, `compression_quality = 0`, and GD cannot encode lossless WebP. | The diagnostics page shows the warning before uploads fail. | Skipped while `size_variant_format` does not exist yet (pending migrations). | n/a | Diagnostics warning `GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED`. | Q-073-07 |
+| FR-073-11 | `GDSupportCheck` warns when Imagick is not in use, `size_variant_format = webp`, `compression_quality = 0`, and GD cannot encode lossless WebP. | The diagnostics page shows the warning before uploads fail. | Skipped when the `configs` table does not exist (no migrations run at all). Partially run migrations are not guarded against, per project convention (maintainer review). | n/a | Diagnostics warning `GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED`. | Q-073-07 |
 
 ## Non-Functional Requirements
 
@@ -54,19 +54,19 @@ This feature adds an admin setting that selects the output format of generated s
 |----|-------------|--------|-------------|--------------|--------|
 | NFR-073-01 | No new dependencies. | AGENTS.md dependency policy | `composer.json`/`package.json` unchanged | GD `imagewebp`, Imagick WebP delegate (both already required) | AGENTS.md |
 | NFR-073-02 | No frontend code changes. Both keys render through existing generic widgets (`SliderField` for `a\|b\|c`, `NumberField` for `int:min:max`). | Minimal diff | `git diff --stat resources/js` is empty | `ConfigGroup.vue` | Ponytail / AGENTS.md straight-line increments |
-| NFR-073-03 | Extension and quality decisions live in small pure helpers (`SizeVariantFormat::extension()`, `BaseImageHandler::resolveQuality()`/`isLossless()`), keeping each handler change nearly straight-line. | AGENTS.md "Straight-line increments" | Code review | — | AGENTS.md |
+| NFR-073-03 | Extension and quality decisions live in small pure helpers (`BaseSizeVariantNamingStrategy::generatedExtension()`, `BaseImageHandler::resolveQuality()`/`isLossless()`), keeping each handler change nearly straight-line. | AGENTS.md "Straight-line increments" | Code review | — | AGENTS.md |
 | NFR-073-04 | Both image handlers are covered by the same tests (`BaseImageHandler` suite runs under GD and Imagick). | Handler parity | `PhotosAddHandlerGDTest`, `PhotosAddHandlerImagickTest` | `RequiresImageHandler` trait | Test strategy |
 
 ## UI / Interaction Mock-ups
 
-Settings → Image Processing (existing generic widgets, no new components):
+Settings → Image Processing (existing generic widgets, no new components; the format selector only shows in expert mode):
 
 ```
 ┌─ Image Processing ─────────────────────────────────────────────┐
 │ ...                                                             │
 │ Quality of generated size variants                              │
 │   [  80  ]  (0–100)                                             │
-│ File format of generated size variants                          │
+│ Format of generated size variants            (expert mode only) │
 │   ( original | jpeg | webp )                                    │
 │   original: thumbs JPEG, small/medium keep the original format  │
 │ ...                                                             │
@@ -98,7 +98,7 @@ Settings → Image Processing (existing generic widgets, no new components):
 ### Domain Objects
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-073-01 | `App\Enum\SizeVariantFormat` (`original`, `jpeg`, `webp`) with `extension(): ?string` (`null` for `original`) | app/Enum, app/Assets |
+| DO-073-01 | `App\Enum\SizeVariantFormat` (`original`, `jpeg`, `webp`); the extension mapping lives in `BaseSizeVariantNamingStrategy::generatedExtension()` | app/Enum, app/Assets |
 
 ### API Routes / Services
 None.
@@ -126,7 +126,7 @@ No new events. Save failures surface through the existing `MediaFileOperationExc
 
 ## Documentation Deliverables
 
-- `lang/*/all_settings.php`: `size_variant_format` documentation/details in every locale (English text, Russian translated), following the convention of the latest config additions. The `compression_quality` text is updated in `en` only.
+- `lang/*/all_settings.php`: `size_variant_format` documentation/details in every locale (English text, Russian translated), following the convention of the latest config additions. `compression_quality` gets its new English documentation/details text in every locale (maintainer review), so translators can update it via Weblate.
 - Roadmap row #073.
 - Knowledge map entry under image processing.
 - `docs/specs/3-reference/image-processing.md` gets a short section on output format and quality.
@@ -144,6 +144,7 @@ configs:
     type_range: "original|jpeg|webp"
     default: original
     category: Image Processing
+    expert: true
   - key: compression_quality
     type_range: "int:0:100"   # was: positive
     semantics: "0 = lossless (WebP) / max quality (others)"

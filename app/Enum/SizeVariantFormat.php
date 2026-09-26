@@ -17,17 +17,4 @@ enum SizeVariantFormat: string
 	case ORIGINAL = 'original';
 	case JPEG = 'jpeg';
 	case WEBP = 'webp';
-
-	/**
-	 * Extension (incl. the preceding dot) forced on generated size variants,
-	 * or null if the extension depends on the original.
-	 */
-	public function extension(): ?string
-	{
-		return match ($this) {
-			self::ORIGINAL => null,
-			self::JPEG => '.jpeg',
-			self::WEBP => '.webp',
-		};
-	}
 }

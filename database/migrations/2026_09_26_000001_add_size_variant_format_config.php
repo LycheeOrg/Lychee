@@ -22,7 +22,7 @@ return new class() extends BaseConfigMigration {
 				'description' => 'Format of generated size variants',
 				'details' => 'Original: thumbs are JPEG, small and medium keep the format of the uploaded file. JPEG or WebP: all generated size variants use that format. Only applies to newly generated size variants.',
 				'is_secret' => false,
-				'is_expert' => false,
+				'is_expert' => true,
 				'level' => 0,
 				'order' => 10,
 			],
