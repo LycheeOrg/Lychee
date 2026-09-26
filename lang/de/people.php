@@ -45,7 +45,7 @@ return [
         'toggle_searchable' => 'Sichtbarkeit umschalten',
         'claim' => 'Das bin ich',
         'unclaim' => 'Entferne die Verknüpfung mit mir',
-        'photos_title' => 'Photos of %s',
+        'photos_title' => 'Fotos von %s',
     ],
     'clusters_title' => 'Face Clusters',
     'run_clustering' => 'Run Clustering',
