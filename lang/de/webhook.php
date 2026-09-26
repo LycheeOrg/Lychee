@@ -24,12 +24,12 @@ return [
     'col_enabled' => 'Aktiviert',
     'col_actions' => 'Aktionen',
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Foto hinzugefügt',
+    'event_photo_move' => 'Foto verschoben',
+    'event_photo_delete' => 'Foto gelöscht',
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Abfragezeichenfolge',
     // Buttons
     'create' => 'Create Webhook',
     'edit' => 'Edit',
