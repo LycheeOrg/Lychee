@@ -32,7 +32,7 @@ return [
         'total' => 'Gesamt:',
         'proceedToCheckout' => 'Zur Kasse',
         'emptyBasket' => 'Ihr Warenkorb ist leer.',
-        'printLabel' => 'Print',
+        'printLabel' => 'Drucken',
         'pixelLabel' => 'Pixel',
         'paperType' => 'Paper',
     ],
