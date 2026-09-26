@@ -150,6 +150,50 @@ class UrlValidationTest extends AbstractTestCase
 		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
 	}
 
+	public function testForbiddenNat64IpViaHostname(): void
+	{
+		// 64:ff9b::7f00:1 is the NAT64 mapping of 127.0.0.1 and passes filter_var's private/reserved flags.
+		$this->url_validation = $this->makeUrlValidation(fn (string $hostname, int $type = DNS_AAAA) => match ($type) {
+			DNS_AAAA => [['ipv6' => '64:ff9b::7f00:1']],
+			default => [],
+		});
+
+		$dto = $this->url_validation->validate('https://evil.example.com/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenPrivateIpv6Literal(): void
+	{
+		$dto = $this->url_validation->validate('https://[fd00::1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenNat64IpLiteral(): void
+	{
+		$dto = $this->url_validation->validate('https://[64:ff9b::7f00:1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenLocalhostIpv6Literal(): void
+	{
+		Configs::set('import_via_url_forbidden_local_ip', '0');
+
+		$dto = $this->url_validation->validate('https://[::1]/test.jpg');
+
+		self::assertEquals('must not resolve to localhost.', $dto->error);
+	}
+
+	public function testPublicIpv6Literal(): void
+	{
+		$dto = $this->url_validation->validate('https://[2606:4700:4700::1111]/test.jpg');
+
+		self::assertNull($dto->error);
+		self::assertEquals('2606:4700:4700::1111', $dto->resolved_ip);
+	}
+
 	public function testForbiddenLocalhostViaHostnameIpv4(): void
 	{
 		$this->url_validation = $this->makeUrlValidation(fn (string $hostname, int $type = DNS_A) => match ($type) {

@@ -135,6 +135,11 @@ class UrlValidation
 	 */
 	private function resolveHostToIPs(string $host): array
 	{
+		// IPv6 literals are returned by parse_url() wrapped in brackets, e.g. "[::1]".
+		if (str_starts_with($host, '[') && str_ends_with($host, ']')) {
+			$host = substr($host, 1, -1);
+		}
+
 		// If the host is already a valid IP, no resolution needed.
 		if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
 			return [$host];
@@ -179,7 +184,7 @@ class UrlValidation
 			if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
 				return true;
 			}
-			if (str_starts_with('64:ff9b::', $ip)) {
+			if (str_starts_with($ip, '64:ff9b::')) {
 				return true;
 			}
 		}
