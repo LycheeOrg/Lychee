@@ -24,7 +24,7 @@ return [
             'top-left' => 'Oben links',
             'top' => 'Oben in der Mitte',
             'top-right' => 'Oben rechts',
-            'left' => 'Middle Left',
+            'left' => 'Mitte links',
             'center' => 'Center',
             'right' => 'Middle Right',
             'bottom-left' => 'Bottom Left',
