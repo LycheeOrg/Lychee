@@ -12,7 +12,7 @@ return [
     'no_data' => 'Die Freigabeliste ist leer.',
     'filter_placeholder' => 'Nach Albumtitel suchen...',
     'hide_empty' => 'Alben ohne Freigaben ausblenden',
-    'screen_too_small' => 'This page requires a larger screen.',
+    'screen_too_small' => 'Für diese Seite ist ein größerer Bildschirm erforderlich.',
     'share' => 'Teilen',
     'add_new_access_permission' => 'Eine neue Zugangsberechtigung hinzufügen',
     'permission_deleted' => 'Berechtigung gelöscht!',
