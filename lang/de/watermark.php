@@ -16,8 +16,8 @@ return [
         'watermark_photo_id_hint' => 'Photo ID of the image used as watermark. Open a photo and copy the last 24 characters from the URL.',
         'preview_photo_id' => 'Hintergrundfoto ID',
         'preview_photo_id_placeholder' => '24 Zeichen Foto ID',
-        'preview_photo_id_hint' => 'Enter a photo ID to use as background for the preview.',
-        'size' => 'Size (:value%)',
+        'preview_photo_id_hint' => 'Geben Sie eine Foto-ID ein, welche als Hintergrund für die Vorschau verwendet werden soll.',
+        'size' => 'Größe (:value%)',
         'opacity' => 'Opacity (:value%)',
         'position' => 'Position',
         'position_options' => [
