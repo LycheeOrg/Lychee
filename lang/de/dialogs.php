@@ -48,6 +48,7 @@ return [
         'album' => 'Album Tastaturkürzel',
         'slideshow' => 'Diashow starten/stoppen',
         'toggle' => 'Panel umschalten',
+        'toggle_date_scrubber' => 'Datumsleiste ein-/ausblenden',
         'photo' => 'Foto Tastaturkürzel',
         'previous' => 'Vorheriges Foto',
         'next' => 'Nächstes Foto',

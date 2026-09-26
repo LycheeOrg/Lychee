@@ -5,6 +5,19 @@ import type { VirtualAlbumRowsResult } from "@/v8/composables/album/virtualAlbum
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 import { albumRowScrubItems, deriveDayScrubEntries, formatDayLabel, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 
+/** Content-space `top` of every bucket header row, in the same pixel space as the rail entries. */
+function headerRowTops({ rows, rowHeights }: VirtualAlbumRowsResult): number[] {
+	const tops: number[] = [];
+	let top = 0;
+	for (let i = 0; i < rows.length; i++) {
+		if (rows[i].type === "header") {
+			tops.push(top);
+		}
+		top += rowHeights[i];
+	}
+	return tops;
+}
+
 /**
  * Feature 071 — date scrubber wiring shared by the two sub-album views
  * (`AlbumThumbGridVirtual.vue`, `AlbumListViewVirtual.vue`), which lay out
@@ -29,7 +42,7 @@ export function useAlbumRowsDateScrubber(
 		}
 		const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
 		const { items, totalHeight } = albumRowScrubItems(rowsResult.value.rows, rowsResult.value.rowHeights, tiles.value, field);
-		return deriveDayScrubEntries(items, totalHeight, (day) => formatDayLabel(day, format));
+		return deriveDayScrubEntries(items, totalHeight, headerRowTops(rowsResult.value), (day) => formatDayLabel(day, format));
 	});
 
 	watch(

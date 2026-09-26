@@ -568,7 +568,8 @@ const scrubberLayout = computed<DateScrubLayout | null>(() => {
 	}
 	const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
 	const items = layoutResult.value.positioned.map((p) => ({ day: tileDayKey(p.photo, field), top: p.box.top }));
-	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, (day) => formatDayLabel(day, format));
+	const separatorTops = layoutResult.value.headerTops.map((h) => h.top);
+	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (day) => formatDayLabel(day, format));
 });
 
 watch(

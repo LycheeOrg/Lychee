@@ -48,6 +48,7 @@ return [
         'album' => 'Комбинации за албум',
         'slideshow' => 'Старт/Стоп на слайдшоу',
         'toggle' => 'Превключване на панела',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Комбинации за снимка',
         'previous' => 'Предишна снимка',
         'next' => 'Следваща снимка',

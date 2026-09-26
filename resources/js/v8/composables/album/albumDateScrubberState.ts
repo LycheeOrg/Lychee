@@ -59,6 +59,8 @@ export function useAlbumDateScrubberState() {
 			photoCount: photoCount.value,
 			photoField: albumStore.config?.photo_date_scrubber_field ?? null,
 			albumField: albumStore.config?.album_date_scrubber_field ?? null,
+			photoTimelineBucketed: (albumStore.config?.is_photo_timeline_enabled ?? false) && albumStore.photoBucketableV3,
+			albumTimelineBucketed: (albumStore.config?.is_album_timeline_enabled ?? false) && albumStore.bucketableV3,
 		}),
 	);
 

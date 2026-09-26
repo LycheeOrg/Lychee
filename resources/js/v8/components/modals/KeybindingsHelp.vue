@@ -25,10 +25,8 @@
 						</div>
 					</template>
 				</UTable>
-				<div class="w-full flex justify-center mt-4 items-center gap-2">
+				<div class="w-full flex flex-col justify-center items-center gap-2">
 					<UCheckbox v-model="doNotShowAgain" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.don_t_show_again')" />
-				</div>
-				<div class="w-full flex justify-center mb-4 items-center gap-2">
 					<UCheckbox v-model="hideHeaderButton" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.hide_header_button')" />
 				</div>
 			</div>
@@ -129,6 +127,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
 			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.toggle"), key: "i" },
+			{ action: trans("dialogs.keybindings.toggle_date_scrubber"), key: "d" },
 		],
 	},
 	{

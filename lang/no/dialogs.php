@@ -48,6 +48,7 @@ return [
         'album' => 'Album tastatursnarveier',
         'slideshow' => 'Start/Stopp lysbildefremvisning',
         'toggle' => 'Toggle albumpreferanser',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Bildesnarveier',
         'previous' => 'Forrige bilde',
         'next' => 'Neste bilde',

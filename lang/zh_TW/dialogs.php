@@ -48,6 +48,7 @@ return [
         'album' => '相簿捷徑',
         'slideshow' => '開始／停止幻燈片模式',
         'toggle' => '切換面板',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => '相片捷徑',
         'previous' => '先前的照片',
         'next' => '下一張照片',

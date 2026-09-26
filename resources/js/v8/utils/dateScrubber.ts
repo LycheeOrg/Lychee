@@ -15,7 +15,12 @@ export type DateScrubberField = "taken_at" | "created_at" | "min_taken_at" | "ma
 
 export type DateScrubEntry = { bucketId: string; label: string; count: number; top: number; height: number };
 
-export type DateScrubLayout = { entries: DateScrubEntry[]; totalHeight: number };
+/**
+ * `separatorTops`: the content-space `top` of every bucket section header the
+ * grid draws (empty when the album shows no headers) — the rail marks each
+ * with one dot, so its ticks match the grid's own separations (FR-071-12).
+ */
+export type DateScrubLayout = { entries: DateScrubEntry[]; totalHeight: number; separatorTops: number[] };
 
 /** The date-bearing fields a tile may be read from — photo and album tiles each supply the subset they have. */
 export type DatedTile = {
@@ -70,6 +75,7 @@ export function formatDayLabel(day: string, format: string): string {
 export function deriveDayScrubEntries(
 	items: { day: string | null; top: number }[],
 	totalHeight: number,
+	separatorTops: number[],
 	formatLabel: (day: string) => string,
 ): DateScrubLayout {
 	const runs: { bucketId: string; day: string; top: number; count: number }[] = [];
@@ -98,7 +104,7 @@ export function deriveDayScrubEntries(
 		const end = i + 1 < runs.length ? runs[i + 1].top : totalHeight;
 		return { bucketId: run.bucketId, label: formatLabel(run.day), count: run.count, top: run.top, height: Math.max(0, end - run.top) };
 	});
-	return { entries, totalHeight };
+	return { entries, totalHeight, separatorTops };
 }
 
 /** The bucket-tier shape `TimelineDatesV3.vue`'s `buckets` prop expects, synthesized from day entries. */
@@ -132,13 +138,16 @@ export function resolveDateScrubberSource(input: {
 	photoCount: number | undefined;
 	photoField: string | null;
 	albumField: string | null;
+	photoTimelineBucketed: boolean;
+	albumTimelineBucketed: boolean;
 }): DateScrubberSource | null {
 	if (!input.soaActive || !input.enabled || input.albumCount === undefined || input.photoCount === undefined) {
 		return null;
 	}
 	const kind = singleKind(input.albumCount, input.photoCount);
 	const field = kind === "photos" ? input.photoField : input.albumField;
-	return kind !== null && field !== null ? kind : null;
+	const bucketed = kind === "photos" ? input.photoTimelineBucketed : input.albumTimelineBucketed;
+	return kind !== null && field !== null && bucketed ? kind : null;
 }
 
 /**
