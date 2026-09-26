@@ -32,8 +32,8 @@ return [
     'format_query_string' => 'Abfragezeichenfolge',
     // Buttons
     'create' => 'Webhook erstellen',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'edit' => 'Bearbeiten',
+    'delete' => 'Löschen',
     'cancel' => 'Abbrechen',
     'save' => 'Save',
     // Form fields
