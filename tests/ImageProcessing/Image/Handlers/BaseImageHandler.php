@@ -246,6 +246,151 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertStringEndsWith('.png', $response->json('photos.0.size_variants.original.url'));
 	}
 
+	/**
+	 * Generated size variants (all but original/raw/placeholder).
+	 */
+	private const GENERATED_VARIANTS = ['thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'];
+
+	/**
+	 * Uploads a file with the given size variant format/quality and returns the photo.
+	 * `small_max_height` is lowered so that the small 400x300 PNG sample also gets a small variant.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function uploadWithFormat(string $filename, string $format, int $quality): array
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_format = $config_manager->getValueAsString('size_variant_format');
+		$init_quality = $config_manager->getValueAsString('compression_quality');
+		$init_small_height = $config_manager->getValueAsString('small_max_height');
+		try {
+			Configs::set('size_variant_format', $format);
+			Configs::set('compression_quality', $quality);
+			Configs::set('small_max_height', 100);
+
+			return $this->uploadImage($filename)->json('photos.0');
+		} finally {
+			Configs::set('size_variant_format', $init_format);
+			Configs::set('compression_quality', $init_quality);
+			Configs::set('small_max_height', $init_small_height);
+		}
+	}
+
+	/**
+	 * @param array<string,mixed> $photo
+	 *
+	 * @return array<string,string> variant name => content of the generated file
+	 */
+	private function generatedVariantFiles(array $photo): array
+	{
+		$files = [];
+		foreach (self::GENERATED_VARIANTS as $variant) {
+			if ($photo['size_variants'][$variant] !== null) {
+				$files[$variant] = file_get_contents(public_path($this->dropUrlPrefix($photo['size_variants'][$variant]['url'])));
+			}
+		}
+		self::assertArrayHasKey('thumb', $files);
+		self::assertArrayHasKey('small', $files);
+
+		return $files;
+	}
+
+	/**
+	 * S-071-01, S-071-02: default format keeps the pre-feature extensions,
+	 * and each file's content matches its extension.
+	 */
+	public function testSizeVariantFormatOriginalKeepsExtensions(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'original', 90);
+		$files = $this->generatedVariantFiles($photo);
+
+		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
+		self::assertStringEndsWith('.jpeg', $photo['size_variants']['thumb']['url']);
+		self::assertEquals("\xFF\xD8", substr($files['thumb'], 0, 2));
+		self::assertStringEndsWith('.png', $photo['size_variants']['small']['url']);
+		self::assertEquals("\x89PNG", substr($files['small'], 0, 4));
+	}
+
+	/**
+	 * S-071-05: jpeg format forces .jpeg on small/medium of a PNG original.
+	 */
+	public function testSizeVariantFormatJpegFromPng(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'jpeg', 90);
+
+		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
+		}
+	}
+
+	/**
+	 * S-071-03: webp format with lossy quality writes lossy WebP for every generated variant.
+	 */
+	public function testSizeVariantFormatWebpLossy(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'webp', 80);
+
+		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			$chunks = $this->webpChunks($content);
+			self::assertContains('VP8 ', $chunks, $variant);
+			self::assertNotContains('VP8L', $chunks, $variant);
+		}
+	}
+
+	/**
+	 * Returns the FourCC codes of the top-level chunks of a WebP (RIFF) file.
+	 * `VP8 ` is lossy image data, `VP8L` lossless; an optional `VP8X` header may precede them.
+	 *
+	 * @return string[]
+	 */
+	private function webpChunks(string $content): array
+	{
+		self::assertEquals('RIFF', substr($content, 0, 4));
+		self::assertEquals('WEBP', substr($content, 8, 4));
+		$chunks = [];
+		$offset = 12;
+		while ($offset + 8 <= strlen($content)) {
+			$chunks[] = substr($content, $offset, 4);
+			$size = \Safe\unpack('V', substr($content, $offset + 4, 4))[1];
+			$offset += 8 + $size + ($size % 2);
+		}
+
+		return $chunks;
+	}
+
+	/**
+	 * S-071-04: webp format with quality 0 writes lossless WebP.
+	 */
+	public function testSizeVariantFormatWebpLossless(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'webp', 0);
+
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertContains('VP8L', $this->webpChunks($content), $variant);
+		}
+	}
+
+	/**
+	 * S-071-06: quality 0 on a format without a lossless mode still writes a valid JPEG,
+	 * including the auto-rotated original which goes through the same save path.
+	 */
+	public function testSizeVariantFormatJpegLosslessClamps(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'jpeg', 0);
+
+		self::assertEquals(2016, $photo['size_variants']['original']['width']);
+		self::assertEquals(1512, $photo['size_variants']['original']['height']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
+		}
+	}
+
 	public function testGIFUpload(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GIF);

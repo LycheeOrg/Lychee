@@ -28,6 +28,25 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	}
 
 	/**
+	 * Whether `compression_quality` requests lossless encoding (0).
+	 */
+	protected function isLossless(): bool
+	{
+		return resolve(ConfigManager::class)->getValueAsInt('compression_quality') === 0;
+	}
+
+	/**
+	 * Returns the lossy compression quality (1..100).
+	 * Lossless (0) maps to 100 for formats without a lossless mode (e.g. JPEG).
+	 */
+	protected function resolveQuality(): int
+	{
+		$quality = resolve(ConfigManager::class)->getValueAsInt('compression_quality');
+
+		return $quality === 0 ? 100 : $quality;
+	}
+
+	/**
 	 * Optimizes a local image, if enabled.
 	 *
 	 * If lossless optimization is enabled via configuration, this method

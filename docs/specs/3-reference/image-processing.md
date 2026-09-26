@@ -49,6 +49,17 @@ Each variant type has configurable dimensions and quality settings:
 ],
 ```
 
+### Output Format and Quality (Feature 071)
+
+Two settings in **Settings → Image Processing** control how generated variants (`thumb`, `thumb2x`, `small`, `small2x`, `medium`, `medium2x`) are encoded:
+
+| Config | Values | Effect |
+|--------|--------|--------|
+| `size_variant_format` | `original` (default), `jpeg`, `webp` | `original`: thumbs are JPEG, and small/medium keep the uploaded file's format (videos and other non-photo media use JPEG). `jpeg`/`webp`: every generated variant uses that format. Originals, RAW files and placeholders are never affected. |
+| `compression_quality` | `0`–`100` | `1`–`100`: lossy quality. `0`: lossless WebP, or maximum quality (`100`) for formats without a lossless mode. On GD, lossless WebP needs libgd ≥ 2.3.3. Otherwise saving fails with a clear error and diagnostics show a warning. |
+
+The format is resolved from the target file extension (`BaseSizeVariantNamingStrategy::generateExtension()` → `SizeVariantFormat::extension()`). Quality is resolved by `BaseImageHandler::resolveQuality()`/`isLossless()`. Changing either setting only affects newly generated variants: existing files keep their paths. To re-encode them, delete the variants and regenerate them with `lychee:generate_thumbs` (photos) or `lychee:video_data` (videos).
+
 ## Processing Pipeline
 
 ### Upload Flow

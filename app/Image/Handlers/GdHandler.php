@@ -18,7 +18,6 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\InMemoryBuffer;
-use App\Repositories\ConfigManager;
 use Safe\Exceptions\ImageException;
 use function Safe\imagealphablending;
 use function Safe\imagecopyresampled;
@@ -47,6 +46,18 @@ class GdHandler extends BaseImageHandler
 		IMAGETYPE_PNG,
 		IMAGETYPE_GIF,
 		IMAGETYPE_WEBP,
+	];
+
+	/**
+	 * Image type written for a target file extension (incl. the preceding dot).
+	 * Unknown extensions keep the type of the source image.
+	 */
+	private const OUTPUT_TYPES = [
+		'.jpg' => IMAGETYPE_JPEG,
+		'.jpeg' => IMAGETYPE_JPEG,
+		'.png' => IMAGETYPE_PNG,
+		'.gif' => IMAGETYPE_GIF,
+		'.webp' => IMAGETYPE_WEBP,
 	];
 
 	/**
@@ -241,15 +252,16 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
 
-			$config_manager = resolve(ConfigManager::class);
-			$compression_quality = $config_manager->getValueAsInt('compression_quality');
+			// Encode by target extension so that the content matches it for the mapped extensions
+			// (e.g. a `.jpeg` thumb of a PNG original is a real JPEG).
+			$output_type = self::OUTPUT_TYPES[strtolower($file->getExtension())] ?? $this->gd_image_type;
 
-			match ($this->gd_image_type) {
+			match ($output_type) {
 				IMAGETYPE_JPEG,
-				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $compression_quality),
+				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $this->resolveQuality()),
 				IMAGETYPE_PNG => imagepng($this->gd_image, $in_memory_buffer->stream()),
 				IMAGETYPE_GIF => imagegif($this->gd_image, $in_memory_buffer->stream()),
-				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream()),
+				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream(), $this->webpQuality()),
 				default => throw new \AssertionError('uncovered image type'),
 			};
 
@@ -258,9 +270,36 @@ class GdHandler extends BaseImageHandler
 			$in_memory_buffer->close();
 
 			return $this->applyLosslessOptimizationConditionally($file) ?? $stream_stat;
-		} catch (\ErrorException $e) {
+		} catch (\ErrorException|ImageException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
+	}
+
+	/**
+	 * Whether this GD build can encode lossless WebP.
+	 * `IMG_WEBP_LOSSLESS` is only defined when libgd provides `gdWebpLossless` (libgd >= 2.3.3),
+	 * while `imagewebp()` exists with any WebP-enabled build.
+	 */
+	public static function supportsLosslessWebp(): bool
+	{
+		return defined('IMG_WEBP_LOSSLESS');
+	}
+
+	/**
+	 * Returns the quality argument for `imagewebp()`.
+	 *
+	 * @throws MediaFileOperationException if lossless is requested but not supported by this GD build
+	 */
+	private function webpQuality(): int
+	{
+		if (!$this->isLossless()) {
+			return $this->resolveQuality();
+		}
+		if (!static::supportsLosslessWebp()) {
+			throw new MediaFileOperationException('Lossless WebP encoding is not supported by this GD build; set compression_quality to 1-100 or enable Imagick');
+		}
+
+		return IMG_WEBP_LOSSLESS;
 	}
 
 	/**
