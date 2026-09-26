@@ -31,7 +31,7 @@ return [
     'format_json' => 'JSON',
     'format_query_string' => 'Abfragezeichenfolge',
     // Buttons
-    'create' => 'Create Webhook',
+    'create' => 'Webhook erstellen',
     'edit' => 'Edit',
     'delete' => 'Delete',
     'cancel' => 'Abbrechen',
