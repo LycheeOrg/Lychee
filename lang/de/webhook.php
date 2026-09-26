@@ -21,7 +21,7 @@ return [
     'col_method' => 'Methode',
     'col_url' => 'URL',
     'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
+    'col_enabled' => 'Aktiviert',
     'col_actions' => 'Actions',
     // Event labels
     'event_photo_add' => 'Photo Added',
