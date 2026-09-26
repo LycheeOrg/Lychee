@@ -28,9 +28,9 @@ return [
     'not_searchable' => 'Versteckt',
     'searchable' => 'Sichtbar',
     'claim_by_selfie' => 'Finde mich auf den Fotos',
-    'claim_by_selfie_description' => 'Upload a selfie to find and link your person profile.',
+    'claim_by_selfie_description' => 'Lade ein Selfie hoch, um dein Profil zu finden und zu verknüpfen.',
     'claims' => [
-        'success' => 'Successfully linked to your profile.',
+        'success' => 'Die Verknüpfung mit Ihrem Profil war erfolgreich.',
         'no_face' => 'No face detected in the selfie.',
         'no_match' => 'No matching person found.',
         'already_claimed' => 'This person is already linked to another user.',
