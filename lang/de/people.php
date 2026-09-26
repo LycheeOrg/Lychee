@@ -27,7 +27,7 @@ return [
     'scan_success' => 'Der Gesichts-Scan wurde erfolgreich in die Warteschlange gestellt.',
     'not_searchable' => 'Versteckt',
     'searchable' => 'Sichtbar',
-    'claim_by_selfie' => 'Find me in photos',
+    'claim_by_selfie' => 'Finde mich auf den Fotos',
     'claim_by_selfie_description' => 'Upload a selfie to find and link your person profile.',
     'claims' => [
         'success' => 'Successfully linked to your profile.',
