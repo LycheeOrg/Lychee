@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -13,7 +12,7 @@ return [
         'current_password' => 'Aktuelles Passwort',
         'credentials_update' => 'Ihre Anmeldedaten werden wie folgt geändert:',
         'username' => 'Benutzername',
-        'change_password' => 'Change password',
+        'change_password' => 'Passwort ändern',
         'cancel_password_change' => 'Cancel password change',
         'new_password' => 'Neues Passwort',
         'confirm_new_password' => 'Neues Passwort bestätigen',
