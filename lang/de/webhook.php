@@ -22,7 +22,7 @@ return [
     'col_url' => 'URL',
     'col_format' => 'Format',
     'col_enabled' => 'Aktiviert',
-    'col_actions' => 'Actions',
+    'col_actions' => 'Aktionen',
     // Event labels
     'event_photo_add' => 'Photo Added',
     'event_photo_move' => 'Photo Moved',
