@@ -55,6 +55,7 @@ return [
         'album_decoration' => '在相册封面显示装饰（子相册 和/或 照片数量）',
         'album_decoration_direction' => '相册装饰水平或垂直对齐',
         'photo_overlay' => '默认图片覆盖信息',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => '圆角化照片和相册缩略图',
         'album_border_enabled' => '在照片和相册缩略图周围显示边框',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

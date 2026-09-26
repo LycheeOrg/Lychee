@@ -96,6 +96,8 @@ import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
+import type { DateScrubLayout } from "@/v8/utils/dateScrubber";
+import { useAlbumRowsDateScrubber } from "@/v8/composables/album/albumDateScrubber";
 
 const props = defineProps<{
 	selectedAlbums: string[];
@@ -105,6 +107,9 @@ const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
 	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
+	/** Feature 071 — day-level entries + scroll offset for `AlbumPanel.vue`'s date scrubber rail. */
+	scrubberLayoutChanged: [payload: DateScrubLayout];
+	scrollOffsetChanged: [offset: number];
 }>();
 
 const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
@@ -175,6 +180,17 @@ const virtualizer = useWindowVirtualizer(
 );
 
 const totalSize = computed(() => virtualizer.value.getTotalSize());
+const { scrollToPixelOffset } = useAlbumRowsDateScrubber(
+	rowsResult,
+	computed(() => visibleAlbums.value.tiles as AdaptedAlbumTile[]),
+	virtualizer,
+	scrollMargin,
+	(layout) => emits("scrubberLayoutChanged", layout),
+	(offset) => emits("scrollOffsetChanged", offset),
+);
+
+defineExpose({ scrollToPixelOffset });
+
 const virtualRows = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, row: rowsResult.value.rows[item.index] })));
 
 // tanstack-virtual caches each row's measured size by its getItemKey(), not

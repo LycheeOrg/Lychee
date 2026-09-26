@@ -262,7 +262,7 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		$response->assertOk();
 		$json = $response->json();
 
-		self::assertEqualsCanonicalizing(['_lft', '_rgt', 'bulk_edit', 'cover_ids', 'ids', 'parent_ids', 'titles'], array_keys($json));
+		self::assertEqualsCanonicalizing(['_lft', '_rgt', 'bulk_edit', 'can_edits', 'cover_ids', 'ids', 'parent_ids', 'titles'], array_keys($json));
 	}
 
 	// ── cover_ids resolution (FR-057-09) ─────────────────────────
@@ -555,5 +555,43 @@ class AlbumListV3Test extends BaseApiWithDataTest
 
 		self::assertNotContains($new_album_id, $before_ids);
 		self::assertContains($new_album_id, $after_ids);
+	}
+
+	// ── can_edits ─────
+
+	public function testCanEditsReflectEditRightsPerAlbum(): void
+	{
+		$json = $this->actingAs($this->userMayUpload2)->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertCount(count($json['ids']), $json['can_edits']);
+		self::assertTrue($json['can_edits'][$this->indexOf($json['ids'], $this->album1->id)], 'perm1 grants edit on album1');
+		self::assertTrue($json['can_edits'][$this->indexOf($json['ids'], $this->album2->id)], 'own album');
+		self::assertFalse($json['can_edits'][$this->indexOf($json['ids'], $this->album4->id)], 'public, read-only');
+	}
+
+	public function testCanEditsAllFalseForGuest(): void
+	{
+		$json = $this->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertSame(array_fill(0, count($json['ids']), false), $json['can_edits']);
+	}
+
+	public function testCanEditsAllTrueForAdmin(): void
+	{
+		$json = $this->actingAs($this->admin)->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertSame(array_fill(0, count($json['ids']), true), $json['can_edits']);
+	}
+
+	public function testCanEditsIsComputedInsideTheListingQuery(): void
+	{
+		Configs::set('managed_cache_albums_enabled', '0');
+		$this->actingAs($this->userMayUpload2);
+		$edit_queries = $this->countTableQueries(fn () => $this->getJsonV3('Albums')->assertOk(), ['edit_perm']);
+		$listing_queries = $this->countTableQueries(fn () => $this->getJsonV3('Albums')->assertOk(), ['_lft']);
+
+		// Cache off: exactly one listing query, and the edit grant lives inside it.
+		self::assertSame(1, $listing_queries);
+		self::assertSame(1, $edit_queries, 'the edit grant must be a sub-query of the listing query, not a query of its own');
 	}
 }

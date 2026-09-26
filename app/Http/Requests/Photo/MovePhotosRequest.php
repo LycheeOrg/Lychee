@@ -14,14 +14,14 @@ use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosAlbumTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanMovePhotosTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasFromAlbumTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
-use App\Policies\PhotoPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -31,30 +31,22 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum, H
 	use HasPhotosTrait;
 	use HasAlbumTrait;
 	use HasFromAlbumTrait;
-	use AuthorizeCanEditPhotosAlbumTrait;
+	use AuthorizeCanMovePhotosTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		if (!Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album])) {
+		// Photos leave from_album: its content must be movable (smart albums: upload privilege).
+		$can_move_from = $this->from_album instanceof BaseAlbum ?
+			Gate::check(AlbumPolicy::CAN_MOVE_CONTENT_ID, [AbstractAlbum::class, [$this->from_album->get_id()]]) :
+			Gate::check(AlbumPolicy::CAN_MOVE, [AbstractAlbum::class, $this->from_album]);
+		if (!$can_move_from) {
 			return false;
 		}
 
-		if (!Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->from_album])) {
-			return false;
-		}
-
-		// TODO: refactor this check so it does not explode.
-		/** @var Photo $photo */
-		foreach ($this->photos as $photo) {
-			if (!Gate::check(PhotoPolicy::CAN_EDIT, $photo)) {
-				return false;
-			}
-		}
-
-		return true;
+		return $this->canMovePhotosInto($this->album);
 	}
 
 	/**
@@ -77,9 +69,7 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum, H
 	{
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()
-			->with(['size_variants', 'albums'])
-			->findOrFail($photos_ids);
+		$this->photos = Photo::query()->findOrFail($photos_ids);
 
 		/** @var string|null */
 		$target_album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];

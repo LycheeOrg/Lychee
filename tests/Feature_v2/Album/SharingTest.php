@@ -37,6 +37,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -58,6 +59,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
 			'grants_upload' => true,
+			'grants_move' => true,
 		]);
 		$this->assertOk($response);
 
@@ -248,6 +250,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
 			'grants_upload' => true,
+			'grants_move' => true,
 		]);
 		$this->assertOk($response);
 
@@ -256,6 +259,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -318,6 +322,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_full_photo_access' => false,
 			'grants_upload' => false,
+			'grants_move' => false,
 		]);
 		$this->assertOk($response);
 
@@ -357,6 +362,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [$this->group2->id],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -389,6 +395,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->subAlbum1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -402,6 +409,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -441,6 +449,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [$this->group2->id],
 			'album_ids' => [$this->subAlbum1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -454,6 +463,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,

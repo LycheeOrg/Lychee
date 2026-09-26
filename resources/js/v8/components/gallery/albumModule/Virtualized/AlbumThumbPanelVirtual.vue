@@ -1,17 +1,23 @@
 <template>
 	<AlbumListViewVirtual
+		ref="viewRef"
 		v-if="album_view_mode === 'list'"
 		:selected-albums="props.selectedAlbums"
 		@clicked="(e, id) => emits('clicked', e, id)"
 		@selected="(e, id) => emits('selected', e, id)"
 		@contexted="(e, id) => emits('contexted', e, id)"
+		@scrubber-layout-changed="(layout) => emits('scrubberLayoutChanged', layout)"
+		@scroll-offset-changed="(offset) => emits('scrollOffsetChanged', offset)"
 	/>
 	<AlbumThumbGridVirtual
+		ref="viewRef"
 		v-else-if="isGridDataReady"
 		:selected-albums="props.selectedAlbums"
 		@clicked="(e, id) => emits('clicked', e, id)"
 		@selected="(e, id) => emits('selected', e, id)"
 		@contexted="(e, id) => emits('contexted', e, id)"
+		@scrubber-layout-changed="(layout) => emits('scrubberLayoutChanged', layout)"
+		@scroll-offset-changed="(offset) => emits('scrollOffsetChanged', offset)"
 	/>
 </template>
 <script setup lang="ts">
@@ -25,12 +31,13 @@
  * splitter.ts usage entirely), so the prop surface collapses to just
  * selectedAlbums + the three propagated events.
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import AlbumThumbGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbGridVirtual.vue";
 import AlbumListViewVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumListViewVirtual.vue";
+import type { DateScrubLayout } from "@/v8/utils/dateScrubber";
 
 const lycheeStore = useLycheeStateStore();
 const { album_view_mode } = storeToRefs(lycheeStore);
@@ -58,5 +65,17 @@ const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
 	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
+	/** Feature 071 — forwarded from whichever view is mounted, for `AlbumPanel.vue`'s date scrubber rail. */
+	scrubberLayoutChanged: [payload: DateScrubLayout];
+	scrollOffsetChanged: [offset: number];
 }>();
+
+const viewRef = ref<InstanceType<typeof AlbumThumbGridVirtual> | InstanceType<typeof AlbumListViewVirtual> | null>(null);
+
+/** Feature 071 — the rail's scrub/jump target, forwarded from the mounted view. */
+function scrollToPixelOffset(px: number): void {
+	viewRef.value?.scrollToPixelOffset(px);
+}
+
+defineExpose({ scrollToPixelOffset });
 </script>

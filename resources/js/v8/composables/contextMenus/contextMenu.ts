@@ -63,6 +63,10 @@ function canMove(accumulator: boolean, currentValue: App.Http.Resources.Models.T
 	return accumulator && currentValue.rights.can_move;
 }
 
+function canMerge(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
+	return accumulator && currentValue.rights.can_merge;
+}
+
 function canDelete(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_delete;
 }
@@ -199,13 +203,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.copy_to",
 					icon: "lucide:copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.move",
 					icon: "lucide:folder",
 					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.delete",
@@ -298,13 +302,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.copy_all_to",
 					icon: "lucide:copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.move_all",
 					icon: "lucide:folder",
 					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.delete_all",
@@ -368,7 +372,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.merge",
 					icon: "lucide:shrink",
 					callback: albumCallbacks.toggleMerge,
-					access: selectedAlbum.rights.can_move ?? false,
+					access: selectedAlbum.rights.can_merge ?? false,
 				},
 				{
 					label: "gallery.menus.move",
@@ -406,7 +410,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.merge_all",
 				icon: "lucide:shrink",
 				callback: albumCallbacks.toggleMerge,
-				access: selectors.selectedAlbums?.value.reduce(canMove, true),
+				access: selectors.selectedAlbums?.value.reduce(canMerge, true),
 			},
 			{
 				label: "gallery.menus.move_all",

@@ -31,7 +31,13 @@ class TargetListAlbumRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_EDIT_ID, [AbstractAlbum::class, $this->albums->map(fn (Album $album): string => $album->id)->toArray()]);
+		// The source albums must be movable, not merely editable.
+		// Photo pickers pass no source album.
+		if ($this->albums->isEmpty()) {
+			return true;
+		}
+
+		return Gate::check(AlbumPolicy::CAN_MOVE_ALBUMS_ID, [AbstractAlbum::class, $this->albums->map(fn (Album $album): string => $album->id)->all()]);
 	}
 
 	/**

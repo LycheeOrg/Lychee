@@ -184,6 +184,10 @@ return [
             'upload_failed' => 'Could not upload one or more tracks',
             'name_required' => 'Name is required',
         ],
+        'date_scrubber' => [
+            'toggle' => 'Show/hide the date scrubber',
+            'albums_count' => ':count album|:count albums',
+        ],
         'hero' => [
             'created' => 'Създаден',
             'copyright' => 'Авторски права',
@@ -227,6 +231,10 @@ return [
             'aspect_ratio' => 'Задай пропорции на миниатюрите',
             'album_timeline' => 'Задай времева линия за албума',
             'photo_timeline' => 'Задай времева линия за снимките',
+            'date_scrubber' => 'Date scrubber',
+            'date_scrubber_default' => 'Default',
+            'date_scrubber_enabled' => 'Enabled',
+            'date_scrubber_disabled' => 'Disabled',
             'layout' => 'Задай оформление на снимките',
             'flow_publish_date' => 'Flow publish date',
             'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',

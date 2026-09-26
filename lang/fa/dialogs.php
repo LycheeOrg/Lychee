@@ -48,6 +48,7 @@ return [
         'album' => 'میانبرهای آلبوم',
         'slideshow' => 'شروع/توقف نمایش اسلاید',
         'toggle' => 'تغییر حالت پنل',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'میانبرهای عکس',
         'previous' => 'عکس قبلی',
         'next' => 'عکس بعدی',

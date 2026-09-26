@@ -171,6 +171,7 @@ import { useCatalogStore } from "@/stores/CatalogState";
 import { useRating } from "@/composables/photo/useRating";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
 
 const { isLTR } = useLtRorRtL();
 
@@ -384,6 +385,9 @@ function openSearch() {
 	router.push({ name: "search", params: { albumId: albumStore.album.id } });
 }
 
+// Feature 071 (FR-071-07): keyboard counterpart of the header's date scrubber toggle.
+const { isAvailable: isDateScrubberAvailable, toggleHidden: toggleDateScrubberHidden } = useAlbumDateScrubberState();
+
 definePanelShortcuts({
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
@@ -403,6 +407,7 @@ definePanelShortcuts({
 	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous(true) : photoStore.hasNext && next(true)),
 	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next(true) : photoStore.hasPrevious && previous(true)),
 	o: () => photoStore.isLoaded && rotateOverlay(),
+	d: () => !photoStore.isLoaded && isDateScrubberAvailable.value && toggleDateScrubberHidden(),
 	escape: () => {
 		if (photoStore.isLoaded && is_slideshow_active.value) {
 			stop();
@@ -446,7 +451,10 @@ definePanelShortcuts({
 		goBack();
 	},
 	// privileged album/photo actions
-	m: () => (photoStore.isLoaded ? albumStore.rights?.can_edit && toggleMove() : albumStore.rights?.can_move && hasSelection() && toggleMove()),
+	m: () =>
+		photoStore.isLoaded
+			? albumStore.rights?.can_move_content && toggleMove()
+			: albumStore.rights?.can_move_content && hasSelection() && toggleMove(),
 	delete: () =>
 		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
 	backspace: () =>

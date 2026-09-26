@@ -49,9 +49,9 @@ class QuerySearchAlbumRights
 		$query = $this->album_search->sqlQueryAlbums($tokens, $origin);
 
 		if ($user?->may_administrate === true) {
-			return $this->allGranted($query, Optional::create(), false);
+			return $this->allGranted($query, Optional::create(), false, false);
 		}
 
-		return $this->grantsResource($this->album_query_policy, $query, $user, Optional::create(), false);
+		return $this->grantsResource($this->album_query_policy, $query, $user, Optional::create(), false, false);
 	}
 }

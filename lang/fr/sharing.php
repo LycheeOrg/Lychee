@@ -37,6 +37,7 @@ return [
         'download' => 'Autorise le téléchargement',
         'upload' => 'Autorise l’envoi de fichiers',
         'edit' => 'Autorise la modification',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Autorise la suppression',
     ],
 ];

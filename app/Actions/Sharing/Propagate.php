@@ -69,6 +69,7 @@ final class Propagate
 					APC::GRANTS_UPLOAD => $permission->grants_upload,
 					APC::GRANTS_EDIT => $permission->grants_edit,
 					APC::GRANTS_DELETE => $permission->grants_delete,
+					APC::GRANTS_MOVE => $permission->grants_move,
 				]);
 				$perm->save();
 			});
@@ -152,6 +153,7 @@ final class Propagate
 						APC::GRANTS_UPLOAD => $permission->grants_upload,
 						APC::GRANTS_EDIT => $permission->grants_edit,
 						APC::GRANTS_DELETE => $permission->grants_delete,
+						APC::GRANTS_MOVE => $permission->grants_move,
 					]
 				)->all()
 			)
