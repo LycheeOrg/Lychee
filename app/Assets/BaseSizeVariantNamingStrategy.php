@@ -9,9 +9,11 @@
 namespace App\Assets;
 
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Enum\SizeVariantFormat;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
+use App\Repositories\ConfigManager;
 
 abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingStrategy
 {
@@ -36,6 +38,11 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 	 */
 	protected function generateExtension(SizeVariantType $size_variant): string
 	{
+		$forced_extension = $this->configuredExtension($size_variant);
+		if ($forced_extension !== null) {
+			return $forced_extension;
+		}
+
 		if ($size_variant === SizeVariantType::THUMB ||
 			$size_variant === SizeVariantType::THUMB2X ||
 			($size_variant !== SizeVariantType::ORIGINAL && $size_variant !== SizeVariantType::RAW && !$this->photo->isPhoto())
@@ -54,5 +61,20 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 		}
 
 		return $this->extension;
+	}
+
+	/**
+	 * Returns the extension forced by `size_variant_format` for generated
+	 * size variants, or null if the default rules above apply.
+	 */
+	private function configuredExtension(SizeVariantType $size_variant): ?string
+	{
+		if (in_array($size_variant, [SizeVariantType::ORIGINAL, SizeVariantType::RAW, SizeVariantType::PLACEHOLDER], true)) {
+			return null;
+		}
+
+		return resolve(ConfigManager::class)
+			->getValueAsEnum('size_variant_format', SizeVariantFormat::class)
+			?->extension();
 	}
 }

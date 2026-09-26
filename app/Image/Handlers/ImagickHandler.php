@@ -19,7 +19,6 @@ use App\Facades\Helpers;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\NativeLocalFile;
-use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use function Safe\fclose;
 use function Safe\filesize;
@@ -283,9 +282,11 @@ class ImagickHandler extends BaseImageHandler
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
-			$config_manager = resolve(ConfigManager::class);
-			$compression_quality = $config_manager->getValueAsInt('compression_quality');
-			$this->im_image->setImageCompressionQuality($compression_quality);
+			$format = strtolower(ltrim($file->getExtension(), '.'));
+			$this->im_image->setImageCompressionQuality($this->resolveQuality());
+			if ($format === 'webp' && $this->isLossless()) {
+				$this->im_image->setOption('webp:lossless', 'true');
+			}
 			$profiles = $this->im_image->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->im_image->stripImage();
@@ -298,7 +299,7 @@ class ImagickHandler extends BaseImageHandler
 			// we don't know if the file is a local file (or hosted elsewhere)
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
-			$this->im_image->writeImageFile($in_memory_buffer->stream(), ltrim($file->getExtension(), '.'));
+			$this->im_image->writeImageFile($in_memory_buffer->stream(), $format);
 			$stream_stat = $file->write($in_memory_buffer->read(), $collect_statistics);
 			$file->close();
 			$in_memory_buffer->close();

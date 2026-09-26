@@ -18,7 +18,6 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\InMemoryBuffer;
-use App\Repositories\ConfigManager;
 use Safe\Exceptions\ImageException;
 use function Safe\imagealphablending;
 use function Safe\imagecopyresampled;
@@ -241,15 +240,16 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
 
-			$config_manager = resolve(ConfigManager::class);
-			$compression_quality = $config_manager->getValueAsInt('compression_quality');
+			// WebP targets (see `size_variant_format`) are encoded as WebP whatever the source;
+			// other targets keep the source type.
+			$output_type = strtolower($file->getExtension()) === '.webp' ? IMAGETYPE_WEBP : $this->gd_image_type;
 
-			match ($this->gd_image_type) {
+			match ($output_type) {
 				IMAGETYPE_JPEG,
-				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $compression_quality),
+				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $this->resolveQuality()),
 				IMAGETYPE_PNG => imagepng($this->gd_image, $in_memory_buffer->stream()),
 				IMAGETYPE_GIF => imagegif($this->gd_image, $in_memory_buffer->stream()),
-				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream()),
+				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream(), $this->isLossless() ? IMG_WEBP_LOSSLESS : $this->resolveQuality()),
 				default => throw new \AssertionError('uncovered image type'),
 			};
 

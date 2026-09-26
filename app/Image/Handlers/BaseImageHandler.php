@@ -22,9 +22,31 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
+	/**
+	 * `compression_quality` value which requests lossless encoding.
+	 */
+	public const LOSSLESS_QUALITY = 0;
+
 	public function __destruct()
 	{
 		$this->reset();
+	}
+
+	/**
+	 * Whether `compression_quality` requests lossless encoding.
+	 */
+	protected function isLossless(): bool
+	{
+		return resolve(ConfigManager::class)->getValueAsInt('compression_quality') === self::LOSSLESS_QUALITY;
+	}
+
+	/**
+	 * Returns the lossy compression quality (1..100).
+	 * A lossless request maps to 100 for formats without a lossless mode (e.g. JPEG).
+	 */
+	protected function resolveQuality(): int
+	{
+		return $this->isLossless() ? 100 : resolve(ConfigManager::class)->getValueAsInt('compression_quality');
 	}
 
 	/**
