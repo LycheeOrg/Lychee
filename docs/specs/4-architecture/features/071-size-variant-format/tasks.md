@@ -8,7 +8,7 @@ _Last updated: 2026-09-26_
 
 ## Checklist
 - [x] T-071-01 – Unit tests: enum mapping and config validation (FR-071-01, FR-071-06, S-071-07, S-071-08).  
-  _Intent:_ `tests/Unit/Enum/SizeVariantFormatTest.php`, `tests/Unit/Models/SizeVariantFormatConfigSanityTest.php`.  
+  _Intent:_ `tests/Unit/Models/SizeVariantFormatConfigSanityTest.php`.  
   _Verification commands:_  
   - `php artisan test --filter=SizeVariantFormat`
 

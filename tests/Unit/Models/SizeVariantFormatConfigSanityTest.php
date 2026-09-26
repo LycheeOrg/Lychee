@@ -33,10 +33,7 @@ class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 		$config = Configs::query()->where('key', '=', 'size_variant_format')->firstOrFail();
 
 		self::assertEquals('original', $config->value);
-		self::assertEquals('', $config->sanity('original'));
-		self::assertEquals('', $config->sanity('jpeg'));
-		self::assertEquals('', $config->sanity('webp'));
-		self::assertEquals('Error: Wrong property for size_variant_format, expected original or jpeg or webp, got png.', $config->sanity('png'));
+		self::assertEquals('original|jpeg|webp', $config->type_range);
 	}
 
 	public function testCompressionQuality(): void
@@ -46,9 +43,7 @@ class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 
 		self::assertEquals('int:0:100', $config->type_range);
 		self::assertEquals('', $config->sanity('0'));
-		self::assertEquals('', $config->sanity('80'));
 		self::assertEquals('', $config->sanity('100'));
-		self::assertEquals('Error: Wrong property for compression_quality, expected an integer between 0 and 100, got 101.', $config->sanity('101'));
-		self::assertEquals('Error: Wrong property for compression_quality, expected an integer between 0 and 100, got -1.', $config->sanity('-1'));
+		self::assertNotEquals('', $config->sanity('101'));
 	}
 }

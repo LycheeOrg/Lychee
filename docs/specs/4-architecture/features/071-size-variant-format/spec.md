@@ -90,7 +90,7 @@ Settings → Image Processing (existing generic widgets, no new components):
 ## Test Strategy
 
 - **Image processing (GD + Imagick):** new cases in `tests/ImageProcessing/Image/Handlers/BaseImageHandler.php` for S-071-01..06, asserting the URL extension and the file's magic bytes (`RIFF….WEBPVP8 `/`VP8L`, JPEG `FF D8`).
-- **Unit:** `tests/Unit/Enum/SizeVariantFormatTest.php` for the enum→extension mapping, and a `Configs::sanity()` case set for S-071-07/08 in `tests/Unit/Models/SizeVariantFormatConfigSanityTest.php`.
+- **Unit:** `tests/Unit/Models/SizeVariantFormatConfigSanityTest.php` checks that the migrations store the expected `type_range`/default values and the `0`/`100`/`101` bounds (S-071-07/08; the generic enum validation is already covered by `ConfigsTest`). The enum→extension mapping is covered by the image-processing cases.
 - **REST/CLI/UI:** unchanged surfaces, so no new tests. Settings rendering reuses existing generic widgets.
 
 ## Interface & Contract Catalogue

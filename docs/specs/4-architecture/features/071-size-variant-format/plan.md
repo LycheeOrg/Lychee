@@ -40,7 +40,7 @@ After CI is green: map FR-071-01..10 to classes/tests in the table below, and co
 | Requirement | Implementation | Test |
 |-------------|----------------|------|
 | FR-071-01 | `2026_09_26_000001_add_size_variant_format_config.php` | `SizeVariantFormatConfigSanityTest` |
-| FR-071-02/03/04/05 | `SizeVariantFormat::extension()`, `BaseSizeVariantNamingStrategy::generateExtension()` | `BaseImageHandler::testSizeVariantFormat*`, `SizeVariantFormatTest` |
+| FR-071-02/03/04/05 | `SizeVariantFormat::extension()`, `BaseSizeVariantNamingStrategy::generateExtension()` | `BaseImageHandler::testSizeVariantFormat*` |
 | FR-071-06/10 | `2026_09_26_000002_bound_compression_quality.php` | `SizeVariantFormatConfigSanityTest` |
 | FR-071-07/08 | `BaseImageHandler::resolveQuality()`/`isLossless()`, `GdHandler::save()`, `ImagickHandler::save()` | `BaseImageHandler::testSizeVariantFormatWebpLossless`, `…JpegLosslessClamps` |
 | FR-071-09 | `GdHandler::save()` | `PhotosAddHandlerGDTest` (inherited cases) |
@@ -57,7 +57,7 @@ After CI is green: map FR-071-01..10 to classes/tests in the table below, and co
 ## Increment Map
 
 1. **I1 – Config + enum (≤45 min)**
-   - _Steps:_ tests first (`SizeVariantFormatTest`, `SizeVariantFormatConfigSanityTest`), then the enum and both migrations.
+   - _Steps:_ tests first (`SizeVariantFormatConfigSanityTest`), then the enum and both migrations.
    - _Commands:_ `php artisan test --filter=SizeVariantFormat`, `make phpstan`
    - _Exit:_ the unit tests are green.
 2. **I2 – Naming strategy (≤30 min)**
