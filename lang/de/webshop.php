@@ -18,7 +18,7 @@ return [
         'expirationDate' => 'Ablaufdatum',
         'month' => 'Monat',
         'year' => 'Jahr',
-        'CVV' => 'CVV',
+        'CVV' => 'Kartenprüfnummer',
         'submit' => 'Absenden',
         'invalidCardNumber' => 'Ungültige Kartennummer',
     ],
