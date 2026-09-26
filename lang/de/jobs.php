@@ -13,6 +13,6 @@ return [
     'started' => 'Gestartet',
     'col_date' => 'Datum',
     'col_status' => 'Status',
-    'col_username' => 'User',
+    'col_username' => 'Benutzer',
     'col_job' => 'Job',
 ];
