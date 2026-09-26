@@ -12,7 +12,6 @@ use App\DTO\UrlValidatedDTO;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
-
 use function Safe\inet_ntop;
 use function Safe\inet_pton;
 use function Safe\parse_url;
