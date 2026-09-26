@@ -11,10 +11,10 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Konfigurieren Sie ausgehende Webhooks, die ausgelöst werden, wenn Fotos hinzugefügt, verschoben oder gelöscht werden.',
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Es sind noch keine Webhooks konfiguriert.',
+    'create_first' => 'Erstellen Sie Ihren ersten Webhook',
     // Table columns
     'col_name' => 'Name',
     'col_event' => 'Event',
