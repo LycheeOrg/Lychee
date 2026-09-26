@@ -27,7 +27,7 @@ return [
             'left' => 'Mitte links',
             'center' => 'Mitte',
             'right' => 'Mitte rechts',
-            'bottom-left' => 'Bottom Left',
+            'bottom-left' => 'Unten links',
             'bottom' => 'Bottom Center',
             'bottom-right' => 'Bottom Right',
         ],
