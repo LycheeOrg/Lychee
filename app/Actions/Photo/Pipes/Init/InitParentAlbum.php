@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Album;
@@ -18,14 +17,14 @@ use App\SmartAlbums\HighlightedAlbum;
 /**
  * Init album.
  */
-class InitParentAlbum implements InitPipe
+class InitParentAlbum extends AbstractInitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->album === null || $state->album instanceof Album) {
 			return $next($state);
@@ -42,5 +41,10 @@ class InitParentAlbum implements InitPipe
 		}
 
 		throw new InvalidPropertyException('The given parent album does not support uploading');
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.init_parent_album';
 	}
 }
