@@ -17,8 +17,8 @@ return [
     'create_first' => 'Erstellen Sie Ihren ersten Webhook',
     // Table columns
     'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_event' => 'Veranstaltung',
+    'col_method' => 'Methode',
     'col_url' => 'URL',
     'col_format' => 'Format',
     'col_enabled' => 'Enabled',
