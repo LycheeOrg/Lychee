@@ -39,8 +39,13 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_DELETE = 'canDelete';
 	public const CAN_TRANSFER = 'canTransfer';
+	public const CAN_CHANGE_PROTECTION_POLICY = 'canChangeProtectionPolicy';
 	public const CAN_UPLOAD = 'canUpload';
 	public const CAN_EDIT = 'canEdit';
+	public const CAN_MOVE = 'canMove';
+	public const CAN_MOVE_ALBUM = 'canMoveAlbum';
+	public const CAN_MOVE_ALBUMS_ID = 'canMoveAlbumsById';
+	public const CAN_MOVE_CONTENT_ID = 'canMoveContentById';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_DELETE_ID = 'canDeleteById';
 	public const CAN_SHARE = 'canShare';
@@ -298,6 +303,75 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
+	 * Checks whether the user may move or copy the *content* of the album
+	 * (its photos and sub-albums) out of it.
+	 * This does not allow moving the album itself, see {@link AlbumPolicy::canMoveAlbum()}.
+	 *
+	 * Separate from {@link AlbumPolicy::canEdit()}: the content is movable if
+	 *  - the user is the owner of the album and has the upload privilege, or
+	 *  - a user or group permission on the album grants move.
+	 *
+	 * Public permissions never grant move.
+	 * The root album and smart albums follow the upload privilege, like canEdit.
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $album the album; `null` designates the root album
+	 *
+	 * @return bool
+	 */
+	public function canMove(User $user, AbstractAlbum|null $album): bool
+	{
+		if ($album === null || $album instanceof BaseSmartAlbum) {
+			return $user->may_upload;
+		}
+
+		if ($album instanceof BaseAlbum) {
+			return ($this->isOwner($user, $album) && $user->may_upload) ||
+				$album->current_user_permissions()?->grants_move === true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether the album itself may be moved.
+	 *
+	 * Like {@link AlbumPolicy::canDelete()}, this is decided by the parent:
+	 * an album is part of its parent's content, so moving it requires
+	 *  - the user to own the album and have the upload privilege, or
+	 *  - a user or group permission on the parent granting move.
+	 *
+	 * A root album has no parent: only its owner may move it.
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstract_album
+	 *
+	 * @return bool
+	 */
+	public function canMoveAlbum(User $user, ?AbstractAlbum $abstract_album = null): bool
+	{
+		if (!$abstract_album instanceof Album) {
+			return false;
+		}
+
+		if ($this->isOwner($user, $abstract_album)) {
+			return $user->may_upload;
+		}
+
+		if ($abstract_album->parent_id === null) {
+			return false;
+		}
+
+		return AccessPermission::query()
+			->where(APC::BASE_ALBUM_ID, '=', $abstract_album->parent_id)
+			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
+					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
+			)
+			->where(APC::GRANTS_MOVE, '=', true)
+			->exists();
+	}
+
+	/**
 	 * Check if user is allowed to USE delete in current albumn.
 	 *
 	 * @param User               $user
@@ -318,7 +392,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($this->isOwner($user, $abstract_album)) {
-			return true;
+			return $user->may_upload;
 		}
 
 		if (
@@ -353,6 +427,28 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		return $this->isOwner($user, $base_album);
+	}
+
+	/**
+	 * Checks whether the user may change the protection policy of the album:
+	 * public visibility, link requirement, password, NSFW flag and the grants
+	 * of the public share.
+	 *
+	 * This is a sharing decision, so it is reserved to the owner, like sharing
+	 * with users. Smart albums have no owner: only admins (via `before()`).
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstract_album
+	 *
+	 * @return bool
+	 */
+	public function canChangeProtectionPolicy(User $user, ?AbstractAlbum $abstract_album = null): bool
+	{
+		if (!$abstract_album instanceof BaseAlbum) {
+			return false;
+		}
+
+		return $this->isOwner($user, $abstract_album);
 	}
 
 	/**
@@ -436,17 +532,15 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the designated albums are editable by the current user.
+	 * Checks whether the designated albums may be deleted by the current user.
 	 *
-	 * See {@link AlbumQueryPolicy::isEditable()} for the definition
-	 * when an album is editable.
+	 * An album is part of its parent's content, so, like
+	 * {@link AlbumPolicy::canDelete()}, each album is deletable if
+	 *  - the user owns it and has the upload privilege, or
+	 *  - a user or group permission on its parent grants delete.
 	 *
-	 * This method is mostly only useful during deletion of albums, when no
-	 * album models are loaded for efficiency reasons.
-	 * If an album model is required anyway (because it shall be edited),
-	 * then first load the album once and use
-	 * {@link AlbumQueryPolicy::isEditable()}
-	 * instead in order to avoid several DB requests.
+	 * An album without parent (root, tag, person album) can only be deleted
+	 * by its owner.
 	 *
 	 * @param User              $user
 	 * @param array<int,string> $album_ids
@@ -457,37 +551,146 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canDeleteById(User $user, array $album_ids): bool
 	{
-		$album_ids = $this->uniquify($album_ids);
-		$num_albums = count($album_ids);
+		return $this->hasGrantOnParentsById($user, $album_ids, APC::GRANTS_DELETE);
+	}
 
-		if ($num_albums === 0) {
+	/**
+	 * Checks whether the designated albums themselves may be moved:
+	 * aggregate counterpart of {@link AlbumPolicy::canMoveAlbum()}, the move
+	 * grant on each parent.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 */
+	public function canMoveAlbumsById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnParentsById($user, $album_ids, APC::GRANTS_MOVE);
+	}
+
+	/**
+	 * Checks whether the user may delete the *content* (photos) of every
+	 * designated album. Used for deleting photos, with the albums containing
+	 * them.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function canDeleteContentById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnAllById($user, $album_ids, APC::GRANTS_DELETE);
+	}
+
+	/**
+	 * Checks whether the user may move the *content* (photos, sub-albums) out of
+	 * every designated album: aggregate counterpart of
+	 * {@link AlbumPolicy::canMove()} for regular, tag and person albums.
+	 *
+	 * @param User              $user
+	 * @param array<int,string> $album_ids
+	 *
+	 * @return bool
+	 */
+	public function canMoveContentById(User $user, array $album_ids): bool
+	{
+		return $this->hasGrantOnAllById($user, $album_ids, APC::GRANTS_MOVE);
+	}
+
+	/**
+	 * True when every designated album is either owned by the user (who then
+	 * needs the upload privilege) or has a parent on which a user or group
+	 * permission carries $grant. Albums without parent: owner only.
+	 *
+	 * Two queries, whatever the number of albums.
+	 *
+	 * @param array<int,string> $album_ids
+	 */
+	private function hasGrantOnParentsById(User $user, array $album_ids, string $grant): bool
+	{
+		$album_ids = $this->uniquify($album_ids);
+
+		if ($album_ids === []) {
 			return $user->may_upload;
 		}
 
-		if (
-			BaseAlbumImpl::query()
+		$rows = BaseAlbumImpl::query()
+			->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
+			->whereIn('base_albums.id', $album_ids)
+			->select(['base_albums.id', 'base_albums.owner_id', 'albums.parent_id'])
+			->toBase()
+			->get();
+
+		if ($rows->count() !== count($album_ids)) {
+			return false;
+		}
+
+		$foreign = $rows->filter(fn ($row) => (int) $row->owner_id !== $user->id);
+		if ($foreign->count() < $rows->count() && !$user->may_upload) {
+			return false;
+		}
+
+		if ($foreign->contains(fn ($row) => $row->parent_id === null)) {
+			return false;
+		}
+
+		/** @var array<int,string> $parent_ids */
+		$parent_ids = $foreign->pluck('parent_id')->unique()->values()->all();
+
+		return $parent_ids === [] || $this->countGrantedById($user, $parent_ids, $grant) === count($parent_ids);
+	}
+
+	/**
+	 * True when every designated album is either owned by the user (who then
+	 * needs the upload privilege) or carries $grant in a user or group
+	 * permission. Two queries, whatever the number of albums.
+	 *
+	 * @param array<int,string> $album_ids
+	 */
+	private function hasGrantOnAllById(User $user, array $album_ids, string $grant): bool
+	{
+		$album_ids = $this->uniquify($album_ids);
+
+		if ($album_ids === []) {
+			return $user->may_upload;
+		}
+
+		/** @var array<int,string> $owned_ids */
+		$owned_ids = BaseAlbumImpl::query()
 			->whereIn('id', $album_ids)
 			->where('owner_id', '=', $user->id)
-			->count() === $num_albums
-		) {
-			return $user->may_upload;
+			->pluck('id')
+			->all();
+
+		if ($owned_ids !== [] && !$user->may_upload) {
+			return false;
 		}
 
-		if (
-			AccessPermission::query()
-			->select(APC::BASE_ALBUM_ID)
+		$foreign_ids = array_values(array_diff($album_ids, $owned_ids));
+
+		return $foreign_ids === [] || $this->countGrantedById($user, $foreign_ids, $grant) === count($foreign_ids);
+	}
+
+	/**
+	 * Number of the designated albums on which a user or group permission of
+	 * $user carries $grant.
+	 *
+	 * @param array<int,string> $album_ids
+	 */
+	private function countGrantedById(User $user, array $album_ids, string $grant): int
+	{
+		return AccessPermission::query()
 			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
 			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
 					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
 			)
-			->where(APC::GRANTS_DELETE, '=', true)
+			->where($grant, '=', true)
 			->distinct()
-			->count() === $num_albums
-		) {
-			return true;
-		}
-
-		return false;
+			->count(APC::BASE_ALBUM_ID);
 	}
 
 	/**

@@ -103,6 +103,7 @@ class SharingController extends Controller
 			'grants_upload' => $request->permResource()->grants_upload,
 			'grants_edit' => $request->permResource()->grants_edit,
 			'grants_delete' => $request->permResource()->grants_delete,
+			'grants_move' => $request->permResource()->grants_move,
 		]);
 
 		AccessPermissionChanged::dispatch($perm->base_album_id);

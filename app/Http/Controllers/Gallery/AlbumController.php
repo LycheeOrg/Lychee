@@ -325,7 +325,7 @@ class AlbumController extends Controller
 		$albums = $request->albums();
 		$parent_id = $albums->count() > 0 ? $albums->first()->parent_id : null;
 
-		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id, null));
+		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id, null, editable_only: true));
 	}
 
 	/**

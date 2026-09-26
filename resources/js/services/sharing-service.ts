@@ -9,6 +9,7 @@ export type CreateSharingData = {
 	grants_upload: boolean;
 	grants_edit: boolean;
 	grants_delete: boolean;
+	grants_move: boolean;
 };
 
 export type EditSharingData = {
@@ -18,6 +19,7 @@ export type EditSharingData = {
 	grants_upload: boolean;
 	grants_edit: boolean;
 	grants_delete: boolean;
+	grants_move: boolean;
 };
 
 export type PropagateSharingData = {

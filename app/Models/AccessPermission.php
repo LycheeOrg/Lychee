@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool                            $grants_upload
  * @property bool                            $grants_edit
  * @property bool                            $grants_delete
+ * @property bool                            $grants_move
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \App\Models\BaseAlbumImpl|null  $album
@@ -52,6 +53,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsDownload($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsEdit($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsFullPhotoAccess($value)
+ * @method static AccessPermissionBuilder|AccessPermission whereGrantsMove($value)
  * @method static AccessPermissionBuilder|AccessPermission whereGrantsUpload($value)
  * @method static AccessPermissionBuilder|AccessPermission whereId($value)
  * @method static AccessPermissionBuilder|AccessPermission whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
@@ -81,6 +83,7 @@ class AccessPermission extends Model
 		APC::GRANTS_UPLOAD => 'boolean',
 		APC::GRANTS_EDIT => 'boolean',
 		APC::GRANTS_DELETE => 'boolean',
+		APC::GRANTS_MOVE => 'boolean',
 	];
 
 	/**
@@ -96,6 +99,7 @@ class AccessPermission extends Model
 		APC::GRANTS_UPLOAD,
 		APC::GRANTS_EDIT,
 		APC::GRANTS_DELETE,
+		APC::GRANTS_MOVE,
 		APC::PASSWORD,
 	];
 
@@ -165,6 +169,7 @@ class AccessPermission extends Model
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,
 			APC::GRANTS_DELETE => false,
+			APC::GRANTS_MOVE => false,
 			APC::PASSWORD => null,
 		]);
 	}
@@ -185,6 +190,7 @@ class AccessPermission extends Model
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,
 			APC::GRANTS_DELETE => false,
+			APC::GRANTS_MOVE => false,
 			APC::PASSWORD => null,
 		]);
 	}
@@ -201,6 +207,7 @@ class AccessPermission extends Model
 			APC::GRANTS_UPLOAD => true,
 			APC::GRANTS_EDIT => true,
 			APC::GRANTS_DELETE => true,
+			APC::GRANTS_MOVE => true,
 		]);
 	}
 }

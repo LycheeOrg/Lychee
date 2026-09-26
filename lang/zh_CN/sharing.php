@@ -37,6 +37,7 @@ return [
         'download' => '授予下载权限',
         'upload' => '授予上传权限',
         'edit' => '授予编辑权限',
+        'move' => 'Grants move, copy and merge',
         'delete' => '授予删除权限',
     ],
 ];

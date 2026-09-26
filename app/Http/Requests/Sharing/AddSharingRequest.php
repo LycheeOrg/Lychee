@@ -63,6 +63,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_EDIT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_DELETE_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::GRANTS_MOVE_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
 
@@ -85,6 +86,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 		$this->perm_resource = new AccessPermissionResource(
 			grants_edit: static::toBoolean($values[RequestAttribute::GRANTS_EDIT_ATTRIBUTE]),
 			grants_delete: static::toBoolean($values[RequestAttribute::GRANTS_DELETE_ATTRIBUTE]),
+			grants_move: static::toBoolean($values[RequestAttribute::GRANTS_MOVE_ATTRIBUTE]),
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),
 			grants_full_photo_access: static::toBoolean($values[RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),

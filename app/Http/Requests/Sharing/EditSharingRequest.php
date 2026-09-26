@@ -54,6 +54,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_EDIT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_DELETE_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::GRANTS_MOVE_ATTRIBUTE => ['required', 'boolean'],
 		];
 	}
 
@@ -72,6 +73,7 @@ class EditSharingRequest extends BaseApiRequest implements HasAlbumIds, HasAcces
 			grants_download: static::toBoolean($values[RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE]),
 			grants_full_photo_access: static::toBoolean($values[RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE]),
 			grants_upload: static::toBoolean($values[RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE]),
+			grants_move: static::toBoolean($values[RequestAttribute::GRANTS_MOVE_ATTRIBUTE]),
 		);
 	}
 }

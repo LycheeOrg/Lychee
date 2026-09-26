@@ -38,7 +38,7 @@
 				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
 				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
 			</template>
-			<UTooltip :text="$t('gallery.photo.actions.move')">
+			<UTooltip v-if="albumStore.rights?.can_move_content" :text="$t('gallery.photo.actions.move')">
 				<DockButton pi="lucide:folder" class="lg:hover:text-primary-500 text-white" @click="emits('toggleMove')" />
 			</UTooltip>
 			<UTooltip :text="$t('gallery.photo.actions.delete')">

@@ -19,8 +19,11 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * `can_edit`/`can_download` booleans (Non-Goals): `owner_id`/`can_delete_children`/
  * `can_move_children` are whole-response (uniform across every direct
  * child, since both checks key off `parent_id`, which is `album_id` itself
- * for every direct child); `grants_edit`/`grants_download` are per-child,
- * index-aligned with `ids`. `grants_upload`/`grants_full_photo_access` and
+ * for every direct child); `grants_edit`/`grants_download`/`grants_move` are
+ * per-child, index-aligned with `ids`. The move grant
+ * covers an album's content, so `can_move_children` (moving a child) comes
+ * from the grant on the parent, while `grants_move[i]` (moving child i's own
+ * content, as merge does) comes from the grant on the child. `grants_upload`/`grants_full_photo_access` and
  * any combined `can_*` field are deliberately not transmitted — neither
  * underlying right is offered by the right-click menu this endpoint serves
  * (Non-Goals).
@@ -41,6 +44,7 @@ class AlbumRightsResource extends Data
 	 * @param string[] $ids
 	 * @param bool[]   $grants_edit
 	 * @param bool[]   $grants_download
+	 * @param bool[]   $grants_move
 	 */
 	public function __construct(
 		public string|Optional $owner_id,
@@ -49,6 +53,7 @@ class AlbumRightsResource extends Data
 		public array $ids,
 		public array $grants_edit,
 		public array $grants_download,
+		public array $grants_move,
 	) {
 	}
 }

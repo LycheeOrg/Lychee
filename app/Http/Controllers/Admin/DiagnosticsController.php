@@ -120,6 +120,7 @@ class DiagnosticsController extends Controller
 				APC::GRANTS_EDIT,
 				APC::GRANTS_UPLOAD,
 				APC::GRANTS_DELETE,
+				APC::GRANTS_MOVE,
 				APC::PASSWORD,
 				APC::USER_ID,
 				'title',
@@ -156,6 +157,7 @@ class DiagnosticsController extends Controller
 				APC::GRANTS_EDIT,
 				APC::GRANTS_UPLOAD,
 				APC::GRANTS_DELETE,
+				APC::GRANTS_MOVE,
 				APC::PASSWORD,
 				APC::USER_ID,
 				'title',
@@ -167,6 +169,7 @@ class DiagnosticsController extends Controller
 				$e->grants_download = DbBool::parse($e->grants_download);
 				$e->grants_upload = DbBool::parse($e->grants_upload);
 				$e->grants_delete = DbBool::parse($e->grants_delete);
+				$e->grants_move = DbBool::parse($e->grants_move);
 				$e->grants_edit = DbBool::parse($e->grants_edit);
 				$e->grants_full_photo_access = DbBool::parse($e->grants_full_photo_access);
 

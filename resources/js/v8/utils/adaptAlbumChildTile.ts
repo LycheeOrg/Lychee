@@ -12,6 +12,8 @@ export const DEFAULT_ALBUM_CHILD_RIGHTS: App.Http.Resources.Rights.AlbumRightsRe
 	can_download: false,
 	can_upload: false,
 	can_move: false,
+	can_move_content: false,
+	can_merge: false,
 	can_delete: false,
 	can_transfer: false,
 	can_access_original: false,
@@ -36,7 +38,7 @@ export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 /**
  * Client-side rights combination Feature 061 deliberately left
  * unimplemented — verified to match
- * `AlbumPolicy::canEdit`/`canDownload`/`canDelete` exactly
+ * `AlbumPolicy::canEdit`/`canDownload`/`canDelete`/`canMove` exactly
  * (`app/Policies/AlbumPolicy.php:255-269,184-207,281-303`).
  *
  * `isOwner` is precomputed by the caller rather than derived here (2026-09-02
@@ -69,11 +71,19 @@ export function combineAlbumChildRights(
 	isOwner: boolean,
 	mayUpload: boolean | undefined,
 ): App.Http.Resources.Rights.AlbumRightsResource {
+	const can_delete = isOwner || rightsV3.can_delete_children;
+	// The move grant covers an album's content. Moving the child
+	// itself follows the grant on the parent (AlbumPolicy::canMoveAlbum); moving the child's
+	// own content follows the grant on the child (AlbumPolicy::canMove). Merge empties then deletes.
+	const can_move = (isOwner && (mayUpload ?? false)) || rightsV3.can_move_children;
+	const can_move_content = (isOwner && (mayUpload ?? false)) || rightsV3.grants_move[i];
 	return {
 		can_edit: (isOwner && (mayUpload ?? false)) || rightsV3.grants_edit[i],
 		can_download: isOwner || rightsV3.grants_download[i],
-		can_delete: isOwner || rightsV3.can_delete_children,
-		can_move: isOwner || rightsV3.can_move_children,
+		can_delete: can_delete,
+		can_move: can_move,
+		can_move_content: can_move_content,
+		can_merge: can_move_content && can_delete,
 		// Not offered by the right-click menu on a selection of albums
 		// (confirmed against contextMenu.ts's actual field reads) — Feature
 		// 061 deliberately excludes these signals from tier 3 (Non-Goals).

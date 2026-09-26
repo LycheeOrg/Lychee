@@ -24,6 +24,7 @@ final readonly class EffectiveAccessPermission
 		public bool $grants_upload = false,
 		public bool $grants_edit = false,
 		public bool $grants_delete = false,
+		public bool $grants_move = false,
 	) {
 	}
 
@@ -41,6 +42,7 @@ final readonly class EffectiveAccessPermission
 			grants_upload: $permissions->contains(fn (AccessPermission $p) => $p->grants_upload),
 			grants_edit: $permissions->contains(fn (AccessPermission $p) => $p->grants_edit),
 			grants_delete: $permissions->contains(fn (AccessPermission $p) => $p->grants_delete),
+			grants_move: $permissions->contains(fn (AccessPermission $p) => $p->grants_move),
 		);
 	}
 }

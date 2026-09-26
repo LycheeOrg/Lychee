@@ -8,6 +8,8 @@
 
 namespace App\Policies;
 
+use App\Assets\DbBool;
+use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\FacePermissionMode;
 use App\Enum\MetricsAccess;
@@ -27,6 +29,9 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	public const CAN_EDIT = 'canEdit';
+	public const CAN_MOVE = 'canMove';
+	public const CAN_MOVE_ID = 'canMoveById';
+	public const CAN_ACCESS_FULL_AND_DOWNLOAD_ID = 'canAccessFullAndDownloadById';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
@@ -127,6 +132,136 @@ class PhotoPolicy extends BasePolicy
 		}
 
 		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canEdit($user, $a));
+	}
+
+	/**
+	 * Checks whether the photo may be moved or copied by the current user.
+	 *
+	 * A photo is movable if the user owns it and has the upload privilege,
+	 * or if any album containing it is movable (see {@link AlbumPolicy::canMove()}).
+	 *
+	 * @param User  $user
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function canMove(User $user, Photo $photo): bool
+	{
+		if ($photo->is_validated !== true) {
+			return false;
+		}
+		if ($this->isOwner($user, $photo) && $user->may_upload) {
+			return true;
+		}
+
+		return $this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canMove($user, $a));
+	}
+
+	/**
+	 * Aggregate counterpart of {@link PhotoPolicy::canMove()} for a batch of
+	 * photos: every photo is validated and either owned
+	 * by the user (with the upload privilege) or contained in an album whose
+	 * content the user may move (owned with the upload privilege, or a user or
+	 * group permission granting move). Three queries, whatever the batch size.
+	 *
+	 * @param User     $user
+	 * @param string[] $photo_ids
+	 *
+	 * @return bool
+	 */
+	public function canMoveById(User $user, array $photo_ids): bool
+	{
+		$photo_ids = array_values(array_unique($photo_ids));
+		$rows = Photo::query()->whereIn('id', $photo_ids)->toBase()->get(['id', 'owner_id', 'is_validated']);
+
+		if ($rows->count() !== count($photo_ids) || $rows->contains(fn ($row) => !DbBool::parse($row->is_validated))) {
+			return false;
+		}
+
+		/** @var string[] $foreign_ids */
+		$foreign_ids = $rows
+			->filter(fn ($row) => !($user->may_upload && (int) $row->owner_id === $user->id))
+			->pluck('id')->all();
+
+		return $foreign_ids === [] ||
+			$this->countPhotosWithAlbumGrant($user, $foreign_ids, APC::GRANTS_MOVE, owned_album_counts: $user->may_upload, public_counts: false) === count($foreign_ids);
+	}
+
+	/**
+	 * Aggregate counterpart of {@link PhotoPolicy::canAccessFullPhoto()} &&
+	 * {@link PhotoPolicy::canDownload()} for a batch of photos (cross-owner
+	 * guard): every photo is owned by the user, or has a
+	 * containing album granting full-photo access and one granting download
+	 * (album owned by the user, or a user, group or public permission; a public
+	 * permission with a password only once the album is unlocked).
+	 * Three queries, whatever the batch size.
+	 *
+	 * @param User     $user
+	 * @param string[] $photo_ids
+	 *
+	 * @return bool
+	 */
+	public function canAccessFullAndDownloadById(User $user, array $photo_ids): bool
+	{
+		$photo_ids = array_values(array_unique($photo_ids));
+
+		/** @var string[] $foreign_ids */
+		$foreign_ids = Photo::query()
+			->whereIn('id', $photo_ids)
+			->where('owner_id', '!=', $user->id)
+			->pluck('id')->all();
+
+		if ($foreign_ids === []) {
+			return true;
+		}
+
+		$count = count($foreign_ids);
+
+		return $this->countPhotosWithAlbumGrant($user, $foreign_ids, APC::GRANTS_FULL_PHOTO_ACCESS, owned_album_counts: true, public_counts: true) === $count &&
+			$this->countPhotosWithAlbumGrant($user, $foreign_ids, APC::GRANTS_DOWNLOAD, owned_album_counts: true, public_counts: true) === $count;
+	}
+
+	/**
+	 * Number of the designated photos contained in at least one album that the
+	 * user owns (when $owned_album_counts) or on which a user or group (or public,
+	 * when $public_counts and the album has no password or is unlocked)
+	 * permission carries $grant.
+	 *
+	 * @param string[] $photo_ids
+	 */
+	private function countPhotosWithAlbumGrant(User $user, array $photo_ids, string $grant, bool $owned_album_counts, bool $public_counts): int
+	{
+		/** @var int[] $group_ids */
+		$group_ids = $user->user_groups->pluck('id')->all();
+		$unlocked_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		return DB::table(PA::PHOTO_ALBUM)
+			->join('base_albums', 'base_albums.id', '=', PA::ALBUM_ID)
+			->whereIn(PA::PHOTO_ID, $photo_ids)
+			->where(fn ($q) => $q
+				->when($owned_album_counts, fn ($q1) => $q1->orWhere('base_albums.owner_id', '=', $user->id))
+				->orWhereExists(fn ($q2) => $q2
+					->from(APC::ACCESS_PERMISSIONS, 'grant_perm')
+					->selectRaw('1')
+					->whereColumn('grant_perm.' . APC::BASE_ALBUM_ID, '=', PA::ALBUM_ID)
+					->where('grant_perm.' . $grant, '=', true)
+					->where(fn ($q3) => $q3
+						->where('grant_perm.' . APC::USER_ID, '=', $user->id)
+						->orWhereIn('grant_perm.' . APC::USER_GROUP_ID, $group_ids)
+						->when($public_counts, fn ($q4) => $q4->orWhere(fn ($q5) => $q5
+							->whereNull('grant_perm.' . APC::USER_ID)
+							->whereNull('grant_perm.' . APC::USER_GROUP_ID)
+							// Like AlbumPolicy::canAccess(): a password-protected public share counts only once unlocked.
+							->where(fn ($q6) => $q6
+								->whereNull('grant_perm.' . APC::PASSWORD)
+								->orWhereIn('grant_perm.' . APC::BASE_ALBUM_ID, $unlocked_ids)
+							)
+						))
+					)
+				)
+			)
+			->distinct()
+			->count(PA::PHOTO_ID);
 	}
 
 	/**
@@ -252,7 +387,8 @@ class PhotoPolicy extends BasePolicy
 			->groupBy(PA::ALBUM_ID)
 			->pluck('album_id')->all();
 
-		return $this->album_policy->canDeleteById($user, $parent_ids);
+		// A photo is content of its albums: the delete grant is checked on them.
+		return $this->album_policy->canDeleteContentById($user, $parent_ids);
 	}
 
 	/**

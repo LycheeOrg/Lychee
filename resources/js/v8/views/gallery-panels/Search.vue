@@ -565,7 +565,7 @@ definePanelShortcuts({
 	i: () => photoStore.isLoaded && toggleDetails(),
 
 	// Priviledged Photo operations
-	m: () => photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove(),
+	m: () => photoStore.isLoaded && albumStore.rights?.can_move_content && toggleMove(),
 	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
 	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
 	delete: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),

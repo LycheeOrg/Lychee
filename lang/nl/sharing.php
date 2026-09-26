@@ -37,6 +37,7 @@ return [
         'download' => 'Geeft downloadrechten',
         'upload' => 'Geeft uploadrechten',
         'edit' => 'Geeft bewerkingsrechten',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Geeft verwijderrechten',
     ],
 ];
