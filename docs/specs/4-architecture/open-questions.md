@@ -6,6 +6,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-071-07~~ | 071 – Size-Variant Format | Medium | Review of PR #4790: `IMG_WEBP_LOSSLESS` exists only when libgd defines `gdWebpLossless` (libgd ≥ 2.3.3), while `imagewebp()` exists with any WebP-enabled GD (PHP allows external libgd ≥ 2.1.0). With quality `0` + `webp` on such builds, GD raises `Undefined constant`. How should GD behave? | Resolved (Option C — clear `MediaFileOperationException` plus a `GDSupportCheck` warning; owner, 2026-09-26; FR-071-07, FR-071-11) | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-06~~ | 071 – Size-Variant Format | Medium | Review of PR #4790 (CodeRabbit): with `size_variant_format = jpeg`, GD still writes PNG bytes into `.jpeg` files for PNG originals (the Q-071-04 quirk now reaches `small`/`medium` too, and the setting explicitly promises JPEG). Revisit Q-071-04? | Resolved (Option A — GD encodes by target extension for every format; owner, 2026-09-26: "a mismatch between extension and real format is worse than any other possible problem"; supersedes Q-071-04; FR-071-09) | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-05~~ | 071 – Size-Variant Format | Medium | Upstream issue LycheeOrg/Lychee#1888 asks for a **per-size** quality (e.g. medium 90 / small 80 / thumb 70); Feature 071 ships one global quality (N-071-06). Extend 071, or ship 071 as a partial answer and do per-size quality as a follow-up? | Resolved (Option A — ship 071 as is, PR references #1888 as partially addressed, per-size quality is a follow-up; owner, 2026-09-26: "Выбираю А") | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-01~~ | 071 – Size-Variant Format | Medium | Where does "lossless" live: reuse `compression_quality` with `0` = lossless, or add a dedicated WebP quality key? | Resolved directly (Option A — reuse `compression_quality`, re-typed `positive` → `int:0:100`; follows the owner's own suggestion "accept 0 … as lossless"; FR-071-06) | 2026-09-26 | 2026-09-26 |
@@ -202,6 +203,20 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-071-07~~ · Lossless WebP on GD builds without `IMG_WEBP_LOSSLESS` ✅ RESOLVED
+
+**Status:** Resolved by the owner, 2026-09-26 — Option C. Encoded in spec FR-071-07 (failure path) and FR-071-11.  
+**Feature:** F-071  
+**Priority:** Medium
+
+Raised by the automated review on LycheeOrg/Lychee#4790 and verified against php-src PHP-8.4 (`ext/gd/gd.stub.php`: the constant sits under `#ifdef gdWebpLossless`, `imagewebp()` under `#ifdef HAVE_GD_WEBP`) and libgd (`gdWebpLossless` first appears in 2.3.3; `config.m4` accepts external `gdlib >= 2.1.0`). The earlier reply on the PR, which said the constant is only missing without WebP support, was wrong.
+
+- **Option A (recommended) — throw a clear `MediaFileOperationException('Lossless WebP encoding is not supported by this GD build')`, as the reviewer suggested.** One line, and the failure is explicit. The admin sees exactly why and can set quality 1–100 or enable Imagick.
+- **Option B — fall back to lossy quality 100 and log a warning.** Uploads keep working, but the admin asked for lossless and silently gets lossy output. This is also a fallback AGENTS.md discourages unless requested.
+- **Option C — Option A plus a diagnostics warning (`GDSupportCheck`) when `compression_quality = 0`, `size_variant_format = webp`, and `IMG_WEBP_LOSSLESS` is undefined.** The problem shows on the diagnostics page before uploads fail. It needs a few more lines and a test.
+
+---
 
 ### ~~Q-071-06~~ · GD writes PNG bytes into `.jpeg` variants (revisits Q-071-04) ✅ RESOLVED
 

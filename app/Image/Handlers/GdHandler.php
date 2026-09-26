@@ -261,7 +261,7 @@ class GdHandler extends BaseImageHandler
 				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $this->resolveQuality()),
 				IMAGETYPE_PNG => imagepng($this->gd_image, $in_memory_buffer->stream()),
 				IMAGETYPE_GIF => imagegif($this->gd_image, $in_memory_buffer->stream()),
-				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream(), $this->isLossless() ? IMG_WEBP_LOSSLESS : $this->resolveQuality()),
+				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream(), $this->webpQuality()),
 				default => throw new \AssertionError('uncovered image type'),
 			};
 
@@ -273,6 +273,33 @@ class GdHandler extends BaseImageHandler
 		} catch (\ErrorException|ImageException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
+	}
+
+	/**
+	 * Whether this GD build can encode lossless WebP.
+	 * `IMG_WEBP_LOSSLESS` is only defined when libgd provides `gdWebpLossless` (libgd >= 2.3.3),
+	 * while `imagewebp()` exists with any WebP-enabled build.
+	 */
+	public static function supportsLosslessWebp(): bool
+	{
+		return defined('IMG_WEBP_LOSSLESS');
+	}
+
+	/**
+	 * Returns the quality argument for `imagewebp()`.
+	 *
+	 * @throws MediaFileOperationException if lossless is requested but not supported by this GD build
+	 */
+	private function webpQuality(): int
+	{
+		if (!$this->isLossless()) {
+			return $this->resolveQuality();
+		}
+		if (!static::supportsLosslessWebp()) {
+			throw new MediaFileOperationException('Lossless WebP encoding is not supported by this GD build; set compression_quality to 1-100 or enable Imagick');
+		}
+
+		return IMG_WEBP_LOSSLESS;
 	}
 
 	/**

@@ -35,6 +35,12 @@ _Last updated: 2026-09-26_
 
 - [x] T-071-08 – Quality gate (CI): `vendor/bin/php-cs-fixer fix`, `php artisan test`, `make phpstan`; complete the drift gate in plan.md.
 
+- [x] T-071-09 – Lossless WebP guard on GD builds without `IMG_WEBP_LOSSLESS`, plus a diagnostics warning (FR-071-07, FR-071-11, S-071-09; Q-071-07).  
+  _Intent:_ tests first: `tests/Unit/Image/Handlers/GdHandlerLosslessWebpTest.php` and `tests/Unit/Actions/Diagnostics/GDSupportCheckTest.php` (red before the implementation), then `GdHandler::supportsLosslessWebp()`/`webpQuality()` and `GDSupportCheck::isLosslessWebpUnsupported()`.  
+  _Verification commands:_  
+  - `php artisan test --filter="GdHandlerLosslessWebpTest|GDSupportCheckTest"`  
+  - `make phpstan`
+
 ## Notes / TODOs
 - The Imagick variants of the `BaseImageHandler` cases (`PhotosAddHandlerImagickTest`) are skipped when `ext-imagick` is not installed and are covered by CI on the pull request. The GD variants and all unit tests were run locally.
 - T-071-08 local results: `php-cs-fixer` clean, PHPStan `[OK] No errors`, Unit and ImageProcessing suites without regressions against the 7.9.0 baseline, `tests/Feature_v2/Settings` and `Install` green, `migrate:rollback --step=2` followed by `migrate` round-trips both migrations.

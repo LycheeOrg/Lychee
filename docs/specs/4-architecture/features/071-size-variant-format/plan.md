@@ -44,12 +44,14 @@ After CI is green: map FR-071-01..10 to classes/tests in the table below, and co
 | FR-071-06/10 | `2026_09_26_000002_bound_compression_quality.php` | `SizeVariantFormatConfigSanityTest` |
 | FR-071-07/08 | `BaseImageHandler::resolveQuality()`/`isLossless()`, `GdHandler::save()`, `ImagickHandler::save()` | `BaseImageHandler::testSizeVariantFormatWebpLossless`, `…JpegLosslessClamps` |
 | FR-071-09 | `GdHandler::save()` | `PhotosAddHandlerGDTest` (inherited cases) |
+| FR-071-11 (and FR-071-07 failure path) | `GdHandler::supportsLosslessWebp()`/`webpQuality()`, `GDSupportCheck::isLosslessWebpUnsupported()` | `GdHandlerLosslessWebpTest`, `GDSupportCheckTest` |
 
 **Drift gate report (2026-09-26):**
 - Every FR maps to the implementation and tests in the table above. No undocumented behaviour was added. The one addition is the `size_variant_format` documentation/details keys in all `lang/*/all_settings.php` files, following the convention of the latest config additions and recorded in the spec's Documentation Deliverables.
 - The tests fail without the implementation (4 of 5 image-processing cases). `testSizeVariantFormatOriginalKeepsExtensions` passes on both sides by design, as a regression guard for G3.
 - `git diff --stat resources/js` is empty (NFR-071-02), and `composer.json`/`package.json` are unchanged (NFR-071-01).
 - Review of the pull request (automated reviewer) led to Q-071-06: GD now encodes by target extension for every format, and encoder exceptions are wrapped in `MediaFileOperationException`. The image-processing tests assert the content signature of JPEG and PNG variants too.
+- A second review round found that `IMG_WEBP_LOSSLESS` depends on libgd >= 2.3.3, independently of WebP support (verified against php-src PHP-8.4 `ext/gd/gd.stub.php` and libgd headers). This became Q-071-07, Option C.
 - Owner feedback applied: `compression_quality` is labelled "Quality of generated size variants", and the meaning of `0` lives in the details text.
 
 ## Increment Map

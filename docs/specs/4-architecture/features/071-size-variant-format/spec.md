@@ -42,10 +42,11 @@ This feature adds an admin setting that selects the output format of generated s
 | FR-071-04 | When `size_variant_format` is `original`, extension selection is exactly the pre-feature behaviour: `thumb`/`thumb2x` and all non-photo variants use `.jpeg`, while `small`/`medium` families inherit the original's extension. | No behaviour change. | n/a | n/a | None. | G3; Q-071-03 |
 | FR-071-05 | `ORIGINAL`, `RAW`, and `PLACEHOLDER` extensions are never affected by `size_variant_format`. | Originals keep their extension; placeholders stay `.webp`. | n/a | n/a | None. | N-071-03, N-071-05 |
 | FR-071-06 | `compression_quality` is re-typed from `positive` to `int:0:100`. `1–100` is the lossy quality. `0` means lossless. | Settings renders a bounded number field (existing `int:` branch in `ConfigGroup.vue`). | Values outside `0–100` or non-digits are rejected by the existing bounded-int branch of `Configs::sanity()`. | n/a | None. | Owner request ("0 or lossless as lossless"); Q-071-01 |
-| FR-071-07 | With `compression_quality = 0`, WebP output is encoded losslessly: `IMG_WEBP_LOSSLESS` on GD, `webp:lossless=true` on Imagick. | WebP files carry a `VP8L` chunk. | n/a | As FR-071-02. | None. | Owner request |
+| FR-071-07 | With `compression_quality = 0`, WebP output is encoded losslessly: `IMG_WEBP_LOSSLESS` on GD, `webp:lossless=true` on Imagick. | WebP files carry a `VP8L` chunk. | n/a | On GD builds whose libgd lacks `gdWebpLossless` (libgd < 2.3.3; `IMG_WEBP_LOSSLESS` undefined), saving throws `MediaFileOperationException('Lossless WebP encoding is not supported by this GD build; …')`. There is no silent lossy fallback (Q-071-07). | None. | Owner request; Q-071-07 |
 | FR-071-08 | With `compression_quality = 0`, formats without a lossless mode (JPEG, and any other re-encode such as an auto-rotated original) are encoded at the maximum quality, `100`. | JPEG output is valid and maximum quality. | n/a | n/a | None. | Q-071-02 |
 | FR-071-09 | GD's `save()` encodes by the **target** file extension for every supported format (`.jpg`/`.jpeg`/`.png`/`.gif`/`.webp`) and falls back to the source type only for other extensions, so a file's content always matches its extension. Imagick already writes by extension. | A `.jpeg` thumb of a PNG original contains JPEG bytes. Transparency is lost in JPEG targets, as with Imagick. | n/a | Encoder failures (`Safe\Exceptions\ImageException`) are wrapped in `MediaFileOperationException('Failed to save image')`. | None. | Q-071-06 (supersedes Q-071-04) |
 | FR-071-10 | The existing up-migration value of `compression_quality` is preserved. The down-migration restores `positive` and rewrites a stored `0` to `100`, so the old validator accepts it. | Round-trip migration is safe. | n/a | n/a | None. | Constitution: reversible migrations |
+| FR-071-11 | `GDSupportCheck` warns when Imagick is not in use, `size_variant_format = webp`, `compression_quality = 0`, and GD cannot encode lossless WebP. | The diagnostics page shows the warning before uploads fail. | Skipped while `size_variant_format` does not exist yet (pending migrations). | n/a | Diagnostics warning `GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED`. | Q-071-07 |
 
 ## Non-Functional Requirements
 
@@ -84,6 +85,7 @@ Settings → Image Processing (existing generic widgets, no new components):
 | S-071-06 | `jpeg` + quality `0`: upload succeeds and JPEG is written (quality clamps to 100). |
 | S-071-07 | `size_variant_format` set to an unknown value: rejected by config validation. |
 | S-071-08 | `compression_quality` set to `101` or `-1`: rejected by config validation. |
+| S-071-09 | Quality `0` + `webp` on a GD build without `IMG_WEBP_LOSSLESS`: saving throws a clear `MediaFileOperationException`, lossy WebP still works, and diagnostics warn. |
 
 ## Test Strategy
 
