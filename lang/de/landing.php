@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,9 +9,9 @@ return [
     'access_gallery' => 'Zugang zur Galerie',
     'Powered_by_Lychee' => 'Unterstützt von Lychee',
     'copyright' => 'Alle Bilder auf dieser Website unterliegen dem Copyright von %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'client_login' => 'Client-Login',
+    'view_public_gallery' => 'Öffentliche Galerie anzeigen',
+    'contact' => 'Kontakt',
     'portfolio' => [
         'about' => 'About',
         'featured' => 'Recent Work',
