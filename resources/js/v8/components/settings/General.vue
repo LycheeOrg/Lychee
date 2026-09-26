@@ -154,6 +154,12 @@
 				:mapper="SelectBuilders.buildOverlay"
 				@filled="save"
 			/>
+			<BoolField
+				v-if="album_date_scrubber_enabled !== undefined"
+				:label="$t('settings.gallery.album_date_scrubber_enabled')"
+				:config="album_date_scrubber_enabled"
+				@filled="save"
+			/>
 			<!-- <BoolField
 				v-if="rounded_corners_enabled !== undefined"
 				:label="$t('settings.gallery.rounded_corners_enabled')"
@@ -290,6 +296,7 @@ const albumSortingOrder = ref<App.Http.Resources.Models.ConfigResource | undefin
 const album_decoration = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const album_decoration_orientation = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const image_overlay_type = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const album_date_scrubber_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const default_license = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const aspectRatio = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const lang = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -373,6 +380,7 @@ function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
 	album_decoration.value = configurations.find((config) => config.key === "album_decoration");
 	album_decoration_orientation.value = configurations.find((config) => config.key === "album_decoration_orientation");
 	image_overlay_type.value = configurations.find((config) => config.key === "image_overlay_type");
+	album_date_scrubber_enabled.value = configurations.find((config) => config.key === "album_date_scrubber_enabled");
 	// rounded_corners_enabled.value = configurations.find((config) => config.key === "rounded_corners_enabled");
 	// album_border_enabled.value = configurations.find((config) => config.key === "album_border_enabled");
 	// photo_ken_burns_on_hover_enabled.value = configurations.find((config) => config.key === "photo_ken_burns_on_hover_enabled");

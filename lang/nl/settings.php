@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Toon decoraties op albumhoes (sub-album en/of aantal foto’s)',
         'album_decoration_direction' => 'Lijn albumdecoraties horizontaal of verticaal uit',
         'photo_overlay' => 'Standaard overlay-informatie voor afbeeldingen',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Rond de hoeken van foto- en albumminiaturen af',
         'album_border_enabled' => 'Toon een rand rond foto- en albumminiaturen',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

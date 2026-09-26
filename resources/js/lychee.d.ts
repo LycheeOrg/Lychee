@@ -436,6 +436,7 @@ declare namespace App {
 					cover_id: string | null;
 					album_timeline: App.Enum.TimelineAlbumGranularity | null;
 					photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+					is_date_scrubber_enabled: boolean | null;
 					published_at: string | null;
 					tags: string[];
 					persons: App.Http.Resources.Models.Utils.PersonNameResource[];
@@ -548,6 +549,10 @@ declare namespace App {
 					photo_layout: App.Enum.PhotoLayoutType;
 					is_album_timeline_enabled: boolean;
 					is_photo_timeline_enabled: boolean;
+					is_date_scrubber_enabled: boolean;
+					photo_date_scrubber_field: string | null;
+					album_date_scrubber_field: string | null;
+					date_scrubber_label_format: string;
 				};
 				export type ContactConfig = {
 					is_contact_form_enabled: boolean;

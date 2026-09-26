@@ -84,7 +84,7 @@
 		>
 			<span :dir>{{ hoverBucket.label }}</span>
 			<em class="ms-2 font-mono not-italic text-xs font-normal text-muted">{{
-				trans_choice("gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
+				trans_choice(props.countLabelKey ?? "gallery.timeline.photos_count", hoverBucket.count, { count: hoverBucket.count.toString() })
 			}}</em>
 		</div>
 	</div>
@@ -136,6 +136,8 @@ const props = defineProps<{
 	lensFalloff: number;
 	/** How much dates are enlarged at the lens's focal line — admin-configurable `timeline_lens_magnification` (already divided by 10 by the caller). */
 	lensMagnification: number;
+	/** Feature 071: pluralized lang key for the readout pill's count — album views counting sub-albums pass their own. */
+	countLabelKey?: string;
 }>();
 
 const emits = defineEmits<{

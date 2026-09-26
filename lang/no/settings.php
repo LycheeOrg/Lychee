@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Vis dekorasjoner på albumforside (antall underalbum og/eller bilder)',
         'album_decoration_direction' => 'Juster albumdekorasjoner horisontalt eller vertikalt',
         'photo_overlay' => 'Standard informasjon for bildeoverlegg',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Avrund hjørnene på bilde- og albumminiatyrer',
         'album_border_enabled' => 'Vis en kant rundt bilde- og albumminiatyrer',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

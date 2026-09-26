@@ -33,6 +33,8 @@ export type UpdateAbumData = {
 	is_pinned: boolean;
 	album_timeline: App.Enum.TimelineAlbumGranularity | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	// Feature 071 (FR-071-02): optional - omitting leaves the existing override untouched; `null` follows the global setting.
+	is_date_scrubber_enabled?: boolean | null;
 	// Feature 068 (FR-068-13): optional - omitting leaves the existing value
 	// untouched; `null` clears it. ISO-8601 string with an explicit offset.
 	published_at?: string | null;
@@ -56,6 +58,8 @@ export type UpdateTagAlbumData = {
 	copyright: string | null;
 	photo_layout: App.Enum.PhotoLayoutType | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	// Feature 071 (FR-071-02): optional - omitting leaves the existing override untouched; `null` follows the global setting.
+	is_date_scrubber_enabled?: boolean | null;
 	is_pinned: boolean;
 	is_and: boolean;
 };
@@ -77,6 +81,8 @@ export type UpdatePersonAlbumData = {
 	copyright: string | null;
 	photo_layout: App.Enum.PhotoLayoutType | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	// Feature 071 (FR-071-02): optional - omitting leaves the existing override untouched; `null` follows the global setting.
+	is_date_scrubber_enabled?: boolean | null;
 	is_pinned: boolean;
 	is_and: boolean;
 };

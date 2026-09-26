@@ -57,6 +57,9 @@
 							</template>
 							<AlbumThumbPanelVirtual
 								v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
+								ref="albumPanelVirtualRef"
+								@scrubber-layout-changed="onAlbumScrubberLayout"
+								@scroll-offset-changed="onAlbumScrubberScroll"
 								:selected-albums="selectedAlbumsIds"
 								@clicked="albumSelect"
 								@selected="albumSelect"
@@ -94,6 +97,9 @@
 							<!-- Tag Filter -->
 							<PhotoThumbPanelVirtual
 								v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
+								ref="photoPanelVirtualRef"
+								@scrubber-layout-changed="onPhotoScrubberLayout"
+								@scroll-offset-changed="onPhotoScrubberScroll"
 								header="gallery.album.header_photos"
 								:selected-photos="selectedPhotosIds"
 								@clicked="photoClick"
@@ -153,6 +159,20 @@
 				</template>
 				<GalleryFooter v-if="albumStore.album" v-once context="album" />
 			</div>
+			<!-- Feature 071: the Timeline's date scrubber rail, fed day-level entries derived from the single grid this album shows. -->
+			<TimelineDatesV3
+				v-if="isDateScrubberVisible && dateScrubberLayout !== null"
+				:buckets="dateScrubberBuckets"
+				:bucket-layout="dateScrubberLayout.entries"
+				:total-height="dateScrubberLayout.totalHeight"
+				:scroll-offset="activeScrollOffset"
+				:lens-height="lycheeStore.timeline_lens_height"
+				:lens-falloff="lycheeStore.timeline_lens_falloff / 10"
+				:lens-magnification="lycheeStore.timeline_lens_magnification / 10"
+				:count-label-key="dateScrubberSource === 'albums' ? 'gallery.album.date_scrubber.albums_count' : undefined"
+				@load="jumpToDateScrubberEntry"
+				@scrub="scrubDateScrubberTo"
+			/>
 		</div>
 	</UMain>
 </template>
@@ -167,6 +187,9 @@ import AlbumHero from "@/v8/components/gallery/albumModule/AlbumHero.vue";
 import AlbumEdit from "@/v8/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/v8/components/headers/AlbumHeader.vue";
 import AlbumNavPanel from "@/v8/components/gallery/albumModule/AlbumNavPanel.vue";
+import TimelineDatesV3 from "@/v8/components/gallery/timelineModule/TimelineDatesV3.vue";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
+import { toRailBuckets, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
@@ -203,7 +226,7 @@ import type { ContextMenuItem } from "@nuxt/ui";
 const router = useRouter();
 const toast = useAppToast();
 
-defineProps<{
+const props = defineProps<{
 	isPhotoOpen: boolean;
 }>();
 
@@ -231,6 +254,57 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+
+// --- Feature 071: album date scrubber ---
+
+const {
+	source: dateScrubberSource,
+	activeLayout: dateScrubberLayout,
+	activeScrollOffset,
+	isAvailable: isDateScrubberAvailable,
+	isHidden: isDateScrubberHidden,
+	resetLayouts: resetDateScrubberLayouts,
+	photoLayout,
+	albumLayout,
+	photoScrollOffset,
+	albumScrollOffset,
+} = useAlbumDateScrubberState();
+resetDateScrubberLayouts();
+
+const albumPanelVirtualRef = ref<InstanceType<typeof AlbumThumbPanelVirtual> | null>(null);
+const photoPanelVirtualRef = ref<InstanceType<typeof PhotoThumbPanelVirtual> | null>(null);
+
+const isDateScrubberVisible = computed(() => isDateScrubberAvailable.value && !isDateScrubberHidden.value && !props.isPhotoOpen);
+const dateScrubberBuckets = computed(() => toRailBuckets(dateScrubberLayout.value?.entries ?? []));
+
+function onAlbumScrubberLayout(layout: DateScrubLayout): void {
+	albumLayout.value = layout;
+}
+function onPhotoScrubberLayout(layout: DateScrubLayout): void {
+	photoLayout.value = layout;
+}
+function onAlbumScrubberScroll(offset: number): void {
+	albumScrollOffset.value = offset;
+}
+function onPhotoScrubberScroll(offset: number): void {
+	photoScrollOffset.value = offset;
+}
+
+/** Drag-scrub, and the in-place jump below — never a route push (FR-071-10). */
+function scrubDateScrubberTo(px: number): void {
+	if (dateScrubberSource.value === "albums") {
+		albumPanelVirtualRef.value?.scrollToPixelOffset(px);
+		return;
+	}
+	photoPanelVirtualRef.value?.scrollToPixelOffset(px);
+}
+
+function jumpToDateScrubberEntry(bucketId: string): void {
+	const entry = dateScrubberLayout.value?.entries.find((e) => e.bucketId === bucketId);
+	if (entry !== undefined) {
+		scrubDateScrubberTo(entry.top);
+	}
+}
 const { is_download_album_visible } = storeToRefs(togglableStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;

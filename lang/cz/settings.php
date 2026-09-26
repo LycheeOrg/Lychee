@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Zobrazit dekorace na obálce alba (počet podalb a/nebo fotografií)',
         'album_decoration_direction' => 'Zarovnat dekorace alba vodorovně nebo svisle',
         'photo_overlay' => 'Výchozí informace o překrytí obrázků',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Zaoblit rohy miniatur fotografií a alb',
         'album_border_enabled' => 'Zobrazit okraj kolem miniatur fotografií a alb',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
