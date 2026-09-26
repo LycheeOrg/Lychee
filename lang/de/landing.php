@@ -15,7 +15,7 @@ return [
     'portfolio' => [
         'about' => 'Über',
         'featured' => 'Aktuelle Arbeiten',
-        'scroll_down' => 'Scroll down',
+        'scroll_down' => 'Nach unten scrollen',
     ],
     'meridian' => [
         'explore_label' => 'Explore',
@@ -23,6 +23,6 @@ return [
         'contact_caption' => 'Get in touch',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Willkommen zurück',
     ],
 ];
