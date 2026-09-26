@@ -30,7 +30,7 @@ return [
         'upload_trust_level_trusted' => 'Vertrauenswürdig – Uploads sind sofort öffentlich.',
         'trust_level_options' => [
             'trusted' => 'Vertrauenswürdig',
-            'trust_but_verify' => 'Trust but Verify',
+            'trust_but_verify' => 'Vertrauen ist gut, Kontrolle ist besser',
             'monitor' => 'Überwachen',
             'check' => 'Prüfen',
         ],
