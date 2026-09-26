@@ -252,7 +252,7 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
 
-			// Encode by target extension so that the content always matches it
+			// Encode by target extension so that the content matches it for the mapped extensions
 			// (e.g. a `.jpeg` thumb of a PNG original is a real JPEG).
 			$output_type = self::OUTPUT_TYPES[strtolower($file->getExtension())] ?? $this->gd_image_type;
 
