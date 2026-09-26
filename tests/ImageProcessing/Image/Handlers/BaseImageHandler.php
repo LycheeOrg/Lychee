@@ -296,15 +296,19 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-071-01, S-071-02: default format keeps the pre-feature extensions.
+	 * S-071-01, S-071-02: default format keeps the pre-feature extensions,
+	 * and each file's content matches its extension.
 	 */
 	public function testSizeVariantFormatOriginalKeepsExtensions(): void
 	{
 		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'original', 90);
+		$files = $this->generatedVariantFiles($photo);
 
 		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
 		self::assertStringEndsWith('.jpeg', $photo['size_variants']['thumb']['url']);
+		self::assertEquals("\xFF\xD8", substr($files['thumb'], 0, 2));
 		self::assertStringEndsWith('.png', $photo['size_variants']['small']['url']);
+		self::assertEquals("\x89PNG", substr($files['small'], 0, 4));
 	}
 
 	/**
@@ -315,8 +319,9 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'jpeg', 90);
 
 		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
-		foreach (array_keys($this->generatedVariantFiles($photo)) as $variant) {
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
 			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
 		}
 	}
 

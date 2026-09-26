@@ -28,7 +28,7 @@ This feature adds an admin setting that selects the output format of generated s
 - N-071-01: Converting already-generated size variants. Existing rows keep their paths and remain served as-is. Operators who want existing thumbnails re-encoded use the existing delete-and-regenerate procedure (`lychee:generate_thumbs`, `lychee:video_data`).
 - N-071-02: AVIF or other formats. They are not requested, and GD cannot write AVIF on every build.
 - N-071-03: Changing the placeholder format (already WebP, stored inline in the DB) or the watermark file format (always JPEG, `WatermarkGroupedWithRandomSuffixNamingStrategy`).
-- N-071-04: Fixing GD's pre-existing behaviour of encoding by **source** type rather than target extension for non-WebP targets (for example, PNG bytes inside a `.jpeg` thumb). See Q-071-04. This feature only adds the WebP route.
+- N-071-04: *(withdrawn — see FR-071-09 and Q-071-06).*
 - N-071-05: Changing the original's format or the RAW→JPEG conversion (`RawToJpeg`, fixed quality 92).
 - N-071-06: Per-variant formats or quality. One format and one quality apply to all generated variants. This only partially addresses [LycheeOrg/Lychee#1888](https://github.com/LycheeOrg/Lychee/issues/1888): it covers WebP quality, while per-size quality is a follow-up (Q-071-05, Option A).
 
@@ -44,7 +44,7 @@ This feature adds an admin setting that selects the output format of generated s
 | FR-071-06 | `compression_quality` is re-typed from `positive` to `int:0:100`. `1–100` is the lossy quality. `0` means lossless. | Settings renders a bounded number field (existing `int:` branch in `ConfigGroup.vue`). | Values outside `0–100` or non-digits are rejected by the existing bounded-int branch of `Configs::sanity()`. | n/a | None. | Owner request ("0 or lossless as lossless"); Q-071-01 |
 | FR-071-07 | With `compression_quality = 0`, WebP output is encoded losslessly: `IMG_WEBP_LOSSLESS` on GD, `webp:lossless=true` on Imagick. | WebP files carry a `VP8L` chunk. | n/a | As FR-071-02. | None. | Owner request |
 | FR-071-08 | With `compression_quality = 0`, formats without a lossless mode (JPEG, and any other re-encode such as an auto-rotated original) are encoded at the maximum quality, `100`. | JPEG output is valid and maximum quality. | n/a | n/a | None. | Q-071-02 |
-| FR-071-09 | GD's `save()` writes WebP whenever the **target** file extension is `.webp`, regardless of the source image type. For every other extension its existing source-type dispatch is unchanged (N-071-04). | WebP thumbs from JPEG/PNG sources contain WebP bytes. | n/a | n/a | None. | Q-071-04 |
+| FR-071-09 | GD's `save()` encodes by the **target** file extension for every supported format (`.jpg`/`.jpeg`/`.png`/`.gif`/`.webp`) and falls back to the source type only for other extensions, so a file's content always matches its extension. Imagick already writes by extension. | A `.jpeg` thumb of a PNG original contains JPEG bytes. Transparency is lost in JPEG targets, as with Imagick. | n/a | Encoder failures (`Safe\Exceptions\ImageException`) are wrapped in `MediaFileOperationException('Failed to save image')`. | None. | Q-071-06 (supersedes Q-071-04) |
 | FR-071-10 | The existing up-migration value of `compression_quality` is preserved. The down-migration restores `positive` and rewrites a stored `0` to `100`, so the old validator accepts it. | Round-trip migration is safe. | n/a | n/a | None. | Constitution: reversible migrations |
 
 ## Non-Functional Requirements
@@ -77,10 +77,10 @@ Settings → Image Processing (existing generic widgets, no new components):
 | Scenario ID | Description / Expected outcome |
 |-------------|--------------------------------|
 | S-071-01 | Default `original`, JPEG upload: all generated variants keep today's extensions (`thumb` `.jpeg`, `small` inherits `.jpg`). |
-| S-071-02 | Default `original`, PNG upload: `thumb` `.jpeg`, `small`/`medium` `.png` (unchanged behaviour). |
+| S-071-02 | Default `original`, PNG upload: `thumb` `.jpeg` containing JPEG, `small`/`medium` `.png` containing PNG (unchanged naming; on GD the thumb content now matches its extension). |
 | S-071-03 | `webp` + quality `80`, JPEG upload: every generated variant ends `.webp` and contains lossy WebP (`VP8 ` chunk); original keeps `.jpg`. |
 | S-071-04 | `webp` + quality `0`: generated variants contain lossless WebP (`VP8L` chunk). |
-| S-071-05 | `jpeg` + PNG upload: `small`/`medium` end `.jpeg`. |
+| S-071-05 | `jpeg` + PNG upload: `small`/`medium` end `.jpeg` and contain JPEG. |
 | S-071-06 | `jpeg` + quality `0`: upload succeeds and JPEG is written (quality clamps to 100). |
 | S-071-07 | `size_variant_format` set to an unknown value: rejected by config validation. |
 | S-071-08 | `compression_quality` set to `101` or `-1`: rejected by config validation. |

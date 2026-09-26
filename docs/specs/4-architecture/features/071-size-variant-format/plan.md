@@ -10,13 +10,13 @@ _Last updated:_ 2026-09-26
 
 Admins can switch generated thumbnails to WebP, lossy or lossless, from the settings page. Success means:
 
-- S-071-01..08 are green under both GD and Imagick.
+- S-071-01..06 are green under both GD and Imagick; S-071-07..08 are green in the unit suite.
 - The default configuration produces the same file naming as before.
 - There are no new dependencies and no frontend diff.
 
 ## Scope Alignment
 
-- **In scope:** the two config migrations, the `SizeVariantFormat` enum, the extension override in `BaseSizeVariantNamingStrategy`, quality/lossless resolution in `BaseImageHandler`, WebP routing and quality in `GdHandler::save()`, lossless/quality handling in `ImagickHandler::save()`, tests, and docs.
+- **In scope:** the two config migrations, the `SizeVariantFormat` enum, the extension override in `BaseSizeVariantNamingStrategy`, quality/lossless resolution in `BaseImageHandler`, target-extension encoding and quality in `GdHandler::save()`, lossless/quality handling in `ImagickHandler::save()`, tests, and docs.
 - **Out of scope:** N-071-01..06 (conversion of existing files, AVIF, placeholder/watermark format, full GD target-type dispatch, originals, per-variant settings).
 
 ## Dependencies & Interfaces
@@ -49,6 +49,7 @@ After CI is green: map FR-071-01..10 to classes/tests in the table below, and co
 - Every FR maps to the implementation and tests in the table above. No undocumented behaviour was added. The one addition is the `size_variant_format` documentation/details keys in all `lang/*/all_settings.php` files, following the convention of the latest config additions and recorded in the spec's Documentation Deliverables.
 - The tests fail without the implementation (4 of 5 image-processing cases). `testSizeVariantFormatOriginalKeepsExtensions` passes on both sides by design, as a regression guard for G3.
 - `git diff --stat resources/js` is empty (NFR-071-02), and `composer.json`/`package.json` are unchanged (NFR-071-01).
+- Review of the pull request (automated reviewer) led to Q-071-06: GD now encodes by target extension for every format, and encoder exceptions are wrapped in `MediaFileOperationException`. The image-processing tests assert the content signature of JPEG and PNG variants too.
 - Owner feedback applied: `compression_quality` is labelled "Quality of generated size variants", and the meaning of `0` lives in the details text.
 
 ## Increment Map
@@ -96,6 +97,5 @@ Completed 2026-09-26 (agent self-review):
 
 ## Follow-ups / Backlog
 
-- Q-071-04 Option B: make `GdHandler::save()` dispatch on target extension for every format (with alpha flattening for JPEG).
 - Optional: a maintenance action to convert existing size variants to the configured format.
 - Per-size quality (`compression_quality_thumb`/`_small`/`_medium`) to fully close LycheeOrg/Lychee#1888 (Q-071-05 Option A deferred it). This needs the variant type passed from `SizeVariantDefaultFactory` into `save()`.

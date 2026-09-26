@@ -49,6 +49,18 @@ class GdHandler extends BaseImageHandler
 	];
 
 	/**
+	 * Image type written for a target file extension (incl. the preceding dot).
+	 * Unknown extensions keep the type of the source image.
+	 */
+	private const OUTPUT_TYPES = [
+		'.jpg' => IMAGETYPE_JPEG,
+		'.jpeg' => IMAGETYPE_JPEG,
+		'.png' => IMAGETYPE_PNG,
+		'.gif' => IMAGETYPE_GIF,
+		'.webp' => IMAGETYPE_WEBP,
+	];
+
+	/**
 	 * @var \GdImage|null the opaque GD handler
 	 */
 	private ?\GdImage $gd_image = null;
@@ -240,9 +252,9 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
 
-			// WebP targets (see `size_variant_format`) are encoded as WebP whatever the source;
-			// other targets keep the source type.
-			$output_type = strtolower($file->getExtension()) === '.webp' ? IMAGETYPE_WEBP : $this->gd_image_type;
+			// Encode by target extension so that the content always matches it
+			// (e.g. a `.jpeg` thumb of a PNG original is a real JPEG).
+			$output_type = self::OUTPUT_TYPES[strtolower($file->getExtension())] ?? $this->gd_image_type;
 
 			match ($output_type) {
 				IMAGETYPE_JPEG,
@@ -258,7 +270,7 @@ class GdHandler extends BaseImageHandler
 			$in_memory_buffer->close();
 
 			return $this->applyLosslessOptimizationConditionally($file) ?? $stream_stat;
-		} catch (\ErrorException $e) {
+		} catch (\ErrorException|ImageException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
 	}

@@ -6,11 +6,12 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-071-06~~ | 071 – Size-Variant Format | Medium | Review of PR #4790 (CodeRabbit): with `size_variant_format = jpeg`, GD still writes PNG bytes into `.jpeg` files for PNG originals (the Q-071-04 quirk now reaches `small`/`medium` too, and the setting explicitly promises JPEG). Revisit Q-071-04? | Resolved (Option A — GD encodes by target extension for every format; owner, 2026-09-26: "a mismatch between extension and real format is worse than any other possible problem"; supersedes Q-071-04; FR-071-09) | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-05~~ | 071 – Size-Variant Format | Medium | Upstream issue LycheeOrg/Lychee#1888 asks for a **per-size** quality (e.g. medium 90 / small 80 / thumb 70); Feature 071 ships one global quality (N-071-06). Extend 071, or ship 071 as a partial answer and do per-size quality as a follow-up? | Resolved (Option A — ship 071 as is, PR references #1888 as partially addressed, per-size quality is a follow-up; owner, 2026-09-26: "Выбираю А") | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-01~~ | 071 – Size-Variant Format | Medium | Where does "lossless" live: reuse `compression_quality` with `0` = lossless, or add a dedicated WebP quality key? | Resolved directly (Option A — reuse `compression_quality`, re-typed `positive` → `int:0:100`; follows the owner's own suggestion "accept 0 … as lossless"; FR-071-06) | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-02~~ | 071 – Size-Variant Format | Medium | What does `compression_quality = 0` mean for formats with no lossless mode (JPEG, auto-rotated originals, HEIC)? | Resolved directly (Option A — encode at max quality `100`; FR-071-08) | 2026-09-26 | 2026-09-26 |
 | ~~Q-071-03~~ | 071 – Size-Variant Format | Medium | Default for `size_variant_format`: `original` (no change on upgrade) or `webp`? | Resolved directly (Option A — `original`; upgrade is a no-op until an admin opts in; FR-071-01/04) | 2026-09-26 | 2026-09-26 |
-| ~~Q-071-04~~ | 071 – Size-Variant Format | Low | GD encodes by **source** type, not target extension (pre-existing: a PNG original yields PNG bytes inside a `.jpeg` thumb). Fix fully, or only route `.webp` targets? | Resolved directly (Option A — only route `.webp`; full fix changes alpha handling for existing GD users and is out of scope; N-071-04, FR-071-09) | 2026-09-26 | 2026-09-26 |
+| ~~Q-071-04~~ | 071 – Size-Variant Format | Low | GD encodes by **source** type, not target extension (pre-existing: a PNG original yields PNG bytes inside a `.jpeg` thumb). Fix fully, or only route `.webp` targets? | Superseded by Q-071-06 (Option A — GD now encodes by target extension for every format) | 2026-09-26 | 2026-09-26 |
 | ~~Q-069-14~~ | 069 – Search Struct-of-Arrays | — | ~~`ConfigManager` is never bound in the container~~ — **the premise was false.** It is bound as `scoped()` by the global `ResolveConfigs` middleware. The 88 `configs` queries were a test-harness artifact of calling the action directly, bypassing middleware. | **Withdrawn (invalid), 2026-09-22.** Through a real HTTP request the same call issues 13 queries total, with **one** full `configs` load. Binding it as a singleton would have been actively harmful under FrankenPHP worker mode. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-13~~ | 069 – Search Struct-of-Arrays | High | Q-069-12 established that v2 reads `configs.grants_full_photo_access` — a **seed value for newly created shares** — as a runtime authorization gate. | Resolved (owner, 2026-09-22: "Fix the over-grants.") — **Option B, widened**: implemented as **Feature 070** across all affected surfaces. The count grew from 5 to 7 during implementation: `PersonPhotosController` passed `should_downgrade: false` unconditionally, and `FlowItemResource` used an album-wide gate. | 2026-09-22 | 2026-09-22 |
 | ~~Q-069-12~~ | 069 – Search Struct-of-Arrays | High | v2's search computes `should_downgrade` **once per request** from the raw `grants_full_photo_access` config, ignoring ownership and per-album share grants; the v3 tier evaluates `PhotoPolicy::CAN_ACCESS_FULL_PHOTO` **per photo**. | Resolved (owner, 2026-09-22): **v2 is the defect — it grants full-resolution access more widely than it should.** v3's per-photo check is authoritative. Re-classified Medium → High: this is a rights over-grant, not a cosmetic divergence. See Q-069-13 for whether v2 itself gets fixed. | 2026-09-22 | 2026-09-22 |
@@ -202,6 +203,20 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-071-06~~ · GD writes PNG bytes into `.jpeg` variants (revisits Q-071-04) ✅ RESOLVED
+
+**Status:** Resolved by the owner, 2026-09-26 — Option A. Encoded in spec FR-071-09; N-071-04 withdrawn. Supersedes Q-071-04.  
+**Feature:** F-071  
+**Priority:** Medium
+
+Raised by the automated review on LycheeOrg/Lychee#4790. Q-071-04 kept GD's source-type dispatch for non-WebP targets. With the new `jpeg` format, though, a PNG original yields PNG bytes in `.jpeg` small/medium files, not just in thumbs, even though the setting explicitly promises JPEG. Consumers that trust the extension or MIME type can reject such files.
+
+- **Option A (recommended) — GD dispatches on the target extension for every format (`.jpg/.jpeg/.png/.gif/.webp`), falling back to the source type for unknown extensions.** This is Q-071-04 Option B. It is a small table lookup, and the test can then assert the JPEG signature. Behaviour change: on GD installs, the `.jpeg` thumbs of PNG/GIF/WebP originals become real JPEGs and lose transparency. Imagick already behaves this way (it writes by extension), and it is the handler in the official Docker image.
+- **Option B — keep Q-071-04 and reply on the PR that it is a known pre-existing GD limitation, out of scope.** No behaviour change, but the `jpeg` setting stays wrong on GD.
+- **Option C — Option A plus flattening transparency onto white for JPEG targets.** Nicer output for transparent PNGs, but more code, and it would diverge from Imagick's behaviour.
+
+---
+
 ### ~~Q-071-05~~ · Per-size quality requested by issue #1888 ✅ RESOLVED
 
 **Status:** Resolved by the owner, 2026-09-26 — Option A. Encoded in spec N-071-06 and plan Follow-ups.  
@@ -253,7 +268,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-071-04~~ · GD encodes by source type, not target extension ✅ RESOLVED DIRECTLY
 
-**Status:** Resolved directly, 2026-09-26 — Option A. Encoded in spec N-071-04 and FR-071-09.  
+**Status:** Superseded by Q-071-06, 2026-09-26. Option B was adopted after review of the pull request.  
 **Feature:** F-071  
 **Priority:** Low
 
