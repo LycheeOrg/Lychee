@@ -901,6 +901,7 @@ declare namespace App {
 					is_expert: boolean;
 					require_se: boolean;
 					order: number | null;
+					required_keys: string[];
 				};
 				export type ContactMessageResource = {
 					id: number;
