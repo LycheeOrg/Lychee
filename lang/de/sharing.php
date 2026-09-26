@@ -36,7 +36,7 @@ return [
         'download' => 'Herunterladen erlauben',
         'upload' => 'Hochladen erlauben',
         'edit' => 'Gewährt das Recht zur Bearbeitung',
-        'move' => 'Grants move, copy and merge',
+        'move' => 'Erlaubt verschieben, kopieren und zusammenführen',
         'delete' => 'Gewährt das Recht zu löschen',
     ],
 ];
