@@ -10,7 +10,7 @@ _Last updated:_ 2026-09-26
 
 Admins can switch generated thumbnails to WebP, lossy or lossless, from the settings page. Success means:
 
-- S-073-01..06 are green under both GD and Imagick; S-073-07..08 are green in the unit suite.
+- S-073-01..06 are green under both GD and Imagick (S-073-04 is skipped on GD builds without lossless WebP); S-073-07..09 are green in the unit suite.
 - The default configuration produces the same file naming as before.
 - There are no new dependencies and no frontend diff.
 
@@ -68,6 +68,15 @@ After CI is green: map FR-073-01..10 to classes/tests in the table below, and co
    - _Commands:_ `php artisan test --filter=PhotosAddHandler`, `make phpstan`
 4. **I4 – Docs + quality gate (≤30 min)**
    - _Steps:_ roadmap, knowledge map, `3-reference/image-processing.md`; run `vendor/bin/php-cs-fixer fix`, `php artisan test`, `make phpstan` (CI).
+5. **I5 – Lossless WebP guard on old libgd (≤45 min)** (T-073-09; Q-073-07)
+   - _Steps:_ tests first (`GdHandlerLosslessWebpTest`, `GDSupportCheckTest`, red before the implementation), then `GdHandler::supportsLosslessWebp()`/`webpQuality()` and the `GDSupportCheck` warning.
+   - _Commands:_ `php artisan test --filter="GdHandlerLosslessWebpTest|GDSupportCheckTest"`, `make phpstan`
+6. **I6 – Maintainer review follow-ups (≤45 min)** (T-073-10; Q-073-08)
+   - _Steps:_ enum instead of literals, expert setting (plus a test assertion), `compression_quality` texts in all locales, removal of `SizeVariantFormat::extension()`, docs alignment.
+   - _Commands:_ `php artisan test --filter="SizeVariantFormat|PhotosAddHandlerGDTest|GDSupportCheckTest|LangTest|ConfigsTest"`, `make phpstan`
+7. **I7 – Second automated-review round (≤30 min)** (T-073-11)
+   - _Steps:_ test first (`GDSupportCheckTest::testWarnsForOriginalFormat`, red), then the warning covers `original`; skip S-073-04 on GD without lossless WebP; plan/spec wording.
+   - _Commands:_ `php artisan test --filter="GDSupportCheckTest|PhotosAddHandlerGDTest"`, `make phpstan`
 
 ## Scenario Tracking
 
@@ -81,6 +90,7 @@ After CI is green: map FR-073-01..10 to classes/tests in the table below, and co
 | S-073-06 | I3 / T-073-05 | `testSizeVariantFormatJpegLosslessClamps` |
 | S-073-07 | I1 / T-073-01 | sanity test |
 | S-073-08 | I1 / T-073-01 | sanity test |
+| S-073-09 | I5, I7 / T-073-09, T-073-11 | `GdHandlerLosslessWebpTest`, `GDSupportCheckTest` |
 
 ## Analysis Gate
 

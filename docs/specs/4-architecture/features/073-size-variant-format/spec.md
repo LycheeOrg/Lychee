@@ -21,13 +21,13 @@ This feature adds an admin setting that selects the output format of generated s
 
 - G1: Admins can switch generated size variants to WebP (or force JPEG) from **Settings → Image Processing** (expert mode), with no file or DB edits.
 - G2: Admins can request lossless encoding by setting `compression_quality` to `0`.
-- G3: The default configuration produces byte-identical file naming to today (`original`), so upgrading changes nothing until an admin opts in.
+- G3: The default configuration produces byte-identical file naming to today (`original`), so upgrading changes nothing until an admin opts in. Single exception: video placeholders get a `.webp` path instead of `.jpeg` (see FR-073-05); placeholders are embedded in the DB, so this is not user-visible.
 
 ## Non-Goals
 
 - N-073-01: Converting already-generated size variants. Existing rows keep their paths and remain served as-is. Operators who want existing thumbnails re-encoded use the existing delete-and-regenerate procedure (`lychee:generate_thumbs`, `lychee:video_data`).
 - N-073-02: AVIF or other formats. They are not requested, and GD cannot write AVIF on every build.
-- N-073-03: Changing the placeholder format (already WebP, stored inline in the DB) or the watermark file format (always JPEG, `WatermarkGroupedWithRandomSuffixNamingStrategy`).
+- N-073-03: Changing the placeholder format (already WebP, stored inline in the DB; the only change is the video-placeholder path noted in FR-073-05) or the watermark file format (always JPEG, `WatermarkGroupedWithRandomSuffixNamingStrategy`).
 - N-073-04: *(withdrawn — see FR-073-09 and Q-073-06).*
 - N-073-05: Changing the original's format or the RAW→JPEG conversion (`RawToJpeg`, fixed quality 92).
 - N-073-06: Per-variant formats or quality. One format and one quality apply to all generated variants. This only partially addresses [LycheeOrg/Lychee#1888](https://github.com/LycheeOrg/Lychee/issues/1888): it covers WebP quality, while per-size quality is a follow-up (Q-073-05, Option A).
@@ -46,7 +46,7 @@ This feature adds an admin setting that selects the output format of generated s
 | FR-073-08 | With `compression_quality = 0`, formats without a lossless mode (JPEG, and any other re-encode such as an auto-rotated original) are encoded at the maximum quality, `100`. | JPEG output is valid and maximum quality. | n/a | n/a | None. | Q-073-02 |
 | FR-073-09 | GD's `save()` encodes by the **target** file extension for every supported format (`.jpg`/`.jpeg`/`.png`/`.gif`/`.webp`) and falls back to the source type for other extensions. The content-format guarantee therefore applies only to the listed extensions, which cover every extension GD-generated size variants can get except an original's own extension under `original`. Imagick already writes by extension. | A `.jpeg` thumb of a PNG original contains JPEG bytes. Transparency is lost in JPEG targets, as with Imagick. | n/a | Encoder failures (`Safe\Exceptions\ImageException`) are wrapped in `MediaFileOperationException('Failed to save image')`. | None. | Q-073-06 (supersedes Q-073-04) |
 | FR-073-10 | The existing up-migration value of `compression_quality` is preserved. The down-migration restores `positive` and rewrites a stored `0` to `100`, so the old validator accepts it. | Round-trip migration is safe. | n/a | n/a | None. | Constitution: reversible migrations |
-| FR-073-11 | `GDSupportCheck` warns when Imagick is not in use, `size_variant_format = webp`, `compression_quality = 0`, and GD cannot encode lossless WebP. | The diagnostics page shows the warning before uploads fail. | Skipped when the `configs` table does not exist (no migrations run at all). Partially run migrations are not guarded against, per project convention (maintainer review). | n/a | Diagnostics warning `GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED`. | Q-073-07 |
+| FR-073-11 | `GDSupportCheck` warns when Imagick is not in use, `compression_quality = 0`, GD cannot encode lossless WebP, and `size_variant_format` is `webp` or `original` (under `original`, small/medium of a WebP upload keep `.webp`). | The diagnostics page shows the warning before uploads fail. | Skipped when the `configs` table does not exist (no migrations run at all). Partially run migrations are not guarded against, per project convention (maintainer review). | n/a | Diagnostics warning `GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED`. | Q-073-07 |
 
 ## Non-Functional Requirements
 
@@ -85,7 +85,7 @@ Settings → Image Processing (existing generic widgets, no new components; the 
 | S-073-06 | `jpeg` + quality `0`: upload succeeds and JPEG is written (quality clamps to 100). |
 | S-073-07 | `size_variant_format` set to an unknown value: rejected by config validation. |
 | S-073-08 | `compression_quality` set to `101` or `-1`: rejected by config validation. |
-| S-073-09 | Quality `0` + `webp` on a GD build without `IMG_WEBP_LOSSLESS`: saving throws a clear `MediaFileOperationException`, lossy WebP still works, and diagnostics warn. |
+| S-073-09 | Quality `0` + `webp` (or `original` with WebP uploads) on a GD build without `IMG_WEBP_LOSSLESS`: saving throws a clear `MediaFileOperationException`, lossy WebP still works, diagnostics warn, and the lossless image-processing case is skipped. |
 
 ## Test Strategy
 

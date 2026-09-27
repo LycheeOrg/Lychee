@@ -19,6 +19,7 @@
 namespace Tests\ImageProcessing\Image\Handlers;
 
 use App\Facades\Helpers;
+use App\Image\Handlers\GdHandler;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Carbon\Carbon;
@@ -367,6 +368,9 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testSizeVariantFormatWebpLossless(): void
 	{
+		if (!resolve(ConfigManager::class)->hasImagick() && !GdHandler::supportsLosslessWebp()) {
+			self::markTestSkipped('This GD build cannot encode lossless WebP (libgd < 2.3.3).');
+		}
 		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'webp', 0);
 
 		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {

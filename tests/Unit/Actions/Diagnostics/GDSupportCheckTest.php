@@ -74,6 +74,16 @@ class GDSupportCheckTest extends AbstractTestCase
 		self::assertContains(GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED, $this->messages($this->check(false)));
 	}
 
+	/**
+	 * With `original`, small/medium of a WebP upload are `.webp` too, so lossless WebP may be needed.
+	 */
+	public function testWarnsForOriginalFormat(): void
+	{
+		$this->configure('original', 0);
+
+		self::assertContains(GDSupportCheck::LOSSLESS_WEBP_UNSUPPORTED, $this->messages($this->check(false)));
+	}
+
 	public function testNoWarningWhenLosslessWebpIsSupported(): void
 	{
 		$this->configure('webp', 0);

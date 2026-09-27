@@ -237,7 +237,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-073-07~~ · Lossless WebP on GD builds without `IMG_WEBP_LOSSLESS` ✅ RESOLVED
 
-**Status:** Resolved by the owner, 2026-09-26 — Option C. Encoded in spec FR-073-07 (failure path) and FR-073-11.  
+**Status:** Resolved by the owner, 2026-09-26 — Option C. Encoded in spec FR-073-07 (failure path) and FR-073-11. The warning was later extended to `size_variant_format = original` too, because small/medium of a WebP upload keep `.webp` (automated review of PR #4790, 2026-09-27).  
 **Feature:** F-073  
 **Priority:** Medium
 

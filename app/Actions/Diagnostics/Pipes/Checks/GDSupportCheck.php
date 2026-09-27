@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class GDSupportCheck implements DiagnosticPipe
 {
-	public const LOSSLESS_WEBP_UNSUPPORTED = 'Lossless WebP is requested (compression_quality = 0, size_variant_format = webp) but this PHP gd build cannot encode it (libgd < 2.3.3). Uploads will fail: set compression_quality to 1-100 or enable Imagick.';
+	public const LOSSLESS_WEBP_UNSUPPORTED = 'Lossless WebP may be requested (compression_quality = 0 with size_variant_format = webp, or original for WebP uploads) but this PHP gd build cannot encode it (libgd < 2.3.3). Such uploads will fail: set compression_quality to 1-100 or enable Imagick.';
 
 	public function __construct(protected readonly ConfigManager $config_manager)
 	{
@@ -65,7 +65,8 @@ class GDSupportCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * Lossless WebP is requested for GD-generated size variants, but GD cannot encode it.
+	 * Lossless WebP may be requested for GD-generated size variants, but GD cannot encode it.
+	 * `original` counts too: small/medium of a WebP upload keep the `.webp` extension.
 	 */
 	private function isLosslessWebpUnsupported(): bool
 	{
@@ -74,8 +75,10 @@ class GDSupportCheck implements DiagnosticPipe
 			return false;
 		}
 
+		$webp_targets = [SizeVariantFormat::WEBP->value, SizeVariantFormat::ORIGINAL->value];
+
 		return !$this->config_manager->hasImagick() &&
-			$this->config_manager->getValueAsString('size_variant_format') === SizeVariantFormat::WEBP->value &&
+			in_array($this->config_manager->getValueAsString('size_variant_format'), $webp_targets, true) &&
 			$this->config_manager->getValueAsInt('compression_quality') === 0 &&
 			!$this->supportsLosslessWebp();
 	}
