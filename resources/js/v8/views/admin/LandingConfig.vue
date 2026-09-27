@@ -910,6 +910,7 @@ const heroColorConfig = computed<App.Http.Resources.Models.ConfigResource>(() =>
 	key: "landing_hero_text_color",
 	type: "color",
 	value: draft.hero_text_color,
+	is_set: draft.hero_text_color !== "",
 	documentation: trans("landing_config.field_hero_text_color"),
 	details: "",
 	is_expert: false,

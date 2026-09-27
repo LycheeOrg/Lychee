@@ -104,6 +104,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_contact_form_enabled_on_gallery: false,
 		is_contact_form_enabled_on_album: false,
 		is_embed_enabled: true,
+		is_gallery_locked: false,
 		is_photo_share_card_enabled: true,
 		site_owner: "",
 
@@ -288,6 +289,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_contact_form_enabled_on_gallery = data.is_contact_form_enabled_on_gallery;
 					this.is_contact_form_enabled_on_album = data.is_contact_form_enabled_on_album;
 					this.is_embed_enabled = data.is_embed_enabled;
+					this.is_gallery_locked = data.is_gallery_locked;
 					this.is_photo_share_card_enabled = data.is_photo_share_card_enabled;
 					this.site_owner = data.site_owner;
 

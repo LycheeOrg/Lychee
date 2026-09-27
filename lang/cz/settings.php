@@ -105,4 +105,10 @@ return [
             'help' => 'Nahraďte vnořené podmenu administrace jediným odkazem na novou stránku administračního panelu.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

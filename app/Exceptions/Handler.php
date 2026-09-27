@@ -103,6 +103,7 @@ class Handler extends ExceptionHandler
 	protected $dontReport = [
 		TokenMismatchException::class,
 		SessionExpiredException::class,
+		GalleryPasswordRequiredException::class, // Expected for every anonymous visit to a locked gallery.
 		NoWriteAccessOnLogsExceptions::class,
 		ViteException::class,
 	];

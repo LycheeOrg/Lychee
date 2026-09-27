@@ -20,6 +20,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Services\GalleryLockState;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -54,7 +55,7 @@ class EmbedController extends Controller
 	 */
 	public function getAlbum(EmbededRequest $request): EmbedAlbumResource
 	{
-		if (!$request->configs()->getValueAsBool('is_embed_enabled')) {
+		if (!GalleryLockState::isEmbedEnabled($request->configs())) {
 			throw new NotFoundHttpException();
 		}
 
@@ -88,7 +89,7 @@ class EmbedController extends Controller
 	 */
 	public function getPublicStream(EmbededRequest $request): EmbedStreamResource
 	{
-		if (!$request->configs()->getValueAsBool('is_embed_enabled')) {
+		if (!GalleryLockState::isEmbedEnabled($request->configs())) {
 			throw new NotFoundHttpException();
 		}
 

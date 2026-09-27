@@ -41,7 +41,8 @@ Route::get('/Contact', [Contact\ContactController::class, 'index'])->middleware(
 Route::patch('/Contact', [Contact\ContactController::class, 'update'])->middleware('support:se');
 Route::delete('/Contact', [Contact\ContactController::class, 'destroy'])->middleware('support:se');
 
-Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
+Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit'])->withoutMiddleware(['gallery_password']);
+Route::post('/Gallery::unlock', [Gallery\GalleryUnlockController::class, 'unlock'])->middleware(['throttle:10,1'])->withoutMiddleware(['gallery_password']);
 Route::get('/Gallery::getMac', [Gallery\ConfigController::class, 'getMac']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
@@ -190,11 +191,11 @@ Route::get('/Search', [SearchController::class, 'search'])->middleware(['cache_c
 /**
  * SESSION.
  */
-Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login');
-Route::post('/Auth::logout', [AuthController::class, 'logout']);
-Route::get('/Auth::user', [AuthController::class, 'getCurrentUser']);
+Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login')->withoutMiddleware(['gallery_password']);
+Route::post('/Auth::logout', [AuthController::class, 'logout'])->withoutMiddleware(['gallery_password']);
+Route::get('/Auth::user', [AuthController::class, 'getCurrentUser'])->withoutMiddleware(['gallery_password']);
 Route::get('/Auth::rights', [AuthController::class, 'getGlobalRights']);
-Route::get('/Auth::config', [AuthController::class, 'getConfig']);
+Route::get('/Auth::config', [AuthController::class, 'getConfig'])->withoutMiddleware(['gallery_password']);
 
 /**
  * USER.
@@ -246,9 +247,11 @@ Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController:
 Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
 Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class, 'options'])
-	->name('webauthn.login.options');
+	->name('webauthn.login.options')
+	->withoutMiddleware(['gallery_password']);
 Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login'])
-	->name('webauthn.login');
+	->name('webauthn.login')
+	->withoutMiddleware(['gallery_password']);
 
 /**
  * OAUTH.
@@ -256,7 +259,7 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 // This route returns different results depending whether we are authenticated or not:
 // If Authenticated: list of the registrated Oauth providers
 // If not Authenticated: list of the available Oauth providers
-Route::get('/Oauth::providers', [OauthController::class, 'listProviders'])->middleware(['cache_control']);
+Route::get('/Oauth::providers', [OauthController::class, 'listProviders'])->middleware(['cache_control'])->withoutMiddleware(['gallery_password']);
 Route::get('/Oauth', [OauthController::class, 'listForUser']);
 Route::delete('/Oauth', [OauthController::class, 'clear']);
 
@@ -451,9 +454,9 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	 * AI VISION — FACE DETECTION.
 	 */
 	Route::post('/FaceDetection/scan', [AiVision\FaceDetectionController::class, 'scan']);
-	Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth', 'gallery_password']);
 	Route::post('/FaceDetection/bulk-scan', [AiVision\FaceDetectionController::class, 'bulkScan']);
-	Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth']);
+	Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth', 'gallery_password']);
 
 	/**
 	 * AI VISION — CLUSTER REVIEW.
@@ -468,7 +471,7 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	 * AI VISION — NSFW DETECTION.
 	 */
 	Route::get('/Photo/{id}/nsfw-detections', [AiVision\PhotoNsfwDetectionsController::class, 'show']);
-	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth', 'gallery_password']);
 	// TODO: Those should require admin no ???
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);

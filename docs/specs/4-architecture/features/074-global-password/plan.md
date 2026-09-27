@@ -34,6 +34,26 @@ An admin can lock the whole gallery behind one shared password. Success means:
 ## Implementation Drift Gate
 After all tasks are `[x]`: rerun `php artisan test --filter=GalleryLockStateTest`, `--filter=GalleryPasswordTest`, `--filter=PasswordConfigTypeTest`, `--filter=GalleryPasswordWebTest`, then `make phpstan` and `npm run check`. Map FR-074-01..15 and NFR-074-01..06 to code and tests in a table appended here, and record manual S-074-18 and S-074-19 results for both v7 and v8.
 
+### Drift Gate Report
+
+Status: code complete. Only T-074-23 (manual browser check in v7 and v8) is open.
+
+| Requirement | Code | Tests |
+|-------------|------|-------|
+| FR-074-01, FR-074-15 | `2026_09_27_000001_add_gallery_password_config.php` | `PasswordConfigTypeTest`, `GalleryPasswordTest::testCookieLifetimeFollowsConfig` |
+| FR-074-02, NFR-074-04, NFR-074-06 | `App\Services\GalleryLockState`, `GalleryPasswordRequired`, `GalleryPasswordRequiredException` | `GalleryLockStateTest`, `GalleryPasswordTest::testGatedRequestsNeverRunBcrypt` |
+| FR-074-03, FR-074-04 | `Kernel` `api` group, `routes/api_v2.php` opt-outs | `GalleryPasswordTest` (locked, login, AI callback cases) |
+| FR-074-05 | `GalleryLockState::isRssEnabled()` / `isEmbedEnabled()` in `RSSController`, `Meta`, `EmbedController`, `InitConfig` | `GalleryPasswordTest::testRssAndEmbedsDisabledWhilePasswordSet`, `testRssAndEmbedsWorkWithoutPassword` |
+| FR-074-06 | `VueController::gallery()` early return | `GalleryPasswordWebTest` |
+| FR-074-07, FR-074-14, NFR-074-03 | `GalleryUnlockController`, `UnlockGalleryRequest`, `GalleryLockState::makeUnlockCookie()` | `GalleryPasswordTest` (unlock cases, throttle, lifetime) |
+| FR-074-08 | `InitConfig::is_gallery_locked` | `GalleryPasswordTest::testInitReportsLockState` |
+| FR-074-09 | `useGalleryLock`, `useGalleryUnlock`, `gallery-password-service`, `axios-config.ts`, `LycheeState`, v7/v8 `GalleryUnlock.vue` and `App.vue` | manual (T-074-23) |
+| FR-074-10, FR-074-11, NFR-074-01 | `ConfigType::PASSWORD`, `Configs::sanity()`, `SettingsController::setConfigs`, `ConfigResource` | `PasswordConfigTypeTest` |
+| FR-074-12 | v7/v8 `PasswordField.vue`, `ConfigGroup.vue` | manual (T-074-23) |
+| FR-074-13 | gate order in the `api` group | `GalleryPasswordTest::testLoginRequiredStillAppliesAfterUnlock` |
+
+Checks: `vendor/bin/php-cs-fixer fix`, `make phpstan` (no errors), `npm run format`, `npm run check` and eslint on the changed files are clean. Scoped tests are green: `GalleryLockStateTest` (9), `GalleryPasswordTest` (22), `PasswordConfigTypeTest` (7), `GalleryPasswordWebTest` (3), `LangTest`. Regression classes are green: `AuthTest`, `EmbedAlbumTest`, `EmbedStreamTest`, `RssTest`, `SetRssFeedMetaTest`, `AlbumRootV3Test`, `ConfigIntegrityTest`, `UpdateSettingsTest`, `GetAllSettingsTest`.
+
 ## Increment Map
 
 1. **I1 – Config and predicate** (FR-074-01, FR-074-02, NFR-074-04)

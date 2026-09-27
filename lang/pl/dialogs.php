@@ -229,6 +229,14 @@ return [
         'unlock' => 'Odblokowanie',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => 'Wprowadź tagi dla tego zdjęcia.',
         'question_multiple' => 'Wprowadź tagi dla wszystkich %d wybranych zdjęć. Istniejące tagi zostaną nadpisane.',

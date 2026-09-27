@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Actions\RSS\Generate;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
+use App\Services\GalleryLockState;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -29,7 +30,7 @@ class RSSController extends Controller
 	 */
 	public function getRSS(Request $request, Generate $generate): Collection
 	{
-		if (!$request->configs()->getValueAsBool('rss_enable')) {
+		if (!GalleryLockState::isRssEnabled($request->configs())) {
 			throw new ConfigurationException('RSS is disabled by configuration');
 		}
 

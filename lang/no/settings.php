@@ -105,4 +105,10 @@ return [
             'help' => 'Erstatt den nøstede admin-undermenyen med én enkelt lenke til den nye administrasjonspanelsiden.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

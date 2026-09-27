@@ -105,4 +105,10 @@ return [
             'help' => 'Remplace le sous-menu d’administration imbriqué par un lien unique vers la nouvelle page de tableau de bord d’administration.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

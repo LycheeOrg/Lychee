@@ -105,4 +105,10 @@ return [
             'help' => 'جایگزینی زیرمنوی تودرتوی مدیریت با یک لینک ساده به صفحه جدید داشبورد مدیریت.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

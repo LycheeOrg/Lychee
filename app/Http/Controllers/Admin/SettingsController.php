@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Constants\FileSystem;
 use App\Enum\CacheTag;
+use App\Enum\ConfigType;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoBucketsRecomputed;
@@ -27,6 +28,7 @@ use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -220,8 +222,9 @@ class SettingsController extends Controller
 	public function setConfigs(SetConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
 		$configs = $request->editable_configs();
-		$configs->each(function ($config): void {
-			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
+		$write_only_keys = Configs::query()->where('type_range', '=', ConfigType::PASSWORD->value)->pluck('key')->all();
+		$configs->each(function ($config) use ($write_only_keys): void {
+			Configs::query()->where('key', $config->key)->update(['value' => self::toStoredValue($config->key, $config->value, $write_only_keys)]);
 		});
 
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
@@ -233,6 +236,23 @@ class SettingsController extends Controller
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return $this->getAll($request, $docker_info);
+	}
+
+	/**
+	 * Values of `password` configs are stored as a bcrypt hash; an empty value clears them.
+	 *
+	 * @param string   $key
+	 * @param ?string  $value
+	 * @param string[] $write_only_keys keys of the `password` configs
+	 */
+	private static function toStoredValue(string $key, #[\SensitiveParameter] ?string $value, array $write_only_keys): string
+	{
+		$value ??= '';
+		if ($value === '' || !in_array($key, $write_only_keys, true)) {
+			return $value;
+		}
+
+		return Hash::make($value);
 	}
 
 	/**

@@ -24,6 +24,7 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\VisibilityType;
 use App\Providers\AuthServiceProvider;
+use App\Services\GalleryLockState;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -149,6 +150,9 @@ class InitConfig extends Data
 
 	// Embed
 	public bool $is_embed_enabled = true;
+
+	// Gallery password
+	public bool $is_gallery_locked = false;
 
 	// Photo Share Card
 	public bool $is_photo_share_card_enabled = true;
@@ -299,7 +303,10 @@ class InitConfig extends Data
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
 		// Embed
-		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+		$this->is_embed_enabled = GalleryLockState::isEmbedEnabled(request()->configs());
+
+		// Gallery password
+		$this->is_gallery_locked = GalleryLockState::isLockedForRequest(request());
 
 		// Photo Share Card
 		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');

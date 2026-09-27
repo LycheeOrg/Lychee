@@ -19,6 +19,7 @@ class ConfigResource extends Data
 	public string $key;
 	public ConfigType|string $type;
 	public string $value;
+	public bool $is_set;
 	public string $documentation;
 	public string $details;
 	public bool $is_expert;
@@ -29,7 +30,10 @@ class ConfigResource extends Data
 	{
 		$this->key = $c->key;
 		$this->type = ConfigType::tryFrom($c->type_range) ?? $c->type_range;
-		$this->value = $c->value;
+		// Values of `password` configs are bcrypt hashes and never leave the server.
+		$is_password = $c->type_range === ConfigType::PASSWORD->value;
+		$this->value = $is_password ? '' : $c->value;
+		$this->is_set = $c->value !== '';
 		$this->documentation = $c->description;
 		$this->details = $c->details ?? '';
 		$this->require_se = $c->level > 0;
