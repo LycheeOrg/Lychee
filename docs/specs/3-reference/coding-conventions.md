@@ -128,6 +128,11 @@ namespace App\Example;
 
 - **Views:** Do not use Blade views. The application uses Vue3 for all frontend rendering.
 
+### Translations
+
+- **Source files:** Translation sources are the PHP arrays in `lang/<locale>/*.php` (e.g. `lang/en/gallery.php`). Only edit these files; use snake_case keys and group related translations in nested arrays.
+- **Generated files:** `lang/<locale>.json` and `lang/php_<locale>.json` are generated and git-ignored. Never read, write, or edit them.
+
 ### Money and Currency
 
 When dealing with monetary values:
@@ -199,35 +204,39 @@ try {
   ```
   This generates TypeScript definitions in `resources/js/lychee.d.ts` from PHP DTOs, resources, and enums. The generated types are automatically available in the `App.*` namespace (e.g., `App.Http.Resources.Models.PhotoResource`).
 
-- **Function declarations:** Use regular function declarations, not arrow functions.
+### v7 vs v8 Scope
+
+The frontend has two trees. **v8** is everything under `resources/js/v8/`. **v7** is everything else under `resources/js/`, including the shared modules outside `v8/`. Rules marked *v7 only* below do not apply to v8 code.
+
+- **Function declarations (v7 only):** Use regular function declarations, not arrow functions. In v8, both styles are allowed.
   ```typescript
-  // ✅ Correct
+  // ✅ Correct (v7)
   function handleClick() {
       // ...
   }
   
-  // ❌ Incorrect
+  // ❌ Incorrect (v7)
   const handleClick = () => {
       // ...
   };
   ```
 
-- **Async handling:** Do not use `await`/`async` in Vue3. Use `.then()` instead.
+- **Async handling (v7 only):** Do not use `await`/`async`. Use `.then()` instead. In v8, `async`/`await` is allowed.
   ```typescript
-  // ✅ Correct
+  // ✅ Correct (v7)
   fetchData().then((data) => {
       processData(data);
   });
   
-  // ❌ Incorrect
+  // ❌ Incorrect (v7)
   const data = await fetchData();
   processData(data);
   ```
 
 ### UI Components
 
-- **Component library:** Use PrimeVue for UI components.
-- **Custom components:** Build custom components on top of PrimeVue primitives.
+- **v7 component library:** Use PrimeVue for UI components, and build custom components on top of PrimeVue primitives.
+- **v8 component library:** Use Nuxt UI (`@nuxt/ui`, the `<U…>` components) for UI components, and build custom components on top of Nuxt UI primitives. Do not import PrimeVue in v8 code.
 
 ### API Communication
 
@@ -262,7 +271,7 @@ try {
   ```php
   namespace Tests\Feature_v2;
   
-  use Tests\Feature_v2\BaseApiWithDataTest;
+  use Tests\Feature_v2\Base\BaseApiWithDataTest;
   
   class PhotoApiTest extends BaseApiWithDataTest
   {
@@ -270,17 +279,19 @@ try {
   }
   ```
 
+- **v3 feature tests:** Tests in `tests/Feature_v3/` directory must extend from `Tests\Feature_v3\Base\BaseApiWithDataTest`.
+
 ### Database Testing
 
 - **No mocking:** Do not mock the database in tests.
-- **In-memory database:** Use the in-memory SQLite database for test execution.
+- **SQLite test database:** Tests run against the SQLite file `database/database.sqlite` (configured in `phpunit.xml`), not the development database. Changes are rolled back via the `DatabaseTransactions` trait.
 
 ## Documentation Conventions
 
 ### Markdown Format
 
 - **Standard:** Use Markdown format for all documentation.
-- **Footer:** At the bottom of every documentation file, add:
+- **Footer:** At the bottom of every documentation file (except files created from `docs/specs/templates/`, which follow the template's own layout), add:
   ```markdown
   ---
   
@@ -305,23 +316,24 @@ try {
 Before committing PHP changes:
 
 1. **PHP CS Fixer:** `vendor/bin/php-cs-fixer fix` — Apply code style fixes
-2. **Tests:** `php artisan test` — All tests must pass
-3. **PHPStan:** `make phpstan` — Level 6 minimum; fix all errors
+2. **Tests:** `php artisan test --filter=<ClassName>` for every test class touched by or related to the change — all must pass. Never run the whole suite locally; CI runs it.
+3. **PHPStan:** `make phpstan` — at the level configured in `phpstan.neon`; fix all errors
 
 ### Frontend Code Quality
 
 Before committing frontend changes:
 
 1. **Prettier:** `npm run format` — Apply code formatting
-2. **Tests:** `npm run check` — All frontend tests must pass
+2. **Type-check:** `npm run check` — TypeScript type-check (`vue-tsc`) must pass
 
 ## Related References
 
 - [Knowledge Map](../4-architecture/knowledge-map.md) - Module and dependency relationships
 - [PSR-4 Specification](https://www.php-fig.org/psr/psr-4/) - PHP autoloading standard
 - [Vue 3 Composition API](https://vuejs.org/guide/extras/composition-api-faq.html) - Official Vue3 documentation
-- [PrimeVue Documentation](https://primevue.org/) - UI component library
+- [PrimeVue Documentation](https://primevue.org/) - v7 UI component library
+- [Nuxt UI Documentation](https://ui.nuxt.com/) - v8 UI component library
 
 ---
 
-*Last updated: December 27, 2025*
+*Last updated: September 27, 2026*

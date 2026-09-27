@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/034-bulk-album-edit/tasks.md` |
 | Roadmap entry | #034 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 
@@ -305,7 +305,7 @@ All four open questions have been resolved (2026-04-14):
 | Q-034-03 | **Option B** — Delete shows a minimal confirmation dialog (count + "Confirm Delete" button). All other operations remain no-confirmation. |
 | Q-034-04 | **Option A** — `GET ::ids` returns all albums regardless of owner. |
 
-See [open-questions.md](../../open-questions.md) for full resolution history.
+See [open-questions.md](open-questions.md) for full resolution history.
 
 ## Spec DSL
 

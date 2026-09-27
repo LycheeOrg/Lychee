@@ -1,10 +1,10 @@
 # Feature Plan <NNN> – <Descriptive Name>
 
-_Linked specification:_ ``docs/specs/4-architecture/features`/<NNN>/spec.md`  
+_Linked specification:_ [spec.md](spec.md)  
 _Status:_ Draft  
 _Last updated:_ YYYY-MM-DD
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under ``docs/specs/5-decisions`/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 Reiterate the user value, measurable success signals, and quality bars (telemetry parity, deterministic fixtures, etc.).
@@ -30,7 +30,7 @@ Break the feature into ≤90-minute increments. Each increment should identify p
    - _Goal:_ Brief description.
    - _Preconditions:_ Specs/tests that must already exist.
    - _Steps:_ Bullet the work items (tests first, then implementation).
-   - _Commands:_ `php artisan …`, `node --test …`, etc.
+   - _Commands:_ `php artisan test --filter=<ClassName>`, `npm run check`, `make phpstan`, etc.
    - _Exit:_ Definition of done for this increment.
 2. **I2 – <Title>**
    - …
@@ -42,13 +42,13 @@ Map each Branch & Scenario Matrix ID to the increments/tasks that implement it s
 
 | Scenario ID | Increment / Task reference | Notes |
 |-------------|---------------------------|-------|
-| S-<NNN>-01 | I1 / T<taskId> | e.g., covered by HOTP console harness |
+| S-<NNN>-01 | I1 / T-<NNN>-01 | e.g., covered by `PhotoRatingTest` |
 
 ## Analysis Gate
 Record when the analysis gate was completed, who reviewed it, and any findings that must be addressed before implementation resumes.
 
 ## Exit Criteria
-- Enumerate the checklist that must pass before declaring the feature complete (full Gradle gate, OpenAPI snapshot, documentation updates, etc.).
+- Enumerate the checklist that must pass before declaring the feature complete (quality gate green, `php artisan typescript:transform` rerun if resources changed, roadmap/knowledge-map updates, etc.).
 
 ## Follow-ups / Backlog
 Capture post-feature investigations, deferred optimisations, or monitoring tasks so they can be prioritised later.

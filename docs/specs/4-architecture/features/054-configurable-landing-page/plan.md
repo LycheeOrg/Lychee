@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/054-configurable-lan
 _Status:_ Draft
 _Last updated:_ 2026-08-11
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections have been updated.
 
 ## Vision & Success Criteria
 

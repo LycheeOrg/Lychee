@@ -39,5 +39,5 @@ None beyond what Feature 056's spec/ADR-0008 already cover (this ADR is about re
 ## Links
 
 - Related spec sections: `docs/specs/4-architecture/features/056-api-v3-asset-retrieval/spec.md` (FR-056-02, Non-Goals)
-- Related open questions: Q-056-02 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-056-02 ([056-api-v3-asset-retrieval/open-questions.md](../4-architecture/features/056-api-v3-asset-retrieval/open-questions.md))
 - Related ADRs: ADR-0008 (this endpoint's authorization/signing model)

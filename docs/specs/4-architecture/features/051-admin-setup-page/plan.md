@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/051-admin-setup-page
 _Status:_ Implemented — T-051-14 (manual browser verification) deferred to operator
 _Last updated:_ 2026-07-26
 
-> Guardrail: Keep this plan traceable back to the governing spec. All four clarifications (Q-051-01..04) are resolved and captured in spec.md's normative sections; see [docs/specs/4-architecture/open-questions.md](../../open-questions.md) for rationale.
+> Guardrail: Keep this plan traceable back to the governing spec. All four clarifications (Q-051-01..04) are resolved and captured in spec.md's normative sections; see [open-questions.md](open-questions.md) for rationale.
 
 ## Vision & Success Criteria
 When `NUXT_UI_ENABLED=true` (i.e. `Features::active('nuxt_ui')`) and no admin user exists, any request lands on a Nuxt UI `/setup-admin` page instead of the legacy Blade `install/admin` form. Submitting valid credentials creates the admin account and the user proceeds into the gallery. With `NUXT_UI_ENABLED=false`, behaviour is byte-for-byte identical to today. Success signals: FR-051-01..06 all pass their feature/component tests; `php artisan test`, `make phpstan`, `npm run check` all green; manual verification of both flag states on a fresh (no-admin) database.

@@ -1,4 +1,4 @@
-# ADR-0010: Bounding strategies for v3 Struct-of-Arrays collection endpoints
+# ADR-069-01: Bounding strategies for v3 Struct-of-Arrays collection endpoints
 
 - **Status:** Accepted
 - **Date:** 2026-09-22
@@ -62,5 +62,5 @@ None directly. One adjacent obligation carried over from Feature 069: a capped e
 ## Links
 
 - Related spec sections: `docs/specs/4-architecture/features/069-search-struct-of-arrays/spec.md` (FR-069-02, NFR-069-01, NG1)
-- Related open questions: Q-069-02, Q-069-10 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-069-02, Q-069-10 ([069-search-struct-of-arrays/open-questions.md](../4-architecture/features/069-search-struct-of-arrays/open-questions.md))
 - Related ADRs: ADR-0009 (response *shape*; this ADR covers response *size*)

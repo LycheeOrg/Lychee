@@ -2,14 +2,14 @@
 
 _Status: Implemented — manual browser verification pending (T-071-19)_
 _Last updated: 2026-09-24_
-_Linked spec:_ [spec.md](spec.md) · _Tasks:_ [tasks.md](tasks.md) · _ADR:_ [ADR-0011](../../../6-decisions/ADR-0011-date-scrubber-ticks-derived-client-side.md)
+_Linked spec:_ [spec.md](spec.md) · _Tasks:_ [tasks.md](tasks.md) · _ADR:_ [ADR-071-01](../../../6-decisions/ADR-071-01-date-scrubber-ticks-derived-client-side.md)
 
 ## Vision & Success Criteria
 Album views on the v8 SoA path show the Timeline's scrubber rail when the album is single-kind and date-ordered, with day precision, no extra request, and `/timeline` unchanged. Success = S-071-01…12 pass (automated backend branches, manual browser check for UI), and the quality gate is green.
 
 ## Scope Alignment
 - In scope: FR-071-01…11, NFR-071-01…05.
-- Out of scope: NG1–NG8, in particular bucket storage (ADR-0011) and bulk edit.
+- Out of scope: NG1–NG8, in particular bucket storage (ADR-071-01) and bulk edit.
 
 ## Dependencies & Interfaces
 - Reuses `TimelineDatesV3.vue` (Feature 066 T-067), `phpDateFormat.ts` (Feature 063), and the v3 tiers of Features 061/064.
@@ -61,10 +61,10 @@ Before each commit, re-read FR-071-xx for the increment. Any divergence goes bac
 ## Analysis Gate
 Run 2026-09-24 against [analysis-gate-checklist.md](../../../5-operations/analysis-gate-checklist.md): **PASS**.
 1. Spec completeness — ✅ FR-071-01…11 / NFR-071-01…05 populated; Q-071-01…05 folded into the normative sections; ASCII mock-ups present (album view, lens, properties drawer).
-2. Open questions — ✅ no `Open` Q-071 rows; Q-071-05 → ADR-0011, linked from the spec and the open-questions row.
+2. Open questions — ✅ no `Open` Q-071 rows; Q-071-05 → ADR-071-01, linked from the spec and the open-questions row.
 3. Plan alignment — ✅ links correct; success criteria match S-071-01…12.
 4. Tasks coverage — ✅ FR-01→T02 · FR-02→T02/03/05–07/16 · FR-03/04/05→T01/04 · FR-06→T10/14 · FR-07→T15 · FR-08→T10/12/13 · FR-09→T11 · FR-10/11→T14. Backend tests precede code (T01→T04, T05→T06/07). The frontend branch table is manual, per NG8 (accepted limitation, no runner).
-5. Constitution — ✅ no new dependency; eligibility split into one-decision helpers (T-071-04, T-071-10); ADR-0009 (v3 response shape) reviewed — no v3 response changes; ADR-0011 applies.
+5. Constitution — ✅ no new dependency; eligibility split into one-decision helpers (T-071-04, T-071-10); ADR-0009 (v3 response shape) reviewed — no v3 response changes; ADR-071-01 applies.
 6. Tooling — ✅ commands recorded per task.
 Follow-up: none.
 
@@ -72,11 +72,11 @@ Follow-up: none.
 All tasks `[x]`. Backend: `php-cs-fixer`, filtered `php artisan test` for the new test classes and the existing `AlbumConfig`/album-update tests, and `make phpstan` all green. Frontend: `npm run format` and `npm run check` green. Roadmap updated.
 
 ## Follow-ups / Backlog
-- A persisted "always smallest granularity" bucketing refactor, as its own feature (ADR-0011).
+- A persisted "always smallest granularity" bucketing refactor, as its own feature (ADR-071-01).
 - Possibly the override in bulk album edit (NG7), if requested.
 
 ## Intent Log
-- 2026-09-24: Owner kickoff ("feature 71 … date effect on album views"). The spec draft plus Q-071-01…05 were logged before any code. Answers: 1A, 2A, 3B, 4A (+ title `DATE_PREFIX`), 5A. ADR-0011 records Q-071-05. Findings that shaped the design: `ratios` already carries per-photo dates; `TimelineDatesV3.vue`'s tick logic accepts `YYYY-MM-DD` ids, so it can be fed synthesized day entries unchanged; the stored `num_children`/`num_photos` counts include items the viewer can't see, so single-kind eligibility is decided client-side from bucket-tier counts.
+- 2026-09-24: Owner kickoff ("feature 71 … date effect on album views"). The spec draft plus Q-071-01…05 were logged before any code. Answers: 1A, 2A, 3B, 4A (+ title `DATE_PREFIX`), 5A. ADR-071-01 records Q-071-05. Findings that shaped the design: `ratios` already carries per-photo dates; `TimelineDatesV3.vue`'s tick logic accepts `YYYY-MM-DD` ids, so it can be fed synthesized day entries unchanged; the stored `num_children`/`num_photos` counts include items the viewer can't see, so single-kind eligibility is decided client-side from bucket-tier counts.
 - 2026-09-24 (implementation): I1–I8 executed in order, tests first. Two corrections came up during implementation and were folded back into the spec before continuing:
   1. **Update-request field made optional.** It was first `present` (matching `photo_timeline`), but v7 shares those endpoints and never sends it, so v7 album editing would have got a 422. Sending `null` from v7 would have silently wiped an override set in v8. Switched to Feature 068's `published_at` pattern (omitted = unchanged); FR-071-02 updated, and the 46 existing test payloads reverted to untouched.
   2. **Visible counts come from tier-2 tile counts**, not the sum of bucket `counts`, which is empty when a tier is `bucketable: false`. Smart albums (no children listing) count 0 albums. FR-071-06 updated.
@@ -86,4 +86,4 @@ All tasks `[x]`. Backend: `php-cs-fixer`, filtered `php artisan test` for the ne
 - Coverage: backend branches are fully covered (31 new tests across eligibility, the enable layering and the write path). The frontend relies on type-checking, a one-off executed branch table, and pending manual verification (no JS runner, NG8).
 - Only touch outside v8: `AlbumConfig` fallback literals in v7 `Search.vue` (compile-only), forced by the shared generated `lychee.d.ts`.
 - `npm run check` reports two errors in untouched `app.ts`/`app-v8.ts` (i18n plugin typing). They were present before this feature started.
-- Follow-up candidates: a JS unit-test runner (needs approval); the persisted day-granularity bucketing refactor (ADR-0011); the override in bulk album edit (NG7).
+- Follow-up candidates: a JS unit-test runner (needs approval); the persisted day-granularity bucketing refactor (ADR-071-01); the override in bulk album edit (NG7).

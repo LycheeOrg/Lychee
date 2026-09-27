@@ -9,7 +9,7 @@
 | Linked tasks | [tasks.md](tasks.md) |
 | Roadmap entry | Feature 072 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](../../open-questions.md); resolved answers are encoded in the normative sections below.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md); resolved answers are encoded in the normative sections below.
 
 ## Overview
 

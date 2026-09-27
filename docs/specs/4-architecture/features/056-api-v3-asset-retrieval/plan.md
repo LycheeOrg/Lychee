@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/056-api-v3-asset-ret
 _Status:_ Completed
 _Last updated:_ 2026-08-21
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 Establish API v3 as a real, working, additive REST surface with one correct, fully-tested endpoint: `GET /api/v3/Photo/{photo_id}/Asset/{size_variant}`. Success = every Branch & Scenario Matrix entry (S-056-01..17) has a passing Feature test written before its implementation, `make phpstan` is clean on all new files, v2 is provably untouched (NFR-056-03), and the new v3 routing/versioning convention is documented for the next v3 feature to reuse without re-deriving it.

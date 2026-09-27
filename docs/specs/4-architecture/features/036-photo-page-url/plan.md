@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/036-photo-page-url/s
 _Status:_ Complete  
 _Last updated:_ 2026-04-12
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant. Log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md).
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant. Log any new high- or medium-impact questions in [open-questions.md](open-questions.md).
 
 ## Vision & Success Criteria
 

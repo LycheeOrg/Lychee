@@ -5,7 +5,7 @@ _Linked tasks:_ [tasks.md](tasks.md)
 _Status:_ Draft  
 _Last updated:_ 2026-09-25
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and ADR-0011 have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections and ADR-0011 have been updated.
 
 ## Vision & Success Criteria
 

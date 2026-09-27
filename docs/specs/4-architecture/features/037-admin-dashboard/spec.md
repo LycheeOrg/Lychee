@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/037-admin-dashboard/tasks.md` (TBD) |
 | Roadmap entry | Active Features |
 
-> Guardrail: Open questions Q-037-01 … Q-037-08 are all resolved (see [docs/specs/4-architecture/open-questions.md](../../open-questions.md)). Resolutions are folded into the normative sections below. Per governance there is no `## Clarifications` section.
+> Guardrail: Open questions Q-037-01 … Q-037-08 are all resolved (see [open-questions.md](open-questions.md)). Resolutions are folded into the normative sections below. Per governance there is no `## Clarifications` section.
 
 ## Overview
 Administrators currently reach every admin screen through a long "Admin" submenu in the left drawer. The submenu has outgrown the drawer and offers no at-a-glance overview of system state. This feature introduces a single **Admin Dashboard** page at `/admin` that lists the admin tools and surfaces a cacheable statistics overview, moves the nine admin-only screens under a `/admin/<slug>` URL namespace (with a matching `resources/js/views/admin/` folder reorganisation), and adds an admin-category toggle that replaces the long submenu with a single "Admin" link when enabled (default ON).
@@ -296,6 +296,6 @@ views_unchanged:
 
 ## Appendix
 - User request (2026-04-22, verbatim): "We want a new page with all the admin tools and links. We may need a controller endpoint for some nice statistics overview (maybe use caching to avoid computations). This should be toggable settings (in admin category) and should replace the admin section in the menu. We would like also to move the major admin/maintenance pages to sub address under /admin/ we would like also to do the same with the views files in resources/js/views. Diagnostics must stay on the same url, same for Logs."
-- Resolutions recorded in [open-questions.md](../../open-questions.md) Q-037-01 through Q-037-07.
+- Resolutions recorded in [open-questions.md](open-questions.md) Q-037-01 through Q-037-07.
 - Current admin submenu source: [resources/js/composables/contextMenus/leftMenu.ts](../../../../resources/js/composables/contextMenus/leftMenu.ts).
 - Existing admin controllers: [app/Http/Controllers/Admin/](../../../../app/Http/Controllers/Admin/).

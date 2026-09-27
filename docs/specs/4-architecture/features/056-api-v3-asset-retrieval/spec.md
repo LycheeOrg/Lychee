@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/056-api-v3-asset-retrieval/tasks.md` |
 | Roadmap entry | #56 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 Lychee's current REST surface is `/api/v2/...`, an Array-of-Structs (AoS) API where collection responses are arrays of self-contained objects (see `PaginatedPhotosResource`/`PaginatedAlbumsResource` in [docs/specs/3-reference/api-design.md](../../../3-reference/api-design.md)). This feature starts **API v3**, a new, greenfield `/api/v3/...` surface whose base response convention is Struct-of-Arrays (SoA) for *collection* endpoints — a convention this feature establishes precedent for but does not itself need, since its endpoint is single-item (ADR-0009). v3 coexists with v2; nothing in v2 is deprecated or changed by this feature.

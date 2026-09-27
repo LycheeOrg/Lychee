@@ -1,4 +1,4 @@
-# ADR-0011: Date Scrubber Ticks Are Derived Client-Side; Bucket Storage Stays Unchanged
+# ADR-071-01: Date Scrubber Ticks Are Derived Client-Side; Bucket Storage Stays Unchanged
 
 - **Status:** Accepted
 - **Date:** 2026-09-24
