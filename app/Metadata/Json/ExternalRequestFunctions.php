@@ -12,6 +12,8 @@ use App\Contracts\ExternalRequest;
 use App\Exceptions\Internal\RequestFailedException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Safe\Exceptions\FilesystemException;
+
 use function Safe\file_get_contents;
 use function Safe\ini_get;
 
@@ -92,7 +94,7 @@ class ExternalRequestFunctions implements ExternalRequest
 			}
 
 			return $this->data;
-		} catch (RequestFailedException $e) {
+		} catch (RequestFailedException|FilesystemException $e) {
 			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
 		}
 		$this->clear_cache();
@@ -107,6 +109,7 @@ class ExternalRequestFunctions implements ExternalRequest
 	 * @return string the plain JSON-encoded response
 	 *
 	 * @throws RequestFailedException
+	 * @throws FilesystemException
 	 */
 	private function fetchFromServer(): string
 	{
