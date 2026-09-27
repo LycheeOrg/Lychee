@@ -1,12 +1,11 @@
 <?php
-
 return [
-    /*
+    'card' => [
+        /*
     |--------------------------------------------------------------------------
     | Webshop page
     |--------------------------------------------------------------------------
     */
-    'card' => [
         'cardHolder' => 'Karteninhaber',
         'fullName' => 'Vollständiger Name',
         'expires' => 'Gültig bis',
@@ -19,7 +18,7 @@ return [
         'expirationDate' => 'Ablaufdatum',
         'month' => 'Monat',
         'year' => 'Jahr',
-        'CVV' => 'CVV',
+        'CVV' => 'Kartenprüfnummer',
         'submit' => 'Absenden',
         'invalidCardNumber' => 'Ungültige Kartennummer',
     ],
@@ -33,7 +32,7 @@ return [
         'total' => 'Gesamt:',
         'proceedToCheckout' => 'Zur Kasse',
         'emptyBasket' => 'Ihr Warenkorb ist leer.',
-        'printLabel' => 'Print',
+        'printLabel' => 'Drucken',
         'pixelLabel' => 'Pixel',
         'paperType' => 'Paper',
     ],

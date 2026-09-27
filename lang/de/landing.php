@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,20 +9,20 @@ return [
     'access_gallery' => 'Zugang zur Galerie',
     'Powered_by_Lychee' => 'Unterstützt von Lychee',
     'copyright' => 'Alle Bilder auf dieser Website unterliegen dem Copyright von %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'client_login' => 'Client-Login',
+    'view_public_gallery' => 'Öffentliche Galerie anzeigen',
+    'contact' => 'Kontakt',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Über',
+        'featured' => 'Aktuelle Arbeiten',
+        'scroll_down' => 'Nach unten scrollen',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Entdecken',
+        'explore_caption' => 'Galerie ansehen',
+        'contact_caption' => 'Kontaktieren Sie uns',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Willkommen zurück',
     ],
 ];
