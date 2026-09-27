@@ -235,6 +235,23 @@ found and its fix directly in this file's increment entries, not a separate log.
     - _Commands:_ None (docs only).
     - _Exit:_ All four docs updated; roadmap.md reflects true completion status.
 
+11. **I11 – Single-photo cells render as photo points (Q-067-20)**
+    - _Goal:_ FR-067-05 (amended), FR-067-20 (amended), FR-067-25; S-067-23.
+    - _Preconditions:_ I1–I10 complete.
+    - _Steps:_ Move `album_ids[]` resolution, `formatTakenAt()` and the row-to-`MapPhotoResource`
+      mapping from `QueryMapPhotos` into `ResolvesMapPhotoSource`. `QueryMapBuckets` adds
+      `MIN(id)` per cell, drops `COUNT(*) = 1` cells from the arrays, and fetches their photos into
+      `MapBucketResource::$singleton_photos`. Regenerate `lychee.d.ts`. `Map.vue`'s
+      `renderAggregateMarkers()` feeds `singleton_photos` into the photo-marker path used by
+      `renderIndividualPhotos()`.
+    - _Commands:_ `php artisan test --filter=QueryMapBucketsTest`, `--filter=QueryMapPhotosTest`,
+      `--filter=MapListingV3Test`; `make phpstan`; `vendor/bin/php-cs-fixer fix`; `npm run format`;
+      `npm run check`.
+    - _Exit:_ Tests green; count-1 cells never appear as badges. Manual browser check pending (same
+      environment gap as T-067-23/T-067-29).
+    - _Intent log:_ Owner report 2026-09-27 (screenshot of `1` badges over Rotterdam) → Q-067-20
+      logged with three options → owner chose A.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -258,6 +275,7 @@ found and its fix directly in this file's increment entries, not a separate log.
 | S-067-17 | I8 | Track loading decoupled from viewport. |
 | S-067-18 | I9 | v2 coexistence. |
 | S-067-19 | I6 | Config-change cache flush (Q-067-14). |
+| S-067-23 | I11 | Single-photo cells as photo points (Q-067-20). |
 
 ## Analysis Gate
 

@@ -428,7 +428,7 @@ Every request carries `north`/`south`/`east`/`west` (decimal degrees) + `zoom` (
 
 Registered via `MapListingController::buckets()` / `GetMapBucketsRequest`, backed by `App\Actions\Map\QueryMapBuckets`. One driver-portable `GROUP BY FLOOR(latitude/$cell), FLOOR(longitude/$cell)` + `COUNT(*)`/`AVG(latitude)`/`AVG(longitude)`, `toBase()`-only (no Eloquent hydration).
 
-**Response:** `MapBucketResource` — `bucket_ids[]` (opaque `"{lat_cell}:{lng_cell}"` strings), `counts[]`, `centroid_latitudes[]`, `centroid_longitudes[]`.
+**Response:** `MapBucketResource` — `bucket_ids[]` (opaque `"{lat_cell}:{lng_cell}"` strings), `counts[]`, `centroid_latitudes[]`, `centroid_longitudes[]` for cells with at least two photos, plus `singleton_photos` (a `MapPhotoResource`, same fields as `/Map/Photos` below) holding the one photo of every single-photo cell (FR-067-25, Q-067-20).
 
 #### `GET /api/v3/Map/Photos`
 

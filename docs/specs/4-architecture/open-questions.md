@@ -6,6 +6,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-067-20~~ | 067 – Map Geo-Bucketing | Medium | Above `MAX_VIEWPORT_PHOTOS`, the aggregate badges include many count-1 cells, drawn as a "1" cluster instead of a photo point. `MapBucketResource` has no photo/album id, so the frontend can't draw it as a photo. Where does the singleton's photo data come from? | Resolved (Option A — buckets response carries `singleton_photos`; owner, 2026-09-27; FR-067-25) | 2026-09-27 | 2026-09-27 |
 | ~~Q-073-08~~ | 073 – Size-Variant Format | Low | After the maintainer's refactor of `BaseSizeVariantNamingStrategy` (commit a9d34495), `SizeVariantFormat::extension()` has no caller. Delete it, route the new `match` through it, or keep it? | Resolved (Option A — delete; the maintainer's `generatedExtension()` owns the mapping; owner, 2026-09-27) | 2026-09-27 | 2026-09-27 |
 | ~~Q-073-07~~ | 073 – Size-Variant Format | Medium | Review of PR #4790: `IMG_WEBP_LOSSLESS` exists only when libgd defines `gdWebpLossless` (libgd ≥ 2.3.3), while `imagewebp()` exists with any WebP-enabled GD (PHP allows external libgd ≥ 2.1.0). With quality `0` + `webp` on such builds, GD raises `Undefined constant`. How should GD behave? | Resolved (Option C — clear `MediaFileOperationException` plus a `GDSupportCheck` warning; owner, 2026-09-26; FR-073-07, FR-073-11) | 2026-09-26 | 2026-09-26 |
 | ~~Q-073-06~~ | 073 – Size-Variant Format | Medium | Review of PR #4790 (CodeRabbit): with `size_variant_format = jpeg`, GD still writes PNG bytes into `.jpeg` files for PNG originals (the Q-073-04 quirk now reaches `small`/`medium` too, and the setting explicitly promises JPEG). Revisit Q-073-04? | Resolved (Option A — GD encodes by target extension for every format; owner, 2026-09-26: "a mismatch between extension and real format is worse than any other possible problem"; supersedes Q-073-04; FR-073-09) | 2026-09-26 | 2026-09-26 |
@@ -222,6 +223,20 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-067-20~~ · Count-1 aggregate buckets should render as photo points ✅ RESOLVED
+
+**Status:** Resolved by the owner, 2026-09-27 — Option A. Encoded in spec FR-067-05, FR-067-20, FR-067-25, S-067-23 and decision card Q-067-20.  
+**Feature:** F-067  
+**Priority:** Medium
+
+Owner report (2026-09-27, screenshot of Rotterdam): once the viewport holds more than `QueryMapPhotos::MAX_VIEWPORT_PHOTOS` (500) photos, `/Map/Photos` returns empty and `Map.vue`'s `renderAggregateMarkers()` draws a count badge for every grid cell (FR-067-20), including many cells with a single photo. Those should be photo points (thumbnail marker, popup, click-through), not a "1" cluster. `MapBucketResource` only carries `bucket_ids`/`counts`/`centroid_*`, so the frontend has no photo id or album id for the Asset endpoint (`ThumbAssetService.acquire(album_id, photo_id)`).
+
+- **Option A (chosen) — the buckets response also returns its singleton cells' photos.** `QueryMapBuckets` collects `MIN(id)` for cells with `COUNT(*) = 1`, drops those cells from the bucket arrays, and returns their photos in a new `singleton_photos` field with the same SoA shape as `MapPhotoResource` (`ids`/`album_ids`/`titles`/`taken_ats`/`latitudes`/`longitudes`). `album_ids` resolution (Q-067-15) moves from `QueryMapPhotos` into the shared `ResolvesMapPhotoSource` trait. The frontend feeds them into the existing photo-marker path (lazy thumbnails, popup, `.leaflet-marker-photo`), drawn next to the remaining count badges. *Pros:* real photo points that look and behave exactly like the below-cap path. Cost stays bounded by cell count (one extra `whereIn` fetch of at most one photo per cell), and the cache keys don't change. *Cons:* a backend + resource + TS type change. Neighbouring singletons can still be merged by Leaflet's own pixel-radius clustering into a thumbnail cluster (v2 look), which is arguably correct.
+- **Option B — frontend only, a plain pin for count-1 badges.** `renderAggregateMarkers()` draws the default Leaflet marker instead of a "1" badge. A count-1 cell's centroid is the photo's exact position. Clicking still zooms in. *Pros:* a few lines, no API change. *Cons:* no thumbnail, no popup, no click-through, so it is not really a photo point.
+- **Option C — ids only on the bucket arrays.** Add index-aligned `photo_ids[]`/`album_ids[]` to `MapBucketResource` (null unless `counts[i] === 1`), and render a thumbnail marker that opens the photo on click. *Pros:* a smaller payload change than A. *Cons:* no title/date for the popup, so it differs from the below-cap photo markers. It is also a second rendering path to maintain.
+
+---
 
 ### ~~Q-073-08~~ · Unused `SizeVariantFormat::extension()` ✅ RESOLVED
 
