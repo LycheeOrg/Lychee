@@ -54,7 +54,7 @@ import { trans } from "laravel-vue-i18n";
 import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceDetectionService from "@/services/face-detection-service";
 import { isTouchDevice } from "@/utils/keybindings-utils";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
@@ -70,16 +70,15 @@ const emits = defineEmits<{
 }>();
 
 const toast = useAppToast();
-const leftMenuStore = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const { is_face_assignment_visible } = storeToRefs(togglableStore);
 
 const isTouchDev = isTouchDevice();
 
 // Config-driven: is the overlay feature enabled at all?
-const overlayEnabled = computed(() => initData.value?.modules.is_face_overlay_enabled ?? true);
+const overlayEnabled = computed(() => rights.value?.modules.is_face_overlay_enabled ?? true);
 
 // Visibility toggle (P key) — stored in lycheeStore for persistence
 const isVisible = computed(() => lycheeStore.is_face_overlay_visible);

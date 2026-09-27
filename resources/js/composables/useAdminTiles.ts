@@ -6,7 +6,7 @@
 
 import { computed, type ComputedRef } from "vue";
 import { storeToRefs } from "pinia";
-import { type LeftMenuStateStore } from "@/stores/LeftMenuState";
+import { type GlobalRightsStore } from "@/stores/GlobalRightsState";
 import { type LycheeStateStore } from "@/stores/LycheeState";
 
 export type AdminTileGroup = "core" | "monitoring" | "extensions";
@@ -22,9 +22,9 @@ export type AdminTile = {
 	num?: ComputedRef<number>;
 };
 
-export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
+export function useAdminTiles(lycheeStore: LycheeStateStore, globalRightsStore: GlobalRightsStore): AdminTile[] {
 	const { clockwork_url, is_face_recognition_enabled } = storeToRefs(lycheeStore);
-	const { initData } = storeToRefs(leftMenuStore);
+	const { rights } = storeToRefs(globalRightsStore);
 
 	return [
 		{
@@ -34,7 +34,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "cog",
 			to: "/admin/settings",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "diagnostics",
@@ -43,7 +43,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "wrench",
 			to: "/diagnostics",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_see_diagnostics ?? false),
+			visible: computed(() => rights.value?.settings.can_see_diagnostics ?? false),
 		},
 		{
 			key: "users",
@@ -52,7 +52,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-user",
 			to: "/admin/users",
 			isExternal: false,
-			visible: computed(() => initData.value?.user_management.can_edit ?? false),
+			visible: computed(() => rights.value?.user_management.can_edit ?? false),
 		},
 		{
 			key: "user-groups",
@@ -61,7 +61,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-users",
 			to: "/admin/user-groups",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_acess_user_groups ?? false),
+			visible: computed(() => rights.value?.settings.can_acess_user_groups ?? false),
 		},
 		{
 			key: "purchasables",
@@ -70,7 +70,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-shopping-bag",
 			to: "/admin/purchasables",
 			isExternal: false,
-			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			visible: computed(() => (rights.value?.modules.is_mod_webshop_enabled ?? false) && (rights.value?.settings.can_edit ?? false)),
 		},
 		{
 			key: "shop-sizes",
@@ -79,7 +79,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-expand",
 			to: "/admin/shop/sizes",
 			isExternal: false,
-			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			visible: computed(() => (rights.value?.modules.is_mod_webshop_enabled ?? false) && (rights.value?.settings.can_edit ?? false)),
 		},
 		{
 			key: "contact-messages",
@@ -88,15 +88,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-inbox",
 			to: "/admin/contact-messages",
 			isExternal: false,
-			num: computed(() => initData.value?.modules.messages_count ?? 0),
+			num: computed(() => rights.value?.modules.messages_count ?? 0),
 			visible: computed(
 				() =>
-					(initData.value?.modules.is_contact_enabled ?? false) &&
-					((initData.value?.settings.can_edit ?? false) ||
-						(initData.value?.user_management.can_edit ?? false) ||
-						(initData.value?.settings.can_see_diagnostics ?? false) ||
-						(initData.value?.settings.can_see_logs ?? false) ||
-						(initData.value?.settings.can_acess_user_groups ?? false)),
+					(rights.value?.modules.is_contact_enabled ?? false) &&
+					((rights.value?.settings.can_edit ?? false) ||
+						(rights.value?.user_management.can_edit ?? false) ||
+						(rights.value?.settings.can_see_diagnostics ?? false) ||
+						(rights.value?.settings.can_see_logs ?? false) ||
+						(rights.value?.settings.can_acess_user_groups ?? false)),
 			),
 		},
 		{
@@ -106,7 +106,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-send",
 			to: "/admin/webhooks",
 			isExternal: false,
-			visible: computed(() => initData.value?.modules.is_mod_webhook_enabled ?? false),
+			visible: computed(() => rights.value?.modules.is_mod_webhook_enabled ?? false),
 		},
 		{
 			key: "faces",
@@ -115,7 +115,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-face-smile",
 			to: "/admin/maintenance/faces",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false)),
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false)),
 		},
 		{
 			key: "nsfw-config",
@@ -124,7 +124,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-eye",
 			to: "/admin/nsfw-config",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_nsfw_classifier_enabled ?? false)),
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (rights.value?.modules.is_nsfw_classifier_enabled ?? false)),
 		},
 		{
 			key: "bulk-album-edit",
@@ -133,7 +133,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-folder",
 			to: "/bulk-album-edit",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "moderation",
@@ -144,11 +144,11 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			isExternal: false,
 			visible: computed(
 				() =>
-					(initData.value?.settings.can_edit ?? false) ||
-					(initData.value?.user_management.can_edit ?? false) ||
-					(initData.value?.settings.can_see_diagnostics ?? false) ||
-					(initData.value?.settings.can_see_logs ?? false) ||
-					(initData.value?.settings.can_acess_user_groups ?? false),
+					(rights.value?.settings.can_edit ?? false) ||
+					(rights.value?.user_management.can_edit ?? false) ||
+					(rights.value?.settings.can_see_diagnostics ?? false) ||
+					(rights.value?.settings.can_see_logs ?? false) ||
+					(rights.value?.settings.can_acess_user_groups ?? false),
 			),
 		},
 		{
@@ -158,7 +158,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "timer",
 			to: "/admin/maintenance",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "jobs",
@@ -167,7 +167,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "project",
 			to: "/admin/jobs",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
+			visible: computed(() => rights.value?.settings.can_see_logs ?? false),
 		},
 
 		{
@@ -177,7 +177,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "excerpt",
 			to: "/Logs",
 			isExternal: true,
-			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
+			visible: computed(() => rights.value?.settings.can_see_logs ?? false),
 		},
 		{
 			key: "clockwork",
@@ -186,7 +186,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "telescope",
 			to: clockwork_url.value ?? "",
 			isExternal: true,
-			visible: computed(() => clockwork_url.value !== null && (initData.value?.settings.can_access_dev_tools ?? false)),
+			visible: computed(() => clockwork_url.value !== null && (rights.value?.settings.can_access_dev_tools ?? false)),
 		},
 	];
 }

@@ -1,6 +1,6 @@
 <template>
 	<!-- Mark as paid if in offline state -->
-	<template v-if="initData?.settings.can_edit">
+	<template v-if="rights?.settings.can_edit">
 		<Button
 			v-if="props.order.status === 'offline'"
 			:label="$t('webshop.orderListAction.markAsPaid')"
@@ -41,8 +41,7 @@
 </template>
 <script setup lang="ts">
 import { useOrder } from "@/composables/checkout/useOrder";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { storeToRefs } from "pinia";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 import { useRouter } from "vue-router";
@@ -53,8 +52,7 @@ const props = defineProps<{
 const router = useRouter();
 const toast = useToast();
 
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 
 const { markAsPaid, markAsDelivered, requireAttention } = useOrder(toast, router);
 </script>

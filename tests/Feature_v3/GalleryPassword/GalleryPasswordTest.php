@@ -125,6 +125,7 @@ class GalleryPasswordTest extends BaseApiWithDataTest
 		$this->assertOk($this->getJson('Gallery::Init'));
 		$this->assertOk($this->getJson('Auth::config'));
 		$this->assertOk($this->getJson('Auth::user'));
+		$this->assertOk($this->getJson('LandingPage'));
 		$this->assertNoContent($this->postJson('Auth::login', ['username' => $this->userMayUpload1->username, 'password' => 'password']));
 		$this->assertOk($this->getJson('Albums'));
 	}

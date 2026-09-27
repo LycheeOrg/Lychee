@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_control']);
+Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_control'])->withoutMiddleware(['gallery_password']);
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 /**
@@ -398,7 +398,7 @@ Route::post('/Metrics::favourite', [MetricsController::class, 'favourite'])->wit
  * UPDATE.
  */
 // Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
-Route::get('/Version', [VersionController::class, 'get']);
+Route::get('/Version', [VersionController::class, 'get'])->withoutMiddleware(['gallery_password']);
 Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
 
 /**

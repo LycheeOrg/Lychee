@@ -97,14 +97,12 @@ import PersonDeleteDialog from "@/v8/components/forms/people/PersonDeleteDialog.
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PeopleService from "@/services/people-service";
 import UserManagementService from "@/services/user-management-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useUserStore } from "@/stores/UserState";
-import { storeToRefs } from "pinia";
 import type { ContextMenuItem, InputMenuItem } from "@nuxt/ui";
 
 const toast = useAppToast();
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const userStore = useUserStore();
 
 const people = ref<App.Http.Resources.Models.PersonResource[]>([]);
@@ -151,7 +149,7 @@ function buildContextMenuItems(person: App.Http.Resources.Models.PersonResource)
 		},
 	];
 
-	if (initData.value?.user_management.can_edit) {
+	if (rights.value?.user_management.can_edit) {
 		items.push({
 			label: trans("people.assign_to_user"),
 			icon: "lucide:user-pen",

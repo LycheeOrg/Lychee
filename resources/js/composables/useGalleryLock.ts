@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
@@ -31,6 +31,29 @@ export function useGalleryLock() {
 	});
 
 	const isGalleryLocked = computed(() => lycheeStore.is_gallery_locked && !userStore.isLoggedIn && route.name !== "login");
+
+	// A successful login clears the user (LoginForm) and leaves the reload to the page mounted next.
+	// Behind the password screen no gallery page is mounted, so load the user here.
+	watch(
+		() => isGalleryLocked.value && userStore.user === undefined,
+		(needsUser) => {
+			if (needsUser) {
+				userStore.load().catch(() => {});
+			}
+		},
+	);
+
+	// A logged-in user is never asked for the gallery password, and logging out reloads the page.
+	// Drop the lock for good: gallery pages reset the user while re-fetching it on mount, and a
+	// lock still set would bring the password screen back, unmount the page, and loop.
+	watch(
+		() => userStore.isLoggedIn,
+		(isLoggedIn) => {
+			if (isLoggedIn) {
+				lycheeStore.is_gallery_locked = false;
+			}
+		},
+	);
 
 	return { isGalleryLocked };
 }

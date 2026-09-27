@@ -6,18 +6,21 @@
 			:class="props.config.require_se ? 'text-primary' : 'text-highlighted'"
 			v-html="tDoc(props.config)"
 		/>
-		<div class="w-1/2 flex items-center gap-2">
+		<div class="w-1/2 flex items-center gap-2 justify-end">
 			<UBadge :color="isSet ? 'success' : 'neutral'" variant="soft">
 				{{ isSet ? $t("settings.password_field.set") : $t("settings.password_field.not_set") }}
 			</UBadge>
-			<InputPassword
-				:id="props.config.key"
-				v-model="val"
-				class="flex-1"
-				autocomplete="new-password"
-				:placeholder="$t('settings.password_field.placeholder')"
-				@update:model-value="update"
-			/>
+			<div>
+				<InputPassword
+					:id="props.config.key"
+					v-model="val"
+					class="flex-1"
+					autocomplete="new-password"
+					:has-check="true"
+					:placeholder="$t('settings.password_field.placeholder')"
+					@update:model-value="update"
+				/>
+			</div>
 			<UButton color="neutral" variant="soft" :disabled="!isSet" @click="clear">
 				{{ $t("settings.password_field.clear") }}
 			</UButton>
