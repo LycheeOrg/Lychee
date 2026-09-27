@@ -9,8 +9,8 @@
 namespace App\Relations;
 
 use App\DTO\PhotoSortingCriterion;
-use App\Eloquent\FixedQueryBuilder;
 use App\Models\Album;
+use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use App\Models\User;
@@ -48,12 +48,12 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * @return FixedQueryBuilder<Photo>
+	 * @return PhotoBuilder<Photo>
 	 */
-	protected function getRelationQuery(): FixedQueryBuilder
+	protected function getRelationQuery(): PhotoBuilder
 	{
 		/**
-		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * We know that the internal query is of type `PhotoBuilder`,
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection

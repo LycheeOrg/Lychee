@@ -66,7 +66,7 @@ class EditCredentialRequest extends BaseApiRequest
 	{
 		/** @var string $id */
 		$id = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->credential = WebAuthnCredential::query()->findOrFail($id);
+		$this->credential = WebAuthnCredential::findOrFail($id);
 		$this->alias = $values[RequestAttribute::ALIAS_ATTRIBUTE];
 	}
 

@@ -26,6 +26,8 @@ use App\Models\Photo;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\TimelineAlbum;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
@@ -77,12 +79,11 @@ trait ResolvesPhotoSource
 		} else {
 			// TagAlbum | PersonAlbum - `photos()` returns a `Relation`
 			// (`HasManyPhotosByTag`/`HasManyPhotosByPerson`); `getQuery()`
-			// unwraps it to the underlying `FixedQueryBuilder<Photo>`
+			// unwraps it to the underlying `PhotoBuilder<Photo>`
 			// (mirrors `BaseHasManyPhotos::getRelationQuery()`, which is
 			// `protected` and therefore not reachable from here directly).
-			/** @var Relation<Photo,BaseAlbum,mixed> $relation */
+			/** @var Relation<Photo,AbstractAlbum&Model,Collection<int,Photo>> $relation */
 			$relation = $album->photos();
-			/** @var FixedQueryBuilder<Photo> $query */
 			$query = $relation->getQuery();
 		}
 
