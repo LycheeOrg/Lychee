@@ -13,7 +13,6 @@
 
 namespace Tests\Feature_v3\Map;
 
-use App\DTO\MapViewport;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoSaved;
 use App\Models\AccessPermission;
@@ -91,14 +90,13 @@ class MapListingV3Test extends BaseApiWithDataTest
 	public function testRootScopeBucketsReturnsGeotaggedPhoto(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams());
 		$this->assertOk($response);
 
-		$cell = MapViewport::cellSizeForZoom($this->defaultViewportParams()['zoom']);
-		$expected_bucket_id = ((int) floor(10.0 / $cell)) . ':' . ((int) floor(10.0 / $cell));
-		$response->assertJson(['bucket_ids' => [$expected_bucket_id], 'counts' => [1]]);
+		// A single-photo cell is returned as a photo, not as a bucket (FR-067-25).
+		$response->assertJson(['bucket_ids' => [], 'counts' => [], 'singleton_photos' => ['ids' => [$photo->id], 'album_ids' => [$album->id]]]);
 	}
 
 	public function testRootScopePhotosReturnsLeafPhoto(): void
@@ -188,8 +186,9 @@ class MapListingV3Test extends BaseApiWithDataTest
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
 
+		// One photo: a singleton, no bucket yet (FR-067-25).
 		$before = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams())->assertOk()->json('counts');
-		self::assertSame([1], $before);
+		self::assertSame([], $before);
 
 		$new_photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
 		PhotoSaved::dispatch([$new_photo->id]);
@@ -207,8 +206,9 @@ class MapListingV3Test extends BaseApiWithDataTest
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
 
+		// One photo: a singleton, no bucket yet (FR-067-25).
 		$before = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams())->assertOk()->json('counts');
-		self::assertSame([1], $before);
+		self::assertSame([], $before);
 
 		// A second geotagged photo, added without dispatching PhotoSaved -
 		// the warm cache entry above must stay stale until a config-change
@@ -216,7 +216,7 @@ class MapListingV3Test extends BaseApiWithDataTest
 		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
 
 		$still_stale = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams())->assertOk()->json('counts');
-		self::assertSame([1], $still_stale, 'cache must still be warm/stale before the flush event');
+		self::assertSame([], $still_stale, 'cache must still be warm/stale before the flush event');
 
 		MapListingCacheFlushRequested::dispatch();
 
@@ -268,5 +268,23 @@ class MapListingV3Test extends BaseApiWithDataTest
 		$after = $this->getJsonV3('Map/Photos', $this->defaultViewportParams())->assertOk()->json('titles');
 		self::assertSame([''], $after, 'a warm guest-scoped cache entry must not keep leaking the real title after file_name_hidden is turned on');
 		self::assertNotSame($photo->title, $after[0]);
+	}
+
+	/**
+	 * FR-067-25: `singleton_photos` applies the same guest title blanking as
+	 * `/Map/Photos` (FR-067-09).
+	 */
+	public function testBucketsSingletonPhotoTitleIsBlankedForGuestsWhenFileNameHidden(): void
+	{
+		// file_name_hidden is a level-1 (Supporter Edition) config.
+		$this->requireSe();
+		Configs::set('file_name_hidden', '1');
+
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->with_title('Secret Location')->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+
+		$titles = $this->getJsonV3('Map/buckets', $this->defaultViewportParams())->assertOk()->json('singleton_photos.titles');
+		self::assertSame([''], $titles);
 	}
 }

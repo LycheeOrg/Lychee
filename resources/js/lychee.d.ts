@@ -186,6 +186,7 @@ declare namespace App {
 		export type ShiftX = "left" | "right";
 		export type ShiftY = "up" | "down";
 		export type SizeVariantAssetType = "small2x" | "small" | "thumb2x" | "thumb" | "placeholder";
+		export type SizeVariantFormat = "original" | "jpeg" | "webp";
 		export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 		export type SmallLargeType = "small" | "large";
 		export type SmartAlbumType =
@@ -1829,6 +1830,7 @@ declare namespace App {
 					counts: number[];
 					centroid_latitudes: number[];
 					centroid_longitudes: number[];
+					singleton_photos: App.Http.Resources.V3.MapPhotoResource;
 				};
 				export type MapPhotoResource = {
 					ids: string[];

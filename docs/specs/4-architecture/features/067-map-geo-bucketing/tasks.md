@@ -1,7 +1,7 @@
 # Feature 067 Tasks – Map Geo-Bucketing
 
 _Status: Implemented — all 37 tasks green except two explicitly-flagged manual-verification items (T-067-23, T-067-29), which require a live browser/dev environment this authoring session does not have (`[[feedback_no_mariadb_mysql_access]]`)._
-_Last updated: 2026-09-15_
+_Last updated: 2026-09-27 (I11 added for Q-067-20)_
 
 > Keep this checklist aligned with `plan.md`'s increments. Stage tests before implementation,
 > record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -264,6 +264,33 @@ _Last updated: 2026-09-15_
   (including any manual-verification gaps still outstanding), mirroring this project's established
   convention.
   _Verification commands:_ None (docs only).
+
+### I11 – Single-photo cells render as photo points (Q-067-20)
+
+- [x] T-067-38 – Update `QueryMapBucketsTest` and `MapListingV3Test` for FR-067-25: single-photo
+  cells leave the bucket arrays and appear in `singleton_photos` (id, resolved album id, title,
+  coordinates); a ≥ 2-photo cell stays a bucket; guest title blanking applies (S-067-23).
+  _Intent:_ Failing tests staged before the implementation.
+  _Verification commands:_ `php artisan test --filter=QueryMapBucketsTest` (expect failure).
+
+- [x] T-067-39 – Move album-id resolution, `formatTakenAt()` and row-to-`MapPhotoResource` mapping
+  from `QueryMapPhotos` into `ResolvesMapPhotoSource`; add `singleton_photos` to
+  `MapBucketResource`; implement the singleton split in `QueryMapBuckets`.
+  _Verification commands:_ `php artisan test --filter=QueryMapBucketsTest`,
+  `--filter=QueryMapPhotosTest`, `--filter=MapListingV3Test`; `make phpstan`;
+  `vendor/bin/php-cs-fixer fix`.
+  _Result (2026-09-27):_ `QueryMapBucketsTest` 9/9, `QueryMapPhotosTest` 6/6,
+  `ResolvesMapPhotoSourceTest` 5/5, `make phpstan` clean. `MapListingV3Test` 8/17 locally: the 9
+  failures are all `storage/logs/daily-2026-09-27.log` being owned by `www-data` and not writable
+  by the test user (error/403/422 paths that log), not the change. Re-run once that is fixed.
+
+- [x] T-067-40 – Regenerate `lychee.d.ts`; in `Map.vue`, draw `singleton_photos` through the
+  photo-marker path alongside the aggregate badges (FR-067-20, FR-067-25).
+  _Verification commands:_ `npm run format`; `npm run check`.
+
+- [ ] T-067-41 – Manual browser check: an over-cap viewport shows no `1` badges; single photos
+  show thumbnails and popups (S-067-23).
+  _Verification commands:_ Manual (no dev environment this session).
 
 ## Notes / TODOs
 
