@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 074 | Global Gallery Password | Planning | Medium | ildyria | 2026-09-27 | 2026-09-27 | Spec, plan and tasks drafted. Q-074-01..03 resolved (Option A, ADR-074-01: session unlock, not a guest account). v7 and v8 frontends both in scope. 0/23 tasks. See `features/074-global-password/`. |
 
 ## Paused Features
 
