@@ -123,7 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { RouterLink } from "vue-router";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
@@ -142,7 +142,7 @@ import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/v8/composa
 const lycheeStore = useLycheeStateStore();
 const toast = useAppToast();
 
-const { rights, ready } = useGlobalRights();
+const { rights } = useGlobalRights();
 const stats = ref<App.Http.Resources.Models.AdminStatsResource | null>(null);
 const isLoading = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
@@ -224,13 +224,19 @@ function loadUpdateStatus() {
 		});
 }
 
-onMounted(() => {
-	ready.then(() => {
-		if (rights.value?.settings.can_edit) {
-			loadStats();
-			loadUpdateStatus();
-			loadAdvisories();
+// The rights may already be loaded, arrive later, or only on a retry: load the admin data once they allow it.
+let isAdminDataRequested = false;
+watch(
+	() => rights.value?.settings.can_edit ?? false,
+	(canEdit) => {
+		if (!canEdit || isAdminDataRequested) {
+			return;
 		}
-	});
-});
+		isAdminDataRequested = true;
+		loadStats();
+		loadUpdateStatus();
+		loadAdvisories();
+	},
+	{ immediate: true },
+);
 </script>

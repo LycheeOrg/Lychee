@@ -89,6 +89,15 @@ class PasswordConfigTypeTest extends BaseApiWithDataTest
 		self::assertSame('', $this->storedValue());
 	}
 
+	public function testEmptyValueOnRegularConfigIsStoredAsEmptyString(): void
+	{
+		$this->assertOk($this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'landing_subtitle', 'value' => '']],
+		]));
+
+		self::assertSame('', Configs::query()->where('key', '=', 'landing_subtitle')->value('value'));
+	}
+
 	public function testOmittedKeyLeavesPasswordUnchanged(): void
 	{
 		$this->setGalleryPassword('secret');

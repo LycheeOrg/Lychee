@@ -226,11 +226,12 @@ class SettingsController extends Controller
 
 		// First we take care of all the non-write-only configurations.
 		[$write_only_configs, $regular_configs] = $configs->partition(fn ($config) => in_array($config->key, $write_only_keys, true));
-		$regular_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => $config->value]));
+		$regular_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']));
 
 		// Then we handle the write-only configurations
 		// We clear the ones that needs clearing and hash the non-empty ones.
-		[$empty_write_only_configs, $non_empty_write_only_configs] = $write_only_configs->partition(fn ($config) => $config->value === '');
+		// An empty value reaches us as null (ConvertEmptyStringsToNull).
+		[$empty_write_only_configs, $non_empty_write_only_configs] = $write_only_configs->partition(fn ($config) => ($config->value ?? '') === '');
 		$empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => '']));
 		$non_empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => Hash::make($config->value)]));
 

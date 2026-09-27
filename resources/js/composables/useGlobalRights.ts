@@ -9,15 +9,14 @@ import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 
 /**
  * Global rights for a component that needs them: triggers the (shared, at most once) fetch.
- * `ready` settles once that fetch does, for checks that run only once (e.g. on mount).
  * Components mounted on every page (LeftMenu, and SpotlightSearch in v8) read the store directly
  * and call `ensureLoaded()` only once they open, so pages that never need the rights never fetch them.
  */
 export function useGlobalRights() {
 	const store = useGlobalRightsStore();
 	// Failures are already reported by the axios interceptor; the next caller retries.
-	const ready: Promise<void> = store.ensureLoaded().catch(() => {});
+	store.ensureLoaded().catch(() => {});
 	const { rights } = storeToRefs(store);
 
-	return { rights, ready };
+	return { rights };
 }
