@@ -48,6 +48,7 @@ return [
         'album' => 'Skróty do albumów',
         'slideshow' => 'Uruchamianie/zatrzymywanie pokazu slajdów',
         'toggle' => 'Przełącz panel',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Skróty do zdjęć',
         'previous' => 'Poprzednie zdjęcie',
         'next' => 'Następne zdjęcie',

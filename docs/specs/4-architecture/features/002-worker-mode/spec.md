@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/002-worker-mode/tasks.md` |
 | Roadmap entry | #002 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 Enable Lychee containers to operate in two distinct modes using the same Docker image: **web mode** (default, running FrankenPHP/Octane) and **worker mode** (processing Laravel queue jobs). Mode selection is controlled via an environment variable at container startup. This addresses the application layer (Laravel queue processing), deployment infrastructure (Docker), and operational concerns (horizontal scaling of queue workers). The feature enables standard Laravel queue-based architectures for background processing of photo uploads, image processing, and other asynchronous tasks.

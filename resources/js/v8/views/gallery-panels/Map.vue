@@ -284,6 +284,9 @@ function clearAggregateMarkers() {
  * photo count was over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS`) - otherwise
  * `renderIndividualPhotos()` owns the view and every bucket is skipped, even
  * though `bucketsV3` itself is always populated regardless of that cap.
+ * Cells holding a single photo are not in the bucket arrays at all: they
+ * arrive as `singleton_photos` and `renderIndividualPhotos()` draws them as
+ * photo markers (FR-067-25, Q-067-20).
  */
 function renderAggregateMarkers() {
 	if (map.value === undefined) return;
@@ -365,6 +368,16 @@ function ensureThumbnailLoaded(entry: MapPhotoEntry, onResolved: (objectUrl: str
 }
 
 /**
+ * `photosV3` when the viewport is under the cap, otherwise the single-photo
+ * cells of `bucketsV3` - `MapState.ts` never holds both at once.
+ */
+function individualPhotosForViewport(): App.Http.Resources.V3.MapPhotoResource | undefined {
+	const photos = mapStore.photosV3;
+	if (photos !== undefined && photos.ids.length > 0) return photos;
+	return mapStore.bucketsV3?.singleton_photos;
+}
+
+/**
  * Below `MAX_VIEWPORT_PHOTOS` (Q-067-13, amended), the backend ships every
  * individual photo in the viewport with no server-side clustering at all -
  * handed straight to the same `clusterFunc()`/`Cluster.add()` machinery the
@@ -378,12 +391,17 @@ function ensureThumbnailLoaded(entry: MapPhotoEntry, onResolved: (objectUrl: str
  * actually placed on the map - is what triggers `ensureThumbnailLoaded()`
  * for it, so a photo hidden inside a cluster the whole time never gets
  * fetched at all.
+ *
+ * Over the cap, the same path draws `bucketsV3.singleton_photos` - the
+ * photos of grid cells holding exactly one photo - next to the aggregate
+ * badges, so an isolated photo is a photo point, never a `1` badge
+ * (FR-067-25, Q-067-20).
  */
 function renderIndividualPhotos() {
 	if (map.value === undefined || photoLayer.value === undefined) return;
 	clearIndividualPhotos();
 
-	const photos = mapStore.photosV3;
+	const photos = individualPhotosForViewport();
 	if (photos === undefined || photos.ids.length === 0) return;
 
 	const entries: MapPhotoEntry[] = photos.ids.map((photoID, i) => ({

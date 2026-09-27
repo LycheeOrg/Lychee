@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/048-fix-multi-group-permissions/tasks.md` |
 | Roadmap entry | #048 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 `BaseAlbumImpl::current_user_permissions()` (`app/Models/BaseAlbumImpl.php:261-271`) resolves the effective `AccessPermission` for the current user on an album by calling `Collection::first()` twice: once for a direct user-level row, and once — only if the first lookup fails — for a matching user-group row. Because `first()` returns the earliest-matching element of an already in-memory `Collection` (ordered by DB fetch order, effectively insertion/id order), a user who belongs to **two or more groups** with different grants on the same album only ever receives the grants of whichever group's `AccessPermission` row happens to sort first. The other group's grants (e.g. Download) are silently dropped, and simply re-creating the sharing rows in a different order changes the outcome — this is the bug reported against the "All" + "Support_VIP" group scenario.
@@ -85,7 +85,7 @@ No new telemetry. No new verbose-trace fields.
 
 ## Documentation Deliverables
 - Update `docs/specs/6-decisions/` with an ADR recording the "most-permissive-wins, order-independent merge" policy for `current_user_permissions()`, since this establishes the canonical multi-source permission-merge rule for the album authorization module (security-relevant, cross-cutting: `AlbumPolicy` + `PhotoController`).
-- Close Q-048-01 in `docs/specs/4-architecture/open-questions.md` (done).
+- Close Q-048-01 in `open-questions.md` (done).
 
 ## Fixtures & Sample Data
 See FX-048-01 above — no new fixture files are required.

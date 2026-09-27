@@ -72,6 +72,7 @@ class RequestAttribute
 	public const ALBUM_PHOTO_LAYOUT = 'photo_layout';
 	public const ALBUM_TIMELINE_ALBUM = 'album_timeline';
 	public const ALBUM_TIMELINE_PHOTO = 'photo_timeline';
+	public const ALBUM_DATE_SCRUBBER = 'is_date_scrubber_enabled';
 	public const ALBUM_TITLE_COLOR_ATTRIBUTE = 'title_color';
 	public const ALBUM_TITLE_POSITION_ATTRIBUTE = 'title_position';
 	public const HEADER_PHOTO_FOCUS_ATTRIBUTE = 'header_photo_focus';
@@ -89,6 +90,7 @@ class RequestAttribute
 	public const GRANTS_UPLOAD_ATTRIBUTE = 'grants_upload';
 	public const GRANTS_EDIT_ATTRIBUTE = 'grants_edit';
 	public const GRANTS_DELETE_ATTRIBUTE = 'grants_delete';
+	public const GRANTS_MOVE_ATTRIBUTE = 'grants_move';
 
 	public const IS_AND_ATTRIBUTE = 'is_and';
 

@@ -19,7 +19,11 @@
 								:legend-label="$t('gallery.album.tabs.about')"
 							/>
 						</section>
-						<section id="album-settings-visibility" class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4">
+						<section
+							v-if="canChangeVisibility"
+							id="album-settings-visibility"
+							class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4"
+						>
 							<AlbumVisibility
 								:key="`visibility_${albumStore.album?.id}`"
 								legend-icon="lucide:eye"
@@ -73,7 +77,7 @@
 						</section>
 					</div>
 				</div>
-				<div v-else class="w-full flex justify-center flex-wrap gap-4">
+				<div v-else-if="canChangeVisibility" class="w-full flex justify-center flex-wrap gap-4">
 					<AlbumVisibility
 						:key="`visibility_${albumStore.album?.id}`"
 						legend-icon="lucide:eye"
@@ -145,6 +149,9 @@ const canMove = computed(() => albumStore.config?.is_model_album && albumStore.r
 // Gated exactly like `canMove`: hidden for smart/tag/person albums.
 const canTracks = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_edit);
 const trackCount = computed(() => albumStore.modelAlbum?.tracks?.length ?? 0);
+// The protection policy is a sharing decision, reserved to the owner
+// (admins for smart albums) — exactly what `can_transfer` expresses.
+const canChangeVisibility = computed(() => albumStore.rights?.can_transfer ?? false);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
 const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
@@ -159,10 +166,10 @@ const sections = computed<Section[]>(() => {
 		return [];
 	}
 
-	const items: Section[] = [
-		{ value: "about", label: trans("gallery.album.tabs.about") },
-		{ value: "visibility", label: trans("gallery.album.tabs.visibility") },
-	];
+	const items: Section[] = [{ value: "about", label: trans("gallery.album.tabs.about") }];
+	if (canChangeVisibility.value) {
+		items.push({ value: "visibility", label: trans("gallery.album.tabs.visibility") });
+	}
 	if (canMove.value) {
 		items.push({ value: "move", label: trans("gallery.album.tabs.move") });
 	}

@@ -29,30 +29,37 @@ class EmbedStreamResource extends Data
 	public Collection $photos;
 
 	/**
-	 * @param string     $site_title       The site title to display
-	 * @param Collection $photos           Collection of Photo models
-	 * @param bool       $should_downgrade Whether to downgrade image quality for size variants
+	 * @param string     $site_title The site title to display
+	 * @param Collection $photos     Collection of Photo models
 	 */
-	public function __construct(string $site_title, Collection $photos, bool $should_downgrade)
+	public function __construct(string $site_title, Collection $photos)
 	{
 		$this->site_title = $site_title;
+
+		// Feature 070 (FR-070-06): per photo, one grouped query. Previously a
+		// single boolean off the `grants_full_photo_access` config, which only
+		// seeds newly created shares - reading it as a gate over-granted.
+		/** @var \App\Models\User|null $user */
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$should_downgrade = resolve(\App\Actions\Photo\StructOfArrays\ResolvesPhotoGrants::class)
+			->downgradeMap($photos, $user);
+
 		$this->photos = $photos->map(fn ($photo) => EmbedPhotoResource::fromModel(
 			photo: $photo,
-			should_downgrade: $should_downgrade,
+			should_downgrade: $should_downgrade[$photo->id] ?? true,
 		));
 	}
 
 	/**
 	 * Create resource from photo collection.
 	 *
-	 * @param string     $site_title       The site title to display
-	 * @param Collection $photos           Collection of Photo models
-	 * @param bool       $should_downgrade Whether to downgrade image quality for size variants
+	 * @param string     $site_title The site title to display
+	 * @param Collection $photos     Collection of Photo models
 	 *
 	 * @return self
 	 */
-	public static function fromPhotos(string $site_title, Collection $photos, bool $should_downgrade): self
+	public static function fromPhotos(string $site_title, Collection $photos): self
 	{
-		return new self($site_title, $photos, $should_downgrade);
+		return new self($site_title, $photos);
 	}
 }

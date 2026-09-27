@@ -1,6 +1,36 @@
 <template>
-	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0 && photosStore.photos.length === 0" class="contents">
-		<div class="contents">
+	<UContextMenu :items="menuSections" :disabled="!hasResults" class="contents">
+		<!-- v3 Struct-of-Arrays path (Feature 069). No UPagination at all:
+		     the photo tier is whole-scope, virtualized, and bounded by the
+		     `search_result_limit` cap rather than by a page size. -->
+		<div v-if="searchStore.isSearchSoaActive" class="contents">
+			<SearchAlbumGridV3
+				:header="albumHeaderV3"
+				:selected-albums="selectedAlbumsIds"
+				@clicked="albumSelect"
+				@selected="albumSelect"
+				@contexted="contextMenuAlbumOpen"
+			/>
+			<template v-if="photosStore.photos.length > 0">
+				<h2 class="w-full px-3 py-2 font-semibold text-toned text-lg">{{ photoHeader }}</h2>
+				<UAlert
+					v-if="searchStore.isTruncatedV3"
+					class="mx-3 mb-2"
+					color="warning"
+					variant="subtle"
+					icon="lucide:triangle-alert"
+					:description="truncationHint"
+				/>
+				<PhotoGridVirtual
+					source="search"
+					:selected-photos="selectedPhotosIds"
+					@clicked="photoClick"
+					@selected="selectPhoto"
+					@contexted="contextMenuPhotoOpen"
+				/>
+			</template>
+		</div>
+		<div v-else class="contents">
 			<AlbumThumbPanel
 				v-if="albumsStore.albums.length > 0"
 				:header="albumHeader"
@@ -38,6 +68,8 @@ import { useSelection } from "@/composables/selections/selections";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import PhotoGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoGridVirtual.vue";
+import SearchAlbumGridV3 from "@/v8/components/gallery/searchModule/SearchAlbumGridV3.vue";
 import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
@@ -69,6 +101,14 @@ const photoHeader = computed(() => {
 	return sprintf(trans("gallery.search.photos"), searchStore.total);
 });
 
+const albumHeaderV3 = computed(() => {
+	return sprintf(trans("gallery.search.albums"), searchStore.albumTilesV3.length);
+});
+
+const truncationHint = computed(() => {
+	return sprintf(trans("gallery.search.results_truncated"), searchStore.total);
+});
+
 const albumHeader = computed(() => {
 	if (albumsStore.albums.length === 0) {
 		return "";
@@ -97,7 +137,21 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
-const { selectedPhotosIds, selectedAlbumsIds, photoSelect: selectPhoto, albumSelect } = useSelection(photosStore, albumsStore, togglableStore);
+// On the v3 path the album hits never reach `albumsStore` (FR-069-20), so both
+// the selection pool and the "is there anything to act on" gate above have to
+// read them from the search store instead.
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() =>
+	searchStore.isSearchSoaActive ? searchStore.albumTilesV3 : undefined,
+);
+
+const hasResults = computed<boolean>(() => (searchAlbumsV3.value ?? albumsStore.albums).length > 0 || photosStore.photos.length > 0);
+
+const {
+	selectedPhotosIds,
+	selectedAlbumsIds,
+	photoSelect: selectPhoto,
+	albumSelect,
+} = useSelection(photosStore, albumsStore, togglableStore, searchAlbumsV3);
 
 const { Menu } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 

@@ -36,7 +36,7 @@ const LycheePreset = definePreset(Aura, LycheePrimeVueConfig);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
-const langs = import.meta.glob("../../lang/*.json");
+const langs = import.meta.glob<{ default: Record<string, string> }>("../../lang/*.json");
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin

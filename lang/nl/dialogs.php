@@ -48,6 +48,7 @@ return [
         'album' => 'Album sneltoetsen',
         'slideshow' => 'Diavoorstelling starten/stoppen',
         'toggle' => 'Paneel in-/uitschakelen',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Foto sneltoetsen',
         'previous' => 'Vorige foto',
         'next' => 'Volgende foto',

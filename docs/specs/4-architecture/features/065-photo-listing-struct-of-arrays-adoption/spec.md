@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/065-photo-listing-struct-of-arrays-adoption/tasks.md` |
 | Roadmap entry | #65 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) and the existing `bucket_id`-driven virtual-scroll pattern (Feature 061/062/063) to photos — it does not establish a new convention, so no new ADR is added.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) and the existing `bucket_id`-driven virtual-scroll pattern (Feature 061/062/063) to photos — it does not establish a new convention, so no new ADR is added.
 
 ## Overview
 

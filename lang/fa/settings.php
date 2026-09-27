@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'نمایش تزئینات روی جلد آلبوم (تعداد زیرآلبوم و/یا عکس)',
         'album_decoration_direction' => 'تراز افقی یا عمودی تزئینات آلبوم',
         'photo_overlay' => 'اطلاعات پیش فرض پوشش تصویر',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'گرد کردن گوشه‌های تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
         'album_border_enabled' => 'نمایش حاشیه دور تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

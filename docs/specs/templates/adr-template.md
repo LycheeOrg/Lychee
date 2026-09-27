@@ -1,9 +1,9 @@
-# ADR-00xx: <Decision Title>
+# ADR-<NNN>-<YY>: <Decision Title>
 
-- **Status:** Proposed | Accepted | Superseded by ADR-00yy
+- **Status:** Proposed | Accepted | Superseded by ADR-<NNN>-<YY>
 - **Date:** YYYY-MM-DD
-- **Related features/specs:** Feature 00x (docs/specs/4-architecture/features/00x/spec.md), …
-- **Related open questions:** OQ-00x-01, …
+- **Related features/specs:** Feature <NNN> (docs/specs/4-architecture/features/<NNN>-<feature-name>/spec.md), …
+- **Related open questions:** Q-<NNN>-01, …
 
 ## Context
 

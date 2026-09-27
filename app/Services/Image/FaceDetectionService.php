@@ -50,6 +50,9 @@ class FaceDetectionService
 	/**
 	 * Dispatch face scan jobs for specific photos or all photos in an album.
 	 *
+	 * When both are given, the selection is the intersection: only the listed
+	 * photos that also belong to the album are scanned.
+	 *
 	 * @param string[]|null $photo_ids specific photo IDs to scan, or null to scan all in album
 	 * @param string|null   $album_id  album ID to scan (required if photo_ids is null)
 	 * @param bool          $force     if true, rescan even if photo has assigned faces
@@ -58,13 +61,21 @@ class FaceDetectionService
 	 */
 	public function dispatchPhotos(?array $photo_ids, ?string $album_id, bool $force = false): int
 	{
+		if ($photo_ids === null && $album_id === null) {
+			return 0;
+		}
+
 		$query = Photo::query()
 			->select('id')
 			->whereIn('type', FileExtensionService::SUPPORTED_IMAGE_MIME_TYPES);
 
+		// Both predicates are combined (not alternatives) so that an album never
+		// widens an explicit selection of photo IDs (see GHSA-x6f7-qp5q-w37f).
 		if ($photo_ids !== null) {
 			$query->whereIn('id', $photo_ids);
-		} else {
+		}
+
+		if ($album_id !== null) {
 			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));
 		}
 

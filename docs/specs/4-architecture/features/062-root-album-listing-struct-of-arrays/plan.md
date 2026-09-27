@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/062-root-album-listi
 _Status:_ Implemented
 _Last updated:_ 2026-09-02
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md).
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md).
 
 ## Vision & Success Criteria
 

@@ -8,6 +8,7 @@
 
 namespace Tests\Feature_v2\UserGroups;
 
+use App\Models\AlbumUserThumb;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UserGroupTest extends BaseApiWithDataTest
@@ -99,6 +100,25 @@ class UserGroupTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->deleteJson('/UserGroups', ['group_id' => $this->group1->id]);
 		$this->assertNoContent($response);
+	}
+
+	/**
+	 * Deleting a whole group revokes every access it granted, again without
+	 * deleting any `access_permissions` row its former members could be traced
+	 * through — so their cached covers are purged by member id instead.
+	 */
+	public function testDeleteGroupPurgesFormerMembersCachedAlbumThumbs(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userWithGroup1->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+
+		$response = $this->actingAs($this->admin)->deleteJson('/UserGroups', ['group_id' => $this->group1->id]);
+		$this->assertNoContent($response);
+
+		self::assertSame(0, AlbumUserThumb::query()->where('user_id', '=', $this->userWithGroup1->id)->count());
 	}
 
 	/**

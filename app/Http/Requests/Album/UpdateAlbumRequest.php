@@ -13,6 +13,7 @@ use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasAlbumSortingCriterion;
 use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasCopyright;
+use App\Contracts\Http\Requests\HasDateScrubber;
 use App\Contracts\Http\Requests\HasDescription;
 use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasLicense;
@@ -42,6 +43,7 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasAspectRatioTrait;
 use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
+use App\Http\Requests\Traits\HasDateScrubberTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasIsPinnedTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
@@ -69,7 +71,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTags, HasPublishedAt
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasDateScrubber, HasIsPinned, HasTags, HasPublishedAt
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -84,6 +86,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasPhotoLayoutTrait;
 	use HasTimelineAlbumTrait;
 	use HasTimelinePhotoTrait;
+	use HasDateScrubberTrait;
 	use HasIsPinnedTrait;
 	use HasTagsTrait;
 	use HasPublishedAtTrait;
@@ -169,6 +172,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
 			// Feature 068 (FR-068-13): `sometimes`, not `present` - confirmed via
 			// the existing AlbumUpdateTest/AlbumUpdateFocusTest regression suite
@@ -219,6 +223,9 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->album_timeline = TimelineAlbumGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_ALBUM]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
+		$this->is_date_scrubber_enabled_provided = array_key_exists(RequestAttribute::ALBUM_DATE_SCRUBBER, $values);
+		$date_scrubber = $values[RequestAttribute::ALBUM_DATE_SCRUBBER] ?? null;
+		$this->is_date_scrubber_enabled = $date_scrubber === null ? null : static::toBoolean($date_scrubber);
 
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 		$this->tags_provided = array_key_exists(RequestAttribute::TAGS_ATTRIBUTE, $values);

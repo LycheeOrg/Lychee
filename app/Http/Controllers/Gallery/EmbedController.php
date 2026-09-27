@@ -97,7 +97,7 @@ class EmbedController extends Controller
 		// Get site title from configuration
 		$site_title = strval($request->configs()->getValue('site_title') ?? 'Lychee');
 
-		return EmbedStreamResource::fromPhotos($site_title, $photos, !request()->configs()->getValueAsBool('grants_full_photo_access'));
+		return EmbedStreamResource::fromPhotos($site_title, $photos);
 	}
 
 	/**

@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'الحد الأدنى %s من الأحرف المطلوبة.',
         'photos' => 'الصور (%s)',
         'albums' => 'الألبومات (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'البحث المتقدم',
             'search_button' => 'بحث',
@@ -183,6 +184,10 @@ return [
             'upload_failed' => 'Could not upload one or more tracks',
             'name_required' => 'Name is required',
         ],
+        'date_scrubber' => [
+            'toggle' => 'Show/hide the date scrubber',
+            'albums_count' => ':count album|:count albums',
+        ],
         'hero' => [
             'created' => 'تم الإنشاء',
             'copyright' => 'حقوق الطبع والنشر',
@@ -226,6 +231,10 @@ return [
             'aspect_ratio' => 'تعيين نسبة عرض إلى ارتفاع مصغرات الألبوم',
             'album_timeline' => 'تعيين وضع الجدول الزمني للألبوم',
             'photo_timeline' => 'تعيين وضع الجدول الزمني للصورة',
+            'date_scrubber' => 'Date scrubber',
+            'date_scrubber_default' => 'Default',
+            'date_scrubber_enabled' => 'Enabled',
+            'date_scrubber_disabled' => 'Disabled',
             'layout' => 'تعيين تخطيط الصورة',
             'flow_publish_date' => 'Flow publish date',
             'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',

@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumStore } from "./AlbumState";
 import { useTimelineStore } from "./TimelineState";
+import { useLycheeStateStore } from "./LycheeState";
+import { useSearchStore } from "./SearchState";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -81,13 +83,33 @@ export const usePhotoStore = defineStore("photo-store", {
 			// gates are mutually exclusive in practice (a v3 album tile's
 			// `album_id` is never `"timeline"`), but checked as a clean
 			// `else if` regardless — never both in the same call.
+			//
+			// Feature 069: a search-sourced tile is `ratios`-lightweight in the
+			// same way and needs the same resolution, but it cannot be
+			// recognised by its `album_id` the way a Timeline tile can — a
+			// search tile carries a *real* album id (FR-069-04), indistinguishable
+			// from an album-browsing tile's. Nor is membership in the search
+			// store's own tile list enough — that list outlives the search route
+			// (only an explicit clear empties it), so a photo that is in both a
+			// search result and the album being browsed would match it. The tile
+			// is identified by who last wrote `photosStore.photos` instead.
+			//
+			// That branch is checked **first**, and the ordering is load-bearing:
+			// an album-scoped search leaves `albumStore` holding that origin
+			// album, so `isPhotoSoaActive` can be true on the search route too.
+			// Falling through to it would fetch details from
+			// `/Albums/{origin}/Photos/details`, which is wrong for any result
+			// outside that album and silently returns nothing for it.
 			if (this.photo !== undefined) {
 				const albumStore = useAlbumStore();
 				const timelineStore = useTimelineStore();
+				const searchStore = useSearchStore();
 				const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
 					(id): id is string => id !== null && id !== undefined,
 				);
-				if (albumStore.isPhotoSoaActive) {
+				if (searchStore.isSearchSoaActive && photosState.sourceV3 === "search") {
+					void searchStore.loadPhotoDetailsV3(ids);
+				} else if (albumStore.isPhotoSoaActive) {
 					void albumStore.loadPhotoDetails(ids);
 				} else if (timelineStore.isTimelineSoaActive && this.photo.album_id === "timeline") {
 					void timelineStore.loadPhotoDetailsV3(ids);
@@ -133,17 +155,25 @@ export const usePhotoStore = defineStore("photo-store", {
 				return ImageViewMode.Raw;
 			}
 
+			// When enabled, prefer the highest-quality variant that exists for
+			// this photo (Original, falling back to Medium) instead of always
+			// preferring Medium - e.g. so a mobile long-press-save captures
+			// Original rather than whatever the viewer would otherwise render.
+			const prefersHighestQuality = useLycheeStateStore().is_photo_viewer_highest_quality_enabled;
+			const hasMedium = this.photo?.size_variants.medium !== null;
+			const hasOriginal = !!this.photo?.size_variants.original?.url;
+
 			if (this.photo?.precomputed.is_livephoto === true) {
-				if (this.photo?.size_variants.medium !== null) {
-					return ImageViewMode.LivePhotoMedium;
+				if (prefersHighestQuality) {
+					return hasOriginal ? ImageViewMode.LivePhotoOriginal : ImageViewMode.LivePhotoMedium;
 				}
-				return ImageViewMode.LivePhotoOriginal;
+				return hasMedium ? ImageViewMode.LivePhotoMedium : ImageViewMode.LivePhotoOriginal;
 			}
 
-			if (this.photo?.size_variants.medium !== null) {
-				return ImageViewMode.Medium;
+			if (prefersHighestQuality) {
+				return hasOriginal ? ImageViewMode.Original : ImageViewMode.Medium;
 			}
-			return ImageViewMode.Original;
+			return hasMedium ? ImageViewMode.Medium : ImageViewMode.Original;
 		},
 		srcSetMedium(): string {
 			const medium = this.photo?.size_variants.medium ?? null;

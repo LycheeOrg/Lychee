@@ -5,14 +5,14 @@
 | Status | Draft |
 | Last updated | YYYY-MM-DD |
 | Owners | <Name(s)> |
-| Linked plan | ``docs/specs/4-architecture/features`/<NNN>/plan.md` |
-| Linked tasks | ``docs/specs/4-architecture/features`/<NNN>/tasks.md` |
+| Linked plan | [plan.md](plan.md) |
+| Linked tasks | [tasks.md](tasks.md) |
 | Roadmap entry | #<workstream number> |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under ``docs/specs/5-decisions`/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in the feature's [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
-Summarise the problem, affected modules (core/application/CLI/REST/UI), and the user impact in 2–3 sentences. Call out any constitutional constraints (spec-first, telemetry, persistence) that drive this work.
+Summarise the problem, affected layers (models/actions, REST API v2/v3, artisan commands, v7/v8 frontend), and the user impact in 2–3 sentences. Call out any constitutional constraints (spec-first, telemetry, persistence) that drive this work.
 
 ## Goals
 List the concrete outcomes this feature must deliver (behavioural, quality, telemetry, documentation).
@@ -37,7 +37,7 @@ List quality, performance, security, accessibility, or governance expectations i
 | NFR-<NNN>-02 | … | … | … | … | … |
 
 ## UI / Interaction Mock-ups (required for UI-facing work)
-Embed ASCII sketches illustrating layouts or state changes. Reference the guideline in [docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md](docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md) when completing this section. Remove it if the feature has no UI impact.
+Embed ASCII sketches illustrating layouts or state changes. Reference the guideline in [ui-ascii-mockups.md](../../spec-guidelines/ui-ascii-mockups.md) when completing this section. Remove it if the feature has no UI impact.
 
 ```
 <ASCII mock-up>
@@ -52,12 +52,11 @@ Assign each scenario a stable identifier (format `S-<NNN>-<nn>`, e.g., `S-005-01
 
 ## Test Strategy
 Describe how each layer gains coverage. Mention failing tests that must be staged before implementation.
-- **Core:** …
-- **Application:** …
-- **REST:** …
-- **CLI:** …
-- **UI (JS/Selenium):** …
-- **Docs/Contracts:** OpenAPI, telemetry snapshots, etc.
+- **Models / Actions:** …
+- **REST API (v2/v3):** …
+- **Artisan commands:** …
+- **Frontend (v7/v8):** …
+- **Docs/Contracts:** API resources, generated TypeScript types, etc.
 
 ## Interface & Contract Catalogue
 Document the artifacts this feature governs so other specs and automation can reference them.
@@ -65,17 +64,17 @@ Document the artifacts this feature governs so other specs and automation can re
 ### Domain Objects
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-<NNN>-01 | e.g., HotpEvaluationRequest fields, validation rules | core, application, REST |
+| DO-<NNN>-01 | e.g., SetPhotoRatingRequest fields, validation rules | models, actions, REST |
 
 ### API Routes / Services
 | ID | Transport | Description | Notes |
 |----|-----------|-------------|-------|
-| API-<NNN>-01 | REST POST /api/v1/... | … | Schema reference |
+| API-<NNN>-01 | REST POST /api/v2/Photo::... | … | Request/Resource class |
 
 ### CLI Commands / Flags
 | ID | Command | Behaviour |
 |----|---------|-----------|
-| CLI-<NNN>-01 | ./bin/... evaluate | Describe what the command does. |
+| CLI-<NNN>-01 | php artisan lychee:... | Describe what the command does. |
 
 ### Telemetry Events
 | ID | Event name | Fields / Redaction rules |
@@ -85,7 +84,7 @@ Document the artifacts this feature governs so other specs and automation can re
 ### Fixtures & Sample Data
 | ID | Path | Purpose |
 |----|------|---------|
-| FX-<NNN>-01 | docs/specs/test-vectors/...json | Describe fixture usage. |
+| FX-<NNN>-01 | tests/Samples/... | Describe fixture usage. |
 
 ### UI States
 | ID | State | Trigger / Expected outcome |
@@ -99,7 +98,7 @@ Detail event names, required fields, redaction rules, and verbose-trace addition
 Enumerate roadmap/knowledge-map/how-to/ADR updates triggered by this feature.
 
 ## Fixtures & Sample Data
-List any fixture files that must be added or updated (e.g., `docs/specs/test-vectors`/<protocol>/…).
+List any fixture files that must be added or updated (e.g., `tests/Samples/…` or `tests/Fixtures/…`).
 
 ## Spec DSL
 Provide a machine-readable summary that mirrors the catalogue above so tooling can parse it. Use YAML/JSON-style keys and reuse the IDs already defined.
@@ -107,27 +106,27 @@ Provide a machine-readable summary that mirrors the catalogue above so tooling c
 ```
 domain_objects:
   - id: DO-<NNN>-01
-    name: HotpEvaluationRequest
+    name: SetPhotoRatingRequest
     fields:
-      - name: counter
+      - name: rating
         type: integer
-        constraints: ">= 0"
+        constraints: "0..5"
 routes:
   - id: API-<NNN>-01
     method: POST
-    path: /api/v1/.../evaluate
+    path: /api/v2/Photo::...
 cli_commands:
   - id: CLI-<NNN>-01
-    command: ./bin/... evaluate
+    command: php artisan lychee:...
 telemetry_events:
   - id: TE-<NNN>-01
-    event: hotp.evaluate
+    event: example.event
 fixtures:
   - id: FX-<NNN>-01
-    path: docs/specs/test-vectors/...json
+    path: tests/Samples/...
 ui_states:
   - id: UI-<NNN>-01
-    description: Evaluate form success card
+    description: Rating saved confirmation
 ```
 
 ## Appendix (Optional)

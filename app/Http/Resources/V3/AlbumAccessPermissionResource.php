@@ -58,6 +58,8 @@ class AlbumAccessPermissionResource extends Data
 	public array $grants_edits;
 	/** @var (bool|null)[] */
 	public array $grants_deletes;
+	/** @var (bool|null)[] */
+	public array $grants_moves;
 
 	/**
 	 * @param string[]        $album_ids
@@ -76,6 +78,7 @@ class AlbumAccessPermissionResource extends Data
 	 * @param (bool|null)[]   $grants_uploads
 	 * @param (bool|null)[]   $grants_edits
 	 * @param (bool|null)[]   $grants_deletes
+	 * @param (bool|null)[]   $grants_moves
 	 */
 	public function __construct(
 		array $album_ids,
@@ -94,6 +97,7 @@ class AlbumAccessPermissionResource extends Data
 		array $grants_uploads,
 		array $grants_edits,
 		array $grants_deletes,
+		array $grants_moves,
 	) {
 		$this->album_ids = $album_ids;
 		$this->album_titles = $album_titles;
@@ -111,5 +115,6 @@ class AlbumAccessPermissionResource extends Data
 		$this->grants_uploads = $grants_uploads;
 		$this->grants_edits = $grants_edits;
 		$this->grants_deletes = $grants_deletes;
+		$this->grants_moves = $grants_moves;
 	}
 }

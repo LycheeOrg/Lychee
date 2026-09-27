@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Minimum %s characters required.',
         'photos' => 'Photos (%s)',
         'albums' => 'Albums (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Advanced Search',
             'search_button' => 'Search',
@@ -183,6 +184,10 @@ return [
             'upload_failed' => 'Could not upload one or more tracks',
             'name_required' => 'Name is required',
         ],
+        'date_scrubber' => [
+            'toggle' => 'Show/hide the date scrubber',
+            'albums_count' => ':count album|:count albums',
+        ],
         'hero' => [
             'created' => 'Created',
             'copyright' => 'Copyright',
@@ -226,6 +231,10 @@ return [
             'aspect_ratio' => 'Set album thumbs aspect ratio',
             'album_timeline' => 'Set album timeline mode',
             'photo_timeline' => 'Set photo timeline mode',
+            'date_scrubber' => 'Date scrubber',
+            'date_scrubber_default' => 'Default',
+            'date_scrubber_enabled' => 'Enabled',
+            'date_scrubber_disabled' => 'Disabled',
             'layout' => 'Set photo layout',
             'flow_publish_date' => 'Flow publish date',
             'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',

@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laragear\WebAuthn\ByteBuffer;
@@ -430,17 +431,123 @@ class WebAuthTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Simple generation of credentials.
+	 * A non-admin user must not be able to rename a credential which belongs
+	 * to somebody else, even though they are allowed to edit their own
+	 * settings.
+	 *
+	 * The credential ID is not a secret: the public `WebAuthn::login/options`
+	 * endpoint hands it out for any given username.
 	 *
 	 * @return void
 	 */
-	private function createCredentials(): void
+	public function testWebAuthEditCredentialOfOtherUser(): void
+	{
+		$this->createCredentials();
+
+		// Retrieve the ID of the admin's credential the same way an attacker would.
+		$responseOptions = $this->postJson('WebAuthn::login/options', ['username' => $this->admin->username]);
+		$this->assertOk($responseOptions);
+		$credential_id = $responseOptions->json()['allowCredentials'][0]['id'];
+
+		$this->userMayUpload1->may_edit_own_settings = true;
+		$this->userMayUpload1->save();
+
+		Auth::loginUsingId($this->userMayUpload1->id);
+
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => $credential_id, 'alias' => 'hijacked']);
+		$this->assertForbidden($responseEdit);
+
+		Auth::logout();
+		Session::flush();
+
+		// The admin's credential must be untouched.
+		$this->assertDatabaseHas('webauthn_credentials', ['id' => $credential_id, 'alias' => null]);
+	}
+
+	/**
+	 * A non-admin user may rename their own credential.
+	 *
+	 * This covers the ownership branch of the authorization gate, which the
+	 * admin test above short-circuits.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthEditOwnCredentialAsNonAdmin(): void
+	{
+		$credential_id = 'BBBBBp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg';
+		$this->createCredentials($this->userMayUpload1, $credential_id);
+
+		$this->userMayUpload1->may_edit_own_settings = true;
+		$this->userMayUpload1->save();
+
+		Auth::loginUsingId($this->userMayUpload1->id);
+
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => $credential_id, 'alias' => 'my own key']);
+		$this->assertNoContent($responseEdit);
+
+		$responseList = $this->getJson('WebAuthn');
+		$this->assertOk($responseList);
+		self::assertEquals('my own key', $responseList->json()[0]['alias']);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
+	 * An administrator may rename any credential.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthAdminEditCredentialOfOtherUser(): void
+	{
+		$credential_id = 'AAAAAp8jSUfho6ksyUPhPOMsC2ZLXmUJgkxvZd1zi8AXO6dnXfcRQg9xbTNA5PLcoIbn0ZQbsj4De6bvRy_Cgg';
+		$this->createCredentials($this->userMayUpload1, $credential_id);
+
+		Auth::loginUsingId($this->admin->id);
+
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => $credential_id, 'alias' => 'renamed by admin']);
+		$this->assertNoContent($responseEdit);
+
+		Auth::logout();
+		Session::flush();
+
+		$this->assertDatabaseHas('webauthn_credentials', ['id' => $credential_id, 'alias' => 'renamed by admin']);
+	}
+
+	/**
+	 * Renaming a credential which does not exist at all must not leak
+	 * anything either.
+	 *
+	 * @return void
+	 */
+	public function testWebAuthEditUnknownCredential(): void
+	{
+		$this->createCredentials();
+
+		Auth::loginUsingId($this->admin->id);
+
+		$responseEdit = $this->patchJson('WebAuthn', ['id' => 'this-credential-does-not-exist', 'alias' => 'something']);
+		$this->assertNotFound($responseEdit);
+
+		Auth::logout();
+		Session::flush();
+	}
+
+	/**
+	 * Simple generation of credentials.
+	 *
+	 * @param User|null $owner the owner of the credential, defaults to the admin
+	 * @param string    $id    the ID of the credential
+	 *
+	 * @return void
+	 */
+	private function createCredentials(?User $owner = null, string $id = '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA'): void
 	{
 		// The attribute for public key is encrypted (not that it really matters, but still).
 		// Therefore we cannot use a classic insert as this encryption relies on the secret app key.
 		// This key is different at each run of the tests, therefore we store a public key here unencrypted
-		$key = $this->admin->makeWebAuthnCredential([
-			'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+		$key = ($owner ?? $this->admin)->makeWebAuthnCredential([
+			'id' => $id,
 
 			'user_id' => '27117450ff81461d80331fb79c655f39',
 			'alias' => null,

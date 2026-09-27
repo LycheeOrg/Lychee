@@ -8,6 +8,7 @@
 
 namespace App\Actions\RSS;
 
+use App\Actions\Photo\StructOfArrays\ResolvesPhotoGrants;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
@@ -18,6 +19,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use App\Services\UrlGenerator;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
@@ -32,7 +34,8 @@ use function Safe\parse_url;
 use Spatie\Feed\FeedItem;
 
 /**
- * @template T of object{id:string,title:string,description:?string,type:string,created_at:string,updated_at:string,short_path:string,filesize:int,storage_disk:string,size_variant_type:string,username:string}
+ * @template T of object{id:string,owner_id:int,title:string,description:?string,type:string,created_at:string,updated_at:string,short_path:string,filesize:int,storage_disk:string,username:string,display_name:?string}
+ * @template V of object{short_path:string,filesize:int,storage_disk:string,type:int}
  */
 class Generate
 {
@@ -43,11 +46,14 @@ class Generate
 		protected AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 		protected readonly UrlGenerator $url_generator,
+		protected readonly ResolvesPhotoGrants $resolves_photo_grants,
+		protected readonly FileExtensionService $file_extension_service,
 	) {
 	}
 
 	/**
 	 * @param T        $data       the row supplying the item's photo/user fields
+	 * @param V        $variant    the size variant the viewer may obtain (see {@see self::authorizedVariant()})
 	 * @param string   $album_id   the album whose view of the photo the item links to
 	 * @param string[] $categories album titles to list on the item as `<category>`
 	 *
@@ -55,7 +61,7 @@ class Generate
 	 *
 	 * @throws BindingResolutionException
 	 */
-	private function toFeedItem(object $data, string $album_id, array $categories): FeedItem
+	private function toFeedItem(object $data, object $variant, string $album_id, array $categories): FeedItem
 	{
 		$page_link = route('gallery', ['albumId' => $album_id, 'photoId' => $data->id]);
 		// A tag: URI (RFC 4151) is an opaque, album-independent identity for the
@@ -70,9 +76,12 @@ class Generate
 			'summary' => Markdown::convert($data->description ?? '')->getContent(),
 			'updated' => $this->asDateTime($data->updated_at),
 			'link' => $page_link,
-			'enclosure' => $this->url_generator->pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
+			'enclosure' => $this->url_generator->pathToUrl($variant->short_path, $variant->storage_disk, SizeVariantType::from($variant->type)),
+			// A photo's medium variants keep the original's file extension (see
+			// BaseSizeVariantNamingStrategy::generateExtension()), so the mime
+			// type is unchanged when the enclosure is downgraded.
 			'enclosureType' => $data->type,
-			'enclosureLength' => $data->filesize,
+			'enclosureLength' => $variant->filesize,
 			'authorName' => ($data->display_name !== null && $data->display_name !== '')
 				? $data->display_name
 				: $data->username,
@@ -80,6 +89,35 @@ class Generate
 		];
 
 		return FeedItem::create($feed_item);
+	}
+
+	/**
+	 * The size variant the viewer may obtain for the item, mirroring the
+	 * downgrade rule of the album API ({@see \App\Http\Resources\Models\SizeVariantsResouce}):
+	 * without full-photo access, a non-video photo that has a medium derivative
+	 * is served through the best of them (medium2x, then medium). Otherwise the
+	 * original is what the album API exposes too.
+	 *
+	 * @param T                 $data
+	 * @param bool              $should_downgrade
+	 * @param Collection<int,V> $mediums          medium variants of the photo, medium2x first
+	 *
+	 * @return V
+	 */
+	private function authorizedVariant(object $data, bool $should_downgrade, Collection $mediums): object
+	{
+		$original = (object) [
+			'short_path' => $data->short_path,
+			'filesize' => $data->filesize,
+			'storage_disk' => $data->storage_disk,
+			'type' => SizeVariantType::ORIGINAL->value,
+		];
+
+		if (!$should_downgrade || $this->file_extension_service->isSupportedVideoMimeType($data->type)) {
+			return $original;
+		}
+
+		return $mediums->first() ?? $original;
 	}
 
 	/**
@@ -122,6 +160,7 @@ class Generate
 				->whereColumn(PA::PHOTO_ID, 'photos.id'))
 			->select([
 				'photos.id',
+				'photos.owner_id',
 				'photos.title',
 				'photos.description',
 				'photos.type',
@@ -191,8 +230,23 @@ class Generate
 			])
 			->groupBy('photo_id');
 
+		// GHSA-m9h3-925m-vvpp: the original may only be exposed to viewers
+		// granted full-photo access (Feature 070, FR-070-10). One grouped query
+		// resolves that for every photo; deny by default.
+		$downgrade_map = $this->resolves_photo_grants->downgradeMap($photos, $user);
+		$downgraded_ids = array_keys(array_filter($downgrade_map));
+
+		/** @var Collection<string,Collection<int,V>> $mediums_by_photo */
+		$mediums_by_photo = count($downgraded_ids) === 0 ? collect() : DB::table('size_variants')
+			->whereIn('photo_id', $downgraded_ids)
+			->whereIn('type', [SizeVariantType::MEDIUM2X->value, SizeVariantType::MEDIUM->value])
+			// MEDIUM2X < MEDIUM, so the first variant per photo is the largest.
+			->orderBy('type')
+			->get(['photo_id', 'short_path', 'filesize', 'storage_disk', 'type'])
+			->groupBy('photo_id');
+
 		return $photos
-			->map(function (object $photo) use ($albums_by_photo): ?FeedItem {
+			->map(function (object $photo) use ($albums_by_photo, $downgrade_map, $mediums_by_photo): ?FeedItem {
 				/** @var Collection<int,object{album_id:string,album_title:string}>|null $albums */
 				$albums = $albums_by_photo->get($photo->id);
 				// The two queries are not a single snapshot: a concurrent request
@@ -210,6 +264,7 @@ class Generate
 
 				return $this->toFeedItem(
 					$photo,
+					$this->authorizedVariant($photo, $downgrade_map[$photo->id] ?? true, $mediums_by_photo->get($photo->id, collect())),
 					$albums->first()->album_id,
 					$albums->pluck('album_title')->all(),
 				);

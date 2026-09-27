@@ -113,7 +113,7 @@ class FlowItemResource extends Data
 			$this->photos = $this->toPhotoResources(
 				photos: $album->all_photos,
 				album_id: $album->id,
-				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]));
+				should_downgrade: $this->resolveDowngradeMap($album->all_photos));
 
 			return;
 			// @codeCoverageIgnoreEnd
@@ -123,7 +123,7 @@ class FlowItemResource extends Data
 			$this->photos = $this->toPhotoResources(
 				photos: $album->photos,
 				album_id: $album->id,
-				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]),
+				should_downgrade: $this->resolveDowngradeMap($album->photos),
 			);
 
 			return;

@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/048-fix-multi-group-
 _Status:_ Draft
 _Last updated:_ 2026-07-01
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 A user who belongs to multiple groups (with or without an additional direct per-user share) on the same album always receives the union of every applicable grant, regardless of the order the shares were created in. Success signals:

@@ -52,6 +52,7 @@ return [
         'minimum_chars' => 'Минимум %s символов.',
         'photos' => 'Фотографии (%s)',
         'albums' => 'Альбомы (%s)',
+        'results_truncated' => 'Showing the first %s matches. Refine your search to narrow the results.',
         'advanced' => [
             'title' => 'Advanced Search',
             'search_button' => 'Search',
@@ -183,6 +184,10 @@ return [
             'upload_failed' => 'Could not upload one or more tracks',
             'name_required' => 'Name is required',
         ],
+        'date_scrubber' => [
+            'toggle' => 'Show/hide the date scrubber',
+            'albums_count' => ':count album|:count albums',
+        ],
         'hero' => [
             'created' => 'Создан',
             'copyright' => 'Авторские права',
@@ -226,6 +231,10 @@ return [
             'aspect_ratio' => 'Установить соотношение сторон миниатюр альбома',
             'album_timeline' => 'Установить режим временной шкалы альбома',
             'photo_timeline' => 'Установить режим временной шкалы фотографий',
+            'date_scrubber' => 'Date scrubber',
+            'date_scrubber_default' => 'Default',
+            'date_scrubber_enabled' => 'Enabled',
+            'date_scrubber_disabled' => 'Disabled',
             'layout' => 'Установить макет фотографий',
             'flow_publish_date' => 'Flow publish date',
             'flow_publish_date_toggle' => 'Opt this album into Flow at a specific date/time',

@@ -130,6 +130,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->mock_verify), new SlugRule($request->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
 			RequestAttribute::PUBLISHED_AT_ATTRIBUTE => ['sometimes', 'nullable', 'date'],
 		];

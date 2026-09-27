@@ -37,6 +37,7 @@ return [
         'download' => 'Descarga de subvenciones',
         'upload' => 'Subir permisos',
         'edit' => 'Editar permisos',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Eliminar permisos',
     ],
 ];

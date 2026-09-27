@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/064-photo-listing-struct-of-arrays/tasks.md` |
 | Roadmap entry | #64 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) and the existing `bucket_id`-driven virtual-scroll pattern (Feature 061/062) — it does not establish a new convention, so no new ADR is added.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) and the existing `bucket_id`-driven virtual-scroll pattern (Feature 061/062) — it does not establish a new convention, so no new ADR is added.
 
 ## Overview
 
@@ -342,7 +342,7 @@ ui_states: []
 
 ### Open questions
 
-See [docs/specs/4-architecture/open-questions.md](../../open-questions.md) for full history. All seven questions logged during this feature's drafting are now **resolved**:
+See [open-questions.md](open-questions.md) for full history. All seven questions logged during this feature's drafting are now **resolved**:
 - ~~Q-064-01~~ — dual-mode `bucket_id`/`photo_ids[]` scoping confirmed.
 - ~~Q-064-02~~ — no dedicated `/rights` endpoint; `owner_id` in `ratios`/`details` only.
 - ~~Q-064-03~~ — the `ratios`↔`buckets` bucket-correlation contract is scoped to `bucketable: true` only (not about bucketing by the `ratio` field — see the card's own clarification).

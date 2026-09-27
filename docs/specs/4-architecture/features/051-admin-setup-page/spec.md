@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/051-admin-setup-page/tasks.md` |
 | Roadmap entry | Active Features #051 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
 Today, when no admin user exists yet (fresh install, tables migrated but no `may_administrate = true` user created), every request under the `web` middleware group is gated by `admin_user:set` (`app/Http/Kernel.php:43`). `HasAdminUser::assert()` (`app/Http/Middleware/Checks/HasAdminUser.php`) fails, `AdminUserStatus` throws `AdminUserRequiredException`, and `AdminSetterHandler` (`app/Exceptions/Handlers/AdminSetterHandler.php`) 307-redirects the browser to `route('install-admin')` — a standalone Blade form (`resources/views/install/setup-admin.blade.php`) styled with the installer's own static CSS, completely outside the Vue app. This happens **before** `vueapp.blade.php` is ever served, so neither the v7 (`app.ts`/PrimeVue) nor v8 (`app-v8.ts`/Nuxt UI) bundle ever mounts in this state.
@@ -31,7 +31,7 @@ Affected modules: backend routing (`routes/web_v2.php`), exception/redirect hand
 - v7's `install/admin` Blade route, `SetUpAdminController`, and `install.setup-admin`/`install.setup-success` views are not removed or modified for this feature (they remain v7's exclusive path).
 
 ## Resolved Clarifications
-All four clarifications raised while drafting this feature are resolved; full rationale lives in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and the security-relevant gate-bypass mechanism is additionally recorded in **[ADR-0007](../../../6-decisions/ADR-0007-v8-admin-setup-gate-bypass.md)**:
+All four clarifications raised while drafting this feature are resolved; full rationale lives in [open-questions.md](open-questions.md), and the security-relevant gate-bypass mechanism is additionally recorded in **[ADR-0007](../../../6-decisions/ADR-0007-v8-admin-setup-gate-bypass.md)**:
 - **Q-051-01** (High, Option A) — new route `GET /setup-admin`, exempted from `admin_user:set`, redirect target branched on `Features::active('nuxt_ui')`. See ADR-0007.
 - **Q-051-02** (Medium, Option A) — shared `App\Actions\User\CreateInitialAdmin` used by both the legacy Blade controller and the new API endpoint.
 - **Q-051-03** (Medium, Option A) — toast + immediate `router.push` to gallery on success, mirroring `RegisterPage.vue`.

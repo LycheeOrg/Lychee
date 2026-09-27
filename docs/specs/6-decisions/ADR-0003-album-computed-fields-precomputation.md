@@ -8,7 +8,7 @@
 
 ## Context
 
-Lychee's album listing performance is constrained by expensive runtime computations in [AlbumBuilder.php](app/Models/Builders/AlbumBuilder.php:109-174). Every album fetch executes 4 subqueries (min_taken_at, max_taken_at, num_children, num_photos) with nested set joins. For a list of 50 albums, this generates 200 database subqueries, creating significant load.
+Lychee's album listing performance is constrained by expensive runtime computations in [AlbumBuilder.php](../../../app/Models/Builders/AlbumBuilder.php#L109-L174). Every album fetch executes 4 subqueries (min_taken_at, max_taken_at, num_children, num_photos) with nested set joins. For a list of 50 albums, this generates 200 database subqueries, creating significant load.
 
 Feature 003 addresses this by pre-computing these values into physical database columns and maintaining them via event-driven updates. However, this introduces architectural decisions around:
 
@@ -140,8 +140,8 @@ Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/ow
 
 ## Links
 
-- Related spec sections: [docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements) (FR-003-01, FR-003-02, FR-003-04, FR-003-06, FR-003-07), [NFR-003-05](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#non-functional-requirements), [Migration Strategy appendix](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#migration-strategy), [Cover Selection Logic appendix](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#cover-selection-logic)
-- Related open questions (resolved): Q-003-02, Q-003-03, Q-003-05, Q-003-08, Q-003-09 in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md)
-- AlbumBuilder virtual column logic: [app/Models/Builders/AlbumBuilder.php:109-174](app/Models/Builders/AlbumBuilder.php#L109-L174)
-- HasAlbumThumb cover selection logic: [app/Relations/HasAlbumThumb.php:193-211, 226-229](app/Relations/HasAlbumThumb.php#L193-L211)
-- Feature 002 Worker Mode (WithoutOverlapping precedent): [docs/specs/4-architecture/features/002-worker-mode/spec.md](docs/specs/4-architecture/features/002-worker-mode/spec.md)
+- Related spec sections: [docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements](../4-architecture/features/003-album-computed-fields/spec.md#functional-requirements) (FR-003-01, FR-003-02, FR-003-04, FR-003-06, FR-003-07), [NFR-003-05](../4-architecture/features/003-album-computed-fields/spec.md#non-functional-requirements), [Migration Strategy appendix](../4-architecture/features/003-album-computed-fields/spec.md#migration-strategy), [Cover Selection Logic appendix](../4-architecture/features/003-album-computed-fields/spec.md#cover-selection-logic)
+- Related open questions (resolved): Q-003-02, Q-003-03, Q-003-05, Q-003-08, Q-003-09 in [003-album-computed-fields/open-questions.md](../4-architecture/features/003-album-computed-fields/open-questions.md)
+- AlbumBuilder virtual column logic: [app/Models/Builders/AlbumBuilder.php:109-174](../../../app/Models/Builders/AlbumBuilder.php#L109-L174)
+- HasAlbumThumb cover selection logic: [app/Relations/HasAlbumThumb.php:193-211, 226-229](../../../app/Relations/HasAlbumThumb.php#L193-L211)
+- Feature 002 Worker Mode (WithoutOverlapping precedent): [docs/specs/4-architecture/features/002-worker-mode/spec.md](../4-architecture/features/002-worker-mode/spec.md)

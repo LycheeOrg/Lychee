@@ -34,7 +34,7 @@ class MergeAlbumRequestTest extends BaseRequestTest
 	{
 		$album = $this->createUserAndAlbum();
 		Gate::shouldReceive('check')
-			->times(4) // TODO:// not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
+			->times(6) // TODO:// not only the times, but make sure the right arguments are passed, but this is hard to do find with mockery
 			->andReturn(true);
 
 		$request = new MergeAlbumsRequest();

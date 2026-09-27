@@ -15,15 +15,21 @@ use App\Models\User;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Spatie\LaravelData\Optional;
 
 /**
  * Shared plumbing for the two `/rights` query variants (a real Album's
  * direct children, or a TagAlbum/PersonAlbum's dynamically-matched set) —
  * both shapes are byte-for-byte identical past "here is the already-visibility-filtered
  * query", differing only in whether `can_delete_children`/`can_move_children`
- * is a real per-request check (Album) or always `false` (no single shared
+ * are a real per-request check (Album) or always `false` (no single shared
  * parent's `access_permissions` could uniformly apply to a dynamically-matched,
  * disparately-parented set).
+ *
+ * `$owner_id` is widened to `string|Optional` (Feature 069): a search result set
+ * spans arbitrarily many parents, so there is no single owning album to name and
+ * the key is omitted from the payload entirely — the same resolution
+ * `/Albums/root/rights` already reached for root (Q-062-16).
  *
  * Takes {@see AlbumQueryPolicy} as an explicit parameter rather than reading
  * it off `$this` — a trait has no constructor of its own, and reaching into
@@ -39,7 +45,7 @@ trait GrantsAlbumRights
 	 *
 	 * @param Builder<Album> $query
 	 */
-	final protected function allGranted(Builder $query, string $owner_id, bool $can_delete_children): AlbumRightsResource
+	final protected function allGranted(Builder $query, string|Optional $owner_id, bool $can_delete_children, bool $can_move_children): AlbumRightsResource
 	{
 		$ids = $query->select(['albums.id'])->toBase()->pluck('id')->all();
 		$count = count($ids);
@@ -47,10 +53,11 @@ trait GrantsAlbumRights
 		return new AlbumRightsResource(
 			owner_id: $owner_id,
 			can_delete_children: $can_delete_children,
-			can_move_children: $can_delete_children,
+			can_move_children: $can_move_children,
 			ids: $ids,
 			grants_edit: array_fill(0, $count, true),
 			grants_download: array_fill(0, $count, true),
+			grants_move: array_fill(0, $count, true),
 		);
 	}
 
@@ -63,7 +70,7 @@ trait GrantsAlbumRights
 	 *
 	 * @param Builder<Album> $query
 	 */
-	final protected function grantsResource(AlbumQueryPolicy $album_query_policy, Builder $query, ?User $user, string $owner_id, bool $can_delete_children): AlbumRightsResource
+	final protected function grantsResource(AlbumQueryPolicy $album_query_policy, Builder $query, ?User $user, string|Optional $owner_id, bool $can_delete_children, bool $can_move_children): AlbumRightsResource
 	{
 		$album_query_policy->joinSubComputedAccessPermissions($query, 'albums.id', 'left', 'grants_', true, $user);
 
@@ -78,6 +85,7 @@ trait GrantsAlbumRights
 			->select(['albums.id'])
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_edit) as grants_edit')
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_download) as grants_download')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_move) as grants_move')
 			->groupBy('albums.id')
 			->toBase()
 			->get();
@@ -85,19 +93,22 @@ trait GrantsAlbumRights
 		$ids = [];
 		$grants_edit = [];
 		$grants_download = [];
+		$grants_move = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$grants_edit[] = DbBool::parse($row->grants_edit);
 			$grants_download[] = DbBool::parse($row->grants_download);
+			$grants_move[] = DbBool::parse($row->grants_move);
 		}
 
 		return new AlbumRightsResource(
 			owner_id: $owner_id,
 			can_delete_children: $can_delete_children,
-			can_move_children: $can_delete_children,
+			can_move_children: $can_move_children,
 			ids: $ids,
 			grants_edit: $grants_edit,
 			grants_download: $grants_download,
+			grants_move: $grants_move,
 		);
 	}
 }

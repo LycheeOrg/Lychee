@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/060-database-title-sorting/tasks.md` |
 | Roadmap entry | #060 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 
@@ -182,7 +182,7 @@ Not applicable — no telemetry for this feature.
 ## Documentation Deliverables
 
 - **Roadmap update:** Add Feature 060 to `docs/specs/4-architecture/roadmap.md`'s Active Features table.
-- **Open questions:** Log Q-060-01 (Description scope) and Q-060-02 (splitter design) as Resolved in `docs/specs/4-architecture/open-questions.md`.
+- **Open questions:** Log Q-060-01 (Description scope) and Q-060-02 (splitter design) as Resolved in `open-questions.md`.
 - **Knowledge map update:** Add `title_base`/`title_index` columns, `TitleSplitter`, and the narrowed sorting enums to `docs/specs/4-architecture/knowledge-map.md` if it documents sort infrastructure.
 - **API reference:** Update `docs/specs/3-reference/api-design.md` if it enumerates the `sorting_*_col` allowed values.
 

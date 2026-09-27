@@ -69,19 +69,27 @@ class ResultsResource extends Data
 	 * @param Collection<int,Album>           $albums
 	 * @param LengthAwarePaginator<int,Photo> $photos
 	 * @param string|null                     $album_id
-	 * @param bool                            $should_downgrade
 	 *
 	 * @return ResultsResource
 	 */
-	public static function fromData(Collection $albums, LengthAwarePaginator $photos, ?string $album_id, bool $should_downgrade): self
+	public static function fromData(Collection $albums, LengthAwarePaginator $photos, ?string $album_id): self
 	{
+		// Feature 070 (FR-070-03): one grouped query for the page, then a
+		// per-photo answer. This previously took a single boolean derived from
+		// the `grants_full_photo_access` config - a seed value for new shares,
+		// not an authorization gate - and so over-granted full-resolution access.
+		/** @var \App\Models\User|null $user */
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$should_downgrade = resolve(\App\Actions\Photo\StructOfArrays\ResolvesPhotoGrants::class)
+			->downgradeMap(collect($photos->items()), $user);
+
 		/** @disregard Undefined method through() (stupid intelephense) */ return new self(
 			albums: ThumbAlbumResource::collect($albums),
 			/** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
 			photos: $photos->through(fn ($p) => new PhotoResource(
 				photo: $p,
 				album_id: $album_id,
-				should_downgrade_size_variants: $should_downgrade,
+				should_downgrade_size_variants: $should_downgrade[$p->id] ?? true,
 			)),
 		);
 	}

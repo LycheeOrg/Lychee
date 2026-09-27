@@ -66,6 +66,8 @@ export function adaptCategoryTile(
 		rights: rights,
 		timeline: null,
 		cover_id: data.cover_ids[i],
+		min_taken_at: null,
+		max_taken_at: null,
 	};
 }
 
@@ -96,6 +98,8 @@ export function combineTagAlbumRights(
 		can_download: isOwner || grantsDownload,
 		can_delete: isOwner || grantsDelete,
 		can_move: false,
+		can_move_content: false,
+		can_merge: false,
 		can_share: false,
 		can_share_with_users: false,
 		can_transfer: false,

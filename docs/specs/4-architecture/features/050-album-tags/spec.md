@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/050-album-tags/tasks.md` |
 | Roadmap entry | #050 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
 
@@ -260,8 +260,8 @@ ui_states:
 
 ### Resolved clarifications
 
-- **Q-050-01** (`/tag/{id}` layout) — Resolved: Option A, separate Albums section above Photos grid. See [open-questions.md](../../open-questions.md#q-050-01--tagid-detail-page--layout-for-showing-tagged-albums-alongside-tagged-photos--resolved).
-- **Q-050-02** (`/tags` list & counts) — Resolved: Option A, show album-only tags with split `num_photos`/`num_albums`. See [open-questions.md](../../open-questions.md#q-050-02--tags-global-list--counts--should-album-only-tags-be-listed-and-how-are-counts-split--resolved).
+- **Q-050-01** (`/tag/{id}` layout) — Resolved: Option A, separate Albums section above Photos grid. See [open-questions.md](open-questions.md#q-050-01--tagid-detail-page--layout-for-showing-tagged-albums-alongside-tagged-photos--resolved).
+- **Q-050-02** (`/tags` list & counts) — Resolved: Option A, show album-only tags with split `num_photos`/`num_albums`. See [open-questions.md](open-questions.md#q-050-02--tags-global-list--counts--should-album-only-tags-be-listed-and-how-are-counts-split--resolved).
 - **Q-050-03** (tag visibility to viewers) — Resolved: Option A, editor-only. `EditableBaseAlbumResource.tags` (FR-050-03) remains the only surface for an album's own tags; `HeadAlbumResource` gains no public `tags` field in this feature. A public read-only chip display is a possible fast-follow, not built here.
 - **Plain-text album search matching tags** — Decided by precedent (not logged as a blocking question): `PlainTextStrategy` for photos already ORs `tags.name` into the modifier-less match (`app/Actions/Search/Strategies/PlainTextStrategy.php:35`), so the album equivalent (`AlbumFieldLikeStrategy` with `$column = null`) does the same for consistency (FR-050-07).
 

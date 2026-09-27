@@ -16,11 +16,14 @@
 			/>
 		</Collapse>
 		<PhotoGridVirtual
+			ref="gridRef"
 			:selected-photos="props.selectedPhotos"
 			@clicked="(id, e) => emits('clicked', id, e)"
 			@selected="(id, e) => emits('selected', id, e)"
 			@contexted="(id, e) => emits('contexted', id, e)"
 			@toggle-buy-me="(id) => emits('toggleBuyMe', id)"
+			@scrubber-layout-changed="(layout) => emits('scrubberLayoutChanged', layout)"
+			@scroll-offset-changed="(offset) => emits('scrollOffsetChanged', offset)"
 		/>
 	</UContainer>
 </template>
@@ -42,6 +45,8 @@ import { Collapse } from "vue-collapsed";
 import PhotoThumbPanelControl from "@/v8/components/gallery/albumModule/PhotoThumbPanelControl.vue";
 import AlbumTagFilter from "@/v8/components/gallery/albumModule/AlbumTagFilter.vue";
 import PhotoGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoGridVirtual.vue";
+import { ref } from "vue";
+import type { DateScrubLayout } from "@/v8/utils/dateScrubber";
 
 const albumStore = useAlbumStore();
 const modalStore = useTogglablesStateStore();
@@ -57,7 +62,19 @@ const emits = defineEmits<{
 	selected: [id: string, event: MouseEvent];
 	contexted: [id: string, event: MouseEvent];
 	toggleBuyMe: [id: string];
+	/** Feature 071 — forwarded from `PhotoGridVirtual.vue` for `AlbumPanel.vue`'s date scrubber rail. */
+	scrubberLayoutChanged: [payload: DateScrubLayout];
+	scrollOffsetChanged: [offset: number];
 }>();
+
+const gridRef = ref<InstanceType<typeof PhotoGridVirtual> | null>(null);
+
+/** Feature 071 — the rail's scrub/jump target, forwarded from the grid. */
+function scrollToPixelOffset(px: number): void {
+	gridRef.value?.scrollToPixelOffset(px);
+}
+
+defineExpose({ scrollToPixelOffset });
 
 function handleTagFilterApply(payload: { tagIds: number[]; tagLogic: string }) {
 	albumStore.setTagFilter(payload.tagIds, payload.tagLogic);

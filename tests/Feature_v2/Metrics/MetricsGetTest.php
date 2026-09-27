@@ -102,4 +102,21 @@ class MetricsGetTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$this->assertCount(5, $response->json());
 	}
+
+	public function testTitleIsStrippedOfHtml(): void
+	{
+		$this->requireSe();
+		Configs::set('live_metrics_enabled', true);
+
+		$this->album4->title = '<img src=x onerror="document.documentElement.dataset.xss=\'executed\'">LM';
+		$this->album4->save();
+
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
+		$this->assertOk($response);
+
+		$response = $this->actingAs($this->admin)->getJson('Metrics');
+		$this->assertOk($response);
+		$this->assertCount(1, $response->json());
+		$this->assertEquals('LM', $response->json('0.title'));
+	}
 }

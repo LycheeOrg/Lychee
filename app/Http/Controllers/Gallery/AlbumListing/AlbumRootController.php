@@ -417,9 +417,9 @@ class AlbumRootController extends Controller
 
 	/**
 	 * Root has no single shared parent's `access_permissions` to
-	 * check `can_delete_children`/`can_move_children` against — both flags
-	 * are always `false` for a non-admin caller (either scope), `true` for
-	 * an admin. `owner_id` is unconditionally omitted from the JSON payload
+	 * check `can_delete_children`/`can_move_children` against — both are
+	 * always `false` for a non-admin caller (either scope), `true` for an
+	 * admin. `owner_id` is unconditionally omitted from the JSON payload
 	 * — root has no single owner to report there, even under
 	 * `own` scope.
 	 */
@@ -439,6 +439,7 @@ class AlbumRootController extends Controller
 				ids: $ids,
 				grants_edit: array_fill(0, $count, true),
 				grants_download: array_fill(0, $count, true),
+				grants_move: array_fill(0, $count, true),
 			);
 		}
 
@@ -455,6 +456,7 @@ class AlbumRootController extends Controller
 			->select(['albums.id'])
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_edit) as grants_edit')
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_download) as grants_download')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_move) as grants_move')
 			->groupBy('albums.id')
 			->toBase()
 			->get();
@@ -462,10 +464,12 @@ class AlbumRootController extends Controller
 		$ids = [];
 		$grants_edit = [];
 		$grants_download = [];
+		$grants_move = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$grants_edit[] = DbBool::parse($row->grants_edit);
 			$grants_download[] = DbBool::parse($row->grants_download);
+			$grants_move[] = DbBool::parse($row->grants_move);
 		}
 
 		return new AlbumRightsResource(
@@ -475,6 +479,7 @@ class AlbumRootController extends Controller
 			ids: $ids,
 			grants_edit: $grants_edit,
 			grants_download: $grants_download,
+			grants_move: $grants_move,
 		);
 	}
 }

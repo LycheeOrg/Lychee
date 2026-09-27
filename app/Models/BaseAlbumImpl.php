@@ -114,6 +114,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
+ * @property bool|null                        $is_date_scrubber_enabled
  * @property bool                             $is_pinned
  * @property Collection                       $shared_with
  * @property int|null                         $shared_with_count
@@ -201,6 +202,7 @@ class BaseAlbumImpl extends Model implements HasRandomID, HasUTCBasedTimes
 		'is_nsfw' => false,
 		'is_pinned' => false,
 		'photo_layout' => null,
+		'is_date_scrubber_enabled' => null,
 		// 'statistics' => null,
 	];
 
@@ -216,6 +218,7 @@ class BaseAlbumImpl extends Model implements HasRandomID, HasUTCBasedTimes
 		'slug' => 'string',
 		'is_nsfw' => 'boolean',
 		'is_pinned' => 'boolean',
+		'is_date_scrubber_enabled' => 'boolean',
 		'owner_id' => 'integer',
 		'photo_layout' => PhotoLayoutType::class,
 	];

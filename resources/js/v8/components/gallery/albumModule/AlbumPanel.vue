@@ -55,84 +55,110 @@
 									v-model:open="areStatisticsOpen"
 								/>
 							</template>
-							<AlbumThumbPanelVirtual
-								v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
-								:selected-albums="selectedAlbumsIds"
-								@clicked="albumSelect"
-								@selected="albumSelect"
-								@contexted="contextMenuAlbumOpen"
-							/>
-							<template v-else>
-								<AlbumThumbPanel
-									v-if="albumsStore.albums.length > 0"
-									header="gallery.album.header_albums"
-									:albums="albumsStore.albums"
-									:config="albumPanelConfig"
-									:is-alone="photosStore.photos.length === 0"
-									:selected-albums="selectedAlbumsIds"
-									:is-timeline="albumStore.config.is_album_timeline_enabled"
-									@clicked="albumSelect"
-									@selected="albumSelect"
-									@contexted="contextMenuAlbumOpen"
+							<div class="flex w-full">
+								<div class="flex flex-1 min-w-0 flex-wrap content-start justify-start">
+									<AlbumThumbPanelVirtual
+										v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
+										ref="albumPanelVirtualRef"
+										@scrubber-layout-changed="onAlbumScrubberLayout"
+										@scroll-offset-changed="onAlbumScrubberScroll"
+										:selected-albums="selectedAlbumsIds"
+										@clicked="albumSelect"
+										@selected="albumSelect"
+										@contexted="contextMenuAlbumOpen"
+									/>
+									<template v-else>
+										<AlbumThumbPanel
+											v-if="albumsStore.albums.length > 0"
+											header="gallery.album.header_albums"
+											:albums="albumsStore.albums"
+											:config="albumPanelConfig"
+											:is-alone="photosStore.photos.length === 0"
+											:selected-albums="selectedAlbumsIds"
+											:is-timeline="albumStore.config.is_album_timeline_enabled"
+											@clicked="albumSelect"
+											@selected="albumSelect"
+											@contexted="contextMenuAlbumOpen"
+										/>
+										<!-- Pagination for albums -->
+										<Pagination
+											v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+											:mode="lycheeStore.albums_pagination_mode"
+											:loading="albumStore.albums_loading"
+											:has-more="albumStore.hasMoreAlbums"
+											:current-page="albumStore.albums_current_page"
+											:last-page="albumStore.albums_last_page"
+											:per-page="albumStore.albums_per_page"
+											:total="albumStore.albums_total"
+											:remaining="albumStore.albumsRemainingCount"
+											resource-type="albums"
+											@load-more="albumStore.loadMoreAlbums()"
+											@go-to-page="goToAlbumsPage"
+										/>
+									</template>
+									<!-- Tag Filter -->
+									<PhotoThumbPanelVirtual
+										v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
+										ref="photoPanelVirtualRef"
+										@scrubber-layout-changed="onPhotoScrubberLayout"
+										@scroll-offset-changed="onPhotoScrubberScroll"
+										header="gallery.album.header_photos"
+										:selected-photos="selectedPhotosIds"
+										@clicked="photoClick"
+										@selected="photoSelect"
+										@contexted="contextMenuPhotoOpen"
+										@toggle-buy-me="toggleBuyMe"
+									/>
+									<template v-else>
+										<PhotoThumbPanel
+											v-if="layoutStore.config && photosStore.photos.length > 0"
+											header="gallery.album.header_photos"
+											:photos="photosStore.filteredPhotos"
+											:photos-timeline="photosStore.filteredPhotosTimeline"
+											:selected-photos="selectedPhotosIds"
+											:is-timeline="albumStore.config.is_photo_timeline_enabled"
+											:with-control="true"
+											@clicked="photoClick"
+											@selected="photoSelect"
+											@contexted="contextMenuPhotoOpen"
+											@toggle-buy-me="toggleBuyMe"
+											ref="photoPanel"
+										/>
+										<!-- Pagination for photos: not applicable on the SoA path
+										     (tier 2 is whole-album-at-once, never paginated) -->
+										<Pagination
+											v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+											:mode="lycheeStore.photos_pagination_mode"
+											:loading="albumStore.photos_loading"
+											:has-more="albumStore.hasMorePhotos"
+											:current-page="albumStore.photos_current_page"
+											:last-page="albumStore.photos_last_page"
+											:per-page="albumStore.photos_per_page"
+											:total="albumStore.photos_total"
+											:remaining="albumStore.photosRemainingCount"
+											resource-type="photos"
+											@load-more="albumStore.loadMorePhotos()"
+											@go-to-page="goToPhotosPage"
+										/>
+									</template>
+								</div>
+								<!-- Feature 071: the Timeline's date scrubber rail, fed day-level entries derived from the single grid this album shows.
+							     Mounted beside the grids only (not the hero), so it scrolls in with them and then sticks under the header. -->
+								<TimelineDatesV3
+									v-if="isDateScrubberVisible && dateScrubberLayout !== null"
+									:buckets="dateScrubberBuckets"
+									:bucket-layout="dateScrubberLayout.entries"
+									:total-height="dateScrubberLayout.totalHeight"
+									:separator-tops="dateScrubberLayout.separatorTops"
+									:scroll-offset="activeScrollOffset"
+									:lens-height="lycheeStore.timeline_lens_height"
+									:lens-falloff="lycheeStore.timeline_lens_falloff / 10"
+									:lens-magnification="lycheeStore.timeline_lens_magnification / 10"
+									:count-label-key="dateScrubberSource === 'albums' ? 'gallery.album.date_scrubber.albums_count' : undefined"
+									@load="jumpToDateScrubberEntry"
+									@scrub="scrubDateScrubberTo"
 								/>
-								<!-- Pagination for albums -->
-								<Pagination
-									v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-									:mode="lycheeStore.albums_pagination_mode"
-									:loading="albumStore.albums_loading"
-									:has-more="albumStore.hasMoreAlbums"
-									:current-page="albumStore.albums_current_page"
-									:last-page="albumStore.albums_last_page"
-									:per-page="albumStore.albums_per_page"
-									:total="albumStore.albums_total"
-									:remaining="albumStore.albumsRemainingCount"
-									resource-type="albums"
-									@load-more="albumStore.loadMoreAlbums()"
-									@go-to-page="goToAlbumsPage"
-								/>
-							</template>
-							<!-- Tag Filter -->
-							<PhotoThumbPanelVirtual
-								v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
-								header="gallery.album.header_photos"
-								:selected-photos="selectedPhotosIds"
-								@clicked="photoClick"
-								@selected="photoSelect"
-								@contexted="contextMenuPhotoOpen"
-								@toggle-buy-me="toggleBuyMe"
-							/>
-							<template v-else>
-								<PhotoThumbPanel
-									v-if="layoutStore.config && photosStore.photos.length > 0"
-									header="gallery.album.header_photos"
-									:photos="photosStore.filteredPhotos"
-									:photos-timeline="photosStore.filteredPhotosTimeline"
-									:selected-photos="selectedPhotosIds"
-									:is-timeline="albumStore.config.is_photo_timeline_enabled"
-									:with-control="true"
-									@clicked="photoClick"
-									@selected="photoSelect"
-									@contexted="contextMenuPhotoOpen"
-									@toggle-buy-me="toggleBuyMe"
-									ref="photoPanel"
-								/>
-								<!-- Pagination for photos: not applicable on the SoA path
-								     (tier 2 is whole-album-at-once, never paginated) -->
-								<Pagination
-									v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
-									:mode="lycheeStore.photos_pagination_mode"
-									:loading="albumStore.photos_loading"
-									:has-more="albumStore.hasMorePhotos"
-									:current-page="albumStore.photos_current_page"
-									:last-page="albumStore.photos_last_page"
-									:per-page="albumStore.photos_per_page"
-									:total="albumStore.photos_total"
-									:remaining="albumStore.photosRemainingCount"
-									resource-type="photos"
-									@load-more="albumStore.loadMorePhotos()"
-									@go-to-page="goToPhotosPage"
-								/>
-							</template>
+							</div>
 						</div>
 					</UContextMenu>
 					<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
@@ -167,6 +193,9 @@ import AlbumHero from "@/v8/components/gallery/albumModule/AlbumHero.vue";
 import AlbumEdit from "@/v8/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/v8/components/headers/AlbumHeader.vue";
 import AlbumNavPanel from "@/v8/components/gallery/albumModule/AlbumNavPanel.vue";
+import TimelineDatesV3 from "@/v8/components/gallery/timelineModule/TimelineDatesV3.vue";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
+import { toRailBuckets, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
@@ -203,7 +232,7 @@ import type { ContextMenuItem } from "@nuxt/ui";
 const router = useRouter();
 const toast = useAppToast();
 
-defineProps<{
+const props = defineProps<{
 	isPhotoOpen: boolean;
 }>();
 
@@ -231,6 +260,57 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+
+// --- Feature 071: album date scrubber ---
+
+const {
+	source: dateScrubberSource,
+	activeLayout: dateScrubberLayout,
+	activeScrollOffset,
+	isAvailable: isDateScrubberAvailable,
+	isHidden: isDateScrubberHidden,
+	resetLayouts: resetDateScrubberLayouts,
+	photoLayout,
+	albumLayout,
+	photoScrollOffset,
+	albumScrollOffset,
+} = useAlbumDateScrubberState();
+resetDateScrubberLayouts();
+
+const albumPanelVirtualRef = ref<InstanceType<typeof AlbumThumbPanelVirtual> | null>(null);
+const photoPanelVirtualRef = ref<InstanceType<typeof PhotoThumbPanelVirtual> | null>(null);
+
+const isDateScrubberVisible = computed(() => isDateScrubberAvailable.value && !isDateScrubberHidden.value && !props.isPhotoOpen);
+const dateScrubberBuckets = computed(() => toRailBuckets(dateScrubberLayout.value?.entries ?? []));
+
+function onAlbumScrubberLayout(layout: DateScrubLayout): void {
+	albumLayout.value = layout;
+}
+function onPhotoScrubberLayout(layout: DateScrubLayout): void {
+	photoLayout.value = layout;
+}
+function onAlbumScrubberScroll(offset: number): void {
+	albumScrollOffset.value = offset;
+}
+function onPhotoScrubberScroll(offset: number): void {
+	photoScrollOffset.value = offset;
+}
+
+/** Drag-scrub, and the in-place jump below — never a route push (FR-071-10). */
+function scrubDateScrubberTo(px: number): void {
+	if (dateScrubberSource.value === "albums") {
+		albumPanelVirtualRef.value?.scrollToPixelOffset(px);
+		return;
+	}
+	photoPanelVirtualRef.value?.scrollToPixelOffset(px);
+}
+
+function jumpToDateScrubberEntry(bucketId: string): void {
+	const entry = dateScrubberLayout.value?.entries.find((e) => e.bucketId === bucketId);
+	if (entry !== undefined) {
+		scrubDateScrubberTo(entry.top);
+	}
+}
 const { is_download_album_visible } = storeToRefs(togglableStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;

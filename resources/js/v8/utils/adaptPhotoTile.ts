@@ -66,7 +66,18 @@ function formatDateForOverlay(iso: string | null): string {
  * tile is ever linked from in this feature — matching- albums/multi-album
  * membership display is out of scope, NG5).
  */
-export function adaptPhotoTile(i: number, ratios: PhotoRatioResource, album_id: string): AdaptedPhotoTile {
+/**
+ * Everything `adaptPhotoTile()` actually reads off a tier-2 payload.
+ *
+ * Expressed as `Omit<…, "bucket_ids">` rather than as `PhotoRatioResource` so
+ * Feature 069's `SearchPhotoResource` — structurally identical but with no
+ * `bucket_ids`, because search has no bucket tier — is accepted too. The
+ * function never touched `bucket_ids` in the first place; bucket placement is
+ * the caller's concern.
+ */
+export type AdaptablePhotoTierTwo = Omit<PhotoRatioResource, "bucket_ids">;
+
+export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_id: string): AdaptedPhotoTile {
 	const takenAt = ratios.taken_ats[i];
 	const createdAt = ratios.created_ats[i];
 	const ratingAvg = ratios.rating_avgs?.[i] ?? null;

@@ -49,6 +49,7 @@ return [
         'album' => 'Album Shortcuts',
         'slideshow' => 'Start/Stop Slideshow',
         'toggle' => 'Toggle panel',
+        'toggle_date_scrubber' => 'Show/hide date scrubber',
         'photo' => 'Photo Shortcuts',
         'previous' => 'Previous photo',
         'next' => 'Next photo',

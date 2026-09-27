@@ -201,7 +201,7 @@ AI-assisted development is permitted and welcomed. However, contributions using 
 
 5. **Review and understand all output** — Contributors are responsible for understanding and validating any AI-generated code before submitting. Do not submit code you don't understand.
 
-6. **Document open questions** — When AI encounters ambiguity, log questions in `docs/specs/4-architecture/open-questions.md` and wait for clarification before proceeding.
+6. **Document open questions** — When AI encounters ambiguity, log questions in the feature's `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md` and wait for clarification before proceeding.
 
 ### Recommended AI Models
 

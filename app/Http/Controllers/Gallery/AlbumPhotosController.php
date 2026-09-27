@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Gallery;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
@@ -17,12 +16,10 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use App\Repositories\PhotoRepository;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * Controller for returning paginated photos.
@@ -55,7 +52,6 @@ class AlbumPhotosController extends Controller
 			return new PaginatedPhotosResource(
 				paginated_photos: $album->getPhotos(),
 				album_id: $album->get_id(),
-				should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
 				photo_timeline: $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
 				is_smart_album: true,
 			);
@@ -79,7 +75,6 @@ class AlbumPhotosController extends Controller
 			return new PaginatedPhotosResource(
 				paginated_photos: $paginated_photos,
 				album_id: $album->id,
-				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 				photo_timeline: $album->photo_timeline,
 			);
 		}
@@ -100,7 +95,6 @@ class AlbumPhotosController extends Controller
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginator,
 			album_id: $album->id,
-			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			photo_timeline: $album->photo_timeline);
 	}
 }

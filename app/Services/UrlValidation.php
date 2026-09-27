@@ -12,6 +12,7 @@ use App\DTO\UrlValidatedDTO;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
+use function Safe\inet_ntop;
 use function Safe\inet_pton;
 use function Safe\parse_url;
 
@@ -135,6 +136,11 @@ class UrlValidation
 	 */
 	private function resolveHostToIPs(string $host): array
 	{
+		// IPv6 literals are returned by parse_url() wrapped in brackets, e.g. "[::1]".
+		if (str_starts_with($host, '[') && str_ends_with($host, ']')) {
+			$host = substr($host, 1, -1);
+		}
+
 		// If the host is already a valid IP, no resolution needed.
 		if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
 			return [$host];
@@ -179,9 +185,74 @@ class UrlValidation
 			if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
 				return true;
 			}
+
+			// filter_var() does not decode IPv6 transition addresses that embed an
+			// internal IPv4 (NAT64 64:ff9b::/96, RFC 8215 local-use 64:ff9b:1::/48,
+			// 6to4 2002::/16, IPv4-mapped ::ffff:0:0/96, IPv4-compatible ::/96). On a
+			// host with such routing these resolve to the embedded target, so the
+			// check must decode them. We judge the binary form, so alternative textual
+			// spellings (compressed, expanded, upper-case, leading zeros) cannot bypass it.
+			if ($this->embedsPrivateOrReservedIPv4($ip)) {
+				return true;
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Whether an IPv6 address embeds a private, reserved or loopback IPv4 via an
+	 * address-transition mechanism.
+	 *
+	 * The test operates on the 16-byte binary form produced by inet_pton(), which
+	 * is independent of how the address was written, so equivalent spellings of the
+	 * same address (e.g. "64:ff9b::7f00:1", "64:ff9b:0:0:0:0:7f00:1", "64:FF9B::7F00:1")
+	 * are all caught.
+	 *
+	 * @param string $ip
+	 *
+	 * @return bool
+	 */
+	private function embedsPrivateOrReservedIPv4(string $ip): bool
+	{
+		try {
+			$bin = inet_pton($ip);
+		} catch (NetworkException) {
+			return false;
+		}
+
+		// Only a 16-byte IPv6 address can wrap an IPv4 address.
+		if (strlen($bin) !== 16) {
+			return false;
+		}
+
+		// RFC 8215 local-use NAT64 (64:ff9b:1::/48): the embedded IPv4 position is not
+		// fixed for this range, so reject the whole prefix.
+		if (str_starts_with($bin, "\x00\x64\xff\x9b\x00\x01")) {
+			return true;
+		}
+
+		$high_12 = substr($bin, 0, 12);
+		$mapped_prefix = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff"; // ::ffff:0:0/96 (IPv4-mapped)
+		$compat_prefix = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"; // ::/96 (IPv4-compatible, deprecated)
+		$nat64_prefix = "\x00\x64\xff\x9b\x00\x00\x00\x00\x00\x00\x00\x00";  // 64:ff9b::/96 (well-known NAT64)
+
+		if (in_array($high_12, [$mapped_prefix, $compat_prefix, $nat64_prefix], true)) {
+			$embedded = substr($bin, 12, 4); // IPv4 carried in the low 32 bits
+		} elseif (str_starts_with($bin, "\x20\x02")) {
+			$embedded = substr($bin, 2, 4); // 6to4 (2002::/16) carries the IPv4 in bytes 2..5
+		} else {
+			return false;
+		}
+
+		try {
+			$embedded_v4 = inet_ntop($embedded);
+		} catch (NetworkException) {
+			return true; // undecodable embedded address — fail closed
+		}
+
+		// Re-run the private/reserved test against the embedded IPv4.
+		return filter_var($embedded_v4, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false;
 	}
 
 	/**

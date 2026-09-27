@@ -37,6 +37,7 @@ return [
         'download' => 'Gir nedlasting',
         'upload' => 'Gir opplasting',
         'edit' => 'Gir redigering',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Gir sletting',
     ],
 ];

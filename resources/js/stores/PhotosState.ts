@@ -10,6 +10,21 @@ export const usePhotosStore = defineStore("photos-store", {
 	state: () => ({
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
+		/**
+		 * Which v3 store last wrote `photos` (Feature 069).
+		 *
+		 * Album and Timeline tiles are recognisable from their own contents
+		 * (`album_id`), but a search tile carries a *real* album id (FR-069-04)
+		 * and is indistinguishable from an album-browsing tile. Leaving the
+		 * search store to recognise its own tiles by id is not enough either:
+		 * `SearchState` is only cleared on an explicit clear, so after
+		 * navigating from a search into an album the search tiles are still
+		 * there, and a photo present in both would route its tier-3 details
+		 * fetch to the search loader — which merges into the search tiles and
+		 * leaves the album tile unresolved. Ownership of the array is the only
+		 * unambiguous signal, so it is recorded rather than inferred.
+		 */
+		sourceV3: undefined as "search" | undefined,
 		photoRatingFilter: null as PhotoRatingFilter,
 		/**
 		 * Maps each loaded photo ID to the page number it was loaded from.
@@ -24,6 +39,7 @@ export const usePhotosStore = defineStore("photos-store", {
 			this.photosTimeline = undefined;
 			this.photoRatingFilter = null;
 			this.photoPageMap = {};
+			this.sourceV3 = undefined;
 		},
 		setPhotoRatingFilter(rating: PhotoRatingFilter) {
 			this.photoRatingFilter = rating;
@@ -66,6 +82,9 @@ export const usePhotosStore = defineStore("photos-store", {
 			});
 		},
 		setPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean, page: number = 1) {
+			// Every non-search writer of `photos` goes through here, so this is
+			// where search's ownership of the array ends.
+			this.sourceV3 = undefined;
 			if (isTimeline) {
 				this.photosTimeline = spliter(
 					photos,

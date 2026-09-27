@@ -6,7 +6,7 @@ _Last updated: 2026-04-22_
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
 > When referencing requirements, keep feature IDs (`FR-037-`), NFR IDs (`NFR-037-`), and scenario IDs (`S-037-`) inside the same parentheses immediately after the task title (omit categories that do not apply).
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/5-decisions/` reflect the clarified behaviour.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/6-decisions/` reflect the clarified behaviour.
 
 ## Checklist
 
@@ -284,4 +284,4 @@ _Last updated: 2026-04-22_
 - T-037-15 is a supporting task for the rename in T-037-12: if the project uses an `@/views/...` alias consistently, a single codebase-wide grep-replace is the quickest path.
 - T-037-24 touches every locale file; consider splitting into two commits (authoritative English + bulk placeholder copies) to keep diffs reviewable. Placeholder policy matches current practice established by Feature 019 (Friendly URLs).
 - If row counts in `AdminStatsService` regress beyond the 1500 ms budget (NFR-037-01), pivot to pre-computed counters (see Feature 003/004) in a follow-up rather than inflating the current scope.
-- All open questions resolved (2026-04-22): Q-037-01..Q-037-08. See [open-questions.md](../../open-questions.md) for the closed trail.
+- All open questions resolved (2026-04-22): Q-037-01..Q-037-08. See [open-questions.md](open-questions.md) for the closed trail.

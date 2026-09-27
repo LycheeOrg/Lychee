@@ -22,6 +22,7 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Events\AccessPermissionChanged;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Models\AccessPermission;
+use App\Models\AlbumUserThumb;
 use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -36,6 +37,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -57,6 +59,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
 			'grants_upload' => true,
+			'grants_move' => true,
 		]);
 		$this->assertOk($response);
 
@@ -71,6 +74,72 @@ class SharingTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $e) => $e->base_album_id === $this->album1->id);
+	}
+
+	/**
+	 * Revoking the *public* permission of a source album must also drop the
+	 * cached tag/person/smart-album covers which *authenticated* viewers
+	 * materialised while that permission was in place.
+	 *
+	 * A row in `album_user_thumbs` is keyed by the viewer who materialised it
+	 * (`Auth::id()`), never by the permission their access came from, so a
+	 * logged-in viewer reaching the album through its public permission still
+	 * stores the row under their own `user_id`. Purging only `user_id IS NULL`
+	 * left those rows behind, and GetPhotoAssetRequest treats such a row as
+	 * proof that the photo legitimately represents the album - so the revoked
+	 * viewer kept being served the private thumbnail.
+	 */
+	public function testDeletePublicPermissionPurgesAuthenticatedViewersCachedThumbs(): void
+	{
+		$public_perm = AccessPermission::factory()->public()->visible()->for_album($this->album1)->create();
+
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userNoUpload->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $public_perm->id]);
+		$this->assertNoContent($response);
+
+		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->photo1->id)->count());
+	}
+
+	/**
+	 * Same for a group permission: the rows are keyed by the individual
+	 * members' `user_id`, but a member may equally have reached the album
+	 * through an unrelated permission, so the purge is unconditional.
+	 */
+	public function testDeleteGroupPermissionPurgesEveryViewersCachedThumbs(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userNoUpload->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $this->perm11->id]);
+		$this->assertNoContent($response);
+
+		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->photo1->id)->count());
+	}
+
+	/**
+	 * The purge stays scoped to the album whose permission was revoked:
+	 * a cached cover pointing at a photo of an *unrelated* album survives.
+	 */
+	public function testDeletePermissionLeavesUnrelatedAlbumsCachedThumbsAlone(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userNoUpload->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo2->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $this->perm1->id]);
+		$this->assertNoContent($response);
+
+		self::assertSame(1, AlbumUserThumb::query()->where('photo_id', '=', $this->photo2->id)->count());
 	}
 
 	public function testPropagateUpdateDispatchesCoarseFlush(): void
@@ -97,6 +166,29 @@ class SharingTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	/**
+	 * `Propagate::overwrite()` wipes every own permission the descendants had
+	 * before re-inserting the ancestor's — a revocation for anyone whose access
+	 * came from a descendant-only permission, so the covers those permissions
+	 * produced go with them.
+	 */
+	public function testPropagateOverwritePurgesDescendantsCachedThumbs(): void
+	{
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userNoUpload->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->subPhoto1->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
+			'album_id' => $this->album1->id,
+			'shall_override' => true,
+		]);
+		$this->assertNoContent($response);
+
+		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->subPhoto1->id)->count());
 	}
 
 	public function testGet(): void
@@ -158,6 +250,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
 			'grants_upload' => true,
+			'grants_move' => true,
 		]);
 		$this->assertOk($response);
 
@@ -166,6 +259,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -228,6 +322,7 @@ class SharingTest extends BaseApiWithDataTest
 			'grants_download' => false,
 			'grants_full_photo_access' => false,
 			'grants_upload' => false,
+			'grants_move' => false,
 		]);
 		$this->assertOk($response);
 
@@ -267,6 +362,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [$this->group2->id],
 			'album_ids' => [$this->album2->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -299,6 +395,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->subAlbum1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -312,6 +409,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -351,6 +449,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [$this->group2->id],
 			'album_ids' => [$this->subAlbum1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,
@@ -364,6 +463,7 @@ class SharingTest extends BaseApiWithDataTest
 			'group_ids' => [],
 			'album_ids' => [$this->album1->id],
 			'grants_edit' => true,
+			'grants_move' => true,
 			'grants_delete' => true,
 			'grants_download' => true,
 			'grants_full_photo_access' => true,

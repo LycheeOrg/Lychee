@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Hinweise auf dem Albumcover anzeigen (Anzahl der Unteralben und/oder Fotos)',
         'album_decoration_direction' => 'Album-Hinweise horizontal oder vertikal ausrichten',
         'photo_overlay' => 'Standard-Bildüberlagerungsinformationen',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Ecken der Foto- und Albumvorschaubilder abrunden',
         'album_border_enabled' => 'Rahmen um Foto- und Albumvorschaubilder anzeigen',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

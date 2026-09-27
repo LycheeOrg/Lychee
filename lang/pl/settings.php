@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Pokaż dekoracje na okładce albumu (liczba podalbumów i/lub zdjęć)',
         'album_decoration_direction' => 'Wyrównanie dekoracji albumu w poziomie lub w pionie',
         'photo_overlay' => 'Domyślne informacje o nakładce obrazu',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Zaokrąglaj rogi miniatur zdjęć i albumów',
         'album_border_enabled' => 'Pokaż obramowanie wokół miniatur zdjęć i albumów',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',

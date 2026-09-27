@@ -40,7 +40,7 @@ storage/bootstrap/cache/*
 storage/image-jobs/*
 **/__pycache__/**
 .coverage
-typescript-transformer-manifest.json 
+typescript-transformer-manifest.json
 
 
 # used by Vite
@@ -92,3 +92,6 @@ PRODUCT.md
 /playwright/.cache/
 /playwright/.auth/
 example.spec.ts
+
+# Spec Driven Development.
+_current-session.md

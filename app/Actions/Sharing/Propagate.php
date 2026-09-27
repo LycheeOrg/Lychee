@@ -69,6 +69,7 @@ final class Propagate
 					APC::GRANTS_UPLOAD => $permission->grants_upload,
 					APC::GRANTS_EDIT => $permission->grants_edit,
 					APC::GRANTS_DELETE => $permission->grants_delete,
+					APC::GRANTS_MOVE => $permission->grants_move,
 				]);
 				$perm->save();
 			});
@@ -129,6 +130,11 @@ final class Propagate
 			->where('_rgt', '<', $album->_rgt)
 			->pluck('id');
 
+		// The DELETE above revoked every own permission the descendants had:
+		// drop the cached covers those permissions may have produced before
+		// re-inserting the ancestor's (see PurgeAlbumUserThumbs).
+		resolve(PurgeAlbumUserThumbs::class)->forBaseAlbums($descendant_ids);
+
 		$access_permissions = $album->access_permissions()->where(fn ($q) => $q
 			->whereNotNull(APC::USER_ID)
 			->orWhereNotNull(APC::USER_GROUP_ID)
@@ -147,6 +153,7 @@ final class Propagate
 						APC::GRANTS_UPLOAD => $permission->grants_upload,
 						APC::GRANTS_EDIT => $permission->grants_edit,
 						APC::GRANTS_DELETE => $permission->grants_delete,
+						APC::GRANTS_MOVE => $permission->grants_move,
 					]
 				)->all()
 			)

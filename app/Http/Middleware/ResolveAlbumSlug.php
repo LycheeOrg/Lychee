@@ -18,7 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Middleware that translates album slugs to real album IDs.
  *
- * For each `album_id` value (query param, JSON body, or route param `albumId`),
+ * For each `album_id` value (query param, JSON body, or the route params
+ * `albumId` and `album_id`),
  * if the value is not a 24-char random ID and not a SmartAlbumType value,
  * the middleware queries `base_albums.slug` and replaces the value with the real ID.
  * If no match is found, the value passes through unchanged (downstream returns 404).
@@ -39,6 +40,11 @@ class ResolveAlbumSlug
 
 		// Used mostly in routes such as first loading of album
 		$this->resolveRouteParam($request, 'albumId');
+		// The v3 API (and a few v2 routes such as `/Album/{album_id}/people`)
+		// spell the same segment in snake_case and read it back with
+		// `$this->route('album_id')`; `Request::input()` above never sees
+		// route parameters, so this needs its own pass.
+		$this->resolveRouteParam($request, RequestAttribute::ALBUM_ID_ATTRIBUTE);
 
 		// May occur but unlikely, better safe than sorry.
 		$this->resolveArrayParam($request, RequestAttribute::ALBUM_IDS_ATTRIBUTE);

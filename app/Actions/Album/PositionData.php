@@ -12,9 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Album;
-use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Gate;
 
 class PositionData
 {
@@ -48,7 +46,6 @@ class PositionData
 			title: $album->get_title(),
 			photos: $photo_relation->get(),
 			track_url: $album instanceof Album ? $album->track_url : null,
-			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			tracks: $album instanceof Album ? $album->tracks : collect(),
 		);
 	}

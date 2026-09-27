@@ -186,6 +186,7 @@ declare namespace App {
 		export type ShiftX = "left" | "right";
 		export type ShiftY = "up" | "down";
 		export type SizeVariantAssetType = "small2x" | "small" | "thumb2x" | "thumb" | "placeholder";
+		export type SizeVariantFormat = "original" | "jpeg" | "webp";
 		export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 		export type SmallLargeType = "small" | "large";
 		export type SmartAlbumType =
@@ -436,6 +437,7 @@ declare namespace App {
 					cover_id: string | null;
 					album_timeline: App.Enum.TimelineAlbumGranularity | null;
 					photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+					is_date_scrubber_enabled: boolean | null;
 					published_at: string | null;
 					tags: string[];
 					persons: App.Http.Resources.Models.Utils.PersonNameResource[];
@@ -548,6 +550,10 @@ declare namespace App {
 					photo_layout: App.Enum.PhotoLayoutType;
 					is_album_timeline_enabled: boolean;
 					is_photo_timeline_enabled: boolean;
+					is_date_scrubber_enabled: boolean;
+					photo_date_scrubber_field: string | null;
+					album_date_scrubber_field: string | null;
+					date_scrubber_label_format: string;
 				};
 				export type ContactConfig = {
 					is_contact_form_enabled: boolean;
@@ -593,6 +599,7 @@ declare namespace App {
 					image_overlay_type: App.Enum.ImageOverlayType;
 					can_rotate: boolean;
 					can_autoplay: boolean;
+					is_photo_viewer_highest_quality_enabled: boolean;
 					is_exif_disabled: boolean;
 					is_favourite_enabled: boolean;
 					photo_previous_next_size: App.Enum.SmallLargeType;
@@ -843,6 +850,7 @@ declare namespace App {
 					grants_upload: boolean;
 					grants_edit: boolean;
 					grants_delete: boolean;
+					grants_move: boolean;
 				};
 				export type AdminStatsResource = {
 					photos_count: number;
@@ -1382,6 +1390,8 @@ declare namespace App {
 					can_download: boolean;
 					can_upload: boolean;
 					can_move: boolean;
+					can_move_content: boolean;
+					can_merge: boolean;
 					can_delete: boolean;
 					can_transfer: boolean;
 					can_access_original: boolean;
@@ -1721,6 +1731,7 @@ declare namespace App {
 					grants_uploads: (boolean | null)[];
 					grants_edits: (boolean | null)[];
 					grants_deletes: (boolean | null)[];
+					grants_moves: (boolean | null)[];
 				};
 				export type AlbumBucketResource = {
 					bucket_ids: string[];
@@ -1787,6 +1798,7 @@ declare namespace App {
 					_lft: number[];
 					_rgt: number[];
 					cover_ids: (string | null)[];
+					can_edits: boolean[];
 					parent_ids: (string | null)[] | null;
 					bulk_edit: App.Http.Resources.V3.AlbumListBulkEditFieldsResource | null;
 				};
@@ -1797,6 +1809,7 @@ declare namespace App {
 					ids: string[];
 					grants_edit: boolean[];
 					grants_download: boolean[];
+					grants_move: boolean[];
 				};
 				export type FlowListResource = {
 					ids: string[];
@@ -1817,6 +1830,7 @@ declare namespace App {
 					counts: number[];
 					centroid_latitudes: number[];
 					centroid_longitudes: number[];
+					singleton_photos: App.Http.Resources.V3.MapPhotoResource;
 				};
 				export type MapPhotoResource = {
 					ids: string[];
@@ -1877,6 +1891,27 @@ declare namespace App {
 					taken_ats: (string | null)[];
 					created_ats: string[];
 					taken_at_orig_tzs: (string | null)[];
+					rating_avgs?: number[];
+					rating_users?: (number | null)[];
+					thumb_infos?: (string | null)[];
+					tags?: string[][];
+				};
+				export type SearchPhotoResource = {
+					ids: string[];
+					album_ids: string[];
+					titles: string[];
+					types: string[];
+					ratios: number[];
+					owner_ids: number[];
+					is_highlighteds: boolean[];
+					is_validateds: boolean[];
+					is_videos: boolean[];
+					is_raws: boolean[];
+					is_live_photos: boolean[];
+					taken_ats: (string | null)[];
+					created_ats: string[];
+					taken_at_orig_tzs: (string | null)[];
+					is_truncated: boolean;
 					rating_avgs?: number[];
 					rating_users?: (number | null)[];
 					thumb_infos?: (string | null)[];

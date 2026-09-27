@@ -38,7 +38,7 @@
 							v-if="mode === 'list'"
 							:photo="tile.photo"
 							:box="relativeBox(tile.box, item.chunk)"
-							:album-id="albumId"
+							:album-id="tileAlbumId(tile.photo)"
 							:is-selected="props.selectedPhotos.includes(tile.photo.id)"
 							:is-cover-id="isCoverId(tile.photo.id)"
 							:is-header-id="isHeaderId(tile.photo.id)"
@@ -51,7 +51,7 @@
 							v-else
 							:photo="tile.photo"
 							:box="relativeBox(tile.box, item.chunk)"
-							:album-id="albumId"
+							:album-id="tileAlbumId(tile.photo)"
 							:is-selected="props.selectedPhotos.includes(tile.photo.id)"
 							:is-cover-id="isCoverId(tile.photo.id)"
 							:is-header-id="isHeaderId(tile.photo.id)"
@@ -108,6 +108,7 @@ import { useRoute } from "vue-router";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useTimelineStore } from "@/stores/TimelineState";
+import { useSearchStore } from "@/stores/SearchState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { isTouchDevice, ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
@@ -127,6 +128,7 @@ import {
 	type TimelineLayoutCacheEntry,
 } from "@/v8/composables/photo/analyticPhotoLayout";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
+import { deriveDayScrubEntries, formatDayLabel, tileDayKey, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 
@@ -141,7 +143,7 @@ const props = defineProps<{
 	 * layout pass the way album mode does, since Timeline's tiles/ratios
 	 * are only ever partially loaded (FR-066-12).
 	 */
-	source?: "album" | "timeline";
+	source?: "album" | "timeline" | "search";
 }>();
 
 const emits = defineEmits<{
@@ -161,8 +163,10 @@ const emits = defineEmits<{
 	 * (buckets vs totalHeight) update.
 	 */
 	timelineLayoutChanged: [payload: { buckets: { bucketId: string; top: number; height: number }[]; totalHeight: number }];
-	/** Timeline-only — raw content-relative scroll offset (`offset` below), for the rail's continuous playhead. Fires on every scroll tick by nature; keep consumers of this to a single cheap style binding. */
+	/** Timeline, and album mode while the date scrubber has entries (Feature 071) — raw content-relative scroll offset (`offset` below), for the rail's continuous playhead. Fires on every scroll tick by nature; keep consumers of this to a single cheap style binding. */
 	scrollOffsetChanged: [offset: number];
+	/** Album mode only (Feature 071, FR-071-08): day-level rail entries derived from each laid-out tile's date, in the same pixel space as `scrollOffsetChanged`. */
+	scrubberLayoutChanged: [payload: DateScrubLayout];
 }>();
 
 const source = computed(() => props.source ?? "album");
@@ -170,6 +174,7 @@ const source = computed(() => props.source ?? "album");
 const route = useRoute();
 const albumStore = useAlbumStore();
 const timelineStore = useTimelineStore();
+const searchStore = useSearchStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
 const catalogStore = useCatalogStore();
@@ -177,16 +182,31 @@ const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const albumId = computed(() => (source.value === "timeline" ? "timeline" : (albumStore.albumId ?? "")));
+
+/**
+ * Feature 069: a search result spans albums, so the album id that feeds
+ * `<Thumb>` (and therefore the v3 Asset endpoint's `{album_id}` segment) is a
+ * property of each tile, not of the grid. Tier 2 supplies it per row
+ * (`SearchPhotoResource.album_ids`), which `adaptPhotoTile()` writes straight
+ * into the tile's own `album_id`. Album and Timeline keep the single
+ * grid-wide value they have always used.
+ */
+function tileAlbumId(photo: App.Http.Resources.Models.PhotoResource): string {
+	if (source.value === "search") {
+		return photo.album_id ?? "";
+	}
+	return albumId.value;
+}
 const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
 
-// Timeline has no "cover"/"header" photo concept (those are per-Album
-// fields) — always false on that path, regardless of what `albumStore`
-// happens to still hold from a previous album visit.
+// Neither Timeline nor Search has a "cover"/"header" photo concept (those are
+// per-Album fields) — always false on those paths, regardless of what
+// `albumStore` happens to still hold from a previous album visit.
 function isCoverId(photoId: string): boolean {
-	return source.value !== "timeline" && albumStore.coverId === photoId;
+	return source.value === "album" && albumStore.coverId === photoId;
 }
 function isHeaderId(photoId: string): boolean {
-	return source.value !== "timeline" && albumStore.modelAlbum?.header_id === photoId;
+	return source.value === "album" && albumStore.modelAlbum?.header_id === photoId;
 }
 
 const containerRef = ref<HTMLElement>();
@@ -230,6 +250,14 @@ const targetAndGap = computed<{ target: number; gap: number }>(() => {
 const ratingFilterActive = computed(() => source.value === "album" && photosStore.photoRatingFilter !== null);
 const filteredPhotoIds = computed(() => (ratingFilterActive.value ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null));
 
+// `photosStore.photos` is whichever v3 store last compacted into it, so the
+// parallel ratio array has to follow the same source. Search keeps its own
+// (`SearchState.photoRatiosV3`): on the search route `albumStore` still holds
+// the scoped origin album, so reading its ratios here would silently feed the
+// layout another album's numbers — and an unscoped search would feed it none,
+// collapsing every justified/masonry tile to the `?? 1` square fallback.
+const ratiosV3 = computed(() => (source.value === "search" ? searchStore.photoRatiosV3 : albumStore.photoRatiosV3));
+
 // Also gated on the album's own `is_photo_timeline_enabled` display toggle —
 // mirrors the flag-off `AlbumPanel.vue`'s identical
 // `albumStore.config.is_photo_timeline_enabled` prop passed to
@@ -245,6 +273,12 @@ const showHeaders = computed(() => {
 	if (source.value === "timeline") {
 		return timelineStore.bucketableV3;
 	}
+	// Search has no bucket tier at all (Feature 069, NG1) — its result is one
+	// flat, ungrouped list, which is exactly the `bucketable: false` shape the
+	// album path already supports for OWNER_ID-sorted albums.
+	if (source.value === "search") {
+		return false;
+	}
 	return albumStore.photoBucketableV3 && (albumStore.config?.is_photo_timeline_enabled ?? false);
 });
 
@@ -257,7 +291,10 @@ const layoutResult = computed(() => {
 	// array that later crash the render (`relativeBox()` reading `.top` off
 	// an undefined box). Stay in the same empty state as `!ready` until a
 	// real width is known.
-	if (source.value !== "album" || !ready.value || containerWidth.value <= 0) {
+	// Search shares the album path's analytic layout verbatim — same
+	// `photosStore.photos` input, same WASM primitives; only Timeline's
+	// incremental, hole-tolerant layout is different.
+	if (source.value === "timeline" || !ready.value || containerWidth.value <= 0) {
 		return {
 			positioned: [] as { photo: App.Http.Resources.Models.PhotoResource; box: PhotoBox }[],
 			totalHeight: 0,
@@ -268,7 +305,7 @@ const layoutResult = computed(() => {
 	return computeVisiblePhotoLayout(
 		mode.value,
 		photosStore.photos,
-		albumStore.photoRatiosV3,
+		ratiosV3.value,
 		albumStore.photoBoundariesV3,
 		showHeaders.value,
 		ratingFilterActive.value,
@@ -515,10 +552,42 @@ watch(
 	{ immediate: true },
 );
 
+// --- Album date scrubber (Feature 071) ---
+
+/**
+ * Day-level rail entries for album mode (ADR-0011): each tile's date (field
+ * picked server-side, `AlbumConfig.photo_date_scrubber_field`) paired with its
+ * laid-out `top`. Recomputed only when the layout itself changes, never per
+ * scroll tick (NFR-071-03). `null` when the album's photo ordering is not
+ * date-based.
+ */
+const scrubberLayout = computed<DateScrubLayout | null>(() => {
+	const field = (albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null;
+	if (source.value !== "album" || field === null) {
+		return null;
+	}
+	const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
+	const items = layoutResult.value.positioned.map((p) => ({ day: tileDayKey(p.photo, field), top: p.box.top }));
+	const separatorTops = layoutResult.value.headerTops.map((h) => h.top);
+	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (day) => formatDayLabel(day, format));
+});
+
+watch(
+	scrubberLayout,
+	(scrubber) => {
+		if (scrubber !== null) {
+			emits("scrubberLayoutChanged", scrubber);
+		}
+	},
+	{ immediate: true },
+);
+
+const emitsScrollOffset = computed(() => source.value === "timeline" || (scrubberLayout.value?.entries.length ?? 0) > 0);
+
 watch(
 	contentScrollOffset,
 	(offset) => {
-		if (source.value === "timeline") {
+		if (emitsScrollOffset.value) {
 			emits("scrollOffsetChanged", offset);
 		}
 	},

@@ -93,6 +93,50 @@ class AlbumSearch
 	}
 
 	/**
+	 * Builder-returning sibling of {@see self::queryAlbums()}, for Feature
+	 * 069's v3 album tier — mirroring the `query()`/`sqlQuery()` pair
+	 * {@see PhotoSearch} already exposes.
+	 *
+	 * It cannot simply reuse `queryAlbums()`: that method both materialises the
+	 * result (`->get()`) and joins `base_albums` as a plain inner join on the
+	 * real table, whereas {@see \App\Actions\Album\StructOfArrays\BuildAlbumDataResource}
+	 * reads `computed_access_permissions.password` and the aliased `base_albums`
+	 * sub-join. `applyBrowsabilityFilter()` — unlike `applyVisibilityFilter()` —
+	 * never calls `prepareModelQueryOrFail()` and so joins neither.
+	 *
+	 * Both joins added here are LEFT joins that contribute no predicate, so the
+	 * result **membership is identical to `queryAlbums()`'s**; only the
+	 * available column set grows. Visibility filtering is deliberately *not*
+	 * added on top: browsability already tests the target album itself, and
+	 * layering an extra predicate would be a silent membership change inside a
+	 * transport migration (spec.md NFR-069-06/07).
+	 *
+	 * @param array<int,SearchToken> $tokens
+	 *
+	 * @return AlbumBuilder
+	 *
+	 * @throws InternalLycheeException
+	 */
+	public function sqlQueryAlbums(array $tokens, ?Album $album = null): AlbumBuilder
+	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$album_query = Album::query()
+			->select(['albums.*'])
+			->when($album !== null, fn ($q) => $q->where('albums._lft', '>=', $album->_lft)
+				->where('albums._rgt', '<=', $album->_rgt));
+
+		$this->album_query_policy->joinBaseAlbumOwnerId($album_query, 'albums.id');
+		$this->album_query_policy->joinSubComputedAccessPermissions($album_query, 'albums.id', 'left', '', false, $user);
+
+		$this->addSearchCondition($tokens, $album_query, include_tags: true);
+		$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
+
+		return $album_query;
+	}
+
+	/**
 	 * Adds the search conditions to the provided query builder.
 	 *
 	 * Only tokens whose modifier is recognised by the album layer (plain text,

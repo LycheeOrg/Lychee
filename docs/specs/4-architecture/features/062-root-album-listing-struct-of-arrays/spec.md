@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/062-root-album-listing-struct-of-arrays/tasks.md` |
 | Roadmap entry | #62 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) — it does not establish a new one, so no new ADR is added.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/Telemetry sections below (no per-feature `## Clarifications` sections). This feature applies the existing Struct-of-Arrays convention (ADR-0009) — it does not establish a new one, so no new ADR is added.
 
 ## Overview
 

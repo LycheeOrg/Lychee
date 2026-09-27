@@ -5,7 +5,7 @@ _Linked tasks:_ [tasks.md](tasks.md)
 _Status:_ Ready for Implementation  
 _Last updated:_ 2026-03-09
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 
@@ -515,7 +515,7 @@ Checklist:
 
 ## Open Questions Log
 
-All questions resolved. See [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md) for resolution details:
+All questions resolved. See [open-questions.md](open-questions.md) for resolution details:
 
 - **Q-026-01**: ✅ RESOLVED - Tag filtering applies to ALL album types (regular, TagAlbum, Smart Album)
 - **Q-026-02**: ✅ RESOLVED - PrimeVue MultiSelect `filter` prop enabled for tag dropdown search
