@@ -1,5 +1,5 @@
 <template>
-	<div class="w-full px-4 sm:px-6">
+	<div class="w-full px-4 sm:px-6 pt-4">
 		<div ref="containerRef" data-album-grid-root role="list" class="relative w-full" :style="{ height: `${totalSize}px` }">
 			<!-- Sticky pinned header: only rendered once the active bucket's own
 			     real header row has scrolled past the top — see activeHeaderLabel below. The
