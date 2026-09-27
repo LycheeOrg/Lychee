@@ -58,7 +58,7 @@ The merge is performed entirely **in memory**, with zero additional database que
 ## Links
 
 - Related spec sections: [docs/specs/4-architecture/features/048-fix-multi-group-permissions/spec.md](../4-architecture/features/048-fix-multi-group-permissions/spec.md) (FR-048-01, FR-048-02, FR-048-04, NFR-048-01, NFR-048-02, NFR-048-03)
-- Related open question (resolved): Q-048-01 in [docs/specs/4-architecture/open-questions.md](../4-architecture/open-questions.md)
+- Related open question (resolved): Q-048-01 in [048-fix-multi-group-permissions/open-questions.md](../4-architecture/features/048-fix-multi-group-permissions/open-questions.md)
 - Implementation: [app/DTO/EffectiveAccessPermission.php](../../../app/DTO/EffectiveAccessPermission.php), [app/Models/BaseAlbumImpl.php](../../../app/Models/BaseAlbumImpl.php)
 - Precedent for the "most permissive wins" pattern: [app/Policies/AlbumPolicy.php](../../../app/Policies/AlbumPolicy.php) (public+current OR pattern; `canDeleteById`/`canEditById` group-OR-in-SQL)
 - Regression tests: [tests/Unit/DTO/EffectiveAccessPermissionTest.php](../../../tests/Unit/DTO/EffectiveAccessPermissionTest.php), [tests/Unit/Models/BaseAlbumImplCurrentUserPermissionsTest.php](../../../tests/Unit/Models/BaseAlbumImplCurrentUserPermissionsTest.php), [tests/Feature_v2/Album/MultiGroupPermissionMergeTest.php](../../../tests/Feature_v2/Album/MultiGroupPermissionMergeTest.php)

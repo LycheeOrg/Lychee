@@ -220,7 +220,7 @@ _Last updated: 2026-08-29_
 
 ### I13 – Follow-up: tier 2 pin/public/link-required fields (2026-08-30)
 
-> Surfaced during Feature 063's ambiguity review (Q-063-05/06 in `docs/specs/4-architecture/open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 063's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
+> Surfaced during Feature 063's ambiguity review (Q-063-05/06 in `open-questions.md`): `contextMenu.ts`'s Pin/Unpin label and the tile's public/hidden badges both read fields (`is_pinned`, `is_public`, `is_link_required`) tier 2 never supplied, which Feature 063's frontend adoption needs to reproduce today's v2-fed tile behavior exactly (FR-061-27).
 
 - [x] T-061-48 – Feature tests: a fixture spanning a pinned child, an unpinned child, a public+no-link-required child, a public+link-required child, and a fully private child — `is_pinneds`/`is_publics`/`is_link_requireds` match `ThumbAlbumResource`'s own resolution for the same children exactly (S-061-44) (F-061-27).
   _Intent:_ Tests-first, added to the existing `AlbumChildrenDataV3Test.php`.

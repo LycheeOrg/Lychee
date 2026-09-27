@@ -1,6 +1,6 @@
 # Quality Gate – Usage & Troubleshooting
 
-_Last updated: December 22, 2025_
+_Last updated: September 27, 2026_
 
 The quality gate for Lychee enforces code style, static analysis, and test coverage standards across both backend (PHP/Laravel) and frontend (Vue3/TypeScript) code. Run the appropriate checks locally before committing changes, and rely on the CI workflow ([.github/workflows/CICD.yml](../../../.github/workflows/CICD.yml)) for enforcement on every push and pull request.
 
@@ -13,8 +13,8 @@ This guide is aligned with the coding conventions defined in [docs/specs/3-refer
 ```bash
 vendor/bin/php-cs-fixer fix    # Apply PHP code style fixes
 npm run format                 # Apply frontend code formatting
-npm run check                  # Run frontend tests
-php artisan test               # Run PHP tests
+npm run check                  # TypeScript type-check (vue-tsc)
+php artisan test --filter=<ClassName>   # Tests touched by/related to the change
 make phpstan                   # Run static analysis
 ```
 
@@ -22,15 +22,15 @@ make phpstan                   # Run static analysis
 
 ```bash
 vendor/bin/php-cs-fixer fix    # Apply PHP code style fixes
-php artisan test               # Run PHP tests
-make phpstan                   # Run static analysis (PHPStan level 6)
+php artisan test --filter=<ClassName>   # Tests touched by/related to the change
+make phpstan                   # Run static analysis (level from phpstan.neon)
 ```
 
 ### Frontend-Only Changes
 
 ```bash
 npm run format                 # Apply frontend code formatting (Prettier)
-npm run check                  # Run frontend tests
+npm run check                  # TypeScript type-check (vue-tsc)
 ```
 
 ## Commands in Detail
@@ -54,18 +54,18 @@ Applies PSR-4 coding standards and Lychee-specific formatting rules using PHP CS
 - Spacing and indentation
 - Brace placement
 
-#### 2. Test Suite: `php artisan test`
+#### 2. Tests: `php artisan test --filter=<ClassName>`
 
-Runs the full PHPUnit test suite including unit tests and feature tests.
+Run every test class touched by or related to the change. Never run `php artisan test` unfiltered or a whole `--testsuite=` locally; CI runs the full suite. Never run two test commands concurrently: they share the SQLite test database.
 
 **Test structure:**
 - `tests/Unit/` - Unit tests (extend `AbstractTestCase`)
-- `tests/Feature_v2/` - Feature/integration tests (extend `BaseApiWithDataTest`)
+- `tests/Feature_v2/` - Feature/integration tests (extend `Tests\Feature_v2\Base\BaseApiWithDataTest`)
+- `tests/Feature_v3/` - v3 API feature tests (extend `Tests\Feature_v3\Base\BaseApiWithDataTest`)
 
 **Coverage expectations:**
 - All new code must include tests
 - Critical paths require comprehensive test coverage
-- Use `--filter` to run specific test suites during development
 
 **Example:**
 ```bash
@@ -74,7 +74,7 @@ php artisan test --filter=AlbumTest
 
 #### 3. Static Analysis: `make phpstan`
 
-Runs PHPStan at level 6 to catch type errors, undefined variables, and other static analysis violations.
+Runs PHPStan at the level configured in `phpstan.neon` to catch type errors, undefined variables, and other static analysis violations.
 
 **Baseline:** `phpstan-baseline.neon` tracks accepted violations; new code must not add to it.
 
@@ -107,45 +107,13 @@ Applies Prettier formatting to Vue, TypeScript, JavaScript, and CSS files.
 
 **Configuration:** `.prettierrc` and `eslint.config.ts`
 
-#### 2. Frontend Tests: `npm run check`
+#### 2. Type-check: `npm run check`
 
-Runs ESLint, TypeScript type checking, and frontend unit tests.
-
-**What it checks:**
-- ESLint rules for Vue3 Composition API
-- TypeScript type correctness
-- Frontend unit tests
-- Import/export consistency
+Runs `vue-tsc --noEmit` to check TypeScript type correctness across the frontend. ESLint is a separate script (`npm run lint`).
 
 ## Standards & Conventions
 
-### PHP Standards (PSR-4)
-
-- **Variables:** `snake_case`
-- **Classes:** `PascalCase` with PSR-4 autoloading
-- **Methods:** `camelCase`
-- **Constants:** `UPPER_SNAKE_CASE`
-- **Comparison:** Use strict comparison (`===`) instead of loose (`==`)
-- **Arrays:** Use `in_array($value, $array, true)` with strict comparison
-- **Empty:** Do not use `empty()` - use explicit checks instead
-- **License headers:** Required in all new files
-
-### Vue3/TypeScript Standards
-
-- **Composition API:** All components use `<script setup lang="ts">`
-- **Functions:** Use `function name() {}` instead of arrow functions for component methods
-- **Async:** Use `.then()` instead of `await`/`async` in Vue components
-- **State:** Pinia stores for global state, reactive/ref for local state
-- **Services:** API calls in `resources/js/services/` using axios
-- **Components:** PrimeVue-based UI components
-
-### Test Requirements
-
-- **Unit tests:** Extend `AbstractTestCase`
-- **Feature tests:** Extend `BaseApiWithDataTest`
-- **Coverage:** New code must include corresponding tests
-- **Naming:** Test methods describe what they test
-- **Database:** Use in-memory SQLite (no mocking required)
+Coding, Vue (v7/v8), and testing standards live only in [coding-conventions.md](../3-reference/coding-conventions.md). Do not restate them here.
 
 ## CI Integration
 
@@ -153,10 +121,10 @@ GitHub Actions runs the full quality gate on every push and pull request via `.g
 
 **CI checks include:**
 - PHP CS Fixer (must pass with no changes)
-- PHPStan level 6 (must pass with no new violations)
-- PHPUnit test suite (all tests must pass)
+- PHPStan at the configured level (must pass with no new violations)
+- Full PHPUnit test suite (all tests must pass)
 - Frontend formatting and linting
-- Frontend tests
+- Frontend type-check
 
 **Before pushing:**
 1. Run the appropriate quality checks locally
@@ -188,7 +156,7 @@ GitHub Actions runs the full quality gate on every push and pull request via `.g
 ### Test Failures
 
 **Problem:** Database-related test failures
-- **Solution:** Check that migrations are up to date: `php artisan migrate:fresh`
+- **Solution:** Reset only the test database: `rm database/database.sqlite && touch database/database.sqlite`, then rerun the scoped tests (migrations apply automatically). **Never** run `migrate:fresh`, `migrate:reset` or `db:wipe`—they destroy the development database.
 
 **Problem:** Random test failures
 - **Solution:** Ensure test isolation - each test should clean up after itself

@@ -4,7 +4,7 @@ _Linked specification:_ [docs/specs/4-architecture/features/069-search-struct-of
 _Status:_ Draft  
 _Last updated:_ 2026-09-22
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 
@@ -178,7 +178,7 @@ Checklist per [analysis-gate-checklist.md](../../../5-operations/analysis-gate-c
    - ✅ ASCII mock-ups present for both the v2 and v3 paths, including the truncation hint.
 2. **Open questions review**
    - ✅ Zero `Open` rows remain for Feature 069 (10 of 10 resolved; verified by grep).
-   - ✅ ADR created: **ADR-0010** (v3 collection bounding strategies), generalising Q-069-02/Q-069-10. Linked from spec.md's NG1, FR-069-02, NFR-069-01 and Documentation Deliverables, and from Q-069-10's entry in the open-questions log. ADR-0009 (response shape) reviewed and confirmed unamended.
+   - ✅ ADR created: **ADR-069-01** (v3 collection bounding strategies), generalising Q-069-02/Q-069-10. Linked from spec.md's NG1, FR-069-02, NFR-069-01 and Documentation Deliverables, and from Q-069-10's entry in the open-questions log. ADR-0009 (response shape) reviewed and confirmed unamended.
 3. **Plan alignment**
    - ✅ Plan references the correct spec and tasks files; dependencies and success criteria match the spec's wording.
 4. **Tasks coverage**

@@ -4,7 +4,7 @@ _Linked specification:_ `docs/specs/4-architecture/features/063-album-timeline-b
 _Status:_ In Progress — I1-I9/I11/I13/I14/I15 implemented (I14: 2026-09-02 smart-album-tiles slice; I15: 2026-09-03 full root-gallery SoA scope, Q-063-16 — own/shared root bucketed grid, tags/persons/pinned flat swaps, root drag-select support — code-complete, `make phpstan`/`php-cs-fixer`/`npm run check`/`npm run format` clean, `AlbumCategoryV3Test`/`AlbumRootV3Test`/`PhotoAssetV3Test`/full `Album*V3Test` sweep green (150+ tests), manual browser verification of S-063-27..40 not performed this session, no dev server/database available); I10 (manual Tag/Person verification, no dev environment available this session), I12 (api-design.md/knowledge-map.md/roadmap.md updates), and the Implementation Drift Gate still pending.
 _Last updated:_ 2026-09-03
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 

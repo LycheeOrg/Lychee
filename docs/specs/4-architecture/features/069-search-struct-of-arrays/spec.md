@@ -9,7 +9,7 @@
 | Linked tasks | [docs/specs/4-architecture/features/069-search-struct-of-arrays/tasks.md](tasks.md) |
 | Roadmap entry | Feature 069 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
 
@@ -17,7 +17,7 @@ Search is the last v8 gallery view still served entirely by API v2. Features 062
 
 This feature adds a dedicated `GET /api/v3/Search/*` family (albums + a `/rights` tier, photos + an on-demand `/details` tier), and migrates the v8 Search page onto it behind the existing `features.struct-of-array` flag. Affected modules: REST (new v3 controller, request classes, resources, query actions), core (a config rename migration), and UI (v8 Search view, its store, and its service client). The v2 route and the v7 frontend are untouched.
 
-Two decisions shape the whole design and are recorded in full in [open-questions.md](../../open-questions.md): photo results are delivered **whole-scope and unpaginated** rather than bucket-windowed (Q-069-02, Option B), bounded instead by a repurposed hard result cap with an explicit truncation signal (Q-069-10, Option A). Consequently this feature introduces **no bucket tier** — the only SoA photo consumer without one.
+Two decisions shape the whole design and are recorded in full in [open-questions.md](open-questions.md): photo results are delivered **whole-scope and unpaginated** rather than bucket-windowed (Q-069-02, Option B), bounded instead by a repurposed hard result cap with an explicit truncation signal (Q-069-10, Option A). Consequently this feature introduces **no bucket tier** — the only SoA photo consumer without one.
 
 ## Goals
 
@@ -31,7 +31,7 @@ Two decisions shape the whole design and are recorded in full in [open-questions
 
 ## Non-Goals
 
-- **NG1 — No bucket tier** (ADR-0010 strategy 3, not strategy 2)**.** Per Q-069-02 (Option B) search photos are returned whole-scope in one request. No `/Search/Photos/buckets` route, no sticky bucket headers, no scrubber. The frontend renders one flat chunk via `PhotoGridVirtual.vue`'s already-supported `bucketable: false` path.
+- **NG1 — No bucket tier** (ADR-069-01 strategy 3, not strategy 2)**.** Per Q-069-02 (Option B) search photos are returned whole-scope in one request. No `/Search/Photos/buckets` route, no sticky bucket headers, no scrubber. The frontend renders one flat chunk via `PhotoGridVirtual.vue`'s already-supported `bucketable: false` path.
 - **NG2 — `SpotlightSearch.vue` is not migrated** (Q-069-04). The global quick-search palette keeps calling `GET /api/v2/Search`; it renders a short capped list that gains nothing from tiering, and v2 survives for v7 regardless.
 - **NG3 — `date:` semantics are unchanged** (Q-069-05). `AlbumDateStrategy` keeps matching `base_albums.created_at` while `DateStrategy` matches `photos.taken_at`. Carried into v3 verbatim so that any result difference during migration is a real regression, not an intended one.
 - **NG4 — No change to the token grammar.** `SearchTokenParser`, every `PhotoSearchTokenStrategy`/`AlbumSearchTokenStrategy`, `ColourNameMap` and the advanced-search panel are reused exactly as they are. This feature changes transport and shape, not what matches.
@@ -46,7 +46,7 @@ Two decisions shape the whole design and are recorded in full in [open-questions
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-069-01 | A new `GET /api/v3/Search/Photos` returns the photo half of a search as a Struct-of-Arrays body, whole-scope and never paginated. | Returns one index-aligned row per distinct matching photo, ordered by the effective sort. | `terms` required; `album_id` optional and must be a valid random ID; `sorting_column`/`sorting_order` validated against `SearchSortingType`/`OrderSortingType`. | 422 on invalid params; 403 when the feature flag or `search_public` gate denies. | Existing request logging only. | Q-069-01 (A), Q-069-02 (B) |
-| FR-069-02 | The photo tier is bounded by the `search_result_limit` config (ADR-0010 strategy 3, "capped with truncation"). The query selects `limit + 1` rows; if the extra row exists, only the first `limit` rows are returned and `is_truncated` is `true`. | Under the cap: every match returned, `is_truncated: false`. | `limit` is server-side config, never a request parameter. | — | — | Q-069-10 (A) |
+| FR-069-02 | The photo tier is bounded by the `search_result_limit` config (ADR-069-01 strategy 3, "capped with truncation"). The query selects `limit + 1` rows; if the extra row exists, only the first `limit` rows are returned and `is_truncated` is `true`. | Under the cap: every match returned, `is_truncated: false`. | `limit` is server-side config, never a request parameter. | — | — | Q-069-10 (A) |
 | FR-069-03 | The config key `search_pagination_limit` is renamed `search_result_limit` by migration, preserving its currently stored value, and its documented meaning changes from "photos per page" to "maximum photo hits returned per search". | Existing installs keep their tuned value (default 300). | — | — | — | Q-069-10 (A) |
 | FR-069-04 | Each photo row carries an `album_ids[i]`: one concrete, viewer-accessible album id for that photo, resolved by a separate join-and-collapse pass to the lowest accessible `album_id`. | Feeds the `{album_id}` path segment of the v3 Asset endpoint so `<Thumb>` can render a cross-album result. | — | A photo the viewer owns but which belongs to no album (searchable in v2 via `owner_id`) reports the `unsorted` smart album id instead, so the field is never null (Q-069-11). | — | Q-069-07, Q-069-11, Feature 067 Q-067-11 |
 | FR-069-05 | The photo tier returns exactly one row per distinct `photos.id`, regardless of how many albums the photo belongs to. | A photo in N albums appears once. | — | — | — | Q-069-08 |
@@ -77,7 +77,7 @@ Two decisions shape the whole design and are recorded in full in [open-questions
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-069-01 | No response may exceed `search_result_limit` photo rows. | The whole-scope choice removed the only existing ceiling. | Feature test asserting `limit + 1` matches yield `limit` rows and `is_truncated: true`. | FR-069-02 | Q-069-10, ADR-0010 |
+| NFR-069-01 | No response may exceed `search_result_limit` photo rows. | The whole-scope choice removed the only existing ceiling. | Feature test asserting `limit + 1` matches yield `limit` rows and `is_truncated: true`. | FR-069-02 | Q-069-10, ADR-069-01 |
 | NFR-069-02 | The photo and album tiers build their bodies from flat `toBase()` queries with no Eloquent model hydration and no eager loading. | v2 eager-loads 6 relations per photo and hydrates every album. | Code review + a query-count assertion. | — | Feature 064/067 precedent |
 | NFR-069-03 | No `Gate::check()` or `ConfigManager` read inside any per-row loop. | v2 performs 2 Gate checks per photo. | Code review; FR-069-14. | — | Feature 064 |
 | NFR-069-04 | No `Carbon` instantiation in any request-path tier; date handling uses raw string slicing or native `date()`/`mktime()`. | Owner directive; `Carbon` is disproportionately costly per row. | Code review. | — | Owner directive, Feature 066 precedent |
@@ -240,9 +240,9 @@ No new events, fields or redaction rules. Managed-cache instrumentation is inher
 
 - [roadmap.md](../../roadmap.md) — add Feature 069 to Active during implementation, move to Completed at the end.
 - [knowledge-map.md](../../knowledge-map.md) — new "Search Struct-of-Arrays (Feature 069)" section, following the Feature 066/067/068 entries' shape.
-- [open-questions.md](../../open-questions.md) — Q-069-01..10 already logged and resolved.
+- [open-questions.md](open-questions.md) — Q-069-01..10 already logged and resolved.
 - [_current-session.md](../../../_current-session.md) — refresh (currently stale at 2026-08-28).
-- [ADR-0010](../../../6-decisions/ADR-0010-v3-collection-bounding-strategies.md) — **new**, created by this feature: names the four bounding strategies for v3 SoA collections and the rule for choosing among them. ADR-0009 governs response *shape*; ADR-0010 governs response *size*. Neither is amended by this feature.
+- [ADR-069-01](../../../6-decisions/ADR-069-01-v3-collection-bounding-strategies.md) — **new**, created by this feature: names the four bounding strategies for v3 SoA collections and the rule for choosing among them. ADR-0009 governs response *shape*; ADR-069-01 governs response *size*. Neither is amended by this feature.
 
 ## Fixtures & Sample Data
 
@@ -313,7 +313,7 @@ ui_states:
 
 ## Appendix — Resolved Decisions
 
-Full option analysis for each lives in [open-questions.md](../../open-questions.md); summarised here so this spec stays self-contained.
+Full option analysis for each lives in [open-questions.md](open-questions.md); summarised here so this spec stays self-contained.
 
 - **Q-069-01 → Option A.** Dedicated `/api/v3/Search/*` family. A "search album" would be parameterised by request state, which nothing in `AlbumFactory`/`AlbumPolicy` assumes, and would push `terms` onto request classes three shipped features already depend on — landing the blast radius on Features 064/066 rather than on new code. It would also still need a separate album route, so it never achieves "zero new routes".
 - **Q-069-02 → Option B.** Whole-scope unpaginated, **no bucket tier**. Chosen over the recommended bucket-windowed option; the unbounded-response risk is accepted and mitigated by Q-069-10's cap.

@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/049-nuxt-ui-migration/tasks.md` |
 | Roadmap entry | #049 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 
@@ -25,7 +25,7 @@ A codebase inventory (2026-07-02) found PrimeVue imported in **235 of 286** `.vu
 - The embeddable widget bundle (`resources/js/embed/`, built via `vite.embed.config.ts` into `public/embed/lychee-embed.js`) has **zero PrimeVue coupling** and is explicitly out of scope.
 - There is **no frontend automated test suite** (`resources/js/**/*.test.ts` — zero files exist); `npm run check` is `vue-tsc` type-checking only. Verification is manual/browser-based per the project's standard practice for frontend changes.
 
-Three high-impact design questions were resolved before planning and recorded in **ADR-0005** (`docs/specs/6-decisions/ADR-0005-nuxt-ui-migration.md`) (see also [open-questions.md](../../open-questions.md) Q-049-01..03):
+Three high-impact design questions were resolved before planning and recorded in **ADR-0005** (`docs/specs/6-decisions/ADR-0005-nuxt-ui-migration.md`) (see also [open-questions.md](open-questions.md) Q-049-01..03):
 - **Q-049-01** (feature sizing): this feature covers the **entire** PrimeVue removal, planned as one feature with many grouped increments, tracked to full completion.
 - **Q-049-02** (icons): icon **visual parity** is preserved via the Iconify `prime` collection (`@iconify-json/prime`, confirmed published on npm, mirrors PrimeIcons 1:1) — no icon redesign in this feature.
 - **Q-049-03** (ripple): the PrimeVue ripple click effect is **dropped entirely**; Reka UI's built-in focus-trapping replaces `v-focustrap`.

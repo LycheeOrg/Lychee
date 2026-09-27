@@ -1,22 +1,22 @@
 # Analysis Gate Checklist
 
-Use this checklist after a feature's specification, plan, and tasks exist but before implementation begins. After implementation, complete the Implementation Drift Gate section before the feature can be marked complete. Together these guardrails enforce the project constitution and keep specifications, plans, tasks, and code aligned.
+Use this checklist after a feature's specification, plan, and tasks exist but before implementation begins. After implementation, complete the Implementation Drift Gate section before the feature can be marked complete. Together these guardrails enforce the working agreements in `AGENTS.md` and keep specifications, plans, tasks, and code aligned.
 
 ## Inputs
 - Feature specification (e.g., docs/specs/4-architecture/features/XXX/spec.md)
 - Feature plan (e.g., docs/specs/4-architecture/features/XXX/plan.md)
 - Feature tasks (e.g., docs/specs/4-architecture/features/XXX/tasks.md)
-- Open questions log ([docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md))
-- Constitution ([docs/specs/6-decisions/project-constitution.md](docs/specs/6-decisions/project-constitution.md))
+- Feature open questions log (`docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md`)
+- Working agreements ([AGENTS.md](../../../AGENTS.md))
 - Feature plan subsection reserved for the Implementation Drift Gate report (create if missing)
 
 ## Checklist
 1. **Specification completeness** 
    - [ ] Objectives, functional, and non-functional requirements are populated.
    - [ ] Resolved high- and medium-impact questions for this feature are reflected directly in the spec’s normative sections (requirements, NFR, behaviour/UI, telemetry/policy).
-   - [ ] UI-impacting work includes an ASCII mock-up in the spec ([docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md](docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md)).
+   - [ ] UI-impacting work includes an ASCII mock-up in the spec ([ui-ascii-mockups.md](../4-architecture/spec-guidelines/ui-ascii-mockups.md)).
 2. **Open questions review**
-   - [ ] No blocking `Open` entries remain for this feature in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md). If any exist, pause and obtain clarification.
+   - [ ] No blocking `Open` entries remain in the feature's `open-questions.md`. If any exist, pause and obtain clarification.
    - [ ] For architecturally significant decisions (cross-feature/module boundaries, security/telemetry strategies, major NFR trade-offs), ADRs exist or are planned, and the spec/open-questions entries link to the corresponding ADR IDs.
 3. **Plan alignment**
    - [ ] Feature plan references the correct specification and tasks files.
@@ -25,7 +25,7 @@ Use this checklist after a feature's specification, plan, and tasks exist but be
    - [ ] Every functional requirement maps to at least one task.
    - [ ] Tasks sequence tests before implementation and keep planned increments ≤90 minutes by outlining logical, self-contained slices (execution may run longer if needed).
    - [ ] Planned tests enumerate the success, validation, and failure branches with failing cases queued before implementation begins.
-5. **Constitution compliance**
+5. **Working-agreement compliance**
    - [ ] No planned work violates principles (spec-first, clarification gate, test-first, documentation sync, dependency control).
    - [ ] Planned increments minimise new control-flow complexity by extracting validation/normalisation into small helpers, keeping each change nearly straight-line.
    - [ ] For the active feature, relevant ADRs (per their Related features/specs metadata) have been reviewed as part of this analysis.
@@ -44,7 +44,7 @@ Run this section once all planned tasks are complete and the latest build is gre
    - [ ] No implementation or tests lack an originating spec/plan task; undocumented work is captured as a follow-up task or spec addition.
    - [ ] Feature plan and tasks remain consistent with the shipped implementation (dependencies, acceptance criteria, sequencing).
 3. **Divergence handling**
-   - [ ] High- and medium-impact gaps or over-deliveries are logged as new entries in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md) for user direction.
+   - [ ] High- and medium-impact gaps or over-deliveries are logged as new entries in the feature's `open-questions.md` for user direction.
    - [ ] Low-impact or low-level drift (typos, minor wording, formatting) is corrected directly before finalising the report; document the fix without escalating.
    - [ ] Follow-up tasks or spec updates are drafted for any outstanding divergences awaiting approval.
 4. **Coverage confirmation**

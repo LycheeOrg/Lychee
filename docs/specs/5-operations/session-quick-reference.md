@@ -5,13 +5,13 @@ Use this appendix to accelerate hand-offs and new-session spin-up. Update it whe
 ## Session Kickoff Checklist
 - [ ] Run `git status -sb` to review branch, staged changes, and repo cleanliness.
 - [ ] Confirm environment prerequisites: PHP 8.4+, Composer installed, npm/Node.js available; log the command/output in `_current-session.md` for traceability.
-- [ ] Review current context: latest roadmap entry, active specification, feature plan, tasks checklist, and [docs/specs/4-architecture/open-questions.md](../4-architecture/open-questions.md).
+- [ ] Review current context: latest roadmap entry, active specification, feature plan, tasks checklist, and the feature's `open-questions.md` (list unresolved questions across all features with `grep -H '^| Q-' docs/specs/4-architecture/features/*/open-questions.md | grep -v '| ~~Q'`).
 - [ ] Confirm that the active feature spec already encodes known decisions directly in its requirements/NFR/behaviour/telemetry sections (no per-feature `## Clarifications` appendices).
-- [ ] If new clarifications arise, record them in [docs/specs/4-architecture/open-questions.md](../4-architecture/open-questions.md), pause planning until answers are agreed, then update the spec sections and mark the questions as resolved with links to those sections; create or reference an ADR for architectural or other high‑impact decisions.
+- [ ] If new clarifications arise, record them in the active feature's `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md`, pause planning until answers are agreed, then update the spec sections and mark the questions as resolved with links to those sections; create or reference an ADR for architectural or other high‑impact decisions.
 - [ ] Check feature organization under `docs/specs/4-architecture/features/<NNN>-<feature-name>/` where NNN is a 3-digit number (001, 002, 003, etc.) and feature-name is hyphen-separated (see [docs/specs/4-architecture/spec-guidelines/feature-numbering-conventions.md](../4-architecture/spec-guidelines/feature-numbering-conventions.md)).
 - [ ] If scope introduces or modifies UI, confirm the spec includes an ASCII mock-up ([docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md](../4-architecture/spec-guidelines/ui-ascii-mockups.md)).
 - [ ] If the last build is stale or after syncing, run quality checks to ensure the baseline is green (capture or resolve any failures before proceeding):
-  - PHP changes: `vendor/bin/php-cs-fixer fix && php artisan test && make phpstan`
+  - PHP changes: `vendor/bin/php-cs-fixer fix && php artisan test --filter=<ClassName> && make phpstan`
   - Frontend changes: `npm run format && npm run check`
 - [ ] When changing dependencies (approved): update `composer.json` or `package.json`, run `composer update` or `npm install`, and verify tests still pass.
 - [ ] Check [docs/specs/_current-session.md](../_current-session.md) for the active snapshot; refresh it with today's status and update the `## Next suggested actions` section before you hand off.
@@ -34,7 +34,7 @@ You're resuming work on Lychee photo management system. Core context:
 - Git state: [branch], staged files [list or "clean"], outstanding TODOs [if any].
 - ADO notes: [max 5 bullets of concrete process improvements to prevent regressions and accelerate the next run].
 - Next steps you should take now: [ordered checklist, e.g., "1. Stage failing tests for … 2. Implement … 3. Update docs …"].
-- Reminders: keep planned tasks/increments ≤90 minutes by organising work into logical slices (execution may run longer if needed), update docs (spec/plan/tasks/roadmap), run quality checks before commits, and document open questions in `docs/specs/4-architecture/open-questions.md`.
+- Reminders: keep planned tasks/increments ≤90 minutes by organising work into logical slices (execution may run longer if needed), update docs (spec/plan/tasks/roadmap), run quality checks before commits, and document open questions in the active feature's `open-questions.md`.
 ```
     
 > Tip: Retros for new sessions should paste the filled template into the opening message so successors inherit complete context.
@@ -59,9 +59,8 @@ git diff --cached --stat                 # Summarise staged changes
 ### PHP Backend Quality Checks
 ```bash
 vendor/bin/php-cs-fixer fix              # Apply code style fixes (PSR-4)
-php artisan test                         # Run full PHPUnit test suite
-php artisan test --filter=AlbumTest      # Run specific test class
-make phpstan                             # Static analysis (PHPStan level 6)
+php artisan test --filter=AlbumTest      # Run a test class (always scope; CI runs the full suite)
+make phpstan                             # Static analysis (level from phpstan.neon)
 vendor/bin/phpstan analyse --memory-limit=2G  # PHPStan with more memory
 composer dump-autoload                   # Rebuild autoload files
 ```
@@ -95,7 +94,7 @@ npm update                               # Update frontend dependencies
 ### Full Quality Gate (Combined)
 ```bash
 # PHP + Frontend changes
-vendor/bin/php-cs-fixer fix && npm run format && npm run check && php artisan test && make phpstan
+vendor/bin/php-cs-fixer fix && npm run format && npm run check && php artisan test --filter=<ClassName> && make phpstan
 
 # PHP only
 vendor/bin/php-cs-fixer fix && php artisan test && make phpstan
@@ -122,7 +121,7 @@ See [quality-gate.md](quality-gate.md) for comprehensive details on:
 - Performance optimization
 
 Quick reference:
-- **PHP changes:** `vendor/bin/php-cs-fixer fix` → `php artisan test` → `make phpstan`
+- **PHP changes:** `vendor/bin/php-cs-fixer fix` → `php artisan test --filter=<ClassName>` → `make phpstan`
 - **Frontend changes:** `npm run format` → `npm run check`
 - **Both:** Run all checks in sequence before committing
 

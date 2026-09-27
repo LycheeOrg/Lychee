@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/073-size-variant-format/tasks.md` |
 | Roadmap entry | #073 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below, and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below, and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
 
