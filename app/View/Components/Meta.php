@@ -58,7 +58,7 @@ class Meta extends Component
 		// default data
 		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 		$this->page_url = url()->current();
-		$this->rss_enable = GalleryLockState::isRssEnabled(request()->configs());
+		$this->rss_enable = resolve(GalleryLockState::class)->isRssEnabled();
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
 

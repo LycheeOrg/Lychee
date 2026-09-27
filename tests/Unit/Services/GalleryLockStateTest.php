@@ -27,68 +27,71 @@ class GalleryLockStateTest extends AbstractTestCase
 	private const STORED_HASH = '$2y$12$abcdefghijklmnopqrstuuFakeBcryptHashForUnitTestsOnly00';
 	private const NOW = 1_800_000_000;
 
+	private GalleryLockState $gallery_lock;
+
 	public function setUp(): void
 	{
 		parent::setUp();
+		$this->gallery_lock = resolve(GalleryLockState::class);
 		Hash::shouldReceive('check')->never();
 	}
 
 	public function testUnlockedWhenNoPasswordIsSet(): void
 	{
-		self::assertFalse(GalleryLockState::isLocked('', false, null, self::NOW));
+		self::assertFalse($this->gallery_lock->isLocked('', false, null, self::NOW));
 	}
 
 	public function testUnlockedForLoggedInUser(): void
 	{
-		self::assertFalse(GalleryLockState::isLocked(self::STORED_HASH, true, null, self::NOW));
+		self::assertFalse($this->gallery_lock->isLocked(self::STORED_HASH, true, null, self::NOW));
 	}
 
 	public function testLockedWithoutCookie(): void
 	{
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, null, self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, null, self::NOW));
 	}
 
 	public function testUnlockedWithMatchingCookie(): void
 	{
-		$cookie = GalleryLockState::makeCookieValue(self::STORED_HASH, self::NOW + 60);
+		$cookie = $this->gallery_lock->makeCookieValue(self::STORED_HASH, self::NOW + 60);
 
-		self::assertFalse(GalleryLockState::isLocked(self::STORED_HASH, false, $cookie, self::NOW));
+		self::assertFalse($this->gallery_lock->isLocked(self::STORED_HASH, false, $cookie, self::NOW));
 	}
 
 	public function testUnlockedWithMatchingBrowserSessionCookie(): void
 	{
-		$cookie = GalleryLockState::makeCookieValue(self::STORED_HASH, null);
+		$cookie = $this->gallery_lock->makeCookieValue(self::STORED_HASH, null);
 
-		self::assertFalse(GalleryLockState::isLocked(self::STORED_HASH, false, $cookie, self::NOW));
+		self::assertFalse($this->gallery_lock->isLocked(self::STORED_HASH, false, $cookie, self::NOW));
 	}
 
 	public function testLockedWithStaleFingerprint(): void
 	{
-		$cookie = GalleryLockState::makeCookieValue('$2y$12$aDifferentHashFromAPreviousPasswordxxxxxxxxxxxxxxxxxxx', self::NOW + 60);
+		$cookie = $this->gallery_lock->makeCookieValue('$2y$12$aDifferentHashFromAPreviousPasswordxxxxxxxxxxxxxxxxxxx', self::NOW + 60);
 
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, $cookie, self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, $cookie, self::NOW));
 	}
 
 	public function testLockedWithExpiredCookie(): void
 	{
-		$cookie = GalleryLockState::makeCookieValue(self::STORED_HASH, self::NOW - 1);
+		$cookie = $this->gallery_lock->makeCookieValue(self::STORED_HASH, self::NOW - 1);
 
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, $cookie, self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, $cookie, self::NOW));
 	}
 
 	public function testLockedWithMalformedCookie(): void
 	{
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, 'not-json', self::NOW));
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, '{"exp":null}', self::NOW));
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, '{"f":42,"exp":null}', self::NOW));
-		self::assertTrue(GalleryLockState::isLocked(self::STORED_HASH, false, '{"f":"abc","exp":"soon"}', self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, 'not-json', self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, '{"exp":null}', self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, '{"f":42,"exp":null}', self::NOW));
+		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, '{"f":"abc","exp":"soon"}', self::NOW));
 	}
 
 	public function testFingerprintIsKeyedHmacSha3(): void
 	{
 		$expected = hash_hmac('sha3-256', self::STORED_HASH, (string) config('app.key'));
 
-		self::assertSame($expected, GalleryLockState::fingerprint(self::STORED_HASH));
-		self::assertNotSame(hash('sha3-256', self::STORED_HASH), GalleryLockState::fingerprint(self::STORED_HASH));
+		self::assertSame($expected, $this->gallery_lock->fingerprint(self::STORED_HASH));
+		self::assertNotSame(hash('sha3-256', self::STORED_HASH), $this->gallery_lock->fingerprint(self::STORED_HASH));
 	}
 }

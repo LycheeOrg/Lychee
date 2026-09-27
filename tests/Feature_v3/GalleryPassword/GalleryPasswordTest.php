@@ -60,7 +60,7 @@ class GalleryPasswordTest extends BaseApiWithDataTest
 
 	private function withUnlockCookie(?int $expires_at): static
 	{
-		return $this->withCookie(GalleryLockState::COOKIE_NAME, GalleryLockState::makeCookieValue($this->stored_hash, $expires_at));
+		return $this->withCookie(GalleryLockState::COOKIE_NAME, resolve(GalleryLockState::class)->makeCookieValue($this->stored_hash, $expires_at));
 	}
 
 	private function assertGalleryLocked(TestResponse $response): void

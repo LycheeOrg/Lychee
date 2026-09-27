@@ -32,7 +32,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class EmbedController extends Controller
 {
 	public function __construct(
-		protected PhotoQueryPolicy $photo_query_policy)
+		protected PhotoQueryPolicy $photo_query_policy,
+		protected GalleryLockState $gallery_lock)
 	{
 	}
 
@@ -55,7 +56,7 @@ class EmbedController extends Controller
 	 */
 	public function getAlbum(EmbededRequest $request): EmbedAlbumResource
 	{
-		if (!GalleryLockState::isEmbedEnabled($request->configs())) {
+		if (!$this->gallery_lock->isEmbedEnabled()) {
 			throw new NotFoundHttpException();
 		}
 
@@ -89,7 +90,7 @@ class EmbedController extends Controller
 	 */
 	public function getPublicStream(EmbededRequest $request): EmbedStreamResource
 	{
-		if (!GalleryLockState::isEmbedEnabled($request->configs())) {
+		if (!$this->gallery_lock->isEmbedEnabled()) {
 			throw new NotFoundHttpException();
 		}
 

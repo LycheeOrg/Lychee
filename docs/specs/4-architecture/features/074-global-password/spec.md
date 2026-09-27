@@ -150,7 +150,7 @@ When not set, the badge reads `[ Not set ]` and Clear is disabled. The field is 
 |----|-------------|---------|
 | DO-074-01 | `gallery_password` config (hash or `''`). | configs, migration |
 | DO-074-02 | Encrypted cookie `lychee_gallery_unlock` holding `{f: HMAC fingerprint of the hash, exp}` (FR-074-14). | cookies, middleware |
-| DO-074-03 | `App\Services\GalleryLockState`: pure predicate `isLocked(string $stored_hash, bool $is_logged_in, ?string $cookie_value, int $now): bool`, request wrapper `isLockedForRequest(Request)`, `isPasswordSet()`, `isRssEnabled()`, `isEmbedEnabled()`, and the cookie helpers `fingerprint()`, `makeCookieValue()`, `makeUnlockCookie()`. | `app/Services` |
+| DO-074-03 | `App\Services\GalleryLockState`, a stateless service resolved from the container (constructor or method injection, `resolve()` in `Meta` and `InitConfig`): pure predicate `isLocked(string $stored_hash, bool $is_logged_in, ?string $cookie_value, int $now): bool`, request wrapper `isLockedForRequest(Request)`, `isPasswordSet()`, `isRssEnabled()`, `isEmbedEnabled()`, and the cookie helpers `fingerprint()`, `makeCookieValue()`, `makeUnlockCookie()`. | `app/Services` |
 | DO-074-05 | `gallery_password_cookie_lifetime` config (int days, 0–3650, default 30, expert). | configs, migration |
 | DO-074-06 | `ConfigType::PASSWORD` (`'password'`): hashed on write, masked on read (`value = ''`, `is_set`). | enums, configs, settings, v7/v8 settings UI |
 | DO-074-04 | `GalleryPasswordRequiredException` (401, message `Gallery password required`). | exceptions |

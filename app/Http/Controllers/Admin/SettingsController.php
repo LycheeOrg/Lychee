@@ -223,9 +223,16 @@ class SettingsController extends Controller
 	{
 		$configs = $request->editable_configs();
 		$write_only_keys = Configs::query()->where('type_range', '=', ConfigType::PASSWORD->value)->pluck('key')->all();
-		$configs->each(function ($config) use ($write_only_keys): void {
-			Configs::query()->where('key', $config->key)->update(['value' => self::toStoredValue($config->key, $config->value, $write_only_keys)]);
-		});
+
+		// First we take care of all the non-write-only configurations.
+		[$write_only_configs, $regular_configs] = $configs->partition(fn ($config) => in_array($config->key, $write_only_keys, true));
+		$regular_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => $config->value]));
+
+		// Then we handle the write-only configurations
+		// We clear the ones that needs clearing and hash the non-empty ones.
+		[$empty_write_only_configs, $non_empty_write_only_configs] = $write_only_configs->partition(fn ($config) => $config->value === '');
+		$empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => '']));
+		$non_empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => Hash::make($config->value)]));
 
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 		RecomputeRootAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
@@ -236,23 +243,6 @@ class SettingsController extends Controller
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return $this->getAll($request, $docker_info);
-	}
-
-	/**
-	 * Values of `password` configs are stored as a bcrypt hash; an empty value clears them.
-	 *
-	 * @param string   $key
-	 * @param ?string  $value
-	 * @param string[] $write_only_keys keys of the `password` configs
-	 */
-	private static function toStoredValue(string $key, #[\SensitiveParameter] ?string $value, array $write_only_keys): string
-	{
-		$value ??= '';
-		if ($value === '' || !in_array($key, $write_only_keys, true)) {
-			return $value;
-		}
-
-		return Hash::make($value);
 	}
 
 	/**

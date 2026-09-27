@@ -30,39 +30,44 @@ final class GalleryLockState
 	public const LIFETIME_CONFIG_KEY = 'gallery_password_cookie_lifetime';
 	public const COOKIE_NAME = 'lychee_gallery_unlock';
 
+	public function __construct(
+		private ConfigManager $configs,
+	) {
+	}
+
 	/**
 	 * Whether a gallery password is configured.
 	 */
-	public static function isPasswordSet(ConfigManager $configs): bool
+	public function isPasswordSet(): bool
 	{
-		return $configs->getValueAsString(self::CONFIG_KEY) !== '';
+		return $this->configs->getValueAsString(self::CONFIG_KEY) !== '';
 	}
 
 	/**
 	 * RSS feeds are disabled for everyone while a gallery password is set.
 	 */
-	public static function isRssEnabled(ConfigManager $configs): bool
+	public function isRssEnabled(): bool
 	{
-		return $configs->getValueAsBool('rss_enable') && !self::isPasswordSet($configs);
+		return $this->configs->getValueAsBool('rss_enable') && !$this->isPasswordSet();
 	}
 
 	/**
 	 * Album embeds are disabled for everyone while a gallery password is set.
 	 */
-	public static function isEmbedEnabled(ConfigManager $configs): bool
+	public function isEmbedEnabled(): bool
 	{
-		return $configs->getValueAsBool('is_embed_enabled') && !self::isPasswordSet($configs);
+		return $this->configs->getValueAsBool('is_embed_enabled') && !$this->isPasswordSet();
 	}
 
 	/**
 	 * Whether the current request is locked out by the gallery password.
 	 */
-	public static function isLockedForRequest(Request $request): bool
+	public function isLockedForRequest(Request $request): bool
 	{
 		$cookie_value = $request->cookie(self::COOKIE_NAME);
 
-		return self::isLocked(
-			$request->configs()->getValueAsString(self::CONFIG_KEY),
+		return $this->isLocked(
+			$this->configs->getValueAsString(self::CONFIG_KEY),
 			Auth::check(),
 			is_string($cookie_value) ? $cookie_value : null,
 			time(),
@@ -77,19 +82,19 @@ final class GalleryLockState
 	 * @param string|null $cookie_value decrypted value of the unlock cookie
 	 * @param int         $now          current unix timestamp
 	 */
-	public static function isLocked(#[\SensitiveParameter] string $stored_hash, bool $is_logged_in, ?string $cookie_value, int $now): bool
+	public function isLocked(#[\SensitiveParameter] string $stored_hash, bool $is_logged_in, ?string $cookie_value, int $now): bool
 	{
 		if ($stored_hash === '' || $is_logged_in) {
 			return false;
 		}
 
-		return !self::isValidCookie($stored_hash, $cookie_value, $now);
+		return !$this->isValidCookie($stored_hash, $cookie_value, $now);
 	}
 
 	/**
 	 * Keyed fingerprint of the stored password hash.
 	 */
-	public static function fingerprint(#[\SensitiveParameter] string $stored_hash): string
+	public function fingerprint(#[\SensitiveParameter] string $stored_hash): string
 	{
 		return hash_hmac('sha3-256', $stored_hash, strval(config('app.key')));
 	}
@@ -100,9 +105,9 @@ final class GalleryLockState
 	 * @param string   $stored_hash bcrypt hash of the gallery password
 	 * @param int|null $expires_at  unix timestamp, null for a browser-session cookie
 	 */
-	public static function makeCookieValue(#[\SensitiveParameter] string $stored_hash, ?int $expires_at): string
+	public function makeCookieValue(#[\SensitiveParameter] string $stored_hash, ?int $expires_at): string
 	{
-		return json_encode(['f' => self::fingerprint($stored_hash), 'exp' => $expires_at]);
+		return json_encode(['f' => $this->fingerprint($stored_hash), 'exp' => $expires_at]);
 	}
 
 	/**
@@ -113,13 +118,13 @@ final class GalleryLockState
 	 * @param bool   $secure        whether the request came over HTTPS
 	 * @param int    $now           current unix timestamp
 	 */
-	public static function makeUnlockCookie(#[\SensitiveParameter] string $stored_hash, int $lifetime_days, bool $secure, int $now): Cookie
+	public function makeUnlockCookie(#[\SensitiveParameter] string $stored_hash, int $lifetime_days, bool $secure, int $now): Cookie
 	{
 		$expires_at = $lifetime_days === 0 ? null : $now + $lifetime_days * 86400;
 
 		return cookie(
 			name: self::COOKIE_NAME,
-			value: self::makeCookieValue($stored_hash, $expires_at),
+			value: $this->makeCookieValue($stored_hash, $expires_at),
 			minutes: $lifetime_days * 1440,
 			path: '/',
 			secure: $secure,
@@ -128,22 +133,22 @@ final class GalleryLockState
 		);
 	}
 
-	private static function isValidCookie(#[\SensitiveParameter] string $stored_hash, ?string $cookie_value, int $now): bool
+	private function isValidCookie(#[\SensitiveParameter] string $stored_hash, ?string $cookie_value, int $now): bool
 	{
-		$payload = self::decodeCookie($cookie_value);
+		$payload = $this->decodeCookie($cookie_value);
 		if ($payload === null) {
 			return false;
 		}
 
 		$is_expired = $payload['exp'] !== null && $payload['exp'] <= $now;
 
-		return !$is_expired && hash_equals(self::fingerprint($stored_hash), $payload['f']);
+		return !$is_expired && hash_equals($this->fingerprint($stored_hash), $payload['f']);
 	}
 
 	/**
 	 * @return array{f:string,exp:int|null}|null
 	 */
-	private static function decodeCookie(?string $cookie_value): ?array
+	private function decodeCookie(?string $cookie_value): ?array
 	{
 		try {
 			$decoded = json_decode($cookie_value ?? '', true);

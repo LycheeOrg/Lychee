@@ -38,6 +38,11 @@ class VueController extends Controller
 	public const ACCESS = 'access';
 	public const PASSWORD = 'password';
 
+	public function __construct(
+		private GalleryLockState $gallery_lock,
+	) {
+	}
+
 	/**
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
@@ -48,7 +53,7 @@ class VueController extends Controller
 	{
 		// A locked gallery serves the bare app shell: no album/photo lookup, so nothing
 		// (title, description, cover, or even existence) leaks before the visitor unlocks.
-		if (GalleryLockState::isLockedForRequest(request())) {
+		if ($this->gallery_lock->isLockedForRequest(request())) {
 			return view('vueapp');
 		}
 

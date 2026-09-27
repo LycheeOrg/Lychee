@@ -26,7 +26,7 @@ class GalleryUnlockController extends Controller
 	/**
 	 * @throws UnauthorizedException
 	 */
-	public function unlock(UnlockGalleryRequest $request): void
+	public function unlock(UnlockGalleryRequest $request, GalleryLockState $gallery_lock): void
 	{
 		$stored_hash = $request->configs()->getValueAsString(GalleryLockState::CONFIG_KEY);
 		if ($stored_hash === '') {
@@ -37,7 +37,7 @@ class GalleryUnlockController extends Controller
 			throw new UnauthorizedException('Password is invalid');
 		}
 
-		Cookie::queue(GalleryLockState::makeUnlockCookie(
+		Cookie::queue($gallery_lock->makeUnlockCookie(
 			$stored_hash,
 			$request->configs()->getValueAsInt(GalleryLockState::LIFETIME_CONFIG_KEY),
 			$request->isSecure(),

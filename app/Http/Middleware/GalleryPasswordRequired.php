@@ -21,12 +21,17 @@ use Illuminate\Http\Request;
  */
 class GalleryPasswordRequired
 {
+	public function __construct(
+		private GalleryLockState $gallery_lock,
+	) {
+	}
+
 	/**
 	 * @throws GalleryPasswordRequiredException
 	 */
 	public function handle(Request $request, \Closure $next): mixed
 	{
-		if (GalleryLockState::isLockedForRequest($request)) {
+		if ($this->gallery_lock->isLockedForRequest($request)) {
 			throw new GalleryPasswordRequiredException();
 		}
 

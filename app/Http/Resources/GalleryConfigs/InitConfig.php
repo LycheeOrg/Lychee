@@ -302,11 +302,13 @@ class InitConfig extends Data
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
+		$gallery_lock = resolve(GalleryLockState::class);
+
 		// Embed
-		$this->is_embed_enabled = GalleryLockState::isEmbedEnabled(request()->configs());
+		$this->is_embed_enabled = $gallery_lock->isEmbedEnabled();
 
 		// Gallery password
-		$this->is_gallery_locked = GalleryLockState::isLockedForRequest(request());
+		$this->is_gallery_locked = $gallery_lock->isLockedForRequest(request());
 
 		// Photo Share Card
 		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');

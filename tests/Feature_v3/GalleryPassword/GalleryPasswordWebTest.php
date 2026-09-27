@@ -57,7 +57,7 @@ class GalleryPasswordWebTest extends BaseApiWithDataTest
 
 	public function testUnlockedPageHasAlbumMetadata(): void
 	{
-		$response = $this->withCookie(GalleryLockState::COOKIE_NAME, GalleryLockState::makeCookieValue($this->stored_hash, time() + 60))
+		$response = $this->withCookie(GalleryLockState::COOKIE_NAME, resolve(GalleryLockState::class)->makeCookieValue($this->stored_hash, time() + 60))
 			->get('/gallery/' . $this->album4->id);
 
 		$this->assertOk($response);
