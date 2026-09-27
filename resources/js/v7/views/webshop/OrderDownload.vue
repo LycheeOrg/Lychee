@@ -82,7 +82,7 @@
 					<div class="flex justify-between mb-3">
 						<h3 class="text-xl font-bold mt-3">{{ $t("webshop.orderDownload.items") }}</h3>
 						<Button
-							v-if="initData?.settings.can_edit && itemsToUpdate.length > 0"
+							v-if="rights?.settings.can_edit && itemsToUpdate.length > 0"
 							@click="markAsDelivered"
 							:label="$t('webshop.orderDownload.deliver')"
 							icon="pi pi-save"
@@ -91,7 +91,7 @@
 						/>
 						<Button
 							text
-							v-else-if="initData?.settings.can_edit && !edit"
+							v-else-if="rights?.settings.can_edit && !edit"
 							@click="edit = !edit"
 							severity="danger"
 							:label="$t('webshop.orderDownload.edit')"
@@ -101,7 +101,7 @@
 						/>
 						<Button
 							text
-							v-else-if="initData?.settings.can_edit && edit"
+							v-else-if="rights?.settings.can_edit && edit"
 							@click="edit = !edit"
 							severity="secondary"
 							:label="$t('webshop.orderDownload.view')"
@@ -204,10 +204,8 @@ import InputText from "@/v7/components/forms/basic/InputText.vue";
 import OrderStatus from "@/v7/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/v7/components/webshop/UsernameEmail.vue";
 import Constants from "@/services/constants";
-import InitService from "@/services/init-service";
 import WebshopService, { ItemLink } from "@/services/webshop-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { storeToRefs } from "pinia";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
@@ -230,8 +228,7 @@ const orderId = ref(props.orderId);
 const transactionId = ref<string | undefined>(props.transactionId);
 const order = ref<App.Http.Resources.Shop.OrderResource | undefined>(undefined);
 const loading = ref(true);
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const edit = ref(false);
 
 function backToGallery() {
@@ -252,14 +249,8 @@ function loadOrder() {
 		});
 }
 
-async function load(): Promise<void> {
-	return InitService.fetchGlobalRights().then((data) => {
-		initData.value = data.data;
-	});
-}
-
 function showInput(item: App.Http.Resources.Shop.OrderItemResource): boolean {
-	return (initData.value?.settings.can_edit ?? false) && (!item.content_url || edit.value);
+	return (rights.value?.settings.can_edit ?? false) && (!item.content_url || edit.value);
 }
 
 function downloadItem(contentUrl: string) {
@@ -348,6 +339,5 @@ function markAsDelivered() {
 
 onMounted(() => {
 	loadOrder();
-	load();
 });
 </script>

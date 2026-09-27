@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Constants\FileSystem;
 use App\Enum\CacheTag;
+use App\Enum\ConfigType;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoBucketsRecomputed;
@@ -27,6 +28,7 @@ use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -220,9 +222,18 @@ class SettingsController extends Controller
 	public function setConfigs(SetConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
 		$configs = $request->editable_configs();
-		$configs->each(function ($config): void {
-			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
-		});
+		$write_only_keys = Configs::query()->where('type_range', '=', ConfigType::PASSWORD->value)->pluck('key')->all();
+
+		// First we take care of all the non-write-only configurations.
+		[$write_only_configs, $regular_configs] = $configs->partition(fn ($config) => in_array($config->key, $write_only_keys, true));
+		$regular_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']));
+
+		// Then we handle the write-only configurations
+		// We clear the ones that needs clearing and hash the non-empty ones.
+		// An empty value reaches us as null (ConvertEmptyStringsToNull).
+		[$empty_write_only_configs, $non_empty_write_only_configs] = $write_only_configs->partition(fn ($config) => ($config->value ?? '') === '');
+		$empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => '']));
+		$non_empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => Hash::make($config->value)]));
 
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 		RecomputeRootAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());

@@ -1,5 +1,5 @@
 <template>
-	<UCard v-if="initData?.modules.is_face_recognition_warning_enabled" class="max-w-6xl mx-auto">
+	<UCard v-if="rights?.modules.is_face_recognition_warning_enabled" class="max-w-6xl mx-auto">
 		<h2 class="text-xl font-bold mb-4 flex items-center gap-2">
 			<UIcon name="lucide:triangle-alert" class="text-warning-600" />
 			<span>{{ $t("people.face_recognition_warning.title") }}</span>
@@ -16,7 +16,7 @@
 
 		<p class="text-muted mb-4" v-html="$t('people.face_recognition_warning.no_liability')"></p>
 
-		<div v-if="initData?.settings.can_edit" class="flex flex-row justify-between gap-3 border-t border-default pt-4">
+		<div v-if="rights?.settings.can_edit" class="flex flex-row justify-between gap-3 border-t border-default pt-4">
 			<UCheckbox v-model="acknowledged" :label="$t('people.face_recognition_warning.acknowledge')" />
 			<div class="flex ltr:justify-end rtl:justify-start">
 				<UButton
@@ -33,22 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { storeToRefs } from "pinia";
-import InitService from "@/services/init-service";
+import { ref } from "vue";
 import SettingsService from "@/services/settings-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 
 const acknowledged = ref(false);
-
-async function load(): Promise<void> {
-	return InitService.fetchGlobalRights().then((data) => {
-		initData.value = data.data;
-	});
-}
 
 function accept() {
 	SettingsService.setConfigs({
@@ -59,15 +50,9 @@ function accept() {
 			},
 		],
 	}).then(() => {
-		if (initData.value) {
-			initData.value.modules.is_face_recognition_warning_enabled = false;
+		if (rights.value) {
+			rights.value.modules.is_face_recognition_warning_enabled = false;
 		}
 	});
 }
-
-onMounted(() => {
-	if (initData.value === undefined) {
-		load();
-	}
-});
 </script>

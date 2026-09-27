@@ -15,7 +15,7 @@
 				</router-link>
 			</div>
 		</template>
-		<Menu v-if="initData" :model="items" class="border-none!" :dt="{ item: { padding: '0.1rem 0.75rem' } }">
+		<Menu v-if="rights" :model="items" class="border-none!" :dt="{ item: { padding: '0.1rem 0.75rem' } }">
 			<template #submenuheader="{ item }">
 				<span class="text-primary-emphasis font-bold" :class="item.access !== false ? '' : 'hidden'">
 					<!-- @vue-ignore -->
@@ -58,7 +58,7 @@
 		</Menu>
 		<AboutLychee v-model:visible="openLycheeAbout" />
 		<div v-if="user?.id !== null" class="mt-auto">
-			<Menu v-if="initData" :model="profileItems" class="border-none!" :dt="{ item: { padding: '0.1rem 0.75rem' } }">
+			<Menu v-if="rights" :model="profileItems" class="border-none!" :dt="{ item: { padding: '0.1rem 0.75rem' } }">
 				<template #item="{ item, props }">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
@@ -117,6 +117,7 @@ import { useRoute } from "vue-router";
 import Button from "primevue/button";
 import PiMiniIcon from "@/v7/components/icons/PiMiniIcon.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import { useLeftMenu } from "@/composables/contextMenus/leftMenu";
 import { onMounted } from "vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
@@ -129,6 +130,7 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import OverlayBadge from "primevue/overlaybadge";
 
 const leftMenuState = useLeftMenuStateStore();
+const globalRightsStore = useGlobalRightsStore();
 const route = useRoute();
 const userStore = useUserStore();
 const photosStore = usePhotosStore();
@@ -140,9 +142,10 @@ const lycheeStore = useLycheeStateStore();
 const favouritesStore = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
 
-const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, items, profileItems } = useLeftMenu(
+const { user, left_menu_open, rights, openLycheeAbout, canSeeAdmin, items, profileItems } = useLeftMenu(
 	lycheeStore,
 	leftMenuState,
+	globalRightsStore,
 	userStore,
 	favouritesStore,
 	route,
@@ -151,7 +154,7 @@ const { user, left_menu_open, initData, openLycheeAbout, canSeeAdmin, load, item
 function logout() {
 	AuthService.logout().then(() => {
 		left_menu_open.value = false;
-		initData.value = undefined;
+		globalRightsStore.reset();
 		photoStore.reset();
 		photosStore.reset();
 		albumsStore.reset();
@@ -167,7 +170,14 @@ const isGallery = computed(() => {
 });
 
 onMounted(() => {
-	Promise.allSettled([lycheeStore.load(), userStore.load(), load()]);
+	Promise.allSettled([lycheeStore.load(), userStore.load()]);
+});
+
+// The rights only drive the menu entries: fetch them once the menu is first opened.
+watch(left_menu_open, (isOpen) => {
+	if (isOpen) {
+		globalRightsStore.ensureLoaded().catch(() => {});
+	}
 });
 
 // Fold the menu as soon as one of its entries navigates somewhere,
@@ -179,14 +189,21 @@ watch(
 	},
 );
 
+// `userStore.refresh()` (called by the gallery pages on mount) resets `user.value` to
+// `undefined` while it re-fetches: a loading state, not a logout (a guest has `id: null`).
+// `lastKnownUserId` looks through it, so only a real login/logout refreshes the rights.
+let lastKnownUserId: number | null | undefined;
+
 watch(
 	() => user.value,
-	(newValue, oldValue) => {
+	(newValue) => {
 		if (newValue === undefined) {
-			initData.value = undefined;
-		} else if (newValue.id !== oldValue?.id) {
-			load();
+			return;
 		}
+		if (lastKnownUserId !== undefined && newValue.id !== lastKnownUserId) {
+			globalRightsStore.refresh().catch(() => {});
+		}
+		lastKnownUserId = newValue.id;
 	},
 );
 </script>

@@ -229,6 +229,14 @@ return [
         'unlock' => '解锁',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => '为此照片输入标签。',
         'question_multiple' => '为所有 %d 张选定的照片输入标签。现有标签将被覆盖。',

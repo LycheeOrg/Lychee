@@ -230,6 +230,14 @@ return [
         'unlock' => 'فتح',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => 'أدخل العلامات لهذه الصورة.',
         'question_multiple' => 'أدخل العلامات لجميع الصور المحددة وعددها %d. سيتم استبدال العلامات الحالية.',

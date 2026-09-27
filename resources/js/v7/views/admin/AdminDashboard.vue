@@ -8,7 +8,7 @@
 		</template>
 		<template #end>
 			<Button
-				v-if="initData?.settings.can_edit"
+				v-if="rights?.settings.can_edit"
 				:label="$t('admin-dashboard.refresh')"
 				icon="pi pi-refresh"
 				:disabled="isLoading"
@@ -21,7 +21,7 @@
 
 	<div class="admin-dashboard max-w-7xl mx-auto p-4">
 		<!-- Update Status (only for full admins) -->
-		<Panel v-if="initData?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4 border-none">
+		<Panel v-if="rights?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4 border-none">
 			<template #header>
 				<div class="flex items-center gap-2 font-bold text-primary-500">
 					<i class="pi pi-arrow-circle-up text-lg" />
@@ -39,7 +39,7 @@
 		</Panel>
 
 		<!-- Security Advisories (only for full admins, shown when vulnerabilities are found) -->
-		<Panel v-if="initData?.settings.can_edit && advisories.length > 0" class="mb-4 border-none">
+		<Panel v-if="rights?.settings.can_edit && advisories.length > 0" class="mb-4 border-none">
 			<template #header>
 				<div class="flex items-center gap-2 text-orange-400 font-bold">
 					<i class="pi pi-exclamation-triangle text-lg" />
@@ -69,7 +69,7 @@
 		</Panel>
 
 		<!-- Stats Overview (only for full admins with settings.can_edit) -->
-		<Panel v-if="initData?.settings.can_edit" class="mb-4 border-none">
+		<Panel v-if="rights?.settings.can_edit" class="mb-4 border-none">
 			<template #header>
 				<h2 class="text-xl font-semibold">{{ $t("admin-dashboard.overview") }}</h2>
 			</template>
@@ -145,7 +145,7 @@
 
 		<div class="flex items-center justify-center gap-6 mt-6 text-sm">
 			<a
-				v-if="initData?.settings.can_edit && !lycheeStore.is_white_label_enabled"
+				v-if="rights?.settings.can_edit && !lycheeStore.is_white_label_enabled"
 				:href="`${Constants.BASE_URL}/docs/api`"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -161,10 +161,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import OverlayBadge from "primevue/overlaybadge";
 import { RouterLink, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
@@ -174,24 +173,24 @@ import ProgressSpinner from "primevue/progressspinner";
 import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import PiMiniIcon from "@/v7/components/icons/PiMiniIcon.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
+import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import Constants from "@/services/constants";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
 import AdminStatsService, { type AdminUpdateStatusResource } from "@/services/admin-stats-service";
 import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/composables/useAdminTiles";
 
 const lycheeStore = useLycheeStateStore();
-const leftMenuStore = useLeftMenuStateStore();
 const toast = useToast();
 const router = useRouter();
 
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const stats = ref<App.Http.Resources.Models.AdminStatsResource | null>(null);
 const isLoading = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
 const updateStatus = ref<AdminUpdateStatusResource | null>(null);
 
-const tiles: AdminTile[] = useAdminTiles(lycheeStore, leftMenuStore);
+const tiles: AdminTile[] = useAdminTiles(lycheeStore, useGlobalRightsStore());
 
 const tileGroupLabelMap: Record<AdminTileGroup, string> = {
 	core: "admin-dashboard.tool_groups.core",
@@ -275,11 +274,19 @@ function loadUpdateStatus() {
 		});
 }
 
-onMounted(() => {
-	if (initData.value?.settings.can_edit) {
+// The rights may already be loaded, arrive later, or only on a retry: load the admin data once they allow it.
+let isAdminDataRequested = false;
+watch(
+	() => rights.value?.settings.can_edit ?? false,
+	(canEdit) => {
+		if (!canEdit || isAdminDataRequested) {
+			return;
+		}
+		isAdminDataRequested = true;
 		loadStats();
 		loadUpdateStatus();
 		loadAdvisories();
-	}
-});
+	},
+	{ immediate: true },
+);
 </script>

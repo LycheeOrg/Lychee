@@ -6,9 +6,6 @@ export const useLeftMenuStateStore = defineStore("leftmenu-store", {
 	state: () => ({
 		// Togglable
 		left_menu_open: false,
-
-		// Info needed for the menu to be displayed
-		initData: undefined as App.Http.Resources.Rights.GlobalRightsResource | undefined,
 	}),
 	actions: {
 		toggleLeftMenu() {

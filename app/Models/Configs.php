@@ -197,6 +197,12 @@ class Configs extends Model
 					break;
 					// @codeCoverageIgnoreEnd
 				}
+			case ConfigType::PASSWORD->value:
+				// Empty clears the password, anything else must be at least 4 characters long.
+				if ($candidate_value !== null && $candidate_value !== '' && mb_strlen($candidate_value) < 4) {
+					$message = sprintf($message_template, 'a password of at least 4 characters');
+				}
+				break;
 			case ConfigType::MAP_PROVIDER->value:
 				if (MapProviders::tryFrom($candidate_value) === null) {
 					$message = sprintf($message_template, 'a valid map provider');

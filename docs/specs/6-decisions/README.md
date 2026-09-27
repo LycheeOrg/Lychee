@@ -17,6 +17,9 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-0011](ADR-0011-move-grant-separate-from-edit.md) | Accepted | Move grant separate from Edit, and cross-owner guards |
 | [ADR-069-01](ADR-069-01-v3-collection-bounding-strategies.md) | Accepted | Bounding strategies for v3 Struct-of-Arrays collection endpoints |
 | [ADR-071-01](ADR-071-01-date-scrubber-ticks-derived-client-side.md) | Accepted | Date Scrubber Ticks Are Derived Client-Side; Bucket Storage Stays Unchanged |
+| [ADR-074-01](ADR-074-01-gallery-password-visitor-unlock.md) | Accepted | Gallery password as a per-visitor unlock, not a guest account |
+| [ADR-074-02](ADR-074-02-gallery-unlock-encrypted-cookie.md) | Accepted | Gallery unlock stored in an encrypted cookie, not the server-side session |
+| [ADR-074-03](ADR-074-03-password-config-type.md) | Accepted | Write-only `password` config type (hashed on write, masked on read) |
 
 ## Templates
 

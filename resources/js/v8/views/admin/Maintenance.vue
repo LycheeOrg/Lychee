@@ -20,8 +20,8 @@
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />
-		<MaintenanceOldOrders v-if="initData?.modules.is_mod_webshop_enabled" />
-		<MaintenanceFulfillOrders v-if="initData?.modules.is_mod_webshop_enabled" />
+		<MaintenanceOldOrders v-if="rights?.modules.is_mod_webshop_enabled" />
+		<MaintenanceFulfillOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceBackfillAlbumSizes />
 		<MaintenanceFlushQueue />
@@ -30,7 +30,7 @@
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
-		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
+		<MaintenanceBulkScanNsfw v-if="rights?.modules.is_nsfw_classifier_enabled" />
 		<template v-if="is_face_recognition_enabled">
 			<MaintenanceBulkScanFaces />
 			<MaintenanceRunClustering />
@@ -66,13 +66,12 @@ import MaintenanceSyncFaceEmbeddings from "@/v8/components/maintenance/Maintenan
 import MaintenanceResetFaceScanStatus from "@/v8/components/maintenance/MaintenanceResetFaceScanStatus.vue";
 import MaintenancePurgeOrphanFaceEmbeddings from "@/v8/components/maintenance/MaintenancePurgeOrphanFaceEmbeddings.vue";
 import { storeToRefs } from "pinia";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useTemplateRef } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
-const leftMenu = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
-const { initData } = storeToRefs(leftMenu);
+const { rights } = useGlobalRights();
 const { is_face_recognition_enabled } = storeToRefs(lycheeStore);
 const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

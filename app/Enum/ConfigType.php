@@ -28,4 +28,5 @@ enum ConfigType: string
 	case LICENSE = 'license';
 	case MAP_PROVIDER = 'map_provider';
 	case CURRENCY = 'currency';
+	case PASSWORD = 'password';
 }

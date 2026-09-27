@@ -105,4 +105,10 @@ return [
             'help' => 'Ersetzen Sie das verschachtelte Admin-Untermenü durch einen einzelnen Link zur neuen Admin-Dashboard-Seite.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

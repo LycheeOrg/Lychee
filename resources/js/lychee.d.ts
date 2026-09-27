@@ -69,7 +69,8 @@ declare namespace App {
 			| "admin_user"
 			| "license"
 			| "map_provider"
-			| "currency";
+			| "currency"
+			| "password";
 		export type CountType = "taken_at" | "created_at";
 		export type CoverFitType = "cover" | "fit";
 		export type DateOrderingType = "older_younger" | "younger_older";
@@ -664,6 +665,7 @@ declare namespace App {
 					is_rating_show_avg_in_album_view_enabled: boolean;
 					rating_album_view_mode: App.Enum.VisibilityType;
 					is_embed_enabled: boolean;
+					is_gallery_locked: boolean;
 					is_photo_share_card_enabled: boolean;
 					site_owner: string;
 					default_homepage: string;
@@ -903,6 +905,7 @@ declare namespace App {
 					key: string;
 					type: App.Enum.ConfigType | string;
 					value: string;
+					is_set: boolean;
 					documentation: string;
 					details: string;
 					is_expert: boolean;

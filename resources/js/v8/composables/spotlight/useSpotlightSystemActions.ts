@@ -13,7 +13,7 @@ export function useSpotlightSystemActions(
 	adminTiles: AdminTile[],
 	router: Router,
 	isDark: Ref<boolean>,
-	initData: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
+	globalRights: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
 	toggleDarkMode: () => void,
 	toggleDarkModeGlobal: () => void,
 	close: () => void,
@@ -43,7 +43,7 @@ export function useSpotlightSystemActions(
 			kind: "nav",
 			onSelect: () => {
 				close();
-				if (initData.value?.settings.can_edit) {
+				if (globalRights.value?.settings.can_edit) {
 					toggleDarkModeGlobal();
 				} else {
 					toggleDarkMode();

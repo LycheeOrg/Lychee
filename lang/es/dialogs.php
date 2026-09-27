@@ -229,6 +229,14 @@ return [
         'unlock' => 'Descubrir',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => 'Introduzca sus etiquetas para esta foto.',
         'question_multiple' => 'Introduce las etiquetas de las %d fotos seleccionadas. Las etiquetas existentes se sobrescribirán.',

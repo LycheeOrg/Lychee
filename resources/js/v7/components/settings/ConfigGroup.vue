@@ -156,10 +156,19 @@
 					<StringField v-else-if="config.key === 'local_takestamp_video_formats'" :config="config" @filled="filled" @reset="reset" />
 					<SelectField v-else-if="config.key === 'watermark_position'" :config="config" @filled="filled" @reset="reset" />
 					<!-- Generic -->
+					<PasswordField v-else-if="config.type === 'password'" :config="config" @filled="filled" @reset="reset" />
 					<StringField v-else-if="config.type.startsWith('string')" :config="config" @filled="filled" @reset="reset" />
 					<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="filled" @reset="reset" />
 					<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="filled" @reset="reset" />
 					<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="filled" @reset="reset" />
+					<NumberField
+						v-else-if="config.type.startsWith('int:')"
+						:config="config"
+						:min="intRangeMin(config.type)"
+						:max="intRangeMax(config.type)"
+						@filled="filled"
+						@reset="reset"
+					/>
 					<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="filled" @reset="reset" />
 					<p v-else-if="is_debug_enabled" class="bg-red-500">
 						{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
@@ -186,6 +195,7 @@ import {
 	paginationUiModeOptions,
 } from "@/config/constants";
 import StringField from "@/v7/components/forms/settings/StringField.vue";
+import PasswordField from "@/v7/components/forms/settings/PasswordField.vue";
 import BoolField from "@/v7/components/forms/settings/BoolField.vue";
 import NumberField from "@/v7/components/forms/settings/NumberField.vue";
 import SliderField from "@/v7/components/forms/settings/SliderField.vue";
@@ -208,6 +218,14 @@ const emits = defineEmits<{
 	filled: [key: string, value: string];
 	reset: [key: string];
 }>();
+
+function intRangeMin(type: string): number {
+	return Number(type.split(":")[1] ?? 0);
+}
+
+function intRangeMax(type: string): number {
+	return Number(type.split(":")[2] ?? undefined);
+}
 
 function reset(configKey: string) {
 	emits("reset", configKey);

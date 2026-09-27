@@ -106,4 +106,10 @@ return [
             'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

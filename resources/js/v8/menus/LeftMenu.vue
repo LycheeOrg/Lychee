@@ -23,7 +23,7 @@
 			</div>
 		</template>
 		<template #body>
-			<UNavigationMenu v-if="initData" orientation="vertical" :items="items" :dir="dir">
+			<UNavigationMenu v-if="rights" orientation="vertical" :items="items" :dir="dir">
 				<template #item-leading="{ item }">
 					<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 				</template>
@@ -34,7 +34,7 @@
 			</UNavigationMenu>
 			<template v-if="!use_admin_dashboard">
 				<div class="mt-4 px-2.5 text-lg text-toned font-bold">{{ $t("left-menu.admin") }}</div>
-				<UNavigationMenu v-if="initData" orientation="vertical" :items="adminItems" :dir="dir">
+				<UNavigationMenu v-if="rights" orientation="vertical" :items="adminItems" :dir="dir">
 					<template #item-leading="{ item }">
 						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 					</template>
@@ -91,6 +91,7 @@ import AlbumService from "@/services/album-service";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import { useLeftMenu, type LeftMenuItem } from "@/v8/composables/contextMenus/leftMenu";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLtRorRtL } from "@/utils/Helpers";
@@ -104,6 +105,7 @@ import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 
 const leftMenuState = useLeftMenuStateStore();
+const globalRightsStore = useGlobalRightsStore();
 const route = useRoute();
 const userStore = useUserStore();
 const photosStore = usePhotosStore();
@@ -119,9 +121,10 @@ const { isLTR } = useLtRorRtL();
 
 const dir = computed(() => (isLTR() ? "ltr" : "rtl"));
 
-const { user, left_menu_open, initData, canSeeAdmin, load, items, adminItems, profileItems, openLycheeAbout } = useLeftMenu(
+const { user, left_menu_open, rights, canSeeAdmin, items, adminItems, profileItems, openLycheeAbout } = useLeftMenu(
 	lycheeStore,
 	leftMenuState,
+	globalRightsStore,
 	userStore,
 	favouritesStore,
 	route,
@@ -145,7 +148,7 @@ const lycheeItems = computed<LeftMenuItem[]>(() => {
 		{
 			label: trans("left-menu.api"),
 			icon: "book",
-			access: initData.value?.settings.can_edit ?? false,
+			access: rights.value?.settings.can_edit ?? false,
 			to: Constants.BASE_URL + "/docs/api",
 		},
 		{
@@ -169,7 +172,7 @@ const profileSections = computed(() => profileItems.value.map((item) => [item]))
 function logout() {
 	AuthService.logout().then(() => {
 		left_menu_open.value = false;
-		initData.value = undefined;
+		globalRightsStore.reset();
 		photoStore.reset();
 		photosStore.reset();
 		albumsStore.reset();
@@ -182,7 +185,14 @@ function logout() {
 }
 
 onMounted(() => {
-	Promise.allSettled([lycheeStore.load(), userStore.load(), load()]);
+	Promise.allSettled([lycheeStore.load(), userStore.load()]);
+});
+
+// The rights only drive the menu entries: fetch them once the menu is first opened.
+watch(left_menu_open, (isOpen) => {
+	if (isOpen) {
+		globalRightsStore.ensureLoaded().catch(() => {});
+	}
 });
 
 // Fold the menu as soon as one of its entries navigates somewhere,
@@ -199,9 +209,9 @@ watch(
 // `undefined` while it re-fetches - a transient loading sentinel, not a
 // logout (a guest has `id: null`, never `undefined`). `lastKnownUserId` lets
 // the watcher below see straight through that blip instead of treating it as
-// a logout: reacting to it here (wiping `initData` and then never reloading
-// it, since the next resolution's `oldValue` is that same forced `undefined`)
-// left `initData` stuck blank on essentially every page mount.
+// a logout: reacting to it here (wiping the rights and then never reloading
+// them, since the next resolution's `oldValue` is that same forced `undefined`)
+// left the rights stuck blank on essentially every page mount.
 let lastKnownUserId: number | null | undefined;
 
 watch(
@@ -212,7 +222,7 @@ watch(
 		}
 		if (lastKnownUserId !== undefined && newValue.id !== lastKnownUserId) {
 			// A real login/logout while already mounted - rights depend on identity.
-			load();
+			globalRightsStore.refresh().catch(() => {});
 		}
 		lastKnownUserId = newValue.id;
 	},

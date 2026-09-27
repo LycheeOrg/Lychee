@@ -80,7 +80,7 @@ import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useRoute } from "vue-router";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
@@ -90,7 +90,7 @@ const toast = useToast();
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
-const leftMenu = useLeftMenuStateStore();
+const { rights } = useGlobalRights();
 const togglableStore = useTogglablesStateStore();
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
@@ -100,7 +100,7 @@ const props = defineProps<{
 
 const isWatermarkerEnabled = computed(
 	() =>
-		leftMenu.initData?.modules.is_watermarker_enabled &&
+		rights.value?.modules.is_watermarker_enabled &&
 		photoStore.photo &&
 		albumStore.rights?.can_edit &&
 		needSizeVariantsWatermark(photoStore.photo.size_variants),

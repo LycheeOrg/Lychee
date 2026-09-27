@@ -105,4 +105,10 @@ return [
             'help' => 'Sustituye el submenú de administración anidado por un único enlace a la nueva página del panel de control de administración.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

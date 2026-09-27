@@ -105,4 +105,10 @@ return [
             'help' => 'Vervang het geneste beheersubmenu door één link naar de nieuwe beheerdersdashboardpagina.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];
