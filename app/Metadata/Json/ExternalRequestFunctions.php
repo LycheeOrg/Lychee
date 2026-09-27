@@ -13,7 +13,6 @@ use App\Exceptions\Internal\RequestFailedException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Safe\Exceptions\FilesystemException;
-
 use function Safe\file_get_contents;
 use function Safe\ini_get;
 
