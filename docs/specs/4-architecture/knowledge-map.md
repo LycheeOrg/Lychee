@@ -378,6 +378,9 @@ Preserves original camera RAW / HEIC / PSD files as a dedicated size variant whi
 
 **Migrations:** `2026_02_28_000001` (shift type values), `2026_02_28_000002` (add `raw_download_enabled` config), `2026_02_28_000003` (reclassify existing raw-format ORIGINAL rows), `2026_02_28_000004` (add `size_raw` to `album_size_statistics`)
 
+### Size-Variant Output Format (Feature 073)
+`size_variant_format` (`original|jpeg|webp`) (an expert setting) is read by `App\Assets\BaseSizeVariantNamingStrategy::generatedExtension()`, which maps `App\Enum\SizeVariantFormat` to `.jpeg`/`.webp`. It forces the extension of generated variants only; `ORIGINAL`, `RAW` and `PLACEHOLDER` are exempt, and `WatermarkGroupedWithRandomSuffixNamingStrategy` keeps its own final JPEG rule. Both handlers encode by target extension, so content matches the extension: `ImagickHandler` natively, `GdHandler` via its `OUTPUT_TYPES` map with a fallback to the source type for other extensions, where the guarantee does not apply (Q-073-06). `compression_quality` is `int:0:100`, where `0` means lossless (`IMG_WEBP_LOSSLESS` / `webp:lossless`) and maps to quality `100` for other formats, via `BaseImageHandler::resolveQuality()`/`isLossless()`. On GD, lossless additionally needs libgd >= 2.3.3 (`GdHandler::supportsLosslessWebp()`). Without it, saving throws a clear `MediaFileOperationException` and `GDSupportCheck` warns (Q-073-07). See `docs/specs/4-architecture/features/073-size-variant-format/`.
+
 ### Naming Conventions
 - PHP: snake_case for variables, PSR-4 for classes
 - Vue3: Composition API with TypeScript

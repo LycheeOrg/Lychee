@@ -9,9 +9,11 @@
 namespace App\Assets;
 
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
+use App\Enum\SizeVariantFormat;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\MissingValueException;
+use App\Repositories\ConfigManager;
 
 abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingStrategy
 {
@@ -36,17 +38,56 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 	 */
 	protected function generateExtension(SizeVariantType $size_variant): string
 	{
-		if ($size_variant === SizeVariantType::THUMB ||
-			$size_variant === SizeVariantType::THUMB2X ||
-			($size_variant !== SizeVariantType::ORIGINAL && $size_variant !== SizeVariantType::RAW && !$this->photo->isPhoto())
+		return match ($size_variant) {
+			SizeVariantType::ORIGINAL, SizeVariantType::RAW => $this->originalExtension(),
+			SizeVariantType::PLACEHOLDER => self::PLACEHOLDER_EXTENSION,
+			default => $this->generatedExtension($size_variant),
+		};
+	}
+
+	/**
+	 * Extension of thumb, small, medium and their 2x variants.
+	 * `size_variant_format` takes precedence over the default rules.
+	 *
+	 * @throws MissingValueException
+	 * @throws IllegalOrderOfOperationException
+	 */
+	private function generatedExtension(SizeVariantType $size_variant): string
+	{
+		$size_variant_format = resolve(ConfigManager::class)
+			->getValueAsEnum('size_variant_format', SizeVariantFormat::class);
+
+		return match ($size_variant_format) {
+			SizeVariantFormat::JPEG => '.jpeg',
+			SizeVariantFormat::WEBP => '.webp',
+			default => $this->getExtensionForSizeVariant($size_variant),
+		};
+	}
+
+	/**
+	 * Get extention for size variant if not forced.
+	 *
+	 * @param SizeVariantType $size_variant
+	 *
+	 * @return string
+	 */
+	private function getExtensionForSizeVariant(SizeVariantType $size_variant): string
+	{
+		if (
+			in_array($size_variant, [SizeVariantType::THUMB, SizeVariantType::THUMB2X], true) ||
+			!$this->photo->isPhoto()
 		) {
 			return self::THUMB_EXTENSION;
 		}
 
-		if ($size_variant === SizeVariantType::PLACEHOLDER) {
-			return self::PLACEHOLDER_EXTENSION;
-		}
+		return $this->originalExtension();
+	}
 
+	/**
+	 * @throws MissingValueException
+	 */
+	private function originalExtension(): string
+	{
 		if ($this->extension === '') {
 			// @codeCoverageIgnoreStart
 			throw new MissingValueException('extension');
