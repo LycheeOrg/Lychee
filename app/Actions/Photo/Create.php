@@ -26,6 +26,7 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Exceptions\QuotaExceededException;
@@ -144,6 +145,7 @@ class Create
 	 * @return Photo Photo duplicated
 	 *
 	 * @throws PhotoResyncedException
+	 * @throws PhotoRejectedException
 	 * @throws PhotoSkippedException
 	 */
 	private function handleDuplicate(InitDTO $init_dto): Photo
@@ -151,6 +153,8 @@ class Create
 		$dto = DuplicateDTO::ofInit($init_dto);
 
 		$pipes = [];
+		// Ensure that unowned duplicates are handled first.
+		$pipes[] = Duplicate\ThrowUnownedDuplicate::class;
 		if ($dto->shall_resync_metadata) {
 			$pipes[] = Shared\HydrateMetadata::class;
 			$pipes[] = Duplicate\SaveIfDirty::class;
@@ -168,7 +172,7 @@ class Create
 				->through($pipes)
 				->thenReturn()
 				->getPhoto();
-		} catch (PhotoResyncedException|PhotoSkippedException $e) {
+		} catch (PhotoResyncedException|PhotoSkippedException|PhotoRejectedException $e) {
 			// duplicate case. Just rethrow.
 			throw $e;
 		}
