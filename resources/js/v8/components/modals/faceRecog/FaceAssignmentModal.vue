@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import FaceDetectionService from "@/services/face-detection-service";
@@ -145,10 +145,4 @@ function dismiss() {
 			dismissing.value = false;
 		});
 }
-
-watch(open, (isOpen) => {
-	if (isOpen) {
-		personInputRef.value?.reset();
-	}
-});
 </script>

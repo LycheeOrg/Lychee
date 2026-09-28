@@ -55,6 +55,8 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_download_album_visible: false,
 		is_download_photo_visible: false,
 		is_face_assignment_visible: false,
+		// Face edited by the photo view's single FaceAssignmentModal (opened from FaceOverlay or PhotoDetails).
+		face_for_assignment: undefined as App.Http.Resources.Models.FaceResource | undefined,
 
 		// Set by the Spotlight "Move current album" action so MoveDialog targets the
 		// currently-open album instead of whatever child album/photo is checkbox-selected.
