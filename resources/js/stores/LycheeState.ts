@@ -30,6 +30,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		image_overlay_type: "exif" as App.Enum.ImageOverlayType,
 		can_rotate: false,
 		can_autoplay: false,
+		is_video_loop_enabled: false,
 		is_photo_viewer_highest_quality_enabled: false,
 		is_exif_disabled: false,
 		is_favourite_enabled: false,
@@ -104,6 +105,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_contact_form_enabled_on_gallery: false,
 		is_contact_form_enabled_on_album: false,
 		is_embed_enabled: true,
+		is_gallery_locked: false,
 		is_photo_share_card_enabled: true,
 		site_owner: "",
 
@@ -197,6 +199,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.image_overlay_type = data.image_overlay_type;
 					this.can_rotate = data.can_rotate;
 					this.can_autoplay = data.can_autoplay;
+					this.is_video_loop_enabled = data.is_video_loop_enabled;
 					this.is_photo_viewer_highest_quality_enabled = data.is_photo_viewer_highest_quality_enabled;
 					this.is_exif_disabled = data.is_exif_disabled;
 					this.is_favourite_enabled = data.is_favourite_enabled;
@@ -288,6 +291,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_contact_form_enabled_on_gallery = data.is_contact_form_enabled_on_gallery;
 					this.is_contact_form_enabled_on_album = data.is_contact_form_enabled_on_album;
 					this.is_embed_enabled = data.is_embed_enabled;
+					this.is_gallery_locked = data.is_gallery_locked;
 					this.is_photo_share_card_enabled = data.is_photo_share_card_enabled;
 					this.site_owner = data.site_owner;
 

@@ -21,6 +21,7 @@
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			autobuffer
 			:autoplay="lycheeStore.can_autoplay"
+			:loop="lycheeStore.is_video_loop_enabled"
 		>
 			<source :src="photoStore.photo.size_variants.original?.url ?? ''" />
 			Your browser does not support the video tag.
@@ -109,6 +110,14 @@
 		<div v-if="isNsfwEnabled && loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
 			<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 		</div>
+		<!-- Single face assignment modal, opened from FaceOverlay or PhotoDetails through the shared modal state -->
+		<FaceAssignmentModal
+			v-if="face_for_assignment"
+			v-model:open="is_face_assignment_visible"
+			:face="face_for_assignment"
+			@assigned="handleFacesUpdated"
+			@dismissed="handleFacesUpdated"
+		/>
 	</div>
 </template>
 <script setup lang="ts">
@@ -124,6 +133,7 @@ import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import FaceOverlay from "./FaceOverlay.vue";
+import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import NsfwDetectionOverlay from "./NsfwDetectionOverlay.vue";
 
 const { isLTR } = useLtRorRtL();
@@ -140,7 +150,7 @@ const isFaceEnabled = computed(() => lycheeStore.is_face_recognition_enabled);
 const isNsfwEnabled = computed(() => lycheeStore.is_nsfw_classifier_enabled);
 
 const { is_swipe_vertically_to_go_back_enabled } = storeToRefs(lycheeStore);
-const { is_slideshow_active, is_full_screen } = storeToRefs(togglableStore);
+const { is_slideshow_active, is_full_screen, is_face_assignment_visible, face_for_assignment } = storeToRefs(togglableStore);
 
 const { getPlaceholderIcon } = useImageHelpers();
 

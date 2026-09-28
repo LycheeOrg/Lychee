@@ -230,6 +230,14 @@ return [
         'unlock' => 'Unlock',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => 'Enter your tags for this photo.',
         'question_multiple' => 'Enter your tags for all %d selected photos. Existing tags will be overwritten.',

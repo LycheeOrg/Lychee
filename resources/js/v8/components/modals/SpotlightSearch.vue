@@ -42,6 +42,7 @@ import { useAlbumListStore } from "@/stores/AlbumListState";
 
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import { useUserStore } from "@/stores/UserState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useAlbumStore } from "@/stores/AlbumState";
@@ -55,6 +56,7 @@ import { useAdminTiles } from "@/v8/composables/useAdminTiles";
 import { useDarkMode } from "@/v8/composables/useDarkMode";
 import { useLanguageSwitcher } from "@/v8/composables/useLanguageSwitcher";
 import { useAppToast } from "@/v8/composables/useAppToast";
+import { useLogout } from "@/v8/composables/useLogout";
 import { useSpotlightNavItems } from "@/v8/composables/spotlight/useSpotlightNavItems";
 import { useSpotlightGalleryActions } from "@/v8/composables/spotlight/useSpotlightGalleryActions";
 import { useSpotlightSystemActions } from "@/v8/composables/spotlight/useSpotlightSystemActions";
@@ -71,12 +73,13 @@ const searchTerm = ref("");
 
 const lycheeStore = useLycheeStateStore();
 const leftMenuState = useLeftMenuStateStore();
+const globalRightsStore = useGlobalRightsStore();
 const userStore = useUserStore();
 const favouritesStore = useFavouriteStore();
 
 const albumListStore = useAlbumListStore();
-const { items: menuItems, profileItems, initData } = useLeftMenu(lycheeStore, leftMenuState, userStore, favouritesStore, route);
-const adminTiles = useAdminTiles(lycheeStore, leftMenuState);
+const { items: menuItems, profileItems, rights } = useLeftMenu(lycheeStore, leftMenuState, globalRightsStore, userStore, favouritesStore, route);
+const adminTiles = useAdminTiles(lycheeStore, globalRightsStore);
 const { isDark, toggle: toggleDarkMode, toggleGlobal: toggleDarkModeGlobal } = useDarkMode();
 
 const albumStore = useAlbumStore();
@@ -98,7 +101,7 @@ function close() {
 }
 
 // Only admins can change the (instance-wide) language config.
-const canEditSettings = computed(() => initData.value?.settings.can_edit ?? false);
+const canEditSettings = computed(() => rights.value?.settings.can_edit ?? false);
 const { availableLanguages, setLanguage } = useLanguageSwitcher(canEditSettings);
 
 const { isRemoteSearching, remoteGroupItems, ensureSearchMinLength, reset: resetRemoteSearch } = useSpotlightRemoteSearch(searchTerm, router, close);
@@ -106,6 +109,7 @@ const { isRemoteSearching, remoteGroupItems, ensureSearchMinLength, reset: reset
 watch(open, (isOpen) => {
 	if (isOpen) {
 		albumListStore.ensureLoaded();
+		globalRightsStore.ensureLoaded().catch(() => {});
 		ensureSearchMinLength();
 	} else {
 		searchTerm.value = "";
@@ -124,12 +128,26 @@ const galleryActionItems = useSpotlightGalleryActions(
 	togglableStore,
 	lycheeStore,
 	toast,
-	initData,
+	rights,
 	{ toggleCreateAlbum, toggleCreateTagAlbum, toggleUpload, toggleApplyRenamer, toggleWatermarkConfirm },
 	close,
 );
 
-const systemActionItems = useSpotlightSystemActions(adminTiles, router, isDark, initData, toggleDarkMode, toggleDarkModeGlobal, close);
+// A guest has `id: null`; `undefined` is only the transient loading sentinel.
+const isLoggedIn = computed(() => userStore.user !== undefined && userStore.user.id !== null);
+const { logout } = useLogout();
+
+const systemActionItems = useSpotlightSystemActions(
+	adminTiles,
+	router,
+	isDark,
+	rights,
+	toggleDarkMode,
+	toggleDarkModeGlobal,
+	isLoggedIn,
+	logout,
+	close,
+);
 
 const actionsGroupItems = computed<SpotlightItem[]>(() => [...galleryActionItems.value, ...systemActionItems.value]);
 

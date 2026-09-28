@@ -18,6 +18,7 @@ use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Services\GalleryLockState;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
@@ -57,7 +58,7 @@ class Meta extends Component
 		// default data
 		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 		$this->page_url = url()->current();
-		$this->rss_enable = request()->configs()->getValueAsBool('rss_enable');
+		$this->rss_enable = resolve(GalleryLockState::class)->isRssEnabled();
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
 

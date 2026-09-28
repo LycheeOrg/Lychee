@@ -229,6 +229,14 @@ return [
         'unlock' => 'باز کردن قفل',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => 'برچسب‌های خود را برای این عکس وارد کنید.',
         'question_multiple' => 'برچسب‌های خود را برای همه %d عکس انتخاب شده وارد کنید. برچسب‌های موجود بازنویسی خواهند شد.',

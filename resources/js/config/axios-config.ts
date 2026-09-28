@@ -92,6 +92,12 @@ const AxiosConfig = {
 				const data = await extractErrorData(error.response.data);
 				const message = data.message || "An error occurred";
 
+				// The gallery password screen takes over (see useGalleryLock): no error overlay.
+				if (error.response.status === 401 && message === "Gallery password required") {
+					window.dispatchEvent(new CustomEvent("gallery_locked"));
+					return Promise.reject(error);
+				}
+
 				if (
 					data.message &&
 					["Password required", "Password is invalid", "Album is not enabled for password-based access", "Login required."].find(

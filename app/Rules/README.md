@@ -45,6 +45,7 @@ Lychee implements comprehensive validation through custom Laravel validation rul
 - **`ExtensionRule.php`** - Validates file extensions against allowed types
 - **`FileUuidRule.php`** - Validates file UUID format for uploads
 - **`PhotoUrlRule.php`** - Validates photo URL format and accessibility
+- **`GpxFileRule.php`** - Validates uploaded tracks are genuine GPX files (delegates to `App\Services\GpxValidation`)
 
 ### 5. Type and Support Rules
 

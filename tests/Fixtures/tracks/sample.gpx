@@ -1,2 +1,42 @@
-LYCHEE_TEST_FIXTURE_NOT_REAL_GPX_CONTENT_zlt1nlGrLRmdWAfgzY8irgyaf+Wrxi/Id6LXAJcI36ClsiFL66QDQ+Z2cRXsEVQ6t+4bL5CrfEBs
-ZuRINy6dPw==
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Lychee test fixture"
+	xmlns="http://www.topografix.com/GPX/1/1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+	<metadata>
+		<name>Sample track</name>
+		<link href="https://lycheeorg.dev">
+			<text>Lychee</text>
+		</link>
+		<time>2026-01-01T10:00:00Z</time>
+		<bounds minlat="48.8566" minlon="2.3522" maxlat="48.8600" maxlon="2.3600"/>
+	</metadata>
+	<wpt lat="48.8566" lon="2.3522">
+		<ele>35</ele>
+		<name>Start</name>
+		<desc><![CDATA[Start of the walk & coffee]]></desc>
+	</wpt>
+	<trk>
+		<name>Sample track</name>
+		<trkseg>
+			<trkpt lat="48.8566" lon="2.3522">
+				<ele>35.0</ele>
+				<time>2026-01-01T10:00:00Z</time>
+				<extensions>
+					<gpxtpx:TrackPointExtension>
+						<gpxtpx:hr>110</gpxtpx:hr>
+					</gpxtpx:TrackPointExtension>
+				</extensions>
+			</trkpt>
+			<trkpt lat="48.8580" lon="2.3560">
+				<ele>36.5</ele>
+				<time>2026-01-01T10:05:00Z</time>
+			</trkpt>
+			<trkpt lat="48.8600" lon="2.3600">
+				<ele>38.0</ele>
+				<time>2026-01-01T10:10:00Z</time>
+			</trkpt>
+		</trkseg>
+	</trk>
+</gpx>

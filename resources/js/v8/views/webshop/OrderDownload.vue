@@ -82,14 +82,14 @@
 						<UButton
 							color="primary"
 							variant="solid"
-							v-if="initData?.settings.can_edit && itemsToUpdate.length > 0"
+							v-if="rights?.settings.can_edit && itemsToUpdate.length > 0"
 							:label="$t('webshop.orderDownload.deliver')"
 							icon="lucide:save"
 							size="sm"
 							@click="markAsDelivered"
 						/>
 						<UButton
-							v-else-if="initData?.settings.can_edit && !edit"
+							v-else-if="rights?.settings.can_edit && !edit"
 							variant="ghost"
 							color="error"
 							:label="$t('webshop.orderDownload.edit')"
@@ -102,7 +102,7 @@
 							"
 						/>
 						<UButton
-							v-else-if="initData?.settings.can_edit && edit"
+							v-else-if="rights?.settings.can_edit && edit"
 							variant="ghost"
 							color="neutral"
 							:label="$t('webshop.orderDownload.view')"
@@ -212,10 +212,8 @@ import OrderStatus from "@/v8/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/v8/components/webshop/UsernameEmail.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import Constants from "@/services/constants";
-import InitService from "@/services/init-service";
 import WebshopService, { ItemLink } from "@/services/webshop-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { storeToRefs } from "pinia";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -234,8 +232,7 @@ const orderId = ref(props.orderId);
 const transactionId = ref<string | undefined>(props.transactionId);
 const order = ref<App.Http.Resources.Shop.OrderResource | undefined>(undefined);
 const loading = ref(true);
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const edit = ref(false);
 
 function backToGallery() {
@@ -256,14 +253,8 @@ function loadOrder() {
 		});
 }
 
-async function load(): Promise<void> {
-	return InitService.fetchGlobalRights().then((data) => {
-		initData.value = data.data;
-	});
-}
-
 function showInput(item: App.Http.Resources.Shop.OrderItemResource): boolean {
-	return (initData.value?.settings.can_edit ?? false) && (!item.content_url || edit.value);
+	return (rights.value?.settings.can_edit ?? false) && (!item.content_url || edit.value);
 }
 
 function downloadItem(contentUrl: string) {
@@ -352,6 +343,5 @@ function markAsDelivered() {
 
 onMounted(() => {
 	loadOrder();
-	load();
 });
 </script>

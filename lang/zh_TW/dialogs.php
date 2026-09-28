@@ -229,6 +229,14 @@ return [
         'unlock' => '解鎖',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
     ],
+    'gallery_unlock' => [
+        'password_required' => 'This gallery is protected by a password.',
+        'password' => 'Password',
+        'unlock' => 'Enter gallery',
+        'sign_in' => 'Have an account? Sign in',
+        'invalid_password' => 'Password is invalid.',
+        'too_many_attempts' => 'Too many attempts, try again later.',
+    ],
     'photo_tags' => [
         'question' => '輸入此相片的標籤。',
         'question_multiple' => '請為所有%d選取的相片輸入標籤，已存在的標籤將被覆寫。',

@@ -1,14 +1,8 @@
 import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "./constants";
 
-// LeftMenu.vue and AlbumPanel.vue each independently fetch the same
-// GlobalRightsResource into their own store field on first page load.
-// Coalescing concurrent in-flight requests avoids firing `Auth::rights`
-// once per caller for the exact same answer.
-let globalRightsRequest: Promise<AxiosResponse<App.Http.Resources.Rights.GlobalRightsResource>> | null = null;
-
 // Coalesces concurrent callers (e.g. many <Thumb> instances mounting at once, all needing the
-// code for the first time) onto a single in-flight request, same as globalRightsRequest above.
+// code for the first time) onto a single in-flight request.
 let macRequest: Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.TemporaryLinkMacConfig>> | null = null;
 
 const InitService = {
@@ -34,14 +28,10 @@ const InitService = {
 		return macRequest;
 	},
 
+	// Not coalesced here: GlobalRightsState shares one request between its callers, and must be able
+	// to start a new one when the identity changes rather than join a request made for the previous one.
 	fetchGlobalRights(): Promise<AxiosResponse<App.Http.Resources.Rights.GlobalRightsResource>> {
-		if (globalRightsRequest === null) {
-			globalRightsRequest = axios.get(`${Constants.getApiUrl()}Auth::rights`, { data: {} }).finally(() => {
-				globalRightsRequest = null;
-			});
-		}
-
-		return globalRightsRequest;
+		return axios.get(`${Constants.getApiUrl()}Auth::rights`, { data: {} });
 	},
 
 	fetchVersion(): Promise<AxiosResponse<App.Http.Resources.Root.VersionResource>> {

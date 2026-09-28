@@ -24,6 +24,7 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\VisibilityType;
 use App\Providers\AuthServiceProvider;
+use App\Services\GalleryLockState;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -50,6 +51,7 @@ class InitConfig extends Data
 	public ImageOverlayType $image_overlay_type;
 	public bool $can_rotate;
 	public bool $can_autoplay;
+	public bool $is_video_loop_enabled;
 	public bool $is_photo_viewer_highest_quality_enabled;
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
@@ -150,6 +152,9 @@ class InitConfig extends Data
 	// Embed
 	public bool $is_embed_enabled = true;
 
+	// Gallery password
+	public bool $is_gallery_locked = false;
+
 	// Photo Share Card
 	public bool $is_photo_share_card_enabled = true;
 	public string $site_owner;
@@ -215,6 +220,7 @@ class InitConfig extends Data
 		$this->image_overlay_type = request()->configs()->getValueAsEnum('image_overlay_type', ImageOverlayType::class);
 		$this->can_rotate = request()->configs()->getValueAsBool('editor_enabled');
 		$this->can_autoplay = request()->configs()->getValueAsBool('autoplay_enabled');
+		$this->is_video_loop_enabled = request()->configs()->getValueAsBool('video_loop_enabled');
 		$this->is_photo_viewer_highest_quality_enabled = request()->configs()->getValueAsBool('photo_viewer_highest_quality_enabled');
 		$this->is_exif_disabled = request()->configs()->getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = request()->configs()->getValueAsBool('client_side_favourite_enabled');
@@ -298,8 +304,13 @@ class InitConfig extends Data
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
+		$gallery_lock = resolve(GalleryLockState::class);
+
 		// Embed
-		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+		$this->is_embed_enabled = $gallery_lock->isEmbedEnabled();
+
+		// Gallery password
+		$this->is_gallery_locked = $gallery_lock->isLockedForRequest(request());
 
 		// Photo Share Card
 		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');

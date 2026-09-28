@@ -49,6 +49,7 @@ class MetaTest extends AbstractTestCase
 
 		$this->config_manager = \Mockery::mock(ConfigManager::class);
 		request()->attributes->set('configs', $this->config_manager);
+		$this->app->instance(ConfigManager::class, $this->config_manager);
 
 		$this->setUpDefaultConfig();
 		Storage::fake(FileSystem::DIST);
@@ -62,6 +63,8 @@ class MetaTest extends AbstractTestCase
 			->with('site_owner')->andReturn('Test Owner')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('rss_enable')->andReturn(false)->byDefault();
+		$this->config_manager->shouldReceive('getValueAsString')
+			->with('gallery_password')->andReturn('')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsString')
 			->with('site_title')->andReturn('My Gallery')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsString')

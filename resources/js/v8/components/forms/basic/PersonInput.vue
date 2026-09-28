@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { usePeopleList } from "@/composables/usePeopleList";
 
 const personId = defineModel<string | undefined>("personId", { default: undefined });
@@ -64,12 +65,15 @@ function selectByName(name: string): boolean {
 	return true;
 }
 
-/** Resets the selection and reloads the person list; call when the host dialog opens. */
-function reset(): void {
+/**
+ * Resets the selection and reloads the person list.
+ * Host modals unmount their body on close, so this runs on every open.
+ */
+onMounted(() => {
 	personId.value = undefined;
 	newPersonName.value = "";
 	load();
-}
+});
 
-defineExpose({ selectByName, reset });
+defineExpose({ selectByName });
 </script>

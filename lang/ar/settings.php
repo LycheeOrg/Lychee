@@ -105,4 +105,10 @@ return [
             'help' => 'استبدال القائمة الفرعية المتداخلة للمسؤول برابط واحد لصفحة لوحة تحكم المسؤول الجديدة.',
         ],
     ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
+    ],
 ];

@@ -171,4 +171,33 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		$this->assertSame($photo->created_at->format('Y'), $row_a->bucket_id);
 		$this->assertSame($photo->created_at->format('Y-m'), $row_b->bucket_id);
 	}
+
+	/**
+	 * With one row per page, the keyset cursor lands between the two pivot
+	 * rows of a photo linked into two albums, and every row across several
+	 * photos is still visited exactly once.
+	 */
+	public function testKeysetPaginationVisitsEveryRowAcrossPageBoundaries(): void
+	{
+		$this->setPhotoInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
+		$user = User::factory()->create();
+		$album_a = Album::factory()->as_root()->owned_by($user)->create();
+		$album_b = Album::factory()->as_root()->owned_by($user)->create();
+
+		$shared = Photo::factory()->owned_by($user)->create();
+		DB::table('photo_album')->insert(['photo_id' => $shared->id, 'album_id' => $album_a->id]);
+		DB::table('photo_album')->insert(['photo_id' => $shared->id, 'album_id' => $album_b->id]);
+		$photo1 = Photo::factory()->owned_by($user)->in($album_a)->create();
+		$photo2 = Photo::factory()->owned_by($user)->in($album_b)->create();
+
+		$this->artisan('lychee:recompute-buckets', ['--chunk' => 1])->assertExitCode(0);
+
+		$this->assertSame(0, DB::table('photo_album')->whereNull('bucket_id')->count());
+		foreach ([$shared, $photo1, $photo2] as $photo) {
+			$buckets = DB::table('photo_album')->where('photo_id', '=', $photo->id)->pluck('bucket_id')->all();
+			foreach ($buckets as $bucket_id) {
+				$this->assertSame($photo->created_at->format('Y'), $bucket_id);
+			}
+		}
+	}
 }

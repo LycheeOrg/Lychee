@@ -85,7 +85,7 @@ _Last updated: 2026-09-05_
   _Verification commands:_
   - `php artisan test --filter=RecomputePhotoBucketsCommandTest`
   - `make phpstan`
-  _Notes:_ `app/Console/Commands/RecomputePhotoBuckets.php`. Uses offset-based `chunk()` rather than `chunkById()`: `photo_album` has a composite PK `(photo_id, album_id)` with no single-column unique id to safely cursor-paginate on when a photo has >1 album link (a `chunkById()` cursor could split that photo's row-group across a page boundary and skip rows) — plain `chunk()` is safe here since the loop only ever writes `bucket_id`, never one of the two `ORDER BY` columns. 5/5 tests green (incl. a zero-size_variants/tags-query assertion, NFR-064-02), `phpstan level 6` clean.
+  _Notes:_ `app/Console/Commands/RecomputePhotoBuckets.php`. Keyset-paginates `photo_album` alone (photo and album columns loaded per page by PK `whereIn`, so no join order can force a per-page sort) on the composite PK `(photo_id, album_id)` rather than `chunkById()` (a single-column `photo_id` cursor would skip the rest of a multi-album photo's row-group at a page boundary) or offset-based `chunk()` (quadratic in table size). 5/5 tests green (incl. a zero-size_variants/tags-query assertion, NFR-064-02), `phpstan level 6` clean.
 
 ### I3 – `buckets` tier
 
