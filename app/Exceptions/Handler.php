@@ -91,6 +91,7 @@ class Handler extends ExceptionHandler
 	public const EXCEPTION2SEVERITY = [
 		HttpHoneyPotException::class => SeverityType::NOTICE, // In theory this is a 404, but because it touches honey we don't really care.
 		PhotoResyncedException::class => SeverityType::WARNING,
+		PhotoRejectedException::class => SeverityType::WARNING,
 		PhotoSkippedException::class => SeverityType::WARNING,
 		ImportCancelledException::class => SeverityType::NOTICE,
 		ConfigurationException::class => SeverityType::NOTICE,
