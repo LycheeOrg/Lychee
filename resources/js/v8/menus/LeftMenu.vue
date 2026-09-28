@@ -85,9 +85,7 @@ import { computed, watch, onMounted } from "vue";
 import PiMiniIcon from "@/v8/components/icons/PiMiniIcon.vue";
 import SETag from "@/v8/components/icons/SETag.vue";
 import AboutLychee from "@/v8/components/modals/AboutLychee.vue";
-import AuthService from "@/services/auth-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import AlbumService from "@/services/album-service";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -96,11 +94,7 @@ import { useLeftMenu, type LeftMenuItem } from "@/v8/composables/contextMenus/le
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useUserStore } from "@/stores/UserState";
-import { usePhotosStore } from "@/stores/PhotosState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
-import { useAlbumStore } from "@/stores/AlbumState";
-import { usePhotoStore } from "@/stores/PhotoState";
-import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useLogout } from "@/v8/composables/useLogout";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 
@@ -108,11 +102,7 @@ const leftMenuState = useLeftMenuStateStore();
 const globalRightsStore = useGlobalRightsStore();
 const route = useRoute();
 const userStore = useUserStore();
-const photosStore = usePhotosStore();
-const albumsStore = useAlbumsStore();
-const albumStore = useAlbumStore();
-const photoStore = usePhotoStore();
-const albumListStore = useAlbumListStore();
+const { logout: doLogout } = useLogout();
 
 const lycheeStore = useLycheeStateStore();
 const { is_white_label_enabled, use_admin_dashboard } = storeToRefs(lycheeStore);
@@ -170,18 +160,8 @@ const lycheeItems = computed<LeftMenuItem[]>(() => {
 const profileSections = computed(() => profileItems.value.map((item) => [item]));
 
 function logout() {
-	AuthService.logout().then(() => {
-		left_menu_open.value = false;
-		globalRightsStore.reset();
-		photoStore.reset();
-		photosStore.reset();
-		albumsStore.reset();
-		albumStore.reset();
-		userStore.setUser(undefined);
-		AlbumService.clearCache();
-		albumListStore.invalidate();
-		window.location.href = Constants.BASE_URL + "/home";
-	});
+	left_menu_open.value = false;
+	doLogout();
 }
 
 onMounted(() => {
