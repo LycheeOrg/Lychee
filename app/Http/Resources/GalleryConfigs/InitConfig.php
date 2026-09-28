@@ -51,6 +51,7 @@ class InitConfig extends Data
 	public ImageOverlayType $image_overlay_type;
 	public bool $can_rotate;
 	public bool $can_autoplay;
+	public bool $is_video_loop_enabled;
 	public bool $is_photo_viewer_highest_quality_enabled;
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
@@ -219,6 +220,7 @@ class InitConfig extends Data
 		$this->image_overlay_type = request()->configs()->getValueAsEnum('image_overlay_type', ImageOverlayType::class);
 		$this->can_rotate = request()->configs()->getValueAsBool('editor_enabled');
 		$this->can_autoplay = request()->configs()->getValueAsBool('autoplay_enabled');
+		$this->is_video_loop_enabled = request()->configs()->getValueAsBool('video_loop_enabled');
 		$this->is_photo_viewer_highest_quality_enabled = request()->configs()->getValueAsBool('photo_viewer_highest_quality_enabled');
 		$this->is_exif_disabled = request()->configs()->getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = request()->configs()->getValueAsBool('client_side_favourite_enabled');
