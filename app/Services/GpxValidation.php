@@ -312,7 +312,8 @@ class GpxValidation
 	{
 		return match (true) {
 			$node instanceof \DOMElement => $this->checkElement($node, $gpx_namespace, $is_gpx_1_1, $in_extensions),
-			$node instanceof \DOMText, $node instanceof \DOMComment => null,
+			$node instanceof \DOMComment => null,
+			$node instanceof \DOMText => str_contains($node->data, '<') ? 'must not contain HTML markup in text content.' : $this->scanDangerousPatterns($node->data),
 			default => 'contains a forbidden node type.',
 		};
 	}
