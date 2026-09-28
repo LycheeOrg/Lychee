@@ -56,6 +56,7 @@ import { useAdminTiles } from "@/v8/composables/useAdminTiles";
 import { useDarkMode } from "@/v8/composables/useDarkMode";
 import { useLanguageSwitcher } from "@/v8/composables/useLanguageSwitcher";
 import { useAppToast } from "@/v8/composables/useAppToast";
+import { useLogout } from "@/v8/composables/useLogout";
 import { useSpotlightNavItems } from "@/v8/composables/spotlight/useSpotlightNavItems";
 import { useSpotlightGalleryActions } from "@/v8/composables/spotlight/useSpotlightGalleryActions";
 import { useSpotlightSystemActions } from "@/v8/composables/spotlight/useSpotlightSystemActions";
@@ -132,7 +133,21 @@ const galleryActionItems = useSpotlightGalleryActions(
 	close,
 );
 
-const systemActionItems = useSpotlightSystemActions(adminTiles, router, isDark, rights, toggleDarkMode, toggleDarkModeGlobal, close);
+// A guest has `id: null`; `undefined` is only the transient loading sentinel.
+const isLoggedIn = computed(() => userStore.user !== undefined && userStore.user.id !== null);
+const { logout } = useLogout();
+
+const systemActionItems = useSpotlightSystemActions(
+	adminTiles,
+	router,
+	isDark,
+	rights,
+	toggleDarkMode,
+	toggleDarkModeGlobal,
+	isLoggedIn,
+	logout,
+	close,
+);
 
 const actionsGroupItems = computed<SpotlightItem[]>(() => [...galleryActionItems.value, ...systemActionItems.value]);
 
