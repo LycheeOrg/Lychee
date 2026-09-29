@@ -27,31 +27,31 @@ use Tests\AbstractTestCase;
 
 class ResolveConfigsTest extends AbstractTestCase
 {
-	public function testPassesThroughWhenConfigsTableMissing(): void
+	/**
+	 * Not installed yet (no `configs` table, or no database at all):
+	 * {@see ConfigManager::load()} yields nothing, the request passes
+	 * through without a `configs` attribute and without a schema query.
+	 */
+	public function testPassesThroughWhenNoConfigCanBeLoaded(): void
 	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andReturn(false);
+		Schema::shouldReceive('hasTable')->never();
+		$this->mock(ConfigManager::class, function (MockInterface $mock): void {
+			$mock->shouldReceive('load')->once()->andReturn([]);
+			$mock->shouldReceive('getValueAsBool')->never();
+		});
 
-		$request = $this->mock(Request::class);
+		$request = Request::create('/');
 		$middleware = new ResolveConfigs();
 
 		self::assertEquals(1, $middleware->handle($request, fn () => 1));
-	}
-
-	public function testPassesThroughWhenSchemaCheckThrows(): void
-	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andThrow(new \Exception('no db connection'));
-
-		$request = $this->mock(Request::class);
-		$middleware = new ResolveConfigs();
-
-		self::assertEquals(1, $middleware->handle($request, fn () => 1));
+		self::assertFalse($request->attributes->has('configs'));
 	}
 
 	public function testResolvesAndStoresConfigManager(): void
 	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andReturn(true);
-
+		Schema::shouldReceive('hasTable')->never();
 		$this->mock(ConfigManager::class, function (MockInterface $mock): void {
+			$mock->shouldReceive('load')->once()->andReturn(['lang' => 'en']);
 			$mock->shouldReceive('getValueAsBool')->with('watermark_enabled')->andReturn(false);
 		});
 

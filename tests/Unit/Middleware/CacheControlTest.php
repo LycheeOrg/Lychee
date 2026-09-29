@@ -32,7 +32,8 @@ class CacheControlTest extends AbstractTestCase
 
 		$response = $middleware->handle($request, fn () => new Response('ok'));
 
-		self::assertStringContainsString('private;max_age=3600', $response->headers->get('Cache-Control'));
+		self::assertTrue($response->headers->hasCacheControlDirective('private'));
+		self::assertSame('3600', $response->headers->getCacheControlDirective('max-age'));
 	}
 
 	public function testUsesGivenAge(): void
@@ -42,6 +43,7 @@ class CacheControlTest extends AbstractTestCase
 
 		$response = $middleware->handle($request, fn () => new Response('ok'), '120');
 
-		self::assertStringContainsString('private;max_age=120', $response->headers->get('Cache-Control'));
+		self::assertTrue($response->headers->hasCacheControlDirective('private'));
+		self::assertSame('120', $response->headers->getCacheControlDirective('max-age'));
 	}
 }

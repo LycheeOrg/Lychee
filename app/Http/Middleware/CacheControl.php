@@ -24,7 +24,7 @@ class CacheControl
 	public function handle(Request $request, \Closure $next, string $age = '3600')
 	{
 		$response = $next($request);
-		$response->headers->set('Cache-Control', 'private;max_age=' . $age);
+		$response->headers->set('Cache-Control', 'private, max-age=' . $age);
 
 		return $response;
 	}
