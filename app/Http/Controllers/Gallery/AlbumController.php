@@ -481,7 +481,6 @@ class AlbumController extends Controller
 
 		// Get all photos in the album and process their size variants
 		// Filter variants that need watermarking and dispatch jobs
-		/** @phpstan-ignore return.type (stupid covariance...) */
 		$album->photos->each(fn (Photo $photo) => $photo->size_variants->toCollection()
 			->filter(fn (?SizeVariant $v) => $this->shouldWatermark($v))
 			->each(fn (?SizeVariant $v) => WatermarkerJob::dispatch($v, $photo->owner_id)));

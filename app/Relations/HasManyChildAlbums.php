@@ -48,8 +48,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		 * because it was set in the constructor as `$owningAlbum->newQuery()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection
-		 *
-		 * @phpstan-ignore return.type
 		 */
 		return $this->query;
 	}

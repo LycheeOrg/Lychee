@@ -27,7 +27,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
 use function Safe\copy;
+use Safe\Exceptions\InfoException;
 use function Safe\json_decode;
+use function Safe\set_time_limit;
 use function Safe\tempnam;
 use Tests\Constants\TestConstants;
 use Tests\Traits\CatchFailures;
@@ -36,6 +38,29 @@ abstract class AbstractTestCase extends BaseTestCase
 {
 	use CreatesApplication;
 	use CatchFailures;
+
+	/**
+	 * Maximum execution time (in seconds) granted to each test.
+	 */
+	public const TEST_TIME_LIMIT = 7200;
+
+	/**
+	 * Console commands and actions under test call `set_time_limit()`
+	 * (e.g. 600s by default for the image processing commands).
+	 * As they run inside the PHPUnit process, that limit would otherwise
+	 * leak into the rest of the suite and abort an unrelated later test.
+	 * We restart the clock before booting the application for every test.
+	 */
+	protected function setUp(): void
+	{
+		try {
+			set_time_limit(self::TEST_TIME_LIMIT);
+		} catch (InfoException) {
+			// Silently do nothing, if `set_time_limit` is denied (e.g. Xdebug reports false while still applying it).
+		}
+
+		parent::setUp();
+	}
 
 	/**
 	 * Visit the given URI with a GET request.

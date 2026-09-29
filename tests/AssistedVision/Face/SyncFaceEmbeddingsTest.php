@@ -62,7 +62,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 
 	public function testCheckReturnsZeroWhenHealthCheckFails(): void
 	{
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')
 			->willThrowException(new \App\Exceptions\ExternalComponentFailedException('Service unavailable'));
 		$this->app->instance(FacialRecognitionService::class, $mock);
@@ -76,7 +76,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 	{
 		Face::factory()->for_photo($this->photo1)->count(3)->create();
 
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')->willReturn([
 			'status' => 'ok',
 			'model_loaded' => true,
@@ -94,7 +94,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 	public function testCheckReturnsZeroWhenInSync(): void
 	{
 		$face_count = Face::count();
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')->willReturn([
 			'status' => 'ok',
 			'model_loaded' => true,
@@ -123,7 +123,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 
 	public function testDoReturnsZeroWhenExportReturnsNull(): void
 	{
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('syncFaceEmbeddings')->willReturn(null);
 		$this->app->instance(FacialRecognitionService::class, $mock);
 
@@ -139,7 +139,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 	{
 		$face = Face::factory()->for_photo($this->photo1)->create(['laplacian_variance' => 100.0]);
 
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('syncFaceEmbeddings')->willReturn([
 			'count' => 1,
 			'embeddings' => [
@@ -167,7 +167,7 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 	{
 		Face::factory()->for_photo($this->photo1)->count(3)->create();
 
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('syncFaceEmbeddings')->willReturn([
 			'count' => 0,
 			'embeddings' => [],

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.3/phpunit.xsd">
   <coverage>
     <report>
       <clover outputFile="clover.xml"/>
@@ -52,14 +52,14 @@
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="MAIL_DRIVER" value="array"/>
-	<env name="STRIPE_API_KEY" value="" />
-	<env name="STRIPE_PUBLISHABLE_KEY" value="" />
-	<env name="MOLLIE_API_KEY" value="" />
-	<env name="MOLLIE_PROFILE_ID" value="" />
-	<env name="PAYPAL_CLIENT_ID" value="" />
-	<env name="PAYPAL_SECRET" value="" />
-	<env name="V8_ENABLED" value="true" />
-	<env name="WEBSHOP_ENABLED" value="true"/>
+    <env name="STRIPE_API_KEY" value=""/>
+    <env name="STRIPE_PUBLISHABLE_KEY" value=""/>
+    <env name="MOLLIE_API_KEY" value=""/>
+    <env name="MOLLIE_PROFILE_ID" value=""/>
+    <env name="PAYPAL_CLIENT_ID" value=""/>
+    <env name="PAYPAL_SECRET" value=""/>
+    <env name="V8_ENABLED" value="true"/>
+    <env name="WEBSHOP_ENABLED" value="true"/>
   </php>
   <source>
     <include>
