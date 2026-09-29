@@ -52,6 +52,7 @@ Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListContr
 Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
 Route::get('/Albums/root/buckets', [Gallery\AlbumListing\AlbumRootController::class, 'buckets']);
 Route::get('/Albums/root/rights', [Gallery\AlbumListing\AlbumRootController::class, 'rights']);
+Route::get('/Albums/root/config', [Gallery\AlbumListing\AlbumRootController::class, 'config'])->middleware(['login_required:root', 'cache_control']);
 Route::get('/Albums/smart', [Gallery\AlbumListing\AlbumSmartController::class, 'smart']);
 Route::get('/Albums/persons', [Gallery\AlbumListing\AlbumPersonController::class, 'persons']);
 Route::get('/Albums/tags', [Gallery\AlbumListing\AlbumTagController::class, 'tags']);

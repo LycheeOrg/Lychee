@@ -13,12 +13,21 @@ import Constants from "./constants";
  * same merge), and `/Albums/root[/buckets|/rights]?scope=` (bucketed, the
  * same tier1/2/3 shape Feature 061/063 already established for sub-album
  * children — `AlbumRootController` literally reuses `AlbumBucketResource`/
- * `AlbumDataResource`/`AlbumRightsResource`). Cached the
+ * `AlbumDataResource`/`AlbumRightsResource`), plus `/Albums/root/config`
+ * (the root page's config + rights, replacing v2 `GET /Albums`). Cached the
  * same way `AlbumChildrenV3Service` already is; invalidated by
  * `AlbumService.clearAlbums()`, the same call site every other
  * root-listing cache entry already relies on.
  */
 const AlbumCategoryV3Service = {
+	getRootConfig(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumRootConfigResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrlV3()}Albums/root/config`, {
+			data: {},
+			id: "albums_v3_root_config",
+		});
+	},
+
 	getSmart(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumCategoryResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrlV3()}Albums/smart`, {

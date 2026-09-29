@@ -278,6 +278,36 @@ class AlbumQueryPolicy
 	}
 
 	/**
+	 * Restricts an album query to albums whose ancestors are all _reachable_.
+	 *
+	 * Combined with {@link AlbumQueryPolicy::applyVisibilityFilter()}, this
+	 * yields the albums a user can see by "clicking around" from the root:
+	 * like {@link AlbumQueryPolicy::applyBrowsabilityFilter()}, except that
+	 * the album itself is not required to be reachable, so a visible but
+	 * still-locked album is kept (the user can click it to unlock it).
+	 *
+	 * @param AlbumBuilder $query              the album query which shall be restricted
+	 * @param User|null    $user               the current user, or null if not authenticated
+	 * @param string[]     $unlocked_album_ids array of unlocked album IDs
+	 *
+	 * @return AlbumBuilder the restricted album query
+	 *
+	 * @throws InternalLycheeException
+	 */
+	public function applyAncestorReachabilityFilter(AlbumBuilder $query, ?User $user, array $unlocked_album_ids): AlbumBuilder
+	{
+		if ($user?->may_administrate === true) {
+			return $query;
+		}
+
+		return $query->whereNotExists(
+			fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition($q, null, null, $user, $unlocked_album_ids)
+				// Strict ancestors only: exclude the album itself.
+				->whereColumn('inner._lft', '<', 'albums._lft')
+		);
+	}
+
+	/**
 	 * Adds the conditions of an unreachable album to the query.
 	 *
 	 * An album is called _unreachable_, if it is

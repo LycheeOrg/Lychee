@@ -23,8 +23,41 @@ Open questions for [Feature 062](spec.md). Log every high- and medium-impact que
 | ~~Q-062-15~~ | 062 – Root Album Listing Struct-of-Arrays | High | Does `bucketable:false` mean "structurally can't group" (Feature 061's convention) or "zero rows this time" (this spec's current FR-062-05 wording)? | Resolved (Option A — keep 061's meaning; empty shared result is `bucketable:true` with empty arrays) | 2026-09-02 | 2026-09-02 |
 | ~~Q-062-16~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Is `/Albums/root/rights`'s `owner_id` field null for `scope=own` too, or only for `scope=shared`? | Resolved (Option A, refined — null unconditionally, both scopes; key omitted from the JSON payload entirely since it's always null for root) | 2026-09-02 | 2026-09-02 |
 | ~~Q-062-17~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Does dropping `/children` from `/Albums/{album_id}` (and `/Albums/root`, `/persons`, `/pinned`) read as "fetch one album" when it actually returns a child/collection listing? | Resolved (Option A — keep the rename as specced, no change) | 2026-09-02 | 2026-09-02 |
+| ~~Q-062-18~~ | 062 – Root Album Listing Struct-of-Arrays | High | With the SoA flag on, the gallery still calls v2 `GET /Albums` (full `Top::get()`) only to read `config` + `rights` — new v3 `/Albums/root/config` vs. reuse `Timeline::init` vs. embed in `/Albums/root` vs. keep the v2 call | Resolved (A — `GET /api/v3/Albums/root/config`, spec FR-062-17, S-062-30..33) | 2026-09-29 | 2026-09-29 |
 
 ## Question Details
+
+### Q-062-18 · Drop the v2 `GET /Albums` call from the SoA root gallery
+
+**Status:** Resolved (Option A, 2026-09-29 — folded into spec FR-062-17, DO-062-07, API-062-10, S-062-30..33)
+**Feature:** F-062 – Root Album Listing Struct-of-Arrays
+**Preferred option:** Option A – `GET /api/v3/Albums/root/config` returning `{config, rights}`
+
+**Question**
+With `is_struct_of_array_enabled` on, `AlbumsState.load()` still calls v2 `GET /api/v2/Albums`, which runs the full `Top::get()` (smart, tag, person, pinned, own and shared album queries with Eloquent hydration), only to read `config` (`RootConfig`) and `rights` (`RootAlbumRightsResource`). Every album list it returns is discarded. How should the SoA path obtain these two fields? There is no per-album or root `.../config` route today; `GET /api/v2/Timeline::init` (`InitResource`) already returns `new RootConfig()` + `new RootAlbumRightsResource()` with no album query, but without `login_required:root` and with timeline-only fields.
+
+#### Option A (recommended) – New `GET /api/v3/Albums/root/config` returning `{config, rights}`
+- **Idea:** A v3 route (middleware `login_required:root`, `cache_control`) returning a small resource holding the existing `RootConfig` and `RootAlbumRightsResource`, the same construction `Timeline::init` already uses. `AlbumsState.load()` calls it instead of v2 `GET /Albums` when the flag is on; the v2 call stays for the flag-off path.
+- **Spec impact:** new FR in Feature 062 (route, request, resource); frontend `AlbumsState.load()` branches before the v2 call.
+- **Pros:** removes the heaviest request on the root page; zero album queries; keeps the `login_required:root` 401 that opens the login modal; `config` and `rights` stay in one response, as the page consumes them today.
+- **Cons:** one new route and resource.
+
+#### Option B – Reuse `GET /api/v2/Timeline::init`
+- **Idea:** Call `Timeline::init` from `AlbumsState.load()` when the flag is on and read its `config`/`rights`.
+- **Spec impact:** frontend only, plus adding `login_required:root` to `Timeline::init` (or handling the private-gallery case elsewhere).
+- **Pros:** no new route.
+- **Cons:** couples the root gallery to a timeline endpoint; carries unused timeline fields; changing its middleware affects the Timeline page.
+
+#### Option C – Add `config` to an existing v3 response
+- **Idea:** Embed `RootConfig` in `GET /api/v3/Albums/root` and take rights from `GET /Rights`.
+- **Spec impact:** changes the DO shape of an existing Feature 062 SoA resource.
+- **Pros:** no new route.
+- **Cons:** mixes page configuration into a SoA list resource (ADR-0009 shape); the `own`/`shared` scope split makes config duplicated or scope-dependent; the list is cached per user while config is global.
+
+#### Option D – Keep the v2 call
+- **Idea:** No change.
+- **Pros:** no work.
+- **Cons:** every root gallery load pays for the full v2 `Top::get()` plus a duplicate rights computation.
 
 ### ~~Q-062-14~~ · Guest exposure of owner display names via root's `shared`-scope bucket labels ✅ RESOLVED
 

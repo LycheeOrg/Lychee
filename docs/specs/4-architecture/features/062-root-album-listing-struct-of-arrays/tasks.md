@@ -1,7 +1,7 @@
 # Feature 062 Tasks – Root Album Listing Struct-of-Arrays
 
-_Status: Implemented — T-062-33 (2026-09-02 amendment, `/Albums/smart` real cover_ids, FR-062-16) implemented, `AlbumCategoryV3Test` 16/16 green._
-_Last updated: 2026-09-02_
+_Status: Implemented — T-062-34..36 (2026-09-29, `GET /Albums/root/config`, FR-062-17) implemented, `AlbumRootConfigV3Test` 5/5 green._
+_Last updated: 2026-09-29_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions.
@@ -246,6 +246,15 @@ _Last updated: 2026-09-02_
   _Intent:_ Feature 063's smart-album root-tile addendum depends on this — Feature 063's own I14 tracks it only as a precondition (T-063-41), this is the actual implementation task.
   _Note:_ Implemented as specced, one query total (not per-row) via `whereIn`. Existing `testSmartReturnsSameSetAsV2WithZeroQueries`'s "zero queries" assertion is scoped to *photos* queries specifically (its own comment already anticipated `with_relations=false`-style exceptions) — the new query targets `album_user_thumbs`, not `photos`, so it needed no change and still passes.
   _Verification commands:_ `make phpstan` (0 errors); `vendor/bin/php-cs-fixer fix --dry-run` (clean); `php artisan test --filter=AlbumCategoryV3Test` (16/16 green, includes new `testSmartResolvesRealCoverFromCacheHitAndNullFromCacheMiss`).
+
+- [x] T-062-34 – Feature tests first: `tests/Feature_v3/Album/AlbumRootConfigV3Test.php` (FR-062-17, S-062-18, S-062-30, S-062-31, S-062-32, S-062-33).
+  _Verification commands:_ `php artisan test --filter=AlbumRootConfigV3Test` (red before T-062-35).
+
+- [x] T-062-35 – Backend: `AlbumRootConfigResource`, `AlbumRootController::config()`, route `GET /api/v3/Albums/root/config` (FR-062-17, S-062-30, S-062-31, S-062-32, S-062-33).
+  _Verification commands:_ `php artisan test --filter=AlbumRootConfigV3Test`; `php artisan test --filter=AlbumRootV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
+- [x] T-062-36 – Frontend: `AlbumsState.load()` reads `rootConfig`/`rootRights` from `/Albums/root/config` when `is_struct_of_array_enabled`, v2 `GET /Albums` only when off; 401 still opens the login modal (FR-062-17).
+  _Verification commands:_ `npm run format`; `npm run check`.
 
 ## Notes / TODOs
 

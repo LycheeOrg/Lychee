@@ -1,7 +1,7 @@
 # Feature 057 Tasks – Album Listing v3
 
 _Status: Completed_
-_Last updated: 2026-08-22_
+_Last updated: 2026-09-29_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -94,6 +94,14 @@ _Last updated: 2026-08-22_
   - `php artisan test --filter=CacheKeyProviderTest`
   - `php artisan test --filter=ManagedCacheAlbumListingInvalidator`
   _Notes:_ Plan I7. Prepare commit summary per AGENTS.md commit protocol; do not commit directly.
+
+- [x] T-057-13 – Feature tests first + restrict the default listing to browsable albums (FR-057-01, NFR-057-04, S-057-13, S-057-19, S-057-20, S-057-21, S-057-22).
+  _Intent:_ Add `AlbumQueryPolicy::applyAncestorReachabilityFilter()` (strict ancestors must be reachable, album itself need not be) and apply it after `applyVisibilityFilter()` in `AlbumListController::queryAlbums()` (Q-057-06).
+  _Verification commands:_
+  - `php artisan test --filter=AlbumListV3Test`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+  _Notes:_ Plan I8.
 
 ## Notes / TODOs
 

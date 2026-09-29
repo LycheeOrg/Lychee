@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/062-root-album-listing-struct-of-arrays/spec.md`
 _Status:_ Implemented
-_Last updated:_ 2026-09-02
+_Last updated:_ 2026-09-29
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md).
 
@@ -112,6 +112,13 @@ Before merging, re-run: `git diff` on `routes/api_v2.php`, `app/Http/Controllers
    - _Steps:_ Implementation Drift Gate diff check. Verify FR-062-14's claim directly: trigger each existing `ManagedCacheAlbumListingInvalidator`-handled event (album save/move/delete/visibility-change etc.) against a populated root/persons/pinned cache and confirm the new `rootAlbum*`/`pinnedAlbumsListing*`/`personAlbumsListing*` cache entries are actually evicted — do not just trust that `albumChildrenTag(null)` and the existing category tags already cover this because the spec says so. Full new-surface + Feature 061's unmodified regression suite + `--filter=Album`/`--filter=Settings`/`--filter=Cache`. `make phpstan`, `php-cs-fixer`. File-count tally against NFR-062-09. Update `api-design.md`, `database-schema.md`, `knowledge-map.md`, `roadmap.md`.
    - _Commands:_ `php artisan test --filter=Album`, `php artisan test --filter=Settings`, `make phpstan`, `vendor/bin/php-cs-fixer fix --dry-run --diff`.
    - _Exit:_ All quality gates clean; roadmap row updated.
+
+7. **I7 – Root gallery config endpoint (FR-062-17)**
+   - _Goal:_ The SoA root gallery stops calling v2 `GET /Albums` (Q-062-18).
+   - _Preconditions:_ I1–I6 complete.
+   - _Steps:_ Feature tests first (`AlbumRootConfigV3Test`, S-062-30..33). Add `AlbumRootConfigResource`, `AlbumRootController::config()`, route `GET /Albums/root/config` (`login_required:root`, `cache_control`). Frontend: `AlbumRootV3Service`-level call + `AlbumsState.load()` branch on `is_struct_of_array_enabled`, keeping the 401 → login-modal handling.
+   - _Commands:_ `php artisan test --filter=AlbumRootConfigV3Test`, `php artisan test --filter=AlbumRootV3Test`, `vendor/bin/php-cs-fixer fix`, `make phpstan`, `npm run format`, `npm run check`.
+   - _Exit:_ S-062-30..33 green; gallery load issues no v2 `GET /Albums` with the flag on.
 
 ## Scenario Tracking
 

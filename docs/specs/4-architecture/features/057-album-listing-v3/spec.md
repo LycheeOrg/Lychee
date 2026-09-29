@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Completed |
-| Last updated | 2026-08-22 |
+| Last updated | 2026-09-29 |
 | Owners | ildyria |
 | Linked plan | `docs/specs/4-architecture/features/057-album-listing-v3/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/057-album-listing-v3/tasks.md` |
@@ -43,13 +43,13 @@ This is the first `/api/v3/...` collection endpoint (Feature 056 was a single-it
 - **No new database columns or migrations** — purely a read/query-shape feature over existing `albums`/`base_albums`/`access_permissions`/`users` columns.
 - **No thumbnail resolution.** `cover_ids` (FR-057-09) exposes a photo **ID** only; resolving it to actual image bytes/a URL is the caller's responsibility via the separate Feature 056 v3 Asset endpoint. This endpoint never touches `SizeVariant`/`Watermarker`/file storage.
 - **No new telemetry events.**
-- **No reachability/password-unlock awareness** in the default mode (Q-057-01) — a password-protected-but-not-yet-unlocked album still appears if it is otherwise visible (public/shared/owned).
+- **No password-lock filtering of a listed album itself** (Q-057-01, Q-057-06) — a visible, password-protected-but-not-yet-unlocked album still appears as long as every one of its ancestors is reachable, so the visitor can click it to unlock it.
 
 ## Functional Requirements
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-057-01 | `GET /api/v3/Albums` returns every album visible to the requesting visitor/user per `AlbumQueryPolicy::applyVisibilityFilter()`, ordered by `albums._lft` ascending, as a Struct-of-Arrays JSON body containing at minimum `ids`, `titles`, `lft`, `rgt`, `cover_ids` (parallel arrays, index-aligned). | 200 with fully populated parallel arrays (empty arrays, not an error, when the visitor has zero visible albums). | Query params validated per FR-057-02/03. | N/A (no failure branch beyond validation/authorization). | None. | User instruction; precedent `FullTree::check()` (`app/Http/Controllers/Admin/Maintenance/FullTree.php:47`). |
+| FR-057-01 | `GET /api/v3/Albums` returns every album the requesting visitor/user can browse to by clicking from the root: the album is visible per `AlbumQueryPolicy::applyVisibilityFilter()` and every one of its ancestors is reachable per `AlbumQueryPolicy::applyAncestorReachabilityFilter()` (public-and-not-link-required or shared or owned, and unlocked when password-protected; admins bypass both). Ordered by `albums._lft` ascending, as a Struct-of-Arrays JSON body containing at minimum `ids`, `titles`, `lft`, `rgt`, `cover_ids` (parallel arrays, index-aligned). | 200 with fully populated parallel arrays (empty arrays, not an error, when the visitor has zero visible albums). | Query params validated per FR-057-02/03. | N/A (no failure branch beyond validation/authorization). | None. | User instruction; Q-057-01; Q-057-06; precedent `FullTree::check()` (`app/Http/Controllers/Admin/Maintenance/FullTree.php:47`). |
 | FR-057-09 | `cover_ids[i]` is resolved per the same priority rule as `HasAlbumThumb::getCoverTypeForAlbum()`: `albums.cover_id` if set, else `albums.auto_cover_id_max_privilege` when the requesting user is an admin or the album's owner, else `albums.auto_cover_id_least_privilege`; `null` when none of the three yields a value (no live legacy-fallback query, unlike `HasAlbumThumb::getResults()`). | `cover_ids` array present in every mode (not gated behind `with_parent_id`/`for_bulk_edit`). | N/A. | N/A. | None. | Q-057-05. |
 | FR-057-02 | Optional boolean query param `with_parent_id` (default `false`). When `true`, response additionally includes `parent_ids` (index-aligned, `null` for a root album's entry — never omitted). Requires `may_administrate === true`. | 200 with `parent_ids` populated. | `sometimes\|boolean`. | Non-admin caller supplying `with_parent_id=true` → 403. | None. | Q-057-02; fixTree consumer (`FullTree::check()`). |
 | FR-057-03 | Optional boolean query param `for_bulk_edit` (default `false`). When `true`, response additionally includes a nested SoA block with full `BulkAlbumResource` field parity (see DO-057-02). Requires `may_administrate === true`. | 200 with the bulk-edit block populated. | `sometimes\|boolean`. | Non-admin caller supplying `for_bulk_edit=true` → 403. | None. | Q-057-02/Q-057-03; bulk-edit consumer (`BulkAlbumController::index()`/`BulkAlbumResource`). |
@@ -66,7 +66,7 @@ This is the first `/api/v3/...` collection endpoint (Feature 056 was a single-it
 | NFR-057-01 | The base query must use `Illuminate\Database\Eloquent\Builder::toBase()` (raw `stdClass` rows, no Eloquent hydration/casts/model events/eager-loading) for every mode. | "Lightest possible way" instruction. | Code review confirms `toBase()` is called before `->get()`; no Eloquent model methods invoked on result rows. | `FullTree::check()` precedent. | User instruction. |
 | NFR-057-02 | The endpoint never paginates, under any flag combination — it always returns the complete curated set in one response. | Client must have the whole set to build a valid tree from `_lft`/`_rgt`; an arbitrary page boundary can split a subtree. | Feature test asserts response array length equals the full curated count, with no `page`/`per_page`/`links`/`meta` pagination envelope. | Q-057-04. | Q-057-04 resolution. |
 | NFR-057-03 | The default mode must function correctly for an unauthenticated visitor (`Auth::user() === null`), matching `AlbumQueryPolicy`'s existing null-user support. | User explicitly said "visitor/user." | Feature test covers an unauthenticated request against a public album. | `AlbumQueryPolicy::applyVisibilityFilter()`'s existing `?User $user` support. | Q-057-01 resolution; user instruction. |
-| NFR-057-04 | Cache key must be a pure function of (user identity, `with_parent_id`, `for_bulk_edit`) — no two distinct combinations may collide on the same key, and no two different users may share a key. | Cache correctness; avoids serving one user's/mode's data to another. | Unit test asserts key uniqueness across a matrix of (guest, user A, user B) × (00, 10, 01, 11) flag combinations, mirroring NFR-053-08's key-uniqueness test pattern. | `CacheKeyProvider` (Feature 053 precedent). | Feature 053 (`CacheKeyProvider`, NFR-053-08). |
+| NFR-057-04 | Cache key must be a pure function of (user identity, `with_parent_id`, `for_bulk_edit`, unlocked-album digest `CacheKeyProvider::unlockedAlbumsDigest()`) — no two distinct combinations may collide on the same key, no two different users may share a key, and two sessions with different unlocked albums never share a key (FR-057-01 depends on unlock state). | Cache correctness; avoids serving one user's/mode's data to another. | Unit test asserts key uniqueness across a matrix of (guest, user A, user B) × (00, 10, 01, 11) flag combinations, mirroring NFR-053-08's key-uniqueness test pattern. | `CacheKeyProvider` (Feature 053 precedent). | Feature 053 (`CacheKeyProvider`, NFR-053-08). |
 | NFR-057-05 | No new database columns or migrations. | Feature is read-only over existing schema. | `git diff -- database/migrations/` empty for this feature. | N/A. | Non-Goals. |
 | NFR-057-06 | `make phpstan` (level 6 minimum) and `vendor/bin/php-cs-fixer fix` clean on every new/changed file. | Repo quality gate. | `make phpstan`; `php-cs-fixer fix --dry-run`. | AGENTS.md quality gate. | AGENTS.md. |
 
@@ -86,18 +86,22 @@ This is the first `/api/v3/...` collection endpoint (Feature 056 was a single-it
 | S-057-10 | An album is edited/moved/deleted, or its access permissions change, between two requests; the second request reflects the change (cache invalidated via the extended Feature 053 listener), not stale data. |
 | S-057-11 | `managed_cache_enabled=false` or `managed_cache_albums_enabled=false`; endpoint still returns correct data, uncached (query re-executed every call). |
 | S-057-12 | A root album (`parent_id IS NULL`) is present when `with_parent_id=true`; its `parent_ids` entry is `null`, and every parallel array stays index-aligned across all albums including this one. |
-| S-057-13 | A password-protected album that the visitor has *not* unlocked, but which is otherwise public, still appears in the default listing (regression guard for the Q-057-01 "visibility only" resolution — explicitly not reachability-filtered). |
+| S-057-13 | A password-protected album that the visitor has *not* unlocked, but which is otherwise public, still appears in the default listing when its ancestors are reachable (Q-057-01, Q-057-06). |
 | S-057-14 | Two different users (or a guest and a user) each request default mode; each gets their own correctly-curated result — cache entries never leak across identities (NFR-057-04). |
 | S-057-15 | An album has an explicit `cover_id` set → `cover_ids[i]` equals that value regardless of viewer privilege (FR-057-09). |
 | S-057-16 | An album has no explicit cover but the requester is its owner (or an admin) → `cover_ids[i]` equals `auto_cover_id_max_privilege`. |
 | S-057-17 | An album has no explicit cover and the requester is neither owner nor admin → `cover_ids[i]` equals `auto_cover_id_least_privilege`. |
 | S-057-18 | An album has none of the three cover columns set → `cover_ids[i]` is `null` (no live fallback query). |
+| S-057-19 | A public, visible album whose parent is private (no permission row) → absent from the guest's listing, as is the parent (FR-057-01). |
+| S-057-20 | A public, visible album whose parent is public but link-required → absent from the guest's listing, as is the parent (FR-057-01). |
+| S-057-21 | A public, visible album whose parent is public, visible and password-protected → the parent is listed, the child is absent until the parent is unlocked in the session, then both are listed (FR-057-01, NFR-057-04). |
+| S-057-22 | An authenticated non-admin requests default mode; a public, visible album under another user's private album is absent (FR-057-01). |
 
 ## Test Strategy
 
 - **Core:** N/A (no core-library changes).
 - **Application:** Unit tests for the new `AlbumQueryPolicy::joinBaseAlbumBulkEditFields()` join helper and the new `CacheKeyProvider` key/tag methods (mirrors existing `CacheKeyProvider` unit test coverage from Feature 053).
-- **REST:** New `tests/Feature_v3/Album/AlbumListV3Test.php` extending `Tests\Feature_v3\Base\BaseApiWithDataTest`, covering S-057-01..14. Reuses the existing v2/v3 fixture graph (no new fixtures needed).
+- **REST:** New `tests/Feature_v3/Album/AlbumListV3Test.php` extending `Tests\Feature_v3\Base\BaseApiWithDataTest`, covering S-057-01..22. Reuses the existing v2/v3 fixture graph (no new fixtures needed).
 - **CLI:** N/A.
 - **UI (JS/Selenium):** N/A — front-end is explicitly out of scope.
 - **Docs/Contracts:** `docs/specs/3-reference/api-design.md` gains an entry for `GET /api/v3/Albums`; `docs/specs/4-architecture/knowledge-map.md` updated to reference the new controller/resources.
@@ -226,11 +230,11 @@ ui_states: []
 
 ## Appendix
 
-### Decision Cards (Q-057-01..04)
+### Decision Cards (Q-057-01..06)
 
 #### Q-057-01 — Rights-curation filter for the default listing mode
 
-**Resolved: Option A — `AlbumQueryPolicy::applyVisibilityFilter()`.** Matches Feature 053's existing root-listing cache-key shape (keyed only by user identity, no session-scoped "unlocked album" digest needed). A password-protected-but-not-unlocked album may still appear in the default listing — accepted as correct behaviour (S-057-13), not a security gap, since visibility (not reachability/unlock state) is the intended curation semantics here. Rejected alternative: `applyReachabilityFilter()` (matches today's v2 `ListAlbums`/`getTargetListAlbums` exactly, but requires `AlbumPolicy::getUnlockedAlbumIDs()` and a session-scoped digest baked into the cache key, the same complexity Feature 053 had to solve separately for the Tag detail page — heavier, rejected per the "lightest possible way" instruction).
+**Resolved: Option A — `AlbumQueryPolicy::applyVisibilityFilter()` for the album itself.** A password-protected-but-not-unlocked album appears in the default listing (S-057-13) so the visitor can click it to unlock it; its cover is gated separately (#4704). Which ancestors must be reachable is governed by Q-057-06.
 
 #### Q-057-02 — Query-parameter shape for the fixTree/bulk-edit variants
 
@@ -247,3 +251,7 @@ ui_states: []
 #### Q-057-05 — Move-picker thumbnail needed, discovered while scoping Feature 058
 
 **Resolved:** add `cover_ids` (FR-057-09) to the base/default response. While scoping Feature 058 (migrating the v2 move-target picker to consume this endpoint), it became clear the picker's current thumbnail display had no field to migrate to — the original minimal 4-field shape had no cover concept at all. Rather than let Feature 058 bolt on a workaround, the gap was fixed at its source: `cover_id`/`auto_cover_id_max_privilege`/`auto_cover_id_least_privilege` all already live on `albums` (confirmed via migration audit), so exposing a resolved cover id costs zero extra joins/queries, reusing `HasAlbumThumb`'s existing priority rule as a pure function (no relation load). The endpoint still returns only an ID, not bytes/a URL — Feature 058's consumers pair it with the separate Feature 056 v3 Asset endpoint.
+
+#### Q-057-06 — Browsable-only default listing
+
+**Resolved: Option A — visibility plus ancestor-only reachability.** The default listing contains only albums reachable by clicking from the root: `applyVisibilityFilter()` for the album itself, and the new `AlbumQueryPolicy::applyAncestorReachabilityFilter()` for every strict ancestor (it reuses `appendUnreachableAlbumsCondition()` with the album itself excluded). A still-locked visible album stays listed, keeping it clickable in the nav tree and spotlight and keeping the #4704 locked-cover gate meaningful; its descendants appear once it is unlocked. Rejected alternative: `applyBrowsabilityFilter()` as-is, which also requires the album itself to be reachable and would therefore hide still-locked albums from the visitor who needs to click them to unlock them.
