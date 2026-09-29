@@ -18,6 +18,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Validator;
 
 class BatchFaceRequest extends BaseApiRequest
 {
@@ -93,9 +94,9 @@ class BatchFaceRequest extends BaseApiRequest
 		];
 	}
 
-	public function withValidator(\Illuminate\Validation\Validator $validator): void
+	public function withValidator(Validator $validator): void
 	{
-		$validator->after(function (\Illuminate\Validation\Validator $validator): void {
+		$validator->after(function (Validator $validator): void {
 			if ($validator->errors()->isNotEmpty()) {
 				return;
 			}
