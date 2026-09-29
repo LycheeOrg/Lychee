@@ -8,9 +8,9 @@
 
 namespace App\Relations;
 
-use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
+use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ResolvesUserContext;
 use App\Models\Extensions\SortingDecorator;
@@ -80,12 +80,12 @@ abstract class BaseHasManyPhotos extends Relation
 	}
 
 	/**
-	 * @return FixedQueryBuilder<Photo>
+	 * @return PhotoBuilder<Photo>
 	 */
-	protected function getRelationQuery(): FixedQueryBuilder
+	protected function getRelationQuery(): PhotoBuilder
 	{
 		/**
-		 * We know that the internal query is of type `FixedQueryBuilder`,
+		 * We know that the internal query is of type `PhotoBuilder`,
 		 * because it was set in the constructor as `Photo::query()`.
 		 *
 		 * @noinspection PhpIncompatibleReturnTypeInspection

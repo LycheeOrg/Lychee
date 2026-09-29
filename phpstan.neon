@@ -6,9 +6,7 @@ includes:
 
 parameters:
 	level: 3
-	tips:
-		treatPhpDocTypesAsCertain: false
-	treatPhpDocTypesAsCertain: true
+	treatPhpDocTypesAsCertain: false
 	checkOctaneCompatibility: true
 	sensitiveParameter:
 		keywords: ['apiKey', 'auth', 'bearer', 'card', 'ccv', 'credential', 'credit', 'csrf', 'cvv', 'hash', 'nonce', 'otp', 'passcode', 'password', 'private', 'salt', 'secret', 'signature', 'ssn']

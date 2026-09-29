@@ -24,13 +24,13 @@ class SetAsHeaderRequestTest extends BaseRequestTest
 {
 	public function testAuthorization()
 	{
-		$albumMock = $this->createMock(Album::class);
+		$albumMock = self::createStub(Album::class);
 
 		Gate::shouldReceive('check')
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $albumMock])
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($albumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);
