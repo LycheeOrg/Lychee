@@ -91,12 +91,12 @@ class DispatchNsfwScanJobTest extends AbstractTestCase
 
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$response = $this->createMock(Response::class);
+		$response = self::createStub(Response::class);
 		$response->method('successful')->willReturn(false);
 		$response->method('status')->willReturn(500);
 		$response->method('json')->willReturn(['error' => 'internal']);
 
-		$service = $this->createMock(NsfwDetectionService::class);
+		$service = self::createStub(NsfwDetectionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('dispatchPhoto')->willReturn($response);
 
@@ -113,7 +113,7 @@ class DispatchNsfwScanJobTest extends AbstractTestCase
 
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$service = $this->createMock(NsfwDetectionService::class);
+		$service = self::createStub(NsfwDetectionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('dispatchPhoto')->willThrowException(new \RuntimeException('Connection refused'));
 
@@ -128,10 +128,10 @@ class DispatchNsfwScanJobTest extends AbstractTestCase
 	{
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$response = $this->createMock(Response::class);
+		$response = self::createStub(Response::class);
 		$response->method('successful')->willReturn(true);
 
-		$service = $this->createMock(NsfwDetectionService::class);
+		$service = self::createStub(NsfwDetectionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('dispatchPhoto')->willReturn($response);
 

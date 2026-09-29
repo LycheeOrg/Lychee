@@ -44,7 +44,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 
 	public function testAuthorization()
 	{
-		$tagalbumMock = $this->createMock(TagAlbum::class);
+		$tagalbumMock = self::createStub(TagAlbum::class);
 		$baseAlbumImpl = new BaseAlbumImpl();
 		$tagalbumMock->method('__get')->willReturnCallback(function (string $key) use ($baseAlbumImpl) {
 			if ($key === 'base_class') {
@@ -59,7 +59,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $tagalbumMock])
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($tagalbumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);
