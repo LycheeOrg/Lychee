@@ -16,10 +16,12 @@ use App\Enum\OrderSortingType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TitleBucketMode;
 use App\Http\Controllers\Gallery\AlbumListController;
+use App\Http\Requests\Album\GetAlbumCategoryRequest;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumBucketResource;
 use App\Http\Resources\V3\AlbumDataResource;
 use App\Http\Resources\V3\AlbumRightsResource;
+use App\Http\Resources\V3\AlbumRootConfigResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
@@ -38,7 +40,7 @@ use function Safe\mktime;
 use Spatie\LaravelData\Optional;
 
 /**
- * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights]`
+ * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights|/config]`
  * root albums (`parent_id IS NULL`) get the same buckets/index/rights
  * trio as sub-albums, plus a `scope` (`own`\|`shared`) dimension
  * reproducing today's `Top::get()` owned/shared partition.
@@ -54,6 +56,14 @@ class AlbumRootController extends Controller
 		protected ManagedCacheService $managed_cache_service,
 		protected CacheKeyProvider $cache_key_provider,
 	) {
+	}
+
+	/**
+	 * The root gallery page's configuration and rights, without any album query.
+	 */
+	public function config(GetAlbumCategoryRequest $request): AlbumRootConfigResource
+	{
+		return new AlbumRootConfigResource();
 	}
 
 	/**

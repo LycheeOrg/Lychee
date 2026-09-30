@@ -10,11 +10,16 @@ namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
 use App\Facades\Helpers;
+use App\Http\Middleware\ReadOnlyStartSession;
+use App\Http\Middleware\VerifyCsrfToken;
 use Dedoc\Scramble\Scramble;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,9 +126,20 @@ Route::match(['get', 'post'], '/api/v1/{path}', fn () => view('error.v1-is-dead'
 	->where('path', '.*')
 	->middleware(['migration:complete']);
 
+// One request per image: skip the installation/admin-user checks, read the
+// session without writing it back, and issue no cookie (session, XSRF-TOKEN).
 Route::get('image/{path}', SecurePathController::class)
 	->name('image')
-	->where('path', '.*');
+	->where('path', '.*')
+	->withoutMiddleware([
+		'installation:complete',
+		'admin_user:set',
+		AddQueuedCookiesToResponse::class,
+		StartSession::class,
+		ShareErrorsFromSession::class,
+		VerifyCsrfToken::class,
+	])
+	->middleware(ReadOnlyStartSession::class);
 
 Route::get('/.well-known/appspecific/com.chrome.devtools.json', fn () => response()->noContent());
 

@@ -127,6 +127,7 @@ class PhotoPolicy extends BasePolicy
 		if ($photo->is_validated !== true) {
 			return false;
 		}
+
 		if ($this->isOwner($user, $photo)) {
 			return true;
 		}

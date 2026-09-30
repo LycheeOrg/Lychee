@@ -35,6 +35,7 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -45,6 +46,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const togglableStore = useTogglablesStateStore();
+const albumListStore = useAlbumListStore();
 const { is_create_album_visible } = storeToRefs(togglableStore);
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
@@ -89,6 +91,7 @@ function create() {
 			title.value = undefined;
 			is_create_album_visible.value = false;
 			AlbumService.clearCache(getParentId());
+			albumListStore.invalidate();
 			router.push(`/gallery/${response.data}`);
 		})
 		.catch((error) => {

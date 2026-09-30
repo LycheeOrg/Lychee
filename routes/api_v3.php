@@ -8,7 +8,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\ReadOnlyStartSession;
+use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +31,19 @@ use Illuminate\Support\Facades\Route;
 // `json_errors` still forces every *error* response (404/401/403/422) to
 // render as Lychee's standard JSON error body, independent of
 // what the client actually sent as its Accept header.
+// A gallery page issues one request per thumbnail: the session is read
+// (authenticated user, unlocked albums) but never written back, and no
+// cookie (session, XSRF-TOKEN) is issued. GET only, so no CSRF check.
 Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
-	->withoutMiddleware(['accept_content_type:json', 'content_type:json'])
-	->middleware('json_errors');
+	->withoutMiddleware([
+		'accept_content_type:json',
+		'content_type:json',
+		AddQueuedCookiesToResponse::class,
+		StartSession::class,
+		ShareErrorsFromSession::class,
+		VerifyCsrfToken::class,
+	])
+	->middleware(['json_errors', ReadOnlyStartSession::class]);
 
 // Struct-of-Arrays JSON collection endpoint (ADR-0009).
 Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
@@ -52,6 +67,7 @@ Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListContr
 Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
 Route::get('/Albums/root/buckets', [Gallery\AlbumListing\AlbumRootController::class, 'buckets']);
 Route::get('/Albums/root/rights', [Gallery\AlbumListing\AlbumRootController::class, 'rights']);
+Route::get('/Albums/root/config', [Gallery\AlbumListing\AlbumRootController::class, 'config'])->middleware(['login_required:root', 'cache_control']);
 Route::get('/Albums/smart', [Gallery\AlbumListing\AlbumSmartController::class, 'smart']);
 Route::get('/Albums/persons', [Gallery\AlbumListing\AlbumPersonController::class, 'persons']);
 Route::get('/Albums/tags', [Gallery\AlbumListing\AlbumTagController::class, 'tags']);

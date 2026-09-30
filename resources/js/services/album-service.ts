@@ -137,6 +137,7 @@ const AlbumService = {
 		// "invalidate the root listing" call
 		// site every mutation that could affect it (create/delete/move/
 		// rename/visibility/unlock/pin) already calls.
+		axiosWithCache.storage.remove("albums_v3_root_config");
 		axiosWithCache.storage.remove("albums_v3_smart");
 		axiosWithCache.storage.remove("albums_v3_tags");
 		axiosWithCache.storage.remove("albums_v3_tags_rights");

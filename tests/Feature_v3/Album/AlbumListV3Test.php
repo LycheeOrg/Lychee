@@ -23,6 +23,7 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -172,6 +173,88 @@ class AlbumListV3Test extends BaseApiWithDataTest
 
 		$response->assertOk();
 		self::assertContains($locked_album->id, $response->json('ids'));
+	}
+
+	// ── browsability of ancestors (FR-057-01) ────────────────────
+
+	/**
+	 * S-057-19: a public+visible album nested under a private album is not
+	 * reachable by clicking, so it is excluded.
+	 */
+	public function testPublicAlbumUnderPrivateParentIsExcluded(): void
+	{
+		$private_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$public_child = Album::factory()->children_of($private_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+
+		$response->assertOk();
+		$ids = $response->json('ids');
+		self::assertNotContains($private_parent->id, $ids);
+		self::assertNotContains($public_child->id, $ids);
+	}
+
+	/**
+	 * S-057-20: a public+visible album nested under a link-required album is
+	 * excluded, even though the parent itself is public.
+	 */
+	public function testPublicAlbumUnderLinkRequiredParentIsExcluded(): void
+	{
+		$hidden_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->for_album($hidden_parent)->create();
+		$public_child = Album::factory()->children_of($hidden_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+
+		$response->assertOk();
+		$ids = $response->json('ids');
+		self::assertNotContains($hidden_parent->id, $ids);
+		self::assertNotContains($public_child->id, $ids);
+	}
+
+	/**
+	 * S-057-21: a public+visible album nested under a password-protected
+	 * parent is excluded until the parent is unlocked; the locked parent
+	 * itself stays listed (S-057-13).
+	 */
+	public function testPublicAlbumUnderLockedParentAppearsOnlyOnceUnlocked(): void
+	{
+		$locked_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_parent)->create();
+		$public_child = Album::factory()->children_of($locked_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response_locked = $this->getJsonV3('Albums');
+		$response_locked->assertOk();
+		self::assertContains($locked_parent->id, $response_locked->json('ids'));
+		self::assertNotContains($public_child->id, $response_locked->json('ids'));
+
+		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $locked_parent->id);
+		$response_unlocked = $this->getJsonV3('Albums');
+		$response_unlocked->assertOk();
+		self::assertContains($locked_parent->id, $response_unlocked->json('ids'));
+		self::assertContains($public_child->id, $response_unlocked->json('ids'));
+	}
+
+	/**
+	 * S-057-22: an authenticated non-owner gets the same ancestor check — a
+	 * public album under another user's private album is excluded.
+	 */
+	public function testNonAdminDoesNotSeePublicAlbumUnderOthersPrivateParent(): void
+	{
+		$private_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$public_child = Album::factory()->children_of($private_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums');
+
+		$response->assertOk();
+		self::assertNotContains($public_child->id, $response->json('ids'));
 	}
 
 	// ── locked-album cover visibility (#4704) ────────────────────

@@ -19,6 +19,7 @@
 namespace Tests\Unit\Middleware;
 
 use App\Http\Middleware\ResolveVerify;
+use App\Repositories\ConfigManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Verify;
@@ -26,33 +27,28 @@ use Tests\AbstractTestCase;
 
 class ResolveVerifyTest extends AbstractTestCase
 {
-	public function testPassesThroughWhenConfigsTableMissing(): void
+	/**
+	 * {@see \App\Http\Middleware\ResolveConfigs} did not set `configs`
+	 * (not installed yet): pass through without resolving the license.
+	 */
+	public function testPassesThroughWhenConfigsWereNotResolved(): void
 	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andReturn(false);
+		Schema::shouldReceive('hasTable')->never();
 
-		$request = $this->mock(Request::class);
+		$request = Request::create('/');
 		$middleware = new ResolveVerify();
 
 		self::assertEquals(1, $middleware->handle($request, fn () => 1));
-	}
-
-	public function testPassesThroughWhenSchemaCheckThrows(): void
-	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andThrow(new \Exception('no db connection'));
-
-		$request = $this->mock(Request::class);
-		$middleware = new ResolveVerify();
-
-		self::assertEquals(1, $middleware->handle($request, fn () => 1));
+		self::assertFalse($request->attributes->has('verify'));
 	}
 
 	public function testResolvesAndStoresVerify(): void
 	{
-		Schema::shouldReceive('hasTable')->once()->with('configs')->andReturn(true);
-
+		Schema::shouldReceive('hasTable')->never();
 		$this->mock(Verify::class);
 
 		$request = Request::create('/');
+		$request->attributes->set('configs', $this->mock(ConfigManager::class));
 		$middleware = new ResolveVerify();
 
 		self::assertEquals(1, $middleware->handle($request, fn () => 1));

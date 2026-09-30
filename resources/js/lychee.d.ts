@@ -1815,6 +1815,10 @@ declare namespace App {
 					grants_download: boolean[];
 					grants_move: boolean[];
 				};
+				export type AlbumRootConfigResource = {
+					config: App.Http.Resources.GalleryConfigs.RootConfig;
+					rights: App.Http.Resources.Rights.RootAlbumRightsResource;
+				};
 				export type FlowListResource = {
 					ids: string[];
 					titles: string[];

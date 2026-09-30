@@ -293,6 +293,47 @@ export const useAlbumsStore = defineStore("albums-store", {
 					console.error(error);
 				});
 		},
+		/**
+		 * Flag-off path: v2 `GET /Albums` carries the page config/rights and every album list.
+		 */
+		loadV2(): Promise<void> {
+			return AlbumService.getAll().then((data) => {
+				this.rootConfig = data.data.config;
+				this.rootRights = data.data.rights;
+				this.baseSmartAlbums = data.data.smart_albums ?? [];
+				this.tagAlbums = data.data.tag_albums;
+				this.personAlbums = data.data.person_albums ?? [];
+				this.albums = data.data.albums;
+				this.pinnedAlbums = data.data.pinned_albums;
+				this.sharedAlbums = spliter(
+					data.data.shared_albums ?? [],
+					(d) => d.owner ?? "(unknown)", // mapper
+					(d) => d.owner ?? "(unknown)", // formatter
+					this.albums.length,
+				);
+			});
+		},
+		/**
+		 * Flag-on path: `GET /Albums/root/config` for the page config/rights (its 401 opens
+		 * the login modal, as v2 `GET /Albums` does), then the v3 listings, which need `rootConfig`.
+		 */
+		loadV3(): Promise<void> {
+			const userStore = useUserStore();
+
+			return AlbumCategoryV3Service.getRootConfig().then((data) => {
+				this.rootConfig = data.data.config;
+				this.rootRights = data.data.rights;
+
+				return Promise.all([
+					this.loadSmartAlbumsV3(),
+					this.loadTagAlbumsV3(),
+					this.loadPersonAlbumsV3(),
+					this.loadPinnedAlbumsV3(),
+					...(userStore.isLoggedIn ? [this.loadRootAlbumsV3("own").then(() => void this.loadRootAlbumsV3Rights("own"))] : []),
+					this.loadRootAlbumsV3("shared").then(() => void this.loadRootAlbumsV3Rights("shared")),
+				]).then(() => {});
+			});
+		},
 		load(router: Router): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 			const userStore = useUserStore();
@@ -303,51 +344,19 @@ export const useAlbumsStore = defineStore("albums-store", {
 			}
 
 			this.isLoading = true;
-			return AlbumService.getAll()
-				.then((data) => {
-					// `config`/`rights` have no v3 replacement source (v2's
-					// Top::get() stays byte-identical, and none of its
-					// five new endpoints carry a config/rights-for-the-page-itself
-					// field) — this v2 call stays in the loop even when the flag
-					// is on, purely for these two fields.
-					this.rootConfig = data.data.config;
-					this.rootRights = data.data.rights;
-
-					const listsLoaded = lycheeStore.is_struct_of_array_enabled
-						? Promise.all([
-								this.loadSmartAlbumsV3(),
-								this.loadTagAlbumsV3(),
-								this.loadPersonAlbumsV3(),
-								this.loadPinnedAlbumsV3(),
-								...(userStore.isLoggedIn ? [this.loadRootAlbumsV3("own").then(() => void this.loadRootAlbumsV3Rights("own"))] : []),
-								this.loadRootAlbumsV3("shared").then(() => void this.loadRootAlbumsV3Rights("shared")),
-							]).then(() => {})
-						: Promise.resolve().then(() => {
-								this.baseSmartAlbums = data.data.smart_albums ?? [];
-								this.tagAlbums = data.data.tag_albums;
-								this.personAlbums = data.data.person_albums ?? [];
-								this.albums = data.data.albums;
-								this.pinnedAlbums = data.data.pinned_albums;
-								this.sharedAlbums = spliter(
-									data.data.shared_albums ?? [],
-									(d) => d.owner ?? "(unknown)", // mapper
-									(d) => d.owner ?? "(unknown)", // formatter
-									this.albums.length,
-								);
-							});
-
-					return listsLoaded.then(() => {
-						// If we are not logged in and there are no albums, we redirect to the login page.
-						if (
-							(userStore.user?.id === undefined || userStore.user?.id === null) &&
-							this.albums.length === 0 &&
-							this.smartAlbums.length === 0 &&
-							this.sharedAlbums.length === 0 &&
-							this.sharedAlbumsV3.length === 0
-						) {
-							router.push({ name: "login" });
-						}
-					});
+			const listsLoaded = lycheeStore.is_struct_of_array_enabled ? this.loadV3() : this.loadV2();
+			return listsLoaded
+				.then(() => {
+					// If we are not logged in and there are no albums, we redirect to the login page.
+					if (
+						(userStore.user?.id === undefined || userStore.user?.id === null) &&
+						this.albums.length === 0 &&
+						this.smartAlbums.length === 0 &&
+						this.sharedAlbums.length === 0 &&
+						this.sharedAlbumsV3.length === 0
+					) {
+						router.push({ name: "login" });
+					}
 				})
 				.catch((error) => {
 					// We are required to login :)

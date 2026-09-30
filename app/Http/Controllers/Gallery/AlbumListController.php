@@ -84,6 +84,7 @@ class AlbumListController extends Controller
 		}
 
 		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
+		$query = $this->album_query_policy->applyAncestorReachabilityFilter($query, $user, AlbumPolicy::getUnlockedAlbumIDs());
 
 		// Edit grant resolved in the same query; ownership
 		// and admin are resolved from already-known values in toAlbumListResource().

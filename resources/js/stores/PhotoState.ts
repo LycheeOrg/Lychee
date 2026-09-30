@@ -17,6 +17,19 @@ export enum ImageViewMode {
 
 export type PhotoStore = ReturnType<typeof usePhotoStore>;
 
+/**
+ * Darkened thumb background for the previous/next buttons. A neighbour synthesised from a
+ * Struct-of-Arrays listing has no size variants until its details are merged: no background
+ * then, otherwise `url('undefined')` requests `/undefined`.
+ */
+function neighbourStyle(photo: App.Http.Resources.Models.PhotoResource): string {
+	const thumbUrl = photo.size_variants.thumb?.url;
+	if (thumbUrl === undefined || thumbUrl === null) {
+		return "";
+	}
+	return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + thumbUrl + "')";
+}
+
 export const usePhotoStore = defineStore("photo-store", {
 	state: () => ({
 		photoId: undefined as string | undefined,
@@ -130,7 +143,9 @@ export const usePhotoStore = defineStore("photo-store", {
 		// For displaying purposes
 		style(): string {
 			if (!this.photo?.precomputed.is_livephoto) {
-				return `background-image: url(${this.photo?.size_variants.small?.url})`;
+				// No small variant: no placeholder background, otherwise `url(undefined)` requests `/undefined`.
+				const smallUrl = this.photo?.size_variants.small?.url;
+				return smallUrl === undefined || smallUrl === null ? "" : `background-image: url(${smallUrl})`;
 			}
 			if (this.photo?.size_variants.medium !== null) {
 				return `width: ${this.photo?.size_variants.medium.width}px; height: ${this.photo?.size_variants.medium.height}px`;
@@ -195,7 +210,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			if (previousPhoto === undefined) {
 				return "";
 			}
-			return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + previousPhoto.size_variants.thumb?.url + "')";
+			return neighbourStyle(previousPhoto);
 		},
 
 		nextStyle(): string {
@@ -209,7 +224,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			if (nextPhoto === undefined) {
 				return "";
 			}
-			return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + nextPhoto.size_variants.thumb?.url + "')";
+			return neighbourStyle(nextPhoto);
 		},
 	},
 });

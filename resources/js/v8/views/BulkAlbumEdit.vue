@@ -293,12 +293,14 @@ import BulkEditFieldsDialog from "@/v8/components/forms/bulk-album-edit/BulkEdit
 import BulkAlbumEditService, { type BulkAlbumResource } from "@/services/bulk-album-edit-service";
 import AlbumListV3Service from "@/services/album-list-v3-service";
 import AlbumService from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import type { TableColumn } from "@nuxt/ui";
 
 const toast = useAppToast();
+const albumListStore = useAlbumListStore();
 
 const { is_se_enabled, is_se_preview_enabled } = storeToRefs(useLycheeStateStore());
 
@@ -572,10 +574,12 @@ function saveTitle(album: BulkAlbumResource): void {
 	}
 	const originalTitle = album.title;
 	album.title = newTitle;
-	AlbumService.rename(album.id, newTitle).catch(() => {
-		album.title = originalTitle;
-		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
-	});
+	AlbumService.rename(album.id, newTitle)
+		.then(() => albumListStore.invalidate())
+		.catch(() => {
+			album.title = originalTitle;
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
+		});
 }
 
 function cancelEditTitle(): void {
