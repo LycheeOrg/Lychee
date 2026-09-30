@@ -668,7 +668,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'Foto\'s die in gevoelige albums staan, worden niet getoond in de RSS-feed.',
         'hide_nsfw_in_timeline' => 'Foto\'s die in gevoelige albums staan, worden niet getoond op de tijdlijnpagina.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'Dit versnelt de responstijd van Lychee aanzienlijk. <span class="pi pi-exclamation-triangle text-orange-500"></span> Als u met wachtwoord beveiligde albums gebruikt, moet u dit niet inschakelen.',
         'cache_event_logging' => 'Dit kan resulteren in een grote hoeveelheid logs',

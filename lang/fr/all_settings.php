@@ -666,7 +666,7 @@ return [
         'search_photos_layout' => 'Disposition des photos pour la page de recherche',
         'hide_nsfw_in_rss' => 'Ne pas afficher les photos sensibles dans le flux RSS',
         'hide_nsfw_in_timeline' => 'Ne pas afficher les photos sensibles dans la chronologie',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => 'Nombre d’albums par ligne en vue mobile',
         'cache_enabled' => 'Activer la mise en cache des réponses aux requêtes.',
         'cache_event_logging' => 'Ajouter des lignes de log pour les événements liés au cache.',

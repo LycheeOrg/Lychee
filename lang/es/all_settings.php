@@ -666,7 +666,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'Las fotos guardadas en álbumes «sensibles» no aparecerán en el canal RSS.',
         'hide_nsfw_in_timeline' => 'Las fotos guardadas en álbumes privados no aparecerán en la página de la línea de tiempo.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'Esto acelerará considerablemente el tiempo de respuesta de Lychee. <span class="pi pi-exclamation-triangle text-orange-500"></span> Si utilizas álbumes protegidos con contraseña, no debes activar esta opción.',
         'cache_event_logging' => 'Esto puede generar una gran cantidad de registros.',
