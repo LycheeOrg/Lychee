@@ -666,7 +666,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'Bilder plassert i følsomme album vil ikke vises i RSS-feeden.',
         'hide_nsfw_in_timeline' => 'Bilder plassert i følsomme album vil ikke vises på tidslinjesiden.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'Dette vil betydelig øke svartiden til Lychee. <span class="pi pi-exclamation-triangle text-orange-500"></span> Hvis du bruker passordbeskyttede album, bør du ikke aktivere dette.',
         'cache_event_logging' => 'Dette kan resultere i store mengder logger',

@@ -666,7 +666,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'Bilder aus Alben, die als „sensibel“ eingestuft sind, werden im RSS-Feed nicht angezeigt.',
         'hide_nsfw_in_timeline' => 'Bilder aus Alben, die als „sensibel“ eingestuft sind, werden auf der Timeline-Seite nicht angezeigt.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'Beschleunigt die Antwortzeiten von Lychee erheblich. <span class="pi pi-exclamation-triangle text-orange-500"></span> Bei Verwendung passwortgeschützter Alben sollte diese Option nicht aktiviert werden.',
         'cache_event_logging' => 'Kann zu einer großen Menge an Log-Einträgen führen.',

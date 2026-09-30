@@ -666,7 +666,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'Снимките, поставени в чувствителни албуми, няма да се показват в RSS емисията.',
         'hide_nsfw_in_timeline' => 'Снимките, поставени в чувствителни албуми, няма да се показват на страницата с времевата линия.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'Това значително ще ускори времето за реакция на Lychee. <span class="pi pi-exclamation-triangle text-orange-500"></span> Ако използвате защитени с парола албуми, не трябва да активирате това.',
         'cache_event_logging' => 'Това може да доведе до голямо количество логове.',

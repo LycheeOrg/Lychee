@@ -668,7 +668,7 @@ return [
         'search_photos_layout' => '',
         'hide_nsfw_in_rss' => 'عکس‌های قرارگرفته در آلبوم‌های حساس در خوراک RSS نمایش داده نخواهند شد.',
         'hide_nsfw_in_timeline' => 'عکس‌های قرارگرفته در آلبوم‌های حساس در صفحه جدول زمانی نمایش داده نخواهند شد.',
-        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown in the timeline page.',
+        'hide_nsfw_in_landing_page' => 'Pictures placed in sensitive albums will not be shown on the Landing Page.',
         'number_albums_per_row_mobile' => '',
         'cache_enabled' => 'این کار زمان پاسخ‌دهی Lychee را به‌طور قابل‌توجهی افزایش می‌دهد. <span class="pi pi-exclamation-triangle text-orange-500"></span> اگر از آلبوم‌های محافظت‌شده با رمز عبور استفاده می‌کنید، نباید این گزینه را فعال کنید.',
         'cache_event_logging' => 'این ممکن است حجم زیادی گزارش تولید کند',
