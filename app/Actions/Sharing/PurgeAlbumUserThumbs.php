@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\DB;
  *    whole group, and with it every access it granted, is gone.
  *
  * Already covered elsewhere, no call needed: photo deletion (FK
- * `photo_id` cascades), user deletion ({@link \App\Models\User::delete()}),
+ * `photo_id` cascades, `photo_id_2`/`photo_id_3` are set NULL), user deletion ({@link \App\Models\User::delete()}),
  * album deletion ({@link \App\Actions\Album\Delete}), and photo membership
  * changes ({@link \App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange}, whose
  * job recomputes each cached viewer through a permission-filtered query).
@@ -67,10 +67,16 @@ final class PurgeAlbumUserThumbs
 			return;
 		}
 
+		// Any rank (Feature 075, FR-075-11): a photo of the revoked albums
+		// serving as a side cover is as much of a leak as one serving as
+		// the primary, and the whole row goes.
+		$photo_ids = fn () => DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->whereIn(PA::ALBUM_ID, $ids);
+
 		DB::table('album_user_thumbs')
-			->whereIn('photo_id',
-				DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->whereIn(PA::ALBUM_ID, $ids)
-			)
+			->where(fn ($q) => $q
+				->whereIn('photo_id', $photo_ids())
+				->orWhereIn('photo_id_2', $photo_ids())
+				->orWhereIn('photo_id_3', $photo_ids()))
 			->delete();
 	}
 

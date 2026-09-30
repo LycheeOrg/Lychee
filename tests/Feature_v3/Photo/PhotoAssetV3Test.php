@@ -29,6 +29,7 @@ use App\Repositories\ConfigManager;
 use App\Services\TemporaryLinkSigner;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Mockery\MockInterface;
@@ -726,5 +727,68 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
 
 		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
+	}
+
+	// ── Feature 075: side covers (FR-075-10, S-075-08, S-075-09) ──
+
+	/**
+	 * S-075-08: a rank-2/3 automatic side cover stored in a descendant album
+	 * is legitimately served for the parent's asset URL, exactly like the
+	 * rank-1 `auto_cover_id_*` columns already are.
+	 */
+	public function testSideCoverInDescendantAlbumIsServedForParentAlbum(): void
+	{
+		self::assertFalse(
+			DB::table('photo_album')->where('album_id', $this->album1->id)->where('photo_id', $this->subPhoto1->id)->exists(),
+			'Fixture assumption: subPhoto1 lives only in subAlbum1.'
+		);
+		$this->album1->auto_cover_id_max_privilege_2 = $this->subPhoto1->id;
+		$this->album1->save();
+		$variant = $this->thumbVariantOf($this->subPhoto1);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->subPhoto1->id}/thumb");
+
+		$response->assertOk();
+	}
+
+	/**
+	 * S-075-09: widening the cover exception to the side columns does not
+	 * turn it into a blanket bypass — a photo that is neither a cover column
+	 * nor a member still fails the membership check.
+	 */
+	public function testPhotoThatIsNeitherSideCoverNorMemberIsStillForbidden(): void
+	{
+		$this->album1->auto_cover_id_max_privilege_2 = $this->subPhoto1->id;
+		$this->album1->auto_cover_id_least_privilege_3 = $this->photo1->id;
+		$this->album1->save();
+		$variant = $this->thumbVariantOf($this->photo2);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb");
+
+		$response->assertForbidden();
+	}
+
+	/**
+	 * S-075-10 (asset half): a rank-2 cached cover of a smart album resolves
+	 * through the cache exception exactly like the rank-1 one (`photo1` is
+	 * not highlighted, so only the cache legitimises it here).
+	 */
+	public function testSmartAlbumCachedSideCoverIsServed(): void
+	{
+		self::assertFalse($this->photo1->is_highlighted, 'Fixture assumption: photo1 must not be highlighted.');
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => SmartAlbumType::HIGHLIGHTED->value,
+			'photo_id' => $this->photoUnsorted->id,
+			'photo_id_2' => $this->photo1->id,
+		]);
+		$variant = $this->thumbVariantOf($this->photo1);
+		$this->putBytes($variant);
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/' . SmartAlbumType::HIGHLIGHTED->value . "/{$this->photo1->id}/thumb");
+
+		$response->assertOk();
 	}
 }

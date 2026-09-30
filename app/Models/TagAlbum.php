@@ -193,7 +193,7 @@ class TagAlbum extends BaseAlbum
 		// user
 		return $this->getCachedOrLiveThumb(
 			$this->id,
-			fn () => Thumb::createFromQueryable(
+			fn () => Thumb::createManyFromQueryable(
 				$this->photos(),
 				$this->getEffectivePhotoSorting(),
 			),

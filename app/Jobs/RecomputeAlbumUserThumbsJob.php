@@ -12,6 +12,7 @@ use App\DTO\PhotoSortingCriterion;
 use App\Factories\AlbumFactory;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AlbumUserThumb;
+use App\Models\Extensions\CachesAlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
@@ -99,69 +100,79 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 	{
 		$user = $user_id !== null ? User::find($user_id) : null;
 
-		$thumb = match ($this->album_kind) {
-			self::KIND_TAG => $this->resolveTagThumb($user),
-			self::KIND_PERSON => $this->resolvePersonThumb($user),
-			self::KIND_SMART => $this->resolveSmartThumb($user),
-			default => null,
+		$thumbs = match ($this->album_kind) {
+			self::KIND_TAG => $this->resolveTagThumbs($user),
+			self::KIND_PERSON => $this->resolvePersonThumbs($user),
+			self::KIND_SMART => $this->resolveSmartThumbs($user),
+			default => [],
 		};
 
-		if ($thumb === null) {
+		if (count($thumbs) === 0) {
 			// No photo qualifies anymore (e.g. album emptied, or last-matching photo deleted).
 			AlbumUserThumb::query()->where('album_id', '=', $this->album_id)->where('user_id', '=', $user_id)->delete();
 
 			return;
 		}
 
+		// Ranks 1–3 (Feature 075, FR-075-08).
 		AlbumUserThumb::query()->updateOrCreate(
 			['album_id' => $this->album_id, 'user_id' => $user_id],
-			['photo_id' => $thumb->id]
+			CachesAlbumUserThumb::cacheColumns($thumbs)
 		);
 	}
 
 	/**
 	 * Resolve the thumb for a tag album, or null if the album is gone or no photo qualifies for this viewer.
 	 */
-	private function resolveTagThumb(?User $user): ?Thumb
+	/**
+	 * @return list<Thumb>
+	 */
+	private function resolveTagThumbs(?User $user): array
 	{
 		$album = TagAlbum::find($this->album_id);
 		if ($album === null) {
-			return null;
+			return [];
 		}
 
 		$relation = new HasManyPhotosByTag($album, for_user: $user, user_is_set: true);
 
-		return Thumb::createFromQueryable($relation, $album->getEffectivePhotoSorting());
+		return Thumb::createManyFromQueryable($relation, $album->getEffectivePhotoSorting());
 	}
 
 	/**
 	 * Resolve the thumb for a person album, or null if the album is gone or no photo qualifies for this viewer.
 	 */
-	private function resolvePersonThumb(?User $user): ?Thumb
+	/**
+	 * @return list<Thumb>
+	 */
+	private function resolvePersonThumbs(?User $user): array
 	{
 		$album = PersonAlbum::find($this->album_id);
 		if ($album === null) {
-			return null;
+			return [];
 		}
 
 		$relation = new HasManyPhotosByPerson($album, for_user: $user, user_is_set: true);
 
-		return Thumb::createFromQueryable($relation, $album->getEffectivePhotoSorting());
+		return Thumb::createManyFromQueryable($relation, $album->getEffectivePhotoSorting());
 	}
 
 	/**
 	 * Resolve the thumb for a built-in smart album, or null if {@link self::$album_id} isn't a known smart album type.
 	 */
-	private function resolveSmartThumb(?User $user): ?Thumb
+	/**
+	 * @return list<Thumb>
+	 */
+	private function resolveSmartThumbs(?User $user): array
 	{
 		$smart_album_class = AlbumFactory::BUILTIN_SMARTS_CLASS[$this->album_id] ?? null;
 		if ($smart_album_class === null) {
-			return null;
+			return [];
 		}
 
 		$album = $smart_album_class::getInstance()->forUser($user);
 
-		return Thumb::createFromQueryable($album->photos(), PhotoSortingCriterion::createDefault());
+		return Thumb::createManyFromQueryable($album->photos(), PhotoSortingCriterion::createDefault());
 	}
 
 	/**

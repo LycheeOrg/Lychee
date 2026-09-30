@@ -25,6 +25,7 @@ use App\Models\AlbumUserThumb;
 use App\Models\Configs;
 use App\Models\Face;
 use App\Models\Person;
+use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -59,7 +60,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	{
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
 
-		self::assertSame(['ids', 'titles', 'cover_ids', 'owner_ids'], array_keys($json));
+		self::assertSame(['ids', 'titles', 'cover_ids', 'cover_ids_2', 'cover_ids_3', 'owner_ids'], array_keys($json));
 		self::assertNotEmpty($json['ids']);
 	}
 
@@ -128,15 +129,19 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
-		self::assertSame(['ids', 'titles', 'cover_ids', 'owner_ids'], array_keys($json));
+		self::assertSame(['ids', 'titles', 'cover_ids', 'cover_ids_2', 'cover_ids_3', 'owner_ids'], array_keys($json));
 		self::assertContains($this->tagAlbum1->id, $json['ids']);
 
 		// Top::queryTagAlbums()'s eager loads (`access_permissions`,
 		// `owner`, `userThumbRow.photo.size_variants`) are deliberately
 		// dropped for this toBase()-queried endpoint (FR-062-09) — assert
 		// their absence directly rather than an easily-miscounted total.
-		$eager_load_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b|album_user_thumbs|size_variants/i', $q['query']) === 1);
+		$eager_load_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b|size_variants/i', $q['query']) === 1);
 		self::assertCount(0, $eager_load_queries, 'Tags listing must not run any of the eager-load queries Top::queryTagAlbums() carries.');
+		// Feature 075 (FR-075-09, NFR-075-01): the viewer's cached covers are
+		// read in exactly one batched query, never one per row.
+		$cache_queries = array_filter($log, fn (array $q) => preg_match('/album_user_thumbs/i', $q['query']) === 1);
+		self::assertCount(1, $cache_queries, 'Tags listing reads the cover cache in one batched query.');
 	}
 
 	public function testTagsRightsNonAdminGetsRealPerRowGrantsAdminGetsAllTrue(): void
@@ -221,7 +226,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/persons?scope=own')->assertOk()->json();
 
-		self::assertSame(['ids' => [], 'titles' => [], 'cover_ids' => [], 'owner_ids' => []], $json);
+		self::assertSame(['ids' => [], 'titles' => [], 'cover_ids' => [], 'cover_ids_2' => [], 'cover_ids_3' => [], 'owner_ids' => []], $json);
 	}
 
 	private function createPersonAlbum(User $owner, string $title): string
@@ -257,7 +262,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 
 		$json = $this->actingAs($this->userMayUpload2)->getJsonV3('Albums/persons?scope=shared')->assertOk()->json();
 
-		self::assertSame(['ids', 'titles', 'cover_ids', 'owner_ids'], array_keys($json));
+		self::assertSame(['ids', 'titles', 'cover_ids', 'cover_ids_2', 'cover_ids_3', 'owner_ids'], array_keys($json));
 		self::assertSame([$mine_id], $json['ids']);
 	}
 
@@ -336,5 +341,81 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testPinnedAuthenticatedOmittingScopeReturns422(): void
 	{
 		$this->assertUnprocessable($this->actingAs($this->userMayUpload1)->getJsonV3('Albums/pinned'));
+	}
+
+	// ── Feature 075: side covers from the viewer cache (FR-075-09) ──
+
+	/**
+	 * S-075-10: a smart album's cached row carries ranks 1–3; the listing
+	 * returns them, and the setting turns the sides off.
+	 */
+	public function testSmartListingReturnsCachedSideCovers(): void
+	{
+		AlbumUserThumb::query()->updateOrCreate(
+			['user_id' => $this->userMayUpload1->id, 'album_id' => SmartAlbumType::UNSORTED->value],
+			['photo_id' => $this->photoUnsorted->id, 'photo_id_2' => $this->photo1->id, 'photo_id_3' => $this->photo2->id],
+		);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+		$i = array_search(SmartAlbumType::UNSORTED->value, $json['ids'], true);
+		self::assertNotFalse($i);
+		self::assertSame([$this->photoUnsorted->id, $this->photo1->id, $this->photo2->id], [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]]);
+
+		Configs::set('album_hover_side_covers_enabled', '0');
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+		self::assertSame([$this->photoUnsorted->id, null, null], [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]]);
+	}
+
+	/**
+	 * S-075-11: a tag album without a manual cover shows the cached primary
+	 * and sides; with a manual cover the sides exclude it; without a cached
+	 * row nothing is computed live.
+	 */
+	public function testTagsListingReturnsCachedPrimaryAndSides(): void
+	{
+		$cached = TagAlbum::factory()->owned_by($this->userMayUpload1)->create();
+		$uncached = TagAlbum::factory()->owned_by($this->userMayUpload1)->create();
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => $cached->id,
+			'photo_id' => $this->photo1->id,
+			'photo_id_2' => $this->photo1b->id,
+			'photo_id_3' => $this->photo2->id,
+		]);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/tags')->assertOk()->json();
+		$i = array_search($cached->id, $json['ids'], true);
+		$j = array_search($uncached->id, $json['ids'], true);
+		self::assertNotFalse($i);
+		self::assertNotFalse($j);
+		self::assertSame([$this->photo1->id, $this->photo1b->id, $this->photo2->id], [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]]);
+		self::assertSame([null, null, null], [$json['cover_ids'][$j], $json['cover_ids_2'][$j], $json['cover_ids_3'][$j]]);
+
+		// Manual cover equal to cached rank 2: sides are ranks 1 and 3.
+		$cached->cover_id = $this->photo1b->id;
+		$cached->save();
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/tags')->assertOk()->json();
+		$i = array_search($cached->id, $json['ids'], true);
+		self::assertSame([$this->photo1b->id, $this->photo1->id, $this->photo2->id], [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]]);
+	}
+
+	/**
+	 * S-075-12: a person album shows its cached primary and sides.
+	 */
+	public function testPersonsListingReturnsCachedPrimaryAndSides(): void
+	{
+		$person_album_id = $this->createPersonAlbum($this->userMayUpload1, 'mine');
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => $person_album_id,
+			'photo_id' => $this->photo1->id,
+			'photo_id_2' => $this->photo1b->id,
+			'photo_id_3' => null,
+		]);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/persons?scope=own')->assertOk()->json();
+		$i = array_search($person_album_id, $json['ids'], true);
+		self::assertNotFalse($i);
+		self::assertSame([$this->photo1->id, $this->photo1b->id, null], [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]]);
 	}
 }

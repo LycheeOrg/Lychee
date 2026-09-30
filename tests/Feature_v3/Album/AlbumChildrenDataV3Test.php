@@ -315,7 +315,7 @@ class AlbumChildrenDataV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album5->id}");
 		$this->assertOk($response);
 		$response->assertExactJson([
-			'ids' => [], 'titles' => [], 'descriptions' => [], 'cover_ids' => [], 'bucket_ids' => [], 'owner_ids' => [],
+			'ids' => [], 'titles' => [], 'descriptions' => [], 'cover_ids' => [], 'cover_ids_2' => [], 'cover_ids_3' => [], 'bucket_ids' => [], 'owner_ids' => [],
 			'is_password_requireds' => [], 'is_nsfws' => [], 'is_pinneds' => [], 'is_publics' => [],
 			'is_link_requireds' => [], 'has_subalbums' => [], 'num_photos' => [],
 			'num_subalbums' => [], 'created_ats' => [], 'min_taken_ats' => [], 'max_taken_ats' => [],

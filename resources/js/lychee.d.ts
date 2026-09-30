@@ -1747,6 +1747,8 @@ declare namespace App {
 					ids: string[];
 					titles: string[];
 					cover_ids: (string | null)[];
+					cover_ids_2: (string | null)[];
+					cover_ids_3: (string | null)[];
 					owner_ids: string[];
 				};
 				export type AlbumCategoryRightsResource = {
@@ -1760,6 +1762,8 @@ declare namespace App {
 					titles: string[];
 					descriptions: string[];
 					cover_ids: (string | null)[];
+					cover_ids_2: (string | null)[];
+					cover_ids_3: (string | null)[];
 					bucket_ids: string[];
 					owner_ids: string[];
 					is_password_requireds: boolean[];

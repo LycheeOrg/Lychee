@@ -216,4 +216,34 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		// Assert least-privilege cover is NULL (album has no AccessPermissions, so nobody can access it)
 		$this->assertNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should be NULL when album has no access permissions');
 	}
+
+	/**
+	 * Feature 075, NFR-075-03 / S-075-03: the least-privilege side covers are
+	 * chosen by the same searchability filter as the least-privilege cover,
+	 * so a private photo can only ever appear in the max-privilege ranks.
+	 */
+	public function testLeastPrivilegeSideCoversExcludePrivatePhotos(): void
+	{
+		$owner = User::factory()->create();
+		$root = Album::factory()->as_root()->owned_by($owner)->create();
+		$public_child = Album::factory()->children_of($root)->owned_by($owner)->create();
+		$private_child = Album::factory()->children_of($root)->owned_by($owner)->create();
+		AccessPermission::factory()->for_album($root)->public()->visible()->create();
+		AccessPermission::factory()->for_album($public_child)->public()->visible()->create();
+
+		$public_photos = Photo::factory()->in($public_child)->owned_by($owner)->count(2)->create()->pluck('id')->all();
+		$private_photos = Photo::factory()->in($private_child)->owned_by($owner)->count(2)->create()->pluck('id')->all();
+
+		Artisan::call('lychee:recompute-album-stats', ['album_id' => $root->id, '--sync' => true]);
+		$root->refresh();
+
+		$least = array_filter([$root->auto_cover_id_least_privilege, $root->auto_cover_id_least_privilege_2, $root->auto_cover_id_least_privilege_3]);
+		$max = array_filter([$root->auto_cover_id_max_privilege, $root->auto_cover_id_max_privilege_2, $root->auto_cover_id_max_privilege_3]);
+
+		$this->assertCount(2, $least, 'Only the two public photos qualify for the least-privilege ranks');
+		$this->assertSame([], array_intersect($least, $private_photos), 'Least-privilege ranks must never contain a private photo');
+		$this->assertEqualsCanonicalizing($public_photos, array_values($least));
+		$this->assertCount(3, $max);
+		$this->assertNotSame([], array_intersect($max, $private_photos), 'Max-privilege ranks may contain private photos');
+	}
 }

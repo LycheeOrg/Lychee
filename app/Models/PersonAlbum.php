@@ -136,7 +136,7 @@ class PersonAlbum extends BaseAlbum
 
 		return $this->getCachedOrLiveThumb(
 			$this->id,
-			fn () => Thumb::createFromQueryable(
+			fn () => Thumb::createManyFromQueryable(
 				$this->photos(),
 				$this->getEffectivePhotoSorting(),
 			),

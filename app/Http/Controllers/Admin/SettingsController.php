@@ -42,6 +42,7 @@ class SettingsController extends Controller
 	 * every cached album listing via one coarse, instance-wide flush.
 	 */
 	public const ALBUM_LISTING_COARSE_FLUSH_CONFIGS = [
+		'album_hover_side_covers_enabled',
 		'sorting_albums_col',
 		'sorting_albums_order',
 		'sorting_pinned_albums_col',
@@ -112,6 +113,7 @@ class SettingsController extends Controller
 	];
 
 	public const V8_CONFIGS = [
+		'album_hover_side_covers_enabled',
 		'site_logo',
 		'primary_color',
 		'enable_design_system',

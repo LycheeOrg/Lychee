@@ -37,7 +37,8 @@ use Illuminate\Support\Facades\Log;
  * Computed fields:
  * - max_taken_at, min_taken_at
  * - num_children, num_photos
- * - auto_cover_id_max_privilege, auto_cover_id_least_privilege
+ * - auto_cover_id_max_privilege, auto_cover_id_least_privilege (rank 1)
+ * - auto_cover_id_max_privilege_2/_3, auto_cover_id_least_privilege_2/_3 (ranks 2–3, Feature 075)
  */
 class RecomputeAlbumStatsJob implements ShouldQueue
 {
@@ -119,10 +120,10 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->min_taken_at = $dates['min'];
 			$album->max_taken_at = $dates['max'];
 
-			// Compute cover IDs (simplified for now - will be enhanced in I3)
-			$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album, $is_nsfw_context);
-			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
-			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
+			// Compute cover IDs: ranks 1–3 per privilege level (Feature 075, FR-075-02).
+			[$album->auto_cover_id_max_privilege, $album->auto_cover_id_max_privilege_2, $album->auto_cover_id_max_privilege_3] = $this->computeMaxPrivilegeCovers($album, $is_nsfw_context);
+			[$album->auto_cover_id_least_privilege, $album->auto_cover_id_least_privilege_2, $album->auto_cover_id_least_privilege_3] = $this->computeLeastPrivilegeCovers($album, $is_nsfw_context);
+			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null') . ', max_privilege_sides=' . ($album->auto_cover_id_max_privilege_2 ?? 'null') . '/' . ($album->auto_cover_id_max_privilege_3 ?? 'null') . ', least_privilege_sides=' . ($album->auto_cover_id_least_privilege_2 ?? 'null') . '/' . ($album->auto_cover_id_least_privilege_3 ?? 'null'));
 
 			$album->bucket_id = $this->computeBucket($album);
 			$album->save();
@@ -231,15 +232,22 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	}
 
 	/**
-	 * Compute the photo id given a user and NSFW context for an album.
+	 * Number of automatic cover ranks stored per privilege level
+	 * (Feature 075, FR-075-02): the cover plus two side covers.
+	 */
+	public const COVER_RANKS = 3;
+
+	/**
+	 * Compute the photo ids of ranks 1–3 given a user and NSFW context for
+	 * an album, padded with `null` when fewer photos qualify.
 	 *
 	 * @param Album     $album
 	 * @param User|null $user
 	 * @param bool      $is_nsfw_context
 	 *
-	 * @return string|null
+	 * @return array{0:string|null,1:string|null,2:string|null}
 	 */
-	private function getPhotoIdForUser(Album $album, ?User $user, bool $is_nsfw_context): ?string
+	private function getPhotoIdsForUser(Album $album, ?User $user, bool $is_nsfw_context): array
 	{
 		$photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$sorting = $album->getEffectivePhotoSorting();
@@ -257,7 +265,10 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			->orderPhotosBy($sorting->column, $sorting->order)
 			->applyOrdering();
 
-		return $query->select('photos.id')->toBase()->first()?->id;
+		/** @var list<string> $ids */
+		$ids = $query->select('photos.id')->limit(self::COVER_RANKS)->toBase()->pluck('id')->all();
+
+		return [$ids[0] ?? null, $ids[1] ?? null, $ids[2] ?? null];
 	}
 
 	/**
@@ -270,13 +281,13 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * @param Album $album
 	 * @param bool  $is_nsfw_context
 	 *
-	 * @return string|null
+	 * @return array{0:string|null,1:string|null,2:string|null} ranks 1–3
 	 */
-	private function computeMaxPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
+	private function computeMaxPrivilegeCovers(Album $album, bool $is_nsfw_context): array
 	{
 		$admin_user = User::query()->where('may_administrate', '=', true)->first();
 
-		return $this->getPhotoIdForUser($album, $admin_user, $is_nsfw_context);
+		return $this->getPhotoIdsForUser($album, $admin_user, $is_nsfw_context);
 	}
 
 	/**
@@ -290,9 +301,9 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * @param Album $album
 	 * @param bool  $is_nsfw_context
 	 *
-	 * @return string|null
+	 * @return array{0:string|null,1:string|null,2:string|null} ranks 1–3
 	 */
-	private function computeLeastPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
+	private function computeLeastPrivilegeCovers(Album $album, bool $is_nsfw_context): array
 	{
 		// First figure out who can access this folder.
 		// Then apply those access rules to the photo selection.
@@ -318,7 +329,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$permissions = AccessPermission::query()->where(APC::BASE_ALBUM_ID, '=', $album->id)->toBase()->get();
 		if ($permissions->isEmpty()) {
 			// No users can access this album, does not matters.
-			return null;
+			return [null, null, null];
 		}
 
 		// Album is not public visible
@@ -327,11 +338,11 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			// Single user can access this album
 			$user = User::query()->find($permissions->first()->user_id);
 
-			return $this->getPhotoIdForUser($album, $user, $is_nsfw_context);
+			return $this->getPhotoIdsForUser($album, $user, $is_nsfw_context);
 		}
 
 		// Album is not public visible and multiple permissions exist => Consider it publically accessible
-		return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
+		return $this->getPhotoIdsForUser($album, null, $is_nsfw_context);
 	}
 
 	/**

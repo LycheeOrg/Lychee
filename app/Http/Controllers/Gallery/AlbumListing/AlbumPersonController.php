@@ -8,11 +8,13 @@
 
 namespace App\Http\Controllers\Gallery\AlbumListing;
 
+use App\Actions\Album\StructOfArrays\SideCoverIds;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\AlbumListingScope;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumCategoryResource;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\User;
@@ -47,7 +49,7 @@ class AlbumPersonController extends Controller
 		$sorting = AlbumSortingCriterion::createDefault();
 
 		if (!$this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
-			return new AlbumCategoryResource(ids: [], titles: [], cover_ids: [], owner_ids: []);
+			return new AlbumCategoryResource(ids: [], titles: [], cover_ids: [], cover_ids_2: [], cover_ids_3: [], owner_ids: []);
 		}
 
 		$key = $this->cache_key_provider->personAlbumsListingKey($user?->id, $sorting, $scope);
@@ -78,21 +80,33 @@ class AlbumPersonController extends Controller
 			->toBase()
 			->get();
 
+		// PersonAlbum carries no cover_id column at all — resolving one live
+		// would require a photos query this flat listing deliberately never
+		// runs. The viewer's cache rows (seeded when the album was opened)
+		// supply the primary and side covers in one batched query
+		// (Feature 075, FR-075-09).
+		$cache_rows = AlbumUserThumb::rowsForViewer($rows->pluck('id')->all());
+		$side_covers_enabled = $this->config_manager->getValueAsBool('album_hover_side_covers_enabled');
+
 		$ids = [];
 		$titles = [];
 		$cover_ids = [];
+		$cover_ids_2 = [];
+		$cover_ids_3 = [];
 		$owner_ids = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$titles[] = $row->title;
-			// PersonAlbum carries no cover_id column at all — resolving one
-			// live would require a photos query this flat listing
-			// deliberately never runs.
-			$cover_ids[] = null;
+			$cache_row = $cache_rows->get($row->id);
+			$cover_id = $cache_row?->photo_id;
+			[$cover_id_2, $cover_id_3] = SideCoverIds::fromCacheRow($cache_row, $cover_id, $side_covers_enabled);
+			$cover_ids[] = $cover_id;
+			$cover_ids_2[] = $cover_id_2;
+			$cover_ids_3[] = $cover_id_3;
 			$owner_ids[] = (string) $row->owner_id;
 		}
 
-		return new AlbumCategoryResource(ids: $ids, titles: $titles, cover_ids: $cover_ids, owner_ids: $owner_ids);
+		return new AlbumCategoryResource(ids: $ids, titles: $titles, cover_ids: $cover_ids, cover_ids_2: $cover_ids_2, cover_ids_3: $cover_ids_3, owner_ids: $owner_ids);
 	}
 
 	/**

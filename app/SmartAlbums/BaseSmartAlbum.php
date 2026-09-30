@@ -235,7 +235,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			*/
 		return $this->thumb = $this->getCachedOrLiveThumb(
 			$this->id,
-			fn () => Thumb::createFromQueryable($this->photos(), PhotoSortingCriterion::createDefault()),
+			fn () => Thumb::createManyFromQueryable($this->photos(), PhotoSortingCriterion::createDefault()),
 		);
 	}
 

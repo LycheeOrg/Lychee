@@ -111,6 +111,44 @@ class Thumb
 	 * @codeCoverageIgnore We don't need to test that one.
 	 * Note that the inRandomOrder maybe slower than fetching length + random int.
 	 */
+	/**
+	 * Feature 075 (FR-075-08): the first `$limit` thumbs of `$photo_queryable`
+	 * in cover order (highlighted first, then `$sorting`), from one query.
+	 * Element 0 is the cover, the rest are its side covers.
+	 *
+	 * @return list<Thumb>
+	 *
+	 * @throws InvalidPropertyException
+	 */
+	public static function createManyFromQueryable(Relation|Builder $photo_queryable, SortingCriterion $sorting, int $limit = 3): array
+	{
+		try {
+			$photo_queryable = $photo_queryable->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))]);
+
+			(new SortingDecorator($photo_queryable))
+				->orderPhotosBy(ColumnSortingType::IS_HIGHLIGHTED, OrderSortingType::DESC)
+				->orderPhotosBy($sorting->column, $sorting->order)
+				->applyOrdering();
+
+			/** @var list<Photo> $photos */
+			$photos = $photo_queryable->select(['photos.id', 'photos.type'])->limit($limit)->get()->all();
+
+			$thumbs = [];
+			foreach ($photos as $photo) {
+				$thumb = self::createFromPhoto($photo);
+				if ($thumb !== null) {
+					$thumbs[] = $thumb;
+				}
+			}
+
+			return $thumbs;
+			// @codeCoverageIgnoreStart
+		} catch (InvalidOrderDirectionException $e) {
+			throw new InvalidPropertyException('Sorting order invalid', $e);
+		}
+		// @codeCoverageIgnoreEnd
+	}
+
 	public static function createFromRandomQueryable(Relation|Builder $photo_queryable): ?Thumb
 	{
 		try {

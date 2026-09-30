@@ -33,6 +33,13 @@ export const DEFAULT_ALBUM_CHILD_RIGHTS: App.Http.Resources.Rights.AlbumRightsRe
  */
 export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 	cover_id: string | null;
+	/**
+	 * Rank-2/3 side covers fanned out behind the cover on hover (Feature 075);
+	 * `null` when the setting is off, the album is locked, or fewer photos
+	 * qualify — the tile then shows `cover_id` in that layer.
+	 */
+	cover_id_2: string | null;
+	cover_id_3: string | null;
 	/** Raw tier-2 values (Feature 071 date scrubber); `formatted_min_max` is the display form. */
 	min_taken_at: string | null;
 	max_taken_at: string | null;
@@ -182,6 +189,8 @@ export function adaptAlbumChildTile(
 		rights: rights,
 		timeline: null,
 		cover_id: childrenV3.cover_ids[i],
+		cover_id_2: childrenV3.cover_ids_2[i],
+		cover_id_3: childrenV3.cover_ids_3[i],
 		min_taken_at: childrenV3.min_taken_ats[i],
 		max_taken_at: childrenV3.max_taken_ats[i],
 	};

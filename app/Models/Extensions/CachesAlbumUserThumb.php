@@ -38,6 +38,14 @@ trait CachesAlbumUserThumb
 	 *
 	 * @return ?Thumb
 	 */
+	/**
+	 * Return the viewer's cached cover of `$album_cache_key`, or compute
+	 * ranks 1–3 live via `$compute_live` (which must return the ordered
+	 * `list<Thumb>` of {@see Thumb::createManyFromQueryable()}), seed the
+	 * three cache columns (Feature 075, FR-075-08) and return rank 1.
+	 *
+	 * @param \Closure(): list<Thumb> $compute_live
+	 */
 	private function getCachedOrLiveThumb(string $album_cache_key, \Closure $compute_live): ?Thumb
 	{
 		$user_id = Auth::id();
@@ -52,17 +60,34 @@ trait CachesAlbumUserThumb
 			return Thumb::createFromPhoto($cached->photo);
 		}
 
-		$thumb = $compute_live();
+		$thumbs = $compute_live();
 
 		// photo_id is NOT NULL - only seed the cache when a photo actually qualifies.
 		// An empty result is cheap to recompute and has nothing to cache anyway.
-		if ($thumb !== null) {
+		if (count($thumbs) > 0) {
 			AlbumUserThumb::query()->updateOrCreate(
 				['album_id' => $album_cache_key, 'user_id' => $user_id],
-				['photo_id' => $thumb->id]
+				self::cacheColumns($thumbs)
 			);
 		}
 
-		return $thumb;
+		return $thumbs[0] ?? null;
+	}
+
+	/**
+	 * The three photo columns of an `album_user_thumbs` row from an ordered
+	 * thumb list, `null`-padded (Feature 075).
+	 *
+	 * @param non-empty-list<Thumb> $thumbs
+	 *
+	 * @return array{photo_id:string,photo_id_2:string|null,photo_id_3:string|null}
+	 */
+	public static function cacheColumns(array $thumbs): array
+	{
+		return [
+			'photo_id' => $thumbs[0]->id,
+			'photo_id_2' => isset($thumbs[1]) ? $thumbs[1]->id : null,
+			'photo_id_3' => isset($thumbs[2]) ? $thumbs[2]->id : null,
+		];
 	}
 }

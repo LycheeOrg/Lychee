@@ -85,6 +85,10 @@ class AlbumPinnedController extends Controller
 				'albums.cover_id',
 				'albums.auto_cover_id_max_privilege',
 				'albums.auto_cover_id_least_privilege',
+				'albums.auto_cover_id_max_privilege_2',
+				'albums.auto_cover_id_max_privilege_3',
+				'albums.auto_cover_id_least_privilege_2',
+				'albums.auto_cover_id_least_privilege_3',
 				'base_albums.owner_id',
 				'computed_access_permissions.password',
 			])

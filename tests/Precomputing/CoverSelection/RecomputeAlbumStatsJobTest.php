@@ -14,9 +14,11 @@ use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
@@ -26,6 +28,9 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  */
 class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 {
+	/** Query count of `RecomputeAlbumStatsJob::handle()` for a 3-photo public root album, measured before Feature 075 (NFR-075-02). */
+	private const JOB_QUERY_BASELINE = 35;
+
 	public function testHandleDispatchesAlbumComputedDataUpdated(): void
 	{
 		$user = User::factory()->create();
@@ -370,5 +375,103 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		$album3->refresh();
 		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_max_privilege);
 		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_least_privilege);
+	}
+
+	// ── Feature 075: side covers (FR-075-02, S-075-01, S-075-02, NFR-075-02) ──
+
+	private function useCreatedAtAscendingPhotoSorting(): void
+	{
+		Configs::set('sorting_photos_col', 'created_at');
+		Configs::set('sorting_photos_order', 'ASC');
+	}
+
+	/**
+	 * S-075-01: ranks 1–3 follow the same ordering as the cover: highlighted
+	 * first, then the album's effective photo sorting.
+	 */
+	public function testComputesSideCoversInEffectiveOrder(): void
+	{
+		$this->useCreatedAtAscendingPhotoSorting();
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+
+		$first = Photo::factory()->in($album)->owned_by($user)->create(['created_at' => Carbon::parse('2024-01-01 10:00:00')]);
+		$second = Photo::factory()->in($album)->owned_by($user)->create(['created_at' => Carbon::parse('2024-01-02 10:00:00')]);
+		$third = Photo::factory()->in($album)->owned_by($user)->create(['created_at' => Carbon::parse('2024-01-03 10:00:00')]);
+		$highlighted = Photo::factory()->in($album)->owned_by($user)->create(['created_at' => Carbon::parse('2024-01-04 10:00:00'), 'is_highlighted' => true]);
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		$album->refresh();
+
+		$this->assertSame($highlighted->id, $album->auto_cover_id_max_privilege);
+		$this->assertSame($first->id, $album->auto_cover_id_max_privilege_2);
+		$this->assertSame($second->id, $album->auto_cover_id_max_privilege_3);
+		$this->assertSame($highlighted->id, $album->auto_cover_id_least_privilege);
+		$this->assertSame($first->id, $album->auto_cover_id_least_privilege_2);
+		$this->assertSame($second->id, $album->auto_cover_id_least_privilege_3);
+		$this->assertNotSame($third->id, $album->auto_cover_id_max_privilege_3);
+	}
+
+	/**
+	 * S-075-02: fewer than three qualifying photos leave the higher ranks NULL.
+	 */
+	public function testSideCoversAreNullWhenFewerPhotosQualify(): void
+	{
+		$this->useCreatedAtAscendingPhotoSorting();
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		$only = Photo::factory()->in($album)->owned_by($user)->create();
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		$album->refresh();
+
+		$this->assertSame($only->id, $album->auto_cover_id_max_privilege);
+		$this->assertNull($album->auto_cover_id_max_privilege_2);
+		$this->assertNull($album->auto_cover_id_max_privilege_3);
+		$this->assertSame($only->id, $album->auto_cover_id_least_privilege);
+		$this->assertNull($album->auto_cover_id_least_privilege_2);
+		$this->assertNull($album->auto_cover_id_least_privilege_3);
+	}
+
+	/**
+	 * S-075-02: an empty album has every cover column NULL.
+	 */
+	public function testEmptyAlbumHasNullSideCovers(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		$album->refresh();
+
+		$this->assertNull($album->auto_cover_id_max_privilege_2);
+		$this->assertNull($album->auto_cover_id_max_privilege_3);
+		$this->assertNull($album->auto_cover_id_least_privilege_2);
+		$this->assertNull($album->auto_cover_id_least_privilege_3);
+	}
+
+	/**
+	 * NFR-075-02: side covers ride on the cover query (`limit(3)` instead of
+	 * `first()`), so the job issues no additional query for them. The
+	 * expected count is the pre-Feature-075 baseline of this exact fixture.
+	 */
+	public function testSideCoversAddNoQueryToTheJob(): void
+	{
+		$this->useCreatedAtAscendingPhotoSorting();
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		Photo::factory()->in($album)->owned_by($user)->count(3)->create();
+
+		$job = new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false);
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$job->handle();
+		$count = count(DB::getQueryLog());
+		DB::disableQueryLog();
+
+		$this->assertSame(self::JOB_QUERY_BASELINE, $count, 'RecomputeAlbumStatsJob issued ' . $count . ' queries');
 	}
 }

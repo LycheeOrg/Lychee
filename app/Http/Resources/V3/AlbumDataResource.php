@@ -31,6 +31,9 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * No thumbnail media `type`/blur `placeholder` field — those
  * require a join this endpoint deliberately never adds (Non-Goals).
  *
+ * `cover_ids_2[i]`/`cover_ids_3[i]` (Feature 075) are the rank-2/3 side
+ * covers shown behind the cover on hover, `null` when hidden or unavailable.
+ *
  * `owner_ids[]` is additive — populated for both the
  * sub-album tier and the root tier; for root's `scope=shared`, `bucket_ids[i]`
  * additionally carries the row's own `owner_id` rather than a date/title
@@ -44,6 +47,8 @@ class AlbumDataResource extends Data
 	 * @param string[]        $titles
 	 * @param string[]        $descriptions
 	 * @param (string|null)[] $cover_ids
+	 * @param (string|null)[] $cover_ids_2
+	 * @param (string|null)[] $cover_ids_3
 	 * @param string[]        $bucket_ids
 	 * @param string[]        $owner_ids
 	 * @param bool[]          $is_password_requireds
@@ -63,6 +68,8 @@ class AlbumDataResource extends Data
 		public array $titles,
 		public array $descriptions,
 		public array $cover_ids,
+		public array $cover_ids_2,
+		public array $cover_ids_3,
 		public array $bucket_ids,
 		public array $owner_ids,
 		public array $is_password_requireds,

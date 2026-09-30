@@ -15,13 +15,15 @@
 		:data-album-id="props.album.id"
 	>
 		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
+		<!-- The two back layers show the rank-3 and rank-2 side covers (Feature 075)
+		     and fall back to the cover when a side is null. -->
 		<template v-if="props.album.cover_id !== null">
 			<Thumb
 				v-if="!togglableStore.isDragging"
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
-				:photo-id="props.album.cover_id"
+				:photo-id="props.album.cover_id_3 ?? props.album.cover_id"
 				type="small"
 			/>
 			<Thumb
@@ -29,7 +31,7 @@
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
-				:photo-id="props.album.cover_id"
+				:photo-id="props.album.cover_id_2 ?? props.album.cover_id"
 				type="small"
 			/>
 			<Thumb

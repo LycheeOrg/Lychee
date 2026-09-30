@@ -21,11 +21,13 @@ namespace Tests\Unit\Jobs;
 use App\Enum\SmartAlbumType;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
 use App\Models\AlbumUserThumb;
+use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Tests\AbstractTestCase;
 
@@ -165,5 +167,47 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 
 		$method = new \ReflectionMethod(RecomputeAlbumUserThumbsJob::class, 'hasNewerJobQueued');
 		self::assertTrue($method->invoke($job));
+	}
+
+	// ── Feature 075 (FR-075-08, S-075-15) ────────────────────────
+
+	public function testRewritesAllThreeCachedIdsForTagAlbum(): void
+	{
+		Configs::set('sorting_photos_col', 'created_at');
+		Configs::set('sorting_photos_order', 'ASC');
+		$user = User::factory()->create();
+		$tag = Tag::factory()->create(['name' => 'sunset']);
+		$tag_album = TagAlbum::factory()->owned_by($user)->of_tags([$tag])->create();
+		$photos = [];
+		for ($i = 0; $i < 3; $i++) {
+			$photo = Photo::factory()->owned_by($user)->create(['created_at' => Carbon::parse('2024-01-01')->addDays($i)]);
+			$photo->tags()->attach($tag->id);
+			$photos[] = $photo->id;
+		}
+		// A stale row with a single id, as left by a pre-Feature-075 seed.
+		AlbumUserThumb::query()->create(['user_id' => null, 'album_id' => $tag_album->id, 'photo_id' => $photos[2]]);
+
+		(new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, $tag_album->id))->handle();
+
+		self::assertDatabaseHas('album_user_thumbs', [
+			'album_id' => $tag_album->id,
+			'user_id' => null,
+			'photo_id' => $photos[0],
+			'photo_id_2' => $photos[1],
+			'photo_id_3' => $photos[2],
+		]);
+	}
+
+	public function testDeletesRowWhenNoPhotoQualifiesAnymore(): void
+	{
+		$user = User::factory()->create();
+		$tag = Tag::factory()->create(['name' => 'sunset']);
+		$tag_album = TagAlbum::factory()->owned_by($user)->of_tags([$tag])->create();
+		$stale = Photo::factory()->owned_by($user)->create();
+		AlbumUserThumb::query()->create(['user_id' => null, 'album_id' => $tag_album->id, 'photo_id' => $stale->id, 'photo_id_2' => $stale->id]);
+
+		(new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, $tag_album->id))->handle();
+
+		self::assertDatabaseMissing('album_user_thumbs', ['album_id' => $tag_album->id]);
 	}
 }

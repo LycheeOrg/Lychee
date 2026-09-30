@@ -127,7 +127,8 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 *
 	 * For a regular {@link Album}, this also allows the photo through if it
 	 * is that album's cover — hardcoded (`cover_id`) or automatically
-	 * selected (`auto_cover_id_max_privilege`/`auto_cover_id_least_privilege`)
+	 * selected (`auto_cover_id_max_privilege`/`auto_cover_id_least_privilege`,
+	 * plus their rank-2/3 side covers `*_2`/`*_3`, Feature 075 FR-075-10)
 	 * — since a cover photo legitimately represents the album even when it
 	 * physically lives in a descendant album, without needing to walk the
 	 * `_lft`/`_rgt` subtree to find it. {@link TagAlbum} and
@@ -151,6 +152,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 				$album->cover_id,
 				$album->auto_cover_id_max_privilege,
 				$album->auto_cover_id_least_privilege,
+				$album->auto_cover_id_max_privilege_2,
+				$album->auto_cover_id_max_privilege_3,
+				$album->auto_cover_id_least_privilege_2,
+				$album->auto_cover_id_least_privilege_3,
 			], true)) {
 				return true;
 			}
@@ -179,7 +184,8 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	/**
 	 * Whether `$this->photo_id` is the current viewer's cached computed
 	 * thumb for `$album_id` — the tag/person-album equivalent of Album's
-	 * `auto_cover_id_*` fields (see {@link \App\Models\AlbumUserThumb}).
+	 * `auto_cover_id_*` fields (see {@link \App\Models\AlbumUserThumb}) —
+	 * in any of its three ranks (Feature 075, FR-075-10).
 	 * `Auth::id()` is `null` for a guest, matching the cache's convention
 	 * for the public/guest view of the album.
 	 */
@@ -188,7 +194,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		return DB::table('album_user_thumbs')
 			->where('album_id', $album_id)
 			->where('user_id', Auth::id())
-			->where('photo_id', $this->photo_id)
+			->where(fn ($q) => $q
+				->where('photo_id', $this->photo_id)
+				->orWhere('photo_id_2', $this->photo_id)
+				->orWhere('photo_id_3', $this->photo_id))
 			->exists();
 	}
 
