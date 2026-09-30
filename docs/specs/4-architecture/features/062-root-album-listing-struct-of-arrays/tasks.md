@@ -1,7 +1,7 @@
 # Feature 062 Tasks – Root Album Listing Struct-of-Arrays
 
 _Status: Implemented — T-062-34..36 (2026-09-29, `GET /Albums/root/config`, FR-062-17) implemented, `AlbumRootConfigV3Test` 5/5 green._
-_Last updated: 2026-09-29_
+_Last updated: 2026-09-30_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions.
@@ -255,6 +255,12 @@ _Last updated: 2026-09-29_
 
 - [x] T-062-36 – Frontend: `AlbumsState.load()` reads `rootConfig`/`rootRights` from `/Albums/root/config` when `is_struct_of_array_enabled`, v2 `GET /Albums` only when off; 401 still opens the login modal (FR-062-17).
   _Verification commands:_ `npm run format`; `npm run check`.
+
+- [x] T-062-37 – Feature tests first: `AlbumCategoryV3Test` smart covers — cached path runs no `photos` query, cache miss resolves live and seeds the row (FR-062-16, S-062-14, S-062-34).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-38).
+
+- [x] T-062-38 – `AlbumSmartController::smart()`: resolve cache misses through `BaseSmartAlbum::get_thumb()` (FR-062-16, S-062-34).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
 
 ## Notes / TODOs
 

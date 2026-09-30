@@ -55,41 +55,27 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 
 	// ── smart (S-062-14) ───────────────────────────────────────────────
 
-	public function testSmartReturnsSameSetAsV2WithZeroQueries(): void
+	public function testSmartReturnsSameSetAsV2(): void
 	{
-		DB::flushQueryLog();
-		DB::enableQueryLog();
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
-		$log = DB::getQueryLog();
-		DB::flushQueryLog();
-		DB::disableQueryLog();
 
 		self::assertSame(['ids', 'titles', 'cover_ids', 'owner_ids'], array_keys($json));
 		self::assertNotEmpty($json['ids']);
-
-		// AlbumFactory::getAllBuiltInSmartAlbums(false) itself still runs one
-		// cheap AccessPermission lookup per smart album type (unrelated to
-		// this endpoint's own code) — "zero SQL query" (S-062-14) means zero
-		// *photos* queries specifically, i.e. with_relations=false is honored
-		// and no eager photos/size_variants load ever runs.
-		$photo_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b/i', $q['query']) === 1);
-		self::assertCount(0, $photo_queries, 'Smart albums listing must never query photos (with_relations=false).');
 	}
 
 	/**
-	 * 2026-09-02 amendment (Feature 063 FR-062-16, Q-063-15): `cover_ids`
-	 * resolves from the pre-computed `album_user_thumbs` cache — a hit
-	 * returns the cached photo id, a miss stays `null`, and this stays a
-	 * cache-only lookup (no live `photos` query — the assertion above
-	 * already covers that for the whole endpoint, seeded row included).
+	 * S-062-14 (FR-062-16): every visible smart album's cover is cached for the
+	 * viewer → one batched `album_user_thumbs` lookup, no `photos` query.
 	 */
-	public function testSmartResolvesRealCoverFromCacheHitAndNullFromCacheMiss(): void
+	public function testSmartWithEveryCoverCachedRunsNoPhotosQuery(): void
 	{
-		AlbumUserThumb::query()->create([
-			'user_id' => $this->userMayUpload1->id,
-			'album_id' => SmartAlbumType::UNSORTED->value,
-			'photo_id' => $this->photoUnsorted->id,
-		]);
+		$ids = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json('ids');
+		foreach ($ids as $id) {
+			AlbumUserThumb::query()->updateOrCreate(
+				['user_id' => $this->userMayUpload1->id, 'album_id' => $id],
+				['photo_id' => $this->photoUnsorted->id],
+			);
+		}
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();
@@ -98,21 +84,37 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
+		// AlbumFactory::getAllBuiltInSmartAlbums(false) still runs one cheap
+		// AccessPermission lookup per smart album type; only photos queries count.
 		$photo_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b/i', $q['query']) === 1);
-		self::assertCount(0, $photo_queries, 'Cover resolution must stay cache-only, never a live photos query.');
+		self::assertCount(0, $photo_queries, 'Cached covers must not trigger a photos query.');
+		self::assertSame(array_fill(0, count($ids), $this->photoUnsorted->id), $json['cover_ids']);
+	}
+
+	/**
+	 * S-062-34 (FR-062-16): no cached row for the viewer → the cover is
+	 * resolved live and the viewer's row is seeded for the next request.
+	 */
+	public function testSmartCacheMissResolvesLiveAndSeedsCache(): void
+	{
+		AlbumUserThumb::query()
+			->where('user_id', '=', $this->userMayUpload1->id)
+			->where('album_id', '=', SmartAlbumType::UNSORTED->value)
+			->delete();
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
 
 		$unsorted_index = array_search(SmartAlbumType::UNSORTED->value, $json['ids'], true);
 		self::assertNotFalse($unsorted_index, 'unsorted must be visible to a may-upload user.');
-		self::assertSame($this->photoUnsorted->id, $json['cover_ids'][$unsorted_index]);
-
-		// Every other visible smart album has no seeded cache row -> null,
-		// not a live-resolved fallback.
-		foreach ($json['ids'] as $i => $id) {
-			if ($id === SmartAlbumType::UNSORTED->value) {
-				continue;
-			}
-			self::assertNull($json['cover_ids'][$i], "cover_ids for '{$id}' must be null on a cache miss.");
-		}
+		$cover_id = $json['cover_ids'][$unsorted_index];
+		self::assertNotNull($cover_id, 'A smart album holding a qualifying photo must get a cover on a cache miss.');
+		self::assertSame(
+			$cover_id,
+			AlbumUserThumb::query()
+				->where('user_id', '=', $this->userMayUpload1->id)
+				->where('album_id', '=', SmartAlbumType::UNSORTED->value)
+				->value('photo_id'),
+		);
 	}
 
 	// ── tags (S-062-15) ────────────────────────────────────────────────

@@ -24,8 +24,35 @@ Open questions for [Feature 062](spec.md). Log every high- and medium-impact que
 | ~~Q-062-16~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | Is `/Albums/root/rights`'s `owner_id` field null for `scope=own` too, or only for `scope=shared`? | Resolved (Option A, refined — null unconditionally, both scopes; key omitted from the JSON payload entirely since it's always null for root) | 2026-09-02 | 2026-09-02 |
 | ~~Q-062-17~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Does dropping `/children` from `/Albums/{album_id}` (and `/Albums/root`, `/persons`, `/pinned`) read as "fetch one album" when it actually returns a child/collection listing? | Resolved (Option A — keep the rename as specced, no change) | 2026-09-02 | 2026-09-02 |
 | ~~Q-062-18~~ | 062 – Root Album Listing Struct-of-Arrays | High | With the SoA flag on, the gallery still calls v2 `GET /Albums` (full `Top::get()`) only to read `config` + `rights` — new v3 `/Albums/root/config` vs. reuse `Timeline::init` vs. embed in `/Albums/root` vs. keep the v2 call | Resolved (A — `GET /api/v3/Albums/root/config`, spec FR-062-17, S-062-30..33) | 2026-09-29 | 2026-09-29 |
+| ~~Q-062-19~~ | 062 – Root Album Listing Struct-of-Arrays | High | `/Albums/smart` cover on an `album_user_thumbs` miss — resolve live and seed the cache vs. keep cache-only (FR-062-16), now that the SoA gallery no longer calls v2 `Top::get()` | Resolved (A — live resolution on a miss, spec FR-062-16, S-062-14, S-062-34) | 2026-09-30 | 2026-09-30 |
 
 ## Question Details
+
+### Q-062-19 · Smart-album cover on a cache miss
+
+**Status:** Resolved (Option A, 2026-09-30 — folded into spec FR-062-16, S-062-14, S-062-34)
+**Feature:** F-062 – Root Album Listing Struct-of-Arrays
+**Preferred option:** Option A – Live resolution on a miss
+
+**Question**
+FR-062-16 makes `/Albums/smart` cache-only: an `album_user_thumbs` miss yields `cover_ids[i] = null`, relying on another path to seed the row. `RecomputeAlbumUserThumbsJob` only refreshes viewers who already have a row, and the only path that creates one for a smart album is `BaseSmartAlbum::getThumbAttribute()` (`CachesAlbumUserThumb::getCachedOrLiveThumb()`), reached through v2 `Top::get()`. With FR-062-17 the SoA gallery never calls `Top::get()`, so a new user, a first-time guest, or a viewer whose rows were purged (`PurgeAlbumUserThumbs`) keeps coverless smart-album tiles indefinitely. How should `/Albums/smart` handle a miss?
+
+#### Option A (recommended) – Live resolution on a miss
+- **Idea:** For each visible smart album absent from the batched `album_user_thumbs` lookup, read `$smart_album->get_thumb()`, which resolves live through the permission-filtered query and seeds the row. Hits stay one batched query.
+- **Spec impact:** FR-062-16 changes from cache-only to cached-or-live; the "zero photos query" guarantee holds only when every cover is cached.
+- **Pros:** covers appear on first view and self-heal after a purge; bounded to the handful of smart albums, only on a miss; reuses the existing seeding path.
+- **Cons:** a cold request runs up to one live photos query per smart album (what v2 `Top::get()` did on every load); an empty smart album re-runs its live query on every load, since nothing is cached for it.
+
+#### Option B – Keep cache-only, warm the cache elsewhere
+- **Idea:** Keep `/Albums/smart` cache-only; dispatch `RecomputeAlbumUserThumbsJob` for missing (viewer, smart album) pairs, e.g. from the request, so a later load finds the row.
+- **Spec impact:** FR-062-16 unchanged; new dispatch path.
+- **Pros:** the endpoint itself never runs a photos query.
+- **Cons:** the first load still shows no cover; the job only refreshes existing rows today, so it needs a new "create for viewer" mode; queue dependency for a display concern.
+
+#### Option C – Accept coverless smart albums until another path seeds them
+- **Idea:** No change.
+- **Pros:** no work.
+- **Cons:** with the v2 call gone, most viewers never get a smart-album cover.
 
 ### Q-062-18 · Drop the v2 `GET /Albums` call from the SoA root gallery
 

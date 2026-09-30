@@ -171,6 +171,7 @@ import Constants from "@/services/constants";
 import { computed, onMounted, ref, watch, nextTick } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import AlbumService, { UpdateAbumData, UpdateTagAlbumData, UpdatePersonAlbumData } from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import PersonsInput from "@/v8/components/forms/basic/PersonsInput.vue";
 import {
 	photoSortingColumnsOptions,
@@ -207,6 +208,7 @@ const props = defineProps<{
 
 const LycheeState = useLycheeStateStore();
 const albumStore = useAlbumStore();
+const albumListStore = useAlbumListStore();
 const { is_se_enabled, is_se_preview_enabled, is_flow_opt_in_strategy } = storeToRefs(LycheeState);
 
 const photosStore = usePhotosStore();
@@ -515,6 +517,7 @@ function saveAlbum() {
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
+		albumListStore.invalidate();
 		albumStore.loadHead();
 	});
 }

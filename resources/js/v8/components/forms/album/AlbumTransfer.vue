@@ -27,12 +27,14 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AlbumService from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import { sprintf } from "sprintf-js";
 import SearchTargetUser from "@/v8/components/forms/album/SearchTargetUser.vue";
 import { type UserOrGroup } from "@/stores/UsersAndGroupsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 
 const albumStore = useAlbumStore();
+const albumListStore = useAlbumListStore();
 const router = useRouter();
 const newOwner = ref<UserOrGroup | undefined>(undefined);
 
@@ -44,6 +46,7 @@ function execute() {
 		return;
 	}
 	AlbumService.transfer(albumStore.album.id, newOwner.value.id).then(() => {
+		albumListStore.invalidate();
 		router.push("/gallery");
 		AlbumService.clearCache(albumStore.modelAlbum?.parent_id);
 	});
