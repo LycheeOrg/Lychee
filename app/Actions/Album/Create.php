@@ -35,7 +35,7 @@ class Create
 	 */
 	public const TREE_LOCK_KEY = 'album_tree_insert';
 	private const TREE_LOCK_TTL_SECONDS = 30;
-	private const TREE_LOCK_WAIT_SECONDS = 30;
+	private const TREE_LOCK_WAIT_SECONDS = 10;
 
 	public function __construct(
 		public readonly int $intended_owner_id,
@@ -82,7 +82,7 @@ class Create
 				$album->save();
 			});
 		} catch (LockTimeoutException $e) {
-			throw new ConflictingPropertyException('Another album is being created, please try again.', $e);
+			throw new ConflictingPropertyException('Another album is being created, please retry.', $e);
 		}
 	}
 

@@ -222,7 +222,8 @@ const AlbumService = {
 	},
 
 	createAlbum(data: CreateAlbumData): Promise<AxiosResponse<string>> {
-		return axios.post(`${Constants.getApiUrl()}Album`, data);
+		// Album creation is serialised server-side, a 409 means the lock timed out and nothing was created.
+		return axios.post(`${Constants.getApiUrl()}Album`, data, { conflictRetries: 5 });
 	},
 
 	createTag(data: CreateTagAlbumData): Promise<AxiosResponse<string>> {
