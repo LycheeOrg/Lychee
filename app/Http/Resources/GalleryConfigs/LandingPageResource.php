@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Actions\Album\AutoCoverRows;
 use App\Enum\LandingAnimationPreset;
 use App\Enum\LandingBackgroundModeType;
 use App\Enum\LandingCtaPosition;
@@ -189,7 +190,7 @@ class LandingPageResource extends Data
 		$count = request()->configs()->getValueAsInt('landing_featured_items_count');
 
 		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		$query = Album::query()->with(['cover.size_variants', 'min_privilege_cover.size_variants']);
+		$query = Album::query()->with(['cover.size_variants', 'autoCoverRows']);
 		$query = $album_query_policy->applyVisibilityFilter($query, null);
 
 		$albums = $query
@@ -217,7 +218,7 @@ class LandingPageResource extends Data
 		foreach ($items as $item) {
 			$model = match ($item->item_type) {
 				LandingFeaturedItemType::PHOTO => Photo::query()->with('size_variants')->find($item->item_id),
-				LandingFeaturedItemType::ALBUM => Album::query()->with(['cover.size_variants', 'min_privilege_cover.size_variants'])->find($item->item_id),
+				LandingFeaturedItemType::ALBUM => Album::query()->with(['cover.size_variants', 'autoCoverRows'])->find($item->item_id),
 			};
 
 			if ($model !== null) {
@@ -323,7 +324,7 @@ class LandingPageResource extends Data
 	private function resolveLatestAlbumCover(): string
 	{
 		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		$query = Album::query()->with(['cover.size_variants', 'min_privilege_cover.size_variants']);
+		$query = Album::query()->with(['cover.size_variants', 'autoCoverRows']);
 
 		// Apply public visibility filter
 		$query = $album_query_policy->applyVisibilityFilter($query, null);
@@ -340,7 +341,7 @@ class LandingPageResource extends Data
 		}
 
 		// Try explicit cover first, then auto cover
-		$cover_id = $album->cover_id ?? $album->auto_cover_id_least_privilege;
+		$cover_id = $album->cover_id ?? AutoCoverRows::publicRow($album->autoCoverRows)?->photo_id;
 
 		if ($cover_id === null) {
 			return self::FALLBACK_IMAGE;

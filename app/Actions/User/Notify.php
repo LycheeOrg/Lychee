@@ -47,7 +47,7 @@ class Notify
 		$users = User::query()->where('may_administrate', '=', true)->get();
 
 		$albums = Album::query()
-			->without(['thumbs', 'statistics', 'cover', 'min_privilege_cover', 'max_privilege_cover'])
+			->without(['thumbs', 'statistics', 'cover', 'autoCoverRows'])
 			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'albums.id')
 			->where(PA::PHOTO_ID, '=', $photo->id)
 			->get();

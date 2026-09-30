@@ -63,8 +63,8 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Assert admin sees max-privilege cover
-		$this->assertNotNull($album->auto_cover_id_max_privilege, 'Admin should see max-privilege cover');
-		$this->assertEquals($photo->id, $album->auto_cover_id_max_privilege, 'Max-privilege cover should be the private photo');
+		$this->assertNotNull($this->maxCovers($album)[0], 'Admin should see max-privilege cover');
+		$this->assertEquals($photo->id, $this->maxCovers($album)[0], 'Max-privilege cover should be the private photo');
 	}
 
 	/**
@@ -125,10 +125,10 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$nsfwAlbum->refresh();
 
 		// Assert NSFW sub-album has NSFW photo as cover (in NSFW context)
-		$this->assertEquals($nsfwPhoto->id, $nsfwAlbum->auto_cover_id_max_privilege, 'NSFW album should have NSFW photo as max-privilege cover');
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($nsfwAlbum)[0], 'NSFW album should have NSFW photo as max-privilege cover');
 
 		// Assert root album's least-privilege cover excludes NSFW photos (not in NSFW context)
-		$this->assertEquals($safePhoto->id, $rootAlbum->auto_cover_id_least_privilege, 'Non-NSFW album least-privilege cover should exclude NSFW photos');
+		$this->assertEquals($safePhoto->id, $this->leastCovers($rootAlbum)[0], 'Non-NSFW album least-privilege cover should exclude NSFW photos');
 	}
 
 	/**
@@ -167,9 +167,9 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Assert both covers exist and are the same (only one photo)
-		$this->assertNotNull($album->auto_cover_id_max_privilege, 'Max-privilege cover should exist');
-		$this->assertNotNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should exist for public album');
-		$this->assertEquals($photo->id, $album->auto_cover_id_least_privilege, 'Least-privilege cover should be the public photo');
+		$this->assertNotNull($this->maxCovers($album)[0], 'Max-privilege cover should exist');
+		$this->assertNotNull($this->leastCovers($album)[0], 'Least-privilege cover should exist for public album');
+		$this->assertEquals($photo->id, $this->leastCovers($album)[0], 'Least-privilege cover should be the public photo');
 	}
 
 	/**
@@ -211,10 +211,10 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Assert max-privilege cover exists (owner/admin can see photos)
-		$this->assertNotNull($album->auto_cover_id_max_privilege, 'Max-privilege cover should exist for owner');
+		$this->assertNotNull($this->maxCovers($album)[0], 'Max-privilege cover should exist for owner');
 
 		// Assert least-privilege cover is NULL (album has no AccessPermissions, so nobody can access it)
-		$this->assertNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should be NULL when album has no access permissions');
+		$this->assertNull($this->leastCovers($album)[0], 'Least-privilege cover should be NULL when album has no access permissions');
 	}
 
 	/**
@@ -237,8 +237,8 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		Artisan::call('lychee:recompute-album-stats', ['album_id' => $root->id, '--sync' => true]);
 		$root->refresh();
 
-		$least = array_filter([$root->auto_cover_id_least_privilege, $root->auto_cover_id_least_privilege_2, $root->auto_cover_id_least_privilege_3]);
-		$max = array_filter([$root->auto_cover_id_max_privilege, $root->auto_cover_id_max_privilege_2, $root->auto_cover_id_max_privilege_3]);
+		$least = array_filter([$this->leastCovers($root)[0], $this->leastCovers($root)[1], $this->leastCovers($root)[2]]);
+		$max = array_filter([$this->maxCovers($root)[0], $this->maxCovers($root)[1], $this->maxCovers($root)[2]]);
 
 		$this->assertCount(2, $least, 'Only the two public photos qualify for the least-privilege ranks');
 		$this->assertSame([], array_intersect($least, $private_photos), 'Least-privilege ranks must never contain a private photo');

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery\AlbumListing;
 
+use App\Actions\Album\StructOfArrays\JoinAutoCover;
 use App\Actions\Album\StructOfArrays\Traits\BuildsAlbumCategoryResource;
 use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
@@ -78,24 +79,19 @@ class AlbumPinnedController extends Controller
 		$this->applyScopePredicate($query, $scope, $user);
 		(new SortingDecorator($query))->orderBy($pinned_col ?? ColumnSortingType::CREATED_AT, $pinned_order ?? OrderSortingType::ASC)->applyOrdering();
 
-		$rows = $query
+		$query
 			->select([
 				'albums.id',
 				'base_albums.title',
 				'albums.cover_id',
-				'albums.auto_cover_id_max_privilege',
-				'albums.auto_cover_id_least_privilege',
-				'albums.auto_cover_id_max_privilege_2',
-				'albums.auto_cover_id_max_privilege_3',
-				'albums.auto_cover_id_least_privilege_2',
-				'albums.auto_cover_id_least_privilege_3',
 				'base_albums.owner_id',
 				'computed_access_permissions.password',
-			])
-			->toBase()
-			->get();
+			]);
 
-		return $this->toCategoryResource($rows, resolve_cover: true, user: $user);
+		// Automatic cover row for this viewer (Feature 076, FR-076-04).
+		$rows = JoinAutoCover::apply($query, $user)->toBase()->get();
+
+		return $this->toCategoryResource($rows, resolve_cover: true);
 	}
 
 	/**

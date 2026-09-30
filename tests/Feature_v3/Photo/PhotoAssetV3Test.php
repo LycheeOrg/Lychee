@@ -734,7 +734,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	/**
 	 * S-075-08: a rank-2/3 automatic side cover stored in a descendant album
 	 * is legitimately served for the parent's asset URL, exactly like the
-	 * rank-1 `auto_cover_id_*` columns already are.
+	 * rank-1 automatic cover already is.
 	 */
 	public function testSideCoverInDescendantAlbumIsServedForParentAlbum(): void
 	{
@@ -742,8 +742,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 			DB::table('photo_album')->where('album_id', $this->album1->id)->where('photo_id', $this->subPhoto1->id)->exists(),
 			'Fixture assumption: subPhoto1 lives only in subAlbum1.'
 		);
-		$this->album1->auto_cover_id_max_privilege_2 = $this->subPhoto1->id;
-		$this->album1->save();
+		$this->setPrecomputedRow($this->userMayUpload1->id, [$this->photo1->id, $this->subPhoto1->id, null]);
 		$variant = $this->thumbVariantOf($this->subPhoto1);
 		$this->putBytes($variant);
 
@@ -759,9 +758,8 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 */
 	public function testPhotoThatIsNeitherSideCoverNorMemberIsStillForbidden(): void
 	{
-		$this->album1->auto_cover_id_max_privilege_2 = $this->subPhoto1->id;
-		$this->album1->auto_cover_id_least_privilege_3 = $this->photo1->id;
-		$this->album1->save();
+		$this->setPrecomputedRow($this->userMayUpload1->id, [$this->photo1->id, $this->subPhoto1->id, null]);
+		$this->setPrecomputedRow(null, [$this->photo1b->id, null, $this->photo1->id]);
 		$variant = $this->thumbVariantOf($this->photo2);
 		$this->putBytes($variant);
 
@@ -790,5 +788,62 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3('Asset/' . SmartAlbumType::HIGHLIGHTED->value . "/{$this->photo1->id}/thumb");
 
 		$response->assertOk();
+	}
+
+	// ── Feature 076: precomputed rows (FR-076-11, S-076-13, NFR-076-04) ──
+
+	/**
+	 * Replace album1's precomputed cover row keyed on `$user_id` (Feature 076).
+	 *
+	 * @param array{0:string,1:string|null,2:string|null} $covers
+	 */
+	private function setPrecomputedRow(?int $user_id, array $covers): void
+	{
+		AlbumUserThumb::query()->updateOrCreate(
+			['album_id' => $this->album1->id, 'user_id' => $user_id],
+			['photo_id' => $covers[0], 'photo_id_2' => $covers[1], 'photo_id_3' => $covers[2], 'is_precomputed' => true],
+		);
+	}
+
+	/**
+	 * S-076-13: every rank of the owner row and of the `NULL` row is served
+	 * for the parent album to any viewer who can access it, here a user the
+	 * album is shared with (not its owner).
+	 */
+	public function testEveryRankOfEveryPrecomputedRowIsServedForParentAlbum(): void
+	{
+		$owner_ranks = [$this->subPhoto1->id, $this->photo2->id, $this->photo3->id];
+		$public_ranks = [$this->photo4->id, $this->subPhoto2->id, $this->subPhoto4->id];
+		$this->setPrecomputedRow($this->userMayUpload1->id, $owner_ranks);
+		$this->setPrecomputedRow(null, $public_ranks);
+
+		foreach ([...$owner_ranks, ...$public_ranks] as $photo_id) {
+			$photo = Photo::query()->findOrFail($photo_id);
+			$this->putBytes($this->thumbVariantOf($photo));
+
+			$this->actingAs($this->userMayUpload2)->getV3("Asset/{$this->album1->id}/{$photo_id}/thumb")->assertOk();
+		}
+	}
+
+	/**
+	 * NFR-076-04: for a regular album, a non-manual-cover photo is checked
+	 * against membership and the precomputed rows in one query.
+	 */
+	public function testRegularAlbumCoverCheckIsOneQuery(): void
+	{
+		$this->setPrecomputedRow($this->userMayUpload1->id, [$this->subPhoto1->id, null, null]);
+		$this->putBytes($this->thumbVariantOf($this->subPhoto1));
+		$this->actingAs($this->userMayUpload1);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$this->getV3("Asset/{$this->album1->id}/{$this->subPhoto1->id}/thumb")->assertOk();
+		$existence_checks = array_values(array_filter(DB::getQueryLog(), fn (array $q): bool => str_contains($q['query'], 'exists') &&
+			(str_contains($q['query'], 'photo_album') || str_contains($q['query'], 'album_user_thumbs'))));
+		DB::disableQueryLog();
+
+		self::assertCount(1, $existence_checks, 'membership and cover rows must be tested in one query');
+		self::assertStringContainsString('photo_album', $existence_checks[0]['query']);
+		self::assertStringContainsString('album_user_thumbs', $existence_checks[0]['query']);
 	}
 }

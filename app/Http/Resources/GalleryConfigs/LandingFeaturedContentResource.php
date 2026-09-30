@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Actions\Album\AutoCoverRows;
 use App\Enum\LandingFeaturedItemType;
 use App\Models\Album;
 use App\Models\Extensions\SizeVariants;
@@ -54,7 +55,7 @@ class LandingFeaturedContentResource extends Data
 		$this->item_type = LandingFeaturedItemType::ALBUM;
 		$this->id = $item->id;
 		$this->title = $item->title;
-		$cover_id = $item->cover_id ?? $item->auto_cover_id_least_privilege;
+		$cover_id = $item->cover_id ?? AutoCoverRows::publicRow($item->autoCoverRows)?->photo_id;
 		$cover_photo = $cover_id !== null ? Photo::query()->with('size_variants')->find($cover_id) : null;
 		$this->applyThumb($cover_photo?->size_variants);
 		$this->url = route('gallery', ['albumId' => $item->id]);

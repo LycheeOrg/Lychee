@@ -15,9 +15,11 @@ use App\Events\PersonAlbumSaved;
 use App\Events\TagAlbumSaved;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
+use Illuminate\Support\Facades\DB;
 
 class Transfer
 {
@@ -26,6 +28,15 @@ class Transfer
 	 */
 	public function do(BaseAlbum $base_album, int $user_id): void
 	{
+		// The precomputed cover rows follow the new owner (Feature 076):
+		// the album and every descendant fixOwnershipOfChildren() moves.
+		if ($base_album instanceof Album) {
+			AlbumUserThumb::rekeyOwnerRows(
+				DB::table('albums')->whereBetween('_lft', [$base_album->_lft, $base_album->_rgt])->pluck('id')->all(),
+				$user_id
+			);
+		}
+
 		$base_album->owner_id = $user_id;
 		$base_album->save();
 

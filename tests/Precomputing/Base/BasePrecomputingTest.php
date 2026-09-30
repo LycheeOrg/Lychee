@@ -9,6 +9,7 @@
 namespace Tests\Precomputing\Base;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiTest;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyColourPalettes;
@@ -74,5 +75,43 @@ abstract class BasePrecomputingTest extends BaseApiTest
 		$this->tearDownRequiresEmptyGroups();
 
 		parent::tearDown();
+	}
+
+	/**
+	 * Ranks 1–3 of the album's max-privilege cover: its precomputed
+	 * `album_user_thumbs` row keyed on the owner (Feature 076, ADR-076-01).
+	 *
+	 * @return array{0:string|null,1:string|null,2:string|null}
+	 */
+	protected function maxCovers(string|\App\Models\Album $album): array
+	{
+		$album_id = is_string($album) ? $album : $album->id;
+		$owner_id = DB::table('base_albums')->where('id', '=', $album_id)->value('owner_id');
+
+		return $this->coverTriple(DB::table('album_user_thumbs')->where('user_id', '=', $owner_id), $album_id);
+	}
+
+	/**
+	 * Ranks 1–3 of the album's least-privilege cover: its precomputed row
+	 * not keyed on the owner (`NULL` or the single shared user).
+	 *
+	 * @return array{0:string|null,1:string|null,2:string|null}
+	 */
+	protected function leastCovers(string|\App\Models\Album $album): array
+	{
+		$album_id = is_string($album) ? $album : $album->id;
+		$owner_id = DB::table('base_albums')->where('id', '=', $album_id)->value('owner_id');
+
+		return $this->coverTriple(DB::table('album_user_thumbs')->where(fn ($q) => $q->whereNull('user_id')->orWhere('user_id', '<>', $owner_id)), $album_id);
+	}
+
+	/**
+	 * @return array{0:string|null,1:string|null,2:string|null}
+	 */
+	private function coverTriple(\Illuminate\Database\Query\Builder $query, string $album_id): array
+	{
+		$row = $query->where('album_id', '=', $album_id)->where('is_precomputed', '=', true)->first();
+
+		return [$row?->photo_id, $row?->photo_id_2, $row?->photo_id_3];
 	}
 }

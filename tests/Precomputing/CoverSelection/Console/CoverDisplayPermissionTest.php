@@ -15,6 +15,7 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -28,6 +29,15 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  */
 class CoverDisplayPermissionTest extends BasePrecomputingTest
 {
+	/**
+	 * Queries of `Album::query()->findOrFail()` for a guest, no explicit
+	 * cover. The cover part is `cover`, `autoCoverRows`, its photo and size
+	 * variants: four queries, one fewer than the two `*_privilege_cover`
+	 * relations with their size variants plus `cover` (24 in total before
+	 * Feature 076, NFR-076-02).
+	 */
+	private const MODEL_LOAD_QUERIES = 23;
+
 	/**
 	 * S-003-17: Admin sees max-privilege cover, shared user sees least-privilege.
 	 */
@@ -65,11 +75,11 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		// Admin should see max-privilege cover (privatePhoto, highlighted + newer)
 		Auth::login($this->admin);
-		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($privatePhoto->id, $this->maxCovers($album)[0]);
 
 		// Public/shared users should see least-privilege cover (publicPhoto only)
 		// The exact photo depends on visibility rules, but it should not be the private photo
-		$this->assertNotNull($album->auto_cover_id_least_privilege);
+		$this->assertNotNull($this->leastCovers($album)[0]);
 	}
 
 	/**
@@ -102,7 +112,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		Auth::login($owner);
 
 		// Owner should see max-privilege cover (photo2, highlighted + newer)
-		$this->assertEquals($photo2->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($photo2->id, $this->maxCovers($album)[0]);
 	}
 
 	/**
@@ -131,13 +141,13 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		// Owner sees max-privilege cover
 		Auth::login($owner);
-		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($privatePhoto->id, $this->maxCovers($album)[0]);
 
 		// Non-owner should see least-privilege cover (may be NULL if no accessible photos)
 		Auth::login($nonOwner);
 		// Least-privilege cover should be NULL or different from max-privilege
-		if ($album->auto_cover_id_least_privilege !== null) {
-			$this->assertNotEquals($privatePhoto->id, $album->auto_cover_id_least_privilege);
+		if ($this->leastCovers($album)[0] !== null) {
+			$this->assertNotEquals($privatePhoto->id, $this->leastCovers($album)[0]);
 		}
 	}
 
@@ -176,7 +186,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		// Shared user should see least-privilege cover
 		Auth::login($sharedUser);
-		$this->assertNotNull($album->auto_cover_id_least_privilege);
+		$this->assertNotNull($this->leastCovers($album)[0]);
 	}
 
 	/**
@@ -206,14 +216,47 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		// Admin should see max-privilege
 		Auth::login($admin);
-		$this->assertNotNull($album->auto_cover_id_max_privilege);
+		$this->assertNotNull($this->maxCovers($album)[0]);
 
 		// Owner should see max-privilege
 		Auth::login($owner);
-		$this->assertNotNull($album->auto_cover_id_max_privilege);
+		$this->assertNotNull($this->maxCovers($album)[0]);
 
 		// Public user should see least-privilege
 		Auth::login($publicUser);
-		$this->assertNotNull($album->auto_cover_id_least_privilege);
+		$this->assertNotNull($this->leastCovers($album)[0]);
+	}
+
+	/**
+	 * S-076-08 / NFR-076-02: the v2 model path (`Album::$with` + `thumb`)
+	 * resolves the same cover per viewer as the listings: owner and admin
+	 * read the owner row, a guest the public row, in a fixed number of
+	 * queries.
+	 */
+	public function testModelThumbFollowsTheRowModel(): void
+	{
+		$owner = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($owner)->create();
+		AccessPermission::factory()->for_album($album)->public()->visible()->create();
+		$public = Album::factory()->children_of($album)->owned_by($owner)->create();
+		AccessPermission::factory()->for_album($public)->public()->visible()->create();
+		$hidden = Album::factory()->children_of($album)->owned_by($owner)->create();
+		$public_photo = Photo::factory()->owned_by($owner)->in($public)->create(['taken_at' => new Carbon('2023-01-01')]);
+		$private_photo = Photo::factory()->owned_by($owner)->in($hidden)->create(['taken_at' => new Carbon('2023-12-31'), 'is_highlighted' => true]);
+		Artisan::call('lychee:recompute-album-stats', ['album_id' => $album->id, '--sync' => true]);
+
+		Auth::login($owner);
+		$this->assertSame($private_photo->id, Album::query()->findOrFail($album->id)->thumb?->id);
+		Auth::login($this->admin);
+		$this->assertSame($private_photo->id, Album::query()->findOrFail($album->id)->thumb?->id);
+		Auth::logout();
+		$this->assertSame($public_photo->id, Album::query()->findOrFail($album->id)->thumb?->id);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		Album::query()->findOrFail($album->id);
+		$count = count(DB::getQueryLog());
+		DB::disableQueryLog();
+		$this->assertSame(self::MODEL_LOAD_QUERIES, $count, 'Loading an Album issued ' . $count . ' queries');
 	}
 }

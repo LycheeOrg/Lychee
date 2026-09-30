@@ -21,6 +21,7 @@ namespace Tests\Feature_v3\Album;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
@@ -351,14 +352,26 @@ class AlbumListV3Test extends BaseApiWithDataTest
 	// ── cover_ids resolution (FR-057-09) ─────────────────────────
 
 	/**
+	 * Replace the album's precomputed cover rows (Feature 076) by rank-1-only
+	 * rows keyed by user id; key `0` is the `NULL` (least-privilege) row.
+	 *
+	 * @param array<int,string> $photo_by_user
+	 */
+	private function setCoverRows(string $album_id, array $photo_by_user): void
+	{
+		AlbumUserThumb::query()->where('album_id', '=', $album_id)->where('is_precomputed', '=', true)->delete();
+		foreach ($photo_by_user as $user_id => $photo_id) {
+			AlbumUserThumb::query()->create(['album_id' => $album_id, 'user_id' => $user_id === 0 ? null : $user_id, 'photo_id' => $photo_id, 'is_precomputed' => true]);
+		}
+	}
+
+	/**
 	 * S-057-15: explicit cover_id wins regardless of viewer privilege.
 	 */
 	public function testExplicitCoverIdWinsRegardlessOfViewer(): void
 	{
-		DB::table('albums')->where('id', '=', $this->album1->id)->update([
-			'cover_id' => $this->photo1->id,
-			'auto_cover_id_max_privilege' => $this->photo1b->id,
-		]);
+		DB::table('albums')->where('id', '=', $this->album1->id)->update(['cover_id' => $this->photo1->id]);
+		$this->setCoverRows($this->album1->id, [$this->userMayUpload1->id => $this->photo1b->id]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums');
 		$response->assertOk();
@@ -368,15 +381,13 @@ class AlbumListV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-057-16: owner (no explicit cover) sees auto_cover_id_max_privilege.
+	 * S-057-16: owner (no explicit cover) sees the max-privilege cover
+	 * (their own precomputed row, Feature 076).
 	 */
 	public function testOwnerSeesMaxPrivilegeCoverWhenNoExplicitCover(): void
 	{
-		DB::table('albums')->where('id', '=', $this->album1->id)->update([
-			'cover_id' => null,
-			'auto_cover_id_max_privilege' => $this->photo1->id,
-			'auto_cover_id_least_privilege' => null,
-		]);
+		DB::table('albums')->where('id', '=', $this->album1->id)->update(['cover_id' => null]);
+		$this->setCoverRows($this->album1->id, [$this->userMayUpload1->id => $this->photo1->id]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums');
 		$response->assertOk();
@@ -386,16 +397,13 @@ class AlbumListV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-057-17: neither owner nor admin (no explicit cover) sees
-	 * auto_cover_id_least_privilege.
+	 * S-057-17: neither owner nor admin (no explicit cover) sees the
+	 * least-privilege cover (the `NULL` precomputed row, Feature 076).
 	 */
 	public function testOtherViewerSeesLeastPrivilegeCoverWhenNoExplicitCover(): void
 	{
-		DB::table('albums')->where('id', '=', $this->album4->id)->update([
-			'cover_id' => null,
-			'auto_cover_id_max_privilege' => $this->photo4->id,
-			'auto_cover_id_least_privilege' => $this->photo4->id,
-		]);
+		DB::table('albums')->where('id', '=', $this->album4->id)->update(['cover_id' => null]);
+		$this->setCoverRows($this->album4->id, [$this->userLocked->id => $this->subPhoto4->id, 0 => $this->photo4->id]);
 
 		Auth::logout();
 		$response = $this->getJsonV3('Albums');
@@ -406,16 +414,13 @@ class AlbumListV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-057-18: none of the three cover columns set → null, no fallback
-	 * query.
+	 * S-057-18: no explicit cover and no precomputed row → null, no
+	 * fallback query.
 	 */
 	public function testNoCoverColumnsSetYieldsNullCover(): void
 	{
-		DB::table('albums')->where('id', '=', $this->album5->id)->update([
-			'cover_id' => null,
-			'auto_cover_id_max_privilege' => null,
-			'auto_cover_id_least_privilege' => null,
-		]);
+		DB::table('albums')->where('id', '=', $this->album5->id)->update(['cover_id' => null]);
+		$this->setCoverRows($this->album5->id, []);
 
 		$response = $this->actingAs($this->admin)->getJsonV3('Albums');
 		$response->assertOk();

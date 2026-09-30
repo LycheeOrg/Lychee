@@ -50,7 +50,7 @@ class BulkAlbumController extends Controller
 		$page = (int) $request->validated('page', 1);
 
 		$query = Album::query()->without(
-			['cover', 'cover.size_variants', 'min_privilege_cover', 'min_privilege_cover.size_variants', 'max_privilege_cover', 'max_privilege_cover.size_variants', 'thumb']
+			['cover', 'cover.size_variants', 'autoCoverRows', 'autoCoverRows.photo', 'autoCoverRows.photo.size_variants', 'thumb']
 		)->orderBy('albums._lft', 'asc');
 
 		if ($search !== null && $search !== '') {

@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v3\Sharing;
 
+use App\Actions\Sharing\PurgeAlbumUserThumbs;
 use App\Models\AccessPermission;
 use App\Models\AlbumUserThumb;
 use App\Models\Photo;
@@ -27,6 +28,8 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 /**
  * Feature 075 – side covers and the ADR-0010 purge invariant / FK behaviour
  * (FR-075-01, FR-075-08, FR-075-11; S-075-13, S-075-14).
+ * Feature 076 – the purges leave regular-album precomputed rows alone
+ * (FR-076-10; S-076-11, S-076-12).
  */
 class PurgeSideCoversV3Test extends BaseApiWithDataTest
 {
@@ -53,9 +56,9 @@ class PurgeSideCoversV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-075-14: deleting a photo used as a side cover nulls the `albums`
-	 * side column and the cache side column; the cache row itself survives
-	 * with its primary.
+	 * S-075-14: deleting a photo used as a side cover nulls the side column
+	 * of the regular album's precomputed rows (Feature 076) and of the cache
+	 * row; every row survives with its primary.
 	 */
 	public function testDeletingASidePhotoNullsSideColumnsAndKeepsCacheRow(): void
 	{
@@ -63,9 +66,8 @@ class PurgeSideCoversV3Test extends BaseApiWithDataTest
 		// refilling the side columns, so only the FK behaviour is observed.
 		Queue::fake();
 		$side = Photo::factory()->owned_by($this->userMayUpload1)->in($this->album1)->create();
-		$this->album1->auto_cover_id_max_privilege_2 = $side->id;
-		$this->album1->auto_cover_id_least_privilege_3 = $side->id;
-		$this->album1->save();
+		$this->precomputedRow($this->album1->id, $this->userMayUpload1->id, $this->photo1->id, $side->id);
+		$this->precomputedRow($this->album1->id, null, $this->photo1b->id, null, $side->id);
 		AlbumUserThumb::query()->create([
 			'user_id' => $this->userMayUpload1->id,
 			'album_id' => $this->tagAlbum1->id,
@@ -76,14 +78,67 @@ class PurgeSideCoversV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Photo', ['photo_ids' => [$side->id], 'from_id' => $this->album1->id]);
 		$this->assertNoContent($response);
 
-		$this->album1->refresh();
-		self::assertNull($this->album1->auto_cover_id_max_privilege_2);
-		self::assertNull($this->album1->auto_cover_id_least_privilege_3);
+		self::assertDatabaseHas('album_user_thumbs', ['album_id' => $this->album1->id, 'user_id' => $this->userMayUpload1->id, 'photo_id' => $this->photo1->id, 'photo_id_2' => null]);
+		self::assertDatabaseHas('album_user_thumbs', ['album_id' => $this->album1->id, 'user_id' => null, 'photo_id' => $this->photo1b->id, 'photo_id_3' => null]);
 		self::assertDatabaseHas('album_user_thumbs', [
 			'album_id' => $this->tagAlbum1->id,
 			'user_id' => $this->userMayUpload1->id,
 			'photo_id' => $this->photo1->id,
 			'photo_id_2' => null,
 		]);
+	}
+
+	/**
+	 * S-076-11: a group-membership change purges the user's cache rows but
+	 * keeps the precomputed covers of the albums they own.
+	 */
+	public function testForUsersKeepsPrecomputedRows(): void
+	{
+		$this->precomputedRow($this->album1->id, $this->userMayUpload1->id, $this->photo1->id);
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userMayUpload1->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+
+		resolve(PurgeAlbumUserThumbs::class)->forUsers([$this->userMayUpload1->id]);
+
+		self::assertTrue($this->hasRow($this->album1->id, $this->userMayUpload1->id));
+		self::assertFalse($this->hasRow($this->tagAlbum1->id, $this->userMayUpload1->id));
+	}
+
+	/**
+	 * S-076-12: revoking a permission on a sub-album purges cache rows
+	 * pointing at its photos, but keeps the parent's precomputed row whose
+	 * cover comes from that sub-album.
+	 */
+	public function testRevocationKeepsPrecomputedRows(): void
+	{
+		$public_perm = AccessPermission::factory()->public()->visible()->for_album($this->subAlbum1)->create();
+		$this->precomputedRow($this->album1->id, null, $this->subPhoto1->id);
+		AlbumUserThumb::query()->create([
+			'user_id' => $this->userNoUpload->id,
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->subPhoto1->id,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $public_perm->id]);
+		$this->assertNoContent($response);
+
+		self::assertTrue($this->hasRow($this->album1->id, null));
+		self::assertFalse($this->hasRow($this->tagAlbum1->id, $this->userNoUpload->id));
+	}
+
+	private function precomputedRow(string $album_id, ?int $user_id, string $photo_id, ?string $photo_id_2 = null, ?string $photo_id_3 = null): void
+	{
+		AlbumUserThumb::query()->updateOrCreate(
+			['album_id' => $album_id, 'user_id' => $user_id],
+			['photo_id' => $photo_id, 'photo_id_2' => $photo_id_2, 'photo_id_3' => $photo_id_3, 'is_precomputed' => true],
+		);
+	}
+
+	private function hasRow(string $album_id, ?int $user_id): bool
+	{
+		return AlbumUserThumb::query()->where('album_id', '=', $album_id)->where('user_id', $user_id)->exists();
 	}
 }

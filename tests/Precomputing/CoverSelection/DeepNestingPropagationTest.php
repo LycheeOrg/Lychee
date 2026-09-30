@@ -71,7 +71,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 		$this->assertEquals(0, $albums[4]->num_children, 'Leaf album should have 0 children');
 		$this->assertNotNull($albums[4]->max_taken_at, 'Leaf album should have max_taken_at set');
 		$this->assertNotNull($albums[4]->min_taken_at, 'Leaf album should have min_taken_at set');
-		$this->assertEquals($photo->id, $albums[4]->auto_cover_id_max_privilege, 'Leaf album max cover should be the photo');
+		$this->assertEquals($photo->id, $this->maxCovers($albums[4])[0], 'Leaf album max cover should be the photo');
 
 		// Verify parent levels updated correctly
 		for ($i = 3; $i >= 0; $i--) {
@@ -80,7 +80,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 			$this->assertEquals(1, $albums[$i]->num_children, "Level $i should have 1 direct child");
 			$this->assertNotNull($albums[$i]->max_taken_at, "Level $i should have max_taken_at from descendants");
 			$this->assertNotNull($albums[$i]->min_taken_at, "Level $i should have min_taken_at from descendants");
-			$this->assertEquals($photo->id, $albums[$i]->auto_cover_id_max_privilege, "Level $i max cover should propagate from leaf");
+			$this->assertEquals($photo->id, $this->maxCovers($albums[$i])[0], "Level $i max cover should propagate from leaf");
 		}
 	}
 

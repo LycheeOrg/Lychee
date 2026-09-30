@@ -206,10 +206,12 @@ class SharingController extends Controller
 			throw new LycheeLogicException('Only albums can have any descandants.');
 		}
 
-		if ($request->shall_override) {
-			$propagate->overwrite($album);
-		} else {
-			$propagate->update($album);
+		$descendant_ids = $request->shall_override ? $propagate->overwrite($album) : $propagate->update($album);
+
+		// Each descendant's permission set changed: recompute its covers
+		// (Feature 076, FR-076-13) and evict its listing caches.
+		foreach ($descendant_ids as $descendant_id) {
+			AccessPermissionChanged::dispatch($descendant_id);
 		}
 
 		AlbumListingCacheFlushRequested::dispatch();

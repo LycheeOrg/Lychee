@@ -67,8 +67,7 @@ class GetAlbumChildrenRequest extends BaseApiRequest implements HasAbstractAlbum
 		// Load album without unnecessary relations for this request
 		$this->album = Album::without([
 			'cover', 'cover.size_variants',
-			'min_privilege_cover', 'min_privilege_cover.size_variants',
-			'max_privilege_cover', 'max_privilege_cover.size_variants',
+			'autoCoverRows', 'autoCoverRows.photo', 'autoCoverRows.photo.size_variants',
 			'thumb',
 			'owner',
 			'statistics',

@@ -8,6 +8,7 @@
 
 namespace App\View\Components;
 
+use App\Actions\Album\AutoCoverRows;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\OgImageAlbumSourceType;
@@ -175,7 +176,7 @@ class Meta extends Component
 			return null;
 		}
 
-		$cover_id = $album->cover_id ?? $album->auto_cover_id_least_privilege;
+		$cover_id = $album->cover_id ?? AutoCoverRows::publicRow($album->autoCoverRows)?->photo_id;
 		if ($cover_id === null) {
 			return null;
 		}

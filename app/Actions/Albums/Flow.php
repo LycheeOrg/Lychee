@@ -120,8 +120,7 @@ final class Flow
 		if ($with_relations) {
 			$base_query->with([
 				'cover', 'cover.size_variants',
-				'max_privilege_cover', 'max_privilege_cover.size_variants',
-				'min_privilege_cover', 'min_privilege_cover.size_variants',
+				'autoCoverRows', 'autoCoverRows.photo', 'autoCoverRows.photo.size_variants',
 				'statistics',
 				'photos',
 				'photos.statistics', 'photos.size_variants', 'photos.palette', 'photos.tags', 'photos.rating', 'photos.faces', 'photos.faces.person', ]);

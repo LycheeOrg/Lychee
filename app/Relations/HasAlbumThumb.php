@@ -8,12 +8,12 @@
 
 namespace App\Relations;
 
+use App\Actions\Album\AutoCoverRows;
 use App\DTO\PhotoSortingCriterion;
 use App\Models\Album;
 use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
-use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,37 +62,29 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * Determine the cover type to use for the album.
-	 *
-	 * @param Album $album
-	 *
-	 * @return string
-	 */
-	protected function getCoverTypeForAlbum(Album $album): string
-	{
-		if ($album->cover_id !== null) {
-			return 'cover_id';
-		}
-
-		/** @var ?User $user */
-		$user = Auth::user();
-
-		// Priority 2: Max-privilege cover for admin or owner
-		if ($user?->may_administrate === true || $album->owner_id === $user?->id) {
-			return 'auto_cover_id_max_privilege';
-		}
-
-		// Priority 3: Least-privilege cover for public
-		return 'auto_cover_id_least_privilege';
-	}
-
-	/**
-	 * Select the appropriate cover ID based on user privileges.
+	 * The cover photo of the album for the current viewer, if any is stored.
 	 *
 	 * Priority:
 	 * 1. Explicit cover_id (if set)
-	 * 2. auto_cover_id_max_privilege (if admin or owns album/ancestor)
-	 * 3. auto_cover_id_least_privilege (public view)
+	 * 2. The viewer's precomputed automatic cover row (Feature 076):
+	 *    the owner's row for an admin or the owner, else the `NULL` row
+	 *    or the row of the single user the album is shared with
+	 *
+	 * @param Album $album
+	 *
+	 * @return Photo|null
+	 */
+	protected function selectCoverForAlbum(Album $album): ?Photo
+	{
+		if ($album->cover_id !== null) {
+			return $album->cover;
+		}
+
+		return AutoCoverRows::forViewer($album->autoCoverRows, $album->owner_id, Auth::user())?->photo;
+	}
+
+	/**
+	 * The id of {@see self::selectCoverForAlbum()}, without loading the photo.
 	 *
 	 * @param Album $album
 	 *
@@ -100,21 +92,14 @@ class HasAlbumThumb extends Relation
 	 */
 	protected function selectCoverIdForAlbum(Album $album): ?string
 	{
-		return match ($this->getCoverTypeForAlbum($album)) {
-			'cover_id' => $album->cover_id,
-			'auto_cover_id_max_privilege' => $album->auto_cover_id_max_privilege,
-			'auto_cover_id_least_privilege' => $album->auto_cover_id_least_privilege,
-			default => null,
-		};
+		return $album->cover_id ?? AutoCoverRows::forViewer($album->autoCoverRows, $album->owner_id, Auth::user())?->photo_id;
 	}
 
 	/**
 	 * Adds the constraints for a single album.
 	 *
-	 * Determines which cover photo to use based on priority:
-	 * 1. Explicit cover_id (if set)
-	 * 2. auto_cover_id_max_privilege (if user is admin or owns album/ancestor)
-	 * 3. auto_cover_id_least_privilege (public view)
+	 * Uses the stored cover of {@see self::selectCoverIdForAlbum()}, and
+	 * falls back to the live searchability query when none is stored.
 	 */
 	public function addConstraints(): void
 	{
@@ -145,8 +130,8 @@ class HasAlbumThumb extends Relation
 	/**
 	 * We do not eager load any covers.
 	 * This relation is only meaningful for single albums.
-	 * In case of multiple album we use the preloaded values from
-	 * `cover_id`, `auto_cover_id_max_privilege`, and `auto_cover_id_least_privilege`.
+	 * In case of multiple album we use the preloaded `cover` and
+	 * `autoCoverRows` relations (see {@link Album::$with}).
 	 *
 	 * @param array<Album> $models
 	 */
@@ -184,18 +169,8 @@ class HasAlbumThumb extends Relation
 	{
 		/** @var Album $album */
 		foreach ($models as $album) {
-			$cover_type = $this->getCoverTypeForAlbum($album);
-			if ($cover_type === 'cover_id' && $album->cover_id !== null) {
-				// We do not need to do anything here, because we already have the cover
-				// loaded via the `cover` relation of `Album`.
-				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
-			} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
-				$album->setRelation($relation, Thumb::createFromPhoto($album->max_privilege_cover));
-			} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
-				$album->setRelation($relation, Thumb::createFromPhoto($album->min_privilege_cover));
-			} else {
-				$album->setRelation($relation, null);
-			}
+			$cover = $this->selectCoverForAlbum($album);
+			$album->setRelation($relation, $cover === null ? null : Thumb::createFromPhoto($cover));
 		}
 
 		return $models;
@@ -209,19 +184,12 @@ class HasAlbumThumb extends Relation
 			return null;
 		}
 
-		// We do not execute a query, if `cover_id` is set, because `Album`
-		// is always eagerly loaded with its cover and hence, we already
-		// have it.
-		// See {@link Album::with}
-		$cover_type = $this->getCoverTypeForAlbum($album);
-		if ($cover_type === 'cover_id' && $album->cover_id !== null) {
-			// We do not need to do anything here, because we already have the cover
-			// loaded via the `cover` relation of `Album`.
-			return Thumb::createFromPhoto($album->cover);
-		} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
-			return Thumb::createFromPhoto($album->max_privilege_cover);
-		} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
-			return Thumb::createFromPhoto($album->min_privilege_cover);
+		// We do not execute a query when a cover is stored: `Album` is always
+		// eagerly loaded with its `cover` and `autoCoverRows` relations.
+		// See {@link Album::$with}
+		$cover = $this->selectCoverForAlbum($album);
+		if ($cover !== null) {
+			return Thumb::createFromPhoto($cover);
 		}
 
 		return Thumb::createFromQueryable(

@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
  * caller (a real Album's direct children, or a TagAlbum/PersonAlbum's
  * dynamically-matched set) regardless of how that query was constructed.
  *
- * @phpstan-type TRow object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,auto_cover_id_max_privilege_2:?string,auto_cover_id_max_privilege_3:?string,auto_cover_id_least_privilege_2:?string,auto_cover_id_least_privilege_3:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}
+ * @phpstan-type TRow object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id:?string,auto_cover_id_2:?string,auto_cover_id_3:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}
  */
 class BuildAlbumDataResource
 {
@@ -57,17 +57,11 @@ class BuildAlbumDataResource
 			type: 'left'
 		);
 
-		$rows = $query
+		$query
 			->select([
 				'albums.id',
 				'base_albums.title',
 				'albums.cover_id',
-				'albums.auto_cover_id_max_privilege',
-				'albums.auto_cover_id_least_privilege',
-				'albums.auto_cover_id_max_privilege_2',
-				'albums.auto_cover_id_max_privilege_3',
-				'albums.auto_cover_id_least_privilege_2',
-				'albums.auto_cover_id_least_privilege_3',
 				'base_albums.owner_id',
 				'albums.bucket_id',
 				'computed_access_permissions.password',
@@ -81,9 +75,10 @@ class BuildAlbumDataResource
 				'albums.min_taken_at',
 				'albums.max_taken_at',
 			])
-			->selectRaw('SUBSTR(base_albums.description, 1, 100) as description')
-			->toBase()
-			->get();
+			->selectRaw('SUBSTR(base_albums.description, 1, 100) as description');
+
+		// Automatic cover row for this viewer (Feature 076, FR-076-04).
+		$rows = JoinAutoCover::apply($query, $user)->toBase()->get();
 
 		return $this->toResource($rows, $user);
 	}
@@ -129,8 +124,8 @@ class BuildAlbumDataResource
 			$ids[] = $row->id;
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
-			$cover_id = AlbumListController::resolveCoverId($row, $user, $unlocked_album_ids);
-			[$cover_id_2, $cover_id_3] = SideCoverIds::forAlbumRow($row, $cover_id, $user, $unlocked_album_ids, $side_covers_enabled);
+			$cover_id = AlbumListController::resolveCoverId($row, $unlocked_album_ids);
+			[$cover_id_2, $cover_id_3] = SideCoverIds::forAlbumRow($row, $cover_id, $unlocked_album_ids, $side_covers_enabled);
 			$cover_ids[] = $cover_id;
 			$cover_ids_2[] = $cover_id_2;
 			$cover_ids_3[] = $cover_id_3;

@@ -56,7 +56,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Automatic cover should be photo1 (highlighted, newer)
-		$this->assertEquals($photo1->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($photo1->id, $this->maxCovers($album)[0]);
 
 		// Set explicit cover to photo2
 		$album->cover_id = $photo2->id;
@@ -101,9 +101,9 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$this->assertNull($album->cover_id);
 
 		// But automatic covers should be set
-		$this->assertEquals($photo2->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($photo2->id, $this->maxCovers($album)[0]);
 		// There is no least options since the album is NOT shared.
-		$this->assertNull($album->auto_cover_id_least_privilege);
+		$this->assertNull($this->leastCovers($album)[0]);
 	}
 
 	/**
@@ -145,7 +145,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 
 		// Automatic cover should still be available
 		$this->assertNull($album->cover_id);
-		$this->assertEquals($photo1->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($photo1->id, $this->maxCovers($album)[0]);
 	}
 
 	/**
@@ -178,8 +178,8 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$this->assertEquals($photo1->id, $album->cover_id);
 
 		// But automatic covers should be computed
-		$this->assertNotNull($album->auto_cover_id_max_privilege);
+		$this->assertNotNull($this->maxCovers($album)[0]);
 		// There is no least options since the album is NOT shared.
-		$this->assertNull($album->auto_cover_id_least_privilege);
+		$this->assertNull($this->leastCovers($album)[0]);
 	}
 }

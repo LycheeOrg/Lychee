@@ -294,7 +294,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		]);
 
 		$album->refresh();
-		$oldCover = $album->auto_cover_id_max_privilege;
+		$oldCover = $this->maxCovers($album)[0];
 
 		// Star the older photo
 		$photo1->is_highlighted = true;
@@ -308,8 +308,8 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Cover should change to highlighted photo (highlighted takes priority over taken_at)
-		$this->assertNotEquals($oldCover, $album->auto_cover_id_max_privilege);
-		$this->assertEquals($photo1->id, $album->auto_cover_id_max_privilege);
+		$this->assertNotEquals($oldCover, $this->maxCovers($album)[0]);
+		$this->assertEquals($photo1->id, $this->maxCovers($album)[0]);
 	}
 
 	/**

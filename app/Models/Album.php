@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Collection as NSCollection;
@@ -53,42 +54,35 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * App\Models\Album.
  *
- * @property string                   $id
- * @property string|null              $parent_id
- * @property Album|null               $parent
- * @property Collection<int,Album>    $children
- * @property int                      $num_children                    The number of children.
- * @property Collection<int,Photo>    $all_photos
- * @property int                      $num_photos                      The number of photos in this album (excluding photos in subalbums).
- * @property Carbon|null              $max_taken_at                    Maximum taken_at timestamp of all photos in album and descendants.
- * @property Carbon|null              $min_taken_at                    Minimum taken_at timestamp of all photos in album and descendants.
- * @property string|null              $auto_cover_id_max_privilege     Automatically selected cover photo ID (admin/owner view).
- * @property Photo|null               $max_privilege_cover
- * @property string|null              $auto_cover_id_least_privilege   Automatically selected cover photo ID (most restrictive view).
- * @property string|null              $auto_cover_id_max_privilege_2   Rank-2 automatic cover (admin/owner view), Feature 075.
- * @property string|null              $auto_cover_id_max_privilege_3   Rank-3 automatic cover (admin/owner view), Feature 075.
- * @property string|null              $auto_cover_id_least_privilege_2 Rank-2 automatic cover (most restrictive view), Feature 075.
- * @property string|null              $auto_cover_id_least_privilege_3 Rank-3 automatic cover (most restrictive view), Feature 075.
- * @property Photo|null               $min_privilege_cover
- * @property LicenseType              $license
- * @property string|null              $album_sorting_col
- * @property string|null              $album_sorting_order
- * @property string|null              $cover_id
- * @property Photo|null               $cover
- * @property string|null              $header_id
- * @property Photo|null               $header
- * @property AlbumSizeStatistics|null $sizeStatistics                  Pre-computed size statistics for this album.
- * @property Collection<int,Track>    $tracks
- * @property Track|null               $primaryTrack
- * @property string|null              $track_url                       Back-compat accessor (FR-055-09): resolves to primaryTrack's URL.
- * @property AspectRatioType|null     $album_thumb_aspect_ratio
- * @property TimelineAlbumGranularity $album_timeline
- * @property int                      $_lft
- * @property int                      $_rgt
- * @property BaseAlbumImpl            $base_class
- * @property User|null                $owner
- * @property bool                     $is_recursive_nsfw               /!\ This attribute is not loaded by default.
- * @property Collection<int,Tag>      $tags
+ * @property string                         $id
+ * @property string|null                    $parent_id
+ * @property Album|null                     $parent
+ * @property Collection<int,Album>          $children
+ * @property int                            $num_children             The number of children.
+ * @property Collection<int,Photo>          $all_photos
+ * @property int                            $num_photos               The number of photos in this album (excluding photos in subalbums).
+ * @property Carbon|null                    $max_taken_at             Maximum taken_at timestamp of all photos in album and descendants.
+ * @property Carbon|null                    $min_taken_at             Minimum taken_at timestamp of all photos in album and descendants.
+ * @property Collection<int,AlbumUserThumb> $autoCoverRows            Precomputed automatic cover rows readable by the viewer (Feature 076).
+ * @property LicenseType                    $license
+ * @property string|null                    $album_sorting_col
+ * @property string|null                    $album_sorting_order
+ * @property string|null                    $cover_id
+ * @property Photo|null                     $cover
+ * @property string|null                    $header_id
+ * @property Photo|null                     $header
+ * @property AlbumSizeStatistics|null       $sizeStatistics           Pre-computed size statistics for this album.
+ * @property Collection<int,Track>          $tracks
+ * @property Track|null                     $primaryTrack
+ * @property string|null                    $track_url                Back-compat accessor (FR-055-09): resolves to primaryTrack's URL.
+ * @property AspectRatioType|null           $album_thumb_aspect_ratio
+ * @property TimelineAlbumGranularity       $album_timeline
+ * @property int                            $_lft
+ * @property int                            $_rgt
+ * @property BaseAlbumImpl                  $base_class
+ * @property User|null                      $owner
+ * @property bool                           $is_recursive_nsfw        /!\ This attribute is not loaded by default.
+ * @property Collection<int,Tag>            $tags
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -198,12 +192,6 @@ class Album extends BaseAlbum implements Node
 		'num_children' => 0,
 		'num_photos' => 0,
 		'header_photo_focus' => null,
-		'auto_cover_id_max_privilege' => null,
-		'auto_cover_id_least_privilege' => null,
-		'auto_cover_id_max_privilege_2' => null,
-		'auto_cover_id_max_privilege_3' => null,
-		'auto_cover_id_least_privilege_2' => null,
-		'auto_cover_id_least_privilege_3' => null,
 	];
 
 	/**
@@ -214,12 +202,6 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
-		'auto_cover_id_max_privilege' => 'string',
-		'auto_cover_id_least_privilege' => 'string',
-		'auto_cover_id_max_privilege_2' => 'string',
-		'auto_cover_id_max_privilege_3' => 'string',
-		'auto_cover_id_least_privilege_2' => 'string',
-		'auto_cover_id_least_privilege_3' => 'string',
 		'is_recursive_nsfw' => 'boolean',
 		'header_photo_focus' => 'array',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
@@ -235,8 +217,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected $with = [
 		'cover', 'cover.size_variants',
-		'min_privilege_cover', 'min_privilege_cover.size_variants',
-		'max_privilege_cover', 'max_privilege_cover.size_variants',
+		'autoCoverRows', 'autoCoverRows.photo', 'autoCoverRows.photo.size_variants',
 		'thumb',
 	];
 
@@ -321,23 +302,23 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
-	 * Return the relationship between an album and its min-privilege cover.
+	 * The album's precomputed automatic cover rows the current viewer may
+	 * read (Feature 076, FR-076-07, ADR-076-01): every row for an admin,
+	 * the `NULL` row and their own row for a user, the `NULL` row for a
+	 * guest. {@see \App\Actions\Album\AutoCoverRows} picks the one to use.
 	 *
-	 * @return HasOne<Photo,$this>
+	 * @return HasMany<AlbumUserThumb,$this>
 	 */
-	public function min_privilege_cover(): HasOne
+	public function autoCoverRows(): HasMany
 	{
-		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_least_privilege');
-	}
+		$query = $this->hasMany(AlbumUserThumb::class, 'album_id', 'id')->where('is_precomputed', '=', true);
+		$user = Auth::user();
 
-	/**
-	 * Return the relationship between an album and its max-privilege cover.
-	 *
-	 * @return HasOne<Photo,$this>
-	 */
-	public function max_privilege_cover(): HasOne
-	{
-		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_max_privilege');
+		return match (true) {
+			$user?->may_administrate === true => $query,
+			$user === null => $query->whereNull('user_id'),
+			default => $query->where(fn ($q) => $q->whereNull('user_id')->orWhere('user_id', '=', $user->id)),
+		};
 	}
 
 	/**

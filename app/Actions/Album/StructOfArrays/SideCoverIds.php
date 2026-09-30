@@ -8,7 +8,6 @@
 
 namespace App\Actions\Album\StructOfArrays;
 
-use App\Models\User;
 use App\Repositories\ConfigManager;
 
 /**
@@ -17,9 +16,10 @@ use App\Repositories\ConfigManager;
  * cover selection already stored on the row.
  *
  * Pure: the only I/O is one config read for the locked-album rule.
- * Regular albums read their privilege-specific triple from the `albums`
- * columns ({@see self::forAlbumRow()}); tag/person/smart albums read the
- * viewer's `album_user_thumbs` row ({@see self::fromCacheRow()}).
+ * Regular albums read the viewer's automatic cover triple that
+ * {@see JoinAutoCover} joined onto the listing row ({@see self::forAlbumRow()},
+ * Feature 076); tag/person/smart albums read the viewer's cached
+ * `album_user_thumbs` row ({@see self::fromCacheRow()}).
  *
  * A side is never the primary cover and never `null` before a non-null
  * one, so the tile can render `[side_1 ?? cover, side_2 ?? cover]`.
@@ -29,25 +29,20 @@ final class SideCoverIds
 	/**
 	 * Side covers for a regular album listing row.
 	 *
-	 * @param object            $row                the `toBase()` row, carrying `id`, `owner_id`, `password` and the six `auto_cover_id_*` columns
+	 * @param object            $row                the `toBase()` row, carrying `id`, `password` and the `auto_cover_id`, `auto_cover_id_2`, `auto_cover_id_3` aliases of {@see JoinAutoCover}
 	 * @param string|null       $primary            the already-resolved primary cover ({@see \App\Http\Controllers\Gallery\AlbumListController::resolveCoverId()})
-	 * @param User|null         $user               the viewer
 	 * @param array<int,string> $unlocked_album_ids {@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}
 	 * @param bool              $enabled            `album_hover_side_covers_enabled`
 	 *
 	 * @return array{0:string|null,1:string|null}
 	 */
-	public static function forAlbumRow(object $row, ?string $primary, ?User $user, array $unlocked_album_ids, bool $enabled): array
+	public static function forAlbumRow(object $row, ?string $primary, array $unlocked_album_ids, bool $enabled): array
 	{
 		if (!$enabled || $primary === null || self::isHiddenByLock($row, $unlocked_album_ids)) {
 			return [null, null];
 		}
 
-		$triple = self::isMaxPrivilege($row, $user)
-			? [$row->auto_cover_id_max_privilege, $row->auto_cover_id_max_privilege_2, $row->auto_cover_id_max_privilege_3]
-			: [$row->auto_cover_id_least_privilege, $row->auto_cover_id_least_privilege_2, $row->auto_cover_id_least_privilege_3];
-
-		return self::pick($triple, $primary);
+		return self::pick([$row->auto_cover_id, $row->auto_cover_id_2, $row->auto_cover_id_3], $primary);
 	}
 
 	/**
@@ -82,14 +77,6 @@ final class SideCoverIds
 		$is_locked = ($row->password ?? null) !== null && !in_array($row->id, $unlocked_album_ids, true);
 
 		return $is_locked && !resolve(ConfigManager::class)->getValueAsBool('show_cover_of_locked_albums');
-	}
-
-	/**
-	 * Mirrors {@see \App\Http\Controllers\Gallery\AlbumListController::rawCoverId()}'s privilege test.
-	 */
-	private static function isMaxPrivilege(object $row, ?User $user): bool
-	{
-		return $user?->may_administrate === true || (int) $row->owner_id === $user?->id;
 	}
 
 	/**

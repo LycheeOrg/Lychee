@@ -44,17 +44,17 @@ If a recomputation job fails after 3 retries, do NOT dispatch parent job. Log er
 
 ### 4. Full Rollback with down() Migration (Q-003-08)
 
-Migration `down()` method drops all 6 columns (max_taken_at, min_taken_at, num_children, num_photos, auto_cover_id_max_privilege, auto_cover_id_least_privilege) and both foreign key constraints. Safe during Phase 1-2 (before backfill). If backfill already ran, rollback discards computed data (acceptable, regenerable). **CRITICAL:** Do NOT rollback after Phase 4 cleanup (virtual column code removed).
+Migration `down()` method drops the computed columns (max_taken_at, min_taken_at, num_children, num_photos). The automatic covers live in `album_user_thumbs` (ADR-076-01), whose migration has its own `down()`. Safe during Phase 1-2 (before backfill). If backfill already ran, rollback discards computed data (acceptable, regenerable). **CRITICAL:** Do NOT rollback after Phase 4 cleanup (virtual column code removed).
 
 **Rationale:** Clean schema restoration, simple one-command rollback (`php artisan migrate:rollback`). Trade-off: data loss if backfill ran, but computed values can be regenerated. Safer than forward-only approach for early-stage deployment issues.
 
 ### 5. Dual Automatic Cover IDs with Privilege-Based Selection (Q-003-09)
 
-Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/owner view, no access filters) and `auto_cover_id_least_privilege` (public view, all restrictive filters applied). Display logic selects at query time based on user permissions: admin/owner sees max-privilege cover, other users see least-privilege cover.
+Store two automatic covers per album, as precomputed `album_user_thumbs` rows (ADR-076-01): the max-privilege cover (admin/owner view, no access filters) keyed on the album's owner, and the least-privilege cover (all restrictive filters applied) keyed on `NULL`, or on the single user the album is shared with. Display logic selects at query time based on user permissions: admin/owner sees the max-privilege cover, other users see the least-privilege cover.
 
-**Rationale:** Balances performance (pre-computation, no subqueries) with security (no private photo leakage). Simple schema (2 columns vs. per-user table or runtime filtering complexity). Guaranteed safe: least-privilege cover NEVER exposes photos invisible to restricted users. Good UX: admin/owner always sees best possible cover (may include private photos), other users see safe public cover (may be NULL if no public photos exist). At query time, selecting the appropriate cover is a simple conditional column read (no database queries).
+**Rationale:** Balances performance (pre-computation, no subqueries) with security (no private photo leakage). Simple schema (at most 2 rows per album vs. a per-user table or runtime filtering complexity). Guaranteed safe: least-privilege cover NEVER exposes photos invisible to restricted users. Good UX: admin/owner always sees best possible cover (may include private photos), other users see safe public cover (may be NULL if no public photos exist). At query time, selecting the appropriate cover is one indexed join whose shape PHP picks per viewer (no per-album query).
 
-**Trade-offs:** Double storage for cover IDs (2 columns instead of 1), recomputation job must run cover selection twice (once with filters, once without). However, this overhead is minimal compared to runtime subquery cost (eliminated) and complexity of alternatives (per-user table, runtime filtering with fallback).
+**Trade-offs:** Double storage for cover IDs (2 rows instead of 1), recomputation job must run cover selection twice (once with filters, once without). However, this overhead is minimal compared to runtime subquery cost (eliminated) and complexity of alternatives (per-user table, runtime filtering with fallback).
 
 ## Consequences
 
@@ -105,11 +105,11 @@ Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/ow
 ## Security / Privacy Impact
 
 - **No direct security impact:** Computed fields contain same data as virtual columns (album stats, cover photo IDs). No new PII introduced.
-- **Integrity protection:** Foreign key constraints (`auto_cover_id_max_privilege` and `auto_cover_id_least_privilege` REFERENCES photos.id ON DELETE SET NULL) prevent dangling references.
+- **Integrity protection:** Foreign key constraints on the cover rows (`photo_id` REFERENCES photos.id ON DELETE CASCADE, `photo_id_2`/`photo_id_3` ON DELETE SET NULL) prevent dangling references.
 - **Cover selection visibility (Q-003-09):** Dual-cover approach GUARANTEES no private photo leakage:
-  - `auto_cover_id_least_privilege`: Computed WITH all restrictive filters (`PhotoQueryPolicy::appendSearchabilityConditions`, `AlbumQueryPolicy::appendAccessibilityConditions`). Shown to non-admin, non-owner users. NEVER contains photos invisible to public.
-  - `auto_cover_id_max_privilege`: Computed WITHOUT filters (admin view). Shown ONLY to admin/owner. May contain private photos.
-  - Display logic enforces separation at query time (simple conditional, no database queries).
+  - Least-privilege row: computed WITH all restrictive filters (`PhotoQueryPolicy::appendSearchabilityConditions`, `AlbumQueryPolicy::appendAccessibilityConditions`), as the public view or as the single shared user. Shown to non-admin, non-owner users. NEVER contains photos invisible to them.
+  - Max-privilege row (keyed on the owner): computed WITHOUT filters (admin view). Shown ONLY to admin/owner. May contain private photos.
+  - Display logic enforces separation at query time: a non-admin, non-owner viewer is never joined to the owner's row.
 - **Album ownership checking:** Display logic must correctly identify album owners (user who created album or any parent album owner in tree) to determine whether to show max-privilege cover.
 
 ## Operational Impact

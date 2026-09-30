@@ -51,6 +51,7 @@ use App\Listeners\OrderCompletedListener;
 use App\Listeners\PurgeAlbumUserThumbsOnMembershipChange;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
+use App\Listeners\RecomputeAlbumStatsOnAccessPermissionChange;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange;
@@ -167,6 +168,7 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PersonAlbumSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePersonAlbumSaved');
 		Event::listen(BaseAlbumRemoved::class, ManagedCacheAlbumListingInvalidator::class . '@handleBaseAlbumRemoved');
 		Event::listen(AccessPermissionChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAccessPermissionChanged');
+		Event::listen(AccessPermissionChanged::class, RecomputeAlbumStatsOnAccessPermissionChange::class . '@handle');
 		Event::listen(AlbumComputedDataUpdated::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumComputedDataUpdated');
 		Event::listen(AlbumListingCacheFlushRequested::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumListingCacheFlushRequested');
 		Event::listen(AlbumTagsChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumTagsChanged');

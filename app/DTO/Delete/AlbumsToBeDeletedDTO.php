@@ -94,6 +94,8 @@ final class AlbumsToBeDeletedDTO
 				DB::table('access_permissions')->whereIn('base_album_id', $chunk->all())->delete();
 				DB::table('statistics')->whereIn('album_id', $chunk->all())->delete();
 				DB::table('album_size_statistics')->whereIn('album_id', $chunk->all())->delete();
+				// Precomputed cover rows (Feature 076): `album_id` has no FK.
+				DB::table('album_user_thumbs')->whereIn('album_id', $chunk->all())->delete();
 				// FK cascade is inert here (foreign key constraints are disabled for the
 				// duration of this transaction), so `tracks` rows must be deleted explicitly.
 				DB::table('tracks')->whereIn('album_id', $chunk->all())->delete();

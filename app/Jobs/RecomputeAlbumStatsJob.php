@@ -17,6 +17,7 @@ use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
@@ -37,8 +38,10 @@ use Illuminate\Support\Facades\Log;
  * Computed fields:
  * - max_taken_at, min_taken_at
  * - num_children, num_photos
- * - auto_cover_id_max_privilege, auto_cover_id_least_privilege (rank 1)
- * - auto_cover_id_max_privilege_2/_3, auto_cover_id_least_privilege_2/_3 (ranks 2–3, Feature 075)
+ * - automatic covers, ranks 1–3 per privilege level (Feature 075), stored as
+ *   `is_precomputed` rows of `album_user_thumbs` (Feature 076, ADR-076-01):
+ *   the max-privilege row under the owner, the least-privilege row under the
+ *   single shared user or `NULL`.
  */
 class RecomputeAlbumStatsJob implements ShouldQueue
 {
@@ -121,12 +124,15 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->max_taken_at = $dates['max'];
 
 			// Compute cover IDs: ranks 1–3 per privilege level (Feature 075, FR-075-02).
-			[$album->auto_cover_id_max_privilege, $album->auto_cover_id_max_privilege_2, $album->auto_cover_id_max_privilege_3] = $this->computeMaxPrivilegeCovers($album, $is_nsfw_context);
-			[$album->auto_cover_id_least_privilege, $album->auto_cover_id_least_privilege_2, $album->auto_cover_id_least_privilege_3] = $this->computeLeastPrivilegeCovers($album, $is_nsfw_context);
-			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null') . ', max_privilege_sides=' . ($album->auto_cover_id_max_privilege_2 ?? 'null') . '/' . ($album->auto_cover_id_max_privilege_3 ?? 'null') . ', least_privilege_sides=' . ($album->auto_cover_id_least_privilege_2 ?? 'null') . '/' . ($album->auto_cover_id_least_privilege_3 ?? 'null'));
+			$max_covers = $this->computeMaxPrivilegeCovers($album, $is_nsfw_context);
+			[$least_key, $least_covers] = $this->computeLeastPrivilegeCovers($album, $is_nsfw_context);
+			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . implode('/', array_map(fn ($id) => $id ?? 'null', $max_covers)) . ', least_privilege=' . implode('/', array_map(fn ($id) => $id ?? 'null', $least_covers)) . ', least_privilege_key=' . ($least_key ?? 'null'));
 
 			$album->bucket_id = $this->computeBucket($album);
-			$album->save();
+			DB::transaction(function () use ($album, $max_covers, $least_key, $least_covers): void {
+				$album->save();
+				$this->writeCoverRows($album, $max_covers, $least_key, $least_covers);
+			});
 
 			AlbumComputedDataUpdated::dispatch($album->id);
 
@@ -272,6 +278,56 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	}
 
 	/**
+	 * Replace the album's precomputed cover rows (Feature 076, FR-076-02):
+	 * one delete, then one insert of at most two rows. The owner row carries
+	 * the max-privilege ranks, the least-privilege row is keyed per
+	 * {@see self::computeLeastPrivilegeCovers()}. A rank-1-less triple, or a
+	 * least-privilege key equal to the owner (the owner row already serves
+	 * them), writes no row.
+	 *
+	 * Delete + insert rather than an upsert: the unique key includes the
+	 * generated `user_id_unique_key`, which MySQL/MariaDB refuse to receive a
+	 * value for, and stale least-privilege rows (a changed key) must go anyway.
+	 *
+	 * @param array{0:string|null,1:string|null,2:string|null} $max_covers
+	 * @param array{0:string|null,1:string|null,2:string|null} $least_covers
+	 */
+	private function writeCoverRows(Album $album, array $max_covers, ?int $least_key, array $least_covers): void
+	{
+		AlbumUserThumb::query()->where('album_id', '=', $album->id)->where('is_precomputed', '=', true)->delete();
+
+		$rows = array_values(array_filter([
+			self::coverRow($album->id, $album->owner_id, $max_covers),
+			$least_key === $album->owner_id ? null : self::coverRow($album->id, $least_key, $least_covers),
+		], fn (?array $row): bool => $row !== null));
+
+		if (count($rows) > 0) {
+			AlbumUserThumb::query()->insert($rows);
+		}
+	}
+
+	/**
+	 * @param array{0:string|null,1:string|null,2:string|null} $covers
+	 *
+	 * @return array{album_id:string,user_id:int|null,photo_id:string,photo_id_2:string|null,photo_id_3:string|null,is_precomputed:bool}|null
+	 */
+	private static function coverRow(string $album_id, ?int $user_id, array $covers): ?array
+	{
+		if ($covers[0] === null) {
+			return null;
+		}
+
+		return [
+			'album_id' => $album_id,
+			'user_id' => $user_id,
+			'photo_id' => $covers[0],
+			'photo_id_2' => $covers[1],
+			'photo_id_3' => $covers[2],
+			'is_precomputed' => true,
+		];
+	}
+
+	/**
 	 * Compute max-privilege cover (admin/owner view).
 	 *
 	 * Selects best photo from album + descendants with NO access filters.
@@ -298,10 +354,14 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * Applies NSFW context: if album/parent is NSFW, allow NSFW photos; else exclude.
 	 * Ordering: is_highlighted DESC, then taken_at DESC, then id ASC.
 	 *
+	 * Also returns the `album_user_thumbs.user_id` the result is stored under
+	 * (Feature 076, ADR-076-01): the single user the album is shared with, or
+	 * `NULL` for the public view.
+	 *
 	 * @param Album $album
 	 * @param bool  $is_nsfw_context
 	 *
-	 * @return array{0:string|null,1:string|null,2:string|null} ranks 1–3
+	 * @return array{0:int|null,1:array{0:string|null,1:string|null,2:string|null}} the row key and ranks 1–3
 	 */
 	private function computeLeastPrivilegeCovers(Album $album, bool $is_nsfw_context): array
 	{
@@ -329,20 +389,21 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$permissions = AccessPermission::query()->where(APC::BASE_ALBUM_ID, '=', $album->id)->toBase()->get();
 		if ($permissions->isEmpty()) {
 			// No users can access this album, does not matters.
-			return [null, null, null];
+			return [null, [null, null, null]];
 		}
 
 		// Album is not public visible
 		// Find out who can access this album
 		if ($permissions->count() === 1 && $permissions->first()->user_id !== null) {
 			// Single user can access this album
-			$user = User::query()->find($permissions->first()->user_id);
+			$user_id = (int) $permissions->first()->user_id;
+			$user = User::query()->find($user_id);
 
-			return $this->getPhotoIdsForUser($album, $user, $is_nsfw_context);
+			return [$user_id, $this->getPhotoIdsForUser($album, $user, $is_nsfw_context)];
 		}
 
 		// Album is not public visible and multiple permissions exist => Consider it publically accessible
-		return $this->getPhotoIdsForUser($album, null, $is_nsfw_context);
+		return [null, $this->getPhotoIdsForUser($album, null, $is_nsfw_context)];
 	}
 
 	/**

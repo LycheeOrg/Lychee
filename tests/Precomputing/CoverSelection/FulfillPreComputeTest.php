@@ -20,6 +20,7 @@ namespace Tests\Precomputing\CoverSelection;
 
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Photo;
 use App\Models\User;
 use Carbon\Carbon;
@@ -75,8 +76,6 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 			'min_taken_at' => null,
 			'num_children' => 0,
 			'num_photos' => 0,
-			'auto_cover_id_max_privilege' => null,
-			'auto_cover_id_least_privilege' => null,
 		]);
 
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::fulfillPrecompute');
@@ -109,9 +108,8 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 		$album->min_taken_at = Carbon::parse('2023-01-01');
 		$album->num_children = 0;
 		$album->num_photos = 1;
-		$album->auto_cover_id_max_privilege = $photo->id;
-		$album->auto_cover_id_least_privilege = $photo->id;
 		$album->save();
+		$this->addPrecomputedRow($album, $photo);
 
 		// Count should stay the same since the new album has computed fields
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::fulfillPrecompute');
@@ -137,8 +135,6 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 			'min_taken_at' => null,
 			'num_children' => 0,
 			'num_photos' => 0,
-			'auto_cover_id_max_privilege' => null,
-			'auto_cover_id_least_privilege' => null,
 		]);
 
 		$album2 = Album::factory()->as_root()->owned_by($user)->create([
@@ -146,8 +142,6 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 			'min_taken_at' => null,
 			'num_children' => 0,
 			'num_photos' => 0,
-			'auto_cover_id_max_privilege' => null,
-			'auto_cover_id_least_privilege' => null,
 		]);
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::fulfillPrecompute');
@@ -182,9 +176,8 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 		$album->min_taken_at = Carbon::parse('2023-01-01');
 		$album->num_children = 0;
 		$album->num_photos = 1;
-		$album->auto_cover_id_max_privilege = $photo->id;
-		$album->auto_cover_id_least_privilege = $photo->id;
 		$album->save();
+		$this->addPrecomputedRow($album, $photo);
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::fulfillPrecompute');
 		$this->assertNoContent($response);
@@ -210,8 +203,6 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 			'min_taken_at' => null,
 			'num_children' => 0,
 			'num_photos' => 0,
-			'auto_cover_id_max_privilege' => null,
-			'auto_cover_id_least_privilege' => null,
 		]);
 
 		$photo1 = Photo::factory()->owned_by($user)->create();
@@ -241,5 +232,35 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::fulfillPrecompute');
 		$this->assertNoContent($response);
+	}
+
+	private function addPrecomputedRow(Album $album, Photo $photo): void
+	{
+		AlbumUserThumb::query()->create(['album_id' => $album->id, 'user_id' => $album->owner_id, 'photo_id' => $photo->id, 'is_precomputed' => true]);
+	}
+
+	/**
+	 * S-076-15: an album whose counters are computed but which has no
+	 * precomputed cover row still needs computation.
+	 */
+	public function testCheckCountsAlbumWithoutCoverRow(): void
+	{
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		$covered = Album::factory()->as_root()->owned_by($user)->create();
+		$uncovered = Album::factory()->as_root()->owned_by($user)->create();
+		foreach ([$covered, $uncovered] as $album) {
+			$album->max_taken_at = Carbon::parse('2023-01-01');
+			$album->min_taken_at = Carbon::parse('2023-01-01');
+			$album->num_photos = 1;
+			$album->save();
+		}
+		$this->addPrecomputedRow($covered, $photo);
+
+		Queue::fake();
+		$this->assertNoContent($this->actingAs($this->admin)->postJson('Maintenance::fulfillPrecompute'));
+
+		Queue::assertPushed(RecomputeAlbumStatsJob::class, fn ($job) => $job->album_id === $uncovered->id);
+		Queue::assertNotPushed(RecomputeAlbumStatsJob::class, fn ($job) => $job->album_id === $covered->id);
 	}
 }

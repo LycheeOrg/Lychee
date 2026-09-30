@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Actions\Album\StructOfArrays\JoinAutoCover;
 use App\Assets\DbBool;
 use App\Http\Requests\Gallery\AlbumListV3Request;
 use App\Http\Resources\V3\AlbumListBulkEditFieldsResource;
@@ -73,8 +74,6 @@ class AlbumListController extends Controller
 			'albums._lft',
 			'albums._rgt',
 			'albums.cover_id',
-			'albums.auto_cover_id_max_privilege',
-			'albums.auto_cover_id_least_privilege',
 			'base_albums.owner_id',
 			'computed_access_permissions.password',
 		]);
@@ -85,6 +84,8 @@ class AlbumListController extends Controller
 
 		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
 		$query = $this->album_query_policy->applyAncestorReachabilityFilter($query, $user, AlbumPolicy::getUnlockedAlbumIDs());
+		// Automatic cover row for this viewer (Feature 076, FR-076-04).
+		JoinAutoCover::apply($query, $user);
 
 		// Edit grant resolved in the same query; ownership
 		// and admin are resolved from already-known values in toAlbumListResource().
@@ -140,7 +141,7 @@ class AlbumListController extends Controller
 	/**
 	 * Create the light object.
 	 *
-	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,password:?string,owner_id:string,edit_grant?:?string}> $rows
+	 * @param Collection<object{id:string,title:string,_lft:string,_rgt:string,cover_id:?string,auto_cover_id:?string,password:?string,owner_id:string,edit_grant?:?string}> $rows
 	 *
 	 * @return AlbumListResource
 	 */
@@ -159,7 +160,7 @@ class AlbumListController extends Controller
 			$titles[] = $row->title;
 			$lft[] = (int) $row->_lft;
 			$rgt[] = (int) $row->_rgt;
-			$cover_ids[] = self::resolveCoverId($row, $user, $unlocked_album_ids);
+			$cover_ids[] = self::resolveCoverId($row, $unlocked_album_ids);
 			$can_edits[] = self::canEdit($row, $user);
 		}
 
@@ -289,9 +290,9 @@ class AlbumListController extends Controller
 
 	/**
 	 * Resolves the cover photo id for one raw album row, per FR-057-09's
-	 * priority rule (mirrors {@see \App\Relations\HasAlbumThumb::getCoverTypeForAlbum()}):
-	 * explicit `cover_id` first, else `auto_cover_id_max_privilege` for an
-	 * admin/owner viewer, else `auto_cover_id_least_privilege`. Operates on
+	 * priority rule: explicit `cover_id` first, else the viewer's automatic
+	 * cover `auto_cover_id`, which {@see JoinAutoCover} already picked from
+	 * the owner or least-privilege row (Feature 076). Operates on
 	 * already-selected columns only — no relation load, no extra query.
 	 *
 	 * Then gated through {@see self::applyLockedCoverGate()} for a
@@ -299,9 +300,9 @@ class AlbumListController extends Controller
 	 *
 	 * @param array<int,string> $unlocked_album_ids {@see AlbumPolicy::getUnlockedAlbumIDs()}, computed once per request/batch by the caller
 	 */
-	public static function resolveCoverId(object $row, ?User $user, array $unlocked_album_ids): ?string
+	public static function resolveCoverId(object $row, array $unlocked_album_ids): ?string
 	{
-		return self::applyLockedCoverGate(self::rawCoverId($row, $user), $row, $unlocked_album_ids);
+		return self::applyLockedCoverGate(self::rawCoverId($row), $row, $unlocked_album_ids);
 	}
 
 	/**
@@ -311,17 +312,9 @@ class AlbumListController extends Controller
 	 * {@see self::applyLockedCoverGate()} without going through the
 	 * auto-cover fallback (which a `TagAlbum` row has no columns for).
 	 */
-	public static function rawCoverId(object $row, ?User $user): ?string
+	public static function rawCoverId(object $row): ?string
 	{
-		if ($row->cover_id !== null) {
-			return $row->cover_id;
-		}
-
-		if ($user?->may_administrate === true || (int) $row->owner_id === $user?->id) {
-			return $row->auto_cover_id_max_privilege;
-		}
-
-		return $row->auto_cover_id_least_privilege;
+		return $row->cover_id ?? $row->auto_cover_id;
 	}
 
 	/**

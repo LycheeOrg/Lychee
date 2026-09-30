@@ -14,6 +14,7 @@ use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\AlbumUserThumb;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
@@ -28,8 +29,14 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  */
 class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 {
-	/** Query count of `RecomputeAlbumStatsJob::handle()` for a 3-photo public root album, measured before Feature 075 (NFR-075-02). */
-	private const JOB_QUERY_BASELINE = 35;
+	/**
+	 * Query count of `RecomputeAlbumStatsJob::handle()` for a 3-photo public
+	 * root album: 35 before Feature 075 (NFR-075-02, side covers add none);
+	 * Feature 076 loads the album with one query fewer (`autoCoverRows`
+	 * instead of the two `*_privilege_cover` relations, NFR-076-02) and adds
+	 * the delete and the insert of the precomputed cover rows (NFR-076-03).
+	 */
+	private const JOB_QUERY_BASELINE = 36;
 
 	public function testHandleDispatchesAlbumComputedDataUpdated(): void
 	{
@@ -182,8 +189,8 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		$this->assertEquals(0, $album->num_children);
 		$this->assertNull($album->min_taken_at);
 		$this->assertNull($album->max_taken_at);
-		$this->assertNull($album->auto_cover_id_max_privilege);
-		$this->assertNull($album->auto_cover_id_least_privilege);
+		$this->assertNull($this->maxCovers($album)[0]);
+		$this->assertNull($this->leastCovers($album)[0]);
 	}
 
 	/**
@@ -216,8 +223,8 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 
 		// Assert max-privilege cover is the highlighted private photo
 		$album->refresh();
-		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
-		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege);
+		$this->assertEquals($privatePhoto->id, $this->maxCovers($album)[0]);
+		$this->assertEquals($publicPhoto->id, $this->leastCovers($album)[0]);
 	}
 
 	/**
@@ -331,12 +338,12 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 
 		// Assert no sensitive picture is accessible.
 		$album->refresh();
-		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_max_privilege);
-		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege);
+		$this->assertEquals($publicPhoto->id, $this->maxCovers($album)[0]);
+		$this->assertEquals($publicPhoto->id, $this->leastCovers($album)[0]);
 
 		$album3->refresh();
-		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_max_privilege);
-		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_least_privilege);
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($album3)[0]);
+		$this->assertEquals($nsfwPhoto->id, $this->leastCovers($album3)[0]);
 	}
 
 	/**
@@ -369,12 +376,12 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 
 		// Assert no sensitive picture is accessible.
 		$album->refresh();
-		$this->assertEquals($nsfwPhoto->id, $album->auto_cover_id_max_privilege);
-		$this->assertEquals($nsfwPhoto->id, $album->auto_cover_id_least_privilege);
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($album)[0]);
+		$this->assertEquals($nsfwPhoto->id, $this->leastCovers($album)[0]);
 
 		$album3->refresh();
-		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_max_privilege);
-		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_least_privilege);
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($album3)[0]);
+		$this->assertEquals($nsfwPhoto->id, $this->leastCovers($album3)[0]);
 	}
 
 	// ── Feature 075: side covers (FR-075-02, S-075-01, S-075-02, NFR-075-02) ──
@@ -404,13 +411,13 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
 		$album->refresh();
 
-		$this->assertSame($highlighted->id, $album->auto_cover_id_max_privilege);
-		$this->assertSame($first->id, $album->auto_cover_id_max_privilege_2);
-		$this->assertSame($second->id, $album->auto_cover_id_max_privilege_3);
-		$this->assertSame($highlighted->id, $album->auto_cover_id_least_privilege);
-		$this->assertSame($first->id, $album->auto_cover_id_least_privilege_2);
-		$this->assertSame($second->id, $album->auto_cover_id_least_privilege_3);
-		$this->assertNotSame($third->id, $album->auto_cover_id_max_privilege_3);
+		$this->assertSame($highlighted->id, $this->maxCovers($album)[0]);
+		$this->assertSame($first->id, $this->maxCovers($album)[1]);
+		$this->assertSame($second->id, $this->maxCovers($album)[2]);
+		$this->assertSame($highlighted->id, $this->leastCovers($album)[0]);
+		$this->assertSame($first->id, $this->leastCovers($album)[1]);
+		$this->assertSame($second->id, $this->leastCovers($album)[2]);
+		$this->assertNotSame($third->id, $this->maxCovers($album)[2]);
 	}
 
 	/**
@@ -427,12 +434,12 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
 		$album->refresh();
 
-		$this->assertSame($only->id, $album->auto_cover_id_max_privilege);
-		$this->assertNull($album->auto_cover_id_max_privilege_2);
-		$this->assertNull($album->auto_cover_id_max_privilege_3);
-		$this->assertSame($only->id, $album->auto_cover_id_least_privilege);
-		$this->assertNull($album->auto_cover_id_least_privilege_2);
-		$this->assertNull($album->auto_cover_id_least_privilege_3);
+		$this->assertSame($only->id, $this->maxCovers($album)[0]);
+		$this->assertNull($this->maxCovers($album)[1]);
+		$this->assertNull($this->maxCovers($album)[2]);
+		$this->assertSame($only->id, $this->leastCovers($album)[0]);
+		$this->assertNull($this->leastCovers($album)[1]);
+		$this->assertNull($this->leastCovers($album)[2]);
 	}
 
 	/**
@@ -446,16 +453,16 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
 		$album->refresh();
 
-		$this->assertNull($album->auto_cover_id_max_privilege_2);
-		$this->assertNull($album->auto_cover_id_max_privilege_3);
-		$this->assertNull($album->auto_cover_id_least_privilege_2);
-		$this->assertNull($album->auto_cover_id_least_privilege_3);
+		$this->assertNull($this->maxCovers($album)[1]);
+		$this->assertNull($this->maxCovers($album)[2]);
+		$this->assertNull($this->leastCovers($album)[1]);
+		$this->assertNull($this->leastCovers($album)[2]);
 	}
 
 	/**
-	 * NFR-075-02: side covers ride on the cover query (`limit(3)` instead of
-	 * `first()`), so the job issues no additional query for them. The
-	 * expected count is the pre-Feature-075 baseline of this exact fixture.
+	 * NFR-075-02 / NFR-076-03: side covers ride on the cover query
+	 * (`limit(3)` instead of `first()`), and the cover rows cost exactly two
+	 * writes, see {@see self::JOB_QUERY_BASELINE}.
 	 */
 	public function testSideCoversAddNoQueryToTheJob(): void
 	{
@@ -473,5 +480,115 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		DB::disableQueryLog();
 
 		$this->assertSame(self::JOB_QUERY_BASELINE, $count, 'RecomputeAlbumStatsJob issued ' . $count . ' queries');
+	}
+
+	/**
+	 * The `user_id`s of the album's precomputed cover rows (Feature 076).
+	 *
+	 * @return array<int,int|null>
+	 */
+	private function coverRowKeys(Album $album): array
+	{
+		return AlbumUserThumb::query()->where('album_id', '=', $album->id)->where('is_precomputed', '=', true)
+			->pluck('user_id')->all();
+	}
+
+	/**
+	 * S-076-01: several permissions → an owner row and a `NULL` row.
+	 */
+	public function testPublicAlbumGetsOwnerAndNullRow(): void
+	{
+		$user = User::factory()->create();
+		$other = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		AccessPermission::factory()->for_user($other)->for_album($album)->create();
+		Photo::factory()->in($album)->owned_by($user)->create();
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+
+		$this->assertEqualsCanonicalizing([null, $user->id], $this->coverRowKeys($album));
+	}
+
+	/**
+	 * S-076-02: an album shared with one user only → the least-privilege
+	 * row is keyed on that user, no `NULL` row.
+	 */
+	public function testSingleShareKeysLeastRowOnSharedUser(): void
+	{
+		$user = User::factory()->create();
+		$shared = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->for_user($shared)->for_album($album)->create();
+		$photo = Photo::factory()->in($album)->owned_by($user)->create();
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+
+		$this->assertEqualsCanonicalizing([$user->id, $shared->id], $this->coverRowKeys($album));
+		$this->assertSame($photo->id, $this->leastCovers($album)[0]);
+	}
+
+	/**
+	 * S-076-03: going from a single share to two permissions replaces the
+	 * shared user's row by a `NULL` row on the next run (I1).
+	 */
+	public function testLeastRowIsReKeyedWhenPermissionsChange(): void
+	{
+		$user = User::factory()->create();
+		$shared = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->for_user($shared)->for_album($album)->create();
+		Photo::factory()->in($album)->owned_by($user)->create();
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+
+		$this->assertEqualsCanonicalizing([null, $user->id], $this->coverRowKeys($album));
+	}
+
+	/**
+	 * S-076-04: no permission → owner row only; a single permission for the
+	 * owner → owner row only (I2); an empty album → no row.
+	 */
+	public function testOwnerRowOnlyWithoutOtherViewers(): void
+	{
+		$user = User::factory()->create();
+		$private = Album::factory()->as_root()->owned_by($user)->create();
+		Photo::factory()->in($private)->owned_by($user)->create();
+		$self_shared = Album::factory()->as_root()->owned_by($user)->create();
+		AccessPermission::factory()->for_user($user)->for_album($self_shared)->create();
+		Photo::factory()->in($self_shared)->owned_by($user)->create();
+		$empty = Album::factory()->as_root()->owned_by($user)->create();
+
+		foreach ([$private, $self_shared, $empty] as $album) {
+			(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		}
+
+		$this->assertEqualsCanonicalizing([$user->id], $this->coverRowKeys($private));
+		$this->assertEqualsCanonicalizing([$user->id], $this->coverRowKeys($self_shared));
+		$this->assertEqualsCanonicalizing([], $this->coverRowKeys($empty));
+	}
+
+	/**
+	 * S-076-17: deleting the rank-1 photo cascades the row away; the next
+	 * recompute writes it back with the remaining photo.
+	 */
+	public function testDeletedCoverPhotoRowIsRecomputed(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$kept = Photo::factory()->in($album)->owned_by($user)->create();
+		$cover = Photo::factory()->in($album)->owned_by($user)->create(['is_highlighted' => true]);
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		$this->assertSame($cover->id, $this->maxCovers($album)[0]);
+
+		DB::table('photo_album')->where('photo_id', '=', $cover->id)->delete();
+		DB::table('size_variants')->where('photo_id', '=', $cover->id)->delete();
+		DB::table('photos')->where('id', '=', $cover->id)->delete();
+		$this->assertEqualsCanonicalizing([], $this->coverRowKeys($album));
+
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
+		$this->assertSame($kept->id, $this->maxCovers($album)[0]);
 	}
 }

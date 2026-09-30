@@ -2,14 +2,18 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-22
-- **Related features/specs:** Feature 056 (docs/specs/4-architecture/features/056-api-v3-asset-retrieval/spec.md, FR-056-08/FR-056-09), Feature 062 (docs/specs/4-architecture/features/062-root-album-listing-struct-of-arrays/spec.md, FR-062-16)
+- **Related features/specs:** Feature 056 (docs/specs/4-architecture/features/056-api-v3-asset-retrieval/spec.md, FR-056-08/FR-056-09), Feature 062 (docs/specs/4-architecture/features/062-root-album-listing-struct-of-arrays/spec.md, FR-062-16), Feature 076 (docs/specs/4-architecture/features/076-unified-album-cover-store/spec.md, FR-076-10)
 - **Related open questions:** none open (Q-063-15 resolved earlier, for the cover exception itself)
 
 ## Context
 
 `album_user_thumbs` caches the computed cover of a tag/person/smart album per viewer, keyed by
 `(album_id, user_id)` where `user_id` is `Auth::id()` — i.e. by whoever materialised the row, never by
-the permission that granted them access.
+the permission that granted them access. These cache rows carry `is_precomputed = false`. The same
+table also holds the precomputed automatic covers of regular albums (`is_precomputed = true`,
+ADR-076-01), which are written only by `RecomputeAlbumStatsJob` and are outside this decision: that
+job runs on every permission change, and the asset endpoint checks them together with album
+membership.
 
 `GetPhotoAssetRequest::isComputedAlbumThumb()` (FR-056-08) accepts such a row as proof that the photo
 legitimately represents the album, short-circuiting the permission-filtered `$album->photos()` check.
@@ -36,7 +40,8 @@ in the application, which constrains what may be added to its authorization path
 
 Keep the asset endpoint's cache exception free of any per-request permission re-check, and make the
 invariant a write-side obligation instead: **every path that revokes a viewer's access purges the
-cached covers that access may have produced.**
+cached covers that access may have produced.** The purges touch cache rows only
+(`is_precomputed = false`).
 
 The purge is centralised in `App\Actions\Sharing\PurgeAlbumUserThumbs`:
 

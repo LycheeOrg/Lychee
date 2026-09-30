@@ -73,8 +73,8 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		$safeParent->refresh();
 
 		// Safe album (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
-		$this->assertEquals($safePhoto->id, $safeParent->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
-		$this->assertEquals($safePhoto->id, $safeParent->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->maxCovers($safeParent)[0], 'Max-privilege cover should ALSO exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->leastCovers($safeParent)[0], 'Least-privilege cover should exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
 	}
 
 	/**
@@ -123,8 +123,8 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		$nsfwParent->refresh();
 
 		// Both covers should prefer the NSFW photo (highlighted, newer)
-		$this->assertEquals($nsfwPhoto->id, $nsfwParent->auto_cover_id_max_privilege, 'Max-privilege cover should prefer NSFW photo in NSFW album');
-		$this->assertEquals($nsfwPhoto->id, $nsfwParent->auto_cover_id_least_privilege, 'Least-privilege cover should allow NSFW photo when album itself is NSFW');
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($nsfwParent)[0], 'Max-privilege cover should prefer NSFW photo in NSFW album');
+		$this->assertEquals($nsfwPhoto->id, $this->leastCovers($nsfwParent)[0], 'Least-privilege cover should allow NSFW photo when album itself is NSFW');
 	}
 
 	/**
@@ -188,8 +188,8 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		$safeParent->refresh();
 
 		// Both covers should prefer NSFW photo (highlighted, newer) because parent is in NSFW context
-		$this->assertEquals($nsfwPhoto->id, $safeParent->auto_cover_id_max_privilege, 'Max-privilege cover should prefer NSFW photo');
-		$this->assertEquals($nsfwPhoto->id, $safeParent->auto_cover_id_least_privilege, 'Least-privilege cover should allow NSFW photo when parent album is in NSFW context (NSFW ancestor exists)');
+		$this->assertEquals($nsfwPhoto->id, $this->maxCovers($safeParent)[0], 'Max-privilege cover should prefer NSFW photo');
+		$this->assertEquals($nsfwPhoto->id, $this->leastCovers($safeParent)[0], 'Least-privilege cover should allow NSFW photo when parent album is in NSFW context (NSFW ancestor exists)');
 	}
 
 	/**
@@ -247,8 +247,8 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		$root->refresh();
 
 		// Safe root (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
-		$this->assertEquals($safePhoto->id, $root->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW branch photos when root is safe (no NSFW parent)');
-		$this->assertEquals($safePhoto->id, $root->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW branch photos when root is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->maxCovers($root)[0], 'Max-privilege cover should ALSO exclude NSFW branch photos when root is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->leastCovers($root)[0], 'Least-privilege cover should exclude NSFW branch photos when root is safe (no NSFW parent)');
 	}
 
 	/**
@@ -298,7 +298,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		$album->refresh();
 
 		// Safe album (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
-		$this->assertEquals($safePhoto->id, $album->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW photos when album is safe (no NSFW parent)');
-		$this->assertEquals($safePhoto->id, $album->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW photos when album is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->maxCovers($album)[0], 'Max-privilege cover should ALSO exclude NSFW photos when album is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $this->leastCovers($album)[0], 'Least-privilege cover should exclude NSFW photos when album is safe (no NSFW parent)');
 	}
 }

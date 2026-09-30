@@ -22,19 +22,17 @@ final class Propagate
 	 *
 	 * @param Album $album
 	 *
-	 * @return void
+	 * @return array<int,string> the ids of the descendants whose permissions were written
 	 */
-	public function update(Album $album): void
+	public function update(Album $album): array
 	{
 		if (!App::runningUnitTests()) {
 			// @codeCoverageIgnoreStart
-			DB::transaction(fn () => $this->applyUpdate($album));
-
-			return;
+			return DB::transaction(fn () => $this->applyUpdate($album));
 			// @codeCoverageIgnoreEnd
 		}
 
-		$this->applyUpdate($album);
+		return $this->applyUpdate($album);
 	}
 
 	/**
@@ -42,9 +40,9 @@ final class Propagate
 	 *
 	 * @param Album $album
 	 *
-	 * @return void
+	 * @return array<int,string> the descendant ids
 	 */
-	private function applyUpdate(Album $album): void
+	private function applyUpdate(Album $album): array
 	{
 		// for each descendant, create a new permission if it does not exist.
 		// or update the existing permission.
@@ -74,6 +72,8 @@ final class Propagate
 				$perm->save();
 			});
 		});
+
+		return $descendants->all();
 	}
 
 	/**
@@ -81,19 +81,17 @@ final class Propagate
 	 *
 	 * @param Album $album
 	 *
-	 * @return void
+	 * @return array<int,string> the ids of the descendants whose permissions were rewritten
 	 */
-	public function overwrite(Album $album): void
+	public function overwrite(Album $album): array
 	{
 		if (!App::runningUnitTests()) {
 			// @codeCoverageIgnoreStart
-			DB::transaction(fn () => $this->applyOverwrite($album));
-
-			return;
+			return DB::transaction(fn () => $this->applyOverwrite($album));
 			// @codeCoverageIgnoreEnd
 		}
 
-		$this->applyOverwrite($album);
+		return $this->applyOverwrite($album);
 	}
 
 	/**
@@ -101,9 +99,9 @@ final class Propagate
 	 *
 	 * @param Album $album
 	 *
-	 * @return void
+	 * @return array<int,string> the descendant ids
 	 */
-	private function applyOverwrite(Album $album): void
+	private function applyOverwrite(Album $album): array
 	{
 		// override permission for all descendants albums.
 		// Faster done by:
@@ -160,5 +158,7 @@ final class Propagate
 		);
 
 		DB::table(APC::ACCESS_PERMISSIONS)->insert($new_perm);
+
+		return $descendant_ids->all();
 	}
 }

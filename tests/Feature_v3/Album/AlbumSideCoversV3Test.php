@@ -35,12 +35,18 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  *
  * Covers FR-075-04..07 and S-075-04..07, S-075-16, S-075-18 for the
  * regular-album listings (`/Albums/{id}/children`, `/Albums/root`,
- * `/Albums/pinned`, `/Search/albums`).
+ * `/Albums/pinned`, `/Search/albums`), and the Feature 076 read rule
+ * (FR-076-04..06, S-076-06, S-076-07, NFR-076-01).
  */
 class AlbumSideCoversV3Test extends BaseApiWithDataTest
 {
-	/** Query count of `GET /Albums/{id}` for a 1-child parent, measured before Feature 075 (NFR-075-01). */
-	private const CHILDREN_QUERY_BASELINE = 21;
+	/**
+	 * Query count of `GET /Albums/{id}` for a 1-child parent: 21 before
+	 * Feature 075 (NFR-075-01, side covers add none), one fewer since the
+	 * parent `Album` loads `autoCoverRows` instead of the two
+	 * `*_privilege_cover` relations (Feature 076, NFR-076-01/02).
+	 */
+	private const CHILDREN_QUERY_BASELINE = 20;
 
 	public function setUp(): void
 	{
@@ -124,6 +130,64 @@ class AlbumSideCoversV3Test extends BaseApiWithDataTest
 		self::assertSame($public_ids[0], $json['cover_ids'][$i]);
 		self::assertSame($public_ids[1], $json['cover_ids_2'][$i]);
 		self::assertSame($public_ids[2], $json['cover_ids_3'][$i]);
+	}
+
+	// ── S-076-06 / S-076-07: Row Model read rule per viewer ──────
+
+	/**
+	 * @return array{0:string|null,1:string|null,2:string|null}
+	 */
+	private function triple(array $json, string $album_id): array
+	{
+		[$i, $json] = $this->rowOf($json, $album_id);
+
+		return [$json['cover_ids'][$i], $json['cover_ids_2'][$i], $json['cover_ids_3'][$i]];
+	}
+
+	/**
+	 * Several permissions: owner and admin read the owner row, a shared user
+	 * and a guest read the `NULL` row, on the root and children listings.
+	 */
+	public function testEachViewerReadsTheRowTheRowModelAssigns(): void
+	{
+		$owner = User::factory()->create();
+		$shared = User::factory()->create();
+		$parent = Album::factory()->as_root()->owned_by($owner)->create();
+		$root = Album::factory()->children_of($parent)->owned_by($owner)->create();
+		$public_child = Album::factory()->children_of($root)->owned_by($owner)->create();
+		$private_child = Album::factory()->children_of($root)->owned_by($owner)->create();
+		foreach ([$parent, $root, $public_child] as $album) {
+			AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		}
+		AccessPermission::factory()->for_user($shared)->visible()->for_album($root)->create();
+		$public_ids = $this->addPhotos($public_child, $owner, 3, 10);
+		$private_ids = $this->addPhotos($private_child, $owner, 3, 0);
+		$this->recompute($root);
+
+		self::assertSame($private_ids, $this->triple($this->actingAs($owner)->getJsonV3("Albums/{$parent->id}")->assertOk()->json(), $root->id));
+		self::assertSame($private_ids, $this->triple($this->actingAs($this->admin)->getJsonV3("Albums/{$parent->id}")->assertOk()->json(), $root->id));
+		self::assertSame($public_ids, $this->triple($this->actingAs($shared)->getJsonV3("Albums/{$parent->id}")->assertOk()->json(), $root->id));
+		\Illuminate\Support\Facades\Auth::logout();
+		self::assertSame($public_ids, $this->triple($this->getJsonV3("Albums/{$parent->id}")->assertOk()->json(), $root->id));
+	}
+
+	/**
+	 * Single share: the shared user reads the row computed as them, which
+	 * is neither the owner row nor a public one.
+	 */
+	public function testSingleShareUserReadsTheirOwnRow(): void
+	{
+		$owner = User::factory()->create();
+		$shared = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($owner)->create();
+		$hidden = Album::factory()->children_of($album)->owned_by($owner)->create();
+		AccessPermission::factory()->for_user($shared)->visible()->for_album($album)->create();
+		$visible_ids = $this->addPhotos($album, $owner, 3, 10);
+		$hidden_ids = $this->addPhotos($hidden, $owner, 3, 0);
+		$this->recompute($album);
+
+		self::assertSame($hidden_ids, $this->triple($this->actingAs($owner)->getJsonV3('Albums/root?scope=own')->assertOk()->json(), $album->id));
+		self::assertSame($visible_ids, $this->triple($this->actingAs($shared)->getJsonV3('Albums/root?scope=shared')->assertOk()->json(), $album->id));
 	}
 
 	// ── S-075-05: setting off ────────────────────────────────────

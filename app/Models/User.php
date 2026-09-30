@@ -243,6 +243,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 			$now = Carbon::now();
 			$new_owner_id = Auth::id() ?? throw new UnauthenticatedException();
 
+			// The precomputed cover rows of the moved albums follow them (Feature 076).
+			AlbumUserThumb::rekeyOwnerRows($this->albums()->pluck('id')->all(), $new_owner_id);
+
 			foreach ($ownership_relations as $relation) {
 				// We must also update the `updated_at` column of the related
 				// models in case clients have cached these models.
@@ -257,6 +260,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		// The FK on album_user_thumbs.user_id cannot CASCADE (it is a base
 		// column of a generated column, see the album_user_thumbs migration),
 		// so this row cleanup must happen explicitly, same as AccessPermission.
+		// What is left keyed on this user are cache rows and single-share
+		// precomputed rows, whose permission was just deleted.
 		AlbumUserThumb::query()->where('user_id', '=', $this->id)->delete();
 		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 

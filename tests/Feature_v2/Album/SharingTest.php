@@ -102,7 +102,7 @@ class SharingTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $public_perm->id]);
 		$this->assertNoContent($response);
 
-		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->photo1->id)->count());
+		self::assertSame(0, AlbumUserThumb::query()->where('is_precomputed', '=', false)->where('photo_id', '=', $this->photo1->id)->count());
 	}
 
 	/**
@@ -121,7 +121,7 @@ class SharingTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $this->perm11->id]);
 		$this->assertNoContent($response);
 
-		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->photo1->id)->count());
+		self::assertSame(0, AlbumUserThumb::query()->where('is_precomputed', '=', false)->where('photo_id', '=', $this->photo1->id)->count());
 	}
 
 	/**
@@ -139,7 +139,7 @@ class SharingTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $this->perm1->id]);
 		$this->assertNoContent($response);
 
-		self::assertSame(1, AlbumUserThumb::query()->where('photo_id', '=', $this->photo2->id)->count());
+		self::assertSame(1, AlbumUserThumb::query()->where('is_precomputed', '=', false)->where('photo_id', '=', $this->photo2->id)->count());
 	}
 
 	public function testPropagateUpdateDispatchesCoarseFlush(): void
@@ -188,7 +188,7 @@ class SharingTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		self::assertSame(0, AlbumUserThumb::query()->where('photo_id', '=', $this->subPhoto1->id)->count());
+		self::assertSame(0, AlbumUserThumb::query()->where('is_precomputed', '=', false)->where('photo_id', '=', $this->subPhoto1->id)->count());
 	}
 
 	public function testGet(): void

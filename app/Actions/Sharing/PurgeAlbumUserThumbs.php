@@ -41,6 +41,13 @@ use Illuminate\Support\Facades\DB;
  * changes ({@link \App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange}, whose
  * job recomputes each cached viewer through a permission-filtered query).
  *
+ * Only cache rows (`is_precomputed = false`) are purged. A regular album's
+ * precomputed cover rows (Feature 076, ADR-076-01) are rewritten by
+ * {@link \App\Jobs\RecomputeAlbumStatsJob}, which runs on every permission
+ * change ({@link \App\Listeners\RecomputeAlbumStatsOnAccessPermissionChange}),
+ * and are never rebuilt lazily, so deleting them here would leave the album
+ * without an automatic cover.
+ *
  * Purging is deliberately coarse: a missing row costs one lazy recomputation on
  * the viewer's next read (through the permission-filtered live query in
  * {@link \App\Models\Extensions\CachesAlbumUserThumb}), whereas a surviving row
@@ -73,6 +80,7 @@ final class PurgeAlbumUserThumbs
 		$photo_ids = fn () => DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->whereIn(PA::ALBUM_ID, $ids);
 
 		DB::table('album_user_thumbs')
+			->where('is_precomputed', '=', false)
 			->where(fn ($q) => $q
 				->whereIn('photo_id', $photo_ids())
 				->orWhereIn('photo_id_2', $photo_ids())
@@ -98,6 +106,6 @@ final class PurgeAlbumUserThumbs
 			return;
 		}
 
-		DB::table('album_user_thumbs')->whereIn('user_id', $ids)->delete();
+		DB::table('album_user_thumbs')->where('is_precomputed', '=', false)->whereIn('user_id', $ids)->delete();
 	}
 }

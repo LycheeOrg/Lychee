@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Config;
  * jobs to compute:
  * - max_taken_at, min_taken_at (date range)
  * - num_children, num_photos (counts)
- * - auto_cover_id_max_privilege, auto_cover_id_least_privilege (cover IDs)
+ * - the automatic cover rows in `album_user_thumbs` (Feature 076)
  *
  * Behavior Based on Queue Configuration:
  * - If queue is 'sync': Processes albums in chunks of 50, ordered by _lft DESC
@@ -79,13 +79,14 @@ class FulfillPreCompute extends Controller
 	/**
 	 * Count albums that need precomputed fields filled.
 	 *
-	 * Returns the count of albums where ALL precomputed fields are null:
+	 * Returns the count of albums whose counters are all at their default:
 	 * - max_taken_at IS NULL
 	 * - min_taken_at IS NULL
 	 * - num_children = 0 (default value indicates not computed)
 	 * - num_photos = 0 (default value indicates not computed)
-	 * - auto_cover_id_max_privilege IS NULL
-	 * - auto_cover_id_least_privilege IS NULL
+	 *
+	 * or which have no precomputed cover row in `album_user_thumbs`
+	 * (Feature 076).
 	 *
 	 * Note: Empty albums legitimately have these values, but this check
 	 * assumes that most albums have at least some content.
@@ -115,9 +116,10 @@ class FulfillPreCompute extends Controller
 				->where('num_children', 0)
 				->where('num_photos', 0)
 			)
-			->orWhere(fn (Builder $q) => $q
-				->whereNull('auto_cover_id_max_privilege')
-				->whereNull('auto_cover_id_least_privilege')
+			->orWhereNotExists(fn ($q) => $q
+				->from('album_user_thumbs')
+				->whereColumn('album_user_thumbs.album_id', '=', 'albums.id')
+				->where('album_user_thumbs.is_precomputed', '=', true)
 			);
 	}
 }
