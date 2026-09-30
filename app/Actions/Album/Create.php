@@ -78,12 +78,28 @@ class Create
 	{
 		try {
 			Cache::lock(self::TREE_LOCK_KEY, self::TREE_LOCK_TTL_SECONDS)->block(self::TREE_LOCK_WAIT_SECONDS, function () use ($album, $parent_album): void {
+				$this->reloadTreeBounds($parent_album);
 				$this->set_parent($album, $parent_album);
 				$album->save();
 			});
 		} catch (LockTimeoutException $e) {
 			throw new ConflictingPropertyException('Another album is being created, please retry.', $e);
 		}
+	}
+
+	/**
+	 * The parent was loaded before the lock was acquired, so its `_lft`/`_rgt`
+	 * may predate a concurrent insertion. The nested set's own refreshNode()
+	 * does not help here: it is a no-op until an action ran in this process.
+	 */
+	private function reloadTreeBounds(?Album $parent_album): void
+	{
+		if ($parent_album === null) {
+			return;
+		}
+
+		$bounds = $parent_album->newNestedSetQuery()->getNodeData($parent_album->getKey(), true);
+		$parent_album->setRawAttributes(array_merge($parent_album->getAttributes(), $bounds));
 	}
 
 	/**

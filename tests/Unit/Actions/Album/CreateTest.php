@@ -63,4 +63,23 @@ class CreateTest extends AbstractTestCase
 		self::assertTrue($second->_lft > $first->_rgt);
 		self::assertTrue(Cache::lock(Create::TREE_LOCK_KEY, 1)->get());
 	}
+
+	public function testParentBoundsAreReloadedInsideTheLock(): void
+	{
+		$user = User::factory()->create();
+		$parent = Album::factory()->as_root()->owned_by($user)->create();
+		// Simulates a request that loaded the parent before another request inserted a sibling.
+		$stale_parent = Album::query()->findOrFail($parent->id);
+
+		$create = new Create($user->id);
+		$first = $create->create('first', $parent);
+		// A fresh PHP request starts with no nested-set action performed, so refreshNode() is a no-op.
+		Album::$actionsPerformed = 0;
+		$second = $create->create('second', $stale_parent);
+
+		$first->refresh();
+		$parent->refresh();
+		self::assertTrue($second->_lft > $first->_rgt);
+		self::assertTrue($second->_rgt < $parent->_rgt);
+	}
 }
