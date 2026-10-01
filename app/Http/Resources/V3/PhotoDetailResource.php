@@ -40,37 +40,39 @@ class PhotoDetailResource extends Data
 {
 	/**
 	 * @param string[]                         $ids
-	 * @param (string|null)[]                  $descriptions           raw, not Markdown-rendered
-	 * @param string[][]                       $tags                   full tag-name list, always included
+	 * @param (string|null)[]                  $descriptions              raw, not Markdown-rendered
+	 * @param string[]                         $preformatted_descriptions Markdown-rendered HTML, "" when empty
+	 * @param string[][]                       $tags                      full tag-name list, always included
 	 * @param (float|null)[]                   $rating_avgs
 	 * @param string[]                         $licenses
 	 * @param int[]                            $owner_ids
 	 * @param (string|null)[]                  $nsfw_statuses
 	 * @param string[]                         $checksums
 	 * @param string[]                         $original_checksums
-	 * @param string[]                         $updated_ats            raw ISO 8601, never Carbon-formatted
+	 * @param string[]                         $updated_ats               raw ISO 8601, never Carbon-formatted
 	 * @param (string|null)[]                  $live_photo_checksums
 	 * @param (string|null)[]                  $live_photo_content_ids
 	 * @param (string|null)[]                  $live_photo_urls
 	 * @param int[]                            $face_counts
-	 * @param (ColourPaletteResource|null)[]   $palette                nested
-	 * @param (SizeVariantsResouce|null)[]     $size_variants          nested, all 9 variants
-	 * @param (PhotoStatisticsResource|null)[] $statistics             nested; null per-row per `metrics_enabled` + per-row `metrics_access=owner`
-	 * @param (string|null)[]|Optional         $makes                  gated by `display_exif_data`
+	 * @param (ColourPaletteResource|null)[]   $palette                   nested
+	 * @param (SizeVariantsResouce|null)[]     $size_variants             nested, all 9 variants
+	 * @param (PhotoStatisticsResource|null)[] $statistics                nested; null per-row per `metrics_enabled` + per-row `metrics_access=owner`
+	 * @param (string|null)[]|Optional         $makes                     gated by `display_exif_data`
 	 * @param (string|null)[]|Optional         $models
 	 * @param (string|null)[]|Optional         $lenses
 	 * @param (string|null)[]|Optional         $apertures
 	 * @param (string|null)[]|Optional         $shutters
 	 * @param (string|null)[]|Optional         $focals
 	 * @param (string|null)[]|Optional         $isos
-	 * @param (float|null)[]|Optional          $latitudes              gated by `gps_coordinate_display`(+`_public` for guests)
+	 * @param (float|null)[]|Optional          $latitudes                 gated by `gps_coordinate_display`(+`_public` for guests)
 	 * @param (float|null)[]|Optional          $longitudes
 	 * @param (float|null)[]|Optional          $altitudes
-	 * @param (string|null)[]|Optional         $locations              gated by `location_show`(+`_public` for guests)
+	 * @param (string|null)[]|Optional         $locations                 gated by `location_show`(+`_public` for guests)
 	 */
 	public function __construct(
 		public array $ids,
 		public array $descriptions,
+		public array $preformatted_descriptions,
 		public array $tags,
 		public array $rating_avgs,
 		public array $licenses,

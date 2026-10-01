@@ -195,6 +195,27 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertSame($photo->license->value, $details['licenses'][0]);
 	}
 
+	// ── Description rendering ─────────────────────────────────────
+
+	public function testPreformattedDescriptionsAreMarkdownRenderedWithRawHtmlStripped(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$raw = '**bold** <script>alert(1)</script><img src=x onerror=alert(2)>';
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['description' => $raw]);
+		$empty = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['description' => null]);
+
+		$details = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/details", ['photo_ids' => [$photo->id, $empty->id]])->assertOk()->json();
+
+		$idx = array_search($photo->id, $details['ids'], true);
+		$empty_idx = array_search($empty->id, $details['ids'], true);
+		$this->assertSame($raw, $details['descriptions'][$idx]);
+		$html = $details['preformatted_descriptions'][$idx];
+		$this->assertStringContainsString('<strong>bold</strong>', $html);
+		$this->assertStringNotContainsString('<script', $html);
+		$this->assertStringNotContainsString('<img', $html);
+		$this->assertSame('', $details['preformatted_descriptions'][$empty_idx]);
+	}
+
 	// ── metrics_access=owner per-row visibility ───────────────────
 
 	public function testMetricsAccessOwnerIsPerRowNotPerRequest(): void
