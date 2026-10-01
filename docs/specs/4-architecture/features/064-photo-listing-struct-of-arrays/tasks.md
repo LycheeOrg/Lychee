@@ -152,6 +152,16 @@ _Last updated: 2026-09-05_
   - `make phpstan`
   _Notes:_ `app/Http/Resources/V3/PhotoDetailResource.php`; route registered as `GET /Albums/{album_id}/Photos/details`; `PhotoChildrenController::details()` added. 14/14 tests green, `phpstan level 6` clean, `php-cs-fixer` clean.
 
+- [x] T-064-31 – Test: `details` returns Markdown-rendered `preformatted_descriptions` with raw HTML stripped (FR-064-10, S-064-29).
+  _Verification commands:_
+  - `php artisan test --filter=PhotoDetailsV3Test`
+
+- [x] T-064-32 – Add `preformatted_descriptions` to `PhotoDetailResource`, built via `Markdown::convert()` in `QueryPhotoDetails` (FR-064-10, DO-064-03).
+  _Verification commands:_
+  - `php artisan test --filter=PhotoDetailsV3Test`
+  - `php artisan test --filter=QuerySearchPhotoDetailsTest`
+  - `make phpstan`
+
 ### I6 – Caching + invalidation
 
 - [x] T-064-25 – `CacheKeyProvider` extensions (F-064-14).

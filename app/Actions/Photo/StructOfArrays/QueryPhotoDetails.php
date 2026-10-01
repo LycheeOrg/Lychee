@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\PhotoBucketComputer;
 use App\SmartAlbums\TimelineAlbum;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\LaravelData\Optional;
 
@@ -198,6 +199,7 @@ class QueryPhotoDetails
 
 		$ids = [];
 		$descriptions = [];
+		$preformatted_descriptions = [];
 		$tags = [];
 		$rating_avgs = [];
 		$licenses = [];
@@ -228,6 +230,9 @@ class QueryPhotoDetails
 		foreach ($photos as $photo) {
 			$ids[] = $photo->id;
 			$descriptions[] = $photo->description;
+			// Same conversion as `PreformattedPhotoData::$description`; the
+			// client injects this one via `v-html`, never the raw text.
+			$preformatted_descriptions[] = ($photo->description ?? '') === '' ? '' : Markdown::convert($photo->description)->getContent();
 			$tags[] = $photo->tags->pluck('name')->all();
 			$rating_avgs[] = $photo->rating_avg !== null ? (float) $photo->rating_avg : null;
 			$licenses[] = $photo->license->value;
@@ -284,6 +289,7 @@ class QueryPhotoDetails
 		return new PhotoDetailResource(
 			ids: $ids,
 			descriptions: $descriptions,
+			preformatted_descriptions: $preformatted_descriptions,
 			tags: $tags,
 			rating_avgs: $rating_avgs,
 			licenses: $licenses,

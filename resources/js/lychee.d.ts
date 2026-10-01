@@ -1857,6 +1857,7 @@ declare namespace App {
 				export type PhotoDetailResource = {
 					ids: string[];
 					descriptions: (string | null)[];
+					preformatted_descriptions: string[];
 					tags: string[][];
 					rating_avgs: (number | null)[];
 					licenses: string[];

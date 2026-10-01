@@ -192,7 +192,7 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 		photo.rating.rating_count = ratingCount;
 	}
 
-	photo.preformatted.description = detail.descriptions[i] ?? "";
+	photo.preformatted.description = detail.preformatted_descriptions[i] ?? "";
 	photo.preformatted.make = detail.makes?.[i] ?? null;
 	photo.preformatted.model = detail.models?.[i] ?? null;
 	photo.preformatted.lens = detail.lenses?.[i] ?? "";
