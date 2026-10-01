@@ -59,6 +59,7 @@
 			:src="photoStore.photo.size_variants.medium?.url ?? ''"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:srcset="photoStore.srcSetMedium"
+			:sizes="photoStore.sizesMedium"
 			@load="updateFaceOverlay"
 		/>
 		<img

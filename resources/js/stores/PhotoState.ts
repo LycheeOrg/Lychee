@@ -199,6 +199,17 @@ export const usePhotoStore = defineStore("photo-store", {
 
 			return `${medium.url} ${medium.width}w, ${medium2x.url} ${medium2x.width}w`;
 		},
+		sizesMedium(): string {
+			const medium = this.photo?.size_variants.medium ?? null;
+			if (this.srcSetMedium === "" || medium === null || medium.height === 0) {
+				return "";
+			}
+
+			// The image is fitted into the viewport, so its rendered width is capped by
+			// the viewport height times its aspect ratio. Ignoring the surrounding chrome
+			// only overestimates, i.e. errs towards medium2x, never towards a blurry medium.
+			return `min(100vw, ${(medium.width / medium.height).toFixed(4)} * 100vh)`;
+		},
 		previousStyle(): string {
 			const photosState = usePhotosStore();
 			if (!this.hasPrevious || photosState.photos.length === 0) {
