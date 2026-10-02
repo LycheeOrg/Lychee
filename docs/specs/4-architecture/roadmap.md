@@ -7,6 +7,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 074 | Global Gallery Password | Testing | Medium | ildyria | 2026-09-27 | 2026-09-27 | 22/23 tasks. A shared gallery password locks every v2/v3 API route for anonymous visitors (a gate in the `api` group with explicit opt-outs), unlocked by an encrypted HMAC-SHA3-256 cookie (ADR-074-01/02). Written through a new write-only `password` config type (ADR-074-03). RSS and embeds are disabled while it is set. v7 and v8 unlock screens and settings fields. Pending: manual browser check T-074-23. See `features/074-global-password/`. |
+| 077 | Upload Thumbnail Preview | Testing | Low | ildyria | 2026-10-02 | 2026-10-02 | 6/7 tasks. v8 only, frontend only (LycheeOrg/Lychee#2084): each upload row shows a 40 px miniature on the inline-start side (left in LTR, right in RTL), built in the browser by `v8/utils/uploadThumbnail.ts` (decode → 80×80 centre crop → WebP blob URL). Lazy within 200 px of the list's scroll box, at most 2 decodes at once, URLs revoked on unmount. Videos, other types and decode failures (HEIC outside Safari) show a Lucide icon. List box `h-48` → `h-72`. Helper verified headless in Chromium, Firefox and WebKit. Pending: manual browser check T-077-07. See `features/077-upload-thumbnail-preview/`. |
 
 ## Paused Features
 

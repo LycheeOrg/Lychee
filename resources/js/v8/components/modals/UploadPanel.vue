@@ -27,7 +27,7 @@
 						"
 					/>
 				</div>
-				<div v-if="counts.files > 0" class="w-full h-48 overflow-y-auto py-4 pr-3">
+				<div v-if="counts.files > 0" ref="listBox" class="w-full h-72 overflow-y-auto py-4 pr-3 flex flex-col gap-1">
 					<UploadingLine
 						v-for="(uploadable, index) in list_upload_files"
 						:key="uploadable.uid"
@@ -39,6 +39,7 @@
 						:index="index"
 						:chunk-size="setup.upload_chunk_size"
 						:apply-watermark="applyWatermark"
+						:scroll-root="listBox"
 						@upload:completed="uploadCompleted"
 					/>
 				</div>
@@ -92,7 +93,7 @@
 	</UModal>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, Ref, ref, useTemplateRef, watch } from "vue";
 import UploadingLine from "@/v8/components/forms/upload/UploadingLine.vue";
 import AlbumService from "@/services/album-service";
 import { useRandomId } from "@/composables/useRandomId";
@@ -105,6 +106,7 @@ const { is_upload_visible, list_upload_files, upload_config: setup } = storeToRe
 const generateId = useRandomId();
 const route = useRoute();
 
+const listBox = useTemplateRef<HTMLDivElement>("listBox");
 const albumId = ref(route.params.albumId ?? (null as string | null)) as Ref<string | null>;
 const applyWatermark = ref(true);
 
