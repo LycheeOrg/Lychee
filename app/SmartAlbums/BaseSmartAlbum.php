@@ -251,6 +251,16 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		return true;
 	}
 
+	/**
+	 * Whether the photo is currently part of this album, as seen by the
+	 * resolved user. A primary-key lookup through {@link self::photos()},
+	 * for albums whose membership moves with the clock.
+	 */
+	protected function containsPhoto(string $photo_id): bool
+	{
+		return $this->photos()->whereKey($photo_id)->exists();
+	}
+
 	public function public_permissions(): ?AccessPermission
 	{
 		return $this->public_permissions;

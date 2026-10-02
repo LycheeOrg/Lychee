@@ -13,6 +13,7 @@ use App\Exceptions\LdapAuthenticationException;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\Auth\LdapService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -50,11 +51,15 @@ class ProvisionLdapUser
 		// Step 2: Update user attributes from LDAP
 		$this->updateUserAttributes($user, $ldap_user);
 
-		// Step 3: Sync admin status based on LDAP groups
-		$this->syncAdminStatus($user, $ldap_user->user_dn);
+		// Step 3: Resolve admin status from LDAP groups (directory calls stay outside the transaction)
+		$is_directory_admin = $this->isDirectoryAdmin($ldap_user->user_dn);
 
-		// Save changes
-		$user->save();
+		// Step 4: Sync admin status and save in one transaction, so the
+		// last-admin check cannot race with a concurrent demotion.
+		DB::transaction(function () use ($user, $is_directory_admin): void {
+			$this->syncAdminStatus($user, $is_directory_admin);
+			$user->save();
+		});
 
 		Log::info('LDAP user provisioned', [
 			'user_id' => $user->id,
@@ -134,27 +139,50 @@ class ProvisionLdapUser
 	}
 
 	/**
-	 * Sync admin status based on LDAP group membership.
+	 * Whether the user belongs to the LDAP admin group.
 	 *
-	 * @param User   $user    Local user to update
 	 * @param string $user_dn User's LDAP DN
 	 */
-	private function syncAdminStatus(User $user, string $user_dn): void
+	private function isDirectoryAdmin(string $user_dn): bool
 	{
-		// Query user's LDAP groups
 		$group_dns = $this->ldap_service->queryGroups($user_dn);
 
-		// Check if user is in admin group
-		$is_admin = $this->ldap_service->isUserInAdminGroup($group_dns);
+		return $this->ldap_service->isUserInAdminGroup($group_dns);
+	}
 
-		$owner_id = resolve(ConfigManager::class)->getValueAsInt('owner_id');
-		if (!$is_admin && ($user->id === $owner_id ||
-			User::query()->where('may_administrate', '=', true)->where('id', '!=', $user->id)->doesntExist())) {
+	/**
+	 * Sync admin status based on LDAP group membership.
+	 * Must run inside the transaction that saves the user (see {@link self::mayDemote()}).
+	 *
+	 * @param User $user     Local user to update
+	 * @param bool $is_admin Whether the user belongs to the LDAP admin group
+	 */
+	private function syncAdminStatus(User $user, bool $is_admin): void
+	{
+		if (!$is_admin && $user->may_administrate && !$this->mayDemote($user)) {
 			// Never demote the owner or the last remaining admin through directory sync.
 			return;
 		}
 
-		// Update admin flag
 		$user->may_administrate = $is_admin;
+	}
+
+	/**
+	 * Whether removing the user's admin rights leaves the instance with its
+	 * owner and at least one other admin.
+	 *
+	 * Every admin row is locked, so two admins demoted concurrently are
+	 * serialized: the second waits for the first to commit, then no longer
+	 * counts it as an admin.
+	 */
+	private function mayDemote(User $user): bool
+	{
+		if ($user->id === resolve(ConfigManager::class)->getValueAsInt('owner_id')) {
+			return false;
+		}
+
+		$admin_ids = User::query()->where('may_administrate', '=', true)->lockForUpdate()->pluck('id')->all();
+
+		return count(array_diff($admin_ids, [$user->id])) > 0;
 	}
 }

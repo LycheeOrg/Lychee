@@ -57,6 +57,6 @@ class OnThisDayAlbum extends BaseSmartAlbum
 	 */
 	public function isCachedThumbValid(string $photo_id): bool
 	{
-		return $this->photos()->whereKey($photo_id)->exists();
+		return $this->containsPhoto($photo_id);
 	}
 }

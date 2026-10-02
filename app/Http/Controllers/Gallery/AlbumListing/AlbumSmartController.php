@@ -39,8 +39,9 @@ class AlbumSmartController extends Controller
 	 * album without a row is resolved live through
 	 * {@link BaseSmartAlbum::get_thumb()}, which seeds the row for the next
 	 * request; so is a row {@link BaseSmartAlbum::isCachedThumbValid()}
-	 * rejects (`on_this_day` cached on a previous day). With every cover
-	 * cached, the only `photos` query is `on_this_day`'s validity check.
+	 * rejects (a date-dependent album, `on_this_day` or `recent`, whose cached
+	 * cover has dropped out). With every cover cached, the only `photos`
+	 * queries are those two albums' validity checks.
 	 */
 	public function smart(GetAlbumCategoryRequest $request): AlbumCategoryResource
 	{

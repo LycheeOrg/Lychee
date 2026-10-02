@@ -46,4 +46,13 @@ class RecentAlbum extends BaseSmartAlbum
 	{
 		return new self();
 	}
+
+	/**
+	 * The `recent_age` cutoff moves with the clock, so a cached cover ages
+	 * out of this album without any photo write.
+	 */
+	public function isCachedThumbValid(string $photo_id): bool
+	{
+		return $this->containsPhoto($photo_id);
+	}
 }

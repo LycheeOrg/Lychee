@@ -60,8 +60,9 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 		$photo->tags()->attach($tag->id);
 		$tag_album = TagAlbum::factory()->owned_by($user)->of_tags([$tag])->create();
 
+		// An unsorted photo is only visible to its owner, so the cached viewer is the owner.
 		AlbumUserThumb::query()->create([
-			'user_id' => null,
+			'user_id' => $user->id,
 			'album_id' => $tag_album->id,
 			'photo_id' => $photo->id,
 		]);
@@ -70,7 +71,7 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 
 		self::assertDatabaseHas('album_user_thumbs', [
 			'album_id' => $tag_album->id,
-			'user_id' => null,
+			'user_id' => $user->id,
 			'photo_id' => $photo->id,
 		]);
 	}
