@@ -11,6 +11,7 @@ namespace App\Actions\User;
 use App\DTO\LdapUser;
 use App\Exceptions\LdapAuthenticationException;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use App\Services\Auth\LdapService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -145,6 +146,13 @@ class ProvisionLdapUser
 
 		// Check if user is in admin group
 		$is_admin = $this->ldap_service->isUserInAdminGroup($group_dns);
+
+		$owner_id = resolve(ConfigManager::class)->getValueAsInt('owner_id');
+		if (!$is_admin && ($user->id === $owner_id ||
+			User::query()->where('may_administrate', '=', true)->where('id', '!=', $user->id)->doesntExist())) {
+			// Never demote the owner or the last remaining admin through directory sync.
+			return;
+		}
 
 		// Update admin flag
 		$user->may_administrate = $is_admin;

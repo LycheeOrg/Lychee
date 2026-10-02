@@ -236,7 +236,19 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		return $this->thumb = $this->getCachedOrLiveThumb(
 			$this->id,
 			fn () => Thumb::createFromQueryable($this->photos(), PhotoSortingCriterion::createDefault()),
+			fn (string $photo_id) => $this->isCachedThumbValid($photo_id),
 		);
+	}
+
+	/**
+	 * Whether the photo cached as this album's cover in `album_user_thumbs`
+	 * still represents it. Membership of most smart albums only changes on
+	 * photo writes, which {@link \App\Jobs\RecomputeAlbumUserThumbsJob}
+	 * already handles, so the cached row is trusted without a query.
+	 */
+	public function isCachedThumbValid(string $photo_id): bool
+	{
+		return true;
 	}
 
 	public function public_permissions(): ?AccessPermission

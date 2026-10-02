@@ -49,4 +49,14 @@ class OnThisDayAlbum extends BaseSmartAlbum
 	{
 		return new self();
 	}
+
+	/**
+	 * Membership follows the current date, so a cover cached on a previous
+	 * day no longer belongs here. Checked through the album's own query so
+	 * the date comparison matches the live one exactly.
+	 */
+	public function isCachedThumbValid(string $photo_id): bool
+	{
+		return $this->photos()->whereKey($photo_id)->exists();
+	}
 }

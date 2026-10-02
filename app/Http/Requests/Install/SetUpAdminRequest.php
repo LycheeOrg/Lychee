@@ -15,6 +15,7 @@ use App\Exceptions\AdminUserAlreadySetException;
 use App\Http\Middleware\Checks\HasAdminUser;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Models\User;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -46,7 +47,7 @@ class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 	 */
 	public function authorize(HasAdminUser $has_admin_user): bool
 	{
-		if ($has_admin_user->assert()) {
+		if ($has_admin_user->assert() || User::exists()) {
 			throw new AdminUserAlreadySetException();
 		}
 
