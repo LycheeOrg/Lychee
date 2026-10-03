@@ -302,6 +302,7 @@ return [
         'title' => 'Hernoemregels toepassen',
         'description' => 'Selecteer de toe te passen hernoemregels en stel het bereik in.',
         'no_rules' => 'Geen hernoemregels gevonden.',
+        'select_all' => 'Select all',
         'target' => 'Doel',
         'scope' => 'Bereik',
         'photos' => 'Foto’s',

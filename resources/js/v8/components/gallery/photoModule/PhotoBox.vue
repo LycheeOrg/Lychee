@@ -239,6 +239,8 @@ const zoomSource = computed(() => (photoStore.photo === undefined ? undefined : 
 const zoomSrc = ref<string | null>(null);
 let loadingZoomSrc = false;
 let failedZoomSrc = false;
+/** Bumped when a resize resets the zoom: a decode started before it must not apply its result. */
+let zoomSrcGeneration = 0;
 
 const panZoom = usePanZoom({
 	container: containerEl,
@@ -248,7 +250,10 @@ const panZoom = usePanZoom({
 	wheelNavigates: () => lycheeStore.is_scroll_to_navigate_photos_enabled,
 	onTap,
 	onContainerResize: () => {
-		// Zoom was reset: release the locked size so the image fits the new container.
+		// Zoom was reset: release the locked size so the image fits the new container,
+		// and drop any decode still in flight for the previous fit.
+		zoomSrcGeneration++;
+		loadingZoomSrc = false;
 		zoomSrc.value = null;
 		nextTick(updateFaceOverlay);
 	},
@@ -282,13 +287,15 @@ function maybeLoadZoomSource(scale: number) {
 		return;
 	}
 	loadingZoomSrc = true;
+	const generation = zoomSrcGeneration;
+	const isCurrent = () => generation === zoomSrcGeneration;
 	const loader = new Image();
 	loader.src = source.url;
 	loader
 		.decode()
-		.then(() => (zoomSrc.value = source.url))
-		.catch(() => (failedZoomSrc = true))
-		.finally(() => (loadingZoomSrc = false));
+		.then(() => isCurrent() && (zoomSrc.value = source.url))
+		.catch(() => isCurrent() && (failedZoomSrc = true))
+		.finally(() => isCurrent() && (loadingZoomSrc = false));
 }
 
 watch(() => panZoom.state.value.scale, maybeLoadZoomSource);

@@ -302,6 +302,7 @@ return [
         'title' => 'Umbenennungsregeln anwenden',
         'description' => 'Wählen Sie die anzuwendenden Umbenennungsregeln aus und konfigurieren Sie den Umfang.',
         'no_rules' => 'Keine Umbenennungsregeln gefunden.',
+        'select_all' => 'Select all',
         'target' => 'Ziel',
         'scope' => 'Umfang',
         'photos' => 'Fotos',

@@ -302,6 +302,7 @@ return [
         'title' => 'Aplicar reglas de renombrado',
         'description' => 'Selecciona las reglas de renombrado que quieras aplicar y configura su ámbito de aplicación.',
         'no_rules' => 'No se han encontrado reglas de renombrado.',
+        'select_all' => 'Select all',
         'target' => 'Objetivo',
         'scope' => 'Ámbito de aplicación',
         'photos' => 'Fotos',

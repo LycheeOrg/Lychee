@@ -65,6 +65,10 @@ Run after T-078-17 with the latest quality gate green. Record in this plan: FR â
 - `PhotoState` exposes `is_zoomed` plus `zoom_controls` instead of one controller object (DO-078-05).
 - Owner directives during implementation: dock hidden while zoomed (FR-078-21), settings hidden without v8 (FR-078-01), no "v8 lightbox" wording in the settings texts.
 
+**Follow-up fixes (2026-10-03, after review)**
+- A zoom-source decode that resolves after a resize reset is discarded through a generation counter in `PhotoBox` (FR-078-12). Reproduced and verified in the scratch instance by holding back the original's response, resizing, then releasing it.
+- Key zoom steps and `z` read the running animation's end state instead of the in-between scale; `z`, `+`, `+` pressed quickly now reach 4.5Ã— (FR-078-11).
+
 **Outstanding (T-078-17)**
 - Real touch device (iOS Safari, Android Chrome); NFR-078-01 performance trace.
 - Videos (S-078-13, S-078-24), face boxes (S-078-14, S-078-23) and the unchanged Flow lightbox / Moderation preview: no samples in the scratch instance.

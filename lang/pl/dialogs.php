@@ -302,6 +302,7 @@ return [
         'title' => 'Apply Renamer Rules',
         'description' => 'Select the renamer rules to apply and configure the scope.',
         'no_rules' => 'No renamer rules found.',
+        'select_all' => 'Select all',
         'target' => 'Target',
         'scope' => 'Scope',
         'photos' => 'Photos',

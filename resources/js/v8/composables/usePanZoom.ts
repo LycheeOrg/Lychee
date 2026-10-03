@@ -95,6 +95,8 @@ export function usePanZoom(options: PanZoomOptions) {
 	let pendingState: PanZoomState | undefined = undefined;
 	let frame = 0;
 	let animation = 0;
+	/** End state of the running animation: quick repeated key presses build on it, not on the in-between state. */
+	let animationTarget: PanZoomState | undefined = undefined;
 
 	function commit(next: PanZoomState) {
 		state.value = next;
@@ -117,6 +119,7 @@ export function usePanZoom(options: PanZoomOptions) {
 	}
 
 	function stopAnimation() {
+		animationTarget = undefined;
 		if (animation !== 0) {
 			cancelAnimationFrame(animation);
 			animation = 0;
@@ -130,6 +133,7 @@ export function usePanZoom(options: PanZoomOptions) {
 			return;
 		}
 		const from = { ...state.value };
+		animationTarget = target;
 		const startTime = performance.now();
 		const step = (now: number) => {
 			const t = Math.min((now - startTime) / ANIMATION_MS, 1);
@@ -140,6 +144,9 @@ export function usePanZoom(options: PanZoomOptions) {
 				y: from.y + (target.y - from.y) * eased,
 			});
 			animation = t < 1 ? requestAnimationFrame(step) : 0;
+			if (animation === 0) {
+				animationTarget = undefined;
+			}
 		};
 		animation = requestAnimationFrame(step);
 	}
@@ -185,7 +192,7 @@ export function usePanZoom(options: PanZoomOptions) {
 		if (!canZoom()) {
 			return;
 		}
-		animateTo(settled(zoomAround(state.value, point, scale, ceiling.value)));
+		animateTo(settled(zoomAround(animationTarget ?? state.value, point, scale, ceiling.value)));
 	}
 
 	function centre(): Point {
@@ -197,7 +204,7 @@ export function usePanZoom(options: PanZoomOptions) {
 	}
 
 	function toggleAt(point: Point) {
-		if (zoomed.value) {
+		if (isZoomed(animationTarget ?? state.value)) {
 			reset();
 			return;
 		}
@@ -209,11 +216,11 @@ export function usePanZoom(options: PanZoomOptions) {
 	}
 
 	function zoomIn() {
-		zoomTo(centre(), state.value.scale * KEY_ZOOM_STEP);
+		zoomTo(centre(), (animationTarget ?? state.value).scale * KEY_ZOOM_STEP);
 	}
 
 	function zoomOut() {
-		zoomTo(centre(), state.value.scale / KEY_ZOOM_STEP);
+		zoomTo(centre(), (animationTarget ?? state.value).scale / KEY_ZOOM_STEP);
 	}
 
 	/** Centre the viewport on a normalised photo point (minimap, FR-078-18). */

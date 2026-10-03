@@ -302,6 +302,7 @@ return [
         'title' => 'Aplikovat pravidla pro přejmenování',
         'description' => 'Vyberte pravidla pro přejmenování, která chcete použít, a nastavte jejich rozsah.',
         'no_rules' => 'Nebyla nalezena žádná pravidla pro přejmenování.',
+        'select_all' => 'Select all',
         'target' => 'Cíl',
         'scope' => 'Rozsah',
         'photos' => 'Fotografie',
