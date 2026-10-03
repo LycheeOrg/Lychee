@@ -130,9 +130,10 @@ class ExternalRequestFunctions implements ExternalRequest
 		];
 		$context = stream_context_create($opts);
 
-		$raw = file_get_contents($this->url, false, $context);
-		if ($raw === '') {
-			throw new RequestFailedException('file_get_contents() failed');
+		try {
+			$raw = file_get_contents($this->url, false, $context);
+		} catch (FilesystemException $e) {
+			throw new RequestFailedException($e->getMessage(), $e);
 		}
 
 		return $raw;

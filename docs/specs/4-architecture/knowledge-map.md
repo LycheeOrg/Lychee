@@ -486,6 +486,7 @@ Key modules:
 - [Shop Implementation](../3-reference/shop-implementation.md) - E-commerce models, services, and API endpoints
 - [Timestamps Handling](../3-reference/timestamps-handling.md) - Timestamp handling conventions and best practices
 - [Localization](../3-reference/localization.md) - Translation system and file structure
+- [Settings Dependencies](../3-reference/settings_dependencies.md) - Graph behind `configs.required_keys`, with the reason for every edge and the relations the mechanism cannot express
 
 #### Coding Standards
 - [Coding Conventions](../3-reference/coding-conventions.md) - PHP and Vue3 conventions
