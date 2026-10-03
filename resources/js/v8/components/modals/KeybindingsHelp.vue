@@ -1,8 +1,14 @@
 <template>
-	<UModal v-model:open="open" :dismissible="true" :ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }">
-		<template #header>
-			<h1 class="text-center text-xl font-bold w-full">{{ $t("dialogs.keybindings.header") }}</h1>
-		</template>
+	<UModal
+		v-model:open="open"
+		:dismissible="true"
+		:ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }"
+		:close="{
+			color: 'neutral',
+			variant: 'soft',
+			class: 'rounded-full'
+		}"
+		:title="$t('dialogs.keybindings.header')">
 		<template #body>
 			<div class="flex flex-wrap gap-4 justify-center align-top">
 				<UTable
