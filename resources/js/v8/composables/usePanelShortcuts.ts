@@ -37,6 +37,14 @@ function withZoomShortcuts(shortcuts: ShortcutsConfig, controls: ZoomControls | 
 	return { ...withoutRatings, escape: controls.reset, "0": controls.reset };
 }
 
+/** Feature 081 (FR-081-09): `v` switches an open 360° photo between the sphere and the flat image. */
+function withSphereShortcut(shortcuts: ShortcutsConfig, isSphereCapable: boolean, toggle: () => void): ShortcutsConfig {
+	if (!isSphereCapable) {
+		return shortcuts;
+	}
+	return { ...shortcuts, v: toggle };
+}
+
 export function definePanelShortcuts(config: MaybeRefOrGetter<ShortcutsConfig>, options?: PanelShortcutsOptions) {
 	const togglableStore = useTogglablesStateStore();
 	const photoStore = usePhotoStore();
@@ -61,7 +69,13 @@ export function definePanelShortcuts(config: MaybeRefOrGetter<ShortcutsConfig>, 
 			return {};
 		}
 
-		const shortcuts = photoStore.isLoaded ? withZoomShortcuts(toValue(config), photoStore.zoom_controls, photoStore.is_zoomed) : toValue(config);
+		const shortcuts = photoStore.isLoaded
+			? withSphereShortcut(
+					withZoomShortcuts(toValue(config), photoStore.zoom_controls, photoStore.is_zoomed),
+					photoStore.isSphereCapable,
+					photoStore.toggleSphereFlat,
+				)
+			: toValue(config);
 		if (!hasSelection.value || photoStore.isLoaded) {
 			return shortcuts;
 		}

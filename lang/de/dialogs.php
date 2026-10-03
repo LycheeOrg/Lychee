@@ -59,6 +59,7 @@ return [
         'edit' => 'Informationen bearbeiten',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Gesichtsüberlagerung ein-/ausschalten',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Es wird verborgen bleiben.',
         'button_hidden' => 'Schaltfläche im Header wird ausgeblendet.',
     ],

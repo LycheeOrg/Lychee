@@ -58,6 +58,11 @@
 						v-html="sprintf($t('gallery.photo.edit.set_taken_at_info'), '<span class=\'text-warning-600\'>*</span>')"
 					></div>
 
+					<template v-if="!is_video">
+						<label for="is360" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.is_360") }}</label>
+						<UCheckbox id="is360" v-model="is_360" class="self-center" />
+					</template>
+
 					<label for="license" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_license") }}</label>
 					<USelectMenu id="license" v-model="license" class="w-72" :items="licenseOptions" label-key="label">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
@@ -107,6 +112,8 @@ const uploadDate = ref<Date | undefined>(undefined);
 const takenAtDate = ref<Date | undefined>(undefined);
 const tags = ref<string[]>([]);
 const is_taken_at_modified = ref<boolean>(false);
+const is_360 = ref<boolean>(false);
+const is_video = ref<boolean>(false);
 function selectedLabel<T>(option: SelectOption<T> | undefined): string {
 	// A single space (matching USelectMenu's own placeholder fallback) keeps the
 	// trigger's line box at its normal height; an empty string collapses it.
@@ -174,6 +181,8 @@ function load(photoToEdit: App.Http.Resources.Models.PhotoResource) {
 	}
 
 	license.value = SelectBuilders.buildLicense(photoToEdit.license);
+	is_360.value = photoToEdit.precomputed.is_360;
+	is_video.value = photoToEdit.precomputed.is_video;
 }
 
 function save() {
@@ -193,7 +202,13 @@ function save() {
 		license: license.value?.value ?? "none",
 		upload_date: dateToLocalInputValue(uploadDate.value) + uploadTz.value,
 		taken_at: is_taken_at_modified.value ? takenDate : null,
+		is_360: is_video.value ? undefined : is_360.value,
 	}).then((response) => {
+		// Feature 081: switch the open photo (and its thumb) to or from the sphere view right away.
+		if (photo.value?.id === response.data.id) {
+			photo.value.precomputed.is_360 = response.data.precomputed.is_360;
+			photo.value.panorama = response.data.panorama;
+		}
 		toast.add({ severity: "success", summary: "Success", life: 3000 });
 		// Clear cache of tags just in case we added any.
 		TagsService.clearCache();

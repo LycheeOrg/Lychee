@@ -36,6 +36,7 @@ use App\Rules\TitleRule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasUploadDate, HasDescription, HasLicense, HasTitle, HasTakenAt, HasFromAlbum
 {
@@ -47,6 +48,8 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 	use HasLicenseTrait;
 	use HasTakenAtDateTrait;
 	use HasFromAlbumTrait;
+
+	protected ?bool $is_360 = null;
 
 	/**
 	 * {@inheritDoc}
@@ -71,6 +74,8 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 			RequestAttribute::UPLOAD_DATE_ATTRIBUTE => ['required', 'date'],
 			RequestAttribute::TAKEN_DATE_ATTRIBUTE => ['nullable', 'date'],
 			RequestAttribute::FROM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
+			// Optional: the v7 frontend shares this endpoint and never sends it.
+			RequestAttribute::IS_360_ATTRIBUTE => ['sometimes', 'boolean'],
 		];
 	}
 
@@ -98,5 +103,21 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 		}
 
 		$this->from_album = $this->album_factory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::FROM_ID_ATTRIBUTE]);
+
+		if (array_key_exists(RequestAttribute::IS_360_ATTRIBUTE, $values)) {
+			$this->is_360 = self::toBoolean($values[RequestAttribute::IS_360_ATTRIBUTE]);
+		}
+
+		if ($this->is_360 === true && $this->photo->isVideo()) {
+			throw ValidationException::withMessages([RequestAttribute::IS_360_ATTRIBUTE => '360° videos are not supported.']);
+		}
+	}
+
+	/**
+	 * Feature 081: the manual 360° flag, null when the request does not set it.
+	 */
+	public function is360(): ?bool
+	{
+		return $this->is_360;
 	}
 }

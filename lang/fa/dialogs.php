@@ -59,6 +59,7 @@ return [
         'edit' => 'ویرایش اطلاعات',
         'show_hide_meta' => 'نمایش اطلاعات',
         'toggle_face_overlay' => 'تغییر نمایش همپوشانی چهره',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'ما آن را مخفی نگه می‌داریم.',
         'button_hidden' => 'ما دکمه را در هدر مخفی می‌کنیم.',
     ],

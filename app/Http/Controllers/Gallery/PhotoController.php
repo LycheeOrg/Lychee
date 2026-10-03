@@ -22,6 +22,7 @@ use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Factories\IdFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
@@ -199,6 +200,9 @@ class PhotoController extends Controller
 		// if the request takenAt is null, then we set the initial value back.
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
 
+		// Feature 081: the manual 360° flag, left untouched when not sent (v7).
+		$photo->is_360 = $request->is360() ?? $photo->is_360;
+
 		$photo->save();
 
 		// title/title_base/created_at/taken_at are all bucket-relevant
@@ -214,7 +218,9 @@ class PhotoController extends Controller
 		// row, so its own cached buckets/ratios/details need this separate,
 		// explicit signal whenever the sort date may have moved this photo
 		// into a different Timeline bucket.
-		PhotoSaved::dispatchIf($bucket_relevant_changed, [$photo->id], [$photo->id => $previous_dates]);
+		// is_360 is not bucket-relevant, but it is part of the cached
+		// listings (`is_360s`), which PhotoSaved also evicts.
+		PhotoSaved::dispatchIf($bucket_relevant_changed || $photo->wasChanged('is_360'), [$photo->id], [$photo->id => $previous_dates]);
 
 		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 
@@ -304,6 +310,10 @@ class PhotoController extends Controller
 	{
 		if (!$request->configs()->getValueAsBool('editor_enabled')) {
 			throw new ConfigurationException('support for rotation disabled by configuration');
+		}
+
+		if ($request->photo()->is_360 === true) {
+			throw new MediaFileUnsupportedException('360° photos cannot be rotated');
 		}
 
 		$rotate_strategy = new Rotate($request->photo(), $request->direction());

@@ -59,6 +59,7 @@ return [
         'edit' => 'Editer informasjonen',
         'show_hide_meta' => 'Vis informasjon',
         'toggle_face_overlay' => 'Slå av/på ansiktsoverlegg',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Vi vil holde det skjult.',
         'button_hidden' => 'Vi gjemmer knappen i øverste felt.',
     ],

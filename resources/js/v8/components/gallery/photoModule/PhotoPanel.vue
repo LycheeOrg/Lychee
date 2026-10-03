@@ -137,6 +137,11 @@ function scrollTo(event: WheelEvent) {
 		return;
 	}
 
+	// FR-081-10: the wheel zooms the sphere, it never changes photo.
+	if (photoStore.isSphereView && !is_slideshow_active.value) {
+		return;
+	}
+
 	const delta = Math.sign(event.deltaY);
 	if (delta > 0) {
 		emits("next");

@@ -43,6 +43,10 @@
 				<span v-else-if="photo.precomputed.is_raw" class="flex items-center gap-1 text-orange-500">
 					<span class="text-2xs font-bold">RAW</span>
 				</span>
+				<span v-else-if="photo.precomputed.is_360" class="flex items-center gap-1 text-sky-500">
+					<UIcon name="lucide:globe" class="text-2xs" />
+					<span class="hidden sm:inline">360°</span>
+				</span>
 				<span v-else class="flex items-center gap-1">
 					<UIcon name="lucide:image" class="text-2xs" />
 					<span class="hidden sm:inline">Photo</span>

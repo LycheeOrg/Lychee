@@ -34,7 +34,7 @@
 			<UTooltip v-if="isFaceRecognitionEnabled" :text="$t('people.scan_faces')">
 				<DockButton pi="lucide:smile" class="lg:hover:text-primary-500 text-white" @click="scanFaces" />
 			</UTooltip>
-			<template v-if="lycheeStore.can_rotate">
+			<template v-if="lycheeStore.can_rotate && !photoStore.photo.precomputed.is_360">
 				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
 				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
 			</template>

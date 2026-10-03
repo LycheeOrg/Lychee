@@ -33,6 +33,18 @@
 				/>
 			</UTooltip>
 			<div class="flex items-center gap-1.5" :class="is_slideshow_active ? 'hidden' : 'flex'">
+				<UTooltip
+					v-if="photoStore.isSphereCapable"
+					:text="photoStore.isSphereFlat ? $t('gallery.photo.actions.show_sphere') : $t('gallery.photo.actions.show_flat')"
+				>
+					<UButton
+						variant="ghost"
+						:icon="photoStore.isSphereFlat ? 'lucide:globe' : 'lucide:rectangle-horizontal'"
+						color="neutral"
+						:aria-label="photoStore.isSphereFlat ? $t('gallery.photo.actions.show_sphere') : $t('gallery.photo.actions.show_flat')"
+						@click="photoStore.toggleSphereFlat()"
+					/>
+				</UTooltip>
 				<UButton v-if="is_slideshow_enabled" variant="ghost" icon="lucide:play" color="neutral" @click="emits('toggleSlideShow')" />
 				<UButton
 					v-if="albumStore.rights?.can_access_original && photoStore.photo!.size_variants.original?.url"

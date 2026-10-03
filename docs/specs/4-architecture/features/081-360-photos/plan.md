@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
-_Status:_ Planned  
+_Status:_ Implemented (manual check pending)  
 _Last updated:_ 2026-10-03
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -39,6 +39,54 @@ Success signals:
 
 ## Implementation Drift Gate
 After the last task: map every FR/NFR to code and tests in a table under this section, rerun the quality gate (`vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, every test class listed in tasks, `make phpstan`), and record findings and lessons here.
+
+### Drift Gate Report – 2026-10-03 (pre-manual check)
+
+**Verification evidence**
+- Test classes, run one at a time, all green: `PanoramaDetectorTest` (13), `Photo360UploadTest` (5, exiftool and Imagick readers), `Photo360ResourcesTest` (5), `Photo360EditTest` (6), `Photo360RotateTest` (1), `Detect360Test` (3), and the regression classes `PhotoRatiosV3Test` (28), `PhotoDetailsV3Test` (17), `QuerySearchPhotosTest` (10), `QuerySearchPhotoDetailsTest` (9), `SearchV3ParityTest` (6), `PhotoEditTest` (5), `PhotoRotateTest` (3), `LangTest` (2).
+- `vendor/bin/php-cs-fixer fix`, `make phpstan`, `npm run format`, `npm run check`, eslint on every touched frontend file: clean. `vite build` emits `SphereView-*.js` as its own chunk (11.6 kB, 4.9 kB gzip).
+- `sphere.ts`: assertion script run with Node on a copy of the module (coverage, clamps, drag, zoom around a point, needed texture width, rotation matrix orthonormality, start source). Kept outside the repository.
+- Real app, scratch instance (SQLite, storage and uploads in the agent scratchpad, PHP built-in server with `variables_order=EGPCS`, `V8_ENABLED` and `STRUCT_OF_ARRAY_ENABLED` on), photos imported with `lychee:sync` (detection verified on import: full, partial with crop 800×400 / 100×100, flat), driven with Playwright + system Chromium (SwiftShader WebGL). 34 checks, all passing:
+  - S-081-10: sphere canvas instead of `<img>`, lazy chunk requested, drag changes the view without navigating or rotating the overlay, tap rotates the overlay, wheel zooms without navigating, arrow key navigates.
+  - S-081-11: `v` shows the flat image with the header button "Show as sphere", the button returns to the sphere; no toggle on a flat photo.
+  - S-081-12: `z` zooms and `z` again returns to the identical frame; `escape` while zoomed keeps the photo open.
+  - S-081-13: partial panorama fills the view at 75°, background above and below the crop once zoomed out.
+  - S-081-14: large sphere (4000×2000) starts from `medium2x` and fetches the original at 1280 px (needs about 4300 px).
+  - S-081-15: Chromium with WebGL disabled shows the flat image without the toggle.
+  - S-081-16: no canvas left after navigating to a flat photo.
+  - S-081-17: `360°` badge on every 360° grid thumb; list rows show `360°` in place of "Photo".
+  - S-081-18: no rotate buttons in the dock for a 360° photo, present for a flat one.
+  - S-081-07 (UI): checkbox in the edit dialog flags a flat photo, the open photo switches to the sphere immediately, persists after reload, unflagging returns to flat.
+  - FR-081-14 seam: a synthetic panorama that wraps continuously shows no line at yaw 180°.
+
+**FR → implementation**
+- FR-081-01: `lychee-org/php-exif` 1.4.0 (`composer.json` `^1.4.0`).
+- FR-081-02: `App\Metadata\PanoramaDetector`, `PanoramaInfo` — `PanoramaDetectorTest`.
+- FR-081-03: `Extractor`, `HydrateMetadata`, migration `2026_10_03_000005_add_360_columns_to_photos`, `Photo` casts — `Photo360UploadTest`.
+- FR-081-04: `EditPhotoRequest` (`is_360`, `is360()`), `PhotoController::update`, `PhotoEdit.vue`, `photo-service.ts` — `Photo360EditTest`, browser check.
+- FR-081-05: `App\Console\Commands\ImageProcessing\Detect360` — `Detect360Test`.
+- FR-081-06: `PanoramaResource`, `PreComputedPhotoData`, `PhotoResource`, `PhotoRatioResource`/`QueryPhotoRatios`, `PhotoDetailResource`/`QueryPhotoDetails`, `SearchPhotoResource`/`QuerySearchPhotos`, `adaptPhotoTile.ts` — `Photo360ResourcesTest`.
+- FR-081-07: `PhotoController::rotate` (`MediaFileUnsupportedException`), `Dock.vue` — `Photo360RotateTest`, browser check.
+- FR-081-08 to FR-081-16: `PhotoState.ts`, `PhotoBox.vue`, `PhotoPanel.vue`, `PhotoHeader.vue`, `usePanelShortcuts.ts`, `KeybindingsHelp.vue`, `SphereView.vue`, `useSphereViewer.ts`, `sphere.ts`, `sphereShader.ts`, `webgl.ts` — browser checks.
+- FR-081-17: `ThumbBadge.vue` (`text` prop), `PhotoThumb.vue`, `PhotoThumbVirtual.vue`, `PhotoListItem.vue`, `PhotoListItemVirtual.vue` — browser check.
+
+**Low-impact divergences, folded into the spec**
+- `PhotoState.imageViewMode` is shared with v7, so it stays flat; `isSphereCapable`/`isSphereView` getters drive the v8 `PhotoBox` (FR-081-08).
+- On the Struct-of-Arrays path the photo has no size variants or crop until its details are merged; the sphere waits for its first source and sets its initial view after the first upload (FR-081-14, FR-081-13).
+- Photos too small for medium variants start from the original, else the small variants (FR-081-14).
+- Drag speed is `fov ÷ viewport height` degrees per pixel rather than an exact point-under-pointer projection (FR-081-10).
+- A lost WebGL context draws nothing until restored (FR-081-15).
+- The list label replaces the generic "Photo" label (FR-081-17).
+- `wheelDelta()` moved from `usePanZoom.ts` to `utils/panZoom.ts` so both composables share it.
+
+**Outstanding (T-081-22)**
+- Real touch device (iOS Safari, Android Chrome): pinch, one-finger drag without swipe navigation, NFR-081-04 performance trace, context loss after a tab switch.
+- Reduced motion (NFR-081-05) and RTL (NFR-081-08).
+- Images served from S3 with a different origin need CORS for WebGL; without it the first texture fails and the photo falls back to flat (FR-081-15). Not exercised (no S3 in the scratch instance).
+
+**Lessons**
+- The login route allows 10 attempts per hour; browser scripts against a scratch instance should log in once and reuse the saved `storageState`.
+- A migration renamed after a test run leaves the old name in `database/database.sqlite`'s `migrations` table; update that row instead of wiping the test database.
 
 ## Increment Map
 
@@ -93,7 +141,7 @@ After the last task: map every FR/NFR to code and tests in a table under this se
 | S-081-18 | I5 / T-081-13, T-081-20 | Playwright |
 
 ## Analysis Gate
-Completed 2026-10-03 (agent self-review; owner to acknowledge with the plan).
+Completed 2026-10-03 (agent self-review; owner acknowledged by asking to implement).
 
 1. Specification completeness — pass: goals, FR-081-01 to 17, NFR-081-01 to 08, ASCII mock-ups present; all twelve answers folded into normative sections.
 2. Open questions — pass: no open entry in [open-questions.md](open-questions.md); ADR-081-01 records the renderer choice (Q-081-01).
