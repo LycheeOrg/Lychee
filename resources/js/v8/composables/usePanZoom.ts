@@ -15,6 +15,7 @@ import {
 	type Point,
 	type Rect,
 	type Size,
+	wheelDelta,
 } from "@/v8/utils/panZoom";
 
 /**
@@ -61,16 +62,6 @@ const CLICK_SUPPRESS_MS = 400;
 
 function prefersReducedMotion(): boolean {
 	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function wheelDelta(event: WheelEvent, containerHeight: number): number {
-	if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-		return event.deltaY * 16;
-	}
-	if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
-		return event.deltaY * containerHeight;
-	}
-	return event.deltaY;
 }
 
 export function usePanZoom(options: PanZoomOptions) {

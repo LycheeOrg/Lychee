@@ -1075,6 +1075,12 @@ declare namespace App {
 					is_review: boolean;
 					is_sensitive: boolean;
 				};
+				export type PanoramaResource = {
+					full_width: number;
+					full_height: number;
+					crop_left: number;
+					crop_top: number;
+				};
 				export type PersonResource = {
 					id: string;
 					name: string;
@@ -1129,6 +1135,7 @@ declare namespace App {
 					precomputed: App.Http.Resources.Models.Utils.PreComputedPhotoData;
 					timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 					palette: App.Http.Resources.Models.ColourPaletteResource | null;
+					panorama: App.Http.Resources.Models.PanoramaResource | null;
 					statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 					rating: App.Http.Resources.Models.PhotoRatingResource | null;
 					face_count: number;
@@ -1323,6 +1330,7 @@ declare namespace App {
 						is_video: boolean;
 						is_raw: boolean;
 						is_livephoto: boolean;
+						is_360: boolean;
 						is_camera_date: boolean;
 						has_exif: boolean;
 						has_location: boolean;
@@ -1878,6 +1886,7 @@ declare namespace App {
 					live_photo_checksums: (string | null)[];
 					live_photo_content_ids: (string | null)[];
 					live_photo_urls: (string | null)[];
+					panoramas: (App.Http.Resources.Models.PanoramaResource | null)[];
 					face_counts: number[];
 					palette: (App.Http.Resources.Models.ColourPaletteResource | null)[];
 					size_variants: (App.Http.Resources.Models.SizeVariantsResouce | null)[];
@@ -1906,6 +1915,7 @@ declare namespace App {
 					is_videos: boolean[];
 					is_raws: boolean[];
 					is_live_photos: boolean[];
+					is_360s: boolean[];
 					taken_ats: (string | null)[];
 					created_ats: string[];
 					taken_at_orig_tzs: (string | null)[];
@@ -1926,6 +1936,7 @@ declare namespace App {
 					is_videos: boolean[];
 					is_raws: boolean[];
 					is_live_photos: boolean[];
+					is_360s: boolean[];
 					taken_ats: (string | null)[];
 					created_ats: string[];
 					taken_at_orig_tzs: (string | null)[];

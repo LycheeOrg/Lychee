@@ -8,6 +8,7 @@ export type PhotoUpdateRequest = {
 	license: App.Enum.LicenseType;
 	upload_date: string;
 	taken_at: string | null;
+	is_360?: boolean;
 };
 
 export type PhotoMove = {

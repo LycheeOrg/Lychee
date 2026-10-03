@@ -4,6 +4,7 @@ import { useAlbumStore } from "./AlbumState";
 import { useTimelineStore } from "./TimelineState";
 import { useLycheeStateStore } from "./LycheeState";
 import { useSearchStore } from "./SearchState";
+import { isWebGL2Supported } from "@/v8/utils/webgl";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -13,6 +14,8 @@ export enum ImageViewMode {
 	LivePhotoMedium = "livephoto-medium",
 	LivePhotoOriginal = "livephoto-original",
 	Pdf = "pdf",
+	/** Feature 081: chosen by the v8 `PhotoBox` only, never returned by `imageViewMode`. */
+	Sphere = "sphere",
 }
 
 export type PhotoStore = ReturnType<typeof usePhotoStore>;
@@ -49,6 +52,9 @@ export const usePhotoStore = defineStore("photo-store", {
 		// Feature 078: written by the v8 `PhotoBox` only (mounted, zoomable photo).
 		is_zoomed: false,
 		zoom_controls: undefined as ZoomControls | undefined,
+		// Feature 081: photo switched to its flat view (FR-081-09), photo whose sphere failed (FR-081-15).
+		sphere_flat_photo_id: undefined as string | undefined,
+		sphere_failed_photo_id: undefined as string | undefined,
 	}),
 	actions: {
 		reset() {
@@ -57,6 +63,18 @@ export const usePhotoStore = defineStore("photo-store", {
 			this.transition = "slide-next";
 			this.is_zoomed = false;
 			this.zoom_controls = undefined;
+			this.sphere_flat_photo_id = undefined;
+			this.sphere_failed_photo_id = undefined;
+		},
+		/** FR-081-09: between the sphere and the flat image; the next photo opens as a sphere again. */
+		toggleSphereFlat() {
+			if (this.photo === undefined) {
+				return;
+			}
+			this.sphere_flat_photo_id = this.sphere_flat_photo_id === this.photo.id ? undefined : this.photo.id;
+		},
+		markSphereFailed(photo_id: string) {
+			this.sphere_failed_photo_id = photo_id;
 		},
 		setTransition(photo_id: string | undefined | null) {
 			if (photo_id === undefined || photo_id === null) {
@@ -170,6 +188,21 @@ export const usePhotoStore = defineStore("photo-store", {
 				return "";
 			}
 			return `width: ${this.photo?.size_variants.original.width}px; height: ${this.photo?.size_variants.original.height}px`;
+		},
+		/** FR-081-08: a 360° still photo the browser can draw as a sphere. */
+		isSphereCapable(): boolean {
+			const precomputed = this.photo?.precomputed;
+			if (precomputed === undefined || !precomputed.is_360 || precomputed.is_video || precomputed.is_raw || precomputed.is_livephoto) {
+				return false;
+			}
+			return this.sphere_failed_photo_id !== this.photo?.id && isWebGL2Supported();
+		},
+		isSphereFlat(): boolean {
+			return this.photo !== undefined && this.sphere_flat_photo_id === this.photo.id;
+		},
+		/** The v8 main lightbox shows the sphere (outside the slideshow). */
+		isSphereView(): boolean {
+			return this.isSphereCapable && !this.isSphereFlat;
 		},
 		imageViewMode(): ImageViewMode {
 			if (this.photo?.precomputed.is_video) {

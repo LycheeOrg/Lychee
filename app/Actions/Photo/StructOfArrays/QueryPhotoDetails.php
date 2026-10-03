@@ -12,6 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\MetricsAccess;
 use App\Http\Resources\Models\ColourPaletteResource;
+use App\Http\Resources\Models\PanoramaResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Http\Resources\V3\PhotoDetailResource;
@@ -211,6 +212,7 @@ class QueryPhotoDetails
 		$live_photo_checksums = [];
 		$live_photo_content_ids = [];
 		$live_photo_urls = [];
+		$panoramas = [];
 		$face_counts = [];
 		$palette = [];
 		$size_variants = [];
@@ -244,6 +246,7 @@ class QueryPhotoDetails
 			$live_photo_checksums[] = $photo->live_photo_checksum;
 			$live_photo_content_ids[] = $photo->live_photo_content_id;
 			$live_photo_urls[] = $photo->live_photo_url;
+			$panoramas[] = PanoramaResource::fromPhoto($photo);
 			$face_counts[] = $photo->face_count;
 
 			$palette[] = ColourPaletteResource::fromModel($photo->palette);
@@ -301,6 +304,7 @@ class QueryPhotoDetails
 			live_photo_checksums: $live_photo_checksums,
 			live_photo_content_ids: $live_photo_content_ids,
 			live_photo_urls: $live_photo_urls,
+			panoramas: $panoramas,
 			face_counts: $face_counts,
 			palette: $palette,
 			size_variants: $size_variants,

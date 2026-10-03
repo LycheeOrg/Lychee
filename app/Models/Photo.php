@@ -70,6 +70,11 @@ use function Safe\preg_match;
  * @property float|null            $longitude
  * @property float|null            $altitude
  * @property float|null            $img_direction
+ * @property bool|null             $is_360
+ * @property int|null              $pano_full_width
+ * @property int|null              $pano_full_height
+ * @property int|null              $pano_crop_left
+ * @property int|null              $pano_crop_top
  * @property string|null           $location
  * @property Carbon|null           $taken_at
  * @property string|null           $taken_at_orig_tz
@@ -176,6 +181,11 @@ class Photo extends Model implements HasUTCBasedTimes
 		'longitude' => 'float',
 		'altitude' => 'float',
 		'img_direction' => 'float',
+		'is_360' => 'boolean',
+		'pano_full_width' => 'integer',
+		'pano_full_height' => 'integer',
+		'pano_crop_left' => 'integer',
+		'pano_crop_top' => 'integer',
 		'rating_avg' => 'decimal:4',
 		'face_scan_status' => FaceScanStatus::class,
 		'face_count' => 'integer',

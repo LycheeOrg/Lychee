@@ -59,6 +59,7 @@ return [
         'edit' => 'Upravit informace',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Toggle face overlay',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Zůstane to skryté.',
         'button_hidden' => 'Skrýt tlačítko v hlavičče.',
     ],
