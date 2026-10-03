@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Metadata\Json;
 
+use App\Exceptions\Internal\RequestFailedException;
 use App\Metadata\Json\ExternalRequestFunctions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -40,7 +41,7 @@ class ExternalRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/testing.*environment/i'));
+			->with(\Mockery::pattern('/testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === $url && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('get')
 			->with($url)
@@ -92,7 +93,7 @@ class ExternalRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'));
+			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === $url && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('forget')
 			->with($url)
@@ -202,7 +203,7 @@ class ExternalRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/testing.*environment/i'));
+			->with(\Mockery::pattern('/testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === $url && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('forget')
 			->with($url)
@@ -242,7 +243,7 @@ class ExternalRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/testing.*environment/i'));
+			->with(\Mockery::pattern('/testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === $url && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('forget')
 			->with($url)
