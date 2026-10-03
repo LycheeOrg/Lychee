@@ -140,6 +140,7 @@ class RequestAttribute
 	 * Shop management attributes.
 	 */
 	public const BASKET_ID_ATTRIBUTE = 'basket_id';
+	public const ORDER_ID_ATTRIBUTE = 'order_id';
 	public const TRANSACTION_ID_ATTRIBUTE = 'transaction_id';
 	public const PRICES_ATTRIBUTE = 'prices';
 	public const PRINT_SIZES_ATTRIBUTE = 'print_sizes';

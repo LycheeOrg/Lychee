@@ -8,35 +8,40 @@
 
 namespace App\Http\Requests\Checkout;
 
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
 use App\Contracts\Http\Requests\HasBasket;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Order;
+use App\Rules\OmnipayProviderTypeRule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Server-to-server payment notification for an order.
  *
- * The order is fetched from the url by its id — completing an order replaces
- * its transaction id with the provider reference, and the gateway retries
- * notifications to the URL it was given at purchase time. The notification
- * body itself is verified cryptographically by the payment gateway driver in
- * CheckoutService::handlePaymentNotification().
+ * The order is fetched from the url by its id — the immutable key the
+ * notification URL was built with at purchase time, which the gateway
+ * retries deliveries to. The notification body itself is verified
+ * cryptographically by the provider's strategy in
+ * AsyncPaymentGateway::handleNotification().
  *
  * @property string $order_id
+ * @property string $provider
  *
  * @method merge(array $values)
  * @method route(string $key)
  */
 class NotifyRequest extends BaseApiRequest implements HasBasket
 {
-	public const ORDER_ID_ATTRIBUTE = 'order_id';
-
+	protected OmnipayProviderType $provider_type;
 	protected Order $order;
 
 	/**
 	 * Determine if the sender is authorized to make this request.
+	 *
+	 * Only providers that settle asynchronously receive notifications.
 	 *
 	 * CANCELLED is allowed on purpose: a buyer can abandon the browser flow
 	 * and still pay from the hosted checkout page that is already open — the
@@ -46,7 +51,8 @@ class NotifyRequest extends BaseApiRequest implements HasBasket
 	 */
 	public function authorize(): bool
 	{
-		return $this->order?->provider === OmnipayProviderType::PAYZUM &&
+		return $this->order?->provider === $this->provider_type &&
+			resolve(AsyncPaymentRegistry::class)->isAsync($this->provider_type) &&
 			in_array($this->order?->status, [
 				PaymentStatusType::PROCESSING,
 				PaymentStatusType::CANCELLED,
@@ -61,7 +67,8 @@ class NotifyRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			self::ORDER_ID_ATTRIBUTE => ['required', 'string'],
+			RequestAttribute::PROVIDER_ATTRIBUTE => ['required', new OmnipayProviderTypeRule(false)],
+			RequestAttribute::ORDER_ID_ATTRIBUTE => ['required', 'string'],
 		];
 	}
 
@@ -69,21 +76,28 @@ class NotifyRequest extends BaseApiRequest implements HasBasket
 	{
 		/** @disregard */
 		$this->merge([
-			self::ORDER_ID_ATTRIBUTE => $this->route(self::ORDER_ID_ATTRIBUTE),
+			RequestAttribute::PROVIDER_ATTRIBUTE => $this->route(RequestAttribute::PROVIDER_ATTRIBUTE),
+			RequestAttribute::ORDER_ID_ATTRIBUTE => $this->route(RequestAttribute::ORDER_ID_ATTRIBUTE),
 		]);
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$order = Order::find($values[self::ORDER_ID_ATTRIBUTE]);
+		$order = Order::find($values[RequestAttribute::ORDER_ID_ATTRIBUTE]);
 		if ($order === null) {
 			throw new ModelNotFoundException('Order not found.');
 		}
 		$this->order = $order;
+		$this->provider_type = OmnipayProviderType::from($values[RequestAttribute::PROVIDER_ATTRIBUTE]);
 	}
 
 	public function basket(): ?Order
 	{
 		return $this->order;
+	}
+
+	public function provider_type(): ?OmnipayProviderType
+	{
+		return $this->provider_type;
 	}
 }

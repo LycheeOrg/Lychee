@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Events\OrderCompleted;
@@ -31,10 +32,12 @@ class CheckoutController extends Controller
 	/**
 	 * Constructor.
 	 *
-	 * @param CheckoutService $checkout_service The checkout service
+	 * @param CheckoutService      $checkout_service The checkout service
+	 * @param AsyncPaymentRegistry $async_payments   Providers settling asynchronously
 	 */
 	public function __construct(
 		private CheckoutService $checkout_service,
+		private AsyncPaymentRegistry $async_payments,
 	) {
 	}
 
@@ -178,10 +181,12 @@ class CheckoutController extends Controller
 			);
 		}
 
-		if (!$success && $order->status === PaymentStatusType::PROCESSING) {
+		if (!$success && $order->status === PaymentStatusType::PROCESSING && $this->async_payments->isAsync($order->provider)) {
 			// Asynchronous providers (crypto): the payment is still confirming
 			// on-chain and the signed notification will complete the order.
-			// The checkout page renders the real order status.
+			// The checkout page renders the real order status. Synchronous
+			// providers never take this branch — for them a return without
+			// success is a failure.
 			return redirect()->route('shop.checkout.complete');
 		}
 
@@ -193,20 +198,27 @@ class CheckoutController extends Controller
 	}
 
 	/**
-	 * Handle a server-to-server payment notification (Payzum).
+	 * Handle a server-to-server payment notification from an asynchronous
+	 * provider.
 	 *
-	 * The notification signature is verified by the gateway driver before
-	 * any field is read; see CheckoutService::handlePaymentNotification().
+	 * The notification signature is verified by the provider's strategy
+	 * before any field is read; see AsyncPaymentGateway::handleNotification().
 	 *
-	 * @param NotifyRequest $request        The request carrying the signed notification
-	 * @param string        $transaction_id The order transaction id from the url
+	 * @param NotifyRequest $request  The request carrying the signed notification
+	 * @param string        $provider The payment provider from the url
+	 * @param string        $order_id The order id from the url
 	 *
 	 * @return Response Empty acknowledgement; the gateway stops retrying on 2xx
 	 */
-	public function notify(NotifyRequest $request, string $transaction_id): Response
+	public function notify(NotifyRequest $request, string $provider, string $order_id): Response
 	{
+		$gateway = $this->async_payments->forProvider($request->provider_type());
+		if ($gateway === null) {
+			abort(404);
+		}
+
 		/** @disregard P1013 */
-		$order = $this->checkout_service->handlePaymentNotification($request->basket());
+		$order = $gateway->handleNotification($request->basket(), $request);
 
 		// wasChanged: fulfil once. A redelivered notification for an order that
 		// is already completed must not dispatch the event a second time.

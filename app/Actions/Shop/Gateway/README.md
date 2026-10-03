@@ -108,6 +108,36 @@ $response = $gateway->purchase($orderDetails);
 2. **Capture Failure**: `PaypalGateway::completePurchase()` → `CaptureFailedResponse`
    - Payment declined, insufficient funds, cancelled by user
 
+## Asynchronous Providers (strategy pattern)
+
+Card providers confirm while the buyer waits, so the browser return is enough
+to complete the order. Some providers settle **asynchronously** instead —
+crypto confirming on-chain (Payzum), bank transfers, etc. For those, the order
+is completed from a **signed server-to-server notification**, never from the
+browser return.
+
+That flow is modelled as a strategy
+([refactoring.guru/design-patterns/strategy](https://refactoring.guru/design-patterns/strategy)):
+
+- **`App\Contracts\Shop\AsyncPaymentGateway`** — the strategy interface:
+  purchase parameters (e.g. the notification URL), return-metadata collection,
+  the buyer's browser return, and the signed notification.
+- **`Async/PayzumAsyncGateway.php`** — the Payzum implementation. All
+  Payzum-specific logic (signature-verified notifications, amount
+  re-validation, on-chain status refresh) is centralized here.
+- **`Async/AsyncPaymentRegistry.php`** — maps providers to strategies and is
+  the single source of truth for "is this provider asynchronous?".
+
+`CheckoutService` and `CheckoutController` only talk to the registry, so they
+stay provider-agnostic. Shared settlement (`App\Actions\Shop\OrderSettlement`)
+marks an order paid **at most once** under a row lock, so a notification and a
+browser return racing each other can never double-fulfil.
+
+**To add a new asynchronous provider**: implement `AsyncPaymentGateway` and
+register the implementation in `AsyncPaymentRegistry`'s constructor. The
+notification route (`/Notify/{provider}/{order_id}`) and the checkout flow
+pick it up automatically.
+
 ## Adding New Payment Providers
 
 To add a new payment provider that requires custom integration:

@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Checkout;
 
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
 use App\Contracts\Http\Requests\HasBasket;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
@@ -42,7 +43,7 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 		// notification before the buyer's browser returns; that return is
 		// still legitimate and must be able to show the completed order.
 		$is_valid_status = $this->order?->status === PaymentStatusType::PROCESSING ||
-			($this->order?->status === PaymentStatusType::COMPLETED && $this->provider_type === OmnipayProviderType::PAYZUM);
+			($this->order?->status === PaymentStatusType::COMPLETED && resolve(AsyncPaymentRegistry::class)->isAsync($this->provider_type));
 
 		return $is_valid_status && $this->order?->provider === $this->provider_type && $this->provider_type !== null;
 	}
