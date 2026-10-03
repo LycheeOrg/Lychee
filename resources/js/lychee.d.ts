@@ -213,7 +213,6 @@ declare namespace App {
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 		export type TitleBucketMode = "date_prefix" | "alphabetical";
-		export type UpdateStatus = 0 | 1 | 2 | 3;
 		export type UserGroupRole = "member" | "admin";
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
 		export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
@@ -411,16 +410,6 @@ declare namespace App {
 					duplicates: number;
 					wrong_parent: number;
 					missing_parent: number;
-				};
-				export type UpdateCheckInfo = {
-					extra: string;
-					can_update: boolean;
-				};
-				export type UpdateInfo = {
-					info: string;
-					extra: string;
-					channel_name: App.Enum.VersionChannelType;
-					is_docker: boolean;
 				};
 			}
 			namespace Editable {

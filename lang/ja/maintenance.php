@@ -53,12 +53,6 @@ return [
         'description' => 'インストールの速度低下に気付いた場合、データベースに必要なインデックスがすべて揃っていないことが原因の可能性があります。',
         'button' => 'データベースを最適化',
     ],
-    'update' => [
-        'title' => '更新',
-        'check-button' => '更新を確認',
-        'update-button' => '更新',
-        'no-pending-updates' => '保留中の更新はありません',
-    ],
     'missing-palettes' => [
         'title' => 'Missing Palettes',
         'description' => 'Found %d missing palettes.',

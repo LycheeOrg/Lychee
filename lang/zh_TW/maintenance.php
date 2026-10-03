@@ -54,12 +54,6 @@ return [
         have all its needed index.',
         'button' => 'Optimize Database',
     ],
-    'update' => [
-        'title' => 'Updates',
-        'check-button' => 'Check for updates',
-        'update-button' => 'Update',
-        'no-pending-updates' => 'No pending update.',
-    ],
     'missing-palettes' => [
         'title' => 'Missing Palettes',
         'description' => 'Found %d missing palettes.',

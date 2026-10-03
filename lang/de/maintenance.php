@@ -52,12 +52,6 @@ return [
         'description' => 'Wenn die Performance Ihrer Installation nachlässt, könnte dies an fehlenden Datenbankindizes liegen.',
         'button' => 'Datenbank optimieren',
     ],
-    'update' => [
-        'title' => 'Updates',
-        'check-button' => 'Auf Updates prüfen',
-        'update-button' => 'Update',
-        'no-pending-updates' => 'Keine Updates verfügbar.',
-    ],
     'missing-palettes' => [
         'title' => 'Fehlende Paletten',
         'description' => '%d fehlende Paletten gefunden.',

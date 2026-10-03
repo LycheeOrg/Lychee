@@ -4,8 +4,6 @@ return [
 	'update' => [
 		// we need this in case the URL of the project changes
 		'git' => [
-			'commits' => 'https://api.github.com/repos/LycheeOrg/Lychee/commits',
-			'tags' => 'https://api.github.com/repos/LycheeOrg/Lychee/tags',
 			'compare' => 'https://api.github.com/repos/LycheeOrg/Lychee/compare',
 		],
 		'json' => 'https://lycheeorg.dev/update.json',

@@ -53,12 +53,6 @@ return [
         'description' => 'Pokud zaznamenáte zpomalení vaší instalace, může to být způsobeno tím, že vaše databáze nemá všechny potřebné indexy.',
         'button' => 'Optimalizovat databázi',
     ],
-    'update' => [
-        'title' => 'Aktualizace',
-        'check-button' => 'Zkontrolovat aktualizace',
-        'update-button' => 'Aktualizovat',
-        'no-pending-updates' => 'Žádné čekající aktualizace.',
-    ],
     'missing-palettes' => [
         'title' => 'Chybějící palety',
         'description' => 'Nalezeno %d chybějících palet.',

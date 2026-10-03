@@ -19,7 +19,7 @@ Open questions for [Feature 037](spec.md). Log every high- and medium-impact que
 **Opened:** 2026-10-03
 **Resolved:** 2026-10-03
 
-**Resolution:** **Option C** — on a miss in the commits list, `GitCommits` asks the GitHub compare API (`compare/<local>...master?per_page=1`) and uses `ahead_by` as the exact commits-behind count. A failed or 404 compare (e.g. local-only commits) means "unknown". The "More than 30 commits behind" text is dropped since the count is now exact. Tags mode keeps its current behaviour.
+**Resolution:** **Option C** — `GitCommits` always asks the GitHub compare API (operator follow-up 2026-10-03: no list scan first, the query is authoritative) (`compare/<local>...master?per_page=1`) and uses `ahead_by` as the exact commits-behind count. A failed or 404 compare (e.g. local-only commits) means "unknown". The "More than 30 commits behind" text is dropped since the count is now exact. Tags mode keeps its current behaviour.
 
 **Spec Impact:** Added FR-037-08, S-037-24 … S-037-26, config key `urls.update.git.compare`.
 

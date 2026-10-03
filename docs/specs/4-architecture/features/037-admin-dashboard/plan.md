@@ -179,13 +179,13 @@ Record any drift (scope change, unresolved failure, deferred test) in the plan's
    - _Trigger:_ bug report 2026-10-03 — `Admin/UpdateStatus` returned `has_update: true` with `current_version == latest_version == 7.10.0` while `/Version` returned both flags `false`. Root causes: (a) `CheckUpdate::getCode()` uses the git commit comparison on git installs while the payload shows `FileVersion` numbers; (b) the two endpoints use different gates (`update-check` feature flag vs `check_for_updates` config); (c) `countBehind()` counts a local SHA missing from the cached list as 30 behind.
    - _Preconditions:_ I1–I7 complete.
    - _Steps:_
-     - Remote: `CompareRequest` (`urls.update.git.compare`), `AbstractGitRemote` keeps `use_cache` and delegates misses to `countBehindNotFound()`, `GitCommits` overrides it with the compare API (`ahead_by`). `GitHubVersion` drops the "More than 30" text and exposes `getCountBehind()`.
+     - Remote (superseded by Feature 079, which removed the `GitRemote` hierarchy): `CompareRequest` (`urls.update.git.compare`), `AbstractGitRemote` keeps `use_cache`, `GitCommits` overrides `countBehind()` to always use the compare API (`ahead_by`); the list scan stays for tags mode. `GitHubVersion` drops the "More than 30" text and exposes `getCountBehind()`.
      - Application: `UpdateAvailability` DTO + `CheckUpdateAvailability` action (gate = `update-check` flag AND `check_for_updates`).
      - REST: `AdminUpdateStatusResource` → `enabled`, `is_new_release_available`, `is_git_update_available`, `commits_behind`, `current_version`, `latest_version`; `VersionResource` reads the same action.
      - UI: v7 + v8 `AdminDashboard.vue` banner picks the release or git message; new `admin-dashboard.update.git_update_available` key in 22 locales.
    - _Commands:_ `php artisan test --filter='GitRemoteTest|GitHubVersionTest|CheckUpdateAvailabilityTest|AdminUpdateStatusControllerTest|VersionTest'`, `make phpstan`, `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`.
    - _Exit:_ Scenarios S-037-19 … S-037-26 covered by green tests; quality gate clean.
-   - _Intent log:_ Operator pasted both endpoint payloads; analysis traced the three root causes above; operator chose Q-037-09 Option A and Q-037-10 Option C. `CheckUpdate` + `UpdateStatus` enum become unused by the admin endpoint; removal is left to operator approval (no unapproved deletions).
+   - _Intent log:_ Operator pasted both endpoint payloads; analysis traced the three root causes above; operator chose Q-037-09 Option A and Q-037-10 Option C, then asked to drop the list scan and always use the compare query on branch checkouts. `CheckUpdate` + `UpdateStatus` enum become unused by the admin endpoint; removal is left to operator approval (no unapproved deletions).
 
 ## Scenario Tracking
 

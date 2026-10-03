@@ -16,7 +16,6 @@
 	<div
 		class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4 w-full"
 	>
-		<MaintenanceUpdate />
 		<MaintenanceOptimize />
 		<MaintenanceDuplicateChecker />
 		<MaintenanceFlushCache />
@@ -58,7 +57,6 @@ import MaintenanceFixTree from "@/v7/components/maintenance/MaintenanceFixTree.v
 import MaintenanceDuplicateChecker from "@/v7/components/maintenance/MaintenanceDuplicateChecker.vue";
 import MaintenanceGenSizevariants from "@/v7/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/v7/components/maintenance/MaintenanceOptimize.vue";
-import MaintenanceUpdate from "@/v7/components/maintenance/MaintenanceUpdate.vue";
 import MaintenanceFlushCache from "@/v7/components/maintenance/MaintenanceFlushCache.vue";
 import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import StatisticsIntegrity from "@/v7/components/maintenance/StatisticsIntegrity.vue";

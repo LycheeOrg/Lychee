@@ -52,12 +52,6 @@ return [
         'description' => 'Si nota una lentitud en la instalación, puede deberse a que su base de datos no tiene todo el índice necesario.',
         'button' => 'Optimizar la base de datos',
     ],
-    'update' => [
-        'title' => 'Actualizaciones',
-        'check-button' => 'Buscar actualizaciones',
-        'update-button' => 'Actualizar',
-        'no-pending-updates' => 'No hay actualizaciones pendientes.',
-    ],
     'missing-palettes' => [
         'title' => 'Paletas faltantes',
         'description' => 'Se encontraron %d paletas faltantes.',

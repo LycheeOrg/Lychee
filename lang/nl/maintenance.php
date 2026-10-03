@@ -53,12 +53,6 @@ return [
         'description' => 'Als u vertragingen in uw installatie opmerkt, kan dit komen doordat uw database niet alle benodigde indexen heeft.',
         'button' => 'Optimaliseer database',
     ],
-    'update' => [
-        'title' => 'Updates',
-        'check-button' => 'Controleer op updates',
-        'update-button' => 'Bijwerken',
-        'no-pending-updates' => 'Geen updates in behandeling.',
-    ],
     'missing-palettes' => [
         'title' => 'Ontbrekende paletten',
         'description' => '%d ontbrekende paletten gevonden.',

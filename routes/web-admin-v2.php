@@ -21,5 +21,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/phpinfo', [Admin\DiagnosticsController::class, 'phpinfo']);
-Route::get('/Update', [Admin\UpdateController::class, 'view'])->name('update');
 

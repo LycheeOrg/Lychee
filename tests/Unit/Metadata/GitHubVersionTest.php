@@ -18,847 +18,196 @@
 
 namespace Tests\Unit\Metadata;
 
-use App\Facades\Helpers;
-use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\CompareRequest;
-use App\Metadata\Json\TagsRequest;
 use App\Metadata\Versions\GitHubVersion;
-use App\Metadata\Versions\Remote\GitCommits;
-use App\Metadata\Versions\Remote\GitTags;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use function Safe\file_get_contents;
+use function Safe\json_decode;
 use Tests\AbstractTestCase;
 
 class GitHubVersionTest extends AbstractTestCase
 {
+	private const SHA = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n";
+
 	protected function tearDown(): void
 	{
 		\Mockery::close();
 		parent::tearDown();
 	}
 
-	public function testHydrateWithNoGitDirectory(): void
+	public function testNoGitDirectory(): void
 	{
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		File::shouldReceive('isReadable')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		Log::shouldReceive('warning')
-			->once()
-			->with(\Mockery::pattern('/Could not read.*\.git\/HEAD/'));
+		File::shouldReceive('isReadable')->with(base_path('.git/HEAD'))->once()->andReturn(false);
+		Log::shouldReceive('warning')->once()->with(\Mockery::pattern('/Could not read.*\.git\/HEAD/'));
+		$this->expectNoCompare();
 
 		$version = new GitHubVersion();
-		$version->hydrate(false, true);
+		$version->hydrate();
 
 		$this->assertNull($version->local_branch);
 		$this->assertNull($version->local_head);
-	}
-
-	public function testHydrateWithGitCommitsMode(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertEquals('master', $version->local_branch);
-		$this->assertEquals('a1b2c3d', $version->local_head);
-	}
-
-	public function testHydrateWithGitCommitsModeAndRemote(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-			(object) ['sha' => 'b2c3d4e5f6g7h8i9j0k1'],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertEquals('master', $version->local_branch);
-		$this->assertEquals('a1b2c3d', $version->local_head);
-	}
-
-	public function testHydrateWithGitTagsMode(): void
-	{
-		$headContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($headContent);
-
-		$mockTags = \Mockery::mock(GitTags::class);
-		$this->app->instance(GitTags::class, $mockTags);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertNull($version->local_branch);
-		$this->assertEquals('a1b2c3d', $version->local_head);
-	}
-
-	public function testHydrateWithGitTagsModeAndRemote(): void
-	{
-		$headContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) [
-				'name' => 'v4.6.3',
-				'commit' => (object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-			],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($headContent);
-
-		$mockRequest = \Mockery::mock(TagsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(TagsRequest::class, $mockRequest);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertEquals('v4.6.3', $version->local_branch);
-		$this->assertEquals('a1b2c3d', $version->local_head);
-	}
-
-	public function testIsReleaseWithGitTags(): void
-	{
-		$headContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) [
-				'name' => 'v4.6.3',
-				'commit' => (object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-			],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($headContent);
-
-		$mockRequest = \Mockery::mock(TagsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(TagsRequest::class, $mockRequest);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertTrue($version->isRelease());
-	}
-
-	public function testIsReleaseWithGitCommits(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertFalse($version->isRelease());
-	}
-
-	public function testIsMasterBranchWithGitTags(): void
-	{
-		$headContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($headContent);
-
-		$mockTags = \Mockery::mock(GitTags::class);
-		$this->app->instance(GitTags::class, $mockTags);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertTrue($version->isMasterBranch());
-	}
-
-	public function testIsMasterBranchWithGitCommitsOnMaster(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertTrue($version->isMasterBranch());
-	}
-
-	public function testIsMasterBranchWithGitCommitsOnFeatureBranch(): void
-	{
-		$branchContent = "ref: refs/heads/feature-branch\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/feature-branch'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/feature-branch'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
+		$this->assertFalse($version->isDetached());
 		$this->assertFalse($version->isMasterBranch());
-	}
-
-	public function testIsUpToDateWhenBehindIsFalse(): void
-	{
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		File::shouldReceive('isReadable')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		Log::shouldReceive('warning')
-			->once();
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
 		$this->assertTrue($version->isUpToDate());
-	}
-
-	public function testIsUpToDateWhenBehindIsZero(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertTrue($version->isUpToDate());
-	}
-
-	public function testIsNotUpToDateWhenBehind(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) ['sha' => 'b2c3d4e5f6g7h8i9j0k1'],
-			(object) ['sha' => 'c3d4e5f6g7h8i9j0k1l2'],
-			(object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertFalse($version->isUpToDate());
-	}
-
-	public function testGetBehindTextWhenCouldNotCompare(): void
-	{
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		File::shouldReceive('isReadable')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(false);
-
-		Log::shouldReceive('warning')
-			->once();
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
 		$this->assertEquals('Could not compare.', $version->getBehindTest());
 	}
 
-	public function testGetBehindTextWhenUpToDate(): void
+	public function testMasterUpToDate(): void
 	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 hours ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
+		$this->onBranch('master', self::SHA);
+		$this->expectCompare((object) ['status' => 'identical', 'ahead_by' => 0, 'behind_by' => 0]);
 
 		$version = new GitHubVersion();
-		$version->hydrate(true, true);
+		$version->hydrate();
 
+		$this->assertEquals('master', $version->local_branch);
+		$this->assertEquals('a1b2c3d', $version->local_head);
+		$this->assertTrue($version->isMasterBranch());
+		$this->assertFalse($version->isDetached());
+		$this->assertSame(0, $version->getCountBehind());
+		$this->assertTrue($version->isUpToDate());
 		$this->assertEquals('Up to date (2 hours ago).', $version->getBehindTest());
 	}
 
-	public function testGetBehindTextWhenBehindByTwo(): void
+	public function testMasterBehind(): void
 	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = [
-			(object) ['sha' => 'b2c3d4e5f6g7h8i9j0k1'],
-			(object) ['sha' => 'c3d4e5f6g7h8i9j0k1l2'],
-			(object) ['sha' => 'a1b2c3d4e5f6g7h8i9j0'],
-		];
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('1 day ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
+		$this->onBranch('master', self::SHA);
+		// Read directly: the File facade is mocked.
+		$this->expectCompare(json_decode(file_get_contents(base_path('tests/Samples/compare.json'))));
 
 		$version = new GitHubVersion();
-		$version->hydrate(true, true);
+		$version->hydrate();
 
-		$this->assertEquals('2 commits behind b2c3d4e (1 day ago)', $version->getBehindTest());
-	}
-
-	public function testGetBehindTextWhenNotInListUsesCompare(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = array_fill(0, 30, (object) ['sha' => 'different']);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 weeks ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
-
-		$mockCompare = \Mockery::mock(CompareRequest::class);
-		$mockCompare->shouldReceive('get_json')
-			->with(true)
-			->once()
-			->andReturn((object) ['status' => 'ahead', 'ahead_by' => 42, 'behind_by' => 0]);
-		$this->app->bind(CompareRequest::class, fn () => $mockCompare);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertEquals('42 commits behind differe (2 weeks ago)', $version->getBehindTest());
 		$this->assertSame(42, $version->getCountBehind());
 		$this->assertFalse($version->isUpToDate());
+		$this->assertEquals('42 commits behind master (2 hours ago)', $version->getBehindTest());
 	}
 
-	public function testGetBehindTextWhenCompareFails(): void
+	public function testMasterCompareFails(): void
 	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-		$remoteData = array_fill(0, 30, (object) ['sha' => 'different']);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockRequest = \Mockery::mock(CommitsRequest::class);
-		$mockRequest->shouldReceive('get_json')
-			->with(true)
-			->andReturn($remoteData);
-		$mockRequest->shouldReceive('get_age_text')
-			->andReturn('2 weeks ago');
-
-		$this->app->instance(CommitsRequest::class, $mockRequest);
-
-		$mockCompare = \Mockery::mock(CompareRequest::class);
-		$mockCompare->shouldReceive('get_json')
-			->with(true)
-			->once()
-			->andReturn(null);
-		$this->app->bind(CompareRequest::class, fn () => $mockCompare);
+		$this->onBranch('master', self::SHA);
+		$this->expectCompare(null);
 
 		$version = new GitHubVersion();
-		$version->hydrate(true, true);
+		$version->hydrate();
 
-		$this->assertEquals('Could not compare.', $version->getBehindTest());
 		$this->assertFalse($version->getCountBehind());
+		$this->assertTrue($version->isUpToDate());
+		$this->assertEquals('Could not compare.', $version->getBehindTest());
+	}
+
+	public function testMasterCompareMalformed(): void
+	{
+		$this->onBranch('master', self::SHA);
+		$this->expectCompare((object) ['status' => 'ahead', 'ahead_by' => '3']);
+
+		$version = new GitHubVersion();
+		$version->hydrate();
+
+		$this->assertFalse($version->getCountBehind());
+	}
+
+	public function testCompareHonoursCacheFlag(): void
+	{
+		$this->onBranch('master', self::SHA);
+		$this->expectCompare((object) ['ahead_by' => 1], use_cache: false);
+
+		$version = new GitHubVersion();
+		$version->hydrate(with_remote: true, use_cache: false);
+
+		$this->assertSame(1, $version->getCountBehind());
+	}
+
+	public function testFeatureBranchDoesNotCompare(): void
+	{
+		$this->onBranch('feature/foo', self::SHA);
+		$this->expectNoCompare();
+
+		$version = new GitHubVersion();
+		$version->hydrate();
+
+		$this->assertEquals('feature/foo', $version->local_branch);
+		$this->assertEquals('a1b2c3d', $version->local_head);
+		$this->assertFalse($version->isMasterBranch());
+		$this->assertFalse($version->isDetached());
+		$this->assertEquals('Could not compare.', $version->getBehindTest());
+	}
+
+	public function testDetachedHeadDoesNotCompare(): void
+	{
+		File::shouldReceive('isReadable')->with(base_path('.git/HEAD'))->once()->andReturn(true);
+		File::shouldReceive('get')->with(base_path('.git/HEAD'))->once()->andReturn(self::SHA);
+		$this->expectNoCompare();
+
+		$version = new GitHubVersion();
+		$version->hydrate();
+
+		$this->assertNull($version->local_branch);
+		$this->assertEquals('a1b2c3d', $version->local_head);
+		$this->assertTrue($version->isDetached());
+		$this->assertFalse($version->isMasterBranch());
 		$this->assertTrue($version->isUpToDate());
 	}
 
-	public function testHasPermissionsWithGitCommitsAndFullPermissions(): void
+	public function testWithoutRemoteDoesNotCompare(): void
 	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		Helpers::shouldReceive('hasFullPermissions')
-			->with(base_path('.git'))
-			->once()
-			->andReturn(true);
-
-		Helpers::shouldReceive('hasPermissions')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
+		$this->onBranch('master', self::SHA);
+		$this->expectNoCompare();
 
 		$version = new GitHubVersion();
-		$version->hydrate(false, true);
+		$version->hydrate(with_remote: false);
 
-		$this->assertTrue($version->hasPermissions());
+		$this->assertEquals('master', $version->local_branch);
+		$this->assertEquals('a1b2c3d', $version->local_head);
+		$this->assertFalse($version->getCountBehind());
 	}
 
-	public function testHasPermissionsWithGitCommitsAndNoFullPermissions(): void
+	public function testUnreadableRefFile(): void
 	{
-		$branchContent = "ref: refs/heads/master\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		Helpers::shouldReceive('hasFullPermissions')
-			->with(base_path('.git'))
-			->once()
-			->andReturn(false);
+		$this->onBranch('master', null);
+		Log::shouldReceive('warning')->once()->with(\Mockery::pattern('/Could not read.*\.git\/refs\/heads\/master/'));
+		$this->expectNoCompare();
 
 		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertFalse($version->hasPermissions());
-	}
-
-	public function testHasPermissionsWithGitTags(): void
-	{
-		$headContent = "a1b2c3d4e5f6g7h8i9j0\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($headContent);
-
-		$mockTags = \Mockery::mock(GitTags::class);
-		$this->app->instance(GitTags::class, $mockTags);
-
-		Helpers::shouldReceive('hasFullPermissions')
-			->with(base_path('.git'))
-			->once()
-			->andReturn(true);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
-
-		$this->assertFalse($version->hasPermissions());
-	}
-
-	public function testHydrateWithNonReadableCommitFile(): void
-	{
-		$branchContent = "ref: refs/heads/master\n";
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
-
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
-
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(false);
-
-		File::shouldReceive('isReadable')
-			->with(base_path('.git/refs/heads/master'))
-			->once()
-			->andReturn(false);
-
-		Log::shouldReceive('warning')
-			->once()
-			->with(\Mockery::pattern('/Could not read.*\.git\/refs\/heads\/master/'));
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(false, true);
+		$version->hydrate();
 
 		$this->assertEquals('master', $version->local_branch);
 		$this->assertNull($version->local_head);
 	}
 
-	public function testHydrateRemoteDoesNotFetchOnFeatureBranch(): void
+	/**
+	 * Arrange .git/HEAD pointing to $branch, whose ref file holds $sha (null: unreadable).
+	 */
+	private function onBranch(string $branch, ?string $sha): void
 	{
-		$branchContent = "ref: refs/heads/feature-branch\n";
-		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
+		$ref = base_path('.git/refs/heads/' . $branch);
+		File::shouldReceive('isReadable')->with(base_path('.git/HEAD'))->once()->andReturn(true);
+		File::shouldReceive('get')->with(base_path('.git/HEAD'))->once()->andReturn('ref: refs/heads/' . $branch . "\n");
+		File::shouldReceive('isReadable')->with($ref)->once()->andReturn($sha !== null);
+		if ($sha !== null) {
+			File::shouldReceive('get')->with($ref)->once()->andReturn($sha);
+		}
+	}
 
-		File::shouldReceive('exists')
-			->with(base_path('.git/HEAD'))
-			->once()
-			->andReturn(true);
+	/**
+	 * Bind a CompareRequest mock for the local sha a1b2c3d answering with $json (null: request failed).
+	 */
+	private function expectCompare(mixed $json, bool $use_cache = true): void
+	{
+		$mock = \Mockery::mock(CompareRequest::class);
+		$mock->shouldReceive('get_json')->with($use_cache)->once()->andReturn($json);
+		$mock->shouldReceive('get_age_text')->andReturn('2 hours ago');
 
-		File::shouldReceive('get')
-			->with(base_path('.git/HEAD'))
-			->twice()
-			->andReturn($branchContent);
+		$this->app->bind(CompareRequest::class, function ($app, array $params) use ($mock) {
+			self::assertSame('a1b2c3d', $params['local_sha'] ?? null);
 
-		File::shouldReceive('exists')
-			->with(base_path('.git/refs/heads/feature-branch'))
-			->once()
-			->andReturn(true);
+			return $mock;
+		});
+	}
 
-		File::shouldReceive('get')
-			->with(base_path('.git/refs/heads/feature-branch'))
-			->once()
-			->andReturn($commitContent);
-
-		$mockCommits = \Mockery::mock(GitCommits::class);
-		$mockCommits->shouldNotReceive('fetchRemote');
-		$this->app->instance(GitCommits::class, $mockCommits);
-
-		$version = new GitHubVersion();
-		$version->hydrate(true, true);
-
-		$this->assertEquals('feature-branch', $version->local_branch);
+	private function expectNoCompare(): void
+	{
+		$this->app->bind(CompareRequest::class, fn () => self::fail('CompareRequest must not be resolved.'));
 	}
 }

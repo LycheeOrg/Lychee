@@ -286,7 +286,7 @@ _Last updated: 2026-10-03_
   - `php artisan test --filter=GitHubVersionTest` (red before T-037-32)
 
 - [x] T-037-32 – Implement `CompareRequest` + `GitCommits` miss handling (FR-037-08).  
-  _Intent:_ `config/urls.php` gains `update.git.compare`; `CompareRequest` builds `<compare>/<sha>...master?per_page=1`; `AbstractGitRemote` stores `use_cache` and delegates misses to `countBehindNotFound()`; `GitCommits` overrides it; `GitHubVersion::getBehindTest()` drops the 30 case and `getCountBehind()` is added.  
+  _Intent:_ `config/urls.php` gains `update.git.compare`; `CompareRequest` builds `<compare>/<sha>...master?per_page=1`; `AbstractGitRemote` stores `use_cache`; `GitCommits` overrides `countBehind()` to always use the compare API; `GitHubVersion::getBehindTest()` drops the 30 case and `getCountBehind()` is added.  
   _Verification commands:_
   - `php artisan test --filter=GitRemoteTest`
   - `php artisan test --filter=GitHubVersionTest`

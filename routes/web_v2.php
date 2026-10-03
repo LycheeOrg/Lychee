@@ -111,7 +111,7 @@ Route::get('/checkout/failed', VueController::class)->middleware(['migration:com
 Route::get('/checkout/cancelled', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.cancelled');
 Route::get('/checkout/{step?}', VueController::class)->middleware(['migration:complete']);
 
-Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
+Route::match(['get', 'post'], '/migrate', [Admin\MigrateController::class, 'migrate'])
 	->name('migrate')
 	->middleware(['migration:incomplete']);
 
