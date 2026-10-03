@@ -239,6 +239,34 @@ class CheckoutNotifyControllerTest extends BaseCheckoutControllerTest
 		Event::assertNotDispatched(OrderCompleted::class);
 	}
 
+	public function testAFailureSignalNeverDowngradesACompletedOrder(): void
+	{
+		// The failure transition is locked exactly like the settlement: a
+		// failed/expired signal racing a successful settlement must adopt
+		// the completed state instead of overwriting it.
+		$settlement = app(\App\Actions\Shop\OrderSettlement::class);
+
+		$this->postNotification($this->payload())->assertStatus(204);
+		$this->test_order->refresh();
+
+		$this->assertFalse($settlement->fail($this->test_order));
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::COMPLETED->value,
+		]);
+	}
+
+	public function testFailTransitionsAProcessingOrder(): void
+	{
+		$settlement = app(\App\Actions\Shop\OrderSettlement::class);
+
+		$this->assertTrue($settlement->fail($this->test_order));
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::FAILED->value,
+		]);
+	}
+
 	public function testFinalizeKeepsProcessingOrderPending(): void
 	{
 		// No session metadata: the return handler has nothing to poll and

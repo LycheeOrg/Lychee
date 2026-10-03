@@ -36,6 +36,43 @@ class OrderSettlement
 	 *
 	 * @return bool Whether THIS call completed the order
 	 */
+	/**
+	 * Mark an order as failed, only if it is still PROCESSING.
+	 *
+	 * Mirror of {@see settle()} for the failure transition: a failed or
+	 * expired signal racing a successful settlement must never downgrade an
+	 * order that another caller just completed. The row is locked and
+	 * re-read, and only a PROCESSING order takes the transition; any other
+	 * state is adopted as-is.
+	 *
+	 * @param Order $order The order to mark as failed
+	 *
+	 * @return bool Whether THIS call failed the order
+	 */
+	public function fail(Order $order): bool
+	{
+		return DB::transaction(function () use ($order): bool {
+			$fresh = Order::query()->whereKey($order->getKey())->lockForUpdate()->first();
+
+			if ($fresh === null || $fresh->status !== PaymentStatusType::PROCESSING) {
+				if ($fresh !== null) {
+					// Someone else moved it first (e.g. the settlement won the
+					// race); adopt their state without claiming the transition.
+					$order->refresh();
+				}
+
+				return false;
+			}
+
+			// Saved through the caller's instance, while this transaction
+			// holds the row lock — same convention as settle().
+			$order->status = PaymentStatusType::FAILED;
+			$order->save();
+
+			return true;
+		});
+	}
+
 	public function settle(Order $order, string $transaction_id): bool
 	{
 		return DB::transaction(function () use ($order, $transaction_id): bool {

@@ -146,8 +146,8 @@ class PayzumAsyncGateway implements AsyncPaymentGateway
 
 		if ($status === NotificationInterface::STATUS_FAILED) {
 			// The invoice expired or failed before full payment arrived.
-			$order->status = PaymentStatusType::FAILED;
-			$order->save();
+			// Locked transition: must never downgrade a concurrent settlement.
+			$this->settlement->fail($order);
 
 			return $order;
 		}
@@ -213,8 +213,9 @@ class PayzumAsyncGateway implements AsyncPaymentGateway
 			}
 
 			if ($response instanceof PayzumFetchTransactionResponse && ($response->isExpired() || $response->isCancelled())) {
-				$order->status = PaymentStatusType::FAILED;
-				$order->save();
+				// Locked transition: a notification settling the order at this
+				// exact moment must win over the stale poll result.
+				$this->settlement->fail($order);
 			}
 			// Still pending or confirming: leave the order in PROCESSING.
 		} catch (\Exception $e) {
