@@ -54,12 +54,6 @@ return [
         nie ma wszystkich potrzebnych indeksów.',
         'button' => 'Optymalizacja bazy danych',
     ],
-    'update' => [
-        'title' => 'Aktualizacje',
-        'check-button' => 'Sprawdź aktualizacje',
-        'update-button' => 'Aktualizacja',
-        'no-pending-updates' => 'Brak oczekujących aktualizacji.',
-    ],
     'missing-palettes' => [
         'title' => 'Missing Palettes',
         'description' => 'Found %d missing palettes.',

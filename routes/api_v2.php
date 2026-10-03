@@ -345,8 +345,6 @@ Route::post('/Settings::setJS', [Admin\SettingsController::class, 'setJS']);
 /**
  * MAINTENANCE.
  */
-Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
-Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
 Route::get('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'check']);
 Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do']);
 Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'check']);
@@ -395,9 +393,8 @@ Route::post('/Metrics::photo', [MetricsController::class, 'photo'])->withoutMidd
 Route::post('/Metrics::favourite', [MetricsController::class, 'favourite'])->withoutMiddleware(['content_type:json']);
 
 /**
- * UPDATE.
+ * VERSION.
  */
-// Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
 Route::get('/Version', [VersionController::class, 'get'])->withoutMiddleware(['gallery_password']);
 Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
 

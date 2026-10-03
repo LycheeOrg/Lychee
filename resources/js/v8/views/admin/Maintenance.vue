@@ -9,7 +9,6 @@
 		{{ $t("maintenance.description") }}
 	</div>
 	<div class="max-w-7xl mt-9 mx-auto flex flex-col divide-y divide-default w-full px-4 sm:px-6">
-		<MaintenanceUpdate />
 		<MaintenanceOptimize />
 		<MaintenanceFlushCache />
 		<MaintenanceGenSizevariants :sv="2" />
@@ -48,7 +47,6 @@ import MaintenanceFixJobs from "@/v8/components/maintenance/MaintenanceFixJobs.v
 import MaintenanceFixTree from "@/v8/components/maintenance/MaintenanceFixTree.vue";
 import MaintenanceGenSizevariants from "@/v8/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/v8/components/maintenance/MaintenanceOptimize.vue";
-import MaintenanceUpdate from "@/v8/components/maintenance/MaintenanceUpdate.vue";
 import MaintenanceFlushCache from "@/v8/components/maintenance/MaintenanceFlushCache.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import StatisticsIntegrity from "@/v8/components/maintenance/StatisticsIntegrity.vue";

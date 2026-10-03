@@ -10,7 +10,6 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const CAT = 'gestures';
-	public const PERCENT_RANGE = 'int:0:100';
 
 	public function getConfigs(): array
 	{

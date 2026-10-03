@@ -8,8 +8,6 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\HasVersion;
-use App\Contracts\Versions\VersionControl;
 use App\DTO\Version;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Metadata\Json\UpdateRequest;
@@ -25,7 +23,7 @@ use Illuminate\Support\Facades\Schema;
  * Up-to-date is checked against the release data in https://lycheeorg.dev/update.json
  * This part is done via the UpdateRequest class.
  */
-class FileVersion implements VersionControl, HasVersion
+class FileVersion
 {
 	public Version $version;
 	public ?Version $remote_version = null;
@@ -47,7 +45,7 @@ class FileVersion implements VersionControl, HasVersion
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Fetch the latest release version from the remote update feed.
 	 */
 	public function hydrate(bool $with_remote = true, bool $use_cache = true): void
 	{
@@ -62,7 +60,7 @@ class FileVersion implements VersionControl, HasVersion
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Version of the code (version.md).
 	 */
 	public function getVersion(): Version
 	{
@@ -70,7 +68,7 @@ class FileVersion implements VersionControl, HasVersion
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * True unless the remote feed announces a newer release.
 	 */
 	public function isUpToDate(): bool
 	{

@@ -6,8 +6,64 @@ Open questions for [Feature 037](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-037-10~~ | 037 | Medium | How `countBehind` treats a local SHA missing from the remote commits list | Resolved (Option C) | 2026-10-03 | 2026-10-03 |
+| ~~Q-037-09~~ | 037 | Medium | Update banner mixes commit-based `has_update` with file-based versions, and disagrees with `/Version` | Resolved (Option A) | 2026-10-03 | 2026-10-03 |
 
 ## Question Details
+
+### ~~Q-037-10~~: Local SHA Missing From the Remote Commits List ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** Medium
+**Status:** Resolved (Option C)
+**Opened:** 2026-10-03
+**Resolved:** 2026-10-03
+
+**Resolution:** **Option C** — `GitCommits` always asks the GitHub compare API (operator follow-up 2026-10-03: no list scan first, the query is authoritative) (`compare/<local>...master?per_page=1`) and uses `ahead_by` as the exact commits-behind count. A failed or 404 compare (e.g. local-only commits) means "unknown". The "More than 30 commits behind" text is dropped since the count is now exact. Tags mode keeps its current behaviour.
+
+**Spec Impact:** Added FR-037-08, S-037-24 … S-037-26, config key `urls.update.git.compare`.
+
+**Context:** `AbstractGitRemote::countBehind()` returns `count($data)` (30) when the local HEAD is not in the fetched list. Three situations produce that: (1) the cached list predates the local HEAD (stale cache, false positive), (2) the local master carries commits not on GitHub (ahead, false positive), (3) the install is really more than 30 commits behind (true positive, shown in Diagnostics as "More than 30 commits behind"). Q-037-09 Option A proposed returning `false` (unknown), which also silences case (3).
+
+**Option A (recommended) — Re-fetch once on a cache miss, keep "30+ behind":** when the SHA is not found and the list came from cache, fetch the list again without cache and recount. A miss after a fresh fetch still means "30+ commits behind".
+- Pros: fixes the stale-cache false positive; far-behind installs keep their git signal and Diagnostics text; no new API endpoint.
+- Cons: local-ahead master (case 2) still reads as behind; one extra GitHub call per stale cache miss (unauthenticated limit 60/h).
+
+**Option B — Treat a miss as unknown (`false`):** as first proposed in Q-037-09.
+- Pros: no false positives at all; trivial change.
+- Cons: far-behind installs lose the git signal (they mostly still get the release signal, since their `version.md` lags `update.json`); Diagnostics shows "Could not compare." instead of "More than 30 commits behind".
+
+**Option C — GitHub compare API:** call `compare/<local>...master` to get exact `behind_by`/`ahead_by`.
+- Pros: exact in every case, including ahead.
+- Cons: new remote request type, new cache entry, more code and tests; still rate-limited.
+
+---
+
+### ~~Q-037-09~~: Update Banner Source of Truth on Git Installs ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** Medium
+**Status:** Resolved (Option A)
+**Opened:** 2026-10-03
+**Resolved:** 2026-10-03
+
+**Resolution:** **Option A** — a shared update-availability action feeds both `/api/v2/Version` and `/api/v2/Admin/UpdateStatus`, reports release and git availability separately, and honours both the `check_for_updates` config and the `update-check` feature flag. The admin banner shows a version message for a release update and a commits-behind message for a git update. How a missing local SHA is counted is split out into Q-037-10.
+
+**Spec Impact:** Added FR-037-07, API-037-12/13, S-037-19 … S-037-23, UI-037-06/06a and the update-banner mock-up.
+
+**Context:** `GET /api/v2/Admin/UpdateStatus` builds `has_update`/`update_status` from `CheckUpdate::getCode()`, which on a git checkout compares the local HEAD against the cached GitHub commits list (`GitHubVersion`), while `current_version`/`latest_version` always come from `version.md` vs `update.json` (`FileVersion`). Observed: `has_update: true` with `current_version == latest_version == 7.10.0`, rendered as "A newer version is available (7.10.0 → 7.10.0)". The commit comparison reports "behind" whenever the local SHA is missing from the cached list (stale cache or local commits ahead).
+
+**Additional context (2026-10-03):** `GET /api/v2/Version` (`VersionResource`, used by the About modal) answers the same question with different logic: it exposes `is_new_release_available` (`FileVersion`) and `is_git_update_available` (`GitHubVersion`) as separate flags and only hydrates the remotes when the `check_for_updates` config is on, otherwise both flags read `false`. `Admin/UpdateStatus` ignores `check_for_updates`, is gated by the `update-check` feature flag (`UPDATE_CHECK_ENABLED`) instead, always hydrates, and merges both sources into one `has_update`. On the same instance the two endpoints returned contradictory answers (`has_update: true` vs both flags `false`).
+
+**Option A (recommended) — One shared update-availability service, two explicit signals:** extract the logic into a single action used by both endpoints. It reports release availability (`FileVersion`) and git availability (`GitHubVersion`) separately, plus the commits-behind text, and honours one gate (`check_for_updates` config and the `update-check` feature flag). `Admin/UpdateStatus` returns `is_new_release_available`, `is_git_update_available`, `current_version`, `latest_version`, `behind_text`; the banner shows "7.10.0 → 7.11.0" for a release and "N commits behind master" for git. `countBehind` returns `false` (unknown) when the local SHA is absent from the remote list, so stale caches or local commits no longer read as "behind".
+- Pros: both endpoints always agree; each message matches the data it shows; git users still learn about new commits.
+- Cons: touches two endpoints, the TS types, both v7/v8 dashboards and translations.
+
+**Option B — File-version only for the admin banner:** compute `has_update` from `FileVersion::isUpToDate()`; leave `/Version` as is.
+- Pros: smallest change; banner always matches the versions shown.
+- Cons: git installs are not told about new commits; the two endpoints keep separate gates and can still disagree on the git signal.
+
+---
 
 ### ~~Q-037-08: Partial-Admin Users — Dashboard Behaviour & Stats Visibility~~ ✅ RESOLVED
 

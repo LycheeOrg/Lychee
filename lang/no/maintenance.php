@@ -53,12 +53,6 @@ return [
         'description' => 'Hvis du merker at installasjonen er treg, kan det skyldes at databasen din ikke har all den nødvendige indeksen.',
         'button' => 'Optimaliser databasen',
     ],
-    'update' => [
-        'title' => 'Oppdateringer',
-        'check-button' => 'Se etter oppdateringer',
-        'update-button' => 'Oppdater',
-        'no-pending-updates' => 'Ingen ventende oppdateringer.',
-    ],
     'missing-palettes' => [
         'title' => 'Manglende paletter',
         'description' => 'Fant %d manglende paletter.',

@@ -21,20 +21,28 @@
 
 	<div class="admin-dashboard max-w-7xl mx-auto p-4">
 		<!-- Update Status (only for full admins) -->
-		<Panel v-if="rights?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4 border-none">
+		<Panel
+			v-if="
+				rights?.settings.can_edit && updateStatus?.enabled && (updateStatus.is_new_release_available || updateStatus.is_git_update_available)
+			"
+			class="mb-4 border-none"
+		>
 			<template #header>
 				<div class="flex items-center gap-2 font-bold text-primary-500">
 					<i class="pi pi-arrow-circle-up text-lg" />
 					<span>{{ $t("admin-dashboard.update.title") }}</span>
 				</div>
 			</template>
-			<p class="text-sm text-muted-color">
+			<p v-if="updateStatus.is_new_release_available" class="text-sm text-muted-color">
 				{{
 					$t("admin-dashboard.update.update_available", {
 						current: updateStatus.current_version ?? "?",
 						latest: updateStatus.latest_version ?? "?",
 					})
 				}}
+			</p>
+			<p v-else class="text-sm text-muted-color">
+				{{ $t("admin-dashboard.update.git_update_available", { count: updateStatus.commits_behind?.toString() ?? "?" }) }}
 			</p>
 		</Panel>
 

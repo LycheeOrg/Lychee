@@ -53,12 +53,6 @@ return [
         'description' => '如果您注意到安装运行变慢，可能是因为您的数据库缺少必要的索引。',
         'button' => '优化数据库',
     ],
-    'update' => [
-        'title' => '更新',
-        'check-button' => '检查更新',
-        'update-button' => '更新',
-        'no-pending-updates' => '没有待处理的更新。',
-    ],
     'missing-palettes' => [
         'title' => 'Missing Palettes',
         'description' => 'Found %d missing palettes.',

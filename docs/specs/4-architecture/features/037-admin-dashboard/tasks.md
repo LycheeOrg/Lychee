@@ -1,7 +1,7 @@
 # Feature 037 Tasks – Admin Dashboard & `/admin/` URL Reorganisation
 
 _Status: Draft_  
-_Last updated: 2026-04-22_
+_Last updated: 2026-10-03_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -276,6 +276,51 @@ _Last updated: 2026-04-22_
 - [x] T-037-30 – Move Feature 037 from Active → Completed in `docs/specs/4-architecture/roadmap.md`, update `_current-session.md` (NFR-037-05).  
   _Intent:_ Roadmap row migrates with completion date and a one-line summary of delivered scope. Session snapshot archives the feature.  
   _Verification commands:_ manual review.
+
+### I8 – Unified update availability (FR-037-07, FR-037-08)
+
+- [x] T-037-31 – Tests for compare-based commits-behind count (FR-037-08, S-037-24, S-037-25, S-037-26).  
+  _Intent:_ Add `tests/Samples/compare.json`. In `tests/Unit/GitRemoteTest.php`, a commits miss with a mocked `CompareRequest` returns `ahead_by` (0 and 42); a failed compare returns `false`; tags still return 30 on a miss. In `tests/Unit/Metadata/GitHubVersionTest.php`, replace the "More than 30" case with the compare-based text and add the "Could not compare." case.  
+  _Verification commands:_
+  - `php artisan test --filter=GitRemoteTest` (red before T-037-32)
+  - `php artisan test --filter=GitHubVersionTest` (red before T-037-32)
+
+- [x] T-037-32 – Implement `CompareRequest` + `GitCommits` miss handling (FR-037-08).  
+  _Intent:_ `config/urls.php` gains `update.git.compare`; `CompareRequest` builds `<compare>/<sha>...master?per_page=1`; `AbstractGitRemote` stores `use_cache`; `GitCommits` overrides `countBehind()` to always use the compare API; `GitHubVersion::getBehindTest()` drops the 30 case and `getCountBehind()` is added.  
+  _Verification commands:_
+  - `php artisan test --filter=GitRemoteTest`
+  - `php artisan test --filter=GitHubVersionTest`
+
+- [x] T-037-33 – Tests for `CheckUpdateAvailability` (FR-037-07, S-037-19, S-037-20, S-037-21, S-037-22).  
+  _Intent:_ `tests/Unit/Actions/InstallUpdate/CheckUpdateAvailabilityTest.php` with mocked `FileVersion` / `GitHubVersion`: feature off, config off, release only, git only, both.  
+  _Verification commands:_
+  - `php artisan test --filter=CheckUpdateAvailabilityTest` (red before T-037-34)
+
+- [x] T-037-34 – Implement `UpdateAvailability` DTO + `CheckUpdateAvailability` action (FR-037-07).  
+  _Verification commands:_
+  - `php artisan test --filter=CheckUpdateAvailabilityTest`
+
+- [x] T-037-35 – Feature tests for both endpoints (FR-037-07, S-037-21, S-037-22, S-037-23).  
+  _Intent:_ Update `tests/Feature_v2/Admin/AdminUpdateStatusControllerTest.php` to the new payload (disabled by feature, disabled by config, mocked availability). Extend `tests/Feature_v2/VersionTest.php` to assert the payload shape and the config-off branch.  
+  _Verification commands:_
+  - `php artisan test --filter=AdminUpdateStatusControllerTest` (red before T-037-36)
+  - `php artisan test --filter=VersionTest`
+
+- [x] T-037-36 – Rewire `AdminUpdateStatusResource`, its controller and `VersionResource` onto the action; regenerate TS types (FR-037-07, API-037-12, API-037-13).  
+  _Verification commands:_
+  - `php artisan test --filter=AdminUpdateStatusControllerTest`
+  - `php artisan test --filter=VersionTest`
+  - `php artisan typescript:transform`
+
+- [x] T-037-37 – Update banner in v7 + v8 `AdminDashboard.vue`, service type, and `admin-dashboard.update.git_update_available` in 22 locales (FR-037-07, UI-037-06, UI-037-06a, NFR-037-02).  
+  _Verification commands:_
+  - `npm run format`
+  - `npm run check`
+
+- [x] T-037-38 – Quality gate + knowledge map (FR-037-07, FR-037-08).  
+  _Verification commands:_
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
 
 ## Notes / TODOs
 
