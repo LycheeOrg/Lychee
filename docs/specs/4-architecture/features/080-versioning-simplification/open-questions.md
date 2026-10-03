@@ -1,19 +1,19 @@
-# Open Questions – Feature 079
+# Open Questions – Feature 080
 
-Open questions for [Feature 079](spec.md). Log every high- and medium-impact question here (table row + Question Details entry) before asking the user; see [open-questions-format.md](../../spec-guidelines/open-questions-format.md). Once answered, fold the outcome into [spec.md](spec.md) (and an ADR when architecturally significant), then mark the entry resolved.
+Open questions for [Feature 080](spec.md). Log every high- and medium-impact question here (table row + Question Details entry) before asking the user; see [open-questions-format.md](../../spec-guidelines/open-questions-format.md). Once answered, fold the outcome into [spec.md](spec.md) (and an ADR when architecturally significant), then mark the entry resolved.
 
 ## Active Questions
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| ~~Q-079-02~~ | 079 | Medium | Remove `Maintenance::update` (GET/POST + Maintenance card): what happens to the `/Update` link | Resolved (Option C) | 2026-10-03 | 2026-10-03 |
-| ~~Q-079-01~~ | 079 | Medium | Which simplifications to apply, including removing git tags mode | Resolved (items 1, 2, 3, 5) | 2026-10-03 | 2026-10-03 |
+| ~~Q-080-02~~ | 080 | Medium | Remove `Maintenance::update` (GET/POST + Maintenance card): what happens to the `/Update` link | Resolved (Option C) | 2026-10-03 | 2026-10-03 |
+| ~~Q-080-01~~ | 080 | Medium | Which simplifications to apply, including removing git tags mode | Resolved (items 1, 2, 3, 5) | 2026-10-03 | 2026-10-03 |
 
 ## Question Details
 
-### ~~Q-079-02~~: Removing `Maintenance::update` and the Fate of the `/Update` Link ✅ RESOLVED
+### ~~Q-080-02~~: Removing `Maintenance::update` and the Fate of the `/Update` Link ✅ RESOLVED
 
-**Feature:** 079 – Versioning Code Simplification
+**Feature:** 080 – Versioning Code Simplification
 **Priority:** Medium
 **Status:** Resolved (Option C)
 **Opened:** 2026-10-03
@@ -21,7 +21,7 @@ Open questions for [Feature 079](spec.md). Log every high- and medium-impact que
 
 **Resolution:** **Option C** — operator: "I want to remove the full update from online functionality" and "the migrate route stays". `/migrate` keeps its route, request and result view but only runs the database migration (no git pull, no composer).
 
-**Spec Impact:** FR-079-07 … FR-079-10, S-079-10 … S-079-14, removed-code table (online updater rows).
+**Spec Impact:** FR-080-07 … FR-080-10, S-080-10 … S-080-14, removed-code table (online updater rows).
 
 **Context:** `POST /api/v2/Maintenance::update` (`UpdateController::check()`) never hydrates `GitHubVersion` / `FileVersion` with remote data, so it always reports no update. The operator proposes removing `GET`/`POST /api/v2/Maintenance::update` and the Maintenance "Update" card (v7 + v8). The card's text (channel, branch/commit, behind count) already appears in Diagnostics, and update availability already appears in the admin dashboard banner (FR-037-07). But the card's "Update" button is the only UI link to `/Update` (`UpdateController::view()`: `BranchCheck` → `GitPull` → `ArtisanMigrate` → `ComposerCall`).
 
@@ -39,9 +39,9 @@ Open questions for [Feature 079](spec.md). Log every high- and medium-impact que
 
 ---
 
-### ~~Q-079-01~~: Scope of the Versioning Simplification ✅ RESOLVED
+### ~~Q-080-01~~: Scope of the Versioning Simplification ✅ RESOLVED
 
-**Feature:** 079 – Versioning Code Simplification
+**Feature:** 080 – Versioning Code Simplification
 **Priority:** Medium
 **Status:** Resolved (items 1, 2, 3, 5)
 **Opened:** 2026-10-03
@@ -49,6 +49,6 @@ Open questions for [Feature 079](spec.md). Log every high- and medium-impact que
 
 **Context:** After Feature 037 I8, the review proposed: (1) delete unused code, (2) drop the commits list, (3) drop tags mode, (4) rename `InstalledVersion::isRelease()`, (5) one git-info formatter, (6) lazy hydration. Item 3 removes a mode: installs on a detached tag lose the "N tags behind" text but keep the release signal from `FileVersion`.
 
-**Resolution:** Operator answer "Do 1235". Items 4 and 6 are non-goals. Lightweight follow-ons recorded directly in the spec: a detached HEAD is channel `tag` and shows `<version.md> (<sha>)` (FR-079-05/06); `BranchCheck` refuses online updates on a detached HEAD (FR-079-04), where `git pull` failed anyway.
+**Resolution:** Operator answer "Do 1235". Items 4 and 6 are non-goals. Lightweight follow-ons recorded directly in the spec: a detached HEAD is channel `tag` and shows `<version.md> (<sha>)` (FR-080-05/06); `BranchCheck` refuses online updates on a detached HEAD (FR-080-04), where `git pull` failed anyway.
 
-**Spec Impact:** FR-079-01 … FR-079-06, NFR-079-01/02, removed-code table.
+**Spec Impact:** FR-080-01 … FR-080-06, NFR-080-01/02, removed-code table.

@@ -50,6 +50,7 @@ return [
         'favourite_plural' => '%1$s 標示為最愛 %2$s',
         'download_plural' => '%1$s 已下載 %2$s',
         'shared_plural' => '%1$s 已分享 %2$s',
+        'truncated' => 'Older activity is not shown.',
         'ago' => [
             'days' => '%d 日前',
             'day' => '一日前',
