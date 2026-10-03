@@ -6,9 +6,10 @@
 		:close="{
 			color: 'neutral',
 			variant: 'soft',
-			class: 'rounded-full'
+			class: 'rounded-full',
 		}"
-		:title="$t('dialogs.keybindings.header')">
+		:title="$t('dialogs.keybindings.header')"
+	>
 		<template #body>
 			<div class="flex flex-wrap gap-4 justify-center align-top">
 				<UTable
