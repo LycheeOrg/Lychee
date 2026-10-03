@@ -18,6 +18,17 @@ export enum ImageViewMode {
 export type PhotoStore = ReturnType<typeof usePhotoStore>;
 
 /**
+ * Zoom functions of the mounted v8 `PhotoBox` (Feature 078, DO-078-05), used by the
+ * panel keyboard shortcuts. The zoom state itself stays in `PhotoBox`.
+ */
+export type ZoomControls = {
+	toggle: () => void;
+	zoomIn: () => void;
+	zoomOut: () => void;
+	reset: () => void;
+};
+
+/**
  * Darkened thumb background for the previous/next buttons. A neighbour synthesised from a
  * Struct-of-Arrays listing has no size variants until its details are merged: no background
  * then, otherwise `url('undefined')` requests `/undefined`.
@@ -35,12 +46,17 @@ export const usePhotoStore = defineStore("photo-store", {
 		photoId: undefined as string | undefined,
 		photo: undefined as App.Http.Resources.Models.PhotoResource | undefined,
 		transition: "slide-next" as "slide-next" | "slide-previous",
+		// Feature 078: written by the v8 `PhotoBox` only (mounted, zoomable photo).
+		is_zoomed: false,
+		zoom_controls: undefined as ZoomControls | undefined,
 	}),
 	actions: {
 		reset() {
 			this.photoId = undefined;
 			this.photo = undefined;
 			this.transition = "slide-next";
+			this.is_zoomed = false;
+			this.zoom_controls = undefined;
 		},
 		setTransition(photo_id: string | undefined | null) {
 			if (photo_id === undefined || photo_id === null) {

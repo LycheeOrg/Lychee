@@ -303,6 +303,7 @@ return [
         'title' => 'Appliquer les règles de renommage',
         'description' => 'Sélectionnez les règles de renommage à appliquer et configurez la portée.',
         'no_rules' => 'Aucune règle de renommage trouvée.',
+        'select_all' => 'Select all',
         'target' => 'Cible',
         'scope' => 'Portée',
         'photos' => 'Photos',

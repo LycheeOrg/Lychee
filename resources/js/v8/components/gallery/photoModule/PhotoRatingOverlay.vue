@@ -1,6 +1,6 @@
 <template>
 	<div
-		v-if="isRatingEnabled && !are_details_open"
+		v-if="isRatingEnabled && !are_details_open && !photoStore.is_zoomed"
 		:class="{
 			'group absolute bottom-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 z-20 sm:h-1/8 h-14': true,
 			'opacity-50 lg:opacity-20': isHoverMode && !isTouchDevice() && !isFullTransparency,

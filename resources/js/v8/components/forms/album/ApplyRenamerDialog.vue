@@ -12,24 +12,36 @@
 				<div v-else-if="rules.length === 0" class="py-4 text-sm text-muted">
 					{{ $t("dialogs.apply_renamer.no_rules") }}
 				</div>
-				<div v-else class="text-left space-y-2 max-h-60 overflow-y-auto">
-					<div v-for="rule in rules" :key="rule.id" class="p-2 rounded hover:bg-elevated">
-						<UCheckbox v-model="selected_rule_ids" :value="rule.id" class="w-full">
-							<template #label>
-								<div class="font-semibold text-sm">{{ rule.rule }}</div>
-								<div class="text-xs text-muted mt-1 space-y-0.5">
-									<div class="flex gap-2">
-										<span class="font-mono bg-elevated px-1.5 py-0.5 rounded">{{ rule.mode }}</span>
-										<span v-if="['first', 'all', 'regex', 'trim'].includes(rule.mode)">
-											<span class="text-error">"{{ rule.needle }}"</span>
-											<span class="mx-1">→</span>
-											<span class="text-success">"{{ rule.replacement }}"</span>
-										</span>
+				<div v-else class="text-left">
+					<UCheckbox
+						:model-value="allRulesState"
+						:label="$t('dialogs.apply_renamer.select_all')"
+						class="px-2 pb-2 mb-2 border-b border-default"
+						@update:model-value="toggleAllRules"
+					/>
+					<div class="space-y-2 max-h-60 overflow-y-auto">
+						<div v-for="rule in rules" :key="rule.id" class="p-2 rounded hover:bg-elevated">
+							<UCheckbox
+								:model-value="selected_rule_ids.includes(rule.id)"
+								class="w-full"
+								@update:model-value="(checked) => toggleRule(rule.id, checked === true)"
+							>
+								<template #label>
+									<div class="font-semibold text-sm">{{ rule.rule }}</div>
+									<div class="text-xs text-muted mt-1 space-y-0.5">
+										<div class="flex gap-2">
+											<span class="font-mono bg-elevated px-1.5 py-0.5 rounded">{{ rule.mode }}</span>
+											<span v-if="['first', 'all', 'regex', 'trim'].includes(rule.mode)">
+												<span class="text-error">"{{ rule.needle }}"</span>
+												<span class="mx-1">→</span>
+												<span class="text-success">"{{ rule.replacement }}"</span>
+											</span>
+										</div>
+										<div v-if="rule.description" class="text-muted/80">{{ rule.description }}</div>
 									</div>
-									<div v-if="rule.description" class="text-muted/80">{{ rule.description }}</div>
-								</div>
-							</template>
-						</UCheckbox>
+								</template>
+							</UCheckbox>
+						</div>
 					</div>
 				</div>
 
@@ -134,7 +146,7 @@
 	</UModal>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import RenamerService, { type PreviewRenameItem } from "@/services/renamer-service";
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -192,6 +204,25 @@ function loadRules() {
 		selected_rule_ids.value = rules.value.map((r) => r.id);
 		is_loading_rules.value = false;
 	});
+}
+
+/** Select-all state: checked when every rule is selected, indeterminate when only some are. */
+const allRulesState = computed(() => {
+	if (selected_rule_ids.value.length === 0) {
+		return false;
+	}
+	return selected_rule_ids.value.length === rules.value.length ? true : "indeterminate";
+});
+
+/** All selected → none; none or some selected → all. */
+function toggleAllRules() {
+	selected_rule_ids.value = selected_rule_ids.value.length === rules.value.length ? [] : rules.value.map((r) => r.id);
+}
+
+// UCheckbox is boolean outside a CheckboxGroup: each box reflects whether its rule is selected.
+function toggleRule(rule_id: number, checked: boolean) {
+	const others = selected_rule_ids.value.filter((id) => id !== rule_id);
+	selected_rule_ids.value = checked ? [...others, rule_id] : others;
 }
 
 function loadPreview() {

@@ -10,6 +10,7 @@
 							<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
 								<PhotoBox
 									:key="photoStore.photo.id"
+									:is-zoom-enabled="true"
 									@go-back="emits('goBack')"
 									@next="emits('next')"
 									@previous="emits('previous')"
@@ -32,7 +33,7 @@
 						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 						<PhotoRatingOverlay />
 						<Dock
-							v-if="canEditCurrentPhoto && !is_photo_edit_open"
+							v-if="canEditCurrentPhoto && !is_photo_edit_open && !photoStore.is_zoomed"
 							:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"

@@ -18,6 +18,7 @@ use App\Enum\FacePermissionMode;
 use App\Enum\FlowStrategy;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
+use App\Enum\PhotoClickAction;
 use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\PhotoThumbInfoType;
 use App\Enum\SmallLargeType;
@@ -141,6 +142,12 @@ class InitConfig extends Data
 	public bool $is_scroll_to_navigate_photos_enabled;
 	public bool $is_swipe_vertically_to_go_back_enabled;
 	public bool $disable_swipe_effect;
+	public PhotoClickAction $photo_click_action;
+	public bool $is_photo_minimap_enabled;
+	public bool $is_photo_minimap_enabled_mobile;
+	public int $photo_minimap_idle_opacity;
+	public int $photo_minimap_idle_opacity_mobile;
+	public int $photo_minimap_fade_delay;
 
 	// Rating settings
 	public bool $is_rating_show_avg_in_details_enabled;
@@ -296,6 +303,12 @@ class InitConfig extends Data
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');
 		$this->is_swipe_vertically_to_go_back_enabled = request()->configs()->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
 		$this->disable_swipe_effect = request()->configs()->getValueAsBool('disable_swipe_effect');
+		$this->photo_click_action = request()->configs()->getValueAsEnum('photo_click_action', PhotoClickAction::class);
+		$this->is_photo_minimap_enabled = request()->configs()->getValueAsBool('is_photo_minimap_enabled');
+		$this->is_photo_minimap_enabled_mobile = request()->configs()->getValueAsBool('is_photo_minimap_enabled_mobile');
+		$this->photo_minimap_idle_opacity = request()->configs()->getValueAsInt('photo_minimap_idle_opacity');
+		$this->photo_minimap_idle_opacity_mobile = request()->configs()->getValueAsInt('photo_minimap_idle_opacity_mobile');
+		$this->photo_minimap_fade_delay = request()->configs()->getValueAsInt('photo_minimap_fade_delay');
 
 		// Rating settings
 		$this->is_rating_show_avg_in_details_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_details');

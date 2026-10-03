@@ -302,6 +302,7 @@ return [
         'title' => 'Bruk omdøpingsregler',
         'description' => 'Velg omdøpingsreglene som skal brukes og konfigurer omfanget.',
         'no_rules' => 'Ingen omdøpingsregler funnet.',
+        'select_all' => 'Select all',
         'target' => 'Mål',
         'scope' => 'Omfang',
         'photos' => 'Bilder',
