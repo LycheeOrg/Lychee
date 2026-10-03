@@ -875,8 +875,9 @@ declare namespace App {
 				};
 				export type AdminUpdateStatusResource = {
 					enabled: boolean;
-					update_status: number | null;
-					has_update: boolean;
+					is_new_release_available: boolean;
+					is_git_update_available: boolean;
+					commits_behind: number | null;
 					current_version: string | null;
 					latest_version: string | null;
 				};

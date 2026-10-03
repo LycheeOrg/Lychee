@@ -6,6 +6,7 @@ return [
 		'git' => [
 			'commits' => 'https://api.github.com/repos/LycheeOrg/Lychee/commits',
 			'tags' => 'https://api.github.com/repos/LycheeOrg/Lychee/tags',
+			'compare' => 'https://api.github.com/repos/LycheeOrg/Lychee/compare',
 		],
 		'json' => 'https://lycheeorg.dev/update.json',
 		'changelogs' => 'https://raw.githubusercontent.com/LycheeOrg/LycheeOrg.github.io/refs/heads/master/src/content/docs/docs/getting-started/releases.md',

@@ -34,6 +34,7 @@ return [
     'update' => [
         'title' => 'Update Status',
         'update_available' => 'A newer version is available (current: :current, latest: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW Detection & Moderation',

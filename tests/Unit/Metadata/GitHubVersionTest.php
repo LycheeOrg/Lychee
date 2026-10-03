@@ -20,6 +20,7 @@ namespace Tests\Unit\Metadata;
 
 use App\Facades\Helpers;
 use App\Metadata\Json\CommitsRequest;
+use App\Metadata\Json\CompareRequest;
 use App\Metadata\Json\TagsRequest;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\Remote\GitCommits;
@@ -577,7 +578,7 @@ class GitHubVersionTest extends AbstractTestCase
 		$this->assertEquals('2 commits behind b2c3d4e (1 day ago)', $version->getBehindTest());
 	}
 
-	public function testGetBehindTextWhenBehindByThirty(): void
+	public function testGetBehindTextWhenNotInListUsesCompare(): void
 	{
 		$branchContent = "ref: refs/heads/master\n";
 		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
@@ -612,10 +613,69 @@ class GitHubVersionTest extends AbstractTestCase
 
 		$this->app->instance(CommitsRequest::class, $mockRequest);
 
+		$mockCompare = \Mockery::mock(CompareRequest::class);
+		$mockCompare->shouldReceive('get_json')
+			->with(true)
+			->once()
+			->andReturn((object) ['status' => 'ahead', 'ahead_by' => 42, 'behind_by' => 0]);
+		$this->app->bind(CompareRequest::class, fn () => $mockCompare);
+
 		$version = new GitHubVersion();
 		$version->hydrate(true, true);
 
-		$this->assertEquals('More than 30 commits behind (2 weeks ago).', $version->getBehindTest());
+		$this->assertEquals('42 commits behind differe (2 weeks ago)', $version->getBehindTest());
+		$this->assertSame(42, $version->getCountBehind());
+		$this->assertFalse($version->isUpToDate());
+	}
+
+	public function testGetBehindTextWhenCompareFails(): void
+	{
+		$branchContent = "ref: refs/heads/master\n";
+		$commitContent = "a1b2c3d4e5f6g7h8i9j0\n";
+		$remoteData = array_fill(0, 30, (object) ['sha' => 'different']);
+
+		File::shouldReceive('exists')
+			->with(base_path('.git/HEAD'))
+			->once()
+			->andReturn(true);
+
+		File::shouldReceive('get')
+			->with(base_path('.git/HEAD'))
+			->twice()
+			->andReturn($branchContent);
+
+		File::shouldReceive('exists')
+			->with(base_path('.git/refs/heads/master'))
+			->once()
+			->andReturn(true);
+
+		File::shouldReceive('get')
+			->with(base_path('.git/refs/heads/master'))
+			->once()
+			->andReturn($commitContent);
+
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
+		$mockRequest->shouldReceive('get_json')
+			->with(true)
+			->andReturn($remoteData);
+		$mockRequest->shouldReceive('get_age_text')
+			->andReturn('2 weeks ago');
+
+		$this->app->instance(CommitsRequest::class, $mockRequest);
+
+		$mockCompare = \Mockery::mock(CompareRequest::class);
+		$mockCompare->shouldReceive('get_json')
+			->with(true)
+			->once()
+			->andReturn(null);
+		$this->app->bind(CompareRequest::class, fn () => $mockCompare);
+
+		$version = new GitHubVersion();
+		$version->hydrate(true, true);
+
+		$this->assertEquals('Could not compare.', $version->getBehindTest());
+		$this->assertFalse($version->getCountBehind());
+		$this->assertTrue($version->isUpToDate());
 	}
 
 	public function testHasPermissionsWithGitCommitsAndFullPermissions(): void

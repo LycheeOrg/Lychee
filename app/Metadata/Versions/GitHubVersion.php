@@ -88,6 +88,14 @@ class GitHubVersion implements VersionControl, HasIsRelease
 	}
 
 	/**
+	 * Number of commits (or tags) the local HEAD is behind the remote, false if unknown.
+	 */
+	public function getCountBehind(): int|false
+	{
+		return $this->count_behind;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getBehindTest(): string
@@ -96,9 +104,6 @@ class GitHubVersion implements VersionControl, HasIsRelease
 			// @codeCoverageIgnoreStart
 			false => 'Could not compare.',
 			0 => sprintf('Up to date (%s).', $this->remote->getAgeText() ?? '??'),
-			30 => sprintf('More than 30 %s behind (%s).',
-				$this->remote->getType(),
-				$this->remote->getAgeText() ?? '??'),
 			// @codeCoverageIgnoreEnd
 			default => sprintf('%d %s behind %s (%s)',
 				$this->count_behind,

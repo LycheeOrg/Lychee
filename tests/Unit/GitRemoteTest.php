@@ -18,6 +18,7 @@
 
 namespace Tests\Unit;
 
+use App\Metadata\Json\CompareRequest;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use Illuminate\Support\Facades\File;
@@ -34,8 +35,9 @@ class GitRemoteTest extends AbstractTestCase
 		// due to api call limitations, $data can be empty...
 		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
 
+		// Not in the list and the compare API is unreachable in tests: unknown.
 		$countBehind = $remote->countBehind($data, 'fail');
-		self::assertEquals(30, $countBehind);
+		self::assertFalse($countBehind);
 
 		$countBehind = $remote->countBehind([], 'fail');
 		self::assertFalse($countBehind);
@@ -44,6 +46,50 @@ class GitRemoteTest extends AbstractTestCase
 		self::assertEquals(1, $countBehind);
 
 		self::assertEquals('commits', $remote->getType());
+	}
+
+	public function testCommitsMissUsesCompareAheadBy(): void
+	{
+		$compare = json_decode(File::get(base_path('tests/Samples/compare.json')));
+		$this->bindCompare('a1b2c3d', $compare);
+
+		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
+		$remote = resolve(GitCommits::class);
+
+		self::assertEquals(42, $remote->countBehind($data, 'a1b2c3d'));
+	}
+
+	public function testCommitsMissWithIdenticalHeadIsUpToDate(): void
+	{
+		$compare = json_decode(File::get(base_path('tests/Samples/compare.json')));
+		$compare->status = 'identical';
+		$compare->ahead_by = 0;
+		$this->bindCompare('a1b2c3d', $compare);
+
+		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
+		$remote = resolve(GitCommits::class);
+
+		self::assertEquals(0, $remote->countBehind($data, 'a1b2c3d'));
+	}
+
+	public function testCommitsMissWithFailedCompareIsUnknown(): void
+	{
+		$this->bindCompare('a1b2c3d', null);
+
+		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
+		$remote = resolve(GitCommits::class);
+
+		self::assertFalse($remote->countBehind($data, 'a1b2c3d'));
+	}
+
+	public function testCommitsMissWithMalformedCompareIsUnknown(): void
+	{
+		$this->bindCompare('a1b2c3d', (object) ['status' => 'ahead']);
+
+		$data = json_decode(File::get(base_path('tests/Samples/commits.json')));
+		$remote = resolve(GitCommits::class);
+
+		self::assertFalse($remote->countBehind($data, 'a1b2c3d'));
 	}
 
 	public function testTags(): void
@@ -71,5 +117,20 @@ class GitRemoteTest extends AbstractTestCase
 		self::assertEquals('', $tagName);
 
 		self::assertEquals('tags', $remote->getType());
+	}
+
+	/**
+	 * Bind a CompareRequest mock that returns $json for the given local sha.
+	 */
+	private function bindCompare(string $expected_sha, mixed $json): void
+	{
+		$mock = \Mockery::mock(CompareRequest::class);
+		$mock->shouldReceive('get_json')->once()->andReturn($json);
+
+		$this->app->bind(CompareRequest::class, function ($app, array $params) use ($expected_sha, $mock) {
+			self::assertSame($expected_sha, $params['local_sha'] ?? null);
+
+			return $mock;
+		});
 	}
 }

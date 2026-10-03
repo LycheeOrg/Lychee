@@ -16,6 +16,7 @@ abstract class AbstractGitRemote implements GitRemote
 	protected ?string $head = null;
 	protected ?string $head_sha = null;
 	protected ?string $age = null;
+	protected bool $use_cache = true;
 
 	/**
 	 * Get the request object.
@@ -47,6 +48,7 @@ abstract class AbstractGitRemote implements GitRemote
 	 */
 	final public function fetchRemote(bool $use_cache): array
 	{
+		$this->use_cache = $use_cache;
 		$request = $this->getRequest();
 
 		// We fetch the commits
@@ -82,7 +84,21 @@ abstract class AbstractGitRemote implements GitRemote
 			$i++;
 		}
 
-		return $i;
+		return $this->countBehindNotFound($data, $needle);
+	}
+
+	/**
+	 * Number of elements behind when the needle is not in the fetched data.
+	 * By default we are at least as far behind as the data we fetched.
+	 *
+	 * @param object[] $data   fetched from github (not empty)
+	 * @param string   $needle
+	 *
+	 * @return int|false Number of elements behind or false if not available
+	 */
+	protected function countBehindNotFound(array $data, string $needle): int|false
+	{
+		return count($data);
 	}
 
 	/**

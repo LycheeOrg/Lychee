@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'وضعیت به‌روزرسانی',
         'update_available' => 'نسخهٔ جدیدتری در دسترس است (فعلی: :current، آخرین: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'تشخیص محتوای نامناسب و نظارت',

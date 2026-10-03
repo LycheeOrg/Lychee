@@ -3,13 +3,13 @@
 | Field | Value |
 |-------|-------|
 | Status | Ready for Planning |
-| Last updated | 2026-04-22 |
+| Last updated | 2026-10-03 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/037-admin-dashboard/plan.md` (TBD) |
 | Linked tasks | `docs/specs/4-architecture/features/037-admin-dashboard/tasks.md` (TBD) |
 | Roadmap entry | Active Features |
 
-> Guardrail: Open questions Q-037-01 … Q-037-08 are all resolved (see [open-questions.md](open-questions.md)). Resolutions are folded into the normative sections below. Per governance there is no `## Clarifications` section.
+> Guardrail: Open questions Q-037-01 … Q-037-10 are all resolved (see [open-questions.md](open-questions.md)). Resolutions are folded into the normative sections below. Per governance there is no `## Clarifications` section.
 
 ## Overview
 Administrators currently reach every admin screen through a long "Admin" submenu in the left drawer. The submenu has outgrown the drawer and offers no at-a-glance overview of system state. This feature introduces a single **Admin Dashboard** page at `/admin` that lists the admin tools and surfaces a cacheable statistics overview, moves the nine admin-only screens under a `/admin/<slug>` URL namespace (with a matching `resources/js/views/admin/` folder reorganisation), and adds an admin-category toggle that replaces the long submenu with a single "Admin" link when enabled (default ON).
@@ -43,6 +43,8 @@ Constitutional constraints honoured: spec-first cadence; greenfield interfaces (
 | FR-037-04 | The dashboard shall render a localised, keyboard-navigable tile grid for every admin tool the current user is authorised to see. Per-tile visibility uses the existing fine-grained capability flags: Settings → `settings.can_edit`; Users → `user_management.can_edit`; User Groups → `settings.can_acess_user_groups`; Purchasables → `is_mod_webshop_enabled && settings.can_edit`; Contact Messages → `is_contact_enabled && canSeeAdmin`; Webhooks → `is_mod_webhook_enabled`; Moderation → `canSeeAdmin`; Diagnostics → `settings.can_see_diagnostics`; Logs → `settings.can_see_logs`; Maintenance → `settings.can_edit`; Jobs → `settings.can_see_logs`; Clockwork → `settings.can_access_dev_tools && clockwork_url !== null`. A partial-admin who holds only one capability sees only the corresponding tile. | Each visible tile shows icon + label + deep link; clicking navigates to the corresponding route/URL. | Hidden tiles for tools the user lacks permission for. | Dashboard with zero tiles is unreachable — if a user reaches `/admin` without any tile-eligible capability the router denies access (aligned with `canSeeAdmin` === false). | No new events. | User request; Q-037-01/04/08. |
 | FR-037-05 | New config key `use_admin_dashboard` (bool, default `1`, `cat = 'config'`) shall toggle left-menu collapse. When enabled (default): the left-menu "Admin" submenu collapses to a single "Admin" entry → `/admin` for **every** user where `canSeeAdmin` is true (including partial-admins). When disabled: current nested "Admin" submenu renders unchanged for every user. | Setting change applies immediately (config reload) and reflects in the next menu render. | Config migration enforces boolean via `type_range` `BOOL`. | Invalid stored value falls back to default `1` (consistent with existing config handler). | No new events. | User request; Q-037-03/06/08. |
 | FR-037-06 | Nine Vue views move into `resources/js/views/admin/`: `AdminDashboard.vue` (new), `Settings.vue`, `Users.vue`, `UserGroups.vue`, `Purchasables.vue`, `ContactMessages.vue`, `Webhooks.vue`, `Moderation.vue`, `Maintenance.vue`, `Jobs.vue`. `Diagnostics.vue` stays at top level. | Vue router imports resolve; `npm run check` passes. | Build fails if an import path is stale. | — | — | User request; Q-037-04. |
+| FR-037-07 | A single update-availability action (`CheckUpdateAvailability`) shall feed both `GET /api/v2/Version` and `GET /api/v2/Admin/UpdateStatus`. It reports two independent signals: `is_new_release_available` (`FileVersion`: `version.md` older than `update.json`) and `is_git_update_available` (`GitHubVersion`: local master HEAD behind GitHub master), plus `commits_behind`. Remote data is fetched only when the `update-check` feature flag **and** the `check_for_updates` config are both on; otherwise both signals are `false` and the admin payload reports `enabled: false`. The admin banner shows the version message (`current_version` → `latest_version`) when a release is available, otherwise the commits-behind message when a git update is available, otherwise nothing. | Both endpoints return the same two signals for the same instance; banner text always matches the data it shows. | — | Remote fetch failure leaves the affected signal `false` (no banner); `commits_behind` is `null` when not compared. | No new events. | Bug report 2026-10-03 (`has_update: true` with `7.10.0 → 7.10.0`); Q-037-09. |
+| FR-037-08 | On a git master install, when the local HEAD is not in the fetched GitHub commits list, the commits-behind count shall come from the GitHub compare API `GET <urls.update.git.compare>/<local_sha>...master?per_page=1`, using `ahead_by`. The compare response is cached per local SHA for `update_check_every_days`. The count is therefore exact beyond 30 commits; Diagnostics shows `N commits behind <head> (<age>)` instead of "More than 30 commits behind". Tags (detached release) mode is unchanged. | Stale commits cache with an up-to-date HEAD → `ahead_by = 0` → up to date, no banner. Install 42 commits behind → `commits_behind = 42`. | Compare payload without an integer `ahead_by` → unknown. | Compare request fails or returns 404 (local-only commits) → unknown (`false`): no git banner, Diagnostics shows "Could not compare." | No new events. | Q-037-10. |
 
 ## Non-Functional Requirements
 
@@ -85,6 +87,18 @@ Admin Dashboard (default view):
 │  │   Jobs   │ │Diagnostic│ │   Logs   │ │Clockwork │                 │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘                 │
 └──────────────────────────────────────────────────────────────────────┘
+```
+
+Update banner (top of the dashboard, full admins only, FR-037-07):
+
+```
+ Release update (is_new_release_available)        Git update (is_git_update_available only)
+ ┌──────────────────────────────────────────┐     ┌──────────────────────────────────────────┐
+ │ ⊕ Update available                       │     │ ⊕ Update available                       │
+ │ A newer version is available             │     │ Your installation is 3 commits behind    │
+ │ (current: 7.10.0, latest: 7.11.0).       │     │ master.                                  │
+ └──────────────────────────────────────────┘     └──────────────────────────────────────────┘
+ Neither signal true, or enabled = false → no banner.
 ```
 
 Left-menu behaviour driven by `use_admin_dashboard`:
@@ -135,6 +149,14 @@ Left-menu behaviour driven by `use_admin_dashboard`:
 | S-037-16 | Partial-admin (only `settings.can_acess_user_groups`) with toggle ON: left menu shows the single "Admin" link; `/admin` renders dashboard with the User Groups tile only and no stats section. |
 | S-037-17 | Partial-admin calling `GET /api/v2/Admin/Stats` directly receives HTTP 403 regardless of the `force` query parameter. |
 | S-037-18 | Partial-admin (only `settings.can_see_logs`) with toggle OFF: legacy nested submenu still renders only the Logs entry (unchanged from today's behaviour). |
+| S-037-19 | Release install with `update.json` newer than `version.md` → `is_new_release_available=true`; banner shows `current → latest`. |
+| S-037-20 | Git install on master behind GitHub master, same `version.md` as `update.json` → `is_new_release_available=false`, `is_git_update_available=true`; banner shows the commits-behind message, never `X → X`. |
+| S-037-21 | `check_for_updates` off → `/Version` returns both flags `false`; `Admin/UpdateStatus` returns `enabled=false`; no banner. |
+| S-037-22 | `update-check` feature flag off → same as S-037-21 on both endpoints. |
+| S-037-23 | For the same instance and settings, `/Version` and `Admin/UpdateStatus` report identical `is_new_release_available` / `is_git_update_available`. |
+| S-037-24 | Cached commits list predates the local HEAD, which equals GitHub master → compare returns `ahead_by = 0` → `is_git_update_available=false`; no banner. |
+| S-037-25 | Local HEAD more than 30 commits behind → compare `ahead_by = 42` → `commits_behind = 42`; Diagnostics shows `42 commits behind …`. |
+| S-037-26 | Local master has commits unknown to GitHub → compare fails (404) → `commits_behind = null`, no git banner, Diagnostics "Could not compare." |
 
 ## Test Strategy
 - **Core / Application:** Unit tests for the stats aggregator service and its cache layer (cache hit vs. miss, partial-failure path). Base class: `AbstractTestCase`.
@@ -165,6 +187,8 @@ Left-menu behaviour driven by `use_admin_dashboard`:
 | API-037-09 | UI `GET /admin/moderation` | Renders `Moderation.vue` (moved). | — |
 | API-037-10 | UI `GET /admin/maintenance` | Renders `Maintenance.vue` (moved). | — |
 | API-037-11 | UI `GET /admin/jobs` | Renders `Jobs.vue` (moved). | — |
+| API-037-12 | REST `GET /api/v2/Admin/UpdateStatus` | Returns `AdminUpdateStatusResource`: `enabled:bool`, `is_new_release_available:bool`, `is_git_update_available:bool`, `commits_behind:int\|null`, `current_version:string\|null`, `latest_version:string\|null`. | Auth: `settings.can_edit`. Data from `CheckUpdateAvailability` (FR-037-07). |
+| API-037-13 | REST `GET /api/v2/Version` | Returns `VersionResource`: `version:string\|null` (null when `hide_version_number`), `is_new_release_available:bool`, `is_git_update_available:bool`. | Public. Data from `CheckUpdateAvailability` (FR-037-07). |
 
 ### CLI Commands / Flags
 None.
@@ -187,6 +211,8 @@ None planned; existing seeder data suffices.
 | UI-037-03  | Admin Dashboard — partial error | `errors[]` present; stats rendered where available; toast surfaces error list. Only reachable from UI-037-01. |
 | UI-037-04  | Left menu — collapsed (toggle ON) | Single "Admin" entry pointing to `/admin`, visible to any `canSeeAdmin` user (including partial-admins). |
 | UI-037-05  | Left menu — expanded (toggle OFF) | Legacy nested submenu preserved; entries still individually gated per today's flags. |
+| UI-037-06  | Update banner — release | `is_new_release_available`; message `admin-dashboard.update.update_available` with current/latest versions. |
+| UI-037-06a | Update banner — git | `is_git_update_available` and not `is_new_release_available`; message `admin-dashboard.update.git_update_available` with `commits_behind`. |
 
 ## Telemetry & Observability
 - `admin.stats.fetch` emitted on every endpoint call (cached or not). `cache_hit=true` on TTL-served responses.
@@ -235,6 +261,8 @@ routes:
   - { id: API-037-09,  method: GET, path: "/admin/moderation",         auth: admin }
   - { id: API-037-10,  method: GET, path: "/admin/maintenance",        auth: admin }
   - { id: API-037-11,  method: GET, path: "/admin/jobs",               auth: admin }
+  - { id: API-037-12,  method: GET, path: "/api/v2/Admin/UpdateStatus", auth: "settings.can_edit" }
+  - { id: API-037-13,  method: GET, path: "/api/v2/Version",            auth: public }
 
 config_keys:
   - key: use_admin_dashboard
@@ -260,6 +288,8 @@ ui_states:
   - { id: UI-037-03,  description: "Admin Dashboard partial-error" }
   - { id: UI-037-04,  description: "Left menu collapsed (toggle ON)" }
   - { id: UI-037-05,  description: "Left menu expanded (toggle OFF)" }
+  - { id: UI-037-06,  description: "Update banner, release update" }
+  - { id: UI-037-06a, description: "Update banner, git update" }
 
 capability_gating:
   tiles:
