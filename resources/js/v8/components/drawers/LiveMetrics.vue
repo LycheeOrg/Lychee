@@ -39,14 +39,23 @@
 								"
 							/>
 						</div>
-						<img v-if="item.src" :src="item.src" class="rounded w-full h-full object-cover" />
+						<Thumb
+							v-if="item.thumb !== undefined"
+							:album-id="item.thumb.albumId"
+							:photo-id="item.thumb.photoId"
+							type="thumb"
+							class="rounded w-full h-full object-cover"
+						/>
+						<img v-else-if="item.src" :src="item.src" class="rounded w-full h-full object-cover" />
 					</div>
 				</div>
+				<div v-if="isTruncated" class="text-xs text-muted pt-4">{{ $t("statistics.metrics.truncated") }}</div>
 			</div>
 		</template>
 	</USlideover>
 </template>
 <script setup lang="ts">
+import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import AlbumService from "@/services/album-service";
 import MetricsService from "@/services/metrics-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -74,9 +83,12 @@ type LiveMetrics = {
 	title: string;
 	count: number;
 	src: string | null;
+	// v3 rows: the thumbnail is fetched through the Asset endpoint instead of `src`.
+	thumb?: { albumId: string; photoId: string | null };
 };
 const data = ref<App.Http.Resources.Models.LiveMetricsResource[] | undefined>(undefined);
 const prettifiedData = ref<LiveMetrics[] | undefined>(undefined);
+const isTruncated = ref(false);
 
 function load() {
 	if (lycheeStore.is_se_preview_enabled) {
@@ -104,6 +116,17 @@ function load() {
 					};
 					return ret;
 				});
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+		return;
+	}
+
+	if (lycheeStore.is_struct_of_array_enabled) {
+		MetricsService.getV3()
+			.then((response) => {
+				prettifyV3(response.data);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -176,6 +199,46 @@ function prettifyData() {
 		} else {
 			dateMetrics[k] = LiveMetricsToPretty(item, 1);
 		}
+	});
+
+	prettifiedData.value = Object.values(dateMetrics).sort((a, b) => {
+		return b.date.getTime() - a.date.getTime();
+	});
+}
+
+// Each v3 row is already a group of `counts[i]` events within one minute:
+// merge the groups into the same relative-time buckets as the v2 path.
+function prettifyV3(soa: App.Http.Resources.V3.LiveMetricsListResource) {
+	isTruncated.value = soa.is_truncated;
+	const dateMetrics: Record<string, LiveMetrics> = {};
+
+	soa.actions.forEach((action, i) => {
+		const ago = dateToAgo(soa.created_ats[i]);
+		const id = soa.photo_ids[i] ?? soa.album_ids[i];
+		const k = action + ago + id;
+
+		if (k in dateMetrics) {
+			dateMetrics[k].count += soa.counts[i];
+			return;
+		}
+
+		dateMetrics[k] = {
+			ago: ago,
+			date: new Date(soa.created_ats[i]),
+			action: action,
+			title: soa.titles[i],
+			id: id,
+			count: soa.counts[i],
+			src: null,
+			thumb: { albumId: soa.album_ids[i], photoId: soa.thumb_photo_ids[i] },
+			link: {
+				name: "album",
+				params: {
+					albumId: soa.album_ids[i],
+					photoId: soa.photo_ids[i],
+				},
+			},
+		};
 	});
 
 	prettifiedData.value = Object.values(dateMetrics).sort((a, b) => {

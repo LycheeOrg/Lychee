@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 class GetMetrics
 {
+	public function __construct(
+		protected readonly CleanupMetrics $cleanup_metrics,
+	) {
+	}
+
 	public function get(): Collection
 	{
 		/** @var User $user */
@@ -30,6 +35,9 @@ class GetMetrics
 
 			// Unnecessary but safer as that avoids some issues in the front-end if the migration failed for some reasons...
 			->whereNotNull('live_metrics.album_id')
+
+			// Expired rows may still be in the table when the cleanup is deferred or disabled.
+			->where('live_metrics.created_at', '>', $this->cleanup_metrics->threshold())
 
 			// Owner check (if not admin)
 			->when(!$user->may_administrate, fn ($q_owner) => $q_owner

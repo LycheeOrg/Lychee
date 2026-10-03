@@ -54,6 +54,7 @@ return [
         'favourite_plural' => '%1$s са добавили в любими %2$s',
         'download_plural' => '%1$s са изтеглили %2$s',
         'shared_plural' => '%1$s са споделили %2$s',
+        'truncated' => 'Older activity is not shown.',
 
         'ago' => [
             'days' => '%d дни преди',

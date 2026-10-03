@@ -15,6 +15,10 @@ const MetricsService = {
 		return axios.get(`${Constants.getApiUrl()}Metrics`, { data: {} });
 	},
 
+	getV3(): Promise<AxiosResponse<App.Http.Resources.V3.LiveMetricsListResource>> {
+		return axios.get(`${Constants.getApiUrlV3()}Metrics`, { data: {} });
+	},
+
 	photo(photo_id: string, album_id: string | undefined): Promise<AxiosResponse<null> | null> {
 		if (!photo_id) {
 			// TODO: figure out why this sometimes happens...

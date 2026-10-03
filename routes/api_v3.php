@@ -105,3 +105,7 @@ Route::get('/Search/albums/rights', [Gallery\SearchListingController::class, 'al
 Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);
 Route::get('/Map/Photos', [Gallery\MapListingController::class, 'photos']);
 Route::get('/Map/tracks', [Gallery\MapListingController::class, 'tracks']);
+
+// Live metrics feed (Feature 079), coexisting with the v2 `/Metrics` route
+// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+Route::get('/Metrics', [Gallery\LiveMetricsListController::class, 'index'])->middleware(['support:se']);
