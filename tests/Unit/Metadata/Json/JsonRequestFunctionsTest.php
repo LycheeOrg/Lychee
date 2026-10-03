@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Metadata\Json;
 
+use App\Exceptions\Internal\RequestFailedException;
 use App\Metadata\Json\JsonRequestFunctions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -54,7 +55,7 @@ class JsonRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'));
+			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === 'https://example.com/test' && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('forget')
 			->with('https://example.com/test')
@@ -186,7 +187,7 @@ class JsonRequestFunctionsTest extends AbstractTestCase
 
 		Log::shouldReceive('error')
 			->once()
-			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'));
+			->with(\Mockery::pattern('/ExternalRequestFunctions::get_data.*testing.*environment/i'), \Mockery::on(fn (array $context): bool => $context['url'] === 'https://example.com/test' && $context['exception'] instanceof RequestFailedException));
 
 		Cache::shouldReceive('forget')
 			->with('https://example.com/test')

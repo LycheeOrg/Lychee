@@ -9,7 +9,7 @@
 			/>
 			<span class="flex gap-4">
 				<ResetField v-if="changed" @click="reset" />
-				<USwitch v-model="val" :id="props.config.key" class="text-sm translate-y-1" @update:model-value="update"></USwitch>
+				<USwitch v-model="val" :id="props.config.key" class="text-sm" @update:model-value="update"></USwitch>
 			</span>
 		</div>
 		<div

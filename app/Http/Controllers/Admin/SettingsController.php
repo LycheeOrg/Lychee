@@ -28,6 +28,7 @@ use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -202,6 +203,7 @@ class SettingsController extends Controller
 		$editable_configs = ConfigCategory::with([
 			'configs' => fn ($query) => $query
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
+				->when($request->configs()->getValueAsInt('owner_id') !== Auth::id(), fn ($q) => $q->where('key', '!=', 'license_key'))
 				->when(
 					config('features.enable-caching') === false,
 					fn ($q) => $q->where(fn ($q2) => $q2->where('cat', '!=', 'Mod Cache'))

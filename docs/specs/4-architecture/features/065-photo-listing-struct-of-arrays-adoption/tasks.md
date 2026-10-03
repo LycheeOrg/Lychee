@@ -308,6 +308,11 @@ _Last updated: 2026-09-06 (implementation pass — 39/53 tasks code-complete, de
   _Verification commands:_
   - `npm run check`
 
+- [x] T-065-55 – `PhotoGridVirtual.vue`'s root applies the Ken-Burns-on-hover class and CSS custom properties through the new shared `useKenBurnsHover()` composable, which `PhotoThumbPanelList.vue` also consumes (FR-065-09, FR-065-10 visual parity with `PhotoThumb.vue`).
+  _Verification commands:_
+  - `npm run format`
+  - `npm run check`
+
 ## Notes / TODOs
 
 - **Remaining work, honestly scoped:** T-065-50/51/52 (`api-design.md`/`knowledge-map.md`/`frontend-gallery.md` documentation updates) are not yet done. Every manual-verification task (T-065-07/13/17/25/27/34/39/42/47/48) is genuinely deferred — no dev server/database available in this implementation session. A lightbox-specific loading *indicator* (spinner) for the not-yet-resolved-details case is not yet wired (T-065-32's note) — a UI-polish gap, not a data-layer one. `date_format_photo_thumb` full-parity formatting (T-065-21's note) and `PhotoGridVirtual.vue`'s container-width calibration against `UContainer`'s real rendered padding (T-065-20's note) both need visual confirmation once a dev environment exists.
