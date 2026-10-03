@@ -65,11 +65,18 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 
 	/**
 	 * S-062-14 (FR-062-16): every visible smart album's cover is cached for the
-	 * viewer → one batched `album_user_thumbs` lookup, no `photos` query.
+	 * viewer → one batched `album_user_thumbs` lookup, and the only `photos`
+	 * queries are the primary-key validity checks of the date-dependent
+	 * `on_this_day` and `recent`.
 	 */
-	public function testSmartWithEveryCoverCachedRunsNoPhotosQuery(): void
+	public function testSmartWithEveryCoverCachedRunsOnlyDateDependentValidityQueries(): void
 	{
+		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
+		DB::table('photos')->where('id', '=', $this->photoUnsorted->id)->update(['taken_at' => '2020-10-03 12:00:00', 'created_at' => '2026-10-03 11:00:00']);
+
 		$ids = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json('ids');
+		self::assertContains(SmartAlbumType::ON_THIS_DAY->value, $ids);
+		self::assertContains(SmartAlbumType::RECENT->value, $ids);
 		foreach ($ids as $id) {
 			AlbumUserThumb::query()->updateOrCreate(
 				['user_id' => $this->userMayUpload1->id, 'album_id' => $id],
@@ -87,7 +94,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 		// AlbumFactory::getAllBuiltInSmartAlbums(false) still runs one cheap
 		// AccessPermission lookup per smart album type; only photos queries count.
 		$photo_queries = array_filter($log, fn (array $q) => preg_match('/\bphotos\b/i', $q['query']) === 1);
-		self::assertCount(0, $photo_queries, 'Cached covers must not trigger a photos query.');
+		self::assertCount(2, $photo_queries, 'Cached covers must not trigger a photos query beyond the on_this_day and recent validity checks.');
 		self::assertSame(array_fill(0, count($ids), $this->photoUnsorted->id), $json['cover_ids']);
 	}
 
@@ -115,6 +122,83 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 				->where('album_id', '=', SmartAlbumType::UNSORTED->value)
 				->value('photo_id'),
 		);
+	}
+
+	/**
+	 * S-062-35 (FR-062-16): the viewer's `on_this_day` row was seeded on a
+	 * previous day → it is replaced by a photo dated today.
+	 */
+	public function testSmartOnThisDayStaleCoverIsReplacedByTodaysPhoto(): void
+	{
+		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => '2020-10-03 12:00:00']);
+		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+
+		self::assertSame($this->photo1->id, $this->smartCover($json, SmartAlbumType::ON_THIS_DAY));
+		self::assertSame($this->photo1->id, $this->smartRow(SmartAlbumType::ON_THIS_DAY));
+	}
+
+	/**
+	 * S-062-36 (FR-062-16): the viewer's `on_this_day` row was seeded on a
+	 * previous day and no photo is dated today → no cover, row deleted.
+	 */
+	public function testSmartOnThisDayStaleCoverWithoutPhotoTodayIsDropped(): void
+	{
+		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
+		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+
+		self::assertNull($this->smartCover($json, SmartAlbumType::ON_THIS_DAY));
+		self::assertNull($this->smartRow(SmartAlbumType::ON_THIS_DAY));
+	}
+
+	/**
+	 * S-062-37 (FR-062-16): the viewer's `recent` row points at a photo that
+	 * has since aged past `recent_age` → it is replaced by a recent photo.
+	 */
+	public function testSmartRecentExpiredCoverIsReplacedByRecentPhoto(): void
+	{
+		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
+		DB::table('photos')->update(['created_at' => '2026-09-01 12:00:00']);
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['created_at' => '2026-10-03 11:00:00']);
+		$this->seedSmartRow(SmartAlbumType::RECENT, $this->photoUnsorted->id);
+
+		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
+
+		self::assertSame($this->photo1->id, $this->smartCover($json, SmartAlbumType::RECENT));
+		self::assertSame($this->photo1->id, $this->smartRow(SmartAlbumType::RECENT));
+	}
+
+	private function seedSmartRow(SmartAlbumType $album, string $photo_id): void
+	{
+		AlbumUserThumb::query()->updateOrCreate(
+			['user_id' => $this->userMayUpload1->id, 'album_id' => $album->value],
+			['photo_id' => $photo_id],
+		);
+	}
+
+	/**
+	 * @param array{ids:string[],cover_ids:array<int,string|null>} $json
+	 */
+	private function smartCover(array $json, SmartAlbumType $album): ?string
+	{
+		$index = array_search($album->value, $json['ids'], true);
+		self::assertNotFalse($index, $album->value . ' must be visible to a may-upload user.');
+
+		return $json['cover_ids'][$index];
+	}
+
+	private function smartRow(SmartAlbumType $album): ?string
+	{
+		return AlbumUserThumb::query()
+			->where('user_id', '=', $this->userMayUpload1->id)
+			->where('album_id', '=', $album->value)
+			->value('photo_id');
 	}
 
 	// ── tags (S-062-15) ────────────────────────────────────────────────

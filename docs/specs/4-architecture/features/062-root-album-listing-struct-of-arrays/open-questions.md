@@ -25,8 +25,44 @@ Open questions for [Feature 062](spec.md). Log every high- and medium-impact que
 | ~~Q-062-17~~ | 062 – Root Album Listing Struct-of-Arrays | Low | Does dropping `/children` from `/Albums/{album_id}` (and `/Albums/root`, `/persons`, `/pinned`) read as "fetch one album" when it actually returns a child/collection listing? | Resolved (Option A — keep the rename as specced, no change) | 2026-09-02 | 2026-09-02 |
 | ~~Q-062-18~~ | 062 – Root Album Listing Struct-of-Arrays | High | With the SoA flag on, the gallery still calls v2 `GET /Albums` (full `Top::get()`) only to read `config` + `rights` — new v3 `/Albums/root/config` vs. reuse `Timeline::init` vs. embed in `/Albums/root` vs. keep the v2 call | Resolved (A — `GET /api/v3/Albums/root/config`, spec FR-062-17, S-062-30..33) | 2026-09-29 | 2026-09-29 |
 | ~~Q-062-19~~ | 062 – Root Album Listing Struct-of-Arrays | High | `/Albums/smart` cover on an `album_user_thumbs` miss — resolve live and seed the cache vs. keep cache-only (FR-062-16), now that the SoA gallery no longer calls v2 `Top::get()` | Resolved (A — live resolution on a miss, spec FR-062-16, S-062-14, S-062-34) | 2026-09-30 | 2026-09-30 |
+| ~~Q-062-20~~ | 062 – Root Album Listing Struct-of-Arrays | Medium | `on_this_day` cover cached in `album_user_thumbs` never expires — the row seeded on day N keeps serving day N's photo on every later day. Validate on read vs. daily scheduled purge vs. date-stamp column vs. never cache | Resolved (A — validate the cached row on read, spec FR-062-16, S-062-35, S-062-36) | 2026-10-03 | 2026-10-03 |
 
 ## Question Details
+
+### ~~Q-062-20~~ · Daily expiry of the cached `on_this_day` cover ✅ RESOLVED
+
+**Status:** Resolved (Option A, 2026-10-03 — folded into spec FR-062-16, S-062-35, S-062-36)
+**Feature:** F-062 – Root Album Listing Struct-of-Arrays
+**Preferred option:** Option A – Validate the cached row on read
+
+**Question**
+`OnThisDayAlbum`'s membership depends on the current date (`Carbon::today()` month/day), but its cover is cached per viewer in `album_user_thumbs` (FR-062-16, `CachesAlbumUserThumb::getCachedOrLiveThumb()`). Nothing invalidates that row when the day changes: `RecomputeAlbumUserThumbsJob` only runs on photo writes, and `PurgeAlbumUserThumbs` only on access revocation. The cover seeded on day N is served on every later day, even though its photo is no longer in the album. Laravel's scheduler (`app/Console/Kernel.php`) runs only where `schedule:run` is wired: `Dockerfile-legacy` adds a cron entry, the main `Dockerfile` and `docker-compose.yaml` do not. How should the `on_this_day` cover expire?
+
+**SoA cover path.** The SoA root gallery gets covers in two steps: `GET /api/v3/Albums/smart` returns `cover_ids` (from the batched `album_user_thumbs` pluck, or `get_thumb()` on a miss), then each tile loads `GET /api/v3/Asset/on_this_day/{photo_id}/{size_variant}`. `GetPhotoAssetRequest::isPhotoOfAlbum()` lets that photo through if the viewer's `album_user_thumbs` row still points at it; otherwise it falls back to the live check `photos()->whereKey()->exists()`. On the client, `AlbumCategoryV3Service.getSmart()` goes through `axios-cache-interceptor` (in-memory, default 5-minute TTL, id `albums_v3_smart`), and `AlbumsState.baseSmartAlbums` keeps the adapted tiles until the next `loadSmartAlbumsV3()`. Neither endpoint is cached server-side. So the client can hold a `cover_id` for a while after the server's cached row has changed, and the row decides whether that old id still loads.
+
+#### Option A (recommended) – Validate the cached row on read
+- **Idea:** `BaseSmartAlbum` gets an overridable "is this cached cover still valid" hook (default: always valid). `OnThisDayAlbum` overrides it by checking the cached photo against its own smart condition (`photos()->whereKey($photo_id)->exists()`, a primary-key lookup through the same SQL as the live query, so timezone handling matches). A stale row is recomputed live and overwritten. `AlbumSmartController::smart()` routes `on_this_day` through `get_thumb()` instead of trusting the batched pluck.
+- **Spec impact:** FR-062-16 gains the validity hook and the `on_this_day` exception from the batched lookup; new scenario for a row seeded on a previous day.
+- **Pros:** correct on every install, with or without a scheduler or queue; self-heals at the first view of the day; one extra indexed query for one album; under SoA, the row is replaced in the same `/Albums/smart` request that sends the new `cover_id`, so the client never holds an id whose row has already gone (except a second open tab of the same viewer, until it reloads).
+- **Cons:** `/Albums/smart` always runs one `photos` query (the PK check) for `on_this_day`, so the "zero photos query when fully cached" guarantee gets an exception; `GetPhotoAssetRequest::isComputedAlbumThumb()` keeps accepting yesterday's row until the viewer next loads the listing (harmless, ADR-0010 keeps the row's access valid).
+
+#### Option B – Daily scheduled purge
+- **Idea:** New artisan command deleting `album_user_thumbs` rows where `album_id = 'on_this_day'`, registered `->daily()` in `Console\Kernel::schedule()`. The next read re-seeds lazily.
+- **Spec impact:** new FR for the command and schedule entry; no change to FR-062-16.
+- **Pros:** literally "reset every day"; tiny change; read path untouched, the zero-query guarantee holds.
+- **Cons:** does nothing where the scheduler is not running, which includes the main Docker image; under SoA, a tile still holding yesterday's `cover_id` (open tab, `baseSmartAlbums` not reloaded) loses its row at purge time, so its `/Asset/on_this_day/...` request falls to the live check and returns 403 (broken image) until the listing reloads; purge time follows the server timezone, not each viewer's day; rows stay stale if cron misses a run.
+
+#### Option C – Date-stamp column on `album_user_thumbs`
+- **Idea:** Add a `computed_on` date column, written by every seeding path; `on_this_day` rows whose date is not today count as a miss. The batched lookup filters on it.
+- **Spec impact:** schema change (migration), every writer of the table updated, FR-062-16 amended.
+- **Pros:** keeps the single batched query, so `/Albums/smart` keeps its zero-`photos`-query guarantee; generalises to any future date-dependent smart album; `isComputedAlbumThumb()` can ignore the date, so an old tile's asset still loads until the listing reloads.
+- **Cons:** persistence change touching every write site (`CachesAlbumUserThumb`, `RecomputeAlbumUserThumbsJob`) for one album; stale rows still accumulate until overwritten.
+
+#### Option D – Never cache the `on_this_day` cover
+- **Idea:** Treat `on_this_day` like `SA_random_thumbs`: always compute live, never write a row.
+- **Spec impact:** FR-062-16 exception for `on_this_day`.
+- **Pros:** simplest; always correct.
+- **Cons:** the live query filters on `MONTH()`/`DAY()` of `taken_at`/`created_at`, which no index serves, so every `/Albums/smart` call that misses the client cache (each page load, or after 5 minutes) scans the viewer's visible photos; asset requests also always take the live check.
 
 ### Q-062-19 · Smart-album cover on a cache miss
 

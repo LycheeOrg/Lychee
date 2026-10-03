@@ -514,17 +514,7 @@ class AlbumPolicy extends BasePolicy
 			return $user->may_upload;
 		}
 
-		if (
-			AccessPermission::query()
-			->select(APC::BASE_ALBUM_ID)
-			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
-			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
-					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
-			)
-			->where(APC::GRANTS_EDIT, '=', true)
-			->distinct()
-			->count() === $num_albums
-		) {
+		if ($this->countGrantedById($user, $album_ids, APC::GRANTS_EDIT) === $num_albums) {
 			return true;
 		}
 

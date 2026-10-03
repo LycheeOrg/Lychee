@@ -10,9 +10,12 @@ namespace Tests\Unit\Actions\User;
 
 use App\Actions\User\ProvisionLdapUser;
 use App\DTO\LdapUser;
+use App\Models\Configs;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use App\Services\Auth\LdapService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 
 /**
@@ -256,6 +259,9 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		$existingUser->may_administrate = true; // Was admin
 		$existingUser->save();
 
+		// Another admin remains, and owns the instance.
+		Configs::set('owner_id', $this->createAdmin('remaining-admin')->id);
+
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'demoted',
@@ -279,6 +285,34 @@ class ProvisionLdapUserTest extends AbstractTestCase
 
 		// Verify admin rights were removed
 		$this->assertFalse($user->may_administrate);
+	}
+
+	public function testOwnerKeepsAdminRightsWhenRemovedFromAdminGroup(): void
+	{
+		$owner = $this->createAdmin('owner');
+		$this->createAdmin('other-admin');
+		Configs::set('owner_id', $owner->id);
+		$this->mockGroupsWithoutAdmin();
+
+		$user = $this->action->do(new LdapUser(username: 'owner', user_dn: 'uid=owner,ou=users,dc=test,dc=local', email: null, display_name: null));
+
+		$this->assertTrue($user->may_administrate);
+		$this->assertTrue($owner->fresh()->may_administrate);
+	}
+
+	public function testLastAdminKeepsAdminRightsWhenRemovedFromAdminGroup(): void
+	{
+		User::query()->where('may_administrate', '=', true)->update(['may_administrate' => false]);
+		$last_admin = $this->createAdmin('last-admin');
+		// Isolate the last-admin rule from the owner rule: owner_id points at no user.
+		DB::table('configs')->where('key', '=', 'owner_id')->update(['value' => '0']);
+		resolve(ConfigManager::class)->invalidateCache();
+		$this->mockGroupsWithoutAdmin();
+
+		$user = $this->action->do(new LdapUser(username: 'last-admin', user_dn: 'uid=last-admin,ou=users,dc=test,dc=local', email: null, display_name: null));
+
+		$this->assertTrue($user->may_administrate);
+		$this->assertTrue($last_admin->fresh()->may_administrate);
 	}
 
 	public function testRegularUserGainsAdminRights(): void
@@ -378,5 +412,30 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		$this->assertNotSame('', $password1);
 		$this->assertStringStartsWith('$2y$', $password1); // BCrypt hash
 		$this->assertGreaterThan(50, strlen($password1)); // Hashed passwords are long
+	}
+
+	private function createAdmin(string $username): User
+	{
+		$user = new User();
+		$user->username = $username;
+		$user->email = $username . '@example.com';
+		$user->password = \Illuminate\Support\Facades\Hash::make('password');
+		$user->may_upload = true;
+		$user->may_edit_own_settings = true;
+		$user->may_administrate = true;
+		$user->save();
+
+		return $user;
+	}
+
+	private function mockGroupsWithoutAdmin(): void
+	{
+		$this->ldapService->expects($this->once())
+			->method('queryGroups')
+			->willReturn(['cn=users,ou=groups,dc=test,dc=local']);
+
+		$this->ldapService->expects($this->once())
+			->method('isUserInAdminGroup')
+			->willReturn(false);
 	}
 }

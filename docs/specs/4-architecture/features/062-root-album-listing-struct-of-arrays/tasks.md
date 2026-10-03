@@ -262,6 +262,18 @@ _Last updated: 2026-09-30_
 - [x] T-062-38 – `AlbumSmartController::smart()`: resolve cache misses through `BaseSmartAlbum::get_thumb()` (FR-062-16, S-062-34).
   _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
 
+- [x] T-062-39 – Feature tests first: `AlbumCategoryV3Test` `on_this_day` covers — a row pointing at a photo not dated today is replaced by today's photo, or deleted when none qualifies; a valid row costs exactly one `photos` query (FR-062-16, S-062-14, S-062-35, S-062-36).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-40).
+
+- [x] T-062-40 – `BaseSmartAlbum::isCachedThumbValid()` (default `true`), `OnThisDayAlbum` override, `CachesAlbumUserThumb::getCachedOrLiveThumb()` validity callback (overwrite or delete an invalid row), `AlbumSmartController::smart()` validates batched hits (FR-062-16, S-062-35, S-062-36).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
+- [x] T-062-41 – Feature test first: `AlbumCategoryV3Test` `recent` cover — a row pointing at a photo older than `recent_age` is replaced by a recent photo; the fully cached path runs exactly two `photos` queries (FR-062-16, S-062-14, S-062-37).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-42).
+
+- [x] T-062-42 – `RecentAlbum::isCachedThumbValid()` through the shared `BaseSmartAlbum::containsPhoto()` helper, also used by `OnThisDayAlbum` (FR-062-16, S-062-37).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
 ## Notes / TODOs
 
 - If `php artisan test` (unfiltered) is attempted, expect the same pre-existing ~600s process-timeout documented for prior features — always use `--filter` runs.
