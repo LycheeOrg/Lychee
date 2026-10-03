@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Actions\Album\Unlock;
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
@@ -34,11 +35,17 @@ class GetAlbumHeadRequest extends BaseApiRequest implements HasAbstractAlbum
 		// with a special error message ("Password required") such that the
 		// front-end shows the password dialog if a password is set, but
 		// does not show the dialog otherwise.
+		// Before that, we try the passwords already entered in this session
+		// (lazy unlock propagation).
 		if (
 			!$result &&
 			$this->album instanceof BaseAlbum &&
 			$this->album->public_permissions()?->password !== null
 		) {
+			if (resolve(Unlock::class)->tryRememberedPasswords($this->album)) {
+				return true;
+			}
+
 			throw new PasswordRequiredException();
 		}
 

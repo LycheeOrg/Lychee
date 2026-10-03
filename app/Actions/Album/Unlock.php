@@ -8,16 +8,22 @@
 
 namespace App\Actions\Album;
 
-use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\UnauthorizedException;
-use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class Unlock
 {
+	/** Encrypted passwords which successfully unlocked an album in this session. */
+	public const REMEMBERED_PASSWORDS_SESSION_KEY = 'unlock_remembered_passwords';
+
+	/** IDs of albums which none of the remembered passwords unlock. */
+	public const REJECTED_ALBUMS_SESSION_KEY = 'unlock_rejected_albums';
+
 	public function __construct(
 		private AlbumPolicy $album_policy,
 	) {
@@ -26,8 +32,10 @@ class Unlock
 	/**
 	 * Tries to unlock the given album with the given password.
 	 *
-	 * If the password is correct, then all albums which can be unlocked with
-	 * the same password are unlocked, too.
+	 * If the password is correct and unlock propagation is enabled, the
+	 * password is remembered so that other albums protected by the same
+	 * password are unlocked as they are opened
+	 * (see {@see self::tryRememberedPasswords()}).
 	 *
 	 * @param BaseAlbum $album
 	 * @param string    $password
@@ -48,8 +56,8 @@ class Unlock
 			if (Hash::check($password, $album_password)) {
 				$this->album_policy->unlock($album); // unlock the album
 
-				// propage the unlock to all albums with the same password
-				$this->propagate($password);
+				// remember the password to propagate the unlock lazily
+				$this->rememberPassword($password);
 
 				return;
 			}
@@ -60,32 +68,72 @@ class Unlock
 	}
 
 	/**
-	 * Provided a password, add all the albums that the password unlocks.
+	 * Tries to unlock the given album with the passwords remembered in
+	 * this session.
+	 *
+	 * Propagation is lazy: instead of checking every password-protected
+	 * album as soon as a password is entered, an album is only checked
+	 * when it is opened. An album which none of the remembered passwords
+	 * unlock is not checked again until a new password is remembered.
+	 *
+	 * @return bool true if the album has been unlocked
 	 */
-	private function propagate(#[\SensitiveParameter] string $password): void
+	public function tryRememberedPasswords(BaseAlbum $album): bool
 	{
-		// Only propagate if the option is enabled
-		$config_manager = app(ConfigManager::class);
-		if ($config_manager->getValueAsBool('enable_propagate_unlock_option') === false) {
+		$album_password = $album->public_permissions()?->password;
+		if (
+			!$this->isPropagationEnabled() ||
+			$album_password === null ||
+			$album_password === '' ||
+			$this->album_policy->isUnlocked($album) ||
+			in_array($album->id, Session::get(self::REJECTED_ALBUMS_SESSION_KEY, []), true)
+		) {
+			return false;
+		}
+
+		foreach ($this->getRememberedPasswords() as $password) {
+			if (Hash::check($password, $album_password)) {
+				$this->album_policy->unlock($album);
+
+				return true;
+			}
+		}
+
+		Session::push(self::REJECTED_ALBUMS_SESSION_KEY, $album->id);
+
+		return false;
+	}
+
+	/**
+	 * Remember the password (encrypted) for lazy propagation.
+	 *
+	 * Albums rejected so far are forgotten, as the new password might
+	 * unlock them.
+	 */
+	private function rememberPassword(#[\SensitiveParameter] string $password): void
+	{
+		if (!$this->isPropagationEnabled()) {
 			return;
 		}
 
-		// We add all the albums that the password unlocks so that the
-		// user is not repeatedly asked to enter the password as they
-		// browse through the hierarchy.  This should be safe as the
-		// list of such albums is not exposed to the user and is
-		// considered as the last access check criteria.
-		$albums = BaseAlbumImpl::query()
-			->select(['base_albums.id', 'base_albums.owner_id', APC::PASSWORD])
-			->join(APC::ACCESS_PERMISSIONS, 'base_album_id', '=', 'base_albums.id', 'inner')
-			->whereNull(APC::ACCESS_PERMISSIONS . '.user_id')
-			->whereNotNull(APC::PASSWORD)
-			->get();
-		/** @var BaseAlbumImpl $album */
-		foreach ($albums as $album) {
-			if (Hash::check($password, $album->password)) {
-				$this->album_policy->unlock($album);
-			}
-		}
+		/** @phpstan-ignore sensitiveParameter.propagation (the password is encrypted here) */
+		Session::push(self::REMEMBERED_PASSWORDS_SESSION_KEY, Crypt::encryptString($password));
+		Session::forget(self::REJECTED_ALBUMS_SESSION_KEY);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function getRememberedPasswords(): array
+	{
+		return array_map(
+			fn (string $encrypted) => Crypt::decryptString($encrypted),
+			Session::get(self::REMEMBERED_PASSWORDS_SESSION_KEY, [])
+		);
+	}
+
+	private function isPropagationEnabled(): bool
+	{
+		return app(ConfigManager::class)->getValueAsBool('enable_propagate_unlock_option');
 	}
 }
