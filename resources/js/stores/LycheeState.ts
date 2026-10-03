@@ -134,6 +134,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_scroll_to_navigate_photos_enabled: true,
 		is_swipe_vertically_to_go_back_enabled: true,
 		disable_swipe_effect: false,
+		photo_click_action: "overlay" as App.Enum.PhotoClickAction,
+		is_photo_minimap_enabled: true,
+		is_photo_minimap_enabled_mobile: true,
+		photo_minimap_idle_opacity: 25,
+		photo_minimap_idle_opacity_mobile: 25,
+		photo_minimap_fade_delay: 2,
 
 		// Rating settings
 		is_rating_show_avg_in_details_enabled: false,
@@ -278,6 +284,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
 					this.disable_swipe_effect = data.disable_swipe_effect;
+					this.photo_click_action = data.photo_click_action;
+					this.is_photo_minimap_enabled = data.is_photo_minimap_enabled;
+					this.is_photo_minimap_enabled_mobile = data.is_photo_minimap_enabled_mobile;
+					this.photo_minimap_idle_opacity = data.photo_minimap_idle_opacity;
+					this.photo_minimap_idle_opacity_mobile = data.photo_minimap_idle_opacity_mobile;
+					this.photo_minimap_fade_delay = data.photo_minimap_fade_delay;
 
 					this.is_rating_show_avg_in_details_enabled = data.is_rating_show_avg_in_details_enabled;
 					this.is_rating_show_avg_in_photo_view_enabled = data.is_rating_show_avg_in_photo_view_enabled;

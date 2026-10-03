@@ -179,6 +179,12 @@ class SettingsController extends Controller
 		'landing_meridian_explore_line_position',
 		'landing_meridian_contact_line_position',
 		'landing_login_position',
+		'photo_click_action',
+		'is_photo_minimap_enabled',
+		'is_photo_minimap_enabled_mobile',
+		'photo_minimap_idle_opacity',
+		'photo_minimap_idle_opacity_mobile',
+		'photo_minimap_fade_delay',
 	];
 
 	/**

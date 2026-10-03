@@ -173,6 +173,7 @@ declare namespace App {
 		export type OrderSortingType = "ASC" | "DESC";
 		export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
 		export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
+		export type PhotoClickAction = "overlay" | "zoom";
 		export type PhotoHighlightVisibilityType = "anonymous" | "authenticated" | "editor";
 		export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 		export type PhotoThumbInfoType = "title" | "description";
@@ -660,6 +661,12 @@ declare namespace App {
 					is_scroll_to_navigate_photos_enabled: boolean;
 					is_swipe_vertically_to_go_back_enabled: boolean;
 					disable_swipe_effect: boolean;
+					photo_click_action: App.Enum.PhotoClickAction;
+					is_photo_minimap_enabled: boolean;
+					is_photo_minimap_enabled_mobile: boolean;
+					photo_minimap_idle_opacity: number;
+					photo_minimap_idle_opacity_mobile: number;
+					photo_minimap_fade_delay: number;
 					is_rating_show_avg_in_details_enabled: boolean;
 					is_rating_show_avg_in_photo_view_enabled: boolean;
 					rating_photo_view_mode: App.Enum.VisibilityType;
