@@ -32,6 +32,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
+use App\Services\Telemetry\TraceService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
@@ -96,6 +97,7 @@ class AppServiceProvider extends ServiceProvider
 			// JsonParsers
 
 			MoneyService::class => MoneyService::class,
+			TraceService::class => TraceService::class,
 		];
 
 	/**

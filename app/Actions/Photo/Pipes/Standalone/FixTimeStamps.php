@@ -8,18 +8,22 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
  * Set the timestamps of the creation and updated_at time.
  */
-class FixTimeStamps implements StandalonePipe
+class FixTimeStamps extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		$state->photo->updateTimestamps();
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.fix_timestamps';
 	}
 }

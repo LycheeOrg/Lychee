@@ -8,13 +8,12 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Image\Files\FlysystemFile;
 
-class PlaceGoogleMotionVideo implements StandalonePipe
+class PlaceGoogleMotionVideo extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// If we have a temporary video file from a Google Motion Picture,
 		// we must move the preliminary extracted video file next to the
@@ -34,5 +33,10 @@ class PlaceGoogleMotionVideo implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.place_google_motion_video';
 	}
 }
