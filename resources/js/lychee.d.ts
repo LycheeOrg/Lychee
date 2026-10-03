@@ -127,6 +127,7 @@ declare namespace App {
 			| "CC-BY-NC-SA-3.0"
 			| "CC-BY-NC-SA-4.0";
 		export type LiveMetricsAccess = "logged-in users" | "admin";
+		export type LiveMetricsCleanup = "deferred" | "sync" | "disabled";
 		export type MapProviders = "OpenStreetMap.org" | "OpenStreetMap.de" | "OpenStreetMap.fr" | "RRZE";
 		export type MessageType = "info" | "warning" | "error";
 		export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
@@ -1839,6 +1840,16 @@ declare namespace App {
 					published_created_ats: string[];
 					diff_published_created_ats: string[];
 					statistics: (App.Http.Resources.Models.AlbumStatisticsResource | null)[];
+				};
+				export type LiveMetricsListResource = {
+					created_ats: string[];
+					actions: App.Enum.MetricsAction[];
+					album_ids: string[];
+					photo_ids: (string | null)[];
+					titles: string[];
+					thumb_photo_ids: (string | null)[];
+					counts: number[];
+					is_truncated: boolean;
 				};
 				export type MapBucketResource = {
 					bucket_ids: string[];

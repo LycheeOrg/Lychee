@@ -50,6 +50,7 @@ return [
         'favourite_plural' => '%1$s ont aime %2$s',
         'download_plural' => '%1$s ont téléchargé %2$s',
         'shared_plural' => '%1$s ont partage %2$s',
+        'truncated' => 'Older activity is not shown.',
         'ago' => [
             'days' => 'il y a %d jours',
             'day' => 'il y a un jour',

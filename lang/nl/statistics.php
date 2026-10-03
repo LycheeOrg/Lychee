@@ -50,6 +50,7 @@ return [
         'favourite_plural' => '%1$s hebben %2$s als favoriet gemarkeerd',
         'download_plural' => '%1$s hebben %2$s gedownload',
         'shared_plural' => '%1$s hebben %2$s gedeeld',
+        'truncated' => 'Older activity is not shown.',
         'ago' => [
             'days' => '%d dagen geleden',
             'day' => 'een dag geleden',
