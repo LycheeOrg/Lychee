@@ -120,7 +120,9 @@ class QueryLiveMetrics
 			$actions[] = MetricsAction::from($row->action);
 			$album_ids[] = $row->album_id;
 			$photo_ids[] = $row->photo_id;
-			$titles[] = $row->photo_title ?? $row->album_title;
+			// Chosen by event type, not by nullability: an untitled photo must not
+			// fall back to the title of an album the photo owner may not access.
+			$titles[] = $row->photo_id !== null ? ($row->photo_title ?? '') : $row->album_title;
 			$thumb_photo_ids[] = $row->photo_id ?? $row->cover_id ?? $row->auto_cover_id_max_privilege;
 			$counts[] = (int) $row->num_events;
 		}

@@ -6,7 +6,7 @@ _Last updated:_ 2026-10-03
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
-## Vision & Success Criria
+## Vision & Success Criteria
 
 The live-metrics drawer loads from one grouped, capped SQL query instead of a hydrated Eloquent collection with five eager loads and one signed URL per row. Success: S-079-01..16 green; one SELECT on `live_metrics` per request (NFR-079-01); `MetricsGetTest` and `ConfigIntegrityTest` still green; `npm run check` and `make phpstan` clean.
 
@@ -40,7 +40,7 @@ After the last task: compare FR-079-01..09 and NFR-079-01..06 against code and t
 | FR-079-01 | `routes/api_v3.php`, `LiveMetricsListController`, `LiveMetricsListResource` | `testEmpty`, `testAdminSeesAllExceptPhotoVisitsAndTagAlbums` |
 | FR-079-02 | `GetLiveMetricsListRequest`, controller `live_metrics_enabled` check | `testFlagOffReturns403`, `testNonAdminForbiddenWhenAccessIsAdmin`, `testLiveMetricsDisabledReturns403`, `testGuestReturns401` |
 | FR-079-03 | `QueryLiveMetrics::do()` / `groupedEvents()` | `testAdminSeesAllExceptPhotoVisitsAndTagAlbums`, `testNonAdminSeesOwnAlbumsAndOwnPhotos` |
-| FR-079-04 | `QueryLiveMetrics::toResource()` | `testTitleIsNotEscaped` |
+| FR-079-04 | `QueryLiveMetrics::toResource()` | `testTitleIsNotEscaped`, `testUntitledPhotoNeverShowsTheAlbumTitle` |
 | FR-079-05 | `QueryLiveMetrics::toResource()` | `testThumbPhotoIds` |
 | FR-079-06 | `QueryLiveMetrics::minuteExpression()` | `testEventsAreGroupedPerMinute` (SQLite; MySQL/PostgreSQL via CI) |
 | FR-079-07 | `QueryLiveMetrics::do()` (`limit + 1`) | `testResultIsCapped` |
@@ -52,7 +52,7 @@ After the last task: compare FR-079-01..09 and NFR-079-01..06 against code and t
 | NFR-079-05 | `2026_10_03_000002_add_live_metrics_created_at_index.php` | migrations applied in every test run |
 | NFR-079-06 | `ConfigIntegrity::SE_FIELDS`, 23 `all_settings.php`, 23 `statistics.php` | `ConfigIntegrityTest`, `ConfigIntegrityMiddlewareTest` |
 
-Commands run green: `php artisan test --filter=` `LiveMetricsListTest` (18), `MetricsGetTest` (4), `EventsFiredTest` (4), `ConfigIntegrityTest` (2), `ConfigIntegrityMiddlewareTest` (2); `vendor/bin/php-cs-fixer fix`; `make phpstan`; `npm run format`; `npm run check`; `php artisan typescript:transform`; `php artisan lang:json`.
+Commands run green: `php artisan test --filter=` `LiveMetricsListTest` (19), `MetricsGetTest` (4), `EventsFiredTest` (4), `ConfigIntegrityTest` (2), `ConfigIntegrityMiddlewareTest` (2); `vendor/bin/php-cs-fixer fix`; `make phpstan`; `npm run format`; `npm run check`; `php artisan typescript:transform`; `php artisan lang:json`.
 
 Spec corrections made while implementing: FR-079-02 (a disabled feed is 403, as v2, and guests are 401); there are 23 locales, not 22.
 

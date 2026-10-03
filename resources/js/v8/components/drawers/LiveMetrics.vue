@@ -12,7 +12,7 @@
 					class="text-sm text-highlighted mb-8"
 					v-html="$t('statistics.metrics.preview_text')"
 				></div>
-				<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex pt-2 pb-1">
+				<div v-for="item in prettifiedData" :key="`${item.action}|${item.ago}|${item.id}`" class="flex pt-2 pb-1">
 					<div class="flex flex-col w-full text-sm text-muted">
 						<router-link v-if="item.count === 1" v-slot="{ href }" :to="item.link">
 							<a :href="href" v-html="printSingular(item)"></a>
@@ -89,13 +89,19 @@ type LiveMetrics = {
 const data = ref<App.Http.Resources.Models.LiveMetricsResource[] | undefined>(undefined);
 const prettifiedData = ref<LiveMetrics[] | undefined>(undefined);
 const isTruncated = ref(false);
+// Reopening the drawer starts a new load: responses of earlier loads are dropped.
+let loadId = 0;
 
 function load() {
+	const id = ++loadId;
 	if (lycheeStore.is_se_preview_enabled) {
 		// Do not load, if the preview is enabled
 		data.value = [];
 		AlbumService.getAll()
 			.then((response) => {
+				if (id !== loadId) {
+					return;
+				}
 				prettifiedData.value = (response.data.albums as App.Http.Resources.Models.ThumbAlbumResource[]).map((album) => {
 					const ago = dateToAgo(album.created_at);
 					const ret: LiveMetrics = {
@@ -126,6 +132,9 @@ function load() {
 	if (lycheeStore.is_struct_of_array_enabled) {
 		MetricsService.getV3()
 			.then((response) => {
+				if (id !== loadId) {
+					return;
+				}
 				prettifyV3(response.data);
 			})
 			.catch((error) => {
@@ -136,6 +145,9 @@ function load() {
 
 	MetricsService.get()
 		.then((response) => {
+			if (id !== loadId) {
+				return;
+			}
 			data.value = response.data;
 			prettifyData();
 		})

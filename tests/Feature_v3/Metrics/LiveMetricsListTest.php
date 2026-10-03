@@ -155,6 +155,18 @@ class LiveMetricsListTest extends BaseApiWithDataTest
 		$response->assertJsonPath('titles', ['<b>&</b>LM']);
 	}
 
+	public function testUntitledPhotoNeverShowsTheAlbumTitle(): void
+	{
+		Configs::set('live_metrics_access', LiveMetricsAccess::LOGGEDIN);
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['title' => null]);
+		// photo1 (owned by userMayUpload1) downloaded from album2 (owned by userMayUpload2).
+		$this->insertEvent(MetricsAction::DOWNLOAD, $this->album2->id, $this->photo1->id, $this->ago(60));
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Metrics');
+		$this->assertOk($response);
+		$response->assertJsonPath('titles', ['']);
+	}
+
 	public function testEventsAreGroupedPerMinute(): void
 	{
 		$minute = date('Y-m-d H:i', strtotime('-2 hours'));
