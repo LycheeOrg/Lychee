@@ -94,7 +94,7 @@ class ExternalRequestFunctions implements ExternalRequest
 
 			return $this->data;
 		} catch (RequestFailedException|FilesystemException $e) {
-			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage());
+			Log::error(__METHOD__ . ':' . __LINE__ . ' ' . $e->getMessage(), ['url' => $this->url, 'exception' => $e]);
 		}
 		$this->clear_cache();
 

@@ -92,7 +92,8 @@ body {
 	/*
 	  Ken-Burns-on-hover defaults, overridden inline per the
 	  `photo_ken_burns_on_hover_scale`/`_duration` settings, see
-	  PhotoThumbPanelList.vue's `kenBurnsStyle`.
+	  `useKenBurnsHover()` (resources/js/v8/composables/photo/kenBurnsHover.ts),
+	  applied by both PhotoThumbPanelList.vue and PhotoGridVirtual.vue.
 	*/
 	--photo-ken-burns-scale: 1.5;
 	--photo-ken-burns-duration: 15s;
@@ -101,7 +102,8 @@ body {
 /*
   Ken-Burns-on-hover: slowly zoom into a photo's image while hovering it, unlike
   the old whole-tile zoom this replaced - `.thumb-image` scales up inside
-  `.thumbimg`'s `overflow-hidden` clip (see PhotoThumb.vue), so the effect stays
+  `.thumbimg`'s `overflow-hidden` clip (see PhotoThumb.vue and
+  PhotoThumbVirtual.vue), so the effect stays
   inside the thumbnail's own bounds instead of growing the tile over its
   neighbours.
 

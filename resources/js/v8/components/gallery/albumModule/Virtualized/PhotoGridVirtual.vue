@@ -1,5 +1,5 @@
 <template>
-	<div ref="containerRef" class="w-full">
+	<div ref="containerRef" class="w-full" :class="kenBurnsClass" :style="kenBurnsStyle">
 		<div data-photo-grid-root role="list" class="relative w-full" :style="{ height: `${layout.totalHeight}px` }">
 			<!-- Sticky pinned header: mirrors AlbumThumbGridVirtual.vue's own
 			     mechanism exactly — only rendered once the active bucket's own
@@ -131,6 +131,7 @@ import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import { deriveDayScrubEntries, formatDayLabel, tileDayKey, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
+import { useKenBurnsHover } from "@/v8/composables/photo/kenBurnsHover";
 
 const props = defineProps<{
 	selectedPhotos: string[];
@@ -180,6 +181,7 @@ const layoutStore = useLayoutStore();
 const catalogStore = useCatalogStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
+const { kenBurnsClass, kenBurnsStyle } = useKenBurnsHover();
 
 const albumId = computed(() => (source.value === "timeline" ? "timeline" : (albumStore.albumId ?? "")));
 
