@@ -39,7 +39,7 @@
 				>
 					<UButton
 						variant="ghost"
-						:icon="photoStore.isSphereFlat ? 'lucide:globe' : 'lucide:rectangle-horizontal'"
+						:icon="photoStore.isSphereFlat ? 'lucide:rotate-3d' : 'lucide:rectangle-horizontal'"
 						color="neutral"
 						:aria-label="photoStore.isSphereFlat ? $t('gallery.photo.actions.show_sphere') : $t('gallery.photo.actions.show_flat')"
 						@click="photoStore.toggleSphereFlat()"

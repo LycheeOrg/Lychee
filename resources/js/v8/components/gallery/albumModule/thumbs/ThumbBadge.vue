@@ -4,7 +4,6 @@
 		<svg v-if="props.icon" class="iconic inline w-4 h-4 fill-white">
 			<use :xlink:href="iconHref" />
 		</svg>
-		<span v-if="props.text" class="text-xs font-bold leading-4">{{ props.text }}</span>
 	</span>
 </template>
 <script setup lang="ts">
@@ -15,8 +14,6 @@ const props = defineProps<{
 	icon?: string;
 	/** Full Iconify name, optionally followed by extra classes for the icon: "lucide:shield text-amber-500". */
 	pi?: string;
-	/** Short text label, e.g. "360°". */
-	text?: string;
 	borderColor?: string;
 }>();
 

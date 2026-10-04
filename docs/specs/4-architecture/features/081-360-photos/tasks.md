@@ -78,12 +78,12 @@ _Last updated: 2026-10-03_
 ### I4 – Detection command
 
 - [x] T-081-10 – Failing `Detect360Test` (FR-081-05, S-081-09).  
-  _Intent:_ `tests/ImageProcessing/Commands/Detect360Test.php` (`BaseApiWithDataTest`): upload FX-081-01, FX-081-02, a plain photo and a video; set `is_360` back to `NULL` for the photos; set one 360° photo to `false` by hand (non-`NULL`, must stay); run `lychee:detect_360` → expected flags and crops, video still `NULL`, output summary; second run prints "No photos require 360° detection."; an original whose file is deleted → failed count, exit code 1, photo still `NULL`. Confirm red.  
+  _Intent:_ `tests/ImageProcessing/Commands/Detect360Test.php` (`BaseApiWithDataTest`): upload FX-081-01, FX-081-02, a plain photo and a video; set `is_360` back to `NULL` for the photos; set one 360° photo to `false` by hand (non-`NULL`, must stay); run `lychee:detect_360` → expected flags and crops, video still `NULL`, output summary; second run prints "No photos require 360° detection."; an original whose file is deleted → failed count, exit code 1, photo still `NULL`. Batches of `limit=1` continue with the printed `--after` cursor, past an unreadable original. Confirm red.  
   _Verification commands:_  
   - `php artisan test --filter=Detect360Test` (expected red)
 
 - [x] T-081-11 – `Detect360` command (FR-081-05, CLI-081-01).  
-  _Intent:_ `app/Console/Commands/ImageProcessing/Detect360.php`, signature `lychee:detect_360 {offset=0} {limit=100} {tm=600}`, same structure as `ExifLens`; `PhotoSaved` once with the ids found; `Log::warning` per failure.  
+  _Intent:_ `app/Console/Commands/ImageProcessing/Detect360.php`, signature `lychee:detect_360 {limit=100} {tm=600} {--after=}` (id cursor), same structure as `ExifLens`; `PhotoSaved` once with the ids found; `Log::warning` per failure.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
   - `php artisan test --filter=Detect360Test` (green)  

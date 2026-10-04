@@ -96,6 +96,38 @@ class Detect360Test extends BaseApiWithDataTest
 		self::assertNull($broken->fresh()->is_360);
 	}
 
+	/**
+	 * Batches continue after the last photo of the previous one: a photo
+	 * checked (or failed) in a batch never shifts the next batch, and an
+	 * unreadable original never blocks the photos after it.
+	 */
+	public function testCursorContinuesAfterThePreviousBatch(): void
+	{
+		$sphere = $this->upload360(TestConstants::SAMPLE_FILE_PHOTOSPHERE);
+		$photos = [$sphere, $this->upload360(TestConstants::SAMPLE_FILE_HOCHUFERWEG)];
+		$this->uncheck(...$photos);
+		usort($photos, fn (Photo $a, Photo $b) => strcmp($a->id, $b->id));
+		[$first, $second] = $photos;
+		$first->size_variants->getOriginal()->getFile()->delete();
+
+		$this->artisan('lychee:detect_360', ['limit' => 1])
+			->expectsOutput('Checked 1 photos: 0 360° photos, 1 failed.')
+			->expectsOutput('More photos may remain: continue with --after=' . $first->id)
+			->assertExitCode(1);
+		self::assertNull($first->fresh()->is_360);
+		self::assertNull($second->fresh()->is_360);
+
+		$this->artisan('lychee:detect_360', ['limit' => 1, '--after' => $first->id])
+			->expectsOutput('Checked 1 photos: ' . ($second->id === $sphere->id ? 1 : 0) . ' 360° photos, 0 failed.')
+			->expectsOutput('More photos may remain: continue with --after=' . $second->id)
+			->assertExitCode(0);
+		self::assertNotNull($second->fresh()->is_360);
+
+		$this->artisan('lychee:detect_360', ['limit' => 1, '--after' => $second->id])
+			->expectsOutput('No photos require 360° detection.')
+			->assertExitCode(0);
+	}
+
 	private function upload360(string $filename): Photo
 	{
 		$before = DB::table('photo_album')->where('album_id', '=', $this->album->id)->pluck('photo_id')->all();

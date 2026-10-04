@@ -30,7 +30,7 @@ class Detect360 extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:detect_360 {offset=0 : from which do we start} {limit=100 : number of photos to check} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:detect_360 {limit=100 : number of photos to check} {tm=600 : timeout time requirement} {--after= : continue after this photo id (printed by the previous run)}';
 
 	/**
 	 * The console command description.
@@ -45,8 +45,8 @@ class Detect360 extends Command
 	public function handle(): int
 	{
 		$limit = (int) $this->argument('limit');
-		$offset = (int) $this->argument('offset');
 		$timeout = (int) $this->argument('tm');
+		$after = $this->option('after');
 
 		try {
 			set_time_limit($timeout);
@@ -58,8 +58,10 @@ class Detect360 extends Command
 			->with(['size_variants' => fn ($r) => $r->where('type', '=', SizeVariantType::ORIGINAL)])
 			->whereNull('is_360')
 			->whereNotIn('type', FileExtensionService::SUPPORTED_VIDEO_MIME_TYPES)
+			// Cursor, not offset: checked photos leave this set, and photos whose
+			// original cannot be read stay in it, so an offset would skip or repeat.
+			->when(is_string($after) && $after !== '', fn ($q) => $q->where('id', '>', $after))
 			->orderBy('id')
-			->offset($offset)
 			->limit($limit)
 			->get();
 
@@ -83,6 +85,9 @@ class Detect360 extends Command
 		PhotoSaved::dispatchIf($found !== [], $found);
 
 		$this->line(sprintf('Checked %d photos: %d 360° photos, %d failed.', $photos->count(), count($found), $failed));
+		if ($photos->count() === $limit) {
+			$this->line('More photos may remain: continue with --after=' . $photos->last()->id);
+		}
 
 		return $failed === 0 ? 0 : 1;
 	}
