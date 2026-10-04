@@ -18,6 +18,7 @@
 
 namespace Tests\ImageProcessing\Image\Handlers;
 
+use App\Models\Configs;
 use function Safe\date;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
@@ -155,6 +156,53 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		self::assertNull($photo['size_variants']['thumb']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 		self::assertLessThan(10, $elapsed);
+	}
+
+	/**
+	 * Tests that a PDF with 32 real, individually-safe `/MediaBox` occurrences
+	 * is still rejected at the default `pdf_mediabox_max_matches` of 25, even
+	 * though none of them individually trips {@see testOversizedPdfMediaBoxIsRejected}
+	 * or {@see testDisproportionateMediaBoxIsRejected}.
+	 *
+	 * This reproduces the real-world false positive reported in
+	 * {@link https://github.com/LycheeOrg/Lychee/discussions/4826}: a legitimate
+	 * large scanned multi-page document can exceed the match-count cap while
+	 * every single occurrence stays well within the size/area guards.
+	 *
+	 * @return void
+	 */
+	public function testManyLegitMediaBoxesRejectedAtDefaultLimit(): void
+	{
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF_MANY_LEGIT_MEDIABOX);
+
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertNull($photo['size_variants']['thumb']);
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+	}
+
+	/**
+	 * Tests that raising `pdf_mediabox_max_matches` above the real
+	 * `/MediaBox` count in {@see testManyLegitMediaBoxesRejectedAtDefaultLimit}'s
+	 * fixture allows the thumbnail to generate normally, proving the limit is
+	 * genuinely read from config at runtime rather than a hardcoded value.
+	 *
+	 * @return void
+	 */
+	public function testManyLegitMediaBoxesAcceptedWhenLimitRaised(): void
+	{
+		Configs::set('pdf_mediabox_max_matches', 40);
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF_MANY_LEGIT_MEDIABOX);
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertNotNull($photo['size_variants']['thumb']);
+		self::assertEquals(200, $photo['size_variants']['thumb']['width']);
+		self::assertEquals(200, $photo['size_variants']['thumb']['height']);
 	}
 
 	/**
