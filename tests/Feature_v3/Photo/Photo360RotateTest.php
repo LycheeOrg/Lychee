@@ -21,6 +21,7 @@ namespace Tests\Feature_v3\Photo;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -28,9 +29,24 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class Photo360RotateTest extends BaseApiWithDataTest
 {
+	private bool $editor_enabled;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		// Configs::set() is not rolled back with the test transaction: restore it in tearDown().
+		$this->editor_enabled = resolve(ConfigManager::class)->getValueAsBool('editor_enabled');
+		Configs::set('editor_enabled', true);
+	}
+
+	public function tearDown(): void
+	{
+		Configs::set('editor_enabled', $this->editor_enabled);
+		parent::tearDown();
+	}
+
 	public function testRotatingA360PhotoIsRejected(): void
 	{
-		Configs::set('editor_enabled', true);
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['is_360' => true]);
 		$checksum = $photo->checksum;
@@ -44,6 +60,5 @@ class Photo360RotateTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 		$response->assertJsonPath('message', '360° photos cannot be rotated');
 		self::assertSame($checksum, $photo->fresh()->checksum);
-		Configs::set('editor_enabled', false);
 	}
 }

@@ -21,6 +21,7 @@ namespace Tests\Feature_v3\Photo;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Config;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
@@ -29,14 +30,31 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class Photo360EditTest extends BaseApiWithDataTest
 {
+	private const CACHE_CONFIGS = ['managed_cache_enabled', 'managed_cache_albums_enabled'];
+
 	private Album $album;
 	private Photo $photo;
+	/** @var array<string,string> */
+	private array $cache_configs = [];
 
 	public function setUp(): void
 	{
 		parent::setUp();
+		// Configs::set() is not rolled back with the test transaction: restore them in tearDown().
+		$config_manager = resolve(ConfigManager::class);
+		foreach (self::CACHE_CONFIGS as $key) {
+			$this->cache_configs[$key] = $config_manager->getValueAsString($key);
+		}
 		$this->album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$this->photo = Photo::factory()->owned_by($this->userMayUpload1)->in($this->album)->create(['is_360' => false]);
+	}
+
+	public function tearDown(): void
+	{
+		foreach ($this->cache_configs as $key => $value) {
+			Configs::set($key, $value);
+		}
+		parent::tearDown();
 	}
 
 	public function testSetAndClearFlag(): void

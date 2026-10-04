@@ -204,11 +204,6 @@ function save() {
 		taken_at: is_taken_at_modified.value ? takenDate : null,
 		is_360: is_video.value ? undefined : is_360.value,
 	}).then((response) => {
-		// Feature 081: switch the open photo (and its thumb) to or from the sphere view right away.
-		if (photo.value?.id === response.data.id) {
-			photo.value.precomputed.is_360 = response.data.precomputed.is_360;
-			photo.value.panorama = response.data.panorama;
-		}
 		toast.add({ severity: "success", summary: "Success", life: 3000 });
 		// Clear cache of tags just in case we added any.
 		TagsService.clearCache();
@@ -216,6 +211,14 @@ function save() {
 		// This is needed to ensure that the album view is updated with the new photo data
 		// and that the tags input is updated with the new tags.
 		AlbumService.clearCache(getParentId());
+		// A save that resolves after another photo was opened must not touch that photo or its form
+		// (the editor stays mounted while closed, so the form would otherwise keep the old photo's id).
+		if (photo.value?.id !== response.data.id) {
+			return;
+		}
+		// Feature 081: switch the open photo (and its thumb) to or from the sphere view right away.
+		photo.value.precomputed.is_360 = response.data.precomputed.is_360;
+		photo.value.panorama = response.data.panorama;
 		load(response.data);
 	});
 }
