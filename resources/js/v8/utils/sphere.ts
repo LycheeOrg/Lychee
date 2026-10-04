@@ -1,5 +1,5 @@
 /**
- * Camera and projection math for the 360° sphere view (Feature 081, NFR-081-03).
+ * Camera and projection math for the 360° sphere view (Feature 082, NFR-082-03).
  *
  * Angles are in degrees. Longitude 0 is the horizontal centre of a full
  * equirectangular panorama and grows to the right (to +180° at the right
@@ -15,7 +15,7 @@ export { CLICK_ZOOM, KEY_ZOOM_STEP };
 
 export type SphereView = { yaw: number; pitch: number; fov: number };
 
-/** Part of the sphere covered by the image (FR-081-12). */
+/** Part of the sphere covered by the image (FR-082-12). */
 export type Coverage = {
 	lonMin: number;
 	lonMax: number;
@@ -77,7 +77,7 @@ export function horizontalFov(fov: number, aspect: number): number {
 	return (2 * Math.atan(aspect * Math.tan((fov * DEG) / 2))) / DEG;
 }
 
-/** Zoom factor relative to the default field of view (FR-081-11): 1 at 75°, 2 at about 42°. */
+/** Zoom factor relative to the default field of view (FR-082-11): 1 at 75°, 2 at about 42°. */
 export function zoomFromFov(fov: number): number {
 	return Math.tan((DEFAULT_FOV * DEG) / 2) / Math.tan((fov * DEG) / 2);
 }
@@ -92,7 +92,7 @@ export function isSphereZoomed(view: SphereView): boolean {
 }
 
 /**
- * Keeps the view inside the covered area (FR-081-10, FR-081-12): on each axis
+ * Keeps the view inside the covered area (FR-082-10, FR-082-12): on each axis
  * where the covered span is larger than the view, the view stays inside it;
  * where it is smaller, the view is centred on it. A full-height image allows
  * the view centre up to the poles.
@@ -123,14 +123,14 @@ function clampAxis(value: number, min: number, max: number, span: number): numbe
 	return clamp(value, min + span / 2, max - span / 2);
 }
 
-/** Initial view (FR-081-13): default field of view, centred on the covered area. */
+/** Initial view (FR-082-13): default field of view, centred on the covered area. */
 export function initialView(coverage: Coverage, aspect: number): SphereView {
 	const yaw = coverage.wraps ? 0 : (coverage.lonMin + coverage.lonMax) / 2;
 	return clampView({ yaw, pitch: (coverage.latMin + coverage.latMax) / 2, fov: DEFAULT_FOV }, coverage, aspect);
 }
 
 /**
- * View after dragging by (`dx`, `dy`) CSS pixels from `start` (FR-081-10): the
+ * View after dragging by (`dx`, `dy`) CSS pixels from `start` (FR-082-10): the
  * image follows the pointer, one pixel being `fov ÷ viewportHeight` degrees.
  */
 export function dragView(start: SphereView, dx: number, dy: number, viewportHeight: number): SphereView {
@@ -139,7 +139,7 @@ export function dragView(start: SphereView, dx: number, dy: number, viewportHeig
 }
 
 /**
- * View zoomed to `zoom` (FR-081-11), keeping the direction under the
+ * View zoomed to `zoom` (FR-082-11), keeping the direction under the
  * normalised viewport point (`nx`, `ny` in [-1, 1], `ny` up) where it is.
  */
 export function zoomAround(view: SphereView, zoom: number, nx: number, ny: number, aspect: number): SphereView {
@@ -157,7 +157,7 @@ function offsetAngles(fov: number, nx: number, ny: number, aspect: number): { x:
 
 /**
  * Texture width that shows the image at one texel per device pixel for this
- * view (FR-081-14), capped at the GPU limit.
+ * view (FR-082-14), capped at the GPU limit.
  */
 export function neededTextureWidth(
 	containerWidth: number,
@@ -202,7 +202,7 @@ function usable(variant: { url: string | null; width: number } | null): ZoomSour
 }
 
 /**
- * First texture of the sphere (FR-081-14): the medium variants the lightbox
+ * First texture of the sphere (FR-082-14): the medium variants the lightbox
  * already shows; for photos too small to have them, the original when it is
  * exposed and not RAW, else the small variants.
  */

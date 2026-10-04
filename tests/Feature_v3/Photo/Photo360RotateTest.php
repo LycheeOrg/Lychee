@@ -25,7 +25,7 @@ use App\Repositories\ConfigManager;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Feature 081 (FR-081-07): a 360° photo cannot be rotated.
+ * Feature 082 (FR-082-07): a 360° photo cannot be rotated.
  */
 class Photo360RotateTest extends BaseApiWithDataTest
 {

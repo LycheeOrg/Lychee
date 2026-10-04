@@ -39,7 +39,7 @@ class PhotoRatioResource extends Data
 	 * @param bool[]                   $is_videos
 	 * @param bool[]                   $is_raws
 	 * @param bool[]                   $is_live_photos
-	 * @param bool[]                   $is_360s           Feature 081 `photos.is_360`, `NULL` (never checked) reads as false
+	 * @param bool[]                   $is_360s           Feature 082 `photos.is_360`, `NULL` (never checked) reads as false
 	 * @param (string|null)[]          $taken_ats         raw ISO 8601, never Carbon-formatted
 	 * @param string[]                 $created_ats       raw ISO 8601, never Carbon-formatted
 	 * @param (string|null)[]          $taken_at_orig_tzs

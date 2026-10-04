@@ -100,7 +100,7 @@
 				<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 			</div>
 		</div>
-		<!-- This is a 360° photo: sphere view (Feature 081) -->
+		<!-- This is a 360° photo: sphere view (Feature 082) -->
 		<SphereView
 			v-if="viewMode === ImageViewMode.Sphere"
 			:photo="photoStore.photo"
@@ -188,7 +188,7 @@ import {
 
 const { isLTR } = useLtRorRtL();
 
-// Lazy chunk: only fetched when a 360° photo is shown (NFR-081-02).
+// Lazy chunk: only fetched when a 360° photo is shown (NFR-082-02).
 const SphereView = defineAsyncComponent(() => import("./SphereView.vue"));
 
 const containerEl = ref<HTMLElement | null>(null);
@@ -240,7 +240,7 @@ const emits = defineEmits<{
 
 /** FR-078-02. */
 /**
- * Feature 081 (FR-081-08): the main lightbox draws 360° photos as a sphere;
+ * Feature 082 (FR-082-08): the main lightbox draws 360° photos as a sphere;
  * the Flow and Moderation previews and the slideshow keep the store's flat mode.
  */
 const viewMode = computed(() =>
@@ -591,7 +591,7 @@ function isPageZoomed(): boolean {
 useSwipe(containerEl, {
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
-		// FR-081-10: in the sphere a drag looks around, never navigates.
+		// FR-082-10: in the sphere a drag looks around, never navigates.
 		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked()) {
 			return;
 		}

@@ -1,7 +1,7 @@
 let webgl2Supported: boolean | undefined = undefined;
 
 /**
- * Whether this browser can create a WebGL2 context (Feature 081, FR-081-15).
+ * Whether this browser can create a WebGL2 context (Feature 082, FR-082-15).
  * Probed once; the probe context is released right away.
  */
 export function isWebGL2Supported(): boolean {

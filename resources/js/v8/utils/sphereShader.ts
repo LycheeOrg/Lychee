@@ -1,5 +1,5 @@
 /**
- * WebGL2 program of the 360° sphere view (Feature 081, FR-081-12, FR-081-14).
+ * WebGL2 program of the 360° sphere view (Feature 082, FR-082-12, FR-082-14).
  *
  * One full-screen triangle; the fragment shader turns each pixel into a view
  * ray (camera space: x right, y up, z forward), rotates it into sphere space

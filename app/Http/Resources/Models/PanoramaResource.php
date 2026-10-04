@@ -14,7 +14,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * Feature 081 (FR-081-06): where a partial 360° photo sits in its full
+ * Feature 082 (FR-082-06): where a partial 360° photo sits in its full
  * panorama, in pixels of the original. Absent (null) for full spheres and
  * flat photos.
  */

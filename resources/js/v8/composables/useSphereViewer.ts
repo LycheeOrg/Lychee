@@ -19,28 +19,28 @@ import {
 import { FRAGMENT_SHADER, VERTEX_SHADER } from "@/v8/utils/sphereShader";
 
 /**
- * 360° sphere renderer for the v8 lightbox (Feature 081, ADR-081-01).
+ * 360° sphere renderer for the v8 lightbox (Feature 082, ADR-082-01).
  *
  * Owns the canvas: WebGL2 context, program and texture, Pointer Events (drag
  * to look around, pinch to zoom), wheel zoom, keyboard zoom controls, context
  * loss and disposal. Gestures stop at the canvas so `usePanZoom` and the
  * lightbox wheel navigation never see them; a plain tap is left to bubble as a
  * regular `click`, and the click that follows a drag is swallowed. Drawing is
- * on demand, at most once per animation frame (NFR-081-04). The geometry lives
+ * on demand, at most once per animation frame (NFR-082-04). The geometry lives
  * in `utils/sphere.ts`.
  */
 export type SphereViewerOptions = {
 	canvas: Ref<HTMLCanvasElement | null>;
-	/** Part of the sphere covered by the photo (FR-081-12). */
+	/** Part of the sphere covered by the photo (FR-082-12). */
 	coverage: () => Coverage;
 	/**
-	 * First texture (FR-081-14). Reactive: a photo synthesised from a Struct-of-Arrays
+	 * First texture (FR-082-14). Reactive: a photo synthesised from a Struct-of-Arrays
 	 * listing has no size variants (nor crop) until its details are merged.
 	 */
 	startSource: () => ZoomSource | undefined;
-	/** Largest source the viewer may see, loaded when the view needs it (FR-081-14). */
+	/** Largest source the viewer may see, loaded when the view needs it (FR-082-14). */
 	upgradeSource: () => ZoomSource | undefined;
-	/** WebGL2 or the first texture failed (FR-081-15). */
+	/** WebGL2 or the first texture failed (FR-082-15). */
 	onUnavailable: (reason: string) => void;
 };
 
@@ -254,7 +254,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		});
 	}
 
-	/** FR-081-14: the original only when the view needs more pixels than the current texture has. */
+	/** FR-082-14: the original only when the view needs more pixels than the current texture has. */
 	function maybeUpgrade() {
 		const source = options.upgradeSource();
 		if (disposed || upgradeStarted || textureWidth === 0 || size.width === 0 || source === undefined || source.width <= textureWidth) {
@@ -322,7 +322,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		setView(view.value);
 	}
 
-	/** FR-081-13, once both the canvas size and the photo (crop included) are known. */
+	/** FR-082-13, once both the canvas size and the photo (crop included) are known. */
 	function ensureInitialView() {
 		if (hasInitialView || size.width === 0 || textureWidth === 0) {
 			return;
@@ -331,7 +331,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		view.value = initialView(options.coverage(), aspect());
 	}
 
-	// ---- Keyboard zoom (FR-081-11) ----
+	// ---- Keyboard zoom (FR-082-11) ----
 
 	function stopAnimation() {
 		animationTarget = undefined;
@@ -386,7 +386,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		animateFov(fovFromZoom(zoomFromFov(targetFov()) / KEY_ZOOM_STEP));
 	}
 
-	// ---- Pointer gestures (FR-081-10, FR-081-11) ----
+	// ---- Pointer gestures (FR-082-10, FR-082-11) ----
 
 	function toCanvas(event: { clientX: number; clientY: number }): Point {
 		return { x: event.clientX - (canvasRect?.left ?? 0), y: event.clientY - (canvasRect?.top ?? 0) };
@@ -504,7 +504,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		setView(zoomAround(view.value, zoomFromFov(view.value.fov) * Math.exp(-step), cursor.x, cursor.y, aspect()));
 	}
 
-	// ---- Context loss (FR-081-15) ----
+	// ---- Context loss (FR-082-15) ----
 
 	function onContextLost(event: Event) {
 		event.preventDefault();
@@ -528,7 +528,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		}
 	}
 
-	// ---- Lifecycle (FR-081-16) ----
+	// ---- Lifecycle (FR-082-16) ----
 
 	const listeners: [string, EventListener, AddEventListenerOptions | boolean][] = [
 		["pointerdown", onPointerDown as EventListener, false],

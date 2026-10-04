@@ -11,7 +11,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Feature 081: 360° photos.
+ * Feature 082: 360° photos.
  *
  * `is_360` is NULL until the photo has been checked (upload or
  * `lychee:detect_360`). The crop columns place a partial photo sphere in its

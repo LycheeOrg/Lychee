@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Config;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Feature 081 (FR-081-04): the manual 360° flag on `PATCH /Photo`.
+ * Feature 082 (FR-082-04): the manual 360° flag on `PATCH /Photo`.
  */
 class Photo360EditTest extends BaseApiWithDataTest
 {

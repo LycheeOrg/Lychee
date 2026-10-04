@@ -14,9 +14,9 @@ import { pickZoomSource } from "@/v8/utils/panZoom";
 import { coverageOf, pickSphereStartSource } from "@/v8/utils/sphere";
 
 /**
- * 360° sphere view of the photo (Feature 081, FR-081-08). Loaded as a lazy
+ * 360° sphere view of the photo (Feature 082, FR-082-08). Loaded as a lazy
  * chunk by `PhotoBox`; registers its zoom controls for the panel shortcuts
- * like the flat view does (FR-081-11).
+ * like the flat view does (FR-082-11).
  */
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;

@@ -14,7 +14,7 @@ export enum ImageViewMode {
 	LivePhotoMedium = "livephoto-medium",
 	LivePhotoOriginal = "livephoto-original",
 	Pdf = "pdf",
-	/** Feature 081: chosen by the v8 `PhotoBox` only, never returned by `imageViewMode`. */
+	/** Feature 082: chosen by the v8 `PhotoBox` only, never returned by `imageViewMode`. */
 	Sphere = "sphere",
 }
 
@@ -52,7 +52,7 @@ export const usePhotoStore = defineStore("photo-store", {
 		// Feature 078: written by the v8 `PhotoBox` only (mounted, zoomable photo).
 		is_zoomed: false,
 		zoom_controls: undefined as ZoomControls | undefined,
-		// Feature 081: photo switched to its flat view (FR-081-09), photo whose sphere failed (FR-081-15).
+		// Feature 082: photo switched to its flat view (FR-082-09), photo whose sphere failed (FR-082-15).
 		sphere_flat_photo_id: undefined as string | undefined,
 		sphere_failed_photo_id: undefined as string | undefined,
 	}),
@@ -66,7 +66,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			this.sphere_flat_photo_id = undefined;
 			this.sphere_failed_photo_id = undefined;
 		},
-		/** FR-081-09: between the sphere and the flat image; the next photo opens as a sphere again. */
+		/** FR-082-09: between the sphere and the flat image; the next photo opens as a sphere again. */
 		toggleSphereFlat() {
 			if (this.photo === undefined) {
 				return;
@@ -189,7 +189,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			}
 			return `width: ${this.photo?.size_variants.original.width}px; height: ${this.photo?.size_variants.original.height}px`;
 		},
-		/** FR-081-08: a 360° still photo the browser can draw as a sphere. */
+		/** FR-082-08: a 360° still photo the browser can draw as a sphere. */
 		isSphereCapable(): boolean {
 			const precomputed = this.photo?.precomputed;
 			if (precomputed === undefined || !precomputed.is_360 || precomputed.is_video || precomputed.is_raw || precomputed.is_livephoto) {

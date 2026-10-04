@@ -1,13 +1,13 @@
-# ADR-081-01: In-house TypeScript + WebGL2 sphere renderer
+# ADR-082-01: In-house TypeScript + WebGL2 sphere renderer
 
 - **Status:** Accepted
 - **Date:** 2026-10-03
-- **Related features/specs:** Feature 081 (docs/specs/4-architecture/features/081-360-photos/spec.md), Feature 078 (docs/specs/4-architecture/features/078-lightbox-pan-zoom/spec.md)
-- **Related open questions:** Q-081-01
+- **Related features/specs:** Feature 082 (docs/specs/4-architecture/features/082-360-photos/spec.md), Feature 078 (docs/specs/4-architecture/features/078-lightbox-pan-zoom/spec.md)
+- **Related open questions:** Q-082-01
 
 ## Context
 
-The v8 lightbox must display equirectangular 360° photos as an interactive sphere (Feature 081). Constraints:
+The v8 lightbox must display equirectangular 360° photos as an interactive sphere (Feature 082). Constraints:
 - Lychee works with no network connection; every asset is bundled.
 - New npm dependencies need owner approval; Feature 078 (lightbox pan & zoom) was built dependency-free on Pointer Events (NFR-078-03).
 - The sphere has to share the lightbox's gesture model: drag must never also navigate, the Feature 078 zoom keys and `PhotoState.zoom_controls` registration apply, the EXIF overlay rotates on tap.
@@ -47,15 +47,15 @@ Write the sphere renderer in TypeScript on WebGL2, without any library:
 
 ## Security / Privacy Impact
 
-- No new network origin; textures come from the same size-variant URLs the lightbox already uses, and the original is requested only when its URL is exposed to the viewer (FR-081-14).
+- No new network origin; textures come from the same size-variant URLs the lightbox already uses, and the original is requested only when its URL is exposed to the viewer (FR-082-14).
 - No secrets involved.
 
 ## Operational Impact
 
 - No server-side cost.
-- GPU memory is released on navigation (FR-081-16); rendering happens only when the view changes (NFR-081-04).
+- GPU memory is released on navigation (FR-082-16); rendering happens only when the view changes (NFR-082-04).
 
 ## Links
 
-- Related spec sections: `docs/specs/4-architecture/features/081-360-photos/spec.md` FR-081-08 to FR-081-16, NFR-081-02 to NFR-081-04
-- Related open questions: `docs/specs/4-architecture/features/081-360-photos/open-questions.md` Q-081-01
+- Related spec sections: `docs/specs/4-architecture/features/082-360-photos/spec.md` FR-082-08 to FR-082-16, NFR-082-02 to NFR-082-04
+- Related open questions: `docs/specs/4-architecture/features/082-360-photos/open-questions.md` Q-082-01

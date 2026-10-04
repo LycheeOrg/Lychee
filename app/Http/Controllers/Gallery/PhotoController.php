@@ -200,7 +200,7 @@ class PhotoController extends Controller
 		// if the request takenAt is null, then we set the initial value back.
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
 
-		// Feature 081: the manual 360° flag, left untouched when not sent (v7).
+		// Feature 082: the manual 360° flag, left untouched when not sent (v7).
 		$photo->is_360 = $request->is360() ?? $photo->is_360;
 
 		$photo->save();

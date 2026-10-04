@@ -216,7 +216,7 @@ function save() {
 		if (photo.value?.id !== response.data.id) {
 			return;
 		}
-		// Feature 081: switch the open photo (and its thumb) to or from the sphere view right away.
+		// Feature 082: switch the open photo (and its thumb) to or from the sphere view right away.
 		photo.value.precomputed.is_360 = response.data.precomputed.is_360;
 		photo.value.panorama = response.data.panorama;
 		load(response.data);

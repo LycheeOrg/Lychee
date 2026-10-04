@@ -150,7 +150,7 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		},
 		timeline: null,
 		palette: null,
-		// Feature 081: only full spheres are known from `ratios`; a partial
+		// Feature 082: only full spheres are known from `ratios`; a partial
 		// crop arrives with `details` (`mergePhotoDetail()`).
 		panorama: null,
 		statistics: null,

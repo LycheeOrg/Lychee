@@ -20,7 +20,7 @@ use function Safe\filemtime;
 use function Safe\set_time_limit;
 
 /**
- * Feature 081 (FR-081-05): flags 360° photos among the photos never checked
+ * Feature 082 (FR-082-05): flags 360° photos among the photos never checked
  * (`photos.is_360 IS NULL`), i.e. photos uploaded before 360° detection.
  */
 class Detect360 extends Command

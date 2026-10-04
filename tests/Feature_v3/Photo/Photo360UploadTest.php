@@ -26,7 +26,7 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 use Tests\Traits\RequiresExifTool;
 
 /**
- * Feature 081 (FR-081-01, FR-081-03): 360° detection on upload with the
+ * Feature 082 (FR-082-01, FR-082-03): 360° detection on upload with the
  * exiftool and the Imagick reader.
  */
 class Photo360UploadTest extends BaseApiWithDataTest
@@ -110,7 +110,7 @@ class Photo360UploadTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * FX-081-02: GPano full 8000×4000, crop 6000×2000 at (1000, 1000),
+	 * FX-082-02: GPano full 8000×4000, crop 6000×2000 at (1000, 1000),
 	 * file 600 px wide → factor 0.1.
 	 */
 	private function assertPartialSphere(Photo $photo): void

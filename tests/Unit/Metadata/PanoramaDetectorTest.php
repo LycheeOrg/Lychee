@@ -24,7 +24,7 @@ use PHPExif\Exif;
 use Tests\AbstractTestCase;
 
 /**
- * Covers Feature 081's detection rule (FR-081-02): projection, viewer flag,
+ * Covers Feature 082's detection rule (FR-082-02): projection, viewer flag,
  * and the absent / valid / malformed crop branches.
  */
 class PanoramaDetectorTest extends AbstractTestCase

@@ -27,7 +27,7 @@ use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 081 (FR-081-05): `lychee:detect_360` flags photos never checked.
+ * Feature 082 (FR-082-05): `lychee:detect_360` flags photos never checked.
  */
 class Detect360Test extends BaseApiWithDataTest
 {

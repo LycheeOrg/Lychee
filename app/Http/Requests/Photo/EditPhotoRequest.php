@@ -114,7 +114,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 	}
 
 	/**
-	 * Feature 081: the manual 360° flag, null when the request does not set it.
+	 * Feature 082: the manual 360° flag, null when the request does not set it.
 	 */
 	public function is360(): ?bool
 	{

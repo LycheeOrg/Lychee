@@ -54,7 +54,7 @@ class PhotoDetailResource extends Data
 	 * @param (string|null)[]                  $live_photo_checksums
 	 * @param (string|null)[]                  $live_photo_content_ids
 	 * @param (string|null)[]                  $live_photo_urls
-	 * @param (PanoramaResource|null)[]        $panoramas                 Feature 081: partial-panorama crop, null for full spheres and flat photos
+	 * @param (PanoramaResource|null)[]        $panoramas                 Feature 082: partial-panorama crop, null for full spheres and flat photos
 	 * @param int[]                            $face_counts
 	 * @param (ColourPaletteResource|null)[]   $palette                   nested
 	 * @param (SizeVariantsResouce|null)[]     $size_variants             nested, all 9 variants

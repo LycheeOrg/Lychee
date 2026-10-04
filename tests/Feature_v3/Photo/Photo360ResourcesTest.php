@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Config;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * Feature 081 (FR-081-06): the 360° flag and the partial-panorama crop in
+ * Feature 082 (FR-082-06): the 360° flag and the partial-panorama crop in
  * the v2 photo payload and the v3 Struct-of-Arrays tiers.
  */
 class Photo360ResourcesTest extends BaseApiWithDataTest

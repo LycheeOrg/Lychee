@@ -37,7 +37,7 @@ function withZoomShortcuts(shortcuts: ShortcutsConfig, controls: ZoomControls | 
 	return { ...withoutRatings, escape: controls.reset, "0": controls.reset };
 }
 
-/** Feature 081 (FR-081-09): `v` switches an open 360° photo between the sphere and the flat image. */
+/** Feature 082 (FR-082-09): `v` switches an open 360° photo between the sphere and the flat image. */
 function withSphereShortcut(shortcuts: ShortcutsConfig, isSphereCapable: boolean, toggle: () => void): ShortcutsConfig {
 	if (!isSphereCapable) {
 		return shortcuts;
