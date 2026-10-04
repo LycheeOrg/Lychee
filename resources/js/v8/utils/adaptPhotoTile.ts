@@ -139,6 +139,7 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 			is_video: ratios.is_videos[i],
 			is_raw: ratios.is_raws[i],
 			is_livephoto: ratios.is_live_photos[i],
+			is_360: ratios.is_360s[i],
 			is_camera_date: false,
 			has_exif: false,
 			has_location: false,
@@ -149,6 +150,9 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		},
 		timeline: null,
 		palette: null,
+		// Feature 082: only full spheres are known from `ratios`; a partial
+		// crop arrives with `details` (`mergePhotoDetail()`).
+		panorama: null,
 		statistics: null,
 		rating: ratingAvg === null && ratingUser === null ? null : { rating_avg: ratingAvg ?? 0, rating_user: ratingUser ?? 0, rating_count: 0 },
 		// Accepted regression (NG11/Q-065-06) — see this file's own doc
@@ -181,6 +185,7 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 	photo.live_photo_content_id = detail.live_photo_content_ids[i];
 	photo.live_photo_url = detail.live_photo_urls[i];
 	photo.palette = detail.palette[i];
+	photo.panorama = detail.panoramas[i];
 	photo.statistics = detail.statistics[i];
 	photo.size_variants = sizeVariants;
 

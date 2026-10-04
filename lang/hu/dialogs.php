@@ -60,6 +60,7 @@ return [
         'edit' => 'Edit information',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Toggle face overlay',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'We will keep it hidden.',
         'button_hidden' => 'We will hide the button in the header.',
     ],

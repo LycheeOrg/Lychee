@@ -150,6 +150,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.edit"), key: "e" },
 			{ action: trans("dialogs.keybindings.show_hide_meta"), key: "i" },
 			{ action: trans("dialogs.keybindings.toggle_face_overlay"), key: "p" },
+			{ action: trans("dialogs.keybindings.toggle_sphere"), key: "v" },
 		],
 	},
 ]);

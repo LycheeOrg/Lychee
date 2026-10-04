@@ -59,6 +59,7 @@ return [
         'edit' => 'Informatie bewerken',
         'show_hide_meta' => 'Informatie tonen',
         'toggle_face_overlay' => 'Gezichtsoverlay in-/uitschakelen',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'We houden het verborgen.',
         'button_hidden' => 'We verbergen de knop in de koptekst.',
     ],

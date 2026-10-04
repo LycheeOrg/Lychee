@@ -60,6 +60,7 @@ return [
         'edit' => 'Modifier les informations',
         'show_hide_meta' => 'Afficher les informations',
         'toggle_face_overlay' => 'Afficher/masquer la superposition des visages',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Nous la garderons cachée.',
         'button_hidden' => 'Nous allons cacher ce bouton dans la barre de menu.',
     ],

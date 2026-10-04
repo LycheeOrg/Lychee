@@ -47,6 +47,8 @@ class TestConstants
 	public const SAMPLE_FILE_ORIENTATION_HFLIP = 'tests/Samples/orientation-hflip.jpg';
 	public const SAMPLE_FILE_ORIENTATION_VFLIP = 'tests/Samples/orientation-vflip.jpg';
 	public const SAMPLE_FILE_PDF = 'tests/Samples/pdf.pdf';
+	public const SAMPLE_FILE_PHOTOSPHERE = 'tests/Samples/photosphere.jpg';
+	public const SAMPLE_FILE_PHOTOSPHERE_PARTIAL = 'tests/Samples/photosphere-partial.jpg';
 	public const SAMPLE_FILE_PDF_OVERSIZED_MEDIABOX = 'tests/Samples/pdf_oversized_mediabox.pdf';
 	public const SAMPLE_FILE_PDF_DISPROPORTIONATE_MEDIABOX = 'tests/Samples/pdf_disproportionate_mediabox.pdf';
 	public const SAMPLE_FILE_PDF_DECOY_MEDIABOX = 'tests/Samples/pdf_decoy_mediabox.pdf';
@@ -84,6 +86,8 @@ class TestConstants
 		self::SAMPLE_FILE_PDF_OVERSIZED_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PDF_DISPROPORTIONATE_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PDF_DECOY_MEDIABOX => self::MIME_TYPE_APP_PDF,
+		self::SAMPLE_FILE_PHOTOSPHERE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_PHOTOSPHERE_PARTIAL => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_PDF_MANY_LEGIT_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
 		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,

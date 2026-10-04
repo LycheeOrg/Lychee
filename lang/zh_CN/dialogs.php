@@ -59,6 +59,7 @@ return [
         'edit' => '编辑信息',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Toggle face overlay',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => '我们会保持隐藏。',
         'button_hidden' => '我们将隐藏顶栏中的按钮。',
     ],

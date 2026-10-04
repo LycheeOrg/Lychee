@@ -9,6 +9,7 @@
 namespace App\Http\Resources\V3;
 
 use App\Http\Resources\Models\ColourPaletteResource;
+use App\Http\Resources\Models\PanoramaResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use Spatie\LaravelData\Data;
@@ -53,6 +54,7 @@ class PhotoDetailResource extends Data
 	 * @param (string|null)[]                  $live_photo_checksums
 	 * @param (string|null)[]                  $live_photo_content_ids
 	 * @param (string|null)[]                  $live_photo_urls
+	 * @param (PanoramaResource|null)[]        $panoramas                 Feature 082: partial-panorama crop, null for full spheres and flat photos
 	 * @param int[]                            $face_counts
 	 * @param (ColourPaletteResource|null)[]   $palette                   nested
 	 * @param (SizeVariantsResouce|null)[]     $size_variants             nested, all 9 variants
@@ -84,6 +86,7 @@ class PhotoDetailResource extends Data
 		public array $live_photo_checksums,
 		public array $live_photo_content_ids,
 		public array $live_photo_urls,
+		public array $panoramas,
 		public array $face_counts,
 		public array $palette,
 		public array $size_variants,
