@@ -1,6 +1,7 @@
 import { computed, watch, type ComputedRef, type Ref } from "vue";
 import type { Virtualizer } from "@tanstack/vue-virtual";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import type { VirtualAlbumRowsResult } from "@/v8/composables/album/virtualAlbumRows";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 import { albumRowScrubItems, deriveDayScrubEntries, formatDayLabel, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
@@ -34,14 +35,22 @@ export function useAlbumRowsDateScrubber(
 	emitScrollOffset: (offset: number) => void,
 ) {
 	const albumStore = useAlbumStore();
+	const lycheeStore = useLycheeStateStore();
 
 	const scrubberLayout = computed<DateScrubLayout | null>(() => {
 		const field = (albumStore.config?.album_date_scrubber_field ?? null) as DateScrubberField | null;
 		if (field === null) {
 			return null;
 		}
-		const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
-		const { items, totalHeight } = albumRowScrubItems(rowsResult.value.rows, rowsResult.value.rowHeights, tiles.value, field);
+		const format = lycheeStore.date_scrubber_label_format;
+		// `created_at` is the tile's display string; the rail reads the raw value.
+		const datedTiles = tiles.value.map((tile) => ({
+			title: tile.title,
+			created_at: tile.raw_created_at,
+			min_taken_at: tile.min_taken_at,
+			max_taken_at: tile.max_taken_at,
+		}));
+		const { items, totalHeight } = albumRowScrubItems(rowsResult.value.rows, rowsResult.value.rowHeights, datedTiles, field);
 		return deriveDayScrubEntries(items, totalHeight, headerRowTops(rowsResult.value), (day) => formatDayLabel(day, format));
 	});
 

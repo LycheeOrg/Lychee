@@ -219,7 +219,8 @@ export const useSearchStore = defineStore("search-store", {
 					}
 
 					const photos = photosResponse.data;
-					this.photoTilesV3 = photos.ids.map((_, i) => adaptPhotoTile(i, photos, photos.album_ids[i]));
+					const lycheeStore = useLycheeStateStore();
+					this.photoTilesV3 = photos.ids.map((_, i) => adaptPhotoTile(i, photos, photos.album_ids[i], lycheeStore));
 					this.photoRatiosV3 = photos.ratios;
 					this.isTruncatedV3 = photos.is_truncated;
 					this.photoDetailsResolvedIdsV3 = new Set<string>();
@@ -254,8 +255,7 @@ export const useSearchStore = defineStore("search-store", {
 		_adaptAlbums(data: App.Http.Resources.V3.AlbumDataResource, rights: App.Http.Resources.V3.AlbumRightsResource): AdaptedAlbumTile[] {
 			const albumsStore = useAlbumsStore();
 			const userStore = useUserStore();
-			const dateFormat = albumsStore.rootConfig?.date_format_album_thumb ?? "M Y";
-			const dateOrder = albumsStore.rootConfig?.thumb_min_max_order ?? "younger_older";
+			const lycheeStore = useLycheeStateStore();
 			const mayUpload = albumsStore.rootRights?.can_upload;
 
 			const rightsIndexById = new Map<string, number>();
@@ -270,7 +270,7 @@ export const useSearchStore = defineStore("search-store", {
 				const combined =
 					rightsIndex === undefined ? DEFAULT_ALBUM_CHILD_RIGHTS : combineAlbumChildRights(rightsIndex, rights, isOwner, mayUpload);
 
-				return adaptAlbumChildTile(i, data, combined, dateFormat, dateOrder);
+				return adaptAlbumChildTile(i, data, combined, lycheeStore);
 			});
 		},
 

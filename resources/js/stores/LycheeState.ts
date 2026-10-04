@@ -67,6 +67,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_photo_ken_burns_on_hover: true,
 		photo_ken_burns_on_hover_scale: 50,
 		photo_ken_burns_on_hover_duration: 15,
+		date_format_album_thumb: "M Y",
+		thumb_min_max_order: "younger_older" as App.Enum.DateOrderingType,
+		date_format_photo_overlay: "M j, Y, g:i:s A e",
+		date_format_sidebar_uploaded: "M j, Y, g:i:s A e",
+		date_format_sidebar_taken_at: "M j, Y, g:i:s A e",
+		date_scrubber_label_format: "j M Y",
 
 		// Enhanced Album Display
 		is_album_enhanced_display_enabled: false,
@@ -256,6 +262,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_photo_ken_burns_on_hover = data.is_photo_ken_burns_on_hover;
 					this.photo_ken_burns_on_hover_scale = data.photo_ken_burns_on_hover_scale;
 					this.photo_ken_burns_on_hover_duration = data.photo_ken_burns_on_hover_duration;
+					this.date_format_album_thumb = data.date_format_album_thumb;
+					this.thumb_min_max_order = data.thumb_min_max_order;
+					this.date_format_photo_overlay = data.date_format_photo_overlay;
+					this.date_format_sidebar_uploaded = data.date_format_sidebar_uploaded;
+					this.date_format_sidebar_taken_at = data.date_format_sidebar_taken_at;
+					this.date_scrubber_label_format = data.date_scrubber_label_format;
 					this.album_view_mode = data.album_layout;
 
 					this.is_raw_download_enabled = data.is_raw_download_enabled;
