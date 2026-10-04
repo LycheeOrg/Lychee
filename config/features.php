@@ -245,6 +245,19 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Loading indicator
+	 |--------------------------------------------------------------------------
+	 |
+	 | URL of an animation (GIF, WebP, APNG, SVG...) replacing the Lychee
+	 | loading icon. A relative value resolves against the base path of the
+	 | install, e.g. LOADING_INDICATOR_URL=dist/loading.gif.
+	 | Requires a Lychee Supporter Edition licence to take effect.
+	 | When empty and white label is enabled, a plain spinner is shown.
+	 */
+	'loading_indicator_url' => trim((string) env('LOADING_INDICATOR_URL', '')),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Use fopen for URL imports instead of curl
 	 |--------------------------------------------------------------------------
 	 | curl mitigates issues with Time of Check to Time of Use (TOCTOU) attacks, but it may not be available in all environments.

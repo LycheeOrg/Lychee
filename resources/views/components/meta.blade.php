@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 <meta name="mobile-web-app-status-bar-style" content="black">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="lychee-loading-indicator" content="{{ $loading_indicator_mode }}" data-url="{{ $loading_indicator_url }}">
 @if(Features::inactive('white_label_enabled'))
 <meta name="generator" content="Lychee v7">
 @endif
