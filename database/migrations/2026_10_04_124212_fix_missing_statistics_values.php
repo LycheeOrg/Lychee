@@ -17,7 +17,7 @@ return new class extends Migration
     {
 		DB::transaction(function ()  {
 			DB::statement('INSERT INTO statistics (photo_id) SELECT p.id FROM photos p LEFT JOIN statistics s ON s.photo_id = p.id WHERE s.photo_id IS NULL;');
-			DB::statement('INSERT INTO statistics (album_id) SELECT a.id FROM albums a LEFT JOIN statistics s ON s.album_id = a.id WHERE s.album_id IS NULL;');
+			DB::statement('INSERT INTO statistics (album_id) SELECT a.id FROM base_albums a LEFT JOIN statistics s ON s.album_id = a.id WHERE s.album_id IS NULL;');
 		});
     }
 
