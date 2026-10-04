@@ -256,7 +256,7 @@
 					/>
 					<div class="grid grid-cols-2 gap-2 text-sm">
 						<div class="text-muted">Taken:</div>
-						<div>{{ viewingPhoto.taken_at || "Unknown" }}</div>
+						<div>{{ viewingPhoto.preformatted.taken_at || "Unknown" }}</div>
 						<div class="text-muted">Dimensions:</div>
 						<div>{{ viewingPhoto.size_variants.original?.width || "?" }} x {{ viewingPhoto.size_variants.original?.height || "?" }}</div>
 						<div v-if="viewingPhoto.description" class="col-span-2 pt-2 border-t border-default">

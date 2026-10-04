@@ -1,4 +1,4 @@
-import { formatMinMaxDate } from "@/v8/utils/phpDateFormat";
+import { formatMinMaxDate, formatServerDateTime } from "@/v8/utils/phpDateFormat";
 
 /**
  * Safe default: every right `false` until tier 3 resolves — a
@@ -33,7 +33,8 @@ export const DEFAULT_ALBUM_CHILD_RIGHTS: App.Http.Resources.Rights.AlbumRightsRe
  */
 export type AdaptedAlbumTile = App.Http.Resources.Models.ThumbAlbumResource & {
 	cover_id: string | null;
-	/** Raw tier-2 values (Feature 071 date scrubber); `formatted_min_max` is the display form. */
+	/** Raw tier-2 values (Feature 071 date scrubber); `created_at`/`formatted_min_max` are the display forms. */
+	raw_created_at: string | null;
 	min_taken_at: string | null;
 	max_taken_at: string | null;
 };
@@ -133,27 +134,32 @@ export function isRegularAlbumParentOwner(
 }
 
 /**
+ * The `Gallery::Init` date configs an album tile is formatted with —
+ * `useLycheeStateStore()` satisfies this directly.
+ */
+export type AlbumTileDateFormats = Pick<App.Http.Resources.GalleryConfigs.InitConfig, "date_format_album_thumb" | "thumb_min_max_order">;
+
+/**
  * Adapts one tier-2 child (by index) into an `AdaptedAlbumTile`.
  * `thumb`/`timeline` are left `null` — resolved independently by
  * `AlbumThumbVirtual.vue`/`AlbumListItemVirtual.vue` and by
  * bucket-driven sectioning respectively, not read from this
  * object in the flag-on path. `is_pinned`/`is_public`/`is_link_required` are
  * mapped straight through from tier 2 — no client-side
- * computation. `formatted_min_max` is computed client-side.
+ * computation. `created_at`/`formatted_min_max` are formatted client-side
+ * with `date_format_album_thumb`, as `ThumbAlbumResource` does server-side.
  *
  * @param i          Index into tier 2's per-child arrays.
  * @param childrenV3 Tier 2 response (`AlbumDataResource`).
  * @param rights     This child's already-combined rights (or the safe
  *                   all-`false` default before tier 3 resolves).
- * @param dateFormatAlbumThumb `date_format_album_thumb` config value.
- * @param thumbMinMaxOrder     `thumb_min_max_order` config value.
+ * @param dateFormats `date_format_album_thumb`/`thumb_min_max_order`.
  */
 export function adaptAlbumChildTile(
 	i: number,
 	childrenV3: App.Http.Resources.V3.AlbumDataResource,
 	rights: App.Http.Resources.Rights.AlbumRightsResource,
-	dateFormatAlbumThumb: string,
-	thumbMinMaxOrder: App.Enum.DateOrderingType,
+	dateFormats: AlbumTileDateFormats,
 ): AdaptedAlbumTile {
 	return {
 		id: childrenV3.ids[i],
@@ -176,12 +182,18 @@ export function adaptAlbumChildTile(
 		has_subalbum: childrenV3.has_subalbums[i],
 		num_subalbums: childrenV3.num_subalbums[i],
 		num_photos: childrenV3.num_photos[i],
-		created_at: childrenV3.created_ats[i],
-		formatted_min_max: formatMinMaxDate(childrenV3.min_taken_ats[i], childrenV3.max_taken_ats[i], dateFormatAlbumThumb, thumbMinMaxOrder),
+		created_at: formatServerDateTime(childrenV3.created_ats[i], dateFormats.date_format_album_thumb),
+		formatted_min_max: formatMinMaxDate(
+			childrenV3.min_taken_ats[i],
+			childrenV3.max_taken_ats[i],
+			dateFormats.date_format_album_thumb,
+			dateFormats.thumb_min_max_order,
+		),
 		owner: null,
 		rights: rights,
 		timeline: null,
 		cover_id: childrenV3.cover_ids[i],
+		raw_created_at: childrenV3.created_ats[i],
 		min_taken_at: childrenV3.min_taken_ats[i],
 		max_taken_at: childrenV3.max_taken_ats[i],
 	};

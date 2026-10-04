@@ -107,7 +107,8 @@ export const useFlowStateStore = defineStore("flow-store", {
 					return;
 				}
 				const ratios = response.data;
-				const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, albumId));
+				const lycheeStore = useLycheeStateStore();
+				const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, albumId, lycheeStore));
 				// adaptPhotoTile() always sets next/previous_photo_id to null
 				// (SoA-sourced tiles have no such link from the backend) -
 				// link them by array position within this capped preview, the

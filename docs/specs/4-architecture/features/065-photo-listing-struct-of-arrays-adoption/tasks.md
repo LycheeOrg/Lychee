@@ -122,11 +122,12 @@ _Last updated: 2026-09-06 (implementation pass — 39/53 tasks code-complete, de
   - `npm run check`
   _Note (deviation — container width):_ Uses `useElementSize()` (a real, reactive measurement of this component's own outer wrapper `<div>`) rather than a pure viewport-minus-assumed-padding analytic formula (`albumTileWidth.ts`'s approach). `albumTileWidth.ts`'s own doc comment explains it avoided a live measurement because observing an element whose height runs into the *hundreds of thousands of px* (a large virtualized grid) can stall `ResizeObserver`'s callback queue — but that concern is about the element's *height*, not width, and specifically about observing the huge inner content div. `PhotoGridVirtual.vue` observes its bounded-height *outer* wrapper instead, which doesn't hit that failure mode; not calibrating this against `UContainer`'s actual default padding/max-width (unknown without a running dev server) was judged higher-risk than a cheap, accurate live measurement. Flagged for visual confirmation once a dev environment exists.
 
-- [x] T-065-21 – Per-tile date subtitle (F-065-21).
-  _Intent:_ A tile's overlay date renders something reasonable.
+- [x] T-065-21 – Per-tile dates formatted client-side with the v2 date-format configs (F-065-21, NFR-065-07).
+  _Intent:_ A v3 tile shows the same dates as a v2 tile, honouring `date_format_sidebar_uploaded`/`date_format_sidebar_taken_at`/`date_format_photo_overlay` and the photo's original `taken_at` zone.
   _Verification commands:_
+  - `php artisan test --filter=DateFormatsInitTest`
   - `npm run check`
-  _Note (deviation/simplification):_ `date_format_photo_thumb` is not currently exposed to the frontend by any typed config resource (`AlbumConfig`/`RootConfig`/`PhotoLayoutConfig` alike) — unlike `date_format_album_thumb`, which Feature 063 added to those classes for its own equivalent need. Exposing it would require the same kind of small backend Data-resource addition; not done in this pass. `adaptPhotoTile.ts`'s `formatDateForOverlay()` instead uses `Date.prototype.toLocaleDateString()` as a reasonable placeholder — a real, non-broken date renders, just not necessarily in the admin-configured format string. Full parity is a flagged follow-up, not a silent gap: see this function's own doc comment.
+  - PHP `DateTime::format()` vs `formatServerDateTime()` cross-check under `TZ=Europe/Paris` and `TZ=America/New_York` (NFR-065-07).
 
 - [x] T-065-22 – Add `aria-posinset`/`aria-setsize` to `PhotoGridVirtual.vue`'s tile elements, reflecting true position/total, for any mode (F-065-23).
   _Intent:_ Accessibility parity regardless of mounted-subset size or layout mode.
@@ -284,7 +285,7 @@ _Last updated: 2026-09-06 (implementation pass — 39/53 tasks code-complete, de
   _Intent:_ Confirm the photos-only `HOUR` granularity's label formatting is correct.
   _Verification commands:_
   - Manual verification (no automated test suite exists).
-  _Note:_ Not applicable in the way originally framed — bucket **header** labels are never client-formatted at all; `PhotoGridVirtual.vue` renders tier 1's `labels[]` verbatim (already server-formatted per FR-064-06, including the `HOUR` tier), so there is no client-side date-parsing code path to cross-check here. (`phpDateFormat.ts` itself was not used in this pass — see T-065-21's note; a per-tile date subtitle uses a simplified `toLocaleDateString()` placeholder instead, unrelated to bucket headers.)
+  _Note:_ Not applicable in the way originally framed — bucket **header** labels are never client-formatted at all; `PhotoGridVirtual.vue` renders tier 1's `labels[]` verbatim (already server-formatted per FR-064-06, including the `HOUR` tier), so there is no client-side date-parsing code path to cross-check here. Per-tile dates (T-065-21) are a separate concern from bucket headers.
 
 ### I12 – Documentation
 
