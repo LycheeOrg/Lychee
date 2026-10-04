@@ -232,10 +232,8 @@ export const useAlbumsStore = defineStore("albums-store", {
 					const buckets = bucketsResponse.data;
 					const children = childrenResponse.data;
 					const boundaries = computeBucketBoundaries(buckets, children.ids.length);
-					const dateFormat = this.rootConfig?.date_format_album_thumb ?? "M Y";
-					const dateOrder = this.rootConfig?.thumb_min_max_order ?? "younger_older";
-
-					const tiles = children.ids.map((_, i) => adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, dateFormat, dateOrder));
+					const lycheeStore = useLycheeStateStore();
+					const tiles = children.ids.map((_, i) => adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, lycheeStore));
 
 					if (scope === "own") {
 						this.ownBucketsV3 = buckets;

@@ -106,6 +106,7 @@ import { useElementBounding, useElementSize } from "@vueuse/core";
 import { useWindowVirtualizer } from "@tanstack/vue-virtual";
 import { useRoute } from "vue-router";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useTimelineStore } from "@/stores/TimelineState";
 import { useSearchStore } from "@/stores/SearchState";
@@ -174,6 +175,7 @@ const source = computed(() => props.source ?? "album");
 
 const route = useRoute();
 const albumStore = useAlbumStore();
+const lycheeStore = useLycheeStateStore();
 const timelineStore = useTimelineStore();
 const searchStore = useSearchStore();
 const photosStore = usePhotosStore();
@@ -568,7 +570,7 @@ const scrubberLayout = computed<DateScrubLayout | null>(() => {
 	if (source.value !== "album" || field === null) {
 		return null;
 	}
-	const format = albumStore.config?.date_scrubber_label_format ?? "j M Y";
+	const format = lycheeStore.date_scrubber_label_format;
 	const items = layoutResult.value.positioned.map((p) => ({ day: tileDayKey(p.photo, field), top: p.box.top }));
 	const separatorTops = layoutResult.value.headerTops.map((h) => h.top);
 	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (day) => formatDayLabel(day, format));

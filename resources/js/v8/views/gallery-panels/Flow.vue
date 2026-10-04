@@ -175,7 +175,7 @@ function setSelectionV3(albumId: string, photoId: string) {
 			if (ratios.ids.length === 0) {
 				return;
 			}
-			openSelectionV3(albumId, adaptPhotoTile(0, ratios, albumId));
+			openSelectionV3(albumId, adaptPhotoTile(0, ratios, albumId, lycheeStore));
 		})
 		.catch((e) => {
 			if (generation !== flowState.generationV3) {

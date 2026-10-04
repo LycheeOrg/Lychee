@@ -537,15 +537,12 @@ declare namespace App {
 					is_nsfw_warning_visible: boolean;
 					is_breadcrumb_enabled: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
-					date_format_album_thumb: string;
-					thumb_min_max_order: App.Enum.DateOrderingType;
 					photo_layout: App.Enum.PhotoLayoutType;
 					is_album_timeline_enabled: boolean;
 					is_photo_timeline_enabled: boolean;
 					is_date_scrubber_enabled: boolean;
 					photo_date_scrubber_field: string | null;
 					album_date_scrubber_field: string | null;
-					date_scrubber_label_format: string;
 				};
 				export type ContactConfig = {
 					is_contact_form_enabled: boolean;
@@ -618,6 +615,12 @@ declare namespace App {
 					is_photo_ken_burns_on_hover: boolean;
 					photo_ken_burns_on_hover_scale: number;
 					photo_ken_burns_on_hover_duration: number;
+					date_format_album_thumb: string;
+					thumb_min_max_order: App.Enum.DateOrderingType;
+					date_format_photo_overlay: string;
+					date_format_sidebar_uploaded: string;
+					date_format_sidebar_taken_at: string;
+					date_scrubber_label_format: string;
 					album_layout: App.Enum.AlbumLayoutType;
 					is_raw_download_enabled: boolean;
 					is_thumb_download_enabled: boolean;
@@ -772,8 +775,6 @@ declare namespace App {
 					is_search_accessible: boolean;
 					show_keybinding_help_button: boolean;
 					album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
-					date_format_album_thumb: string;
-					thumb_min_max_order: App.Enum.DateOrderingType;
 					back_button_enabled: boolean;
 					back_button_text: string;
 					back_button_url: string;

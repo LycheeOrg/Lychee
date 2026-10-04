@@ -159,11 +159,4 @@ class AlbumConfigDateScrubberTest extends BaseApiWithDataTest
 		self::assertSame('created_at', $config['photo_date_scrubber_field']);
 		self::assertNull($config['album_date_scrubber_field']);
 	}
-
-	public function testLabelFormatComesFromTimelinePhotoDayFormat(): void
-	{
-		$this->setConfig('timeline_photo_date_format_day', 'Y/m/d');
-
-		self::assertSame('Y/m/d', $this->headConfig($this->album1->id)['date_scrubber_label_format']);
-	}
 }

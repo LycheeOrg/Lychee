@@ -356,7 +356,7 @@ Completes the v3 SoA line (062/064/066/067/068) by porting the last un-migrated 
 ### Album Date Scrubber (Feature 071)
 Brings the Timeline's scrubber rail to v8 SoA album views, for albums whose visible content is photos-only or sub-albums-only and is ordered by date (or by title in `DATE_PREFIX` bucket mode).
 
-**Backend**: global config `album_date_scrubber_enabled` (Gallery, default on) → nullable `base_albums.is_date_scrubber_enabled` override. The override is written through the album/tag/person update requests (`HasDateScrubber` contract + trait) as an **optional** field: omitting it leaves the value unchanged, following `published_at`'s Feature 068 precedent, because v7 shares those endpoints and never sends it. `AlbumConfig` resolves `is_date_scrubber_enabled`, `photo_date_scrubber_field` / `album_date_scrubber_field` (the field tiles are dated by, or null when the ordering is not date-based) and `date_scrubber_label_format` (`timeline_photo_date_format_day`). Bucket storage is **not** touched (ADR-071-01).
+**Backend**: global config `album_date_scrubber_enabled` (Gallery, default on) → nullable `base_albums.is_date_scrubber_enabled` override. The override is written through the album/tag/person update requests (`HasDateScrubber` contract + trait) as an **optional** field: omitting it leaves the value unchanged, following `published_at`'s Feature 068 precedent, because v7 shares those endpoints and never sends it. `AlbumConfig` resolves `is_date_scrubber_enabled` and `photo_date_scrubber_field` / `album_date_scrubber_field` (the field tiles are dated by, or null when the ordering is not date-based); the rail's `date_scrubber_label_format` (`timeline_photo_date_format_day`) is served by `InitConfig`. Bucket storage is **not** touched (ADR-071-01).
 
 **Frontend**: `TimelineDatesV3.vue` now has two consumers (Timeline, `AlbumPanel.vue`). Its only change is an additive `countLabelKey` prop. Albums feed it *synthesized day-level entries*, not bucket-tier data: `resources/js/v8/utils/dateScrubber.ts` turns each laid-out tile's date plus its pixel `top` into consecutive same-day runs (`YYYY-MM-DD` ids, `#n` suffix on a recurring day, tops forced monotonic for masonry). `PhotoGridVirtual.vue` (album mode) and both sub-album views (`AlbumThumbGridVirtual.vue`, `AlbumListViewVirtual.vue`, sharing `composables/album/albumDateScrubber.ts`) emit those entries plus their scroll offset and expose `scrollToPixelOffset()`. `composables/album/albumDateScrubberState.ts` holds the module-level state shared by `AlbumPanel.vue` (rail mount) and `AlbumHeader.vue` (viewer toggle, `localStorage` key `lychee.album_date_scrubber_hidden`). Single-kind eligibility is decided client-side from tier-2 tile counts, not the stored `num_children`/`num_photos`, which include items the viewer can't see. See `docs/specs/4-architecture/features/071-album-date-scrubber/` and ADR-071-01.
 
@@ -448,6 +448,11 @@ Key modules:
 - Base URL: `${Constants.getApiUrl()}`
 - Services in `services/` directory
 - Axios for HTTP requests
+
+### Client-Side Date Formatting
+- v3 (struct-of-arrays) endpoints return raw UTC SQL datetimes; v2 resources return server-formatted strings.
+- Every date format the frontend applies is instance-wide and served once by `InitConfig` (`Gallery::Init` → `LycheeState`): `date_format_album_thumb`, `thumb_min_max_order`, `date_format_photo_overlay`, `date_format_sidebar_uploaded`, `date_format_sidebar_taken_at`, `date_scrubber_label_format`. `AlbumConfig`/`RootConfig` carry none.
+- `resources/js/v8/utils/phpDateFormat.ts`: `parseServerDateTime()` (never `new Date(raw)`), `phpDateFormat(format, date, timeZone?)` reproducing PHP `date()`, `formatServerDateTime()`. A photo's `taken_at` formats in its `taken_at_orig_tz`.
 
 ### Money Handling
 - Use `moneyphp/money` library

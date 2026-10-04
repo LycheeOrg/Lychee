@@ -13,7 +13,6 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingType;
-use App\Enum\DateOrderingType;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
@@ -42,8 +41,6 @@ class AlbumConfig extends Data
 	public bool $is_nsfw_warning_visible;
 	public bool $is_breadcrumb_enabled;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
-	public string $date_format_album_thumb;
-	public DateOrderingType $thumb_min_max_order;
 	public PhotoLayoutType $photo_layout;
 	public bool $is_album_timeline_enabled = false;
 	public bool $is_photo_timeline_enabled = false;
@@ -53,8 +50,6 @@ class AlbumConfig extends Data
 	public ?string $photo_date_scrubber_field;
 	/** Feature 071: the field sub-album tiles are dated by on the rail (`created_at`, `min_taken_at`, `max_taken_at`, `title`), or null. */
 	public ?string $album_date_scrubber_field;
-	/** Feature 071: PHP `date()` format for the rail's day labels. */
-	public string $date_scrubber_label_format;
 
 	public function __construct(AbstractAlbum $album)
 	{
@@ -80,9 +75,6 @@ class AlbumConfig extends Data
 			$this->album_thumb_css_aspect_ratio = $config_manager->getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		}
 
-		$this->date_format_album_thumb = $config_manager->getValueAsString('date_format_album_thumb');
-		$this->thumb_min_max_order = $config_manager->getValueAsEnum('thumb_min_max_order', DateOrderingType::class);
-
 		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? $config_manager->getValueAsEnum('layout', PhotoLayoutType::class);
 
 		// Set default values.
@@ -102,7 +94,6 @@ class AlbumConfig extends Data
 		$this->is_date_scrubber_enabled = self::resolveDateScrubberEnabled($album, $config_manager);
 		$this->photo_date_scrubber_field = self::resolvePhotoDateScrubberField($album, $config_manager);
 		$this->album_date_scrubber_field = self::resolveAlbumDateScrubberField($album, $config_manager);
-		$this->date_scrubber_label_format = $config_manager->getValueAsString('timeline_photo_date_format_day');
 
 		// Masking to require login for timeline or allow it to be public.
 		$this->is_photo_timeline_enabled = $this->is_photo_timeline_enabled && ($config_manager->getValueAsBool('timeline_photos_public') || Auth::check());

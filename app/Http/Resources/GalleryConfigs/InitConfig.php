@@ -13,6 +13,7 @@ use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumHeaderSize;
 use App\Enum\AlbumLayoutType;
+use App\Enum\DateOrderingType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\FacePermissionMode;
 use App\Enum\FlowStrategy;
@@ -82,6 +83,14 @@ class InitConfig extends Data
 	public bool $is_photo_ken_burns_on_hover;
 	public int $photo_ken_burns_on_hover_scale;
 	public int $photo_ken_burns_on_hover_duration;
+
+	// Date formats applied client-side (PHP `date()` format strings)
+	public string $date_format_album_thumb;
+	public DateOrderingType $thumb_min_max_order;
+	public string $date_format_photo_overlay;
+	public string $date_format_sidebar_uploaded;
+	public string $date_format_sidebar_taken_at;
+	public string $date_scrubber_label_format;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -259,6 +268,14 @@ class InitConfig extends Data
 		$this->is_photo_ken_burns_on_hover = request()->configs()->getValueAsBool('photo_ken_burns_on_hover_enabled');
 		$this->photo_ken_burns_on_hover_scale = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_scale');
 		$this->photo_ken_burns_on_hover_duration = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_duration');
+
+		// Date formats applied client-side
+		$this->date_format_album_thumb = request()->configs()->getValueAsString('date_format_album_thumb');
+		$this->thumb_min_max_order = request()->configs()->getValueAsEnum('thumb_min_max_order', DateOrderingType::class);
+		$this->date_format_photo_overlay = request()->configs()->getValueAsString('date_format_photo_overlay');
+		$this->date_format_sidebar_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
+		$this->date_format_sidebar_taken_at = request()->configs()->getValueAsString('date_format_sidebar_taken_at');
+		$this->date_scrubber_label_format = request()->configs()->getValueAsString('timeline_photo_date_format_day');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
