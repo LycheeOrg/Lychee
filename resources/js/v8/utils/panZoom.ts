@@ -130,6 +130,17 @@ export function midpoint(a: Point, b: Point): Point {
 }
 
 /** A gesture is a tap when it used one pointer and barely moved (FR-078-07). */
+/** Vertical wheel delta in pixels, whatever the event's delta mode (1 = `DOM_DELTA_LINE`, 2 = `DOM_DELTA_PAGE`). */
+export function wheelDelta(event: { deltaY: number; deltaMode: number }, containerHeight: number): number {
+	if (event.deltaMode === 1) {
+		return event.deltaY * 16;
+	}
+	if (event.deltaMode === 2) {
+		return event.deltaY * containerHeight;
+	}
+	return event.deltaY;
+}
+
 export function isTap(start: Point, end: Point, maxPointers: number): boolean {
 	return maxPointers === 1 && distance(start, end) <= TAP_SLOP;
 }

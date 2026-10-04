@@ -91,6 +91,7 @@ class QuerySearchPhotos
 			'photos.created_at',
 			'photos.taken_at_orig_tz',
 			'photos.live_photo_short_path',
+			'photos.is_360',
 			'photos.rating_avg',
 		];
 
@@ -204,6 +205,7 @@ class QuerySearchPhotos
 		$is_videos = [];
 		$is_raws = [];
 		$is_live_photos = [];
+		$is_360s = [];
 		$taken_ats = [];
 		$created_ats = [];
 		$taken_at_orig_tzs = [];
@@ -233,6 +235,7 @@ class QuerySearchPhotos
 			$is_videos[] = $is_video;
 			$is_raws[] = !$is_photo && !$is_video;
 			$is_live_photos[] = $row->live_photo_short_path !== null && $row->live_photo_short_path !== '';
+			$is_360s[] = DbBool::parse($row->is_360);
 			$taken_ats[] = $row->taken_at;
 			$created_ats[] = $row->created_at;
 			$taken_at_orig_tzs[] = $row->taken_at_orig_tz;
@@ -267,6 +270,7 @@ class QuerySearchPhotos
 			is_videos: $is_videos,
 			is_raws: $is_raws,
 			is_live_photos: $is_live_photos,
+			is_360s: $is_360s,
 			taken_ats: $taken_ats,
 			created_ats: $created_ats,
 			taken_at_orig_tzs: $taken_at_orig_tzs,

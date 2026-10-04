@@ -59,6 +59,7 @@ return [
         'edit' => 'Редактировать информацию',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Toggle face overlay',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Мы оставим это скрытым.',
         'button_hidden' => 'Мы скроем кнопку в шапке.',
     ],

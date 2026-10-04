@@ -51,6 +51,7 @@ class RequestAttribute
 	public const TAKEN_DATE_ATTRIBUTE = 'taken_at';
 	public const DESCRIPTION_ATTRIBUTE = 'description';
 	public const LICENSE_ATTRIBUTE = 'license';
+	public const IS_360_ATTRIBUTE = 'is_360';
 	public const ASPECT_RATIO_ATTRIBUTE = 'aspect_ratio';
 	public const ALBUM_ASPECT_RATIO_ATTRIBUTE = 'album_aspect_ratio';
 

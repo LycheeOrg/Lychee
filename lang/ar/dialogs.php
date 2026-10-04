@@ -60,6 +60,7 @@ return [
         'edit' => 'تعديل المعلومات',
         'show_hide_meta' => 'إظهار المعلومات',
         'toggle_face_overlay' => 'تبديل تراكب الوجوه',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'سنحافظ على إخفائها.',
         'button_hidden' => 'سنخفي الزر في الرأس.',
     ],

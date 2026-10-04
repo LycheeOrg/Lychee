@@ -59,6 +59,7 @@ return [
         'edit' => 'Редактирай информацията',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Toggle face overlay',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Ще го запазим скрито.',
         'button_hidden' => 'Бутонът ще бъде скрит от заглавната лента.',
     ],

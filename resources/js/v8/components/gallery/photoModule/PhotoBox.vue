@@ -5,14 +5,14 @@
 		ref="containerEl"
 		class="absolute top-0 left-0 w-full h-full flex items-center justify-center overflow-hidden"
 		:class="{
-			'pt-14': photoStore.imageViewMode === ImageViewMode.Pdf && !is_full_screen,
+			'pt-14': viewMode === ImageViewMode.Pdf && !is_full_screen,
 			'touch-none': isZoomable,
 		}"
 		:style="{ cursor }"
 	>
 		<!--  This is a video file: put html5 player -->
 		<video
-			v-if="photoStore.imageViewMode == ImageViewMode.Video"
+			v-if="viewMode == ImageViewMode.Video"
 			id="image"
 			ref="videoElement"
 			width="auto"
@@ -29,7 +29,7 @@
 		</video>
 		<!-- This is a raw file: put a place holder -->
 		<embed
-			v-if="photoStore.imageViewMode == ImageViewMode.Pdf"
+			v-if="viewMode == ImageViewMode.Pdf"
 			id="image"
 			alt="pdf"
 			:title="photoStore.photo.title"
@@ -44,7 +44,7 @@
 		/>
 		<!-- This is a raw file: put a place holder -->
 		<img
-			v-if="photoStore.imageViewMode == ImageViewMode.Raw"
+			v-if="viewMode == ImageViewMode.Raw"
 			id="image"
 			alt="placeholder"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
@@ -54,7 +54,7 @@
 		<div class="absolute inset-0 flex items-center justify-center select-none" :style="layerStyle">
 			<!-- This is a normal image: medium or original -->
 			<img
-				v-if="photoStore.imageViewMode == ImageViewMode.Medium"
+				v-if="viewMode == ImageViewMode.Medium"
 				ref="imageEl"
 				id="image"
 				alt="medium"
@@ -70,7 +70,7 @@
 				@load="updateFaceOverlay"
 			/>
 			<img
-				v-if="photoStore.imageViewMode == ImageViewMode.Original"
+				v-if="viewMode == ImageViewMode.Original"
 				ref="imageEl"
 				id="image"
 				alt="big"
@@ -85,20 +85,30 @@
 			/>
 			<!-- Face overlay: positioned to exactly match the rendered image via its layout offsets -->
 			<div
-				v-if="isFaceEnabled && (loadedFaces.length > 0 || hiddenFaceCount > 0)"
+				v-if="isFaceEnabled && viewMode !== ImageViewMode.Sphere && (loadedFaces.length > 0 || hiddenFaceCount > 0)"
 				class="absolute z-10 pointer-events-none"
 				:style="faceOverlayStyle"
 			>
 				<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
 			</div>
 			<!-- NSFW detection overlay: positioned to match the rendered image -->
-			<div v-if="isNsfwEnabled && loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+			<div
+				v-if="isNsfwEnabled && viewMode !== ImageViewMode.Sphere && loadedNsfwDetections.length > 0"
+				class="absolute z-10 pointer-events-none"
+				:style="faceOverlayStyle"
+			>
 				<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 			</div>
 		</div>
+		<!-- This is a 360° photo: sphere view (Feature 082) -->
+		<SphereView
+			v-if="viewMode === ImageViewMode.Sphere"
+			:photo="photoStore.photo"
+			@unavailable="photoStore.markSphereFailed(photoStore.photo.id)"
+		/>
 		<!-- This is a livephoto : medium -->
 		<div
-			v-if="photoStore.imageViewMode == ImageViewMode.LivePhotoMedium"
+			v-if="viewMode == ImageViewMode.LivePhotoMedium"
 			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
@@ -111,7 +121,7 @@
 		></div>
 		<!-- This is a livephoto : full -->
 		<div
-			v-if="photoStore.imageViewMode == ImageViewMode.LivePhotoOriginal"
+			v-if="viewMode == ImageViewMode.LivePhotoOriginal"
 			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
@@ -153,7 +163,7 @@ import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
 import * as LivePhotosKit from "livephotoskit";
 import { storeToRefs } from "pinia";
-import { computed, markRaw, nextTick, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
+import { computed, defineAsyncComponent, markRaw, nextTick, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore, type ZoomControls } from "@/stores/PhotoState";
 import FaceOverlay from "./FaceOverlay.vue";
@@ -177,6 +187,9 @@ import {
 } from "@/v8/utils/panZoom";
 
 const { isLTR } = useLtRorRtL();
+
+// Lazy chunk: only fetched when a 360° photo is shown (NFR-082-02).
+const SphereView = defineAsyncComponent(() => import("./SphereView.vue"));
 
 const containerEl = ref<HTMLElement | null>(null);
 const videoElement = ref<HTMLVideoElement | null>(null);
@@ -226,10 +239,18 @@ const emits = defineEmits<{
 // ---- Pan & zoom (Feature 078) ----
 
 /** FR-078-02. */
+/**
+ * Feature 082 (FR-082-08): the main lightbox draws 360° photos as a sphere;
+ * the Flow and Moderation previews and the slideshow keep the store's flat mode.
+ */
+const viewMode = computed(() =>
+	props.isZoomEnabled === true && !is_slideshow_active.value && photoStore.isSphereView ? ImageViewMode.Sphere : photoStore.imageViewMode,
+);
+
 const isZoomable = computed(
 	() =>
 		props.isZoomEnabled === true &&
-		(photoStore.imageViewMode === ImageViewMode.Medium || photoStore.imageViewMode === ImageViewMode.Original) &&
+		(viewMode.value === ImageViewMode.Medium || viewMode.value === ImageViewMode.Original) &&
 		!is_slideshow_active.value,
 );
 const isClickZoom = computed(() => lycheeStore.photo_click_action === "zoom");
@@ -570,7 +591,8 @@ function isPageZoomed(): boolean {
 useSwipe(containerEl, {
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
-		if (isPageZoomed() || panZoom.isSwipeBlocked()) {
+		// FR-082-10: in the sphere a drag looks around, never navigates.
+		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked()) {
 			return;
 		}
 		if (direction === "left" && isLTR()) {

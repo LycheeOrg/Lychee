@@ -59,6 +59,7 @@ return [
         'edit' => 'Editar información',
         'show_hide_meta' => 'Show information',
         'toggle_face_overlay' => 'Activar/desactivar la superposición de la cara',
+        'toggle_sphere' => 'Switch 360° photo between sphere and flat',
         'keep_hidden' => 'Lo mantendremos oculto.',
         'button_hidden' => 'Ocultaremos el botón en el encabezado.',
     ],
