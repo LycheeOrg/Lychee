@@ -106,8 +106,8 @@ class Detect360Test extends BaseApiWithDataTest
 		$sphere = $this->upload360(TestConstants::SAMPLE_FILE_PHOTOSPHERE);
 		$photos = [$sphere, $this->upload360(TestConstants::SAMPLE_FILE_HOCHUFERWEG)];
 		$this->uncheck(...$photos);
-		usort($photos, fn (Photo $a, Photo $b) => strcmp($a->id, $b->id));
-		[$first, $second] = $photos;
+		// Order as the database does: its collation of ids is not byte order on MySQL/PostgreSQL.
+		[$first, $second] = Photo::query()->with('size_variants')->whereIn('id', array_map(fn (Photo $p) => $p->id, $photos))->orderBy('id')->get()->all();
 		$first->size_variants->getOriginal()->getFile()->delete();
 
 		$this->artisan('lychee:detect_360', ['limit' => 1])
