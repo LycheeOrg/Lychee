@@ -4846,16 +4846,16 @@
         },
         {
             "name": "mavinoo/laravel-batch",
-            "version": "v2.4.1",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mavinoo/laravelBatch.git",
-                "reference": "8f85ba2923b63bfad8b9181ef210094eba47b5ec"
+                "reference": "cfd9e6745bc0a559b3747b8b9d0e3a14f4b833f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mavinoo/laravelBatch/zipball/8f85ba2923b63bfad8b9181ef210094eba47b5ec",
-                "reference": "8f85ba2923b63bfad8b9181ef210094eba47b5ec",
+                "url": "https://api.github.com/repos/mavinoo/laravelBatch/zipball/cfd9e6745bc0a559b3747b8b9d0e3a14f4b833f1",
+                "reference": "cfd9e6745bc0a559b3747b8b9d0e3a14f4b833f1",
                 "shasum": ""
             },
             "require": {
@@ -4896,9 +4896,9 @@
             "description": "Insert and update batch (bulk) in laravel",
             "support": {
                 "issues": "https://github.com/mavinoo/laravelBatch/issues",
-                "source": "https://github.com/mavinoo/laravelBatch/tree/v2.4.1"
+                "source": "https://github.com/mavinoo/laravelBatch/tree/v2.5.0"
             },
-            "time": "2024-09-17T11:09:20+00:00"
+            "time": "2026-01-08T07:37:42+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -18654,5 +18654,5 @@
     "platform-overrides": {
         "php": "8.4.24"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
