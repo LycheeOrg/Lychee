@@ -12,6 +12,23 @@ WORKDIR /app
 # Copy composer files first for layer caching
 COPY composer.json composer.lock ./
 
+# Telemetry flavor: add the OpenTelemetry SDK, the OTLP exporter and the
+# auto-instrumentation packages, which composer.json only suggests.
+ARG TELEMETRY=false
+RUN if [ "$TELEMETRY" = "true" ]; then \
+    composer require \
+    --no-install \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --ignore-platform-reqs \
+    open-telemetry/sdk:^1.15 \
+    open-telemetry/exporter-otlp:^1.4 \
+    open-telemetry/opentelemetry-auto-laravel:^1.8 \
+    open-telemetry/opentelemetry-auto-guzzle:^1.4 \
+    open-telemetry/opentelemetry-auto-pdo:^0.5.0; \
+    fi
+
 # Install dependencies (no dev packages for production)
 # Remove markdown and test directories to slim down the image
 RUN composer install \
@@ -113,13 +130,20 @@ RUN apt-get update \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
+# Telemetry flavor: native OpenTelemetry hooks and protobuf encoding
+ARG TELEMETRY=false
+RUN if [ "$TELEMETRY" = "true" ]; then \
+    install-php-extensions opentelemetry protobuf; \
+    fi
+
 WORKDIR /app
 
 # Copy application code
 COPY --chown=www-data:www-data . .
 
-# Copy vendor from composer stage
+# Copy vendor and the matching composer files from composer stage
 COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=composer --chown=www-data:www-data /app/composer.json /app/composer.lock ./
 
 # Copy built frontend assets from node stage
 COPY --from=node --chown=www-data:www-data /app/public/build ./public/build

@@ -88,7 +88,6 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: 8.4
-          extensions: opentelemetry
 
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -120,7 +119,6 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: 8.4
-          extensions: opentelemetry
 
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -150,7 +148,6 @@ jobs:
         with:
           php-version: 8.4
           coverage: none
-          extensions: opentelemetry
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
@@ -177,7 +174,6 @@ jobs:
         with:
           php-version: 8.4
           coverage: none
-          extensions: opentelemetry
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
@@ -221,7 +217,7 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: 8.4
-          extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip, opentelemetry
+          extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip
           coverage: xdebug
           tools: pecl, composer
 
@@ -248,8 +244,16 @@ jobs:
     uses: ./.github/workflows/php_dist.yml
 
   docker_check:
-    name: 3️⃣ Dockerfile Lint
+    name: 3️⃣ Dockerfile Lint ${{ matrix.suffix }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - telemetry: false
+            suffix: ''
+          - telemetry: true
+            suffix: '-telemetry'
     if: always() && (needs.phpstan.result == 'success' || needs.phpstan.result == 'skipped') && (needs.check_js.result == 'success' || needs.check_js.result == 'skipped')
     needs:
       - phpstan
@@ -274,7 +278,7 @@ jobs:
           failure-threshold: warning
 
       - name: Build Docker image locally
-        run: docker build -t lychee:local .
+        run: docker build --build-arg TELEMETRY=${{ matrix.telemetry }} -t lychee:local .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -287,8 +291,16 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   docker_build:
-    name:  4️⃣ Build Docker Image
+    name:  4️⃣ Build Docker Image ${{ matrix.suffix }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - telemetry: false
+            suffix: ''
+          - telemetry: true
+            suffix: '-telemetry'
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
       (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
@@ -337,6 +349,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           flavor: |
             latest=${{ startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-rc') }}
+            suffix=${{ matrix.suffix }},onlatest=true
           tags: |
             # define default branch
             type=edge,branch=master
@@ -352,14 +365,23 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=image-frankenphp
-          cache-to: type=gha,scope=image-frankenphp,mode=max
+          cache-from: type=gha,scope=image-frankenphp${{ matrix.suffix }}
+          cache-to: type=gha,scope=image-frankenphp${{ matrix.suffix }},mode=max
           build-args: |
             NODE_ENV=production
+            TELEMETRY=${{ matrix.telemetry }}
 
   docker_legacy_check:
-    name: 3️⃣ Legacy Dockerfile Lint
+    name: 3️⃣ Legacy Dockerfile Lint${{ matrix.suffix }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - telemetry: false
+            suffix: '-legacy'
+          - telemetry: true
+            suffix: '-legacy-telemetry'
     if: always() && (needs.phpstan.result == 'success' || needs.phpstan.result == 'skipped') && (needs.check_js.result == 'success' || needs.check_js.result == 'skipped')
     needs:
       - phpstan
@@ -384,7 +406,7 @@ jobs:
           failure-threshold: warning
 
       - name: Build Docker image locally
-        run: docker build -f Dockerfile-legacy -t lychee:local-legacy .
+        run: docker build -f Dockerfile-legacy --build-arg TELEMETRY=${{ matrix.telemetry }} -t lychee:local-legacy .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -397,8 +419,16 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   docker_legacy_build:
-    name:  4️⃣ Build Legacy Docker Image
+    name:  4️⃣ Build Legacy Docker Image${{ matrix.suffix }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - telemetry: false
+            suffix: '-legacy'
+          - telemetry: true
+            suffix: '-legacy-telemetry'
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
       (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
@@ -447,7 +477,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           flavor: |
             latest=${{ startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-rc') }}
-            suffix=-legacy,onlatest=true
+            suffix=${{ matrix.suffix }},onlatest=true
           tags: |
             # define default branch
             type=edge,branch=master
@@ -464,10 +494,11 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=image-legacy
-          cache-to: type=gha,scope=image-legacy,mode=max
+          cache-from: type=gha,scope=image${{ matrix.suffix }}
+          cache-to: type=gha,scope=image${{ matrix.suffix }},mode=max
           build-args: |
             NODE_ENV=production
+            TELEMETRY=${{ matrix.telemetry }}
 
   createArtifact:
     name: 3️⃣ Build Artifact
@@ -483,7 +514,7 @@ jobs:
       id-token: write
       attestations: write
     env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip, opentelemetry
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
 
     steps:
       - name: Harden Runner
@@ -559,7 +590,7 @@ jobs:
       contents: write
       id-token: write
     env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip, opentelemetry
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
 
     steps:
       - name: Install Cosign

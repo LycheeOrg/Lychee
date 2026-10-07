@@ -33,6 +33,13 @@ x-base-lychee-setup:
   # There are also other images available which uses nginx as a base instead of FrankenPHP:
   # - ghcr.io/lycheeorg/lychee:latest-legacy
   # - ghcr.io/lycheeorg/lychee:edge-legacy
+  #
+  # Each image also exists with OpenTelemetry tracing installed, by adding `-telemetry`:
+  # - ghcr.io/lycheeorg/lychee:latest-telemetry
+  # - ghcr.io/lycheeorg/lychee:edge-telemetry
+  # - ghcr.io/lycheeorg/lychee:latest-legacy-telemetry
+  # - ghcr.io/lycheeorg/lychee:edge-legacy-telemetry
+  # Tracing stays off until OTEL_PHP_AUTOLOAD_ENABLED=true is set (see .env.example).
   &base-lychee-setup
   image: ghcr.io/lycheeorg/lychee:latest
 
