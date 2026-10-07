@@ -5,12 +5,12 @@
 			<img
 				v-if="imgSrc !== ''"
 				alt="Random Image"
-				class="h-[95%] w-[95%] object-contain filter drop-shadow-black"
+				class="h-[95%] w-[95%] object-contain filter drop-shadow-black z-10"
 				:src="imgSrc"
 				:srcset="imgSrcset"
 			/>
 		</div>
-		<div id="shutter" class="absolute w-screen h-dvh bg-neutral-950 transition-opacity duration-1000 ease-in-out top-0 left-0"></div>
+		<div id="shutter" class="absolute w-screen h-dvh bg-neutral-950 transition-opacity duration-1000 ease-in-out top-0 left-0 z-20"></div>
 		<div class="absolute top-0 ltr:left-0 rtl:right-0 p-3">
 			<GoBack @go-back="goBack" />
 		</div>
