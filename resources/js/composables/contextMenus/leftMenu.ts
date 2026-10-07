@@ -39,8 +39,6 @@ export function useLeftMenu(
 	const { rights } = storeToRefs(globalRightsStore);
 	const {
 		clockwork_url,
-		is_se_enabled,
-		is_se_preview_enabled,
 		is_se_info_hidden,
 		is_favourite_enabled,
 		is_timeline_page_enabled,
@@ -314,19 +312,6 @@ export function useLeftMenu(
 				icon: "cloud",
 				route: "/sharing",
 				access: rights.value.root_album.can_upload ?? false,
-			},
-			{
-				label: "statistics.title",
-				icon: "bar-chart",
-				route: "/statistics",
-				access: is_se_enabled.value === true,
-			},
-			{
-				label: "statistics.title",
-				icon: "bar-chart",
-				route: "/statistics",
-				access: is_se_enabled.value === false && is_se_preview_enabled.value === true,
-				seTag: true,
 			},
 			{
 				label: "renamer.title",

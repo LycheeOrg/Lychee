@@ -19,6 +19,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
 | ~~Q-085-11~~ | 085 – Library insights | Medium | What does the Places section show? (A located count and share plus a link to the existing map · B parse a country from `location` · C no Places section) | Resolved (Option A — located count and share plus map link; owner, 2026-10-05; spec FR-085-14) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-12~~ | 085 – Library insights | Medium | Do insights apply to an album subtree? (A not in this feature · B album scope selector on the page · C replace the album statistics drawer) | Resolved (Option A — no album scope in this feature; owner, 2026-10-05; spec Non-Goals) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-13~~ | 085 – Library insights | High | Which chart library? (A ECharts + vue-echarts · B Chart.js + vue-chartjs + matrix and treemap plugins · C unovis) | Resolved (Option A — ECharts + vue-echarts, SVG renderer, lazy chunk; owner, 2026-10-05; spec NFR-085-07; ADR-085-04) | 2026-10-05 | 2026-10-05 |
+| ~~Q-085-14~~ | 085 – Library insights | High | Who may scope Insights to an album, and which photos count? (A owned album + descendants, all their photos; admins any album · B any accessible album, only the sub-albums the viewer can access · C owned album only, no descendants) | Resolved (Option A — owned album and descendants, every photo in them, administrators any album; owner, 2026-10-07; spec FR-085-16, S-085-20 … S-085-23; ADR-085-02) | 2026-10-07 | 2026-10-07 |
 
 ## Question Details
 
@@ -214,3 +215,20 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
   - ❌ No radar and no calendar layout (built by hand); no streamgraph.
 
 **Resolution:** Option A, recorded in [spec.md](spec.md) NFR-085-07 and [ADR-085-04](../../../6-decisions/ADR-085-04-echarts-chart-library.md).
+
+### ~~Q-085-14~~ – Album scope
+
+**Context:** The owner asked to dive into one album on the Insights page (Q-085-12 kept album scope out). Albums are a nested set (`_lft`/`_rgt`); an album can hold photos of several owners, and each sub-album has its own access permissions. Owner scope (ADR-085-02) needs no access query; an album scope does unless it is limited to owned albums.
+
+- **Option A (chosen):** Album selector on the Insights page listing the viewer's own albums (administrators: every album). The scope is the album and its descendants, counting every photo in them whoever uploaded it.
+  - ✅ One rights check (album ownership), same principle as ADR-085-02.
+  - ✅ Trips and events usually live in one owned album tree.
+  - ❌ Viewers of a shared album cannot analyse it.
+- **Option B:** Any album the viewer can access; descendants count only where the viewer has access too.
+  - ✅ Works for shared family galleries.
+  - ❌ Per-album access query on every aggregate and in the cache key.
+- **Option C:** Owned album only, no descendants.
+  - ✅ Simplest query.
+  - ❌ Parent albums of a trip show nothing.
+
+**Resolution:** Option A, recorded in [spec.md](spec.md) FR-085-16, S-085-20 … S-085-23 and [ADR-085-02](../../../6-decisions/ADR-085-02-owner-scoped-insights.md).

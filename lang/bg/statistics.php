@@ -26,20 +26,6 @@ return [
         'size' => 'Размер',
     ],
 
-    'punch_card' => [
-        'title' => 'Активност',
-        'photo-taken' => '%d направени снимки',
-        'photo-taken-in' => '%d направени снимки в %d',
-        'photo-uploaded' => '%d качени снимки',
-        'photo-uploaded-in' => '%d качени снимки в %d',
-        'with-exif' => 'с EXIF данни',
-        'less' => 'По-малко',
-        'more' => 'Повече',
-        'tooltip' => '%d снимки на %s',
-        'created_at' => 'Дата на качване',
-        'taken_at' => 'Дата на заснемане',
-        'caption' => 'Всяка колона представя седмица.',
-    ],
 
     'metrics' => [
         'header' => 'Live метрики',

@@ -138,8 +138,8 @@ export const paths: RoutePath[] = [
 		path: "/sharing",
 	},
 	{
-		name: "statistics",
-		path: "/statistics",
+		name: "insights",
+		path: "/insights",
 	},
 	{
 		name: "users",
