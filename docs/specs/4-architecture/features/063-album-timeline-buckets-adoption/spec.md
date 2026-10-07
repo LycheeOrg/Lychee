@@ -239,6 +239,7 @@ Reuses Feature 061's existing `Feature_v3` fixture graph (bucketed parents, righ
 | UI-063-12 *(2026-09-02 full-scope addendum)* | Root gallery, own-albums section, flag on | Virtualized/bucketed grid with a "My Albums"-equivalent title, sticky date/title headers, bounded DOM node count (FR-063-24/29). |
 | UI-063-13 *(2026-09-02 full-scope addendum)* | Root gallery, shared-albums section, flag on | Virtualized/bucketed-by-owner grid, sticky owner-name headers, no outer title (FR-063-24). |
 | UI-063-14 *(2026-09-02 full-scope addendum)* | Root gallery, tags/persons/pinned sections, flag on | Tiles sourced from their respective v3 endpoints; tags alone offers working right-click edit/delete (FR-063-25/26/27). |
+| UI-063-15 | Drag selection from an album (v8) | Pressing on an album tile (grid, list row or its links; sub-albums and root gallery) and moving at least 4 px starts the drag selection, exactly as for photos (Feature 065 UI-065-11): a press without that movement stays a click (opens the album, or toggles it with Ctrl/Cmd/Shift), the click ending a drag is swallowed so the album does not open, and the browser's native link/image drag is cancelled for opted-in tiles (`data-drag-select-start="true"`). |
 
 ## Telemetry & Observability
 

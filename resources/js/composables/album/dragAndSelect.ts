@@ -180,6 +180,16 @@ export function useDragAndSelect(
 		start(e);
 	}
 
+	/**
+	 * Opted-in tiles are links and images, which the browser drags natively:
+	 * that would swallow the mouse events the selection needs.
+	 */
+	function preventNativeTileDrag(e: DragEvent) {
+		if (isDragStartTile(e.target)) {
+			e.preventDefault();
+		}
+	}
+
 	function waitForTileDrag(e: MouseEvent) {
 		tilePress = e;
 		document.addEventListener("mousemove", startOnceMoved);
@@ -545,5 +555,6 @@ export function useDragAndSelect(
 		initialPosition,
 		position,
 		show,
+		preventNativeTileDrag,
 	};
 }

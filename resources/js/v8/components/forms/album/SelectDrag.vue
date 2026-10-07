@@ -21,12 +21,19 @@ const props = defineProps<{
 	withScroll: boolean;
 }>();
 
-const { initialPosition, position, show } = useDragAndSelect(togglableStore, albumsStore, photosStore, props.withScroll ?? true);
+const { initialPosition, position, show, preventNativeTileDrag } = useDragAndSelect(
+	togglableStore,
+	albumsStore,
+	photosStore,
+	props.withScroll ?? true,
+);
 
 onMounted(() => {
 	document.getElementById("galleryView")?.addEventListener("mousedown", show);
+	document.getElementById("galleryView")?.addEventListener("dragstart", preventNativeTileDrag);
 });
 onUnmounted(() => {
 	document.getElementById("galleryView")?.removeEventListener("mousedown", show);
+	document.getElementById("galleryView")?.removeEventListener("dragstart", preventNativeTileDrag);
 });
 </script>

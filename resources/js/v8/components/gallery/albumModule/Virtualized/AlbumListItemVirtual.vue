@@ -5,6 +5,7 @@
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
 		:data-album-id="album.id"
+		data-drag-select-start="true"
 		@click="maySelect($event, album.id)"
 		@contextmenu="propagateContexted($event, album.id)"
 	>
@@ -23,6 +24,7 @@
 		</div>
 		<!-- Thumbnail -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="relative block h-8 md:h-5 shrink-0"
 			:class="{
@@ -49,6 +51,7 @@
 
 		<!-- Content (title + counts) -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right"
 		>
