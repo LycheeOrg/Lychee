@@ -40,6 +40,6 @@ class ExtractGoogleMotionPictures extends AbstractStandalonePipe
 
 	protected function getSpanName(): string
 	{
-		return 'photo.set_original_checksum';
+		return 'photo.extract_google_motion_pictures';
 	}
 }

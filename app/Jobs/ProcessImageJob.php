@@ -59,8 +59,6 @@ class ProcessImageJob implements ShouldQueue
 	public ?string $title;
 	public ?string $description;
 
-	private TraceService $trace;
-
 	/**
 	 * Create a new job instance.
 	 */
@@ -73,7 +71,6 @@ class ProcessImageJob implements ShouldQueue
 		?string $title = null,
 		?string $description = null,
 	) {
-		$this->trace = app(TraceService::class);
 		$this->file_path = $file->getPath();
 		$this->original_base_name = $file->getOriginalBasename();
 
@@ -135,10 +132,10 @@ class ProcessImageJob implements ShouldQueue
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
 	 */
-	public function handle(AlbumFactory $album_factory): Photo
+	public function handle(AlbumFactory $album_factory, TraceService $trace): Photo
 	{
-		return $this->trace->traceMethod('photo.process-execution', function () use ($album_factory) {
-			$this->trace->addEventWithMemToCurrentSpan('Process image');
+		return $trace->traceMethod('photo.process-execution', function () use ($album_factory, $trace) {
+			$trace->addEventWithMemToCurrentSpan('Process image');
 
 			$this->history->status = JobStatus::STARTED;
 			$this->history->save();

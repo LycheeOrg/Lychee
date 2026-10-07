@@ -11,6 +11,7 @@ namespace App\Services\Telemetry;
 use App\Contracts\Telemetry\TraceServiceInterface;
 use OpenTelemetry\API\Globals;
 use OpenTelemetry\API\Trace\Span;
+use OpenTelemetry\API\Trace\StatusCode;
 
 final class TraceService implements TraceServiceInterface
 {
@@ -64,6 +65,11 @@ final class TraceService implements TraceServiceInterface
 			]);
 
 			return $result;
+		} catch (\Throwable $e) {
+			$span->recordException($e);
+			$span->setStatus(StatusCode::STATUS_ERROR, $e->getMessage());
+
+			throw $e;
 		} finally {
 			$scope->detach();
 			$span->end();

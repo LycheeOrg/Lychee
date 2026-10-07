@@ -25,7 +25,7 @@ class MayLoadFileMetadata extends LoadFileMetadata
 	{
 		if ($state->import_mode->shall_resync_metadata) {
 			// Load the metadata from the file
-			return parent::handle($state, $next);
+			return parent::execute($state, $next);
 		}
 
 		return $next($state);
