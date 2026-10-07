@@ -8,17 +8,41 @@
 
 namespace App\Http\Resources\Traits;
 
+use App\Actions\Map\QueryAlbumMapPoints;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Policies\AlbumPolicy;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 trait HasHeaderUrl
 {
+	/**
+	 * Whether the album header is drawn as the map of its photos (Feature 086,
+	 * FR-086-04). When false for a `map` album, {@see self::getHeaderUrl()}
+	 * provides the random-photo fallback.
+	 */
+	protected function isMapHeaderShown(Album $album): bool
+	{
+		return self::isMapHeaderId($album->header_id) &&
+			!request()->configs()->getValueAsBool('use_album_compact_header') &&
+			Gate::check(AlbumPolicy::CAN_ACCESS_MAP, [AbstractAlbum::class, $album]) &&
+			resolve(QueryAlbumMapPoints::class)->hasPoints($album, request()->configs()->getValueAsBool('map_include_subalbums'));
+	}
+
+	/**
+	 * `header_id` is a `char(24)`, padded on PostgreSQL.
+	 */
+	private static function isMapHeaderId(?string $header_id): bool
+	{
+		return $header_id !== null && trim($header_id) === AlbumController::MAP_HEADER;
+	}
+
 	protected function getHeaderUrl(AbstractAlbum $album): ?SizeVariant
 	{
 		if (request()->configs()->getValueAsBool('use_album_compact_header')) {
@@ -41,7 +65,7 @@ trait HasHeaderUrl
 	{
 		$header_size_variant = null;
 
-		if ($album instanceof Album && $album->header_id !== null) {
+		if ($album instanceof Album && $album->header_id !== null && !self::isMapHeaderId($album->header_id)) {
 			$header_size_variant = SizeVariant::query()
 				->where('photo_id', '=', $album->header_id)
 				->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])

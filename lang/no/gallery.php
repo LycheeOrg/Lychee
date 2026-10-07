@@ -226,6 +226,7 @@ return [
             'header' => 'Angi albumoverskrift',
             'cover' => 'Set album cover',
             'compact_header' => 'Bruk kompakt topptekst',
+            'map_header' => 'Bruk kart som topptekst',
             'license' => 'Angi lisens',
             'copyright' => 'Angi opphavsrett',
             'aspect_ratio' => 'Angi størrelsesforhold for albumminiatyrer',

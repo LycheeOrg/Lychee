@@ -105,6 +105,8 @@ Route::get('/Search/albums/rights', [Gallery\SearchListingController::class, 'al
 Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);
 Route::get('/Map/Photos', [Gallery\MapListingController::class, 'photos']);
 Route::get('/Map/tracks', [Gallery\MapListingController::class, 'tracks']);
+// Album map header points (Feature 086), not behind the struct-of-array flag.
+Route::get('/Map/album', [Gallery\MapListingController::class, 'album']);
 
 // Live metrics feed (Feature 079), coexisting with the v2 `/Metrics` route
 // (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.

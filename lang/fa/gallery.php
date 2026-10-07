@@ -226,6 +226,7 @@ return [
             'header' => 'تنظیم هدر آلبوم',
             'cover' => 'Set album cover',
             'compact_header' => 'استفاده از هدر فشرده',
+            'map_header' => 'استفاده از نقشه به‌عنوان هدر',
             'license' => 'تنظیم مجوز',
             'copyright' => 'تنظیم کپی‌رایت',
             'aspect_ratio' => 'تنظیم نسبت تصویر تصویر کوچک آلبوم',

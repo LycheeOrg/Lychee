@@ -226,6 +226,7 @@ return [
             'header' => '设置相册封面',
             'cover' => 'Set album cover',
             'compact_header' => '使用紧凑封面',
+            'map_header' => '使用地图封面',
             'license' => '设置许可证',
             'copyright' => '设置版权',
             'aspect_ratio' => '设置相册缩略图比例',

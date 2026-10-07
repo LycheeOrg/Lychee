@@ -226,6 +226,7 @@ return [
             'header' => 'Set album header',
             'cover' => 'Set album cover',
             'compact_header' => 'Use compact header',
+            'map_header' => 'Use map header',
             'license' => 'Set license',
             'copyright' => 'Set copyright',
             'aspect_ratio' => 'Set album thumbs aspect ratio',

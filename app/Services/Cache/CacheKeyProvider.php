@@ -746,6 +746,20 @@ class CacheKeyProvider
 	}
 
 	/**
+	 * Cache key for `GET /api/v3/Map/album` (Feature 086) — viewport-independent,
+	 * like {@see self::mapTracksKey()}. `$include_sub_albums` is part of the key
+	 * so a setting change never serves the other scope.
+	 */
+	public function mapAlbumPointsKey(string $album_id, bool $include_sub_albums, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+		$sub_albums = $include_sub_albums ? 'with-sub-albums' : 'own';
+
+		return "{$tag}:points:{$sub_albums}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
 	 * Deterministic digest of a snapped viewport's bounds + zoom, embedded
 	 * in every viewport-scoped Map cache key.
 	 */

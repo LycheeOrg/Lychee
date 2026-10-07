@@ -80,6 +80,7 @@ class AlbumController extends Controller
 	use HasVisitorIdTrait;
 
 	public const COMPACT_HEADER = 'compact';
+	public const MAP_HEADER = 'map';
 
 	/**
 	 * Create an album.
@@ -155,7 +156,8 @@ class AlbumController extends Controller
 			album: $album,
 			is_compact: $request->is_compact(),
 			photo: $request->photo(),
-			shall_override: true
+			shall_override: true,
+			is_map: $request->is_map_header(),
 		);
 
 		// The parent's own sort column/order or timeline granularity governs

@@ -30,6 +30,7 @@ export type UpdateAbumData = {
 	header_id: string | null;
 	cover_id: string | null;
 	is_compact: boolean;
+	is_map_header: boolean;
 	is_pinned: boolean;
 	album_timeline: App.Enum.TimelineAlbumGranularity | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
@@ -127,6 +128,8 @@ const AlbumService = {
 			// left to expire naturally via TTL, an accepted limitation.
 			axiosWithCache.storage.remove(`photo_v3_buckets_${album_id}`);
 			axiosWithCache.storage.remove(`photo_v3_ratios_${album_id}`);
+			// Map header points (Feature 086).
+			axiosWithCache.storage.remove(`map_v3_album_${album_id}`);
 		}
 	},
 

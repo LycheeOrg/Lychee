@@ -82,6 +82,7 @@ class RequestAttribute
 
 	public const PERMISSION_ID = 'perm_id';
 	public const IS_COMPACT_ATTRIBUTE = 'is_compact';
+	public const IS_MAP_HEADER_ATTRIBUTE = 'is_map_header';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
 	public const IS_PINNED_ATTRIBUTE = 'is_pinned';
 	public const IS_PUBLIC_ATTRIBUTE = 'is_public';

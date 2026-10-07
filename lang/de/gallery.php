@@ -226,6 +226,7 @@ return [
             'header' => 'Album-Header festlegen',
             'cover' => 'Set album cover',
             'compact_header' => 'Kompakten Header verwenden',
+            'map_header' => 'Karte als Header verwenden',
             'license' => 'Lizenz festlegen',
             'copyright' => 'Urheberrecht festlegen',
             'aspect_ratio' => 'Seitenverhältnis der Album-Miniatur festlegen',
