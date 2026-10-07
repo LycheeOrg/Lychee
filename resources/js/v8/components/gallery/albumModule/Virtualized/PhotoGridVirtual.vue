@@ -3,15 +3,18 @@
 		<div data-photo-grid-root role="list" class="relative w-full" :style="{ height: `${layout.totalHeight}px` }">
 			<!-- Sticky pinned header: mirrors AlbumThumbGridVirtual.vue's own
 			     mechanism exactly — only rendered once the active bucket's own
-			     real header row has scrolled past the top. -->
+			     real header row has scrolled past the top. The negative margins bleed
+			     the band across the wrapping `UContainer`'s padding so the blur spans the
+			     whole column up to the date scrubber; the band's padding puts the label
+			     back on the grid's left edge. -->
 			<div
 				v-if="activeHeaderLabel !== null"
-				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none -mx-4 sm:-mx-6 lg:-mx-8"
 				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
 			>
 				<!-- <div class="absolute inset-0 bg-default/50 backdrop-blur mask-[linear-gradient(to_bottom,#000,transparent_50%)]" />
 				<div class="relative w-full h-full flex items-center font-semibold text-toned text-lg"> -->
-				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
+				<div class="w-full h-full flex items-center px-4 sm:px-6 lg:px-8 font-semibold text-toned text-lg bg-default/50 backdrop-blur">
 					{{ activeHeaderLabel }}
 				</div>
 			</div>

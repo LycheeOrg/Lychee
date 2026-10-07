@@ -225,7 +225,7 @@ Reuses Feature 061's existing `Feature_v3` fixture graph (bucketed parents, righ
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-063-01 | Grid view, flag on, bucketable album | Sticky section headers, windowed tile rows (FR-063-07/08). |
+| UI-063-01 | Grid view, flag on, bucketable album | Sticky section headers, windowed tile rows (FR-063-07/08). The pinned header's blurred band spans the whole column across the wrapper's `px-4 sm:px-6` padding, up to the date scrubber; its label stays aligned with the grid. Same for the root grids and both list views. |
 | UI-063-02 | Grid view, flag on, non-bucketable (`OWNER_ID`-sorted) album | Windowed tile rows, no section headers (FR-063-09). |
 | UI-063-03 | List view, flag on | Same sticky-header/windowing behavior as grid view (FR-063-10). |
 | UI-063-04 | Right-click, rights not yet loaded | Every mutating menu action disabled (FR-063-03). |

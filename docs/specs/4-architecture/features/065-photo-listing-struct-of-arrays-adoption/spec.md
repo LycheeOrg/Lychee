@@ -215,7 +215,7 @@ No new backend fixtures — reuses Feature 064's existing `Feature_v3` fixture g
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-065-01 | Virtualized `justified` grid, bucketed | Flag on, regular `Album`, no filter, `justified` mode → sticky bucket headers, analytic row-packed tiles. |
+| UI-065-01 | Virtualized `justified` grid, bucketed | Flag on, regular `Album`, no filter, `justified` mode → sticky bucket headers, analytic row-packed tiles. The pinned header's blurred band spans the whole column, across the `UContainer` padding (`-mx-4 sm:-mx-6 lg:-mx-8`), from the left edge to the date scrubber; its label stays aligned with the grid. |
 | UI-065-02 | Virtualized `square` grid | Same gating, `square` mode → uniform-tile grid. |
 | UI-065-03 | Virtualized `list` | Same gating, `list` mode → one row per photo. |
 | UI-065-04 | Virtualized `masonry`/`grid` | Same gating, `masonry`/`grid` mode → same `PhotoGridVirtual.vue` mechanism, WASM `masonry()`/`grid()`-computed boxes. |
@@ -225,6 +225,7 @@ No new backend fixtures — reuses Feature 064's existing `Feature_v3` fixture g
 | UI-065-08 | v2 fallback — non-`Album` parent | Browsing a `TagAlbum`/`PersonAlbum`'s matching photos → v2 path, regardless of flag. |
 | UI-065-09 | Empty album | Zero visible photos → existing empty-state UI, no error. |
 | UI-065-10 | Flat, headerless fallback | `bucketable:false` or a defensive count mismatch → single unbucketed section. |
+| UI-065-11 | Drag selection from a photo (v8) | Pressing on a photo tile (grid or list) and moving at least 4 px starts the album's drag selection, as pressing on empty space does: selection cleared unless Ctrl/Cmd/Shift is held, rectangle drawn from the press point. Without that movement the press stays a click (opens the photo, or toggles it with a modifier), and controls inside the tile keep their own clicks. The click that ends a drag is swallowed, so a drag never opens a photo. Tiles opt in with `data-drag-select-start="true"`; v7 tiles do not. The rectangle follows the pointer at any scroll position (the v8 album page scrolls the window, so the pointer is converted from `clientY`; the root gallery keeps `pageY`), and the selection is applied once more on release so it matches the final rectangle. |
 
 ## Telemetry & Observability
 

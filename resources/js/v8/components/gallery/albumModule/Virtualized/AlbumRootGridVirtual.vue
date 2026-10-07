@@ -12,10 +12,10 @@
 			     component is its root-scope fork, 2026-09-02 addendum). -->
 			<div
 				v-if="activeHeaderLabel !== null"
-				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none -mx-4 sm:-mx-6"
 				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
 			>
-				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
+				<div class="w-full h-full flex items-center px-4 sm:px-6 font-semibold text-toned text-lg bg-default/50 backdrop-blur">
 					{{ activeHeaderLabel }}
 				</div>
 			</div>
