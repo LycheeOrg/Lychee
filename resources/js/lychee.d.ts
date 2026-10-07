@@ -172,6 +172,7 @@ declare namespace App {
 			| "mastodon"
 			| "microsoft"
 			| "nextcloud"
+			| "pocketid"
 			| "keycloak";
 		export type OgImageAlbumSourceType = "header" | "cover";
 		export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";

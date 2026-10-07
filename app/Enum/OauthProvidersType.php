@@ -30,5 +30,6 @@ enum OauthProvidersType: string
 	case MASTODON = 'mastodon';
 	case MICROSOFT = 'microsoft';
 	case NEXTCLOUD = 'nextcloud';
+	case POCKETID = 'pocketid';
 	case KEYCLOAK = 'keycloak';
 }

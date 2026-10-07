@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1054de290a0e2634946dc57ff22a252a",
+    "content-hash": "9d48f8b63b2318b713dd6d1d53b39534",
     "packages": [
         {
             "name": "apimatic/core",
@@ -8467,6 +8467,56 @@
                 "source": "https://github.com/SocialiteProviders/Nextcloud/tree/4.0.0"
             },
             "time": "2021-02-27T23:17:54+00:00"
+        },
+        {
+            "name": "socialiteproviders/pocketid",
+            "version": "5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/PocketID.git",
+                "reference": "1762e048c39e5ce562fcc9bece0813e972dd22dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/PocketID/zipball/1762e048c39e5ce562fcc9bece0813e972dd22dd",
+                "reference": "1762e048c39e5ce562fcc9bece0813e972dd22dd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\PocketID\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "brufdev",
+                    "email": "brufdev@proton.me"
+                }
+            ],
+            "description": "PocketID OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "laravel",
+                "oauth",
+                "pocketid",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/pocketid",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2025-12-28T21:07:28+00:00"
         },
         {
             "name": "spatie/enum",
@@ -18654,5 +18704,5 @@
     "platform-overrides": {
         "php": "8.4.24"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

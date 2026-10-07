@@ -77,6 +77,7 @@ use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
 use SocialiteProviders\Nextcloud\NextcloudExtendSocialite;
+use SocialiteProviders\PocketID\PocketIDExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -101,6 +102,7 @@ class EventServiceProvider extends ServiceProvider
 			// Mastodon is provided directly.
 			MicrosoftExtendSocialite::class . '@handle',
 			NextcloudExtendSocialite::class . '@handle',
+			PocketIDExtendSocialite::class . '@handle',
 			KeycloakExtendSocialite::class . '@handle',
 		],
 	];
