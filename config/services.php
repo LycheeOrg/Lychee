@@ -158,7 +158,7 @@ return [
 	'pocketid' => [
 		'client_id' => env('POCKETID_CLIENT_ID'),
 		'client_secret' => env('POCKETID_CLIENT_SECRET'),
-		'redirect' => env('POCKETID_REDIRECT_URI'),
+		'redirect' => env('POCKETID_REDIRECT_URI', '/auth/pocketid/redirect'),
 		'base_url' => env('POCKETID_BASE_URL'),
 		'use_pkce' => env('POCKETID_USE_PKCE', true),
 	],
