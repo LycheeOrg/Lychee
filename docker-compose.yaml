@@ -29,6 +29,7 @@ x-base-lychee-setup:
   # There are two main images: `latest` and `edge`.
   # `latest` is mapped to the last published version
   # `edge` is mapped to the last build on master branch (may be unstable)
+  # `vX` (e.g. `v7`) is mapped to the last published version of that major release
   #
   # There are also other images available which uses nginx as a base instead of FrankenPHP:
   # - ghcr.io/lycheeorg/lychee:latest-legacy
