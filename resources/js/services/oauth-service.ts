@@ -34,6 +34,8 @@ const OauthService = {
 				return "fa-brands fa-microsoft";
 			case "nextcloud":
 				return "fa-solid fa-cloud";
+			case "pocketid":
+				return "fa-solid fa-fingerprint";
 			case "keycloak":
 				return "fa-solid fa-key";
 		}

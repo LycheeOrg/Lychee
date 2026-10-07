@@ -395,6 +395,13 @@ x-common-env:
   # NEXTCLOUD_REDIRECT_URI=/auth/nextcloud/redirect
   # NEXTCLOUD_BASE_URI=
 
+  # POCKETID_BASE_URL=
+  # POCKETID_CLIENT_ID=
+  # POCKETID_CLIENT_SECRET=
+  # POCKETID_CLIENT_SECRET_FILE=/run/secrets/pocketid_client_secret
+  # POCKETID_REDIRECT_URI=/auth/pocketid/redirect
+  # POCKETID_USE_PKCE=true
+
   # KEYCLOAK_CLIENT_ID=
   # KEYCLOAK_CLIENT_SECRET=
   # KEYCLOAK_CLIENT_SECRET_FILE=/run/secrets/keycloak_client_secret
