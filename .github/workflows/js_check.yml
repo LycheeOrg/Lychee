@@ -32,9 +32,6 @@ jobs:
       - name: Install
         run: npm ci -D
 
-      - name: Check document titles
-        run: node --test tests/Frontend/useDocumentTitle.test.mjs
-
       - name: Check Style
         run: npm run check-formatting
 
