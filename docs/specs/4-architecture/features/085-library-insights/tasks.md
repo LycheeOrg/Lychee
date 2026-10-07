@@ -238,7 +238,15 @@ _Last updated: 2026-10-05_
 - [x] T-085-36 – Quality gate, `vite build` chunk check, scratch-instance Playwright run (album scope, new sections, loader).
 - [x] T-085-37 – Drift gate addendum, knowledge map, roadmap.
 
+### I18 – v7 keeps the Statistics page
+
+- [x] T-085-38 – Restore the v7 Statistics page (FR-085-02, FR-085-03, S-085-14).  
+  _Intent:_ restore `Counts`, `CountType`, `CountsRequest`, `CountsData`, `DayCount`, `CountsOverTimeTest`, the v7 view and components (`Activity`, `PunchCard`, `PunchCardCaption`, `AlbumsTable`), the v7 menu entries and router entry, the `/statistics` web route and router path, `Statistics::getCountsOverTime` (route, controller method, service function) and the `statistics.punch_card` lang keys; `StatisticsRemovedTest` asserts only `userSpace` is gone.  
+  _Verification commands:_ `php artisan test --filter=StatisticsRemovedTest`, `php artisan test --filter=CountsOverTimeTest`, `npm run check`, `make phpstan`
+
+- [x] T-085-39 – Browser check: v7 Statistics page with punch card, no Insights entry; v8 unchanged.
+
 ## Notes / TODOs
-- FR coverage: FR-085-01 (T-085-06/07, 16, 20), FR-085-02 (T-085-14/15, 21), FR-085-03 (T-085-14, 17), FR-085-04 (T-085-06/07, 16), FR-085-05 (T-085-06/07, 16), FR-085-06 … 09 and 14 (T-085-08/09, 17), FR-085-10 … 13 (T-085-10/11, 18), FR-085-15 (T-085-01/02, 10/11).
+- FR coverage: FR-085-01 (T-085-06/07, 16, 20), FR-085-02 (T-085-14/15, 21, 38), FR-085-03 (T-085-14, 17), FR-085-04 (T-085-06/07, 16), FR-085-05 (T-085-06/07, 16), FR-085-06 … 09 and 14 (T-085-08/09, 17), FR-085-10 … 13 (T-085-10/11, 18), FR-085-15 (T-085-01/02, 10/11).
 - Deletions in T-085-14 and T-085-21 wait for the owner's approval of the listed paths in the session that runs them.
 - No JS unit runner: option builders are checked through `npm run check` and the browser run.

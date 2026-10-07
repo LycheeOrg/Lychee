@@ -18,6 +18,7 @@ const Settings = () => import("@/v7/views/admin/Settings.vue");
 const Profile = () => import("@/v7/views/Profile.vue");
 const Maintenance = () => import("@/v7/views/admin/Maintenance.vue");
 const Diagnostics = () => import("@/v7/views/Diagnostics.vue");
+const Statistics = () => import("@/v7/views/Statistics.vue");
 const Jobs = () => import("@/v7/views/admin/Jobs.vue");
 const FixTree = () => import("@/v7/views/FixTree.vue");
 const DuplicatesFinder = () => import("@/v7/views/DuplicatesFinder.vue");
@@ -74,6 +75,7 @@ const componentByName: Record<string, any> = {
 	profile: Profile,
 	settings: Settings,
 	sharing: Sharing,
+	statistics: Statistics,
 	users: Users,
 	changelogs: Changelogs,
 	login: LoginPage,

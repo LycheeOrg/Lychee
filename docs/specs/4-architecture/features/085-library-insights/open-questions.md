@@ -7,7 +7,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-085-01~~ | 085 – Library insights | High | How does Insights relate to the Statistics page? (A replace it, storage panels become a section · B separate page next to it · C extend Statistics in place) | Resolved (Option A — Insights replaces Statistics; storage endpoints kept for the Storage section and album drawer; owner, 2026-10-05; spec FR-085-01 … FR-085-03, FR-085-07; ADR-085-01) | 2026-10-05 | 2026-10-05 |
-| ~~Q-085-02~~ | 085 – Library insights | High | Which UI versions get Insights? (A v8 only · B v7 and v8) | Resolved (Option A — v8 only, v7 loses the Statistics entry; owner, 2026-10-05; spec Non-Goals, FR-085-01; ADR-085-01) | 2026-10-05 | 2026-10-05 |
+| ~~Q-085-02~~ | 085 – Library insights | High | Which UI versions get Insights? (A v8 only · B v7 and v8) | Resolved (Option A — v8 only; v7 keeps its Statistics page unchanged; owner, 2026-10-05 and 2026-10-07; spec Non-Goals, FR-085-01, FR-085-02; ADR-085-01) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-03~~ | 085 – Library insights | High | Whose photos does a view cover? (A own photos, admin can pick a user or the whole instance · B every photo the user can access · C own photos only, admin included) | Resolved (Option A — own photos, admin picks a user or whole instance; owner, 2026-10-05; spec FR-085-04, NFR-085-02; ADR-085-02) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-04~~ | 085 – Library insights | High | Edition gating? (A whole page SE, preview in core · B core basics, advanced sections SE · C everything core) | Resolved (Option A — whole page SE, preview in core; owner, 2026-10-05; spec FR-085-01) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-05~~ | 085 – Library insights | High | Which sections ship in this feature? (A phased: phase 1 core sections, later phases tracked as follow-ups · B the full catalogue at once · C phase 1 only, rest to backlog) | Resolved (Option A — phased, phase 1 in this feature; owner, 2026-10-05; spec Goals, Non-Goals, FR-085-05 … FR-085-13) | 2026-10-05 | 2026-10-05 |
@@ -50,7 +50,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
   - ✅ Parity.
   - ❌ Every chart component written twice (PrimeVue and Nuxt UI).
 
-**Resolution:** Option A; v7 loses the Statistics menu entry and view. Recorded in [spec.md](spec.md) Non-Goals, FR-085-01 and [ADR-085-01](../../../6-decisions/ADR-085-01-insights-replaces-statistics-page.md).
+**Resolution:** Option A; v7 keeps its Statistics page, punch card and menu entry unchanged and has no access to Insights. Recorded in [spec.md](spec.md) Non-Goals, FR-085-01 and [ADR-085-01](../../../6-decisions/ADR-085-01-insights-replaces-statistics-page.md).
 
 ### ~~Q-085-03~~ – Data scope
 

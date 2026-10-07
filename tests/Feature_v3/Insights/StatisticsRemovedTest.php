@@ -22,9 +22,9 @@ use Illuminate\Support\Facades\Route;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * The Statistics counts and per-user space endpoints are gone; the storage
- * endpoints used by the album drawer stay (Feature 085, FR-085-02,
- * FR-085-03, S-085-14).
+ * The unused per-user space endpoint is gone; the counts endpoint of the v7
+ * Statistics page and the storage endpoints used by the album drawer and
+ * Insights stay (Feature 085, FR-085-02, FR-085-03, S-085-14).
  */
 class StatisticsRemovedTest extends BaseApiWithDataTest
 {
@@ -40,10 +40,10 @@ class StatisticsRemovedTest extends BaseApiWithDataTest
 		parent::tearDown();
 	}
 
-	public function testCountsOverTimeIsGone(): void
+	public function testCountsOverTimeStaysForV7(): void
 	{
-		self::assertFalse($this->isRegistered('api/v2/Statistics::getCountsOverTime'));
-		self::assertNotSame(200, $this->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', ['type' => 'taken_at'])->status());
+		self::assertTrue($this->isRegistered('api/v2/Statistics::getCountsOverTime'));
+		$this->assertOk($this->actingAs($this->admin)->getJsonWithData('Statistics::getCountsOverTime', ['type' => 'taken_at']));
 	}
 
 	public function testUserSpaceIsGone(): void

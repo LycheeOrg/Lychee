@@ -11,10 +11,10 @@ The Statistics page (`/statistics`, SE, v7 and v8) shows a size-variant meter, a
 
 ## Decision
 
-- A v8-only Insights page at `/insights` replaces the Statistics page and its left-menu entry.
+- In v8, an Insights page at `/insights` replaces the Statistics page and its left-menu entry.
 - The size-variant meter and album space table become the Insights "Storage" section, reading the existing `Statistics::sizeVariantSpace`, `Statistics::albumSpace` and `Statistics::totalAlbumSpace` endpoints, which stay unchanged for the drawer as well.
-- The punch card is replaced by the Insights calendar heatmap. `Statistics::getCountsOverTime`, `Statistics::userSpace` (no consumer), the v7 and v8 Statistics views and the punch-card components are removed.
-- v7 gets no Insights page and loses the Statistics menu entry.
+- In v8 the punch card is replaced by the Insights calendar heatmap; the v8 Statistics view and its punch-card components are removed, and so is the unused `Statistics::userSpace`.
+- v7 keeps its Statistics page, punch card, menu entry and `Statistics::getCountsOverTime` unchanged, and gets no Insights page: Insights is a v8-only feature.
 
 ## Consequences
 
@@ -23,7 +23,7 @@ The Statistics page (`/statistics`, SE, v7 and v8) shows a size-variant meter, a
 - Frontend work in Nuxt UI only.
 
 ### Negative
-- v7 users lose the Statistics page.
+- Two pages with overlapping figures exist side by side, one per frontend, until v7 is retired.
 - Administrator disk-usage figures sit inside a page about photography habits.
 
 ## Alternatives Considered

@@ -8,10 +8,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Statistics\Counts;
 use App\Actions\Statistics\Spaces;
+use App\Enum\CountType;
+use App\Http\Requests\Statistics\CountsRequest;
 use App\Http\Requests\Statistics\SpacePerAlbumRequest;
 use App\Http\Requests\Statistics\SpaceSizeVariantRequest;
 use App\Http\Resources\Statistics\Album;
+use App\Http\Resources\Statistics\CountsData;
 use App\Http\Resources\Statistics\Sizes;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -79,5 +83,32 @@ class StatisticsController extends Controller
 		$zipped = $space_data->zip($count_data);
 
 		return $zipped->map(fn ($z) => new Album($z[0], $z[1]));
+	}
+
+	/**
+	 * Fetch the number of uploads/taken_at over time (v7 Statistics page).
+	 *
+	 * @param Counts $counts Dependency injection
+	 */
+	public function getPhotoCountOverTime(CountsRequest $request, Counts $counts): CountsData
+	{
+		if ($request->type === CountType::TAKEN_AT) {
+			$data = $counts->getTakenAtCountOverTime(
+				$request->ownerId(),
+				min_date: $request->min,
+				max_date: $request->max,
+			);
+		} else {
+			$data = $counts->getCreatedAtCountOverTime(
+				$request->ownerId(),
+				min_date: $request->min,
+				max_date: $request->max,
+			);
+		}
+
+		$min_taken_at = $counts->getMinTakenAt($request->ownerId());
+		$min_created_at = $counts->getMinCreatedAt($request->ownerId());
+
+		return new CountsData($data, $min_taken_at, $min_created_at);
 	}
 }

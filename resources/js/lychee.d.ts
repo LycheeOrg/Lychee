@@ -72,6 +72,7 @@ declare namespace App {
 			| "map_provider"
 			| "currency"
 			| "password";
+		export type CountType = "taken_at" | "created_at";
 		export type CoverFitType = "cover" | "fit";
 		export type DateOrderingType = "older_younger" | "younger_older";
 		export type DbDriverType = "mysql" | "pgsql" | "sqlite";
@@ -1842,6 +1843,18 @@ declare namespace App {
 					num_photos: number;
 					num_descendants: number;
 					size: number;
+				};
+				export type CountsData = {
+					data: App.Http.Resources.Statistics.DayCount[];
+					low_number_of_shoots_per_day: number;
+					medium_number_of_shoots_per_day: number;
+					high_number_of_shoots_per_day: number;
+					min_created_at: string;
+					min_taken_at: string;
+				};
+				export type DayCount = {
+					date: string;
+					count: number;
 				};
 				export type Sizes = {
 					type: App.Enum.SizeVariantType;
