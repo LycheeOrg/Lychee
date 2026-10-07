@@ -50,6 +50,7 @@ declare namespace App {
 		export type AlbumTitleColor = "white" | "black" | "colour_1" | "colour_2" | "colour_3" | "colour_4" | "colour_5";
 		export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
+		export type AspectRatioGroup = "1:1" | "5:4" | "4:3" | "3:2" | "16:9" | "2:1" | "panorama" | "other";
 		export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 		export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
 		export type ColumnSortingAlbumType = "created_at" | "title" | "min_taken_at" | "max_taken_at";
@@ -76,12 +77,15 @@ declare namespace App {
 		export type DateOrderingType = "older_younger" | "younger_older";
 		export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 		export type DefaultAlbumProtectionType = "private" | "public" | "inherit" | "public_hidden";
+		export type DeviceCategory = "camera" | "mobile" | "other";
 		export type DownloadVariantType = "RAW" | "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 		export type FacePermissionMode = "public" | "private" | "privacy-preserving" | "restricted";
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
+		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
+		export type InsightsPeriodType = "library" | "year" | "range";
 		export type JobStatus = 0 | 1 | 2 | 3;
 		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
 		export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
@@ -212,6 +216,27 @@ declare namespace App {
 		export type ThumbAlbumSubtitleType =
 			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
+		export type TimelineCategory = "first_last" | "device" | "milestone" | "record" | "break";
+		export type TimelineEventKind =
+			| "first_capture"
+			| "first_video"
+			| "first_located"
+			| "first_with_people"
+			| "first_highlighted"
+			| "device_first"
+			| "milestone"
+			| "longest_video"
+			| "largest_file"
+			| "highest_iso"
+			| "longest_exposure"
+			| "widest_aperture"
+			| "longest_focal"
+			| "break_start"
+			| "break_end"
+			| "streak_start"
+			| "streak_end"
+			| "device_last"
+			| "last_capture";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 		export type TitleBucketMode = "date_prefix" | "alphabetical";
 		export type UserGroupRole = "member" | "admin";
@@ -836,6 +861,161 @@ declare namespace App {
 						workers: string;
 					};
 				}
+			}
+			namespace Insights {
+				export type AspectRatioData = {
+					group: App.Enum.AspectRatioGroup;
+					count: number;
+				};
+				export type BusiestDayData = {
+					date: string;
+					count: number;
+					photo_id: string;
+					thumb_url: string | null;
+				};
+				export type CalendarData = {
+					dates: string[];
+					counts: number[];
+					low: number;
+					medium: number;
+					high: number;
+				};
+				export type CapturePointData = {
+					photo_id: string;
+					taken_at: string;
+					thumb_url: string | null;
+				};
+				export type DeviceEntryData = {
+					name: string | null;
+					category: App.Enum.DeviceCategory;
+					all: number;
+					photos: number;
+					videos: number;
+					highlighted: number;
+					located: number;
+					with_people: number;
+				};
+				export type DeviceFocalData = {
+					name: string | null;
+					category: App.Enum.DeviceCategory;
+					values: number[];
+					counts: number[];
+				};
+				export type DevicesData = {
+					devices: App.Http.Resources.Insights.DeviceEntryData[];
+					manufacturers: App.Http.Resources.Insights.DeviceEntryData[];
+					lenses: App.Http.Resources.Insights.DeviceEntryData[];
+					focal_lengths: App.Http.Resources.Insights.DeviceFocalData[];
+				};
+				export type DimensionsData = {
+					widths: number[];
+					heights: number[];
+					counts: number[];
+					formats: number;
+					with_dimensions: number;
+				};
+				export type DistributionData = {
+					values: number[];
+					counts: number[];
+					total: number;
+					excluded: number;
+					min: number | null;
+					max: number | null;
+					median: number | null;
+					mean: number | null;
+					mode: number | null;
+				};
+				export type ExposureData = {
+					iso: App.Http.Resources.Insights.DistributionData;
+					focal: App.Http.Resources.Insights.DistributionData;
+					shutter: App.Http.Resources.Insights.DistributionData;
+					aperture: App.Http.Resources.Insights.DistributionData;
+					video_length: App.Http.Resources.Insights.DistributionData;
+					total_video_duration: number;
+				};
+				export type FormatsData = {
+					all: App.Http.Resources.Insights.OrientationCountData;
+					photos: App.Http.Resources.Insights.OrientationCountData;
+					videos: App.Http.Resources.Insights.OrientationCountData;
+					aspect_ratios: App.Http.Resources.Insights.AspectRatioData[];
+					dimensions: App.Http.Resources.Insights.DimensionsData;
+				};
+				export type InsightsResource = {
+					years: number[];
+					overview: App.Http.Resources.Insights.OverviewData;
+					storage: App.Http.Resources.Insights.StorageData;
+					people: App.Http.Resources.Insights.PeopleData;
+					places: App.Http.Resources.Insights.PlacesData;
+					time_span: App.Http.Resources.Insights.TimeSpanData;
+					calendar: App.Http.Resources.Insights.CalendarData;
+					rhythm: App.Http.Resources.Insights.RhythmData;
+					devices: App.Http.Resources.Insights.DevicesData;
+					exposure: App.Http.Resources.Insights.ExposureData;
+					formats: App.Http.Resources.Insights.FormatsData;
+					timeline: App.Http.Resources.Insights.TimelineEventData[];
+				};
+				export type OrientationCountData = {
+					portrait: number;
+					landscape: number;
+					square: number;
+					unknown: number;
+				};
+				export type OverviewData = {
+					total: number;
+					photos: number;
+					videos: number;
+					others: number;
+					highlighted: number;
+					albums: number;
+					photos_without_album: number;
+				};
+				export type PeopleData = {
+					has_faces: boolean;
+					photos_with_people: number;
+					people: number;
+					faces: number;
+					faces_per_photo: number | null;
+				};
+				export type PlacesData = {
+					located: number;
+					share: number;
+				};
+				export type RhythmData = {
+					week_hour: number[][];
+					months: number[];
+					weekdays: number[];
+					hours: number[];
+				};
+				export type SpanData = {
+					length: number;
+					from: string;
+					to: string;
+				};
+				export type StorageData = {
+					total_size: number;
+					size_unknown: number;
+					average_photo_size: number | null;
+					average_video_size: number | null;
+				};
+				export type TimeSpanData = {
+					first: App.Http.Resources.Insights.CapturePointData | null;
+					last: App.Http.Resources.Insights.CapturePointData | null;
+					busiest_day: App.Http.Resources.Insights.BusiestDayData | null;
+					days_with_photos: number;
+					calendar_days: number;
+					undated: number;
+					longest_break: App.Http.Resources.Insights.SpanData | null;
+					longest_daily_streak: App.Http.Resources.Insights.SpanData | null;
+					longest_weekly_streak: App.Http.Resources.Insights.SpanData | null;
+				};
+				export type TimelineEventData = {
+					kind: App.Enum.TimelineEventKind;
+					category: App.Enum.TimelineCategory;
+					date: string;
+					subject: string | null;
+					value: number | null;
+					photo_id: string | null;
+				};
 			}
 			namespace Models {
 				export type AccessPermissionResource = {
@@ -1654,6 +1834,7 @@ declare namespace App {
 			}
 			namespace Statistics {
 				export type Album = {
+					id: string;
 					username: string;
 					title: string;
 					is_nsfw: boolean;
@@ -1678,11 +1859,6 @@ declare namespace App {
 				export type Sizes = {
 					type: App.Enum.SizeVariantType;
 					label: string;
-					size: number;
-				};
-				export type UserSpace = {
-					id: number;
-					username: string;
 					size: number;
 				};
 			}

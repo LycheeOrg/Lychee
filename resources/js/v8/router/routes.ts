@@ -38,7 +38,7 @@ const Profile = () => import("@/v8/views/Profile.vue");
 const TagsManagement = () => import("@/v8/views/TagsManagement.vue");
 const Contact = () => import("@/v8/views/Contact.vue");
 const ChangeLogs = () => import("@/v8/views/ChangeLogs.vue");
-const Statistics = () => import("@/v8/views/Statistics.vue");
+const Insights = () => import("@/v8/views/Insights.vue");
 const Favourites = () => import("@/v8/views/gallery-panels/Favourites.vue");
 const Flow = () => import("@/v8/views/gallery-panels/Flow.vue");
 const Frame = () => import("@/v8/views/gallery-panels/Frame.vue");
@@ -97,7 +97,7 @@ const componentByName: Record<string, any> = {
 	tags: TagsManagement,
 	contact: Contact,
 	changelogs: ChangeLogs,
-	statistics: Statistics,
+	insights: Insights,
 	favourites: Favourites,
 	flow: Flow,
 	frame: Frame,

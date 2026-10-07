@@ -78,6 +78,7 @@ Route::get('/tags', VueController::class)->middleware(['migration:complete', 'lo
 Route::get('/tag/{tagId}/{photoId?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/diagnostics', VueController::class)->middleware(['migration:complete']);
 Route::get('/statistics', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/insights', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/people/{cluster?}', VueController::class)->middleware(['migration:complete', 'feature:ai-vision']);
 Route::get('/changelogs', VueController::class)->middleware(['migration:complete']);
 Route::get('/login', VueController::class)->middleware(['migration:complete']);
