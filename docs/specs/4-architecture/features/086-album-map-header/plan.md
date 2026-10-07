@@ -32,14 +32,14 @@ An album editor picks **Map** as the header; visitors see the album's photos as 
 
 ## Implementation Drift Gate
 
-2026-10-07, agent review. All 12 tasks `[x]`.
+2026-10-07, agent review. All 13 tasks `[x]`.
 
 | Requirement | Code | Evidence |
 |-------------|------|----------|
 | FR-086-01, FR-086-02 | `AlbumController::MAP_HEADER`, `UpdateAlbumRequest` (`is_map_header` required, `declined_if`), `SetHeader::do(is_map:)`, `EditableBaseAlbumResource` (trimmed `header_id`), v7 `AlbumProperties.vue` sends `false` | `AlbumMapHeaderTest` patch cases (S-086-01 … S-086-03, S-086-17); every existing `PATCH /Album` test payload sends the field |
 | FR-086-03, FR-086-04 | `HasHeaderUrl::isMapHeaderShown()`, `HeadAlbumResource`, `PreFormattedAlbumData::$is_map_header` | `AlbumMapHeaderTest` head cases (S-086-04 … S-086-09) |
 | FR-086-05, FR-086-06, NFR-086-01, NFR-086-02 | `QueryAlbumMapPoints`, `MapPointResource`, `GetMapAlbumRequest`, `MapListingController::album()`, `CacheKeyProvider::mapAlbumPointsKey()`, route | `MapAlbumPointsTest` (S-086-09 … S-086-13) |
-| FR-086-07 … FR-086-09, NFR-086-04 … NFR-086-06 | `AlbumMapHeader.vue`, `AlbumHero.vue` | Playwright run below; `vite build` emits `AlbumMapHeader-*.js` as a dynamic entry |
+| FR-086-07 … FR-086-09, NFR-086-04 … NFR-086-06 | `AlbumMapHeader.vue` (`data-stop-drag-select`), `AlbumHero.vue`, `dragAndSelect.ts::isInteractiveTarget()` (`Element` targets) | Playwright runs below; `vite build` emits `AlbumMapHeader-*.js` as a dynamic entry |
 | FR-086-10 | `AlbumProperties.vue`, `album-service.ts`, lang key `gallery.album.properties.map_header` (23 locales) | Playwright run below; `LangTest` |
 | FR-086-11 | `AlbumPanel.vue` set-as-header sync | `AlbumMapHeaderTest::testSetPhotoAsHeaderReplacesMapHeader` (backend); frontend by code review |
 | FR-086-12 | `HasHeaderUrl::getByQuery()` skips the sentinel | `AlbumMapHeaderTest::testHeaderImageOfMapAlbumIsARandomPhoto` |
@@ -50,6 +50,7 @@ An album editor picks **Map** as the header; visitors see the album's photos as 
 - After making `is_map_header` required: `AlbumMapHeaderTest`, `AlbumUpdateTest`, `AlbumTitleSyncTest`, `AlbumMatchingAlbumsTest`, `AlbumSortingBucketDispatchTest`, `PhotoSortingBucketDispatchTest`, `UpdateAlbumDateScrubberTest`, `TitleSplitIntegrityTest`, `AlbumSlugCrudTest` (87) green.
 - `vendor/bin/php-cs-fixer fix`, `make phpstan`, `npm run format`, `npm run check`, eslint on every touched frontend file: clean. `php artisan typescript:transform` run.
 - Real app, scratch instance (SQLite, storage and uploads in the agent scratchpad, PHP built-in server with `variables_order=EGPCS`, `map_display` and `map_include_subalbums` on), sample photos imported with `lychee:sync` (album with four geotagged photos and a sub-album with one, album without geotagged photo), driven with Playwright + system Chromium, once with `STRUCT_OF_ARRAY_ENABLED` off (18 checks) and once on (19 checks), all passing: selector lists and keeps "Use map header", choosing it autosaves and shows the map, 30svh band (16rem on a phone), no header image, title in the hero card, dots drawn (sub-album photo included), wheel scrolls the page without zooming, dragging on desktop, clicking a dot opens that photo, album without geotagged photo falls back to the photo header, no page errors, touch: no dragging, pinch zoom kept.
+- S-086-18, scratch instance rebuilt with a 41-point London–Berlin GPX track on the album: before the fix, dragging on tiles and on the track line drew the album's selection rectangle (6/8); after it, 7/7: tiles and track line pan the map without a rectangle, the attribution flag starts nothing, dragging below the map still selects, a dot click still opens its photo.
 - The login route allows 10 attempts per hour: reuse a saved `storageState`; `php artisan cache:clear` on the scratch instance resets the limiter.
 
 **Findings:** none open. NFR-086-05 reworded: Leaflet already reaches the album page through the photo sidebar map, so only the header component is lazy. FR-086-07 failure path reworded: the global API error handling shows its overlay for a failed points request.
@@ -76,6 +77,9 @@ An album editor picks **Map** as the header; visitors see the album's photos as 
 7. **I7 – Required `is_map_header`** (FR-086-02; S-086-03, S-086-17)
    - _Steps:_ `AlbumMapHeaderTest` sends `is_map_header: false` as the v7 payload and expects 422 without it (fail first); `UpdateAlbumRequest` rule `required`; `is_map_header` added to every existing `PATCH /Album` test payload; `UpdateAbumData.is_map_header` required, v7 `AlbumProperties.vue` sends `false`.
    - _Commands:_ `php artisan test --filter=<each touched class>`, `make phpstan`, `npm run format`, `npm run check`.
+8. **I8 – Map interaction never starts the drag selection** (FR-086-08; S-086-18)
+   - _Steps:_ reproduce on the scratch instance with Playwright (selection rectangle appears when dragging the map, also on a GPX track line); mark the map band `data-stop-drag-select="true"`; let `dragAndSelect.ts::isInteractiveTarget()` accept any `Element` target so SVG track lines and icons resolve their ancestors too; rebuild and rerun.
+   - _Commands:_ `npm run format`, `npm run check`, eslint on touched files, `vite build`, scratch Playwright run.
 
 ## Scenario Tracking
 
@@ -89,6 +93,7 @@ An album editor picks **Map** as the header; visitors see the album's photos as 
 | S-086-15 | I3 / T-086-05 | `AlbumMapHeaderTest` (Meta) |
 | S-086-16 | I5, I6 / T-086-09, T-086-10 | manual |
 | S-086-17 | I7 / T-086-11, T-086-12 | `AlbumMapHeaderTest` |
+| S-086-18 | I8 / T-086-13 | scratch Playwright run |
 
 ## Analysis Gate
 

@@ -1,6 +1,7 @@
 <template>
-	<!-- `isolate` keeps Leaflet's pane and control z-indexes below the sticky album toolbar. -->
-	<div class="relative isolate w-full h-[30svh] min-h-64">
+	<!-- `isolate` keeps Leaflet's pane and control z-indexes below the sticky album toolbar.
+	     `data-stop-drag-select`: pressing on the map pans it, it never starts the album's drag selection. -->
+	<div class="relative isolate w-full h-[30svh] min-h-64" data-stop-drag-select="true">
 		<div ref="container" class="h-full w-full" />
 	</div>
 </template>

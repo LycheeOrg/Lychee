@@ -43,7 +43,7 @@ Affected layers: `SetHeader` action and `PATCH /Album` request (new sentinel), `
 | FR-086-05 | `GET /api/v3/Map/album?album_id=` returns every geotagged photo of the album in the Map page's scope: the album's own photos, plus sub-album photos when `map_include_subalbums` is on, with the visibility filtering `all_photos()` applies. Each photo appears once. Struct-of-arrays: `ids`, `album_ids`, `latitudes`, `longitudes`. No clustering, no cap. Not gated by the `struct-of-array` feature flag. | 200 with the arrays (possibly empty). | `album_id` missing or malformed → 422; unknown album → 404. | Viewer may not access the album's map → 403 (401 for a guest when login is required). | — | Q-086-04 |
 | FR-086-06 | `album_ids[i]` is the containing album of photo `i` to open it in: the album with the lowest `_lft` in scope (the requested album itself when the photo is directly in it). | — | — | — | — | Feature 067 Q-067-15 |
 | FR-086-07 | The header map draws one dot per photo in the theme's primary colour and the album's GPX tracks (from the album head payload, Map page colour palette). It is fitted to the bounding box of the dots, with padding and a maximum zoom so a single photo does not zoom to street level. | Clicking a dot opens that photo (`/gallery/{album_ids[i]}/{ids[i]}`). | — | Endpoint error → the map keeps its world view; the global API error handling applies. Track load error → toast, as on the Map page. | — | Q-086-02, Q-086-03 |
-| FR-086-08 | Interaction: `+`/`−` zoom buttons; mouse-wheel zoom off. On pointer devices the map can be dragged. On touch devices (`isTouchDevice()`) the map cannot be dragged and pinch-zoom keeps the centre, so a drag scrolls the page. | — | — | — | — | Q-086-02 |
+| FR-086-08 | Interaction: `+`/`−` zoom buttons; mouse-wheel zoom off. On pointer devices the map can be dragged. On touch devices (`isTouchDevice()`) the map cannot be dragged and pinch-zoom keeps the centre, so a drag scrolls the page. Pressing or dragging anywhere on the map (tiles, dots, tracks, controls) never starts the album's drag selection and keeps the current selection (`data-stop-drag-select`). | — | — | — | — | Q-086-02, owner 2026-10-07 |
 | FR-086-09 | The map header is a band of 30svh, at least 16rem, regardless of `album_header_size`. | — | — | — | — | Q-086-06 |
 | FR-086-10 | The v8 album properties header selector lists **Map** (icon `lucide:map`) after **Compact** when the album's map is accessible (`config.is_map_accessible`), and always shows it selected when `header_id = 'map'`. Choosing a photo, Compact or Map replaces the previous choice. | Saving sends `is_map_header: true`, `is_compact: false`, `header_id: null`. | — | — | — | Owner request 2026-10-07 |
 | FR-086-11 | Setting a photo as header from the photo context menu replaces the map header (existing `SetAsHeaderRequest`, unchanged). The v8 page updates `is_map_header` to `false` locally together with the new header image. | — | — | — | — | Owner request 2026-10-07 |
@@ -118,13 +118,14 @@ Header  [ Map                ▾ ]
 | S-086-15 | Social card of a map-header album uses a random photo. |
 | S-086-16 | v8: selecting Map in the properties shows the map header after saving; touch devices cannot drag the map; clicking a dot opens the photo. (manual) |
 | S-086-17 | `PATCH /Album` without `is_map_header` → 422. |
+| S-086-18 | Desktop: dragging the map (on tiles or on a track line) pans it, draws no selection rectangle and keeps the selected photos. (manual) |
 
 ## Test Strategy
 
 - **REST API (Feature_v3):** `AlbumMapHeaderTest` — `PATCH /Album` (S-086-01 … S-086-03, S-086-17), album head decision (S-086-04 … S-086-09), set-as-header (S-086-14). `MapAlbumPointsTest` — `/Map/album` (S-086-09 … S-086-13).
 - **Unit:** `SetHeader` map branch if not covered by the feature tests.
 - **Social card:** `MetaTest` case for S-086-15 if the existing suite builds album metas; otherwise covered by `getHeaderUrl` ignoring the sentinel.
-- **Frontend (v7, v8):** `npm run check` (the shared `UpdateAbumData` type makes `is_map_header` mandatory in both properties forms); manual browser check (S-086-16).
+- **Frontend (v7, v8):** `npm run check` (the shared `UpdateAbumData` type makes `is_map_header` mandatory in both properties forms); manual browser check (S-086-16, S-086-18).
 - **Contracts:** `php artisan typescript:transform` for `PreFormattedAlbumData` and the new resource.
 
 ## Interface & Contract Catalogue

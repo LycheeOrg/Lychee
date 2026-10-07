@@ -56,6 +56,10 @@ _Last updated: 2026-10-07_
   _Intent:_ `UpdateAlbumRequest` rule `required`; `is_map_header => false` in every `PATCH /Album` test payload (`AlbumUpdateTest`, `AlbumTitleSyncTest`, `AlbumMatchingAlbumsTest`, `AlbumSortingBucketDispatchTest`, `PhotoSortingBucketDispatchTest`, `UpdateAlbumDateScrubberTest`, `TitleSplitIntegrityTest`, `AlbumSlugCrudTest`); `UpdateAbumData.is_map_header` required; v7 `AlbumProperties.vue` sends `false`.  
   _Verification commands:_ `php artisan test --filter=<each class above>`, `make phpstan`, `npm run format`, `npm run check`
 
+- [x] T-086-13 – Map interaction never starts the album drag selection (FR-086-08, S-086-18).  
+  _Intent:_ reproduce with Playwright first, then `data-stop-drag-select="true"` on the `AlbumMapHeader.vue` band and `Element` targets in `dragAndSelect.ts::isInteractiveTarget()`.  
+  _Verification commands:_ `npm run format`, `npm run check`, eslint, `vite build`, scratch Playwright run
+
 ## Notes / TODOs
 
 - Owner review on a real touch device; MySQL/PostgreSQL through CI.

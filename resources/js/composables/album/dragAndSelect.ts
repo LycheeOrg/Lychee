@@ -132,7 +132,8 @@ export function useDragAndSelect(
 	}
 
 	function isInteractiveTarget(target: EventTarget | null): boolean {
-		if (!(target instanceof HTMLElement)) return false;
+		// `Element`, not `HTMLElement`: SVG targets (icons, map track lines) must resolve their ancestors too.
+		if (!(target instanceof Element)) return false;
 		if (target.closest("[data-stop-drag-select='true']")) return true;
 		const interactiveSelectors =
 			"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
