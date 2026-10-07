@@ -14,8 +14,12 @@ COPY composer.json composer.lock ./
 
 # Telemetry flavor: add the OpenTelemetry SDK, the OTLP exporter and the
 # auto-instrumentation packages, which composer.json only suggests.
+# The GitHub VCS repositories are dropped first: resolving against them
+# needs authenticated GitHub API calls, and the packages they provide stay
+# pinned by composer.lock anyway (only the new packages are resolved).
 ARG TELEMETRY=false
 RUN if [ "$TELEMETRY" = "true" ]; then \
+    composer config --unset repositories && \
     composer require \
     --no-install \
     --no-interaction \
