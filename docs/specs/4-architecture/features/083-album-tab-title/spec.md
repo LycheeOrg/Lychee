@@ -21,9 +21,11 @@ New settings, dependencies, server-side title changes, and changes to permission
 ## Functional Requirements
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-083-01 | Show `Album title · Site title` on album and flow-album routes. | Use the current loaded album title, including existing translation support. | Loaded album ID must match the route's album ID. | Keep the site title while metadata is unavailable. | None | User request |
+| FR-083-01 | Show `Album title · Site title` on album and flow-album routes. | Use the loaded album title directly, including smart-album labels translated by the backend. | Use album metadata only on album and flow-album routes. | Keep the site title while metadata is unavailable. | None | User request |
 | FR-083-02 | Preserve the media viewer's title priority. | Show the open photo/video title; restore the album title on close. | Empty media titles use the album/site title. | Existing behaviour applies. | None | Existing composable |
 | FR-083-03 | Restore the site title outside album panels. | Gallery home and other panels use the site title when no media is open. | Ignore stale album metadata. | No extra metadata requests. | None | User request |
+
+The site title is used directly. Its initial `gallery.title` placeholder may appear before initialization finishes. The user accepts this brief startup gap and the previous album title while another album loads. Retained album metadata must still be ignored outside album routes.
 
 ## Non-Functional Requirements
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
@@ -43,8 +45,8 @@ Gallery home: [ Example Gallery                  ] [+]
 | S-083-01 | Loaded album title appears and updates when its title changes. |
 | S-083-02 | Opening/closing media switches between media and album titles. |
 | S-083-03 | Navigating home or to another panel ignores retained album metadata. |
-| S-083-04 | Navigating between albums uses the site title until matching metadata loads. |
-| S-083-05 | Missing or empty titles retain the site/album title; smart album labels are translated. |
+| S-083-04 | Navigating between albums may retain the previous title until the new metadata loads. |
+| S-083-05 | Missing or empty titles retain the site/album title; titles are literal values without frontend translation. |
 | S-083-06 | Flow-album routes use the same album title behaviour. |
 
 ## Test Strategy

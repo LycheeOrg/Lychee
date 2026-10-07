@@ -157,7 +157,7 @@ This document tracks modules, dependencies, and architectural relationships acro
   - **AdminSetupPage** (`/setup-admin`, v8-only, Feature 051) — first-admin creation form shown instead of the legacy Blade `install/admin` page when `nuxt_ui` is active and no admin user exists yet; posts to `POST /Admin::Setup`, then navigates to `gallery` on success. Registered in the shared `router/paths.ts` manifest; v7's `componentByName` lookup falls back to a new `Placeholder.vue` for this and any other unmapped route name.
 - **Composables** (`resources/js/composables/`) - Reusable composition functions
   - Album, photo, search, selection, context menu composables
-  - **useDocumentTitle** (`resources/js/composables/useDocumentTitle.ts`, Feature 083) - Shared v7/v8 browser title watcher: open media title, then current album plus site title, then site title. Album metadata is used only on a matching album/flow-album route.
+  - **useDocumentTitle** (`resources/js/composables/useDocumentTitle.ts`, Feature 083) - Shared v7/v8 browser title watcher: open media title, then current album plus site title, then site title. Album metadata is used only on album/flow-album routes. Titles are used directly, with the previous album title accepted while another album loads.
   - **useAdminTiles** (`resources/js/composables/useAdminTiles.ts`) - Returns `AdminTile[]` with per-tile visibility driven by capability flags; used by `AdminDashboard.vue`.
 - **Services** (`resources/js/services/`) - API communication layer using axios
   - `admin-stats-service.ts` - `getStats(force)` → `GET /api/v2/Admin/Stats`

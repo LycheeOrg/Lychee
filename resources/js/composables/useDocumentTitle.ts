@@ -1,6 +1,5 @@
 import { watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { trans } from "laravel-vue-i18n";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -21,13 +20,8 @@ export function useDocumentTitle(): void {
 	const lycheeStore = useLycheeStateStore();
 
 	watchEffect(() => {
-		const siteTitle = trans(lycheeStore.title);
-		const album = albumStore.album;
 		// The album store can retain metadata after navigating to another panel.
-		const albumTitle =
-			(route.name === "album" || route.name === "flow-album") && album !== undefined && album.id === route.params.albumId
-				? trans(album.title)
-				: "";
-		document.title = photoStore.photo?.title || (albumTitle ? `${albumTitle} · ${siteTitle}` : siteTitle);
+		const albumTitle = route.name === "album" || route.name === "flow-album" ? albumStore.album?.title : undefined;
+		document.title = photoStore.photo?.title || (albumTitle ? `${albumTitle} · ${lycheeStore.title}` : lycheeStore.title);
 	});
 }

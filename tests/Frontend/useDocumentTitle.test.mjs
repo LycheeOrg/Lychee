@@ -18,7 +18,6 @@ function mountTitle(t, name = "album") {
 	const modules = {
 		vue: { watchEffect },
 		"vue-router": { useRoute: () => route },
-		"laravel-vue-i18n": { trans: (title) => (title === "gallery.recent" ? "Recent" : title) },
 		"@/stores/AlbumState": { useAlbumStore: () => albumStore },
 		"@/stores/PhotoState": { usePhotoStore: () => photoStore },
 		"@/stores/LycheeState": { useLycheeStateStore: () => siteStore },
@@ -61,18 +60,18 @@ test("leaving an album ignores retained album metadata", async (t) => {
 	}
 });
 
-test("navigation between albums waits for matching metadata", async (t) => {
+test("navigation between albums uses the previous title until metadata loads", async (t) => {
 	const { albumStore, route, document } = mountTitle(t);
 	route.params.albumId = "winter";
 	await nextTick();
-	assert.equal(document.title, "Example Gallery");
+	assert.equal(document.title, "Summer holiday · Example Gallery");
 	albumStore.album = { id: "winter", title: "Winter holiday" };
 	await nextTick();
 	assert.equal(document.title, "Winter holiday · Example Gallery");
 });
 
-test("unavailable or empty titles and translated album labels", async (t) => {
-	const { albumStore, photoStore, document } = mountTitle(t);
+test("unavailable or empty titles fall back to literal site and album titles", async (t) => {
+	const { albumStore, photoStore, siteStore, document } = mountTitle(t);
 	albumStore.album = undefined;
 	await nextTick();
 	assert.equal(document.title, "Example Gallery");
@@ -82,7 +81,15 @@ test("unavailable or empty titles and translated album labels", async (t) => {
 	albumStore.album.title = "gallery.recent";
 	photoStore.photo = { title: "" };
 	await nextTick();
-	assert.equal(document.title, "Recent · Example Gallery");
+	assert.equal(document.title, "gallery.recent · Example Gallery");
+	albumStore.album.title = "Recent";
+	siteStore.title = "gallery.recent";
+	await nextTick();
+	assert.equal(document.title, "Recent · gallery.recent");
+	albumStore.album = undefined;
+	siteStore.title = "gallery.title";
+	await nextTick();
+	assert.equal(document.title, "gallery.title");
 });
 
 test("flow albums use the album title too", (t) => {
