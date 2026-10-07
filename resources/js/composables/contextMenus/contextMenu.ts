@@ -1,5 +1,5 @@
 import { useAlbumStore } from "@/stores/AlbumState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { computed, Ref, ref } from "vue";
@@ -72,6 +72,7 @@ function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Mode
 }
 
 export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallbacks, albumCallbacks: AlbumCallbacks) {
+	const { rights } = useGlobalRights();
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
@@ -99,7 +100,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStore = useLycheeStateStore();
 
@@ -115,14 +115,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight",
 				icon: "pi pi-flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight",
 				icon: "pi pi-flag-fill",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
@@ -177,7 +177,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer",
 					icon: "pi pi-pencil",
 					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces",
@@ -236,7 +236,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStore = useLycheeStateStore();
 
@@ -253,14 +252,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight_all",
 				icon: "pi pi-flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight_all",
 				icon: "pi pi-flag-fill",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
@@ -282,7 +281,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer_all",
 					icon: "pi pi-pencil",
 					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces_all",
@@ -331,7 +330,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
-		const leftMenuStore = useLeftMenuStateStore();
 		const lycheeStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
@@ -356,7 +354,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer",
 					icon: "pi pi-pencil",
 					callback: albumCallbacks.toggleApplyRenamer,
-					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (selectedAlbum.rights.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces",

@@ -42,9 +42,8 @@
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Disclaimer from "@/v8/components/webshop/Disclaimer.vue";
 import OrderLegend from "@/v8/components/webshop/OrderLegend.vue";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { useGlobalRights } from "@/composables/useGlobalRights";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useOrder } from "@/composables/checkout/useOrder";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -62,19 +61,18 @@ type Order = App.Http.Resources.Shop.OrderResource;
 const router = useRouter();
 const toast = useAppToast();
 
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 
 const { isZero, load, clean, orders, numOldOrders, showPending } = useOrder(toast, router);
 
-const columns: TableColumn<Order>[] = [
+const columns = computed<TableColumn<Order>[]>(() => [
 	{ id: "client", header: trans("webshop.orderList.client") },
-	...(initData.value?.settings.can_edit ? [{ id: "transaction_id", header: trans("webshop.orderList.transactionId") } as TableColumn<Order>] : []),
+	...(rights.value?.settings.can_edit ? [{ id: "transaction_id", header: trans("webshop.orderList.transactionId") } as TableColumn<Order>] : []),
 	{ id: "status", header: trans("webshop.orderList.status") },
 	{ id: "amount", header: trans("webshop.orderList.amount") },
 	{ id: "date", header: trans("webshop.orderList.date") },
 	{ id: "actions" },
-];
+]);
 
 onMounted(() => {
 	load();

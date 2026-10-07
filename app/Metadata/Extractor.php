@@ -61,6 +61,11 @@ class Extractor
 	public ?string $location = null;
 	public ?string $live_photo_content_id = null;
 	public int $micro_video_offset = 0;
+	public bool $is_360 = false;
+	public ?int $pano_full_width = null;
+	public ?int $pano_full_height = null;
+	public ?int $pano_crop_left = null;
+	public ?int $pano_crop_top = null;
 
 	/**
 	 * Extracts metadata from a file.
@@ -167,6 +172,13 @@ class Extractor
 		$metadata->img_direction = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->live_photo_content_id = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata->micro_video_offset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
+
+		$panorama = PanoramaDetector::detect($exif, $metadata->width);
+		$metadata->is_360 = $panorama->is_360;
+		$metadata->pano_full_width = $panorama->full_width;
+		$metadata->pano_full_height = $panorama->full_height;
+		$metadata->pano_crop_left = $panorama->crop_left;
+		$metadata->pano_crop_top = $panorama->crop_top;
 
 		$taken_at = $exif->getCreationDate();
 

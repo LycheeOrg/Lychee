@@ -207,7 +207,7 @@ Two access modes, both always gated by `PhotoPolicy` (`CAN_SEE` for thumbnail-cl
 
 **GET** `/api/v3/Albums`
 
-The first v3 endpoint to realize the Struct-of-Arrays (SoA) collection convention (ADR-0009): a single, cacheable, rights-curated, flat, unpaginated album listing, registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\AlbumListController::index()`, `App\Http\Requests\Gallery\AlbumListV3Request`). Built for three future (separately-scoped) frontend consumers — the Move-target dropdown, the Fix Tree admin page, and the Bulk Album Edit admin page — none of which are wired up by this endpoint itself (backend contract only). Result set is curated via `AlbumQueryPolicy::applyVisibilityFilter()` (visibility, not reachability — a password-protected-but-not-unlocked album still appears if otherwise visible), ordered by `albums._lft` ascending, queried via `Illuminate\Database\Eloquent\Builder::toBase()` for zero Eloquent hydration overhead, and cached through `App\Services\Cache\ManagedCacheService` keyed by user identity and the exact flag combination requested (`managed_cache_enabled`/`managed_cache_albums_enabled`/`managed_cache_ttl`, no new config).
+The first v3 endpoint to realize the Struct-of-Arrays (SoA) collection convention (ADR-0009): a single, cacheable, rights-curated, flat, unpaginated album listing, registered via `routes/api_v3.php` (`App\Http\Controllers\Gallery\AlbumListController::index()`, `App\Http\Requests\Gallery\AlbumListV3Request`). Built for three future (separately-scoped) frontend consumers — the Move-target dropdown, the Fix Tree admin page, and the Bulk Album Edit admin page — none of which are wired up by this endpoint itself (backend contract only). Result set is curated to albums browsable by clicking from the root: visible per `AlbumQueryPolicy::applyVisibilityFilter()` and with every ancestor reachable per `AlbumQueryPolicy::applyAncestorReachabilityFilter()` (a password-protected-but-not-unlocked album still appears when its ancestors are reachable; its descendants appear once it is unlocked), ordered by `albums._lft` ascending, queried via `Illuminate\Database\Eloquent\Builder::toBase()` for zero Eloquent hydration overhead, and cached through `App\Services\Cache\ManagedCacheService` keyed by user identity, the session's unlocked albums and the exact flag combination requested (`managed_cache_enabled`/`managed_cache_albums_enabled`/`managed_cache_ttl`, no new config).
 
 **Query parameters:**
 
@@ -316,11 +316,13 @@ Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenControlle
   "can_move_children": false,
   "ids": ["abc123"],
   "grants_edit": [false],
-  "grants_download": [true]
+  "grants_download": [true],
+  "grants_move": [false]
 }
 ```
-- `owner_id`/`can_delete_children`/`can_move_children` are whole-response (one value, not an array) — uniform across every direct child, since both rights checks key off `parent_id`, which is `album_id` itself for every direct child. `can_delete_children` mirrors `AlbumPolicy::canDelete()`'s parent-scoped `AccessPermission` query verbatim; `can_move_children` reuses the same value (mirrors `AlbumRightsResource::can_move`'s existing reuse of the delete gate).
-- `grants_edit`/`grants_download` are per-child, index-aligned with `ids` — the only rights components that genuinely vary per child (a subalbum can be individually shared independent of its siblings). Computed via one `LEFT JOIN` against `AlbumQueryPolicy::getComputedAccessPermissionSubQuery(full: true, user: $currentUser)` (reused from `AlbumListController.php:88`'s existing call site, with the real caller instead of the hardcoded public-only case), `GROUP BY` child id with `MAX()` per `grants_*` column — required, not optional: that subquery applies no internal `GROUP BY` in `full: true` mode, so a caller belonging to multiple groups with separate matching grants on the same child would otherwise produce duplicate joined rows; `MAX()` OR-merges them correctly.
+- Feature 072: `can_move_children` comes from `grants_move` on the parent (moving a child = moving the parent's content), no longer a copy of `can_delete_children`; per-child `grants_move[i]` is the move grant on child *i* itself (moving child *i*'s own content, as merge does).
+- `owner_id`/`can_delete_children`/`can_move_children` are whole-response (one value, not an array) — uniform across every direct child, since both rights checks key off `parent_id`, which is `album_id` itself for every direct child. `can_delete_children` mirrors `AlbumPolicy::canDelete()`'s parent-scoped `AccessPermission` query verbatim; `can_move_children` runs the same query on `grants_move` (mirrors `AlbumPolicy::canMoveAlbum()`). Root: both `true` for admins, `false` otherwise; tag/person-matching and search rights: both always `false`.
+- `grants_edit`/`grants_download`/`grants_move` are per-child, index-aligned with `ids` — the only rights components that genuinely vary per child (a subalbum can be individually shared independent of its siblings). Computed via one `LEFT JOIN` against `AlbumQueryPolicy::getComputedAccessPermissionSubQuery(full: true, user: $currentUser)` (reused from `AlbumListController.php:88`'s existing call site, with the real caller instead of the hardcoded public-only case), `GROUP BY` child id with `MAX()` per `grants_*` column — required, not optional: that subquery applies no internal `GROUP BY` in `full: true` mode, so a caller belonging to multiple groups with separate matching grants on the same child would otherwise produce duplicate joined rows; `MAX()` OR-merges them correctly.
 - `grants_upload`/`grants_full_photo_access` and any combined `can_edit`/`can_download`/`can_upload`/`can_access_original`/`can_share`/`can_share_with_users`/`can_transfer` field are deliberately not transmitted — the client already knows its own identity (for the owner-based component of `can_edit`/`can_download`) and combines it with the transmitted `grants_*` flag itself; neither `can_upload` nor `can_access_original` is offered by the right-click menu this endpoint serves at all.
 - Admin callers (`may_administrate`) short-circuit to every right `true` for every child, without the grants join or the `can_delete_children` `exists()` query ever running.
 
@@ -329,6 +331,10 @@ Registered via `App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenControlle
 Eight `GET` endpoints, all under `App\Http\Controllers\Gallery\AlbumListing\*`, gated by the same `modules.is_struct_of_array_enabled` flag as the endpoints above. Root albums (`parent_id IS NULL`) get the same buckets/index/rights trio sub-albums have, plus a `scope` (`own`\|`shared`) request parameter reproducing today's `GET /api/v2/Albums` owned/shared partition; smart/person/tag/pinned albums get flat, un-bucketed listings. `GET /api/v2/Albums` (`AlbumsController`/`Top`/`RootAlbumResource`) is untouched — this is an additive v3 surface, not a replacement.
 
 **`scope` request rule** (`GetScopedAlbumsRequest`, shared by root's three endpoints plus `/Albums/persons`/`/Albums/pinned`): an **authenticated** caller must pass exactly one of `own`\|`shared` (422 otherwise, no implicit default); an **unauthenticated** caller may omit it (defaults to `shared`) or pass `shared` explicitly — passing `own` as a guest is 422, never a silently-empty result. `/Albums/smart` and `/Albums/tags` take no `scope` at all (un-scoped, `GetAlbumCategoryRequest`).
+
+#### `GET /api/v3/Albums/root/config`
+
+Registered via `AlbumRootController::config()` (`GetAlbumCategoryRequest`, flag-gated), middleware `login_required:root` + `cache_control`. Returns `AlbumRootConfigResource` — `config` (`RootConfig`) and `rights` (`RootAlbumRightsResource`), the same two fields v2 `GET /Albums` returns, built from config values and the current user only (no album query). With `is_struct_of_array_enabled` on, the root gallery reads its config/rights from here and does not call v2 `GET /Albums`. A guest on a `login_required` instance gets 401, which the frontend turns into the login modal.
 
 #### `GET /api/v3/Albums/root[/buckets|/rights]`
 
@@ -426,7 +432,7 @@ Every request carries `north`/`south`/`east`/`west` (decimal degrees) + `zoom` (
 
 Registered via `MapListingController::buckets()` / `GetMapBucketsRequest`, backed by `App\Actions\Map\QueryMapBuckets`. One driver-portable `GROUP BY FLOOR(latitude/$cell), FLOOR(longitude/$cell)` + `COUNT(*)`/`AVG(latitude)`/`AVG(longitude)`, `toBase()`-only (no Eloquent hydration).
 
-**Response:** `MapBucketResource` — `bucket_ids[]` (opaque `"{lat_cell}:{lng_cell}"` strings), `counts[]`, `centroid_latitudes[]`, `centroid_longitudes[]`.
+**Response:** `MapBucketResource` — `bucket_ids[]` (opaque `"{lat_cell}:{lng_cell}"` strings), `counts[]`, `centroid_latitudes[]`, `centroid_longitudes[]` for cells with at least two photos, plus `singleton_photos` (a `MapPhotoResource`, same fields as `/Map/Photos` below) holding the one photo of every single-photo cell (FR-067-25, Q-067-20).
 
 #### `GET /api/v3/Map/Photos`
 

@@ -1,4 +1,5 @@
 import type { PhotoDetailResource, PhotoRatioResource } from "@/services/photo-children-v3-service";
+import { formatServerDateTime } from "@/v8/utils/phpDateFormat";
 
 /**
  * `PhotosState.ts.photos` is strictly typed `PhotoResource[]` — every
@@ -40,32 +41,14 @@ const EMPTY_SIZE_VARIANTS: App.Http.Resources.Models.SizeVariantsResouce = {
 };
 
 /**
- * Reasonable, non-PHP-format-string-parity date rendering — a simplified
- * stand-in for full `date_format_photo_thumb` client-side formatting
- * (FR-065-21). Full parity requires exposing that config value to the
- * frontend (it isn't currently surfaced by any typed config resource,
- * `AlbumConfig`/`RootConfig`/`PhotoLayoutConfig` alike) — a small, narrow
- * backend Data-resource addition mirroring Feature 063's own
- * `date_format_album_thumb` addition (T-063-38), left as follow-up work
- * rather than done in this pass.
+ * The `Gallery::Init` date formats `PreformattedPhotoData` applies
+ * server-side — `useLycheeStateStore()` satisfies this directly.
  */
-function formatDateForOverlay(iso: string | null): string {
-	if (iso === null) {
-		return "";
-	}
-	const date = new Date(iso);
-	if (Number.isNaN(date.getTime())) {
-		return "";
-	}
-	return date.toLocaleDateString();
-}
+export type PhotoTileDateFormats = Pick<
+	App.Http.Resources.GalleryConfigs.InitConfig,
+	"date_format_photo_overlay" | "date_format_sidebar_uploaded" | "date_format_sidebar_taken_at"
+>;
 
-/**
- * Adapts row `i` of a `ratios` response into a full, `PhotoResource`-shaped
- * tile. `album_id` is the browsed album's id (the only album a v3-sourced
- * tile is ever linked from in this feature — matching- albums/multi-album
- * membership display is out of scope, NG5).
- */
 /**
  * Everything `adaptPhotoTile()` actually reads off a tier-2 payload.
  *
@@ -77,9 +60,19 @@ function formatDateForOverlay(iso: string | null): string {
  */
 export type AdaptablePhotoTierTwo = Omit<PhotoRatioResource, "bucket_ids">;
 
-export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_id: string): AdaptedPhotoTile {
+/**
+ * Adapts row `i` of a `ratios` response into a full, `PhotoResource`-shaped
+ * tile. `album_id` is the browsed album's id (the only album a v3-sourced
+ * tile is ever linked from in this feature — matching- albums/multi-album
+ * membership display is out of scope, NG5). The `preformatted` dates are
+ * formatted client-side exactly as `PreformattedPhotoData` does: `taken_at`
+ * in the zone the photo was taken in, `created_at` in the viewer's.
+ */
+export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_id: string, dateFormats: PhotoTileDateFormats): AdaptedPhotoTile {
 	const takenAt = ratios.taken_ats[i];
 	const createdAt = ratios.created_ats[i];
+	const takenAtTz = ratios.taken_at_orig_tzs[i];
+	const formattedTakenAt = formatServerDateTime(takenAt, dateFormats.date_format_sidebar_taken_at, takenAtTz);
 	const ratingAvg = ratios.rating_avgs?.[i] ?? null;
 	const ratingUser = ratios.rating_users?.[i] ?? null;
 	const description = ratios.thumb_infos?.[i] ?? null;
@@ -100,7 +93,7 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		size_variants: EMPTY_SIZE_VARIANTS,
 		tags: tagNames.map((name, idx) => ({ id: -(idx + 1), name })),
 		taken_at: takenAt,
-		taken_at_orig_tz: ratios.taken_at_orig_tzs[i],
+		taken_at_orig_tz: takenAtTz,
 		title: ratios.titles[i],
 		type: ratios.types[i],
 		updated_at: createdAt,
@@ -111,9 +104,12 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		next_photo_id: null,
 		previous_photo_id: null,
 		preformatted: {
-			created_at: formatDateForOverlay(createdAt),
-			taken_at: formatDateForOverlay(takenAt),
-			date_overlay: formatDateForOverlay(takenAt ?? createdAt),
+			created_at: formatServerDateTime(createdAt, dateFormats.date_format_sidebar_uploaded),
+			taken_at: formattedTakenAt === "" ? null : formattedTakenAt,
+			date_overlay:
+				takenAt === null
+					? formatServerDateTime(createdAt, dateFormats.date_format_photo_overlay)
+					: formatServerDateTime(takenAt, dateFormats.date_format_photo_overlay, takenAtTz),
 			make: null,
 			model: null,
 			shutter: "",
@@ -139,6 +135,7 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 			is_video: ratios.is_videos[i],
 			is_raw: ratios.is_raws[i],
 			is_livephoto: ratios.is_live_photos[i],
+			is_360: ratios.is_360s[i],
 			is_camera_date: false,
 			has_exif: false,
 			has_location: false,
@@ -149,6 +146,9 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		},
 		timeline: null,
 		palette: null,
+		// Feature 082: only full spheres are known from `ratios`; a partial
+		// crop arrives with `details` (`mergePhotoDetail()`).
+		panorama: null,
 		statistics: null,
 		rating: ratingAvg === null && ratingUser === null ? null : { rating_avg: ratingAvg ?? 0, rating_user: ratingUser ?? 0, rating_count: 0 },
 		// Accepted regression (NG11/Q-065-06) — see this file's own doc
@@ -181,6 +181,7 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 	photo.live_photo_content_id = detail.live_photo_content_ids[i];
 	photo.live_photo_url = detail.live_photo_urls[i];
 	photo.palette = detail.palette[i];
+	photo.panorama = detail.panoramas[i];
 	photo.statistics = detail.statistics[i];
 	photo.size_variants = sizeVariants;
 
@@ -192,7 +193,7 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 		photo.rating.rating_count = ratingCount;
 	}
 
-	photo.preformatted.description = detail.descriptions[i] ?? "";
+	photo.preformatted.description = detail.preformatted_descriptions[i] ?? "";
 	photo.preformatted.make = detail.makes?.[i] ?? null;
 	photo.preformatted.model = detail.models?.[i] ?? null;
 	photo.preformatted.lens = detail.lenses?.[i] ?? "";

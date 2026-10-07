@@ -35,15 +35,6 @@
 		<div v-if="hiddenFaceCount > 0" class="absolute bottom-2 left-2 bg-black/60 text-inverted text-xs px-2 py-1 rounded pointer-events-none">
 			{{ hiddenFaceCount }} {{ $t("people.hidden_faces") }}
 		</div>
-
-		<!-- Assignment modal -->
-		<FaceAssignmentModal
-			v-if="selectedFace"
-			v-model:open="is_face_assignment_visible"
-			:face="selectedFace"
-			@assigned="handleFaceAssigned"
-			@dismissed="handleFaceDismissed"
-		/>
 	</div>
 </template>
 
@@ -51,10 +42,9 @@
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
-import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceDetectionService from "@/services/face-detection-service";
 import { isTouchDevice } from "@/utils/keybindings-utils";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
@@ -70,16 +60,15 @@ const emits = defineEmits<{
 }>();
 
 const toast = useAppToast();
-const leftMenuStore = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
-const { initData } = storeToRefs(leftMenuStore);
-const { is_face_assignment_visible } = storeToRefs(togglableStore);
+const { rights } = useGlobalRights();
+const { is_face_assignment_visible, face_for_assignment } = storeToRefs(togglableStore);
 
 const isTouchDev = isTouchDevice();
 
 // Config-driven: is the overlay feature enabled at all?
-const overlayEnabled = computed(() => initData.value?.modules.is_face_overlay_enabled ?? true);
+const overlayEnabled = computed(() => rights.value?.modules.is_face_overlay_enabled ?? true);
 
 // Visibility toggle (P key) — stored in lycheeStore for persistence
 const isVisible = computed(() => lycheeStore.is_face_overlay_visible);
@@ -118,8 +107,6 @@ onUnmounted(() => {
 	}
 });
 
-const selectedFace = ref<App.Http.Resources.Models.FaceResource | undefined>(undefined);
-
 const visibleFaces = computed(() => props.faces.filter((f) => !f.is_dismissed));
 
 function faceLabel(face: App.Http.Resources.Models.FaceResource): string {
@@ -138,16 +125,8 @@ function handleClick(face: App.Http.Resources.Models.FaceResource) {
 				toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 			});
 	} else {
-		selectedFace.value = face;
+		face_for_assignment.value = face;
 		is_face_assignment_visible.value = true;
 	}
-}
-
-function handleFaceAssigned(_updatedFace: App.Http.Resources.Models.FaceResource) {
-	emits("facesUpdated");
-}
-
-function handleFaceDismissed() {
-	emits("facesUpdated");
 }
 </script>

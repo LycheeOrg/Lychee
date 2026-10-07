@@ -7,7 +7,7 @@
 import { computed, type ComputedRef } from "vue";
 import { storeToRefs } from "pinia";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
-import { type LeftMenuStateStore } from "@/stores/LeftMenuState";
+import { type GlobalRightsStore } from "@/stores/GlobalRightsState";
 import { type LycheeStateStore } from "@/stores/LycheeState";
 
 export type AdminTileGroup = "core" | "monitoring" | "extensions";
@@ -24,9 +24,9 @@ export type AdminTile = {
 	disabled?: ComputedRef<boolean>;
 };
 
-export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
+export function useAdminTiles(lycheeStore: LycheeStateStore, globalRightsStore: GlobalRightsStore): AdminTile[] {
 	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_face_recognition_enabled } = storeToRefs(lycheeStore);
-	const { initData } = storeToRefs(leftMenuStore);
+	const { rights } = storeToRefs(globalRightsStore);
 	const breakpoints = useBreakpoints(breakpointsTailwind);
 	const isSmallScreen = breakpoints.smaller("lg");
 	const isBelowMd = breakpoints.smaller("md");
@@ -39,7 +39,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:settings",
 			to: "/admin/settings",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "design-system",
@@ -48,7 +48,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:palette",
 			to: "/admin/design",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_design_system_enabled ?? false)),
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (rights.value?.modules.is_design_system_enabled ?? false)),
 		},
 		{
 			key: "diagnostics",
@@ -57,7 +57,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:stethoscope",
 			to: "/diagnostics",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_see_diagnostics ?? false),
+			visible: computed(() => rights.value?.settings.can_see_diagnostics ?? false),
 		},
 		{
 			key: "users",
@@ -66,7 +66,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:user",
 			to: "/admin/users",
 			isExternal: false,
-			visible: computed(() => initData.value?.user_management.can_edit ?? false),
+			visible: computed(() => rights.value?.user_management.can_edit ?? false),
 		},
 		{
 			key: "user-groups",
@@ -75,7 +75,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:users",
 			to: "/admin/user-groups",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_acess_user_groups ?? false),
+			visible: computed(() => rights.value?.settings.can_acess_user_groups ?? false),
 			disabled: isBelowMd,
 		},
 		{
@@ -85,7 +85,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:shopping-bag",
 			to: "/admin/purchasables",
 			isExternal: false,
-			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			visible: computed(() => (rights.value?.modules.is_mod_webshop_enabled ?? false) && (rights.value?.settings.can_edit ?? false)),
 			disabled: isBelowMd,
 		},
 		{
@@ -95,7 +95,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:expand",
 			to: "/admin/shop/sizes",
 			isExternal: false,
-			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+			visible: computed(() => (rights.value?.modules.is_mod_webshop_enabled ?? false) && (rights.value?.settings.can_edit ?? false)),
 			disabled: isBelowMd,
 		},
 		{
@@ -105,15 +105,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:inbox",
 			to: "/admin/contact-messages",
 			isExternal: false,
-			num: computed(() => initData.value?.modules.messages_count ?? 0),
+			num: computed(() => rights.value?.modules.messages_count ?? 0),
 			visible: computed(
 				() =>
-					(initData.value?.modules.is_contact_enabled ?? false) &&
-					((initData.value?.settings.can_edit ?? false) ||
-						(initData.value?.user_management.can_edit ?? false) ||
-						(initData.value?.settings.can_see_diagnostics ?? false) ||
-						(initData.value?.settings.can_see_logs ?? false) ||
-						(initData.value?.settings.can_acess_user_groups ?? false)),
+					(rights.value?.modules.is_contact_enabled ?? false) &&
+					((rights.value?.settings.can_edit ?? false) ||
+						(rights.value?.user_management.can_edit ?? false) ||
+						(rights.value?.settings.can_see_diagnostics ?? false) ||
+						(rights.value?.settings.can_see_logs ?? false) ||
+						(rights.value?.settings.can_acess_user_groups ?? false)),
 			),
 		},
 		{
@@ -123,7 +123,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:send",
 			to: "/admin/webhooks",
 			isExternal: false,
-			visible: computed(() => initData.value?.modules.is_mod_webhook_enabled ?? false),
+			visible: computed(() => rights.value?.modules.is_mod_webhook_enabled ?? false),
 		},
 		{
 			key: "faces",
@@ -132,7 +132,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:smile",
 			to: "/admin/maintenance/faces",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false)),
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (is_face_recognition_enabled.value ?? false)),
 		},
 		{
 			key: "nsfw-config",
@@ -141,7 +141,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:eye",
 			to: "/admin/nsfw-config",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_nsfw_classifier_enabled ?? false)),
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (rights.value?.modules.is_nsfw_classifier_enabled ?? false)),
 		},
 		{
 			key: "watermark-preview",
@@ -152,9 +152,9 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			isExternal: false,
 			visible: computed(
 				() =>
-					(initData.value?.settings.can_edit ?? false) &&
+					(rights.value?.settings.can_edit ?? false) &&
 					(is_se_enabled.value || is_se_preview_enabled.value) &&
-					(initData.value?.modules.is_watermarker_available ?? false),
+					(rights.value?.modules.is_watermarker_available ?? false),
 			),
 		},
 		{
@@ -164,7 +164,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:layout-template",
 			to: "/admin/landing-config",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "bulk-album-edit",
@@ -173,7 +173,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:folder",
 			to: "/bulk-album-edit",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 			disabled: isSmallScreen,
 		},
 		{
@@ -183,7 +183,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:cloud",
 			to: "/sharing",
 			isExternal: false,
-			visible: computed(() => initData.value?.root_album.can_upload ?? false),
+			visible: computed(() => rights.value?.root_album.can_upload ?? false),
 			disabled: isSmallScreen,
 		},
 		{
@@ -195,11 +195,11 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			isExternal: false,
 			visible: computed(
 				() =>
-					(initData.value?.settings.can_edit ?? false) ||
-					(initData.value?.user_management.can_edit ?? false) ||
-					(initData.value?.settings.can_see_diagnostics ?? false) ||
-					(initData.value?.settings.can_see_logs ?? false) ||
-					(initData.value?.settings.can_acess_user_groups ?? false),
+					(rights.value?.settings.can_edit ?? false) ||
+					(rights.value?.user_management.can_edit ?? false) ||
+					(rights.value?.settings.can_see_diagnostics ?? false) ||
+					(rights.value?.settings.can_see_logs ?? false) ||
+					(rights.value?.settings.can_acess_user_groups ?? false),
 			),
 		},
 		{
@@ -209,7 +209,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:timer",
 			to: "/admin/maintenance",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
 			key: "jobs",
@@ -218,7 +218,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:chart-gantt",
 			to: "/admin/jobs",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
+			visible: computed(() => rights.value?.settings.can_see_logs ?? false),
 			disabled: isBelowMd,
 		},
 
@@ -229,7 +229,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:logs",
 			to: "/Logs",
 			isExternal: true,
-			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
+			visible: computed(() => rights.value?.settings.can_see_logs ?? false),
 		},
 		{
 			key: "clockwork",
@@ -238,7 +238,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:telescope",
 			to: clockwork_url.value ?? "",
 			isExternal: true,
-			visible: computed(() => clockwork_url.value !== null && (initData.value?.settings.can_access_dev_tools ?? false)),
+			visible: computed(() => clockwork_url.value !== null && (rights.value?.settings.can_access_dev_tools ?? false)),
 		},
 	];
 }

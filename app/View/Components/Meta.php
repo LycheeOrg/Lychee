@@ -8,6 +8,7 @@
 
 namespace App\View\Components;
 
+use App\Assets\Features;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\OgImageAlbumSourceType;
@@ -18,10 +19,12 @@ use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Services\GalleryLockState;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
 use Illuminate\View\View;
+use LycheeVerify\Verify;
 
 /**
  * This is the bottom of the page.
@@ -40,6 +43,8 @@ class Meta extends Component
 	public bool $rss_enable;
 	public string $user_css_url;
 	public string $user_js_url;
+	public string $loading_indicator_mode;
+	public string $loading_indicator_url;
 	public int $width = 0;
 	public int $height = 0;
 
@@ -57,9 +62,10 @@ class Meta extends Component
 		// default data
 		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 		$this->page_url = url()->current();
-		$this->rss_enable = request()->configs()->getValueAsBool('rss_enable');
+		$this->rss_enable = resolve(GalleryLockState::class)->isRssEnabled();
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
+		$this->setLoadingIndicator();
 
 		$base_url = url('/');
 		// Work around to try to satisfy everyone...
@@ -126,6 +132,24 @@ class Meta extends Component
 	public function render(): View
 	{
 		return view('components.meta');
+	}
+
+	/**
+	 * Loading indicator of the v8 front-end, rendered into the page so the first loader already uses it.
+	 */
+	private function setLoadingIndicator(): void
+	{
+		$verify = request()->verify();
+		$is_se_enabled = $verify instanceof Verify && $verify->validate() && $verify->is_supporter();
+		$url = trim((string) config('features.loading_indicator_url'));
+
+		// A custom animation wins over white label; both require Supporter Edition.
+		$this->loading_indicator_mode = match (true) {
+			$is_se_enabled && $url !== '' => 'custom',
+			$is_se_enabled && Features::active('white_label_enabled') => 'unbranded',
+			default => 'default',
+		};
+		$this->loading_indicator_url = $this->loading_indicator_mode === 'custom' ? $url : '';
 	}
 
 	/**

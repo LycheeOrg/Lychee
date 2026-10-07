@@ -55,5 +55,5 @@ A directly analogous precedent already exists in this codebase: `GET /register` 
 
 - Related spec sections: `docs/specs/4-architecture/features/051-admin-setup-page/spec.md` (FR-051-01..06, NFR-051-02/03, API-051-01/02)
 - Related plan: `docs/specs/4-architecture/features/051-admin-setup-page/plan.md` (Increment Map I2, I3, I5)
-- Related open questions: Q-051-01, Q-051-04 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-051-01, Q-051-04 ([051-admin-setup-page/open-questions.md](../4-architecture/features/051-admin-setup-page/open-questions.md))
 - Related ADRs: ADR-0006 (shared `router/paths.ts` manifest this ADR adds one exception to)

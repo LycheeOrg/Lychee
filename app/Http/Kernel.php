@@ -33,6 +33,29 @@ class Kernel extends HttpKernel
 	];
 
 	/**
+	 * The priority-sorted list of middleware.
+	 *
+	 * Laravel's default list, plus {@see Middleware\ReadOnlyStartSession}
+	 * right after `StartSession`, so it always runs before `AuthenticateSession`.
+	 *
+	 * @var array<int,string>
+	 */
+	protected $middlewarePriority = [
+		\Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+		\Illuminate\Cookie\Middleware\EncryptCookies::class,
+		\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+		\Illuminate\Session\Middleware\StartSession::class,
+		Middleware\ReadOnlyStartSession::class,
+		\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+		\Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+		\Illuminate\Routing\Middleware\ThrottleRequests::class,
+		\Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+		\Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+		\Illuminate\Routing\Middleware\SubstituteBindings::class,
+		\Illuminate\Auth\Middleware\Authorize::class,
+	];
+
+	/**
 	 * The application's route middleware groups.
 	 *
 	 * @var array<string,array<int,string>>
@@ -78,6 +101,7 @@ class Kernel extends HttpKernel
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
+			'gallery_password',
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\Latency::class,
 			\App\Http\Middleware\ResolveAlbumSlug::class,
@@ -100,6 +124,7 @@ class Kernel extends HttpKernel
 		'json_errors' => \App\Http\Middleware\EnsureJsonErrorResponses::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
+		'gallery_password' => \App\Http\Middleware\GalleryPasswordRequired::class,
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,

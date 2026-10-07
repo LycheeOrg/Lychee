@@ -15,6 +15,7 @@ use App\Models\Face;
 use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Validator;
 
 class AssignFaceRequest extends BaseApiRequest implements HasFace
 {
@@ -37,9 +38,9 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 		];
 	}
 
-	public function withValidator(\Illuminate\Validation\Validator $validator): void
+	public function withValidator(Validator $validator): void
 	{
-		$validator->after(function (\Illuminate\Validation\Validator $validator): void {
+		$validator->after(function (Validator $validator): void {
 			if ($validator->errors()->isNotEmpty()) {
 				return;
 			}

@@ -256,6 +256,7 @@ export const useTimelineStore = defineStore("timeline-store", {
 				const response = await PhotoChildrenV3Service.getRatios("timeline", { bucketIds: toFetch });
 				const ratios = response.data;
 				const cursor = new Map<string, number>();
+				const lycheeStore = useLycheeStateStore();
 
 				for (let i = 0; i < ratios.ids.length; i++) {
 					const bucketId = ratios.bucket_ids[i];
@@ -272,7 +273,7 @@ export const useTimelineStore = defineStore("timeline-store", {
 					}
 					cursor.set(bucketId, written + 1);
 					const index = offset.startIndex + written;
-					this.tilesV3[index] = adaptPhotoTile(i, ratios, "timeline");
+					this.tilesV3[index] = adaptPhotoTile(i, ratios, "timeline", lycheeStore);
 					this.ratiosV3[index] = ratios.ratios[i];
 				}
 

@@ -3,16 +3,19 @@
 		<UTheme :props="theme.props" :ui="theme.ui">
 			<ConfirmModalHost />
 			<Error />
-			<LeftMenu />
-			<EmbedCodeDialog />
-			<SpotlightSearch />
-			<main class="relative">
-				<router-view v-slot="{ Component, route }">
-					<Transition name="lychee-page">
-						<component :is="Component" :key="route.name ?? route.path" />
-					</Transition>
-				</router-view>
-			</main>
+			<GalleryUnlock v-if="isGalleryLocked" />
+			<template v-else>
+				<LeftMenu />
+				<EmbedCodeDialog />
+				<SpotlightSearch />
+				<main class="relative">
+					<router-view v-slot="{ Component, route }">
+						<Transition name="lychee-page">
+							<component :is="Component" :key="route.name ?? route.path" />
+						</Transition>
+					</router-view>
+				</main>
+			</template>
 		</UTheme>
 	</UApp>
 </template>
@@ -23,12 +26,15 @@ import LeftMenu from "@/v8/menus/LeftMenu.vue";
 import Error from "@/v8/views/Error.vue";
 import EmbedCodeDialog from "@/v8/components/forms/album/EmbedCodeDialog.vue";
 import SpotlightSearch from "@/v8/components/modals/SpotlightSearch.vue";
+import GalleryUnlock from "@/v8/views/GalleryUnlock.vue";
+import { useGalleryLock } from "@/composables/useGalleryLock";
 import { disableCtrlA } from "@/utils/keybindings-utils";
 import { useDocumentTitle } from "@/composables/useDocumentTitle";
 import { theme } from "@/v8/style/theme";
 
 disableCtrlA();
 useDocumentTitle();
+const { isGalleryLocked } = useGalleryLock();
 </script>
 
 <style>

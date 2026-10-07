@@ -245,9 +245,13 @@ class CheckoutService
 		// Remove any keys from $additional_data that are already in $params
 		// This ensures that $additional_data does not overwrite existing keys in $params
 		// Fixes that sneaky @5ud0er ;p
-		$param_keys = array_keys($params);
-		foreach ($param_keys as $key) {
-			if (array_key_exists($key, $additional_data)) {
+		//
+		// Note that due to case-insensitivity, we convert both the parameter keys and the
+		// additional data keys to lowercase before comparison.
+		$param_keys = array_map(strtolower(...), array_keys($params));
+		$candidate_keys = array_keys($additional_data);
+		foreach ($candidate_keys as $key) {
+			if (in_array(strtolower($key), $param_keys, true)) {
 				unset($additional_data[$key]);
 			}
 		}

@@ -33,12 +33,14 @@ use Illuminate\Support\Facades\Auth;
 trait CachesAlbumUserThumb
 {
 	/**
-	 * @param string   $album_cache_key base_albums.id or a SmartAlbumType value
-	 * @param \Closure $compute_live    computes the thumb live, on a cache miss
+	 * @param string                       $album_cache_key base_albums.id or a SmartAlbumType value
+	 * @param \Closure                     $compute_live    computes the thumb live, on a cache miss
+	 * @param (\Closure(string):bool)|null $is_valid        whether a cached photo id still represents the album;
+	 *                                                      an invalid row is treated as a miss
 	 *
 	 * @return ?Thumb
 	 */
-	private function getCachedOrLiveThumb(string $album_cache_key, \Closure $compute_live): ?Thumb
+	private function getCachedOrLiveThumb(string $album_cache_key, \Closure $compute_live, ?\Closure $is_valid = null): ?Thumb
 	{
 		$user_id = Auth::id();
 
@@ -48,11 +50,17 @@ trait CachesAlbumUserThumb
 			->where('user_id', $user_id)
 			->first();
 
-		if ($cached !== null) {
+		if ($cached !== null && ($is_valid === null || $is_valid($cached->photo_id))) {
 			return Thumb::createFromPhoto($cached->photo);
 		}
 
 		$thumb = $compute_live();
+
+		// An invalid row with nothing to replace it must not keep vouching for
+		// its photo (see GetPhotoAssetRequest::isComputedAlbumThumb()).
+		if ($thumb === null && $cached !== null) {
+			$cached->delete();
+		}
 
 		// photo_id is NOT NULL - only seed the cache when a photo actually qualifies.
 		// An empty result is cheap to recompute and has nothing to cache anyway.

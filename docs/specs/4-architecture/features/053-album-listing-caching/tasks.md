@@ -5,7 +5,7 @@ _Last updated: 2026-08-09_
 
 > Keep this checklist aligned with `plan.md`'s increments and `spec.md`'s normative sections. Tests are staged before implementation in every task. **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions.
 >
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes.
 
 ## Checklist
 

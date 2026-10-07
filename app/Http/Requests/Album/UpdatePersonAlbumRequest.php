@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\HasCopyright;
+use App\Contracts\Http\Requests\HasDateScrubber;
 use App\Contracts\Http\Requests\HasDescription;
 use App\Contracts\Http\Requests\HasIsAnd;
 use App\Contracts\Http\Requests\HasIsPinned;
@@ -26,6 +27,7 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
+use App\Http\Requests\Traits\HasDateScrubberTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasIsAndTrait;
 use App\Http\Requests\Traits\HasIsPinnedTrait;
@@ -45,7 +47,7 @@ use App\Rules\TitleRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdatePersonAlbumRequest extends BaseApiRequest implements HasPersonAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasPhotoLayout, HasTimelinePhoto, HasIsPinned, HasIsAnd
+class UpdatePersonAlbumRequest extends BaseApiRequest implements HasPersonAlbum, HasTitle, HasDescription, HasPhotoSortingCriterion, HasCopyright, HasPhotoLayout, HasTimelinePhoto, HasDateScrubber, HasIsPinned, HasIsAnd
 {
 	use HasPersonAlbumTrait;
 	use HasTitleTrait;
@@ -55,6 +57,7 @@ class UpdatePersonAlbumRequest extends BaseApiRequest implements HasPersonAlbum,
 	use HasCopyrightTrait;
 	use HasPhotoLayoutTrait;
 	use HasTimelinePhotoTrait;
+	use HasDateScrubberTrait;
 	use HasIsPinnedTrait;
 	use AuthorizeCanEditAlbumTrait;
 
@@ -81,6 +84,7 @@ class UpdatePersonAlbumRequest extends BaseApiRequest implements HasPersonAlbum,
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
 		];
@@ -115,6 +119,9 @@ class UpdatePersonAlbumRequest extends BaseApiRequest implements HasPersonAlbum,
 
 		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
+		$this->is_date_scrubber_enabled_provided = array_key_exists(RequestAttribute::ALBUM_DATE_SCRUBBER, $values);
+		$date_scrubber = $values[RequestAttribute::ALBUM_DATE_SCRUBBER] ?? null;
+		$this->is_date_scrubber_enabled = $date_scrubber === null ? null : static::toBoolean($date_scrubber);
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 		$this->is_pinned = static::toBoolean($values[RequestAttribute::IS_PINNED_ATTRIBUTE]);
 		$this->person_ids = $values['persons'];

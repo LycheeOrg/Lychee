@@ -270,7 +270,7 @@ final class PhotosToBeDeletedDTO
 	 * @param StorageDiskType   $storage_disk              the storage disk to filter for (null = all)
 	 * @param array<int,string> $exclude_size_variants_ids size variant IDs to be excluded
 	 *
-	 * @return Collection<int,SizeVariant> the size variants to be deleted
+	 * @return Collection<int,object{short_path:string,short_path_watermarked:string|null}> the short paths of the size variants to be deleted
 	 */
 	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk, array $exclude_size_variants_ids): Collection
 	{
@@ -279,21 +279,16 @@ final class PhotosToBeDeletedDTO
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
-			function (Collection $carry, Collection $chunk) use ($storage_disk, $exclude_size_variants_ids): Collection {
-				return $carry->concat(
-					SizeVariant::query()
-						->from('size_variants as sv')
-						->select(['sv.short_path', 'sv.short_path_watermarked'])
-						->join('photos as p', 'p.id', '=', 'sv.photo_id')
-						->whereIn('p.id', $chunk->all())
-						->where('sv.storage_disk', '=', $storage_disk->value)
-						->whereNotIn('sv.id', $exclude_size_variants_ids)
-						->toBase()
-						->get()
-				);
-			},
-			collect([])
+		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->flatMap(
+			fn (Collection $chunk) => SizeVariant::query()
+				->from('size_variants as sv')
+				->select(['sv.short_path', 'sv.short_path_watermarked'])
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->whereIn('p.id', $chunk->all())
+				->where('sv.storage_disk', '=', $storage_disk->value)
+				->whereNotIn('sv.id', $exclude_size_variants_ids)
+				->toBase()
+				->get()
 		);
 	}
 
@@ -316,23 +311,18 @@ final class PhotosToBeDeletedDTO
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
-			function (Collection $carry, Collection $chunk) use ($storage_disk): Collection {
-				return $carry->concat(
-					DB::table('photos', 'p')
-						->select(['p.live_photo_short_path'])
-						->join('size_variants as sv', function (JoinClause $join): void {
-							$join
-								->on('sv.photo_id', '=', 'p.id')
-								->where('sv.type', '=', SizeVariantType::ORIGINAL);
-						})
-						->whereIn('p.id', $chunk->all())
-						->whereNotNull('p.live_photo_short_path')
-						->where('sv.storage_disk', '=', $storage_disk->value)
-						->get()
-				);
-			},
-			collect([])
+		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->flatMap(
+			fn (Collection $chunk) => DB::table('photos', 'p')
+				->select(['p.live_photo_short_path'])
+				->join('size_variants as sv', function (JoinClause $join): void {
+					$join
+						->on('sv.photo_id', '=', 'p.id')
+						->where('sv.type', '=', SizeVariantType::ORIGINAL);
+				})
+				->whereIn('p.id', $chunk->all())
+				->whereNotNull('p.live_photo_short_path')
+				->where('sv.storage_disk', '=', $storage_disk->value)
+				->get()
 		);
 	}
 }

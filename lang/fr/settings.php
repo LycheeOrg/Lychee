@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'Afficher les décorations sur la couverture des albums (nombre de sous-albums ou de photos)',
         'album_decoration_direction' => 'Aligner les décorations d’album horizontalement ou verticalement',
         'photo_overlay' => 'Superposition d’information par défaut sur les images',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'Arrondir les coins des vignettes de photos et d’albums',
         'album_border_enabled' => 'Afficher une bordure autour des vignettes de photos et d’albums',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
@@ -103,5 +104,11 @@ return [
             'label' => 'Utiliser le tableau de bord d’administration',
             'help' => 'Remplace le sous-menu d’administration imbriqué par un lien unique vers la nouvelle page de tableau de bord d’administration.',
         ],
+    ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
     ],
 ];

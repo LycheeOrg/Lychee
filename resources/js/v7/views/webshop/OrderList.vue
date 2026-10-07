@@ -30,7 +30,7 @@
 				field="transaction_id"
 				header-class="w-2/12"
 				body-class="w-2/12 align-top"
-				v-if="initData?.settings.can_edit"
+				v-if="rights?.settings.can_edit"
 			>
 				<template #body="slotProps">
 					<TransactionIdLink :order="slotProps.data" />
@@ -65,8 +65,7 @@ import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import Disclaimer from "@/v7/components/webshop/Disclaimer.vue";
 import OrderLegend from "@/v7/components/webshop/OrderLegend.vue";
 import OrderStatus from "@/v7/components/webshop/OrderStatus.vue";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { storeToRefs } from "pinia";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -85,8 +84,7 @@ import { sprintf } from "sprintf-js";
 const router = useRouter();
 const toast = useToast();
 
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 
 const { isZero, load, clean, orders, numOldOrders } = useOrder(toast, router);
 

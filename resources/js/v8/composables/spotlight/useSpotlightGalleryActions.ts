@@ -40,7 +40,7 @@ export function useSpotlightGalleryActions(
 	togglableStore: TogglablesStateStore,
 	lycheeStore: LycheeStateStore,
 	toast: ToastLike,
-	initData: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
+	globalRights: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
 	toggles: SpotlightGalleryActionToggles,
 	close: () => void,
 ): ComputedRef<SpotlightItem[]> {
@@ -172,7 +172,7 @@ export function useSpotlightGalleryActions(
 		if (
 			insideAlbum.value &&
 			albumStore.rights?.can_edit &&
-			initData.value?.modules.is_watermarker_enabled &&
+			globalRights.value?.modules.is_watermarker_enabled &&
 			photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants))
 		) {
 			items.push({
@@ -215,7 +215,7 @@ export function useSpotlightGalleryActions(
 			});
 		}
 
-		if (insideAlbum.value && albumStore.rights?.can_edit && initData.value?.modules.is_mod_renamer_enabled) {
+		if (insideAlbum.value && albumStore.rights?.can_edit && globalRights.value?.modules.is_mod_renamer_enabled) {
 			items.push({
 				label: trans("gallery.menus.apply_renamer"),
 				icon: "lucide:pencil",

@@ -32,8 +32,8 @@ class MetricsController extends Controller
 			throw new UnauthorizedException('Live metrics are not enabled.');
 		}
 
-		// First clean up.
-		$cleanup_metrics->do();
+		// First clean up (now, after the response, or never: `live_metrics_cleanup`).
+		$cleanup_metrics->apply();
 
 		// Then fetch.
 		return LiveMetricsResource::collect($get_metrics->get());

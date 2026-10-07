@@ -34,11 +34,11 @@
 			<UTooltip v-if="isFaceRecognitionEnabled" :text="$t('people.scan_faces')">
 				<DockButton pi="lucide:smile" class="lg:hover:text-primary-500 text-white" @click="scanFaces" />
 			</UTooltip>
-			<template v-if="lycheeStore.can_rotate">
+			<template v-if="lycheeStore.can_rotate && !photoStore.photo.precomputed.is_360">
 				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
 				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
 			</template>
-			<UTooltip :text="$t('gallery.photo.actions.move')">
+			<UTooltip v-if="albumStore.rights?.can_move_content" :text="$t('gallery.photo.actions.move')">
 				<DockButton pi="lucide:folder" class="lg:hover:text-primary-500 text-white" @click="emits('toggleMove')" />
 			</UTooltip>
 			<UTooltip :text="$t('gallery.photo.actions.delete')">
@@ -58,7 +58,7 @@ import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useRoute } from "vue-router";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
@@ -69,7 +69,7 @@ const toast = useAppToast();
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
-const leftMenu = useLeftMenuStateStore();
+const { rights } = useGlobalRights();
 const togglableStore = useTogglablesStateStore();
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
@@ -79,7 +79,7 @@ const props = defineProps<{
 
 const isWatermarkerEnabled = computed(
 	() =>
-		leftMenu.initData?.modules.is_watermarker_enabled &&
+		rights.value?.modules.is_watermarker_enabled &&
 		photoStore.photo &&
 		albumStore.rights?.can_edit &&
 		needSizeVariantsWatermark(photoStore.photo.size_variants),

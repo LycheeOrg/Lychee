@@ -16,10 +16,12 @@ use App\Enum\OrderSortingType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TitleBucketMode;
 use App\Http\Controllers\Gallery\AlbumListController;
+use App\Http\Requests\Album\GetAlbumCategoryRequest;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
 use App\Http\Resources\V3\AlbumBucketResource;
 use App\Http\Resources\V3\AlbumDataResource;
 use App\Http\Resources\V3\AlbumRightsResource;
+use App\Http\Resources\V3\AlbumRootConfigResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
@@ -38,7 +40,7 @@ use function Safe\mktime;
 use Spatie\LaravelData\Optional;
 
 /**
- * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights]`
+ * Serves the root tier: `GET /api/v3/Albums/root[/buckets|/rights|/config]`
  * root albums (`parent_id IS NULL`) get the same buckets/index/rights
  * trio as sub-albums, plus a `scope` (`own`\|`shared`) dimension
  * reproducing today's `Top::get()` owned/shared partition.
@@ -54,6 +56,14 @@ class AlbumRootController extends Controller
 		protected ManagedCacheService $managed_cache_service,
 		protected CacheKeyProvider $cache_key_provider,
 	) {
+	}
+
+	/**
+	 * The root gallery page's configuration and rights, without any album query.
+	 */
+	public function config(GetAlbumCategoryRequest $request): AlbumRootConfigResource
+	{
+		return new AlbumRootConfigResource();
 	}
 
 	/**
@@ -417,9 +427,9 @@ class AlbumRootController extends Controller
 
 	/**
 	 * Root has no single shared parent's `access_permissions` to
-	 * check `can_delete_children`/`can_move_children` against — both flags
-	 * are always `false` for a non-admin caller (either scope), `true` for
-	 * an admin. `owner_id` is unconditionally omitted from the JSON payload
+	 * check `can_delete_children`/`can_move_children` against — both are
+	 * always `false` for a non-admin caller (either scope), `true` for an
+	 * admin. `owner_id` is unconditionally omitted from the JSON payload
 	 * — root has no single owner to report there, even under
 	 * `own` scope.
 	 */
@@ -439,6 +449,7 @@ class AlbumRootController extends Controller
 				ids: $ids,
 				grants_edit: array_fill(0, $count, true),
 				grants_download: array_fill(0, $count, true),
+				grants_move: array_fill(0, $count, true),
 			);
 		}
 
@@ -455,6 +466,7 @@ class AlbumRootController extends Controller
 			->select(['albums.id'])
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_edit) as grants_edit')
 			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_download) as grants_download')
+			->selectRaw($or_aggregate . '(grants_computed_access_permissions.grants_move) as grants_move')
 			->groupBy('albums.id')
 			->toBase()
 			->get();
@@ -462,10 +474,12 @@ class AlbumRootController extends Controller
 		$ids = [];
 		$grants_edit = [];
 		$grants_download = [];
+		$grants_move = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$grants_edit[] = DbBool::parse($row->grants_edit);
 			$grants_download[] = DbBool::parse($row->grants_download);
+			$grants_move[] = DbBool::parse($row->grants_move);
 		}
 
 		return new AlbumRightsResource(
@@ -475,6 +489,7 @@ class AlbumRootController extends Controller
 			ids: $ids,
 			grants_edit: $grants_edit,
 			grants_download: $grants_download,
+			grants_move: $grants_move,
 		);
 	}
 }

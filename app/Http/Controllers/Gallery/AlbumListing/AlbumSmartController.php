@@ -33,11 +33,15 @@ class AlbumSmartController extends Controller
 
 	/**
 	 * Reuses the existing cheap, in-memory, `Gate`-filtered
-	 * `AlbumFactory::getAllBuiltInSmartAlbums(false)` list — no live `photos`
-	 * query: cover pixels come from one  batched, indexed lookup against the
-	 * pre-computed `album_user_thumbs` cache ({@link \App\Models\Extensions\CachesAlbumUserThumb}),
-	 * the same cache `BaseSmartAlbum::getThumbAttribute()`/`RecomputeAlbumUserThumbsJob`
-	 * already read/write for the v2 `Top::get()` path — never resolved live.
+	 * `AlbumFactory::getAllBuiltInSmartAlbums(false)` list. Covers come from
+	 * one batched, indexed lookup against the viewer's `album_user_thumbs`
+	 * rows ({@link \App\Models\Extensions\CachesAlbumUserThumb}); a smart
+	 * album without a row is resolved live through
+	 * {@link BaseSmartAlbum::get_thumb()}, which seeds the row for the next
+	 * request; so is a row {@link BaseSmartAlbum::isCachedThumbValid()}
+	 * rejects (a date-dependent album, `on_this_day` or `recent`, whose cached
+	 * cover has dropped out). With every cover cached, the only `photos`
+	 * queries are those two albums' validity checks.
 	 */
 	public function smart(GetAlbumCategoryRequest $request): AlbumCategoryResource
 	{
@@ -61,10 +65,10 @@ class AlbumSmartController extends Controller
 		$owner_ids = [];
 		foreach ($smart_albums as $smart_album) {
 			$titles[] = $smart_album->get_title();
-			// Cache-only: a miss stays null (no live resolution) and
-			// self-heals the next time anything triggers a live resolution
-			// for this (album, viewer) pair elsewhere (e.g. a v2 root load).
-			$cover_ids[] = $cached_covers[$smart_album->get_id()] ?? null;
+			$cached_cover = $cached_covers[$smart_album->get_id()] ?? null;
+			$cover_ids[] = $cached_cover !== null && $smart_album->isCachedThumbValid($cached_cover)
+				? $cached_cover
+				: $smart_album->get_thumb()?->id;
 			// Smart albums are built-in/system-wide — no real owner.
 			$owner_ids[] = '0';
 		}

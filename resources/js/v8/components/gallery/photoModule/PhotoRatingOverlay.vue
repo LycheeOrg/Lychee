@@ -1,6 +1,6 @@
 <template>
 	<div
-		v-if="isRatingEnabled && !are_details_open"
+		v-if="isRatingEnabled && !are_details_open && !photoStore.is_zoomed"
 		:class="{
 			'group absolute bottom-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 z-20 sm:h-1/8 h-14': true,
 			'opacity-50 lg:opacity-20': isHoverMode && !isTouchDevice() && !isFullTransparency,
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { usePhotoStore } from "@/stores/PhotoState";
+import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -62,6 +62,10 @@ const displayedRating = computed(() => {
 
 // Compute if rating should be shown in photo view
 const isRatingEnabled = computed(() => {
+	// The overlay would sit on top of the native video controls and swallow seek-bar drags.
+	if (photoStore.imageViewMode === ImageViewMode.Video) {
+		return false;
+	}
 	if (photoStore.photo?.rating === null) {
 		return false;
 	}

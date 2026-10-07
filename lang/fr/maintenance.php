@@ -53,12 +53,6 @@ return [
         'description' => 'Si vous constatez un ralentissement de votre installation, cela peut venir d’un manque d’index dans votre base de données.',
         'button' => 'Optimiser la base',
     ],
-    'update' => [
-        'title' => 'Mises à jour',
-        'check-button' => 'Vérifier les mises à jour',
-        'update-button' => 'Mettre à jour',
-        'no-pending-updates' => 'Aucune mise à jour en attente.',
-    ],
     'missing-palettes' => [
         'title' => 'Palettes manquantes',
         'description' => '%d palettes manquantes trouvées.',

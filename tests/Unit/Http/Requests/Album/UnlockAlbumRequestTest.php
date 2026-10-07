@@ -37,9 +37,9 @@ class UnlockAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::PASSWORD_ATTRIBUTE => '123',
 		]);
 
-		$albumMock = $this->createMock(Album::class);
+		$albumMock = self::createStub(Album::class);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($albumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);

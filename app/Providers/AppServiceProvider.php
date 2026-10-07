@@ -8,7 +8,6 @@
 
 namespace App\Providers;
 
-use App\Actions\InstallUpdate\CheckUpdate;
 use App\Assets\ArrayToTextTable;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
@@ -19,13 +18,10 @@ use App\Factories\AlbumFactory;
 use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
-use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
-use App\Metadata\Versions\Remote\GitCommits;
-use App\Metadata\Versions\Remote\GitTags;
 use App\Models\Configs;
 use App\Models\Face;
 use App\Models\Photo;
@@ -85,7 +81,6 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons =
 		[
 			Helpers::class => Helpers::class,
-			CheckUpdate::class => CheckUpdate::class,
 			AlbumFactory::class => AlbumFactory::class,
 			OmnipayFactory::class => OmnipayFactory::class,
 			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
@@ -97,12 +92,9 @@ class AppServiceProvider extends ServiceProvider
 			FileVersion::class => FileVersion::class,
 
 			// Json requests.
-			CommitsRequest::class => CommitsRequest::class,
 			UpdateRequest::class => UpdateRequest::class,
 
 			// JsonParsers
-			GitCommits::class => GitCommits::class,
-			GitTags::class => GitTags::class,
 
 			MoneyService::class => MoneyService::class,
 			TraceService::class => TraceService::class,

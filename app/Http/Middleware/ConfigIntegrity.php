@@ -71,6 +71,8 @@ class ConfigIntegrity
 		'live_metrics_enabled',
 		'live_metrics_access',
 		'live_metrics_max_time',
+		'live_metrics_result_limit',
+		'live_metrics_cleanup',
 		'enable_colour_extractions',
 		'colour_extraction_driver',
 		'renamer_enabled',

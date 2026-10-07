@@ -12,6 +12,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\MetricsAccess;
 use App\Http\Resources\Models\ColourPaletteResource;
+use App\Http\Resources\Models\PanoramaResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Http\Resources\V3\PhotoDetailResource;
@@ -21,6 +22,7 @@ use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\PhotoBucketComputer;
 use App\SmartAlbums\TimelineAlbum;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\LaravelData\Optional;
 
@@ -198,6 +200,7 @@ class QueryPhotoDetails
 
 		$ids = [];
 		$descriptions = [];
+		$preformatted_descriptions = [];
 		$tags = [];
 		$rating_avgs = [];
 		$licenses = [];
@@ -209,6 +212,7 @@ class QueryPhotoDetails
 		$live_photo_checksums = [];
 		$live_photo_content_ids = [];
 		$live_photo_urls = [];
+		$panoramas = [];
 		$face_counts = [];
 		$palette = [];
 		$size_variants = [];
@@ -228,6 +232,9 @@ class QueryPhotoDetails
 		foreach ($photos as $photo) {
 			$ids[] = $photo->id;
 			$descriptions[] = $photo->description;
+			// Same conversion as `PreformattedPhotoData::$description`; the
+			// client injects this one via `v-html`, never the raw text.
+			$preformatted_descriptions[] = ($photo->description ?? '') === '' ? '' : Markdown::convert($photo->description)->getContent();
 			$tags[] = $photo->tags->pluck('name')->all();
 			$rating_avgs[] = $photo->rating_avg !== null ? (float) $photo->rating_avg : null;
 			$licenses[] = $photo->license->value;
@@ -239,6 +246,7 @@ class QueryPhotoDetails
 			$live_photo_checksums[] = $photo->live_photo_checksum;
 			$live_photo_content_ids[] = $photo->live_photo_content_id;
 			$live_photo_urls[] = $photo->live_photo_url;
+			$panoramas[] = PanoramaResource::fromPhoto($photo);
 			$face_counts[] = $photo->face_count;
 
 			$palette[] = ColourPaletteResource::fromModel($photo->palette);
@@ -284,6 +292,7 @@ class QueryPhotoDetails
 		return new PhotoDetailResource(
 			ids: $ids,
 			descriptions: $descriptions,
+			preformatted_descriptions: $preformatted_descriptions,
 			tags: $tags,
 			rating_avgs: $rating_avgs,
 			licenses: $licenses,
@@ -295,6 +304,7 @@ class QueryPhotoDetails
 			live_photo_checksums: $live_photo_checksums,
 			live_photo_content_ids: $live_photo_content_ids,
 			live_photo_urls: $live_photo_urls,
+			panoramas: $panoramas,
 			face_counts: $face_counts,
 			palette: $palette,
 			size_variants: $size_variants,

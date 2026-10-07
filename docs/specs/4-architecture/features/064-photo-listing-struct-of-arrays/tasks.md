@@ -5,7 +5,7 @@ _Last updated: 2026-09-05_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions. Update the roadmap status when all tasks are done.
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes.
 
 ## Checklist
 
@@ -85,7 +85,7 @@ _Last updated: 2026-09-05_
   _Verification commands:_
   - `php artisan test --filter=RecomputePhotoBucketsCommandTest`
   - `make phpstan`
-  _Notes:_ `app/Console/Commands/RecomputePhotoBuckets.php`. Uses offset-based `chunk()` rather than `chunkById()`: `photo_album` has a composite PK `(photo_id, album_id)` with no single-column unique id to safely cursor-paginate on when a photo has >1 album link (a `chunkById()` cursor could split that photo's row-group across a page boundary and skip rows) — plain `chunk()` is safe here since the loop only ever writes `bucket_id`, never one of the two `ORDER BY` columns. 5/5 tests green (incl. a zero-size_variants/tags-query assertion, NFR-064-02), `phpstan level 6` clean.
+  _Notes:_ `app/Console/Commands/RecomputePhotoBuckets.php`. Keyset-paginates `photo_album` alone (photo and album columns loaded per page by PK `whereIn`, so no join order can force a per-page sort) on the composite PK `(photo_id, album_id)` rather than `chunkById()` (a single-column `photo_id` cursor would skip the rest of a multi-album photo's row-group at a page boundary) or offset-based `chunk()` (quadratic in table size). 5/5 tests green (incl. a zero-size_variants/tags-query assertion, NFR-064-02), `phpstan level 6` clean.
 
 ### I3 – `buckets` tier
 
@@ -151,6 +151,16 @@ _Last updated: 2026-09-05_
   - `php artisan test --filter=PhotoDetailsV3Test`
   - `make phpstan`
   _Notes:_ `app/Http/Resources/V3/PhotoDetailResource.php`; route registered as `GET /Albums/{album_id}/Photos/details`; `PhotoChildrenController::details()` added. 14/14 tests green, `phpstan level 6` clean, `php-cs-fixer` clean.
+
+- [x] T-064-31 – Test: `details` returns Markdown-rendered `preformatted_descriptions` with raw HTML stripped (FR-064-10, S-064-29).
+  _Verification commands:_
+  - `php artisan test --filter=PhotoDetailsV3Test`
+
+- [x] T-064-32 – Add `preformatted_descriptions` to `PhotoDetailResource`, built via `Markdown::convert()` in `QueryPhotoDetails` (FR-064-10, DO-064-03).
+  _Verification commands:_
+  - `php artisan test --filter=PhotoDetailsV3Test`
+  - `php artisan test --filter=QuerySearchPhotoDetailsTest`
+  - `make phpstan`
 
 ### I6 – Caching + invalidation
 

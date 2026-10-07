@@ -1,8 +1,15 @@
 <template>
-	<UModal v-model:open="open" :dismissible="true" :ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }">
-		<template #header>
-			<h1 class="text-center text-xl font-bold w-full">{{ $t("dialogs.keybindings.header") }}</h1>
-		</template>
+	<UModal
+		v-model:open="open"
+		:dismissible="true"
+		:ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }"
+		:close="{
+			color: 'neutral',
+			variant: 'soft',
+			class: 'rounded-full',
+		}"
+		:title="$t('dialogs.keybindings.header')"
+	>
 		<template #body>
 			<div class="flex flex-wrap gap-4 justify-center align-top">
 				<UTable
@@ -25,10 +32,8 @@
 						</div>
 					</template>
 				</UTable>
-				<div class="w-full flex justify-center mt-4 items-center gap-2">
+				<div class="w-full flex flex-col justify-center items-center gap-2">
 					<UCheckbox v-model="doNotShowAgain" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.don_t_show_again')" />
-				</div>
-				<div class="w-full flex justify-center mb-4 items-center gap-2">
 					<UCheckbox v-model="hideHeaderButton" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.hide_header_button')" />
 				</div>
 			</div>
@@ -129,6 +134,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
 			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.toggle"), key: "i" },
+			{ action: trans("dialogs.keybindings.toggle_date_scrubber"), key: "d" },
 		],
 	},
 	{
@@ -144,6 +150,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.edit"), key: "e" },
 			{ action: trans("dialogs.keybindings.show_hide_meta"), key: "i" },
 			{ action: trans("dialogs.keybindings.toggle_face_overlay"), key: "p" },
+			{ action: trans("dialogs.keybindings.toggle_sphere"), key: "v" },
 		],
 	},
 ]);

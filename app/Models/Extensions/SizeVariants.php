@@ -101,7 +101,6 @@ class SizeVariants
 	 */
 	public function toCollection(): BaseCollection
 	{
-		/** @phpstan-ignore return.type (BaseCollection is not covariant...) */
 		return collect([
 			$this->raw,
 			$this->original,

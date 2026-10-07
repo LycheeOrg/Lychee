@@ -2,7 +2,9 @@ import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumStore } from "./AlbumState";
 import { useTimelineStore } from "./TimelineState";
+import { useLycheeStateStore } from "./LycheeState";
 import { useSearchStore } from "./SearchState";
+import { isWebGL2Supported } from "@/v8/utils/webgl";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -12,21 +14,67 @@ export enum ImageViewMode {
 	LivePhotoMedium = "livephoto-medium",
 	LivePhotoOriginal = "livephoto-original",
 	Pdf = "pdf",
+	/** Feature 082: chosen by the v8 `PhotoBox` only, never returned by `imageViewMode`. */
+	Sphere = "sphere",
 }
 
 export type PhotoStore = ReturnType<typeof usePhotoStore>;
+
+/**
+ * Zoom functions of the mounted v8 `PhotoBox` (Feature 078, DO-078-05), used by the
+ * panel keyboard shortcuts. The zoom state itself stays in `PhotoBox`.
+ */
+export type ZoomControls = {
+	toggle: () => void;
+	zoomIn: () => void;
+	zoomOut: () => void;
+	reset: () => void;
+};
+
+/**
+ * Darkened thumb background for the previous/next buttons. A neighbour synthesised from a
+ * Struct-of-Arrays listing has no size variants until its details are merged: no background
+ * then, otherwise `url('undefined')` requests `/undefined`.
+ */
+function neighbourStyle(photo: App.Http.Resources.Models.PhotoResource): string {
+	const thumbUrl = photo.size_variants.thumb?.url;
+	if (thumbUrl === undefined || thumbUrl === null) {
+		return "";
+	}
+	return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + thumbUrl + "')";
+}
 
 export const usePhotoStore = defineStore("photo-store", {
 	state: () => ({
 		photoId: undefined as string | undefined,
 		photo: undefined as App.Http.Resources.Models.PhotoResource | undefined,
 		transition: "slide-next" as "slide-next" | "slide-previous",
+		// Feature 078: written by the v8 `PhotoBox` only (mounted, zoomable photo).
+		is_zoomed: false,
+		zoom_controls: undefined as ZoomControls | undefined,
+		// Feature 082: photo switched to its flat view (FR-082-09), photo whose sphere failed (FR-082-15).
+		sphere_flat_photo_id: undefined as string | undefined,
+		sphere_failed_photo_id: undefined as string | undefined,
 	}),
 	actions: {
 		reset() {
 			this.photoId = undefined;
 			this.photo = undefined;
 			this.transition = "slide-next";
+			this.is_zoomed = false;
+			this.zoom_controls = undefined;
+			this.sphere_flat_photo_id = undefined;
+			this.sphere_failed_photo_id = undefined;
+		},
+		/** FR-082-09: between the sphere and the flat image; the next photo opens as a sphere again. */
+		toggleSphereFlat() {
+			if (this.photo === undefined) {
+				return;
+			}
+			this.sphere_flat_photo_id = this.sphere_flat_photo_id === this.photo.id ? undefined : this.photo.id;
+		},
+		markSphereFailed(photo_id: string) {
+			this.sphere_failed_photo_id = photo_id;
 		},
 		setTransition(photo_id: string | undefined | null) {
 			if (photo_id === undefined || photo_id === null) {
@@ -129,7 +177,9 @@ export const usePhotoStore = defineStore("photo-store", {
 		// For displaying purposes
 		style(): string {
 			if (!this.photo?.precomputed.is_livephoto) {
-				return `background-image: url(${this.photo?.size_variants.small?.url})`;
+				// No small variant: no placeholder background, otherwise `url(undefined)` requests `/undefined`.
+				const smallUrl = this.photo?.size_variants.small?.url;
+				return smallUrl === undefined || smallUrl === null ? "" : `background-image: url(${smallUrl})`;
 			}
 			if (this.photo?.size_variants.medium !== null) {
 				return `width: ${this.photo?.size_variants.medium.width}px; height: ${this.photo?.size_variants.medium.height}px`;
@@ -138,6 +188,21 @@ export const usePhotoStore = defineStore("photo-store", {
 				return "";
 			}
 			return `width: ${this.photo?.size_variants.original.width}px; height: ${this.photo?.size_variants.original.height}px`;
+		},
+		/** FR-082-08: a 360° still photo the browser can draw as a sphere. */
+		isSphereCapable(): boolean {
+			const precomputed = this.photo?.precomputed;
+			if (precomputed === undefined || !precomputed.is_360 || precomputed.is_video || precomputed.is_raw || precomputed.is_livephoto) {
+				return false;
+			}
+			return this.sphere_failed_photo_id !== this.photo?.id && isWebGL2Supported();
+		},
+		isSphereFlat(): boolean {
+			return this.photo !== undefined && this.sphere_flat_photo_id === this.photo.id;
+		},
+		/** The v8 main lightbox shows the sphere (outside the slideshow). */
+		isSphereView(): boolean {
+			return this.isSphereCapable && !this.isSphereFlat;
 		},
 		imageViewMode(): ImageViewMode {
 			if (this.photo?.precomputed.is_video) {
@@ -154,17 +219,25 @@ export const usePhotoStore = defineStore("photo-store", {
 				return ImageViewMode.Raw;
 			}
 
+			// When enabled, prefer the highest-quality variant that exists for
+			// this photo (Original, falling back to Medium) instead of always
+			// preferring Medium - e.g. so a mobile long-press-save captures
+			// Original rather than whatever the viewer would otherwise render.
+			const prefersHighestQuality = useLycheeStateStore().is_photo_viewer_highest_quality_enabled;
+			const hasMedium = this.photo?.size_variants.medium !== null;
+			const hasOriginal = !!this.photo?.size_variants.original?.url;
+
 			if (this.photo?.precomputed.is_livephoto === true) {
-				if (this.photo?.size_variants.medium !== null) {
-					return ImageViewMode.LivePhotoMedium;
+				if (prefersHighestQuality) {
+					return hasOriginal ? ImageViewMode.LivePhotoOriginal : ImageViewMode.LivePhotoMedium;
 				}
-				return ImageViewMode.LivePhotoOriginal;
+				return hasMedium ? ImageViewMode.LivePhotoMedium : ImageViewMode.LivePhotoOriginal;
 			}
 
-			if (this.photo?.size_variants.medium !== null) {
-				return ImageViewMode.Medium;
+			if (prefersHighestQuality) {
+				return hasOriginal ? ImageViewMode.Original : ImageViewMode.Medium;
 			}
-			return ImageViewMode.Original;
+			return hasMedium ? ImageViewMode.Medium : ImageViewMode.Original;
 		},
 		srcSetMedium(): string {
 			const medium = this.photo?.size_variants.medium ?? null;
@@ -174,6 +247,17 @@ export const usePhotoStore = defineStore("photo-store", {
 			}
 
 			return `${medium.url} ${medium.width}w, ${medium2x.url} ${medium2x.width}w`;
+		},
+		sizesMedium(): string {
+			const medium = this.photo?.size_variants.medium ?? null;
+			if (this.srcSetMedium === "" || medium === null || medium.height === 0) {
+				return "";
+			}
+
+			// The image is fitted into the viewport, so its rendered width is capped by
+			// the viewport height times its aspect ratio. Ignoring the surrounding chrome
+			// only overestimates, i.e. errs towards medium2x, never towards a blurry medium.
+			return `min(100vw, ${(medium.width / medium.height).toFixed(4)} * 100vh)`;
 		},
 		previousStyle(): string {
 			const photosState = usePhotosStore();
@@ -186,7 +270,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			if (previousPhoto === undefined) {
 				return "";
 			}
-			return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + previousPhoto.size_variants.thumb?.url + "')";
+			return neighbourStyle(previousPhoto);
 		},
 
 		nextStyle(): string {
@@ -200,7 +284,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			if (nextPhoto === undefined) {
 				return "";
 			}
-			return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + nextPhoto.size_variants.thumb?.url + "')";
+			return neighbourStyle(nextPhoto);
 		},
 	},
 });

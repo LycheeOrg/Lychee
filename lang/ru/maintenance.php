@@ -53,12 +53,6 @@ return [
         'description' => 'Если вы замечаете замедление работы установки, возможно, это связано с отсутствием необходимых индексов в базе данных.',
         'button' => 'Оптимизировать базу данных',
     ],
-    'update' => [
-        'title' => 'Обновления',
-        'check-button' => 'Проверить обновления',
-        'update-button' => 'Обновить',
-        'no-pending-updates' => 'Нет ожидающих обновлений.',
-    ],
     'missing-palettes' => [
         'title' => 'Missing Palettes',
         'description' => 'Found %d missing palettes.',

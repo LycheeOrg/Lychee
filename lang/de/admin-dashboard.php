@@ -34,6 +34,7 @@ return [
     'update' => [
         'title' => 'Status aktualisieren',
         'update_available' => 'Es ist eine neuere Version verfügbar (aktuell: :current, neueste: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'Erkennung und Moderation von nicht jugendfreien Inhalten',

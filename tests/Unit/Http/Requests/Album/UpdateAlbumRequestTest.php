@@ -48,7 +48,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 
 	public function testAuthorization()
 	{
-		$albumMock = $this->createMock(Album::class);
+		$albumMock = self::createStub(Album::class);
 		$baseAlbumImpl = new BaseAlbumImpl();
 		$albumMock->method('__get')->willReturnCallback(function (string $key) use ($baseAlbumImpl) {
 			if ($key === 'base_class') {
@@ -63,7 +63,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $albumMock])
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($albumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);
@@ -130,6 +130,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->mock_verify), new SlugRule($request->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
 			RequestAttribute::PUBLISHED_AT_ATTRIBUTE => ['sometimes', 'nullable', 'date'],
 		];

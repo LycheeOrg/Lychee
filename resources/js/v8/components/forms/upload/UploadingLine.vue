@@ -1,23 +1,31 @@
 <template>
-	<div :id="`upload${index}`" class="w-full flex flex-col">
-		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
-			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted">
-				<span v-if="albumTitle" class="text-xs text-muted mr-1">{{ albumTitle }} /</span>{{ file.name }}
-			</span>
-			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
-			<span :class="statusClass">{{ statusMessage }}</span>
+	<div :id="`upload${index}`" class="w-full flex items-center gap-x-3">
+		<div ref="thumbBox" class="w-12 h-8 shrink-0 rounded overflow-hidden bg-elevated flex items-center justify-center">
+			<img v-if="thumbUrl" :src="thumbUrl" alt="" class="size-full object-cover" />
+			<UIcon v-else :name="placeholderIcon" class="size-5 text-muted" />
 		</div>
-		<span class="text-center w-full hidden group-hover:block text-error cursor-pointer" @click="controller.abort()">
-			{{ $t("dialogs.button.cancel") }}
-		</span>
-		<UProgress :model-value="progressBar" :color="progressColor" />
+		<div class="min-w-0 flex-1 flex flex-col">
+			<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
+				<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted">
+					<span v-if="albumTitle" class="text-xs text-muted mr-1">{{ albumTitle }} /</span>{{ file.name }}
+				</span>
+				<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
+				<span :class="statusClass">{{ statusMessage }}</span>
+			</div>
+			<span class="text-center w-full hidden group-hover:block text-error cursor-pointer" @click="controller.abort()">
+				{{ $t("dialogs.button.cancel") }}
+			</span>
+			<UProgress :model-value="progressBar" :color="progressColor" />
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import UploadService, { UploadData } from "@/services/upload-service";
 import { AxiosError, type AxiosProgressEvent } from "axios";
 import { trans } from "laravel-vue-i18n";
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
+import { createUploadThumbnail, enqueueThumbnail, shouldDecode, uploadPlaceholderIcon } from "@/v8/utils/uploadThumbnail";
 
 type UploadingLineProps = {
 	albumId: string | null;
@@ -28,11 +36,13 @@ type UploadingLineProps = {
 	index: number;
 	applyWatermark: boolean;
 	message: string | undefined;
+	scrollRoot?: HTMLElement | null;
 };
 
 const props = withDefaults(defineProps<UploadingLineProps>(), {
 	chunkSize: 1024,
 	message: undefined,
+	scrollRoot: null,
 });
 
 const emits = defineEmits<{
@@ -54,6 +64,48 @@ const meta = ref({
 } as App.Http.Resources.Editable.UploadMetaResource);
 const controller = ref(new AbortController());
 const errorMessage = ref<string | undefined>(undefined);
+
+// Miniature (Feature 077): built once the row nears the visible part of the list.
+const thumbBox = useTemplateRef<HTMLDivElement>("thumbBox");
+const thumbUrl = ref<string | undefined>(undefined);
+const placeholderIcon = ref(uploadPlaceholderIcon(file.value.type));
+let cancelThumbnail = () => {};
+let unmounted = false;
+
+const { stop: stopObserving } = useIntersectionObserver(
+	thumbBox,
+	([entry]) => {
+		if (!entry?.isIntersecting) {
+			return;
+		}
+		stopObserving();
+		if (shouldDecode(file.value.type)) {
+			cancelThumbnail = enqueueThumbnail(() => createUploadThumbnail(file.value).then(onThumbnailReady, onThumbnailFailed));
+		}
+	},
+	// The list scrolls inside its own box: observe against it so the margin applies there.
+	{ root: () => props.scrollRoot, rootMargin: "200px" },
+);
+
+function onThumbnailReady(url: string) {
+	if (unmounted) {
+		URL.revokeObjectURL(url);
+		return;
+	}
+	thumbUrl.value = url;
+}
+
+function onThumbnailFailed() {
+	placeholderIcon.value = "lucide:image";
+}
+
+onUnmounted(() => {
+	unmounted = true;
+	cancelThumbnail();
+	if (thumbUrl.value !== undefined) {
+		URL.revokeObjectURL(thumbUrl.value);
+	}
+});
 
 // prettier-ignore
 const statusMessage = computed(() => {

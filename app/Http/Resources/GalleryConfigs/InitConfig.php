@@ -13,17 +13,20 @@ use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumHeaderSize;
 use App\Enum\AlbumLayoutType;
+use App\Enum\DateOrderingType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\FacePermissionMode;
 use App\Enum\FlowStrategy;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
+use App\Enum\PhotoClickAction;
 use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\PhotoThumbInfoType;
 use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\VisibilityType;
 use App\Providers\AuthServiceProvider;
+use App\Services\GalleryLockState;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -50,6 +53,8 @@ class InitConfig extends Data
 	public ImageOverlayType $image_overlay_type;
 	public bool $can_rotate;
 	public bool $can_autoplay;
+	public bool $is_video_loop_enabled;
+	public bool $is_photo_viewer_highest_quality_enabled;
 	public bool $is_exif_disabled;
 	public bool $is_favourite_enabled;
 	public SmallLargeType $photo_previous_next_size;
@@ -78,6 +83,14 @@ class InitConfig extends Data
 	public bool $is_photo_ken_burns_on_hover;
 	public int $photo_ken_burns_on_hover_scale;
 	public int $photo_ken_burns_on_hover_duration;
+
+	// Date formats applied client-side (PHP `date()` format strings)
+	public string $date_format_album_thumb;
+	public DateOrderingType $thumb_min_max_order;
+	public string $date_format_photo_overlay;
+	public string $date_format_sidebar_uploaded;
+	public string $date_format_sidebar_taken_at;
+	public string $date_scrubber_label_format;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -138,6 +151,12 @@ class InitConfig extends Data
 	public bool $is_scroll_to_navigate_photos_enabled;
 	public bool $is_swipe_vertically_to_go_back_enabled;
 	public bool $disable_swipe_effect;
+	public PhotoClickAction $photo_click_action;
+	public bool $is_photo_minimap_enabled;
+	public bool $is_photo_minimap_enabled_mobile;
+	public int $photo_minimap_idle_opacity;
+	public int $photo_minimap_idle_opacity_mobile;
+	public int $photo_minimap_fade_delay;
 
 	// Rating settings
 	public bool $is_rating_show_avg_in_details_enabled;
@@ -148,6 +167,9 @@ class InitConfig extends Data
 
 	// Embed
 	public bool $is_embed_enabled = true;
+
+	// Gallery password
+	public bool $is_gallery_locked = false;
 
 	// Photo Share Card
 	public bool $is_photo_share_card_enabled = true;
@@ -214,6 +236,8 @@ class InitConfig extends Data
 		$this->image_overlay_type = request()->configs()->getValueAsEnum('image_overlay_type', ImageOverlayType::class);
 		$this->can_rotate = request()->configs()->getValueAsBool('editor_enabled');
 		$this->can_autoplay = request()->configs()->getValueAsBool('autoplay_enabled');
+		$this->is_video_loop_enabled = request()->configs()->getValueAsBool('video_loop_enabled');
+		$this->is_photo_viewer_highest_quality_enabled = request()->configs()->getValueAsBool('photo_viewer_highest_quality_enabled');
 		$this->is_exif_disabled = request()->configs()->getValueAsBool('exif_disabled_for_all');
 		$this->is_favourite_enabled = request()->configs()->getValueAsBool('client_side_favourite_enabled');
 		$this->photo_previous_next_size = request()->configs()->getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
@@ -244,6 +268,14 @@ class InitConfig extends Data
 		$this->is_photo_ken_burns_on_hover = request()->configs()->getValueAsBool('photo_ken_burns_on_hover_enabled');
 		$this->photo_ken_burns_on_hover_scale = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_scale');
 		$this->photo_ken_burns_on_hover_duration = request()->configs()->getValueAsInt('photo_ken_burns_on_hover_duration');
+
+		// Date formats applied client-side
+		$this->date_format_album_thumb = request()->configs()->getValueAsString('date_format_album_thumb');
+		$this->thumb_min_max_order = request()->configs()->getValueAsEnum('thumb_min_max_order', DateOrderingType::class);
+		$this->date_format_photo_overlay = request()->configs()->getValueAsString('date_format_photo_overlay');
+		$this->date_format_sidebar_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
+		$this->date_format_sidebar_taken_at = request()->configs()->getValueAsString('date_format_sidebar_taken_at');
+		$this->date_scrubber_label_format = request()->configs()->getValueAsString('timeline_photo_date_format_day');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
@@ -288,6 +320,12 @@ class InitConfig extends Data
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');
 		$this->is_swipe_vertically_to_go_back_enabled = request()->configs()->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
 		$this->disable_swipe_effect = request()->configs()->getValueAsBool('disable_swipe_effect');
+		$this->photo_click_action = request()->configs()->getValueAsEnum('photo_click_action', PhotoClickAction::class);
+		$this->is_photo_minimap_enabled = request()->configs()->getValueAsBool('is_photo_minimap_enabled');
+		$this->is_photo_minimap_enabled_mobile = request()->configs()->getValueAsBool('is_photo_minimap_enabled_mobile');
+		$this->photo_minimap_idle_opacity = request()->configs()->getValueAsInt('photo_minimap_idle_opacity');
+		$this->photo_minimap_idle_opacity_mobile = request()->configs()->getValueAsInt('photo_minimap_idle_opacity_mobile');
+		$this->photo_minimap_fade_delay = request()->configs()->getValueAsInt('photo_minimap_fade_delay');
 
 		// Rating settings
 		$this->is_rating_show_avg_in_details_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_details');
@@ -296,8 +334,13 @@ class InitConfig extends Data
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
+		$gallery_lock = resolve(GalleryLockState::class);
+
 		// Embed
-		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+		$this->is_embed_enabled = $gallery_lock->isEmbedEnabled();
+
+		// Gallery password
+		$this->is_gallery_locked = $gallery_lock->isLockedForRequest(request());
 
 		// Photo Share Card
 		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');

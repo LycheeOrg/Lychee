@@ -142,6 +142,10 @@ export const paths: RoutePath[] = [
 		path: "/statistics",
 	},
 	{
+		name: "insights",
+		path: "/insights",
+	},
+	{
 		name: "users",
 		path: "/admin/users",
 	},

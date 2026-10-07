@@ -86,13 +86,11 @@ import PersonCard from "@/v7/components/gallery/PersonCard.vue";
 import PersonDeleteDialog from "@/v7/components/forms/people/PersonDeleteDialog.vue";
 import PeopleService from "@/services/people-service";
 import UserManagementService from "@/services/user-management-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useUserStore } from "@/stores/UserState";
-import { storeToRefs } from "pinia";
 
 const toast = useToast();
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const userStore = useUserStore();
 
 const people = ref<App.Http.Resources.Models.PersonResource[]>([]);
@@ -124,7 +122,7 @@ function buildContextMenuItems(person: App.Http.Resources.Models.PersonResource)
 		},
 	];
 
-	if (initData.value?.user_management.can_edit) {
+	if (rights.value?.user_management.can_edit) {
 		items.push({
 			label: trans("people.assign_to_user"),
 			icon: "pi pi-user-edit",

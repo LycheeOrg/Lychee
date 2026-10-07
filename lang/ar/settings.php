@@ -55,6 +55,7 @@ return [
         'album_decoration' => 'عرض الزخارف على غلاف الألبوم (الألبوم الفرعي و/أو عدد الصور)',
         'album_decoration_direction' => 'محاذاة زخارف الألبوم أفقيًا أو عموديًا',
         'photo_overlay' => 'معلومات التراكب الافتراضية للصورة',
+        'album_date_scrubber_enabled' => 'Show the date scrubber on album views',
         'rounded_corners_enabled' => 'تدوير زوايا الصور المصغرة للصور والألبومات',
         'album_border_enabled' => 'إظهار حد حول الصور المصغرة للصور والألبومات',
         'photo_ken_burns_on_hover_enabled' => 'Enable a Ken Burns effect on photo hover',
@@ -103,5 +104,11 @@ return [
             'label' => 'استخدام لوحة تحكم المسؤول',
             'help' => 'استبدال القائمة الفرعية المتداخلة للمسؤول برابط واحد لصفحة لوحة تحكم المسؤول الجديدة.',
         ],
+    ],
+    'password_field' => [
+        'set' => 'Set',
+        'not_set' => 'Not set',
+        'placeholder' => 'New password',
+        'clear' => 'Clear',
     ],
 ];

@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'Stav aktualizace',
         'update_available' => 'Je k dispozici novější verze (aktuální: :current, nejnovější: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW Detection & Moderation',

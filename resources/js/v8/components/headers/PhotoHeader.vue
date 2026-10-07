@@ -20,7 +20,7 @@
 
 		<template #right>
 			<UTooltip
-				v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_highlight"
+				v-if="!albumStore.rights?.can_edit && rights?.root_album?.can_highlight"
 				:text="photoStore.photo!.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')"
 			>
 				<UButton
@@ -33,6 +33,18 @@
 				/>
 			</UTooltip>
 			<div class="flex items-center gap-1.5" :class="is_slideshow_active ? 'hidden' : 'flex'">
+				<UTooltip
+					v-if="photoStore.isSphereCapable"
+					:text="photoStore.isSphereFlat ? $t('gallery.photo.actions.show_sphere') : $t('gallery.photo.actions.show_flat')"
+				>
+					<UButton
+						variant="ghost"
+						:icon="photoStore.isSphereFlat ? 'lucide:rotate-3d' : 'lucide:rectangle-horizontal'"
+						color="neutral"
+						:aria-label="photoStore.isSphereFlat ? $t('gallery.photo.actions.show_sphere') : $t('gallery.photo.actions.show_flat')"
+						@click="photoStore.toggleSphereFlat()"
+					/>
+				</UTooltip>
 				<UButton v-if="is_slideshow_enabled" variant="ghost" icon="lucide:play" color="neutral" @click="emits('toggleSlideShow')" />
 				<UButton
 					v-if="albumStore.rights?.can_access_original && photoStore.photo!.size_variants.original?.url"
@@ -105,7 +117,7 @@ import GoBack from "./GoBack.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useUserStore } from "@/stores/UserState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const emits = defineEmits<{
@@ -124,7 +136,7 @@ const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_activ
 const isDownloadOpen = ref(false);
 const isPhotoShareCardOpen = ref(false);
 const lycheeStore = useLycheeStateStore();
-const leftMenuStore = useLeftMenuStateStore();
+const { rights } = useGlobalRights();
 const { is_exif_disabled, is_slideshow_enabled, is_photo_share_card_enabled } = storeToRefs(lycheeStore);
 
 function openInNewTab(url: string) {

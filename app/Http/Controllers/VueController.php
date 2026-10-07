@@ -19,6 +19,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Services\GalleryLockState;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -37,6 +38,11 @@ class VueController extends Controller
 	public const ACCESS = 'access';
 	public const PASSWORD = 'password';
 
+	public function __construct(
+		private GalleryLockState $gallery_lock,
+	) {
+	}
+
 	/**
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
@@ -45,6 +51,12 @@ class VueController extends Controller
 	 */
 	public function gallery(?string $album_id = null, ?string $photo_id = null): View
 	{
+		// A locked gallery serves the bare app shell: no album/photo lookup, so nothing
+		// (title, description, cover, or even existence) leaks before the visitor unlocks.
+		if ($this->gallery_lock->isLockedForRequest(request())) {
+			return view('vueapp');
+		}
+
 		$album_factory = resolve(AlbumFactory::class);
 		$album = null;
 		$photo = null;

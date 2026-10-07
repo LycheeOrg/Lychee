@@ -12,6 +12,7 @@ use App\Contracts\Image\ImageHandlerInterface;
 use App\Contracts\Image\MediaFile;
 use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
+use App\Enum\SizeVariantFormat;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
@@ -60,16 +61,6 @@ class ImagickHandler extends BaseImageHandler
 
 	/** Number of leading bytes scanned for a `/MediaBox` entry; ample for the first page object of any real-world PDF. */
 	private const MEDIABOX_SCAN_LIMIT = 1_048_576;
-
-	/**
-	 * Maximum number of `/MediaBox` occurrences inspected within the scanned window.
-	 *
-	 * A real-world PDF, however large, has no reason to contain more than a
-	 * handful of raw `/MediaBox` tokens in its first {@see MEDIABOX_SCAN_LIMIT}
-	 * bytes. This bounds the cost of scanning a crafted file that packs the
-	 * pattern back-to-back purely to make this guard itself expensive.
-	 */
-	private const MAX_MEDIABOX_MATCHES = 25;
 
 	/** @var \Imagick|null the internal Imagick image */
 	private ?\Imagick $im_image = null;
@@ -188,6 +179,13 @@ class ImagickHandler extends BaseImageHandler
 	 * `/MediaBox` (e.g. inside a PDF comment) ahead of the real, oversized one used
 	 * to render the first page.
 	 *
+	 * The number of occurrences inspected is bounded by the `pdf_mediabox_max_matches`
+	 * config (default 25) rather than a fixed constant: every occurrence is already
+	 * individually checked against {@see MAX_PDF_MEDIABOX_POINTS} and
+	 * {@see MAX_MEDIABOX_AREA_PER_BYTE}, so this cap only bounds the cost of the scan
+	 * loop itself, not the security property. Legitimate large scanned multi-page
+	 * documents can exceed a low default; see https://github.com/LycheeOrg/Lychee/discussions/4826.
+	 *
 	 * @throws MediaFileUnsupportedException
 	 */
 	private function assertPdfPageSizeIsSafe(string $pdf_path): void
@@ -199,11 +197,12 @@ class ImagickHandler extends BaseImageHandler
 			fclose($handle);
 		}
 
+		$max_matches = app(ConfigManager::class)->getValueAsInt('pdf_mediabox_max_matches');
 		$pattern = '/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/';
 		$filesize = filesize($pdf_path);
 		$offset = 0;
 
-		for ($seen = 0; $seen < self::MAX_MEDIABOX_MATCHES; $seen++) {
+		for ($seen = 0; $seen < $max_matches; $seen++) {
 			if (preg_match($pattern, $head, $matches, PREG_OFFSET_CAPTURE, $offset) !== 1) {
 				return;
 			}
@@ -225,7 +224,7 @@ class ImagickHandler extends BaseImageHandler
 			$offset = $matches[0][1] + \strlen($matches[0][0]);
 		}
 
-		throw new MediaFileUnsupportedException(\sprintf('PDF declares more than %d `/MediaBox` occurrences within the first %d bytes', self::MAX_MEDIABOX_MATCHES, self::MEDIABOX_SCAN_LIMIT));
+		throw new MediaFileUnsupportedException(\sprintf('PDF declares more than %d `/MediaBox` occurrences within the first %d bytes. If this is a legitimate large document, raise the \'pdf_mediabox_max_matches\' setting.', $max_matches, self::MEDIABOX_SCAN_LIMIT));
 	}
 
 	/**
@@ -283,9 +282,11 @@ class ImagickHandler extends BaseImageHandler
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
-			$config_manager = resolve(ConfigManager::class);
-			$compression_quality = $config_manager->getValueAsInt('compression_quality');
-			$this->im_image->setImageCompressionQuality($compression_quality);
+			$format = strtolower(ltrim($file->getExtension(), '.'));
+			$this->im_image->setImageCompressionQuality($this->resolveQuality());
+			if ($format === SizeVariantFormat::WEBP->value && $this->isLossless()) {
+				$this->im_image->setOption('webp:lossless', 'true');
+			}
 			$profiles = $this->im_image->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->im_image->stripImage();
@@ -298,7 +299,7 @@ class ImagickHandler extends BaseImageHandler
 			// we don't know if the file is a local file (or hosted elsewhere)
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
-			$this->im_image->writeImageFile($in_memory_buffer->stream(), ltrim($file->getExtension(), '.'));
+			$this->im_image->writeImageFile($in_memory_buffer->stream(), $format);
 			$stream_stat = $file->write($in_memory_buffer->read(), $collect_statistics);
 			$file->close();
 			$in_memory_buffer->close();

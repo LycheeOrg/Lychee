@@ -94,6 +94,7 @@ class QueryPhotoRatios
 			'photos.created_at',
 			'photos.taken_at_orig_tz',
 			'photos.live_photo_short_path',
+			'photos.is_360',
 			// Always selected, independent of $can_read_ratings: a
 			// non-`Album` source needs the raw value for live bucket
 			// computation (RATING_AVG may be the effective sort column) even
@@ -330,6 +331,7 @@ class QueryPhotoRatios
 		$is_videos = [];
 		$is_raws = [];
 		$is_live_photos = [];
+		$is_360s = [];
 		$taken_ats = [];
 		$created_ats = [];
 		$taken_at_orig_tzs = [];
@@ -356,6 +358,7 @@ class QueryPhotoRatios
 			$is_videos[] = $is_video;
 			$is_raws[] = !$is_photo && !$is_video;
 			$is_live_photos[] = $row->live_photo_short_path !== null && $row->live_photo_short_path !== '';
+			$is_360s[] = DbBool::parse($row->is_360);
 			$taken_ats[] = $row->taken_at;
 			$created_ats[] = $row->created_at;
 			$taken_at_orig_tzs[] = $row->taken_at_orig_tz;
@@ -390,6 +393,7 @@ class QueryPhotoRatios
 			is_videos: $is_videos,
 			is_raws: $is_raws,
 			is_live_photos: $is_live_photos,
+			is_360s: $is_360s,
 			taken_ats: $taken_ats,
 			created_ats: $created_ats,
 			taken_at_orig_tzs: $taken_at_orig_tzs,

@@ -61,8 +61,8 @@ watch(
 	},
 );
 
-// A plain one-shot `onMounted` call would be orphaned by an `invalidate()` (e.g. `Albums.vue`'s
-// own mount-time `refresh()`) landing while this component's initial load is still in flight -
+// A plain one-shot `onMounted` call would be orphaned by an `invalidate()` (e.g. a move/delete
+// dialog's `refresh()`) landing while this component's initial load is still in flight -
 // the response gets discarded via the store's generation guard and nothing re-fetches it.
 // Watching keeps re-triggering `ensureLoaded()` whenever the store drops back to unloaded.
 watchEffect(() => {

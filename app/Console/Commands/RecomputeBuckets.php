@@ -34,8 +34,9 @@ use Illuminate\Support\Facades\Log;
  * self-join query — never touches `photos`/`photo_album`. Photo pass derives
  * every value from the `photo_album` row's own `photo_id`/`album_id` pair's
  * already-loaded photo columns plus the containing album's resolved
- * sorting/timeline settings, via one chunked self-join query — never touches
- * `size_variants`/`tags`.
+ * sorting/timeline settings, via a keyset-paginated scan of `photo_album`
+ * plus one primary-key lookup per page into `photos`/`base_albums` — never
+ * touches `size_variants`/`tags`.
  */
 class RecomputeBuckets extends Command
 {
@@ -119,9 +120,9 @@ class RecomputeBuckets extends Command
 								max_taken_at: $row->max_taken_at !== null ? Carbon::parse($row->max_taken_at) : null,
 							),
 						];
-						$processed++;
-						$bar->advance();
 					}
+					$processed += $rows->count();
+					$bar->advance($rows->count());
 
 					DB::table('albums')->upsert($updates, ['id'], ['bucket_id']);
 				},
@@ -153,73 +154,121 @@ class RecomputeBuckets extends Command
 		$bar->start();
 		$processed = 0;
 
-		DB::table('photo_album as pa')
-			->join('photos as p', 'p.id', '=', 'pa.photo_id')
-			->join('base_albums as ba', 'ba.id', '=', 'pa.album_id')
-			->select([
-				'pa.photo_id',
-				'pa.album_id',
-				'p.title',
-				'p.title_base',
-				'p.created_at',
-				'p.taken_at',
-				'p.is_highlighted',
-				'p.type',
-				'p.rating_avg',
-				'ba.sorting_col',
-				'ba.photo_timeline',
-			])
-			->orderBy('pa.photo_id')
-			->orderBy('pa.album_id')
-			// `photo_album` has a composite primary key (photo_id, album_id),
-			// no single-column unique id `chunkById()` could paginate on
-			// without risking a row-group split across a chunk boundary for
-			// a photo linked into several albums. Plain offset-based
-			// chunk() is safe here instead: the loop below only ever writes
-			// `bucket_id`, never one of the two ORDER BY columns, so the
-			// result set's ordering (and therefore each page's offset window)
-			// never shifts under us between chunks.
-			->chunk(
-				$chunk_size,
-				function (Collection $rows) use (&$processed, $bar, $bucket_computer, $global_default_column): void {
-					$updates = [];
-					foreach ($rows as $row) {
-						$sorting_column = $row->sorting_col !== null
-							? ColumnSortingType::from($row->sorting_col)
-							: $global_default_column;
+		$cursor = null;
+		do {
+			$keys = $this->photoAlbumKeyPage($cursor, $chunk_size);
+			$updates = $this->computePhotoAlbumBuckets($keys, $bucket_computer, $global_default_column);
 
-						$candidate_granularity = $row->photo_timeline !== null
-							? TimelinePhotoGranularity::from($row->photo_timeline)
-							: null;
-						$granularity = $bucket_computer->resolveGranularity($candidate_granularity);
+			if (count($updates) > 0) {
+				DB::table('photo_album')->upsert($updates, ['photo_id', 'album_id'], ['bucket_id']);
+			}
 
-						$updates[] = [
-							'photo_id' => $row->photo_id,
-							'album_id' => $row->album_id,
-							'bucket_id' => $bucket_computer->compute(
-								sorting_column: $sorting_column,
-								granularity: $granularity,
-								title: $row->title,
-								title_base: $row->title_base ?? '',
-								created_at: Carbon::parse($row->created_at),
-								taken_at: $row->taken_at !== null ? Carbon::parse($row->taken_at) : null,
-								is_highlighted: DbBool::parse($row->is_highlighted),
-								type: $row->type ?? '',
-								rating_avg: $row->rating_avg,
-							),
-						];
-						$processed++;
-						$bar->advance();
-					}
-
-					DB::table('photo_album')->upsert($updates, ['photo_id', 'album_id'], ['bucket_id']);
-				},
-			);
+			$processed += $keys->count();
+			$bar->advance($keys->count());
+			$last = $keys->last();
+			$cursor = $last !== null ? [$last->photo_id, $last->album_id] : null;
+		} while ($keys->count() === $chunk_size);
 
 		$bar->finish();
 		$this->newLine(2);
 
 		$this->info("Recomputed bucket_id for {$processed} photo_album rows");
 		Log::info("Photo bucket backfill completed: {$processed} photo_album rows processed");
+	}
+
+	/**
+	 * One page of `photo_album` primary keys, ordered by `(photo_id, album_id)`
+	 * and resumed strictly after `$cursor` (the last key pair of the previous
+	 * page, `null` for the first page).
+	 *
+	 * Keyset pagination on the pivot table alone: an `OFFSET` page must
+	 * produce and discard every preceding row, and a page joined with
+	 * `photos`/`base_albums` lets the planner drive the join from the small
+	 * `base_albums` table and sort every remaining row per page — both make a
+	 * full pass quadratic in the table size. A single-table query ordered by
+	 * its own primary key leaves every supported driver one plan: a primary
+	 * key range seek on the leading `photo_id >= ?` bound. The `OR` only
+	 * filters the remaining rows of the cursor's own photo, so a photo linked
+	 * into several albums is never split or skipped across a page boundary.
+	 *
+	 * @param array{0:string,1:string}|null $cursor
+	 *
+	 * @return Collection<int,object{photo_id:string,album_id:string}>
+	 */
+	private function photoAlbumKeyPage(?array $cursor, int $chunk_size): Collection
+	{
+		$query = DB::table('photo_album')
+			->select(['photo_id', 'album_id'])
+			->orderBy('photo_id')
+			->orderBy('album_id')
+			->limit($chunk_size);
+
+		if ($cursor !== null) {
+			[$photo_id, $album_id] = $cursor;
+			$query->where('photo_id', '>=', $photo_id)
+				->where(fn ($q) => $q->where('photo_id', '>', $photo_id)->orWhere('album_id', '>', $album_id));
+		}
+
+		return $query->get();
+	}
+
+	/**
+	 * Computes the `bucket_id` of every `photo_album` row in `$keys`, loading
+	 * the page's photo columns and containing albums' sorting/timeline
+	 * settings with one primary-key lookup each.
+	 *
+	 * @param Collection<int,object{photo_id:string,album_id:string}> $keys
+	 *
+	 * @return array<int,array{photo_id:string,album_id:string,bucket_id:string|null}>
+	 */
+	private function computePhotoAlbumBuckets(Collection $keys, PhotoBucketComputer $bucket_computer, ColumnSortingType $global_default_column): array
+	{
+		$photos = DB::table('photos')
+			->select(['id', 'title', 'title_base', 'created_at', 'taken_at', 'is_highlighted', 'type', 'rating_avg'])
+			->whereIn('id', $keys->pluck('photo_id')->unique()->all())
+			->get()
+			->keyBy('id');
+
+		$albums = DB::table('base_albums')
+			->select(['id', 'sorting_col', 'photo_timeline'])
+			->whereIn('id', $keys->pluck('album_id')->unique()->all())
+			->get()
+			->keyBy('id');
+
+		$updates = [];
+		foreach ($keys as $key) {
+			$photo = $photos->get($key->photo_id);
+			$album = $albums->get($key->album_id);
+			if ($photo === null || $album === null) {
+				continue;
+			}
+
+			$sorting_column = $album->sorting_col !== null
+				? ColumnSortingType::from($album->sorting_col)
+				: $global_default_column;
+
+			$candidate_granularity = $album->photo_timeline !== null
+				? TimelinePhotoGranularity::from($album->photo_timeline)
+				: null;
+			$granularity = $bucket_computer->resolveGranularity($candidate_granularity);
+
+			$updates[] = [
+				'photo_id' => $key->photo_id,
+				'album_id' => $key->album_id,
+				'bucket_id' => $bucket_computer->compute(
+					sorting_column: $sorting_column,
+					granularity: $granularity,
+					title: $photo->title,
+					title_base: $photo->title_base ?? '',
+					created_at: Carbon::parse($photo->created_at),
+					taken_at: $photo->taken_at !== null ? Carbon::parse($photo->taken_at) : null,
+					is_highlighted: DbBool::parse($photo->is_highlighted),
+					type: $photo->type ?? '',
+					rating_avg: $photo->rating_avg,
+				),
+			];
+		}
+
+		return $updates;
 	}
 }

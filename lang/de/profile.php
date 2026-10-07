@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -13,8 +12,8 @@ return [
         'current_password' => 'Aktuelles Passwort',
         'credentials_update' => 'Ihre Anmeldedaten werden wie folgt geändert:',
         'username' => 'Benutzername',
-        'change_password' => 'Change password',
-        'cancel_password_change' => 'Cancel password change',
+        'change_password' => 'Passwort ändern',
+        'cancel_password_change' => 'Passwortänderung abbrechen',
         'new_password' => 'Neues Passwort',
         'confirm_new_password' => 'Neues Passwort bestätigen',
         'password_strength_info' => 'Die Passwortstärke ist eine Schätzung mithilfe des <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-Algorithmus</a>.',

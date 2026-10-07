@@ -38,7 +38,6 @@ use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
-use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
 use App\DTO\DiagnosticData;
@@ -69,7 +68,6 @@ class Errors
 		PHPVersionCheck::class,
 		OpCacheCheck::class,
 		TimezoneCheck::class,
-		UpdatableCheck::class,
 		ForeignKeyListInfo::class,
 		DBIntegrityCheck::class,
 		SmallMediumExistsCheck::class,

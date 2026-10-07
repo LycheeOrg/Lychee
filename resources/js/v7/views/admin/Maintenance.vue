@@ -16,7 +16,6 @@
 	<div
 		class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4 w-full"
 	>
-		<MaintenanceUpdate />
 		<MaintenanceOptimize />
 		<MaintenanceDuplicateChecker />
 		<MaintenanceFlushCache />
@@ -28,8 +27,8 @@
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />
-		<MaintenanceOldOrders v-if="initData?.modules.is_mod_webshop_enabled" />
-		<MaintenanceFulfillOrders v-if="initData?.modules.is_mod_webshop_enabled" />
+		<MaintenanceOldOrders v-if="rights?.modules.is_mod_webshop_enabled" />
+		<MaintenanceFulfillOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceBackfillAlbumSizes />
 		<MaintenanceFlushQueue />
@@ -38,7 +37,7 @@
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
-		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
+		<MaintenanceBulkScanNsfw v-if="rights?.modules.is_nsfw_classifier_enabled" />
 		<template v-if="lycheeStore.is_face_recognition_enabled">
 			<MaintenanceBulkScanFaces />
 			<MaintenanceRunClustering />
@@ -58,7 +57,6 @@ import MaintenanceFixTree from "@/v7/components/maintenance/MaintenanceFixTree.v
 import MaintenanceDuplicateChecker from "@/v7/components/maintenance/MaintenanceDuplicateChecker.vue";
 import MaintenanceGenSizevariants from "@/v7/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/v7/components/maintenance/MaintenanceOptimize.vue";
-import MaintenanceUpdate from "@/v7/components/maintenance/MaintenanceUpdate.vue";
 import MaintenanceFlushCache from "@/v7/components/maintenance/MaintenanceFlushCache.vue";
 import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import StatisticsIntegrity from "@/v7/components/maintenance/StatisticsIntegrity.vue";
@@ -75,13 +73,11 @@ import MaintenanceDestroyDismissedFaces from "@/v7/components/maintenance/Mainte
 import MaintenanceSyncFaceEmbeddings from "@/v7/components/maintenance/MaintenanceSyncFaceEmbeddings.vue";
 import MaintenanceResetFaceScanStatus from "@/v7/components/maintenance/MaintenanceResetFaceScanStatus.vue";
 import MaintenancePurgeOrphanFaceEmbeddings from "@/v7/components/maintenance/MaintenancePurgeOrphanFaceEmbeddings.vue";
-import { storeToRefs } from "pinia";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useTemplateRef } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const lycheeStore = useLycheeStateStore();
-const leftMenu = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenu);
+const { rights } = useGlobalRights();
 const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

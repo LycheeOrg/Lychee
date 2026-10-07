@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'حالة التحديث',
         'update_available' => 'يتوفر إصدار أحدث (الحالي: :current، الأحدث: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'الكشف عن المحتوى الحساس والإشراف عليه',

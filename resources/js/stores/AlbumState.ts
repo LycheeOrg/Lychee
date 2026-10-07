@@ -388,7 +388,8 @@ export const useAlbumStore = defineStore("album-store", {
 					this.photoRatiosV3 = ratios.ratios;
 					this.photoDetailsResolvedIds = {};
 
-					const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, requestedAlbumId));
+					const lycheeStore = useLycheeStateStore();
+					const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, requestedAlbumId, lycheeStore));
 					photosState.setPhotos(tiles, false);
 					// next_photo_id/previous_photo_id are derived purely
 					// client-side from array order (FR-065-15), never from a
@@ -655,17 +656,8 @@ export const useAlbumStore = defineStore("album-store", {
 					this.bucketsV3 = buckets;
 					this.boundariesV3 = computeBucketBoundaries(buckets, children.ids.length);
 
-					// date_format_album_thumb/thumb_min_max_order have no
-					// per-album override (unlike album_thumb_css_aspect_ratio) —
-					// this.config and rootConfig always agree in practice, but
-					// the same per-album-then-instance-default fallback chain
-					// is kept for consistency with the rest of this codebase.
-					const dateFormat = this.config?.date_format_album_thumb ?? albumsStore.rootConfig?.date_format_album_thumb ?? "M Y";
-					const dateOrder = this.config?.thumb_min_max_order ?? albumsStore.rootConfig?.thumb_min_max_order ?? "younger_older";
-
-					albumsStore.albums = children.ids.map((_, i) =>
-						adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, dateFormat, dateOrder),
-					);
+					const lycheeStore = useLycheeStateStore();
+					albumsStore.albums = children.ids.map((_, i) => adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, lycheeStore));
 
 					this.albums_current_page = 1;
 					this.albums_last_page = 1;

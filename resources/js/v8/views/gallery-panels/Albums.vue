@@ -282,12 +282,16 @@ albumsStore.reset();
 photosStore.reset();
 photoStore.reset();
 
-async function refresh() {
+async function load() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	AlbumService.clearAlbums();
 	albumsStore.load(router);
-	albumListStore.invalidate();
 	orderManagementStore.refresh();
+}
+
+async function refresh() {
+	await load();
+	albumListStore.invalidate();
 }
 
 async function onLoggedIn() {
@@ -499,7 +503,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-	await refresh();
+	await load();
 	setScroll();
 });
 

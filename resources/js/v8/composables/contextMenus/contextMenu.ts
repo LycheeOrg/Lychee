@@ -1,5 +1,5 @@
 import { useAlbumStore } from "@/stores/AlbumState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { computed, Ref, ref } from "vue";
@@ -63,6 +63,10 @@ function canMove(accumulator: boolean, currentValue: App.Http.Resources.Models.T
 	return accumulator && currentValue.rights.can_move;
 }
 
+function canMerge(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
+	return accumulator && currentValue.rights.can_merge;
+}
+
 function canDelete(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_delete;
 }
@@ -72,6 +76,7 @@ function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Mode
 }
 
 export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallbacks, albumCallbacks: AlbumCallbacks) {
+	const { rights } = useGlobalRights();
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
@@ -99,7 +104,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStateStore = useLycheeStateStore();
 
@@ -115,14 +119,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight",
 				icon: "lucide:flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight",
 				icon: "lucide:flag",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
@@ -177,7 +181,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer",
 					icon: "lucide:pencil",
 					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces",
@@ -199,13 +203,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.copy_to",
 					icon: "lucide:copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.move",
 					icon: "lucide:folder",
 					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.delete",
@@ -236,7 +240,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStateStore = useLycheeStateStore();
 
@@ -253,14 +256,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight_all",
 				icon: "lucide:flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight_all",
 				icon: "lucide:flag",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
@@ -282,7 +285,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer_all",
 					icon: "lucide:pencil",
 					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces_all",
@@ -298,13 +301,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.copy_all_to",
 					icon: "lucide:copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.move_all",
 					icon: "lucide:folder",
 					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.rights?.can_move_content ?? false,
 				},
 				{
 					label: "gallery.menus.delete_all",
@@ -331,7 +334,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
-		const leftMenuStore = useLeftMenuStateStore();
 		const lycheeStateStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
@@ -356,7 +358,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.apply_renamer",
 					icon: "lucide:pencil",
 					callback: albumCallbacks.toggleApplyRenamer,
-					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+					access: (selectedAlbum.rights.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.scan_faces",
@@ -368,7 +370,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.merge",
 					icon: "lucide:shrink",
 					callback: albumCallbacks.toggleMerge,
-					access: selectedAlbum.rights.can_move ?? false,
+					access: selectedAlbum.rights.can_merge ?? false,
 				},
 				{
 					label: "gallery.menus.move",
@@ -406,7 +408,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.merge_all",
 				icon: "lucide:shrink",
 				callback: albumCallbacks.toggleMerge,
-				access: selectors.selectedAlbums?.value.reduce(canMove, true),
+				access: selectors.selectedAlbums?.value.reduce(canMerge, true),
 			},
 			{
 				label: "gallery.menus.move_all",

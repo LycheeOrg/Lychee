@@ -50,6 +50,7 @@ return [
         'favourite_plural' => '%1$s به علاقه‌مندی افزودند %2$s',
         'download_plural' => '%1$s دانلود کردند %2$s',
         'shared_plural' => '%1$s به اشتراک گذاشتند %2$s',
+        'truncated' => 'Older activity is not shown.',
         'ago' => [
             'days' => '%d روز پیش',
             'day' => 'یک روز پیش',

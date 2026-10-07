@@ -1,11 +1,11 @@
 # Feature 062 Tasks – Root Album Listing Struct-of-Arrays
 
-_Status: Implemented — T-062-33 (2026-09-02 amendment, `/Albums/smart` real cover_ids, FR-062-16) implemented, `AlbumCategoryV3Test` 16/16 green._
-_Last updated: 2026-09-02_
+_Status: Implemented — T-062-34..36 (2026-09-29, `GET /Albums/root/config`, FR-062-17) implemented, `AlbumRootConfigV3Test` 5/5 green._
+_Last updated: 2026-09-30_
 
 > Keep this checklist aligned with plan.md's increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions.
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes.
 
 ## Checklist
 
@@ -246,6 +246,33 @@ _Last updated: 2026-09-02_
   _Intent:_ Feature 063's smart-album root-tile addendum depends on this — Feature 063's own I14 tracks it only as a precondition (T-063-41), this is the actual implementation task.
   _Note:_ Implemented as specced, one query total (not per-row) via `whereIn`. Existing `testSmartReturnsSameSetAsV2WithZeroQueries`'s "zero queries" assertion is scoped to *photos* queries specifically (its own comment already anticipated `with_relations=false`-style exceptions) — the new query targets `album_user_thumbs`, not `photos`, so it needed no change and still passes.
   _Verification commands:_ `make phpstan` (0 errors); `vendor/bin/php-cs-fixer fix --dry-run` (clean); `php artisan test --filter=AlbumCategoryV3Test` (16/16 green, includes new `testSmartResolvesRealCoverFromCacheHitAndNullFromCacheMiss`).
+
+- [x] T-062-34 – Feature tests first: `tests/Feature_v3/Album/AlbumRootConfigV3Test.php` (FR-062-17, S-062-18, S-062-30, S-062-31, S-062-32, S-062-33).
+  _Verification commands:_ `php artisan test --filter=AlbumRootConfigV3Test` (red before T-062-35).
+
+- [x] T-062-35 – Backend: `AlbumRootConfigResource`, `AlbumRootController::config()`, route `GET /api/v3/Albums/root/config` (FR-062-17, S-062-30, S-062-31, S-062-32, S-062-33).
+  _Verification commands:_ `php artisan test --filter=AlbumRootConfigV3Test`; `php artisan test --filter=AlbumRootV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
+- [x] T-062-36 – Frontend: `AlbumsState.load()` reads `rootConfig`/`rootRights` from `/Albums/root/config` when `is_struct_of_array_enabled`, v2 `GET /Albums` only when off; 401 still opens the login modal (FR-062-17).
+  _Verification commands:_ `npm run format`; `npm run check`.
+
+- [x] T-062-37 – Feature tests first: `AlbumCategoryV3Test` smart covers — cached path runs no `photos` query, cache miss resolves live and seeds the row (FR-062-16, S-062-14, S-062-34).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-38).
+
+- [x] T-062-38 – `AlbumSmartController::smart()`: resolve cache misses through `BaseSmartAlbum::get_thumb()` (FR-062-16, S-062-34).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
+- [x] T-062-39 – Feature tests first: `AlbumCategoryV3Test` `on_this_day` covers — a row pointing at a photo not dated today is replaced by today's photo, or deleted when none qualifies; a valid row costs exactly one `photos` query (FR-062-16, S-062-14, S-062-35, S-062-36).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-40).
+
+- [x] T-062-40 – `BaseSmartAlbum::isCachedThumbValid()` (default `true`), `OnThisDayAlbum` override, `CachesAlbumUserThumb::getCachedOrLiveThumb()` validity callback (overwrite or delete an invalid row), `AlbumSmartController::smart()` validates batched hits (FR-062-16, S-062-35, S-062-36).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
+
+- [x] T-062-41 – Feature test first: `AlbumCategoryV3Test` `recent` cover — a row pointing at a photo older than `recent_age` is replaced by a recent photo; the fully cached path runs exactly two `photos` queries (FR-062-16, S-062-14, S-062-37).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test` (red before T-062-42).
+
+- [x] T-062-42 – `RecentAlbum::isCachedThumbValid()` through the shared `BaseSmartAlbum::containsPhoto()` helper, also used by `OnThisDayAlbum` (FR-062-16, S-062-37).
+  _Verification commands:_ `php artisan test --filter=AlbumCategoryV3Test`; `vendor/bin/php-cs-fixer fix`; `make phpstan`.
 
 ## Notes / TODOs
 

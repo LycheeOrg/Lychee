@@ -15,16 +15,22 @@ class CacheControl
 	/**
 	 * Handle an incoming request.
 	 *
+	 * Without an age, the browser may keep the response but must revalidate
+	 * it before reuse: these responses depend on the viewer's identity, which
+	 * the URL does not capture, so reusing them as-is would leak across a
+	 * login/logout in the same browser (CWE-524). An explicit age is only for
+	 * identity-independent routes (e.g. the session-less embed API).
+	 *
 	 * @param \Illuminate\Http\Request                                                                          $request
-	 * @param string                                                                                            $age     Duration in second of the cache
 	 * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
+	 * @param string|null                                                                                       $age     Duration in seconds the response may be reused without revalidation
 	 *
 	 * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
 	 */
-	public function handle(Request $request, \Closure $next, string $age = '3600')
+	public function handle(Request $request, \Closure $next, ?string $age = null)
 	{
 		$response = $next($request);
-		$response->headers->set('Cache-Control', 'private;max_age=' . $age);
+		$response->headers->set('Cache-Control', $age === null ? 'private, no-cache' : 'private, max-age=' . $age);
 
 		return $response;
 	}

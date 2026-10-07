@@ -2,9 +2,9 @@
 
 _Linked specification:_ [`docs/specs/4-architecture/features/037-admin-dashboard/spec.md`](spec.md)
 _Status:_ Draft
-_Last updated:_ 2026-04-22
+_Last updated:_ 2026-10-03
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) have been updated.
 
 ## Vision & Success Criteria
 
@@ -174,6 +174,19 @@ Record any drift (scope change, unresolved failure, deferred test) in the plan's
    - _Commands:_ see above.
    - _Exit:_ Full pipeline green; OpenAPI diff committed; knowledge-map + roadmap updated; ready for RCI self-review and commit handoff.
 
+8. **I8 – Unified update availability (FR-037-07, FR-037-08; Q-037-09, Q-037-10)**
+   - _Goal:_ Make `/api/v2/Version` and `/api/v2/Admin/UpdateStatus` agree, report release and git updates separately, and count commits behind exactly via the GitHub compare API.
+   - _Trigger:_ bug report 2026-10-03 — `Admin/UpdateStatus` returned `has_update: true` with `current_version == latest_version == 7.10.0` while `/Version` returned both flags `false`. Root causes: (a) `CheckUpdate::getCode()` uses the git commit comparison on git installs while the payload shows `FileVersion` numbers; (b) the two endpoints use different gates (`update-check` feature flag vs `check_for_updates` config); (c) `countBehind()` counts a local SHA missing from the cached list as 30 behind.
+   - _Preconditions:_ I1–I7 complete.
+   - _Steps:_
+     - Remote (superseded by Feature 080, which removed the `GitRemote` hierarchy): `CompareRequest` (`urls.update.git.compare`), `AbstractGitRemote` keeps `use_cache`, `GitCommits` overrides `countBehind()` to always use the compare API (`ahead_by`); the list scan stays for tags mode. `GitHubVersion` drops the "More than 30" text and exposes `getCountBehind()`.
+     - Application: `UpdateAvailability` DTO + `CheckUpdateAvailability` action (gate = `update-check` flag AND `check_for_updates`).
+     - REST: `AdminUpdateStatusResource` → `enabled`, `is_new_release_available`, `is_git_update_available`, `commits_behind`, `current_version`, `latest_version`; `VersionResource` reads the same action.
+     - UI: v7 + v8 `AdminDashboard.vue` banner picks the release or git message; new `admin-dashboard.update.git_update_available` key in 22 locales.
+   - _Commands:_ `php artisan test --filter='GitRemoteTest|GitHubVersionTest|CheckUpdateAvailabilityTest|AdminUpdateStatusControllerTest|VersionTest'`, `make phpstan`, `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`.
+   - _Exit:_ Scenarios S-037-19 … S-037-26 covered by green tests; quality gate clean.
+   - _Intent log:_ Operator pasted both endpoint payloads; analysis traced the three root causes above; operator chose Q-037-09 Option A and Q-037-10 Option C, then asked to drop the list scan and always use the compare query on branch checkouts. `CheckUpdate` + `UpdateStatus` enum become unused by the admin endpoint; removal is left to operator approval (no unapproved deletions).
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -196,6 +209,14 @@ Record any drift (scope change, unresolved failure, deferred test) in the plan's
 | S-037-16 | I5 (partial-admin render), I6 (composable partial-admin test) | Groups-only operator. |
 | S-037-17 | I3 (partial-admin 403 test) | Direct stats call denied. |
 | S-037-18 | I6 (composable partial-admin OFF test) | Legacy submenu with single capability. |
+| S-037-19 | I8 (CheckUpdateAvailabilityTest — release) | Release banner. |
+| S-037-20 | I8 (CheckUpdateAvailabilityTest — git only) | Git banner, never `X → X`. |
+| S-037-21 | I8 (CheckUpdateAvailabilityTest, AdminUpdateStatusControllerTest, VersionTest — config off) | Gate on `check_for_updates`. |
+| S-037-22 | I8 (CheckUpdateAvailabilityTest, AdminUpdateStatusControllerTest — feature off) | Gate on `update-check`. |
+| S-037-23 | I8 (shared action used by both resources) | Endpoints agree. |
+| S-037-24 | I8 (GitRemoteTest — compare ahead_by 0) | Stale cache no longer a false positive. |
+| S-037-25 | I8 (GitRemoteTest, GitHubVersionTest — ahead_by 42) | Exact count beyond 30. |
+| S-037-26 | I8 (GitRemoteTest, GitHubVersionTest — compare failure) | Unknown, no banner. |
 
 ## Analysis Gate
 
@@ -220,3 +241,5 @@ _Not yet completed — pending start of implementation. Run [docs/specs/5-operat
 - Consider a CLI command `php artisan lychee:admin-stats --refresh` for scripted cache warming.
 - If row-count latency regresses on very large libraries (NFR-037-01 miss budget), switch counters to `album_size_statistics` / denormalised counters similar to Feature 003/004.
 - Release-notes entry listing the nine moved URLs so operators can update bookmarks.
+- (I8) `CheckUpdate` + `UpdateStatus` enum (and `CheckUpdateTest`) are no longer used by any endpoint; delete once the operator approves the paths.
+- (I8) Failed compare requests are not cached (`ExternalRequestFunctions::get_data` clears the cache on failure), so a master with local-only commits retries GitHub on every check. Consider negative caching if this shows up in rate limits.

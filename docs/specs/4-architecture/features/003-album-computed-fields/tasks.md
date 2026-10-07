@@ -6,7 +6,7 @@ _Last updated: 2026-01-03_
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
 > When referencing requirements, keep feature IDs (`FR-`), non-goal IDs (N/A here), and scenario IDs (`S-003-`) inside the same parentheses immediately after the task title (omit categories that do not apply).
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/5-decisions/` reflect the clarified behaviour.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/6-decisions/` reflect the clarified behaviour.
 
 ## Checklist
 
@@ -487,5 +487,5 @@ _Last updated: 2026-01-03_
 - **Queue Workers:** Tests involving job dispatch will require queue workers running OR use `Queue::fake()` for unit tests. Feature tests may need `php artisan queue:work --once` or sync queue driver.
 - **PHPStan Level:** Verify project uses PHPStan level 6+ (mentioned in AGENTS.md and plan). Run `make phpstan` after every code change.
 - **Commit Protocol:** After all tasks complete, follow AGENTS.md commit protocol: stage files, run static analysis/tests/formatting, prepare conventional commit message with `Spec impact:` line, present to operator.
-- **Open Questions:** All high-/medium-impact questions resolved per spec (Q-003-01 through Q-003-09). If new questions arise during implementation, add to `docs/specs/4-architecture/open-questions.md` and pause for clarification.
+- **Open Questions:** All high-/medium-impact questions resolved per spec (Q-003-01 through Q-003-09). If new questions arise during implementation, add to `open-questions.md` and pause for clarification.
 - **Test Timing:** Tests should be written BEFORE implementation per SDD cadence. Each increment's tasks are ordered: tests first, then implementation.
