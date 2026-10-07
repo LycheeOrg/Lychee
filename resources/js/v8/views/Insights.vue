@@ -60,6 +60,7 @@
 			<FormatsSection :formats="insights.formats" />
 		</template>
 		<UCard v-else-if="insights !== undefined" class="text-center text-muted">{{ $t("insights.empty") }}</UCard>
+		<UCard v-else-if="failed" class="text-center text-muted">{{ $t("insights.error") }}</UCard>
 		<div v-else class="flex justify-center py-24" role="status" :aria-label="$t('insights.title')">
 			<LycheeLoadingIcon class="text-6xl" />
 		</div>
@@ -107,6 +108,7 @@ lycheeStore.load();
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const insights = ref<App.Http.Resources.Insights.InsightsResource | undefined>(undefined);
+const failed = ref(false);
 const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);
 const albums = ref<App.Http.Resources.Statistics.Album[]>([]);
 const albumId = ref(ALL_ALBUMS);
@@ -212,13 +214,21 @@ function load() {
 
 	const current = ++request;
 	insights.value = undefined;
-	InsightsService.get(params).then((response) => {
-		if (current !== request) {
-			return;
-		}
-		insights.value = response.data;
-		years.value = response.data.years;
-	});
+	failed.value = false;
+	InsightsService.get(params)
+		.then((response) => {
+			if (current !== request) {
+				return;
+			}
+			insights.value = response.data;
+			years.value = response.data.years;
+		})
+		.catch(() => {
+			// Leave the loading state; the global axios handler reports the error itself.
+			if (current === request) {
+				failed.value = true;
+			}
+		});
 }
 
 watch(period, (value) => {

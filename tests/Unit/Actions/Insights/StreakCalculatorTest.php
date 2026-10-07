@@ -91,4 +91,15 @@ class StreakCalculatorTest extends AbstractTestCase
 		self::assertSame('2026-12-21', $summary->longest_weekly_streak->from);
 		self::assertSame('2027-01-04', $summary->longest_weekly_streak->to);
 	}
+
+	public function testWeeksBefore1970(): void
+	{
+		// Sunday 1969-12-28 and Monday 1969-12-29 belong to two ISO weeks.
+		$summary = StreakCalculator::summarise(['1969-12-28', '1969-12-29']);
+
+		self::assertSame(2, $summary->longest_weekly_streak?->length);
+		self::assertSame('1969-12-22', $summary->longest_weekly_streak->from);
+		self::assertSame('1969-12-29', $summary->longest_weekly_streak->to);
+		self::assertSame(2, $summary->longest_daily_streak?->length);
+	}
 }

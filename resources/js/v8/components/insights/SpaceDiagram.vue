@@ -54,11 +54,19 @@ const tree = computed(() =>
 );
 const option = computed(() => spaceOption(tree.value, kind.value, palette.value, sizeToUnit, trans("insights.storage.space")));
 
+// Only the latest request may fill the diagram: an earlier, slower one belongs to another album.
+let request = 0;
+
 watch(
 	() => props.albumId,
 	(albumId) => {
 		albums.value = undefined;
-		StatisticsService.getAlbumSpace(albumId).then((response) => (albums.value = response.data));
+		const current = ++request;
+		StatisticsService.getAlbumSpace(albumId).then((response) => {
+			if (current === request) {
+				albums.value = response.data;
+			}
+		});
 	},
 	{ immediate: true },
 );

@@ -9,6 +9,7 @@ return [
     'title' => 'Insights',
     'preview_text' => 'This is a preview of the insights page available in Lychee <span class="text-primary font-bold">SE</span>.<br />The data shown here are randomly generated and do not reflect your server.',
     'empty' => 'No photos in this period.',
+    'error' => 'The insights could not be loaded.',
     'unknown' => 'Unknown',
     'other' => 'Other',
     'album' => [

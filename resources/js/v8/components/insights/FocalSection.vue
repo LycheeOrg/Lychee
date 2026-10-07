@@ -49,7 +49,7 @@
 	</InsightsSection>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { sprintf } from "sprintf-js";
 import { trans, trans_choice } from "laravel-vue-i18n";
 import { formatFocal, formatNumber } from "@/v8/utils/insights/format";
@@ -68,6 +68,12 @@ const props = defineProps<{
 const device = ref(ALL);
 const hovered = ref<number | undefined>(undefined);
 
+// A new scope or period brings a new device list: start again from all devices.
+watch(
+	() => props.perDevice,
+	() => (device.value = ALL),
+);
+
 const devices = computed(() => [
 	{ value: ALL, label: trans("insights.focal.all_devices") },
 	...props.perDevice.map((entry, i) => ({
@@ -82,7 +88,8 @@ function sum(values: number[]): number {
 
 /** The five most frequent focal lengths of the selection, shortest first (FR-085-18). */
 const cones = computed(() => {
-	const selection = device.value === ALL ? props.focal : props.perDevice[Number(device.value)];
+	// An index from before a reload may point past the new list: fall back to all devices.
+	const selection = (device.value === ALL ? undefined : props.perDevice[Number(device.value)]) ?? props.focal;
 	const top = selection.values
 		.map((focal, i) => ({ focal, photos: selection.counts[i] }))
 		.sort((a, b) => b.photos - a.photos || a.focal - b.focal)

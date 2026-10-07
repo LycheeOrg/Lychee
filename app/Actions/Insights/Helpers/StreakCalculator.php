@@ -33,7 +33,8 @@ final class StreakCalculator
 		}
 
 		$days = array_map(self::dayIndex(...), $dates);
-		$weeks = array_values(array_unique(array_map(fn (int $day) => intdiv($day + self::THURSDAY_OFFSET, 7), $days)));
+		// Floor division: days before 1970 are negative and intdiv() would round them towards zero.
+		$weeks = array_values(array_unique(array_map(fn (int $day) => intval(floor(($day + self::THURSDAY_OFFSET) / 7)), $days)));
 
 		return new StreakSummary(
 			days_with_photos: count($days),

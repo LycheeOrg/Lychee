@@ -6,7 +6,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| ~~Q-085-01~~ | 085 – Library insights | High | How does Insights relate to the Statistics page? (A replace it, storage panels become a section · B separate page next to it · C extend Statistics in place) | Resolved (Option A — Insights replaces Statistics; storage endpoints kept for the Storage section and album drawer; owner, 2026-10-05; spec FR-085-01 … FR-085-03, FR-085-07; ADR-085-01) | 2026-10-05 | 2026-10-05 |
+| ~~Q-085-01~~ | 085 – Library insights | High | How does Insights relate to the Statistics page? (A replace it, storage panels become a section · B separate page next to it · C extend Statistics in place) | Resolved (Option A — Insights replaces the v8 Statistics page; storage endpoints and `getCountsOverTime` kept, only `userSpace` removed; owner, 2026-10-05; spec FR-085-01 … FR-085-03, FR-085-07; ADR-085-01) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-02~~ | 085 – Library insights | High | Which UI versions get Insights? (A v8 only · B v7 and v8) | Resolved (Option A — v8 only; v7 keeps its Statistics page unchanged; owner, 2026-10-05 and 2026-10-07; spec Non-Goals, FR-085-01, FR-085-02; ADR-085-01) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-03~~ | 085 – Library insights | High | Whose photos does a view cover? (A own photos, admin can pick a user or the whole instance · B every photo the user can access · C own photos only, admin included) | Resolved (Option A — own photos, admin picks a user or whole instance; owner, 2026-10-05; spec FR-085-04, NFR-085-02; ADR-085-02) | 2026-10-05 | 2026-10-05 |
 | ~~Q-085-04~~ | 085 – Library insights | High | Edition gating? (A whole page SE, preview in core · B core basics, advanced sections SE · C everything core) | Resolved (Option A — whole page SE, preview in core; owner, 2026-10-05; spec FR-085-01) | 2026-10-05 | 2026-10-05 |
@@ -27,7 +27,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
 
 **Context:** The Statistics page (`/statistics`, SE) shows a size-variant meter, a punch-card calendar of `taken_at`/`created_at`, totals, and a per-album space table (`StatisticsController`, `Actions/Statistics/Spaces.php`, `Counts.php`). The reference dashboard from another famous photo app covers the calendar and totals and adds devices, exposure, rhythm, timeline, evolution and profile sections, but no storage-per-variant or per-album space.
 
-- **Option A (chosen):** Insights replaces the Statistics page. The size-variant meter and album space table move into a "Storage" section; the punch card becomes the Insights calendar heatmap. `/statistics` and its five endpoints are removed.
+- **Option A (chosen):** Insights replaces the Statistics page. The size-variant meter and album space table move into a "Storage" section; the punch card becomes the Insights calendar heatmap.
   - ✅ One page for "numbers about my library"; no duplicated calendar.
   - ❌ The space table's admin use (who uses disk) sits next to personal insights.
 - **Option B:** Separate Insights page; Statistics stays as the storage/admin page.
@@ -37,7 +37,7 @@ Open questions for [Feature 085](spec.md). Log every high- and medium-impact que
   - ✅ No new route or menu entry.
   - ❌ The page name undersells the content; same result as A with a weaker name.
 
-**Resolution:** Option A. `Statistics::sizeVariantSpace`, `::albumSpace` and `::totalAlbumSpace` stay because the album statistics drawer uses them; `::getCountsOverTime` and `::userSpace` are removed. Recorded in [spec.md](spec.md) FR-085-01 … FR-085-03, FR-085-07 and [ADR-085-01](../../../6-decisions/ADR-085-01-insights-replaces-statistics-page.md).
+**Resolution:** Option A, in v8: the v8 Statistics page is replaced by Insights. `Statistics::sizeVariantSpace`, `::albumSpace` and `::totalAlbumSpace` stay because the album statistics drawer and Insights use them; `::getCountsOverTime` stays for the v7 Statistics page (Q-085-02); only the unused `::userSpace` is removed. Recorded in [spec.md](spec.md) FR-085-01 … FR-085-03, FR-085-07 and [ADR-085-01](../../../6-decisions/ADR-085-01-insights-replaces-statistics-page.md).
 
 ### ~~Q-085-02~~ – UI versions
 

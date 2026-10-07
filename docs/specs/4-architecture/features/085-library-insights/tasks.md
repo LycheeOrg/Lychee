@@ -246,6 +246,12 @@ _Last updated: 2026-10-05_
 
 - [x] T-085-39 – Browser check: v7 Statistics page with punch card, no Insights entry; v8 unchanged.
 
+### I19 – Review fixes (PR #4848)
+
+- [x] T-085-40 – Address the CodeRabbit review (FR-085-09, FR-085-18, FR-085-20, FR-085-21, UI-085-05).  
+  _Intent:_ floor division for week indices before 1970 (`StreakCalculatorTest::testWeeksBefore1970`); Q-085-01 resolution matches the shipped endpoints; focal device selection falls back and resets on reload; space diagram ignores stale album-space responses; a failed Insights request shows an error instead of the endless loader.  
+  _Verification commands:_ `php artisan test --filter=StreakCalculatorTest`, `php artisan test --filter=LangTest`, `npm run check`, `make phpstan`, scratch-instance Playwright run (forced 422, device reset after a period change, delayed album-space response)
+
 ## Notes / TODOs
 - FR coverage: FR-085-01 (T-085-06/07, 16, 20), FR-085-02 (T-085-14/15, 21, 38), FR-085-03 (T-085-14, 17), FR-085-04 (T-085-06/07, 16), FR-085-05 (T-085-06/07, 16), FR-085-06 … 09 and 14 (T-085-08/09, 17), FR-085-10 … 13 (T-085-10/11, 18), FR-085-15 (T-085-01/02, 10/11).
 - Deletions in T-085-14 and T-085-21 wait for the owner's approval of the listed paths in the session that runs them.
