@@ -23,6 +23,7 @@ use App\Models\JobHistory;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
+use App\Services\Telemetry\TraceService;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -131,41 +132,45 @@ class ProcessImageJob implements ShouldQueue
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
 	 */
-	public function handle(AlbumFactory $album_factory): Photo
+	public function handle(AlbumFactory $album_factory, TraceService $trace): Photo
 	{
-		$this->history->status = JobStatus::STARTED;
-		$this->history->save();
-		Log::channel('jobs')->info($this->history->job);
+		return $trace->traceMethod('photo.process-execution', function () use ($album_factory, $trace) {
+			$trace->addEventWithMemToCurrentSpan('Process image');
 
-		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
+			$this->history->status = JobStatus::STARTED;
+			$this->history->save();
+			Log::channel('jobs')->info($this->history->job);
 
-		$config_manager = app(ConfigManager::class);
+			$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 
-		// As the file has been uploaded, the (temporary) source file shall be deleted
-		$create = new Create(
-			import_mode: new ImportMode(
-				delete_imported: true,
-				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
-			),
-			intended_owner_id: $this->user_id,
-			upload_trust_level: $this->upload_trust_level,
-			title: $this->title,
-			description: $this->description,
-			preallocated_id: $this->expected_id,
-		);
+			$config_manager = app(ConfigManager::class);
 
-		$album = null;
-		if ($this->album_id !== null) {
-			$album = $album_factory->findAbstractAlbumOrFail($this->album_id);
-		}
+			// As the file has been uploaded, the (temporary) source file shall be deleted
+			$create = new Create(
+				import_mode: new ImportMode(
+					delete_imported: true,
+					skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
+					shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
+				),
+				intended_owner_id: $this->user_id,
+				upload_trust_level: $this->upload_trust_level,
+				title: $this->title,
+				description: $this->description,
+				preallocated_id: $this->expected_id,
+			);
 
-		$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
+			$album = null;
+			if ($this->album_id !== null) {
+				$album = $album_factory->findAbstractAlbumOrFail($this->album_id);
+			}
 
-		// Once the job has finished, set history status to 1.
-		$this->history->status = JobStatus::SUCCESS;
-		$this->history->save();
+			$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
 
-		return $photo;
+			// Once the job has finished, set history status to 1.
+			$this->history->status = JobStatus::SUCCESS;
+			$this->history->save();
+
+			return $photo;
+		});
 	}
 }

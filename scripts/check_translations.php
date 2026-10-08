@@ -64,16 +64,12 @@ function checkFile(string $filename, array $languages, string $lang_dir): array
 			$report[] = "\n[$lang] Issues found:";
 			if (count($missing) > 0) {
 				$report[] = '  ❌ Missing ' . count($missing) . ' keys:';
-				foreach ($missing as $key) {
-					$report[] = "     - $key";
-				}
+				array_push($report, ...array_map(fn (string $key): string => "     - $key", $missing));
 				$all_missing[$lang] = $missing;
 			}
 			if (count($extra) > 0) {
 				$report[] = '  ⚠️  Extra ' . count($extra) . ' keys (not in English):';
-				foreach ($extra as $key) {
-					$report[] = "     + $key";
-				}
+				array_push($report, ...array_map(fn (string $key): string => "     + $key", $extra));
 			}
 		} else {
 			$report[] = "[$lang] ✅ All keys present (" . count($lang_keys) . ' keys)';

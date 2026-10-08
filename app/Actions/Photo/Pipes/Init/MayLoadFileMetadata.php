@@ -8,28 +8,32 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 
 /**
  * Load metadata from the file.
  */
-class MayLoadFileMetadata extends LoadFileMetadata implements InitPipe
+class MayLoadFileMetadata extends LoadFileMetadata
 {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->import_mode->shall_resync_metadata) {
 			// Load the metadata from the file
-			return parent::handle($state, $next);
+			return parent::execute($state, $next);
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.may_load_file_metadata';
 	}
 }
 

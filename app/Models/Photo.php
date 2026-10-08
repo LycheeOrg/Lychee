@@ -245,9 +245,12 @@ class Photo extends Model implements HasUTCBasedTimes
 		return $this->belongsTo(User::class, 'owner_id', 'id');
 	}
 
+	/**
+	 * @return HasManySizeVariants<SizeVariant>
+	 */
 	public function size_variants(): HasManySizeVariants
 	{
-		return new HasManySizeVariants($this);
+		return new HasManySizeVariants(SizeVariant::query(), $this);
 	}
 
 	/**
