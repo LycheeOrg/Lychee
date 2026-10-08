@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="is_upload_visible" :dismissible="true">
+	<UModal v-model:open="is_upload_visible" :dismissible="!showCancel" :close="!showCancel">
 		<template #body>
 			<div v-if="setup" class="w-full flex flex-col">
 				<div v-if="counts.files > 0" class="flex flex-wrap justify-center w-full">
@@ -27,21 +27,31 @@
 						"
 					/>
 				</div>
-				<div v-if="counts.files > 0" ref="listBox" class="w-full h-72 overflow-y-auto py-4 pr-3 flex flex-col gap-1">
-					<UploadingLine
-						v-for="(uploadable, index) in list_upload_files"
-						:key="uploadable.uid"
-						:file="uploadable.file"
-						:album-id="uploadable.album_id ?? albumId"
-						:album-title="uploadable.albumTitle"
-						:status="uploadable.status"
-						:message="uploadable.message"
-						:index="index"
-						:chunk-size="setup.upload_chunk_size"
-						:apply-watermark="applyWatermark"
-						:scroll-root="listBox"
-						@upload:completed="uploadCompleted"
-					/>
+				<div v-if="counts.files > 0" ref="listBox" class="w-full h-72 overflow-y-auto pr-3">
+					<div class="relative w-full" :style="{ height: `${totalSize}px` }">
+						<div
+							v-for="row in virtualRows"
+							:key="row.file.uid"
+							:ref="measureRow"
+							:data-index="row.index"
+							class="absolute top-0 inset-x-0"
+							:style="{ transform: `translateY(${row.start}px)` }"
+						>
+							<UploadingLine
+								:uid="row.file.uid"
+								:file="row.file.file"
+								:album-id="row.file.album_id ?? albumId"
+								:album-title="row.file.albumTitle"
+								:status="row.file.status"
+								:message="row.file.message"
+								:index="row.index"
+								:chunk-size="setup.upload_chunk_size"
+								:apply-watermark="applyWatermark"
+								:scroll-root="listBox"
+								@upload:completed="uploadCompleted"
+							/>
+						</div>
+					</div>
 				</div>
 				<div v-if="counts.files === 0" class="w-full flex flex-col items-center gap-4">
 					<div
@@ -93,13 +103,19 @@
 	</UModal>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, Ref, ref, useTemplateRef, watch } from "vue";
+import { type ComponentPublicInstance, computed, onMounted, onUnmounted, Ref, ref, useTemplateRef, watch } from "vue";
+import { defaultRangeExtractor, type Range, useVirtualizer } from "@tanstack/vue-virtual";
 import UploadingLine from "@/v8/components/forms/upload/UploadingLine.vue";
 import AlbumService from "@/services/album-service";
 import { useRandomId } from "@/composables/useRandomId";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { hasEnded, uploadingIndexes, withPinnedIndexes } from "@/v8/utils/uploadList";
+import { releaseUploadThumbnails } from "@/v8/utils/uploadThumbnail";
+
+/** Height of a row whose name and status fit on one line; actual heights are measured. */
+const ROW_ESTIMATE_PX = 36;
 
 const togglableStore = useTogglablesStateStore();
 const { is_upload_visible, list_upload_files, upload_config: setup } = storeToRefs(togglableStore);
@@ -124,12 +140,41 @@ const counts = computed(() => {
 	return {
 		files: list_upload_files.value.length,
 		waiting: list_upload_files.value.filter((f) => f.status === "waiting").length,
-		completed: list_upload_files.value.filter((f) => f.status === "done" || f.status === "error" || f.status === "warning").length,
+		completed: list_upload_files.value.filter((f) => hasEnded(f.status)).length,
 		uploading: list_upload_files.value.filter((f) => f.status === "uploading").length,
 		errors: list_upload_files.value.filter((f) => f.status === "error").length,
 		warnings: list_upload_files.value.filter((f) => f.status === "warning").length,
 	};
 });
+
+// Only rows near the visible part of the list are mounted (Feature 087). Each row runs its
+// own upload and reports through an event an unmounted row cannot emit, so running rows
+// are added to the range and stay mounted wherever the list is scrolled.
+const virtualizer = useVirtualizer(
+	computed(() => {
+		const pinned = uploadingIndexes(list_upload_files.value);
+		return {
+			count: list_upload_files.value.length,
+			getScrollElement: () => listBox.value,
+			estimateSize: () => ROW_ESTIMATE_PX,
+			overscan: 6,
+			gap: 4,
+			paddingStart: 16,
+			paddingEnd: 16,
+			getItemKey: (index: number) => list_upload_files.value[index].uid,
+			rangeExtractor: (range: Range) => withPinnedIndexes(defaultRangeExtractor(range), pinned),
+		};
+	}),
+);
+
+const totalSize = computed(() => virtualizer.value.getTotalSize());
+const virtualRows = computed(() =>
+	virtualizer.value.getVirtualItems().map((item) => ({ index: item.index, start: item.start, file: list_upload_files.value[item.index] })),
+);
+
+function measureRow(el: Element | ComponentPublicInstance | null) {
+	virtualizer.value.measureElement(el as Element | null);
+}
 
 function upload(event: Event) {
 	// countCompleted.value = 0;
@@ -167,7 +212,7 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 	}
 
 	if (lastIdx !== -1) {
-		document.getElementById(`upload${lastIdx}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+		virtualizer.value.scrollToIndex(lastIdx, { align: "center", behavior: "smooth" });
 	}
 }
 
@@ -193,16 +238,21 @@ function uploadCompleted(index: number, status: "done" | "error" | "warning", me
 	}
 }
 
+function clearList() {
+	list_upload_files.value = [];
+	releaseUploadThumbnails();
+}
+
 function cancel() {
 	is_upload_visible.value = false;
-	list_upload_files.value = [];
+	clearList();
 	applyWatermark.value = true;
 	AlbumService.clearCache(albumId.value ?? "unsorted");
 	emits("refresh");
 }
 
 function close() {
-	list_upload_files.value = [];
+	clearList();
 	is_upload_visible.value = false;
 	applyWatermark.value = true;
 }
@@ -224,7 +274,7 @@ watch(
 	(newAlbumId, _oldAlbumId) => {
 		albumId.value = newAlbumId as string | null;
 		if (!is_upload_visible.value) {
-			list_upload_files.value = [];
+			clearList();
 		}
 	},
 );

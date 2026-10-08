@@ -25,9 +25,19 @@ import { AxiosError, type AxiosProgressEvent } from "axios";
 import { trans } from "laravel-vue-i18n";
 import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
-import { createUploadThumbnail, enqueueThumbnail, shouldDecode, uploadPlaceholderIcon } from "@/v8/utils/uploadThumbnail";
+import {
+	createUploadThumbnail,
+	enqueueThumbnail,
+	keepUploadThumbnail,
+	keptUploadThumbnail,
+	shouldDecode,
+	uploadListGeneration,
+	uploadPlaceholderIcon,
+} from "@/v8/utils/uploadThumbnail";
+import { hasEnded } from "@/v8/utils/uploadList";
 
 type UploadingLineProps = {
+	uid: string;
 	albumId: string | null;
 	albumTitle?: string;
 	file: File;
@@ -65,9 +75,10 @@ const meta = ref({
 const controller = ref(new AbortController());
 const errorMessage = ref<string | undefined>(undefined);
 
-// Miniature (Feature 077): built once the row nears the visible part of the list.
+// Miniature (Feature 077): built once the row nears the visible part of the list,
+// then kept by uid until the list is cleared, as the row unmounts when scrolled away (Feature 087).
 const thumbBox = useTemplateRef<HTMLDivElement>("thumbBox");
-const thumbUrl = ref<string | undefined>(undefined);
+const thumbUrl = ref<string | undefined>(keptUploadThumbnail(props.uid));
 const placeholderIcon = ref(uploadPlaceholderIcon(file.value.type));
 let cancelThumbnail = () => {};
 let unmounted = false;
@@ -80,19 +91,20 @@ const { stop: stopObserving } = useIntersectionObserver(
 		}
 		stopObserving();
 		if (shouldDecode(file.value.type)) {
-			cancelThumbnail = enqueueThumbnail(() => createUploadThumbnail(file.value).then(onThumbnailReady, onThumbnailFailed));
+			const generation = uploadListGeneration();
+			cancelThumbnail = enqueueThumbnail(() =>
+				createUploadThumbnail(file.value).then((url) => onThumbnailReady(url, generation), onThumbnailFailed),
+			);
 		}
 	},
 	// The list scrolls inside its own box: observe against it so the margin applies there.
-	{ root: () => props.scrollRoot, rootMargin: "200px" },
+	{ root: () => props.scrollRoot, rootMargin: "200px", immediate: thumbUrl.value === undefined },
 );
 
-function onThumbnailReady(url: string) {
-	if (unmounted) {
-		URL.revokeObjectURL(url);
-		return;
+function onThumbnailReady(url: string, generation: number) {
+	if (keepUploadThumbnail(props.uid, url, generation) && !unmounted) {
+		thumbUrl.value = url;
 	}
-	thumbUrl.value = url;
 }
 
 function onThumbnailFailed() {
@@ -102,9 +114,6 @@ function onThumbnailFailed() {
 onUnmounted(() => {
 	unmounted = true;
 	cancelThumbnail();
-	if (thumbUrl.value !== undefined) {
-		URL.revokeObjectURL(thumbUrl.value);
-	}
 });
 
 // prettier-ignore
@@ -138,7 +147,8 @@ const statusClass = computed(() => {
 	}
 });
 
-const progressBar = computed(() => (status.value === "done" ? 100 : progress.value));
+// A row mounted after its upload ended has no local progress (Feature 087).
+const progressBar = computed(() => (hasEnded(status.value) ? 100 : progress.value));
 // prettier-ignore
 const progressColor = computed<"success" | "warning" | "error" | "primary">(() => {
 	switch (status.value) {

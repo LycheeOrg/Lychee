@@ -5,6 +5,9 @@
  * as a blob object URL of a few KB, so hundreds of queued photos never hold their
  * full-size bitmaps. Decodes go through a shared queue so at most
  * MAX_CONCURRENT_DECODES full-size bitmaps exist at any time.
+ *
+ * The list is virtualized (Feature 087): rows unmount when scrolled away, so built
+ * miniatures are kept here by `Uploadable.uid` until the list is cleared.
  */
 
 export type UploadPlaceholderIcon = "lucide:image" | "lucide:video" | "lucide:file";
@@ -17,6 +20,38 @@ type ThumbnailJob = () => Promise<unknown>;
 
 const pending: ThumbnailJob[] = [];
 let running = 0;
+
+const kept = new Map<string, string>();
+/** Bumped on each release, so a decode queued before it revokes its URL instead of keeping it. */
+let listGeneration = 0;
+
+export function keptUploadThumbnail(uid: string): string | undefined {
+	return kept.get(uid);
+}
+
+export function uploadListGeneration(): number {
+	return listGeneration;
+}
+
+/**
+ * Keeps the miniature of a queued file until the list is cleared.
+ * Returns false, after revoking the URL, when the list was cleared since `generation`.
+ */
+export function keepUploadThumbnail(uid: string, url: string, generation: number): boolean {
+	if (generation !== listGeneration) {
+		URL.revokeObjectURL(url);
+		return false;
+	}
+	kept.set(uid, url);
+	return true;
+}
+
+/** Called when the upload list is cleared. */
+export function releaseUploadThumbnails(): void {
+	kept.forEach((url) => URL.revokeObjectURL(url));
+	kept.clear();
+	listGeneration++;
+}
 
 export function uploadPlaceholderIcon(mime: string): UploadPlaceholderIcon {
 	if (mime.startsWith("image/")) {
