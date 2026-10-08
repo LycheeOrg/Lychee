@@ -17,7 +17,7 @@ import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 
 const data = ref<number | undefined>(undefined);

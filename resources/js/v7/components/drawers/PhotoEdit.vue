@@ -111,7 +111,7 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import TagsInput from "@/v7/components/forms/basic/TagsInput.vue";

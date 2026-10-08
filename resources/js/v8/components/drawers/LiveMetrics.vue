@@ -63,7 +63,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { watch } from "vue";

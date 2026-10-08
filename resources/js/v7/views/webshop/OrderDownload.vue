@@ -214,7 +214,7 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import GoBack from "@/v7/components/headers/GoBack.vue";
 
 const props = defineProps<{

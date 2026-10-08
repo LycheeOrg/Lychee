@@ -100,7 +100,7 @@ import { AugmentedAlbum, useTreeOperations } from "@/composables/album/treeOpera
 import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/v7/components/maintenance/FixTreeLine.vue";
 import LoadingProgress from "@/v7/components/loading/LoadingProgress.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 
 const albums = ref<AugmentedAlbum[] | undefined>(undefined);

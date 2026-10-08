@@ -152,7 +152,7 @@ import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const props = defineProps<{
 	albumId?: string;

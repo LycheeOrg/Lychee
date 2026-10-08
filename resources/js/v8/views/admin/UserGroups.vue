@@ -113,7 +113,7 @@ import DeleteUserGroupDialog from "@/v8/components/forms/group/DeleteUserGroupDi
 import UsersService from "@/services/users-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const toast = useAppToast();
 

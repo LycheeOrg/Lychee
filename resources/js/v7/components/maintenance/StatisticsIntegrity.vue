@@ -36,7 +36,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const data = ref<App.Http.Resources.Diagnostics.StatisticsCheckResource | undefined>(undefined);
 const loading = ref(false);

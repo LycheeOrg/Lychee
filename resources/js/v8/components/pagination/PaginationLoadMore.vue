@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{

@@ -27,7 +27,7 @@
 import UserManagementService from "@/services/user-management-service";
 import { trans } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref } from "vue";
 import { Ref } from "vue";
 

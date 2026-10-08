@@ -87,7 +87,7 @@ import { useUserStore } from "@/stores/UserState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const userStore = useUserStore();
 const router = useRouter();

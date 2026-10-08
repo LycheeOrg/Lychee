@@ -12,7 +12,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans, trans_choice } from "laravel-vue-i18n";
 import { useInsightsTheme } from "@/v8/composables/insights/useInsightsTheme";
 import { useLtRorRtL } from "@/utils/Helpers";
