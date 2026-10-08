@@ -82,7 +82,7 @@ import { trans } from "laravel-vue-i18n";
 import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@/config/constants";
 import PhotoService from "@/services/photo-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import TagsInput from "@/v8/components/forms/basic/TagsInput.vue";

@@ -28,7 +28,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AlbumService from "@/services/album-service";
 import { useAlbumListStore } from "@/stores/AlbumListState";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import SearchTargetUser from "@/v8/components/forms/album/SearchTargetUser.vue";
 import { type UserOrGroup } from "@/stores/UsersAndGroupsState";
 import { useAlbumStore } from "@/stores/AlbumState";

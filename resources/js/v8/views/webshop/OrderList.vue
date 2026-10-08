@@ -52,7 +52,7 @@ import TransactionIdLink from "@/v8/components/webshop/TransactionIdLink.vue";
 import OrderStatus from "@/v8/components/webshop/OrderStatus.vue";
 import OrderDate from "@/v8/components/webshop/OrderDate.vue";
 import OrderListAction from "@/v8/components/webshop/OrderListAction.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 

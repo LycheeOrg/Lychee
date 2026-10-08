@@ -40,7 +40,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import Button from "primevue/button";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import InputText from "@/v7/components/forms/basic/InputText.vue";
 
 const modelValue = defineModel<string>({ default: "" });

@@ -518,7 +518,7 @@ trans('gallery.album.create')
 
 ### Utilities
 - **QR Code** generation for sharing
-- **sprintf-js** for string formatting
+- **sprintf** (`@/utils/sprintf`): in-house, `sprintf-js`-compatible string formatting
 - **VueUse** for composition utilities
 
 ## Lychee-Specific Conventions

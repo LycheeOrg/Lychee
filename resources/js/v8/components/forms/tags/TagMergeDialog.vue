@@ -30,7 +30,7 @@
 	</UModal>
 </template>
 <script setup lang="ts">
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import TagsService from "@/services/tags-service";

@@ -167,7 +167,7 @@ import LeftWarn from "@/v8/components/maintenance/mini/LeftWarn.vue";
 import RightWarn from "@/v8/components/maintenance/mini/RightWarn.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import ScrollTop from "@/v8/components/ScrollTop.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 import { useLtRorRtL } from "@/utils/Helpers";
 

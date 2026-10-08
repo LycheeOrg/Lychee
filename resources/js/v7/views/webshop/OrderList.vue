@@ -79,7 +79,7 @@ import UsernameEmail from "@/v7/components/webshop/UsernameEmail.vue";
 import TransactionIdLink from "@/v7/components/webshop/TransactionIdLink.vue";
 import OrderDate from "@/v7/components/webshop/OrderDate.vue";
 import OrderListAction from "@/v7/components/webshop/OrderListAction.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const router = useRouter();
 const toast = useToast();

@@ -93,7 +93,7 @@ import CarouselImages from "./CarouselImages.vue";
 import AlbumStatistics from "@/v7/components/gallery/albumModule/AlbumStatistics.vue";
 import { ref } from "vue";
 import MiniIcon from "@/v7/components/icons/MiniIcon.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useLtRorRtL } from "@/utils/Helpers";
 
 const { isLTR } = useLtRorRtL();

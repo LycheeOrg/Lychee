@@ -119,7 +119,7 @@ import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useUserStore } from "@/stores/UserState";
 
 const emits = defineEmits<{

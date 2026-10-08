@@ -24,7 +24,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import SearchTargetAlbum from "@/v8/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";

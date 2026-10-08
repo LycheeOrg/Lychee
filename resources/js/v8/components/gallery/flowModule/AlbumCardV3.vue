@@ -126,7 +126,7 @@ import Blur from "./Blur.vue";
 import AlbumCardSkeletonV3 from "./AlbumCardSkeletonV3.vue";
 import AlbumStatistics from "@/v8/components/gallery/albumModule/AlbumStatistics.vue";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useFlowStateStore } from "@/stores/FlowState";
 import { storeToRefs } from "pinia";

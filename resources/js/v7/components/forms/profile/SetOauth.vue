@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import OauthService from "@/services/oauth-service";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { computed, ref } from "vue";
 import Fieldset from "@/v7/components/forms/basic/Fieldset.vue";
 

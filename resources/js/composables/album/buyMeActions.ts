@@ -4,7 +4,7 @@ import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { PhotosStore } from "@/stores/PhotosState";
 import WebshopService from "@/services/webshop-service";
 

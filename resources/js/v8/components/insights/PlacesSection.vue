@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import { formatNumber, formatPercent } from "@/v8/utils/insights/format";
 import InsightsSection from "./InsightsSection.vue";
