@@ -289,7 +289,7 @@ function convert(ph: Placeholder, arg: unknown): string {
 		default:
 			return convertNumber(ph, arg);
 	}
-	if (ph.precision >= 0) {
+	if (ph.precision > 0) {
 		value = value.substring(0, ph.precision);
 	}
 	return pad(ph, "", value);
