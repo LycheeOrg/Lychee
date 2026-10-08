@@ -17,11 +17,11 @@
 					<Button
 						severity="contrast"
 						class="font-bold w-full border-none rounded-none rounded-br-xl"
+						:label="$t('dialogs.unlock.unlock')"
 						:disabled="!deactivate"
+						:loading="isUnlocking"
 						@click="unlock"
-					>
-						{{ $t("dialogs.unlock.unlock") }}
-					</Button>
+					/>
 				</div>
 			</div>
 		</template>
@@ -51,16 +51,25 @@ const albumId = computed(() => albumStore.albumId);
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);
 const invalidPassword = ref(false);
+// True from submitting the password until the dialog closes or the unlock fails.
+const isUnlocking = ref(false);
 
 watch(password, () => {
 	invalidPassword.value = false;
 });
 
+watch(visible, (isVisible) => {
+	if (isVisible) {
+		isUnlocking.value = false;
+	}
+});
+
 function unlock() {
-	if (albumId.value === undefined || password.value === undefined) {
+	if (albumId.value === undefined || password.value === undefined || isUnlocking.value) {
 		return;
 	}
 
+	isUnlocking.value = true;
 	AlbumService.unlock(albumId.value, password.value)
 		.then((_response) => {
 			AlbumService.clearAlbums();
@@ -69,6 +78,7 @@ function unlock() {
 			emits("reload");
 		})
 		.catch((error) => {
+			isUnlocking.value = false;
 			if (error.response && error.response.status === 403) {
 				invalidPassword.value = true;
 				return;

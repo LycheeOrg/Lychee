@@ -12,7 +12,14 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="hide">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="primary" variant="solid" class="flex-1 justify-center font-bold" :disabled="!deactivate" @click="unlock">
+				<UButton
+					color="primary"
+					variant="solid"
+					class="flex-1 justify-center font-bold"
+					:disabled="!deactivate"
+					:loading="isUnlocking"
+					@click="unlock"
+				>
 					{{ $t("dialogs.unlock.unlock") }}
 				</UButton>
 			</div>
@@ -41,16 +48,25 @@ const albumId = computed(() => albumStore.albumId);
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);
 const invalidPassword = ref(false);
+// True from submitting the password until the dialog closes or the unlock fails.
+const isUnlocking = ref(false);
 
 watch(password, () => {
 	invalidPassword.value = false;
 });
 
+watch(visible, (isVisible) => {
+	if (isVisible) {
+		isUnlocking.value = false;
+	}
+});
+
 function unlock() {
-	if (albumId.value === undefined || password.value === undefined) {
+	if (albumId.value === undefined || password.value === undefined || isUnlocking.value) {
 		return;
 	}
 
+	isUnlocking.value = true;
 	AlbumService.unlock(albumId.value, password.value)
 		.then((_response) => {
 			AlbumService.clearAlbums();
@@ -60,6 +76,7 @@ function unlock() {
 			emits("reload");
 		})
 		.catch((error) => {
+			isUnlocking.value = false;
 			if (error.response && error.response.status === 403) {
 				invalidPassword.value = true;
 				return;
