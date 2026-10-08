@@ -8,11 +8,13 @@
 		}"
 		:style="boxStyle"
 		:data-photo-id="props.photo.id"
+		data-drag-select-start="true"
 		@mouseenter="prefetchFaces"
 	>
 		<span class="thumbimg block relative w-full h-full border-none overflow-hidden">
 			<Thumb
 				class="thumb-image absolute w-full h-full top-0 left-0 object-cover object-center"
+				draggable="false"
 				:album-id="props.albumId"
 				:photo-id="props.photo.id"
 				type="small2x"
@@ -61,7 +63,7 @@
 			v-if="props.photo.precomputed.is_video"
 			class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300 flex justify-center items-center"
 		>
-			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
+			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" draggable="false" />
 		</div>
 		<!-- Touch select mode indicator -->
 		<div

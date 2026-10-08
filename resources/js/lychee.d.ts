@@ -1536,6 +1536,7 @@ declare namespace App {
 						title_color: App.Enum.AlbumTitleColor | null;
 						title_position: App.Enum.AlbumTitlePosition | null;
 						header_photo_focus: App.Http.Resources.Models.Utils.HeaderFocusData | null;
+						is_map_header: boolean;
 					};
 					export type PreformattedPhotoData = {
 						created_at: string;
@@ -2040,6 +2041,12 @@ declare namespace App {
 					album_ids: (string | null)[];
 					titles: string[];
 					taken_ats: (string | null)[];
+					latitudes: number[];
+					longitudes: number[];
+				};
+				export type MapPointResource = {
+					ids: string[];
+					album_ids: (string | null)[];
 					latitudes: number[];
 					longitudes: number[];
 				};

@@ -14,6 +14,7 @@
 			'opacity-25! ': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
+		data-drag-select-start="true"
 	>
 		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
 		<AlbumThumbImage

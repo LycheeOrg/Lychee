@@ -226,6 +226,7 @@ return [
             'header' => 'Establecer el encabezado del álbum',
             'cover' => 'Set album cover',
             'compact_header' => 'Utilice un encabezado compacto',
+            'map_header' => 'Utilice un mapa como encabezado',
             'license' => 'Establecer licencia',
             'copyright' => 'Establecer derechos de autor',
             'aspect_ratio' => 'Establecer la relación de aspecto de las miniaturas del álbum',

@@ -4,6 +4,12 @@
 		:album="albumStore.album"
 		@scroll-to-pictures="emits('scrollToPictures')"
 	/>
+	<AlbumMapHeader
+		v-else-if="albumStore.album && albumStore.album.preFormattedData.is_map_header"
+		:key="`map_header_${albumStore.album.id}`"
+		:album-id="albumStore.album.id"
+		:tracks="albumStore.modelAlbum?.tracks ?? []"
+	/>
 	<UCard
 		class="w-full"
 		v-if="albumStore.album"
@@ -179,7 +185,7 @@ import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import { computed, ref, watch } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import AlbumStatistics from "./AlbumStatistics.vue";
 import AlbumPeopleFilter from "./AlbumPeopleFilter.vue";
 import { useGlobalRights } from "@/composables/useGlobalRights";
@@ -188,6 +194,9 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import AlbumHeaderPanel from "./AlbumHeaderPanel.vue";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
+
+// Feature 086: Leaflet only loads for albums whose header is a map (NFR-086-05).
+const AlbumMapHeader = defineAsyncComponent(() => import("./AlbumMapHeader.vue"));
 
 const userStore = useUserStore();
 const { rights } = useGlobalRights();

@@ -6,6 +6,7 @@
 		}"
 		:style="boxStyle"
 		:data-photo-id="photo.id"
+		data-drag-select-start="true"
 		:aria-label="ariaLabel"
 		role="row"
 		tabindex="0"
@@ -15,7 +16,7 @@
 	>
 		<!-- Thumbnail -->
 		<div class="relative block shrink-0 w-12 h-12 md:w-16 md:h-16">
-			<Thumb class="w-full h-full object-cover object-center rounded" :album-id="albumId" :photo-id="photo.id" type="thumb" />
+			<Thumb class="w-full h-full object-cover object-center rounded" :album-id="albumId" :photo-id="photo.id" type="thumb" draggable="false" />
 			<!-- Video play icon overlay -->
 			<div v-if="photo.precomputed.is_video" class="absolute inset-0 flex items-center justify-center">
 				<UIcon name="lucide:play-circle" class="text-white text-xl drop-shadow-lg" />

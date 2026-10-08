@@ -55,6 +55,7 @@
 						<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
 							<template #item-leading="{ item }">
 								<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
+								<UIcon v-else-if="item.id === 'map'" name="lucide:map" />
 								<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
 							</template>
 						</USelectMenu>
@@ -368,6 +369,9 @@ const headersOptions = computed(() => {
 			title: trans("gallery.album.properties.compact_header"),
 		},
 	];
+	if (albumStore.config?.is_map_accessible === true || header_id.value?.id === "map") {
+		list.push({ id: "map", title: trans("gallery.album.properties.map_header") });
+	}
 	list.push(
 		...photosStore.photos.map((photo) => ({
 			id: photo.id,
@@ -384,6 +388,9 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 	}
 	if (value === "compact") {
 		return { id: "compact" };
+	}
+	if (value === "map") {
+		return { id: "map", title: trans("gallery.album.properties.map_header") };
 	}
 	const photo = photos.find((photo) => photo.id === value);
 	if (photo === undefined) {
@@ -501,9 +508,10 @@ function saveAlbum() {
 		album_aspect_ratio: aspectRatio.value?.value ?? null,
 		copyright: copyright.value ?? null,
 		tags: tags.value,
-		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
+		header_id: header_id.value?.id === "compact" || header_id.value?.id === "map" ? null : (header_id.value?.id ?? null),
 		cover_id: cover_id.value?.id ?? null,
 		is_compact: header_id.value?.id === "compact",
+		is_map_header: header_id.value?.id === "map",
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,

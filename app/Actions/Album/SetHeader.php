@@ -22,13 +22,14 @@ class SetHeader
 	 * @param bool   $is_compact
 	 * @param ?Photo $photo
 	 * @param bool   $shall_override
+	 * @param bool   $is_map         use the map of the album's photos as header (Feature 086)
 	 *
 	 * @return Album
 	 */
-	public function do(Album $album, bool $is_compact, ?Photo $photo, bool $shall_override = false): Album
+	public function do(Album $album, bool $is_compact, ?Photo $photo, bool $shall_override = false, bool $is_map = false): Album
 	{
-		if ($is_compact) {
-			$album->header_id = AlbumController::COMPACT_HEADER;
+		if ($is_compact || $is_map) {
+			$album->header_id = $is_map ? AlbumController::MAP_HEADER : AlbumController::COMPACT_HEADER;
 			$album->header_photo_focus = null;
 		} else {
 			$old_header_id = $album->header_id;

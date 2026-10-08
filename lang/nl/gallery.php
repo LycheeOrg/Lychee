@@ -226,6 +226,7 @@ return [
             'header' => 'Stel albumkop in',
             'cover' => 'Set album cover',
             'compact_header' => 'Gebruik compacte kop',
+            'map_header' => 'Gebruik kaart als kop',
             'license' => 'Stel licentie in',
             'copyright' => 'Stel auteursrecht in',
             'aspect_ratio' => 'Stel album miniatuurverhouding in',

@@ -478,6 +478,8 @@ const photoCallbacks = {
 		}
 		// Update the header image URL in the album's preFormattedData
 		if (albumStore.album.preFormattedData) {
+			// A photo header (or its toggle-off) always replaces the map header (Feature 086).
+			albumStore.album.preFormattedData.is_map_header = false;
 			if (isToggleOff) {
 				albumStore.album.preFormattedData.url = null;
 			} else {

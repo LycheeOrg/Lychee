@@ -226,6 +226,7 @@ return [
             'header' => 'تعيين رأس الألبوم',
             'cover' => 'Set album cover',
             'compact_header' => 'استخدام رأس مدمج',
+            'map_header' => 'استخدام الخريطة كرأس',
             'license' => 'تعيين الترخيص',
             'copyright' => 'تعيين حقوق الطبع والنشر',
             'aspect_ratio' => 'تعيين نسبة عرض إلى ارتفاع مصغرات الألبوم',

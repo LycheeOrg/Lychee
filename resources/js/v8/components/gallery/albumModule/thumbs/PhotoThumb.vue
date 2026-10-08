@@ -9,6 +9,7 @@
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
 		:data-photo-id="props.photo.id"
+		data-drag-select-start="true"
 		@mouseenter="prefetchFaces"
 	>
 		<span
@@ -83,7 +84,7 @@
 			v-if="props.photo.precomputed.is_video"
 			class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300 flex justify-center items-center"
 		>
-			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
+			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" draggable="false" />
 		</div>
 		<!-- Touch select mode indicator -->
 		<div

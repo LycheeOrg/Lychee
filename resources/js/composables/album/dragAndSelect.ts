@@ -1,5 +1,5 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "./albumActions";
@@ -79,11 +79,19 @@ export function useDragAndSelect(
 		return document.getElementById("galleryView")?.scrollTop ?? 0;
 	}
 
-	// Convert the pageY coordinate (from e.g. mouse event) to the "real"
+	// Convert a viewport y coordinate (a bounding rect's `top`) to the "real"
 	// y coordinate in the gallery view.
 	// y = 0 is the top of the gallery view, not the top of the page.
-	function y(pageY: number): number {
-		return pageY + scrollFromTop() - paddingTop();
+	function y(top: number): number {
+		return top + scrollFromTop() - paddingTop();
+	}
+
+	// The pointer's y in the gallery view, where `#selector` is absolutely positioned.
+	function pointerY(e: MouseEvent): number {
+		// Without scroll handling (root gallery), the gallery view starts at the top of the page.
+		if (withScroll === false) return e.pageY;
+		// `clientY`, not `pageY`: when the window scrolls (v8), `paddingTop()` already moves with it.
+		return y(e.clientY);
 	}
 
 	// Resize the selection box based on mouse position.
@@ -92,7 +100,7 @@ export function useDragAndSelect(
 		togglableStore.isDragging = true;
 
 		const diffX = e.pageX - initialPosition.value.left;
-		const diffY = y(e.pageY) - initialPosition.value.top;
+		const diffY = pointerY(e) - initialPosition.value.top;
 
 		position.value = {
 			left: diffX < 0 ? initialPosition.value.left + diffX + "px" : initialPosition.value.left + "px",
@@ -131,19 +139,83 @@ export function useDragAndSelect(
 		return true;
 	}
 
+	const INTERACTIVE_SELECTORS =
+		"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
+
 	function isInteractiveTarget(target: EventTarget | null): boolean {
-		if (!(target instanceof HTMLElement)) return false;
+		// `Element`, not `HTMLElement`: SVG targets (icons, map track lines) must resolve their ancestors too.
+		if (!(target instanceof Element)) return false;
 		if (target.closest("[data-stop-drag-select='true']")) return true;
-		const interactiveSelectors =
-			"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
-		return target.closest(interactiveSelectors) !== null;
+		return target.closest(INTERACTIVE_SELECTORS) !== null;
 	}
 
+	/**
+	 * A tile opted in with `data-drag-select-start` (v8 photos) starts the
+	 * selection too, unless the press lands on a control inside it.
+	 */
+	function isDragStartTile(target: EventTarget | null): boolean {
+		if (!(target instanceof Element)) return false;
+		const tile = target.closest("[data-drag-select-start='true']");
+		if (tile === null || target.closest("[data-stop-drag-select='true']")) return false;
+		const interactive = target.closest(INTERACTIVE_SELECTORS);
+		return interactive === null || interactive === tile;
+	}
+
+	// A press on a tile only becomes a drag after this much movement, so a click stays a click.
+	const TILE_DRAG_THRESHOLD_PX = 4;
+	let tilePress: MouseEvent | undefined = undefined;
+	let swallowNextClick = false;
+
 	function show(e: MouseEvent) {
-		if (!canStart(e) || isInteractiveTarget(e.target)) {
+		if (!canStart(e)) {
 			return;
 		}
+		if (isDragStartTile(e.target)) {
+			waitForTileDrag(e);
+			return;
+		}
+		if (isInteractiveTarget(e.target)) {
+			return;
+		}
+		start(e);
+	}
 
+	/**
+	 * Opted-in tiles are links and images, which the browser drags natively:
+	 * that would swallow the mouse events the selection needs.
+	 */
+	function preventNativeTileDrag(e: DragEvent) {
+		if (isDragStartTile(e.target)) {
+			e.preventDefault();
+		}
+	}
+
+	function waitForTileDrag(e: MouseEvent) {
+		tilePress = e;
+		document.addEventListener("mousemove", startOnceMoved);
+		document.addEventListener("mouseup", cancelTileDrag);
+	}
+
+	function startOnceMoved(e: MouseEvent) {
+		const press = tilePress;
+		if (press === undefined || Math.hypot(e.clientX - press.clientX, e.clientY - press.clientY) < TILE_DRAG_THRESHOLD_PX) {
+			return;
+		}
+		cancelTileDrag();
+		// The click ending this drag lands on the tile: it must not open it.
+		swallowNextClick = true;
+		start(press);
+		// `applySelection()` measures `#selector`, which renders on the next tick.
+		void nextTick(() => resize(e));
+	}
+
+	function cancelTileDrag() {
+		tilePress = undefined;
+		document.removeEventListener("mousemove", startOnceMoved);
+		document.removeEventListener("mouseup", cancelTileDrag);
+	}
+
+	function start(e: MouseEvent) {
 		// If we do not have the shift or control key pressed, erase the selection immediately.
 		if (!modKey().value && !shiftKeyState.value) {
 			togglableStore.selectedPhotosIds = [];
@@ -160,11 +232,11 @@ export function useDragAndSelect(
 		cache.currentAlbumSelectionIds = togglableStore.selectedAlbumsIds.slice();
 
 		initialPosition.value = {
-			top: y(e.pageY),
+			top: pointerY(e),
 			left: e.pageX,
 		};
 		position.value = {
-			top: y(e.pageY),
+			top: pointerY(e),
 			left: e.pageX,
 		};
 		document.addEventListener("mousemove", resize);
@@ -174,9 +246,31 @@ export function useDragAndSelect(
 	function stopResize() {
 		document.removeEventListener("mousemove", resize);
 		document.removeEventListener("mouseup", stopResize);
+		// The throttle drops trailing calls and measures the previous frame's `#selector`:
+		// apply the final rectangle once more, now that it is rendered.
+		if (togglableStore.isDragging) {
+			applySelection();
+		}
 		initialPosition.value = undefined;
 		position.value = undefined;
 		togglableStore.isDragging = false;
+		if (swallowNextClick) {
+			swallowNextClick = false;
+			swallowClick();
+		}
+	}
+
+	/**
+	 * The click follows this mouseup in the same task; the timeout drops the
+	 * listener when no click comes (button released outside the window).
+	 */
+	function swallowClick() {
+		const swallow = (e: MouseEvent) => {
+			e.stopPropagation();
+			e.preventDefault();
+		};
+		window.addEventListener("click", swallow, { capture: true, once: true });
+		setTimeout(() => window.removeEventListener("click", swallow, { capture: true }), 0);
 	}
 
 	function getBounding(e: HTMLElement, id: string): Bounding {
@@ -461,5 +555,6 @@ export function useDragAndSelect(
 		initialPosition,
 		position,
 		show,
+		preventNativeTileDrag,
 	};
 }

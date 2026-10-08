@@ -226,6 +226,7 @@ return [
             'header' => 'Définir l’en-tête de l’album',
             'cover' => 'Set album cover',
             'compact_header' => 'Utiliser un en-tête compact',
+            'map_header' => 'Utiliser une carte comme en-tête',
             'license' => 'Définir la licence',
             'copyright' => 'Définir le copyright',
             'aspect_ratio' => 'Définir le ratio des miniatures',

@@ -244,6 +244,10 @@ _Last updated: 2026-09-03_
   _Verification commands:_ `make phpstan` (0 errors); `vendor/bin/php-cs-fixer fix --dry-run` (clean); `php artisan test --filter="Feature_v2\\Album\\AlbumsTest"` (5/5 green, confirms no v2 regression).
 - [x] T-063-58 – `AlbumService.clearAlbums()`: extend the enumerable cache-id list with every new v3 root-listing entry (`albums_v3_tags`, `albums_v3_tags_rights`, `albums_v3_persons_${scope}`, `albums_v3_pinned_${scope}`, `albums_v3_root_buckets_${scope}`, `albums_v3_root_${scope}`, `albums_v3_root_rights_${scope}` for each of `own`/`shared`) (FR-063-23 widened).
   _Verification commands:_ `npm run check`; `npm run format`.
+- [x] T-063-60 – Pinned section headers of `AlbumThumbGridVirtual.vue`, `AlbumListViewVirtual.vue`, `AlbumRootGridVirtual.vue`, `AlbumRootListViewVirtual.vue` bleed across their wrapper's `px-4 sm:px-6` padding so the blurred band touches the column edges and the date scrubber; labels keep the grid's left edge (UI-063-01, UI-063-03).
+  _Verification commands:_ `npm run format`; `npm run check`; scratch Playwright check: pinned band edges equal the column edges.
+- [x] T-063-61 – Drag selection starts on album tiles (UI-063-15): `AlbumThumb.vue`, `AlbumThumbVirtual.vue` roots and `AlbumListItem.vue`, `AlbumListItemVirtual.vue` rows and inner links carry `data-drag-select-start="true"`; v8 `SelectDrag.vue` cancels the native `dragstart` of opted-in tiles.
+  _Verification commands:_ `npm run format`; `npm run check`; scratch Playwright check (reproduced first): drag from an album selects albums on the sub-album grid and the root gallery, plain click opens, Ctrl+click toggles, no album opens after a drag.
 - [ ] T-063-59 – Manual verification: S-063-33..40 (own/shared root virtualized grids at scale, simultaneous mounting, sticky owner-name headers, root rights combination, tag rights, person/pinned display, cross-grid drag-select, flag-off parity).
   _Verification commands:_ Manual browser check, flag on and off. **Not yet run — no dev server/database available this session.**
 

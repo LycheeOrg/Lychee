@@ -5,6 +5,7 @@ import Constants from "./constants";
 export type MapBucketResource = App.Http.Resources.V3.MapBucketResource;
 export type MapPhotoResource = App.Http.Resources.V3.MapPhotoResource;
 export type MapTrackResource = App.Http.Resources.Models.TrackResource;
+export type MapPointResource = App.Http.Resources.V3.MapPointResource;
 
 export type MapViewportParams = {
 	north: number;
@@ -59,6 +60,19 @@ const MapV3Service = {
 		return requester.get(`${Constants.getApiUrlV3()}Map/tracks?album_id=${encodeURIComponent(albumId)}`, {
 			data: {},
 			id: `map_v3_tracks_${albumId}`,
+		});
+	},
+
+	/**
+	 * Feature 086 — every geotagged photo point of the album, for the map
+	 * header. Cleared by `AlbumService.clearCache(albumId)`.
+	 */
+	getAlbumPoints(albumId: string): Promise<AxiosResponse<MapPointResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+
+		return requester.get(`${Constants.getApiUrlV3()}Map/album?album_id=${encodeURIComponent(albumId)}`, {
+			data: {},
+			id: `map_v3_album_${albumId}`,
 		});
 	},
 };

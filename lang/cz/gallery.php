@@ -226,6 +226,7 @@ return [
             'header' => 'Nastavit záhlaví alba',
             'cover' => 'Set album cover',
             'compact_header' => 'Použít kompaktní záhlaví',
+            'map_header' => 'Použít mapu jako záhlaví',
             'license' => 'Nastavit licenci',
             'copyright' => 'Nastavit copyright',
             'aspect_ratio' => 'Nastavit poměr stran miniatur alba',

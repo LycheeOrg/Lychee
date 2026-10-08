@@ -225,7 +225,7 @@ Reuses Feature 061's existing `Feature_v3` fixture graph (bucketed parents, righ
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-063-01 | Grid view, flag on, bucketable album | Sticky section headers, windowed tile rows (FR-063-07/08). |
+| UI-063-01 | Grid view, flag on, bucketable album | Sticky section headers, windowed tile rows (FR-063-07/08). The pinned header's blurred band spans the whole column across the wrapper's `px-4 sm:px-6` padding, up to the date scrubber; its label stays aligned with the grid. Same for the root grids and both list views. |
 | UI-063-02 | Grid view, flag on, non-bucketable (`OWNER_ID`-sorted) album | Windowed tile rows, no section headers (FR-063-09). |
 | UI-063-03 | List view, flag on | Same sticky-header/windowing behavior as grid view (FR-063-10). |
 | UI-063-04 | Right-click, rights not yet loaded | Every mutating menu action disabled (FR-063-03). |
@@ -239,6 +239,7 @@ Reuses Feature 061's existing `Feature_v3` fixture graph (bucketed parents, righ
 | UI-063-12 *(2026-09-02 full-scope addendum)* | Root gallery, own-albums section, flag on | Virtualized/bucketed grid with a "My Albums"-equivalent title, sticky date/title headers, bounded DOM node count (FR-063-24/29). |
 | UI-063-13 *(2026-09-02 full-scope addendum)* | Root gallery, shared-albums section, flag on | Virtualized/bucketed-by-owner grid, sticky owner-name headers, no outer title (FR-063-24). |
 | UI-063-14 *(2026-09-02 full-scope addendum)* | Root gallery, tags/persons/pinned sections, flag on | Tiles sourced from their respective v3 endpoints; tags alone offers working right-click edit/delete (FR-063-25/26/27). |
+| UI-063-15 | Drag selection from an album (v8) | Pressing on an album tile (grid, list row or its links; sub-albums and root gallery) and moving at least 4 px starts the drag selection, exactly as for photos (Feature 065 UI-065-11): a press without that movement stays a click (opens the album, or toggles it with Ctrl/Cmd/Shift), the click ending a drag is swallowed so the album does not open, and the browser's native link/image drag is cancelled for opted-in tiles (`data-drag-select-start="true"`). |
 
 ## Telemetry & Observability
 
