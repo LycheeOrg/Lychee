@@ -180,6 +180,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		 * Needed after login: part of the init data (e.g. `is_face_recognition_enabled`) depends on the user.
 		 */
 		async refresh(): Promise<void> {
+			// An anonymous load may still be in flight: let it settle, otherwise load() would just
+			// wait for it and return, leaving us with the guest data.
+			while (this.is_loading) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
+			}
+
 			this.is_init = false;
 			return this.load();
 		},

@@ -127,7 +127,17 @@ function login() {
 			AlbumService.clearCache();
 			albumListStore.invalidate();
 			// Init data depends on the user (e.g. face recognition availability).
-			return lycheeStore.refresh().finally(() => emits("logged-in"));
+			// Kept out of this chain: its failures are not authentication errors.
+			// load() reports its own errors and leaves is_init false, in which case we must not
+			// continue with the guest data.
+			void lycheeStore
+				.refresh()
+				.then(() => {
+					if (lycheeStore.is_init) {
+						emits("logged-in");
+					}
+				})
+				.catch(() => {});
 		})
 		.catch((e) => {
 			if (e.response && e.response.status === 401) {
