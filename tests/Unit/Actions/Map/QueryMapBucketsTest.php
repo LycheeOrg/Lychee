@@ -264,4 +264,61 @@ class QueryMapBucketsTest extends BaseApiWithDataTest
 		});
 		self::assertSame([], array_values($grouped_and_ordered_queries), 'no GROUP BY aggregate query may also carry an ORDER BY on a non-grouped column');
 	}
+
+	/**
+	 * Q-067-21: from `UNCLUSTERED_MIN_ZOOM` upward, photos of the same grid
+	 * cell are not aggregated - every photo comes back in `singleton_photos`.
+	 */
+	public function testHighZoomReturnsEveryPhotoUnclustered(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$a = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		$b = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0000001', 'longitude' => '10.0000001']);
+		$c = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.001', 'longitude' => '10.001']);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 10.01, south: 9.99, east: 10.01, west: 9.99, zoom: QueryMapBuckets::UNCLUSTERED_MIN_ZOOM);
+		$resource = app(QueryMapBuckets::class)->do(null, $this->userMayUpload1, $viewport, false);
+
+		self::assertSame([], $resource->bucket_ids);
+		self::assertSame([], $resource->counts);
+		self::assertEqualsCanonicalizing([$a->id, $b->id, $c->id], $resource->singleton_photos->ids);
+		self::assertSame([$album->id, $album->id, $album->id], $resource->singleton_photos->album_ids);
+	}
+
+	public function testBelowUnclusteredMinZoomStillClusters(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0000001', 'longitude' => '10.0000001']);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 10.5, south: 9.5, east: 10.5, west: 9.5, zoom: QueryMapBuckets::UNCLUSTERED_MIN_ZOOM - 1);
+		$resource = app(QueryMapBuckets::class)->do(null, $this->userMayUpload1, $viewport, false);
+
+		self::assertCount(1, $resource->bucket_ids);
+		self::assertSame([2], $resource->counts);
+		self::assertSame([], $resource->singleton_photos->ids);
+	}
+
+	public function testHighZoomOverTheCapFallsBackToClusters(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0', 'longitude' => '10.0']);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.0000001', 'longitude' => '10.0000001']);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['latitude' => '10.002', 'longitude' => '10.002']);
+
+		$this->actingAs($this->userMayUpload1);
+		$viewport = new MapViewport(north: 10.01, south: 9.99, east: 10.01, west: 9.99, zoom: QueryMapBuckets::UNCLUSTERED_MIN_ZOOM);
+		$action = new class() extends QueryMapBuckets {
+			protected function unclusteredPhotoCap(): int
+			{
+				return 2;
+			}
+		};
+		$resource = $action->do(null, $this->userMayUpload1, $viewport, false);
+
+		self::assertSame([2], $resource->counts);
+		self::assertCount(1, $resource->singleton_photos->ids);
+	}
 }

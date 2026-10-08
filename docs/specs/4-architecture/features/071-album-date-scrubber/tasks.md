@@ -61,6 +61,7 @@ _Last updated: 2026-09-24_
 
 ### I8 — Docs + verification
 - [x] T-071-18 – Knowledge map (`TimelineDatesV3.vue` has two consumers; `dateScrubber.ts`), roadmap status, `_current-session.md`, reflection in plan.
+- [x] T-071-20 – Drop the album's `load` handler so tap/release keeps the scrubbed position (FR-071-10, S-071-09). _Verification commands:_ `npm run format`; `npm run check`.
 - [ ] T-071-19 – Manual browser verification of S-071-01…12 (LTR/RTL, light/dark, large album). **Pending** — not run in the authoring session.
 
 ## Notes / TODOs

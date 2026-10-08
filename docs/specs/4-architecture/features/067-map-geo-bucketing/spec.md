@@ -108,6 +108,7 @@ owner scopes work that way — see Q-067-04 below).
 | FR-067-23 | The v2 Map route, controller, both `PositionData` action classes, and the v2 `leaflet.markercluster` rendering path in `Map.vue` remain fully intact and reachable when the SoA flag is off. | Flag off → v2 Map behavior byte-identical to pre-feature. | N/A. | N/A. | None. | Mirrors Feature 065/066's own coexistence precedent. |
 | FR-067-24 | A config-change listener flushes every warm map-cache tag (root's, plus every warm album scope's) whenever any of `hide_nsfw_in_map`, `map_include_subalbums`, `map_display`, or `map_display_public` changes — mirroring Q-053-05's precedent for the sibling album-listing cache. | An admin toggling any of these four settings sees the map reflect it immediately, not after a full TTL. | N/A. | N/A. | None. | Resolved via Q-067-14. |
 | FR-067-25 | `QueryMapBuckets` also selects `MIN(id)` per cell; every cell whose `COUNT(*) = 1` is dropped from the bucket arrays and its photo is returned in `MapBucketResource::$singleton_photos` (a `MapPhotoResource`, same fields and rules as FR-067-09: `album_ids[]` resolved per FR-067-10/Q-067-15, `file_name_hidden` guest title blanking, `date_format_sidebar_taken_at`). The photo rows are fetched by one `whereIn('id', …)` pass over those ids, `toBase()`-only. The `album_ids[]` resolution and the row-to-resource mapping move into the shared `ResolvesMapPhotoSource` trait so both tiers use one implementation. On the frontend, `renderAggregateMarkers()` hands `singleton_photos` to the same photo-marker path as FR-067-21 (lazy thumbnails, popup, `.leaflet-marker-photo`); nearby singletons may still be merged by Leaflet's pixel-radius clustering into a thumbnail cluster. | Above `MAX_VIEWPORT_PHOTOS`, an isolated photo shows as a photo point, never as a `1` badge. | N/A. | Empty scope → `singleton_photos` has all-empty arrays. | None. | Q-067-20 (owner, 2026-09-27). |
+| FR-067-26 | From `QueryMapBuckets::UNCLUSTERED_MIN_ZOOM = 14` upward, `GET /api/v3/Map/buckets` does not group into grid cells: it fetches every distinct photo in the snapped viewport with `->limit(MAX_UNCLUSTERED_PHOTOS + 1)` (`MAX_UNCLUSTERED_PHOTOS = 2000`) and returns them all in `singleton_photos`, with empty `bucket_ids[]`/`counts[]`/`centroid_*[]`. If the viewport holds more than `MAX_UNCLUSTERED_PHOTOS`, the normal grid aggregation (FR-067-05, FR-067-25) runs instead. | At zoom 14 and above, a viewport slightly over `MAX_VIEWPORT_PHOTOS` shows photo markers, not count badges. | N/A. | Over `MAX_UNCLUSTERED_PHOTOS` → clustered response. | None. | Q-067-21 (owner, 2026-10-08). |
 
 ## Non-Functional Requirements
 
@@ -185,6 +186,7 @@ Map (flag on, viewport-driven) — viewport UNDER MAX_VIEWPORT_PHOTOS
 | S-067-21 | Frontend: zooming in on a viewport whose bounds are fully contained within the last exhaustively-fetched (under-cap) viewport triggers no network request at all — Leaflet simply doesn't draw the now off-screen markers (Q-067-18, amended). |
 | S-067-22 | Frontend: a photo that is a cluster's representative child has its thumbnail fetched exactly once even if that cluster's icon is redrawn multiple times (e.g. across zoom steps); a photo hidden inside a cluster for its entire time on screen is never fetched (Q-067-19, amended). |
 | S-067-23 | A viewport over `MAX_VIEWPORT_PHOTOS` where some grid cells hold exactly one photo: those cells are absent from `bucket_ids[]`/`counts[]` and their photos appear in `singleton_photos` with a resolved `album_ids[i]`; the frontend draws them as photo markers, never as a `1` badge (FR-067-25, Q-067-20). |
+| S-067-24 | `buckets` at zoom ≥ 14 with at most `MAX_UNCLUSTERED_PHOTOS` photos in view returns every photo in `singleton_photos` and no buckets, even for photos sharing a grid cell; below zoom 14, or over the cap, it clusters as before (FR-067-26, Q-067-21). |
 
 ## Test Strategy
 
@@ -547,3 +549,11 @@ limitation?**
 - **Decision:** (A). Real photo points identical to the below-cap path, cost still bounded by cell count (one `whereIn` fetch of at most one photo per cell), cache keys unchanged.
 - **Resolution date:** 2026-09-27.
 - **Spec impact:** FR-067-05, FR-067-20, FR-067-25; NFR-067-01; S-067-23; DO-067-05; UI-067-01.
+
+**Q-067-21 — When should the buckets tier stop clustering and return the photos?**
+
+- **Context:** Owner report (2026-10-08): at zoom 14 a viewport of 564 photos exceeded `MAX_VIEWPORT_PHOTOS` (500), so `/Map/Photos` came back empty and the map drew count badges for an area small enough to show photos.
+- **Options considered:** (A) A zoom-dependent cap on `/Map/Photos`. (B) `/Map/buckets` itself returns the photos unclustered from a zoom threshold. (C) An admin-configurable cap.
+- **Decision:** (B). Zoom threshold 14 and cap 2000 are fixed constants on `QueryMapBuckets`; above the cap the grid aggregation applies.
+- **Resolution date:** 2026-10-08.
+- **Spec impact:** FR-067-26; S-067-24; NFR-067-01.

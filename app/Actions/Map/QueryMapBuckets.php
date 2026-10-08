@@ -30,16 +30,43 @@ class QueryMapBuckets
 {
 	use ResolvesMapPhotoSource;
 
+	/**
+	 * From this zoom upward the viewport is small enough that grouping into
+	 * grid cells hides photos the user can tell apart on screen: every photo
+	 * is returned in `singleton_photos` and no bucket is built (Q-067-21).
+	 */
+	public const UNCLUSTERED_MIN_ZOOM = 14;
+
+	/**
+	 * Upper bound on the photos returned unclustered. A denser viewport falls
+	 * back to the grid aggregation below, keeping NFR-067-01 intact.
+	 */
+	public const MAX_UNCLUSTERED_PHOTOS = 2000;
+
+	protected function unclusteredPhotoCap(): int
+	{
+		return self::MAX_UNCLUSTERED_PHOTOS;
+	}
+
 	public function do(?AbstractAlbum $album, ?User $user, MapViewport $viewport, bool $include_sub_albums): MapBucketResource
 	{
 		$snapped = $viewport->snapToGrid();
 		$cell = $snapped->cellSize();
 
-		$query = $album === null ?
-			$this->resolveRootQuery($user) :
-			$this->resolveAlbumQuery($album, $include_sub_albums);
+		if ($viewport->zoom >= self::UNCLUSTERED_MIN_ZOOM) {
+			$rows = $this->fetchUnclusteredRows($album, $user, $snapped, $include_sub_albums);
+			if ($rows !== null) {
+				return new MapBucketResource(
+					bucket_ids: [],
+					counts: [],
+					centroid_latitudes: [],
+					centroid_longitudes: [],
+					singleton_photos: $this->buildMapPhotoResource($rows, $album, $user, $include_sub_albums),
+				);
+			}
+		}
 
-		$this->applyBoundingBoxFilter($query, $snapped);
+		$query = $this->buildScopedQuery($album, $user, $snapped, $include_sub_albums);
 
 		// A photo linked into more than one album within scope (root, or
 		// an `include_sub_albums` subtree) fans out into one row per
@@ -91,6 +118,41 @@ class QueryMapBuckets
 				$include_sub_albums,
 			),
 		);
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Builder<\App\Models\Photo>|\Illuminate\Database\Eloquent\Relations\Relation<\App\Models\Photo,AbstractAlbum&\Illuminate\Database\Eloquent\Model,mixed>
+	 */
+	private function buildScopedQuery(?AbstractAlbum $album, ?User $user, MapViewport $snapped, bool $include_sub_albums): \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation
+	{
+		$query = $album === null ?
+			$this->resolveRootQuery($user) :
+			$this->resolveAlbumQuery($album, $include_sub_albums);
+
+		$this->applyBoundingBoxFilter($query, $snapped);
+
+		return $query;
+	}
+
+	/**
+	 * Every distinct photo in `$snapped`, or null when there are more than
+	 * {@see self::unclusteredPhotoCap()} (one extra row is fetched to tell).
+	 *
+	 * @return \stdClass[]|null
+	 */
+	private function fetchUnclusteredRows(?AbstractAlbum $album, ?User $user, MapViewport $snapped, bool $include_sub_albums): ?array
+	{
+		$cap = $this->unclusteredPhotoCap();
+		$rows = $this->buildScopedQuery($album, $user, $snapped, $include_sub_albums)
+			->select([])
+			->selectRaw('photos.id as id, photos.title as title, photos.taken_at as taken_at, photos.latitude as latitude, photos.longitude as longitude')
+			->distinct()
+			->toBase()
+			->limit($cap + 1)
+			->get()
+			->all();
+
+		return count($rows) > $cap ? null : $rows;
 	}
 
 	/**
