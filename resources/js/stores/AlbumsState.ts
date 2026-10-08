@@ -74,6 +74,10 @@ export const useAlbumsStore = defineStore("albums-store", {
 		hasHidden(): boolean {
 			return this.selectableAlbums.filter((album) => album.is_nsfw).length > 0;
 		},
+		/** Title of an album shown in the current listing, e.g. the locked album just clicked; undefined if it is not listed. */
+		titleOf(): (albumId: string | undefined) => string | undefined {
+			return (albumId) => this.selectableAlbums.concat(this.smartAlbums).find((album) => album.id === albumId)?.title;
+		},
 		/** Mirrors `AlbumState.ts`'s `bucketableV3` getter, own-root scope. */
 		ownBucketableV3(state): boolean {
 			return (state.ownBucketsV3?.bucketable ?? false) && state.ownBoundariesV3 !== null && state.ownBoundariesV3.length > 1;

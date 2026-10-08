@@ -226,6 +226,7 @@ return [
     ],
     'unlock' => [
         'password_required' => 'Toto album je chráněné heslem. Xsdejte heslo, pokud si chcete album prohlédnout:',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => 'Heslo',
         'unlock' => 'Odemknout',
         'invalid_password' => 'Incorrect password for this album. Please try again.',

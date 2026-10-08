@@ -226,6 +226,7 @@ return [
     ],
     'unlock' => [
         'password_required' => 'این آلبوم با یک رمز محافظت شده است. برای مشاهده عکس‌های این آلبوم، رمز را در زیر وارد کنید:',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => 'رمز',
         'unlock' => 'باز کردن قفل',
         'invalid_password' => 'Incorrect password for this album. Please try again.',

@@ -2,7 +2,7 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)">
 		<template #container>
 			<div v-focustrap class="flex flex-col relative max-w-xl text-sm rounded-md pt-9">
-				<p class="mb-5 px-9">{{ $t("dialogs.unlock.password_required") }}</p>
+				<p class="mb-5 px-9">{{ passwordRequiredMessage }}</p>
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
@@ -36,6 +36,8 @@ import Message from "primevue/message";
 import { computed, ref, watch } from "vue";
 import InputPassword from "@/v7/components/forms/basic/InputPassword.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { trans } from "laravel-vue-i18n";
 
 const visible = defineModel("visible", { default: false });
 
@@ -45,8 +47,15 @@ const emits = defineEmits<{
 }>();
 
 const albumStore = useAlbumStore();
+const albumsStore = useAlbumsStore();
 // Fetch the id of the current album
 const albumId = computed(() => albumStore.albumId);
+
+// The title is only known when the album was opened from a listing, not from a direct link.
+const passwordRequiredMessage = computed(() => {
+	const title = albumsStore.titleOf(albumId.value);
+	return title === undefined ? trans("dialogs.unlock.password_required") : trans("dialogs.unlock.password_required_named", { title: title });
+});
 
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);

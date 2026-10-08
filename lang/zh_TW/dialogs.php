@@ -226,6 +226,7 @@ return [
     ],
     'unlock' => [
         'password_required' => '此相簿被密碼保護。請在下方輸入密碼來瀏覽此相簿中的相片：',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => '密碼',
         'unlock' => '解鎖',
         'invalid_password' => 'Incorrect password for this album. Please try again.',

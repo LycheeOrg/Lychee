@@ -1,7 +1,7 @@
 <template>
 	<UModal v-model:open="visible" :dismissible="true">
 		<template #body>
-			<p class="mb-5">{{ $t("dialogs.unlock.password_required") }}</p>
+			<p class="mb-5">{{ passwordRequiredMessage }}</p>
 			<UFormField :label="$t('dialogs.unlock.password')">
 				<InputPassword id="albumPassword" v-model="password" @keydown.enter="unlock" />
 				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.unlock.invalid_password')" />
@@ -32,6 +32,8 @@ import { computed, ref, watch } from "vue";
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { trans } from "laravel-vue-i18n";
 
 const visible = defineModel("open", { default: false });
 
@@ -42,8 +44,15 @@ const emits = defineEmits<{
 
 const albumStore = useAlbumStore();
 const albumListStore = useAlbumListStore();
+const albumsStore = useAlbumsStore();
 // Fetch the id of the current album
 const albumId = computed(() => albumStore.albumId);
+
+// The title is only known when the album was opened from a listing, not from a direct link.
+const passwordRequiredMessage = computed(() => {
+	const title = albumsStore.titleOf(albumId.value);
+	return title === undefined ? trans("dialogs.unlock.password_required") : trans("dialogs.unlock.password_required_named", { title: title });
+});
 
 const password = ref<string | undefined>(undefined);
 const deactivate = computed(() => password.value !== undefined && password.value.length > 0);

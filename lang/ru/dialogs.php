@@ -226,6 +226,7 @@ return [
     ],
     'unlock' => [
         'password_required' => 'Этот альбом защищен паролем. Введите пароль ниже для просмотра фотографий в этом альбоме:',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => 'Пароль',
         'unlock' => 'Разблокировать',
         'invalid_password' => 'Incorrect password for this album. Please try again.',

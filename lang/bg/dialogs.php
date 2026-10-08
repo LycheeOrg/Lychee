@@ -226,6 +226,7 @@ return [
     ],
     'unlock' => [
         'password_required' => 'Този албум е защитен с парола. Въведете паролата по-долу, за да видите снимките:',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => 'Парола',
         'unlock' => 'Отключи',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
