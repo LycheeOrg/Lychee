@@ -6,6 +6,7 @@ Open questions for [Feature 067](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-067-21~~ | 067 – Map Geo-Bucketing | Medium | At high zoom (e.g. 14, ~38 m cells) a viewport holding slightly more than `MAX_VIEWPORT_PHOTOS` (564 vs 500 in the owner's sample) falls back to count-badge clusters although the area is small enough to show photos. When should the buckets tier stop clustering and return the photos themselves? | Resolved (Option B — `/Map/buckets` returns every photo in `singleton_photos` from zoom 14 up, capped at 2000; owner: "B"; FR-067-26) | 2026-10-08 | 2026-10-08 |
 | ~~Q-067-20~~ | 067 – Map Geo-Bucketing | Medium | Above `MAX_VIEWPORT_PHOTOS`, the aggregate badges include many count-1 cells, drawn as a "1" cluster instead of a photo point. `MapBucketResource` has no photo/album id, so the frontend can't draw it as a photo. Where does the singleton's photo data come from? | Resolved (Option A — buckets response carries `singleton_photos`; owner, 2026-09-27; FR-067-25) | 2026-09-27 | 2026-09-27 |
 | ~~Q-067-07~~ | 067 – Map Geo-Bucketing | High | FR-067-12 specs `should_downgrade` via `Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, ...)`, but today's `PositionData` classes use no Gate at all at root scope (raw `grants_full_photo_access` config) and `AlbumPolicy::CAN_ACCESS_FULL_PHOTO` (one check per request, not per photo) at album scope. | Resolved (superseded, not just fixed — Q-067-12: `should_downgrade` removed from this tier entirely; leaf-tier imagery is fetched from the existing v3 Asset endpoint, which never performs a full-vs-thumb split for the thumbnail-class variants Map uses) | 2026-09-13 | 2026-09-15 |
 | ~~Q-067-08~~ | 067 – Map Geo-Bucketing | High | FR-067-02 specs a client-supplied `include_sub_albums` request boolean, but v2's `MapController::getData()` derives it server-side from the single **global** admin config `map_include_subalbums` (no per-album override row exists). | Resolved (Option A — drop the request param, stay config-derived; owner: "Q-67-08: A") | 2026-09-13 | 2026-09-15 |
@@ -14,6 +15,19 @@ Open questions for [Feature 067](spec.md). Log every high- and medium-impact que
 | ~~Q-067-11~~ | 067 – Map Geo-Bucketing | High | Q-067-12 made `MapPhotoResource.album_ids[]` structurally required to be each photo's real, viewer-accessible containing album id — needed a tie-break rule for multi-album photos and sub-album exactness. | Resolved (Option B — album scope constrains the `photo_album` join to the query's own already-authorized subtree, no extra access re-check; root scope joins `base_albums`/`computed_access_permissions`, applies `AlbumQueryPolicy::appendAccessibilityConditions()`, and collapses via `GROUP BY`/`MIN()` — no `Album` model hydration at all, mirroring `ResolvesPhotoSource::resolvePhotoQuery()`'s `BaseSmartAlbum` collapse pattern; owner: "Q-67-11: B", mechanism refined same day: "You can resolve that with joins and collapse. See on timeline v3 photo selection.") | 2026-09-13 | 2026-09-15 |
 
 ## Question Details
+
+### ~~Q-067-21~~ · Stop clustering at high zoom and return the photos ✅ RESOLVED
+
+**Status:** Resolved by the owner, 2026-10-08 — Option B. Encoded in spec FR-067-26, S-067-24 and decision card Q-067-21.  
+**Feature:** F-067  
+**Priority:** Medium
+
+Owner report (2026-10-08): `GET /api/v3/Map/buckets?north=51.9186&south=51.8700&east=4.4807&west=4.3932&zoom=14` returned 142 buckets (402 photos) plus 162 `singleton_photos`, i.e. 564 photos. The viewport is over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS` (500), so `/Map/Photos` returned empty and the frontend rendered count badges (FR-067-20). At zoom 14 the user is looking at a few kilometres of city, and the owner expects photos, not clusters.
+
+- **Option A (recommended) — a zoom-dependent cap on `/Map/Photos`.** Keep the two-tier flow (Photos first, buckets only when Photos is empty) but make the cap a pure function of zoom, like `cellSizeForZoom()`: for example `MAX_VIEWPORT_PHOTOS` stays 500 below zoom 14 and rises to 2000 from zoom 14 up (constants in `QueryMapPhotos`, no admin setting, per Q-067-02). The `->limit(cap + 1)` bound is kept, so NFR-067-01 still holds structurally. The frontend needs no change except that Leaflet's client-side clustering now lays out more markers. *Pros:* smallest change, no new response shape, cache keys already include zoom. *Cons:* the 2000 figure is a guess, and a dense viewport can still exceed it and fall back to badges (that is the intended safety net).
+- **Option B — a zoom threshold in `/Map/buckets` itself.** From zoom N upward `QueryMapBuckets` skips the grid grouping and returns every photo in `singleton_photos` with empty bucket arrays (still capped). *Pros:* the frontend keeps one request path for aggregate data. *Cons:* a second photo-returning endpoint, duplicate cap logic, and it still costs two round trips (empty Photos, then buckets) for exactly the case that should need one.
+- **Option C — an admin-configurable cap.** Same as A, but the cap is a config value. *Pros:* tunable per instance. *Cons:* reverses Q-067-02 (fixed constants), new config row, translations and docs for a value users cannot reason about.
+
 
 ### ~~Q-067-20~~ · Count-1 aggregate buckets should render as photo points ✅ RESOLVED
 

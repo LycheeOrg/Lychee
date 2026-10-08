@@ -292,6 +292,15 @@ _Last updated: 2026-09-27 (I11 added for Q-067-20)_
   show thumbnails and popups (S-067-23).
   _Verification commands:_ Manual (no dev environment this session).
 
+- [x] T-067-42 – Tests first: `QueryMapBucketsTest` for FR-067-26 (zoom ≥ 14 returns every photo
+  unclustered, zoom 13 still clusters, over-cap falls back to clusters).
+  _Verification commands:_ `php artisan test --filter=QueryMapBucketsTest`.
+
+- [x] T-067-43 – `QueryMapBuckets`: `UNCLUSTERED_MIN_ZOOM`, `MAX_UNCLUSTERED_PHOTOS`, unclustered
+  branch with `limit(cap + 1)` (FR-067-26). No frontend change: `singleton_photos` already renders.
+  _Verification commands:_ `vendor/bin/php-cs-fixer fix`; `make phpstan`;
+  `php artisan test --filter=QueryMapBucketsTest`.
+
 ## Notes / TODOs
 
 - S-067-14..17 (pan/zoom refetch, aggregate-click behavior, leaf marker parity, decoupled track
