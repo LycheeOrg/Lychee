@@ -33,7 +33,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import Message from "primevue/message";
-import { computed, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import InputPassword from "@/v7/components/forms/basic/InputPassword.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -62,31 +62,53 @@ const deactivate = computed(() => password.value !== undefined && password.value
 const invalidPassword = ref(false);
 // True from submitting the password until the dialog closes or the unlock fails.
 const isUnlocking = ref(false);
+// The unlock request in flight; aborted when the dialog closes so that its callbacks never run late.
+let unlockRequest: AbortController | undefined = undefined;
 
 watch(password, () => {
 	invalidPassword.value = false;
 });
 
 watch(visible, (isVisible) => {
-	if (isVisible) {
-		isUnlocking.value = false;
+	if (!isVisible) {
+		stopUnlocking();
 	}
 });
+
+onBeforeUnmount(stopUnlocking);
+
+function stopUnlocking() {
+	unlockRequest?.abort();
+	unlockRequest = undefined;
+	isUnlocking.value = false;
+}
 
 function unlock() {
 	if (albumId.value === undefined || password.value === undefined || isUnlocking.value) {
 		return;
 	}
 
+	const requestedAlbumId = albumId.value;
+	const request = new AbortController();
+	unlockRequest = request;
 	isUnlocking.value = true;
-	AlbumService.unlock(albumId.value, password.value)
+	AlbumService.unlock(requestedAlbumId, password.value, request.signal)
 		.then((_response) => {
+			if (request.signal.aborted) {
+				return;
+			}
+
 			AlbumService.clearAlbums();
-			AlbumService.clearCache(albumId.value);
+			AlbumService.clearCache(requestedAlbumId);
 			invalidPassword.value = false;
 			emits("reload");
 		})
 		.catch((error) => {
+			if (request.signal.aborted) {
+				return;
+			}
+
+			unlockRequest = undefined;
 			isUnlocking.value = false;
 			if (error.response && error.response.status === 403) {
 				invalidPassword.value = true;
