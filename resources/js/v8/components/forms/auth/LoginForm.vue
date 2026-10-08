@@ -126,7 +126,8 @@ function login() {
 			invalidPassword.value = false;
 			AlbumService.clearCache();
 			albumListStore.invalidate();
-			emits("logged-in");
+			// Init data depends on the user (e.g. face recognition availability).
+			return lycheeStore.refresh().finally(() => emits("logged-in"));
 		})
 		.catch((e) => {
 			if (e.response && e.response.status === 401) {

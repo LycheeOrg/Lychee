@@ -2073,6 +2073,8 @@ declare namespace App {
 					live_photo_urls: (string | null)[];
 					panoramas: (App.Http.Resources.Models.PanoramaResource | null)[];
 					face_counts: number[];
+					is_camera_dates: boolean[];
+					is_taken_at_modifieds: boolean[];
 					palette: (App.Http.Resources.Models.ColourPaletteResource | null)[];
 					size_variants: (App.Http.Resources.Models.SizeVariantsResouce | null)[];
 					statistics: (App.Http.Resources.Models.PhotoStatisticsResource | null)[];
@@ -2083,6 +2085,8 @@ declare namespace App {
 					shutters?: (string | null)[];
 					focals?: (string | null)[];
 					isos?: (string | null)[];
+					durations?: string[];
+					fps?: string[];
 					latitudes?: (number | null)[];
 					longitudes?: (number | null)[];
 					altitudes?: (number | null)[];

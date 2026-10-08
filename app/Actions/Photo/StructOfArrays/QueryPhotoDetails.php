@@ -11,6 +11,7 @@ namespace App\Actions\Photo\StructOfArrays;
 use App\Contracts\Models\AbstractAlbum;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\MetricsAccess;
+use App\Facades\Helpers;
 use App\Http\Resources\Models\ColourPaletteResource;
 use App\Http\Resources\Models\PanoramaResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
@@ -214,6 +215,8 @@ class QueryPhotoDetails
 		$live_photo_urls = [];
 		$panoramas = [];
 		$face_counts = [];
+		$is_camera_dates = [];
+		$is_taken_at_modifieds = [];
 		$palette = [];
 		$size_variants = [];
 		$statistics = [];
@@ -224,6 +227,8 @@ class QueryPhotoDetails
 		$shutters = [];
 		$focals = [];
 		$isos = [];
+		$durations = [];
+		$fps = [];
 		$latitudes = [];
 		$longitudes = [];
 		$altitudes = [];
@@ -248,6 +253,9 @@ class QueryPhotoDetails
 			$live_photo_urls[] = $photo->live_photo_url;
 			$panoramas[] = PanoramaResource::fromPhoto($photo);
 			$face_counts[] = $photo->face_count;
+			// Same derivation as `PreComputedPhotoData`.
+			$is_camera_dates[] = $photo->taken_at !== null;
+			$is_taken_at_modifieds[] = $photo->taken_at !== null && ($photo->initial_taken_at === null || $photo->taken_at->notEqualTo($photo->initial_taken_at));
 
 			$palette[] = ColourPaletteResource::fromModel($photo->palette);
 			// Batched equivalent of `PhotoPolicy::canAccessFullPhoto()`, resolved
@@ -276,6 +284,9 @@ class QueryPhotoDetails
 				$shutters[] = $photo->shutter;
 				$focals[] = $photo->focal;
 				$isos[] = $photo->iso;
+				// Same formatting as `PreformattedPhotoData`.
+				$durations[] = Helpers::secondsToHMS(intval($photo->duration));
+				$fps[] = $photo->fps !== null && $photo->fps !== '' ? $photo->fps . ' fps' : '';
 			}
 
 			if ($gps_on) {
@@ -306,6 +317,8 @@ class QueryPhotoDetails
 			live_photo_urls: $live_photo_urls,
 			panoramas: $panoramas,
 			face_counts: $face_counts,
+			is_camera_dates: $is_camera_dates,
+			is_taken_at_modifieds: $is_taken_at_modifieds,
 			palette: $palette,
 			size_variants: $size_variants,
 			statistics: $statistics,
@@ -316,6 +329,8 @@ class QueryPhotoDetails
 			shutters: $include_exif ? $shutters : Optional::create(),
 			focals: $include_exif ? $focals : Optional::create(),
 			isos: $include_exif ? $isos : Optional::create(),
+			durations: $include_exif ? $durations : Optional::create(),
+			fps: $include_exif ? $fps : Optional::create(),
 			latitudes: $gps_on ? $latitudes : Optional::create(),
 			longitudes: $gps_on ? $longitudes : Optional::create(),
 			altitudes: $gps_on ? $altitudes : Optional::create(),

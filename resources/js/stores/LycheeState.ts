@@ -175,6 +175,14 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_sensitive_flag_enabled: true,
 	}),
 	actions: {
+		/**
+		 * Drop the cached init data and fetch it again.
+		 * Needed after login: part of the init data (e.g. `is_face_recognition_enabled`) depends on the user.
+		 */
+		async refresh(): Promise<void> {
+			this.is_init = false;
+			return this.load();
+		},
 		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {

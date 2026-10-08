@@ -56,6 +56,8 @@ class PhotoDetailResource extends Data
 	 * @param (string|null)[]                  $live_photo_urls
 	 * @param (PanoramaResource|null)[]        $panoramas                 Feature 082: partial-panorama crop, null for full spheres and flat photos
 	 * @param int[]                            $face_counts
+	 * @param bool[]                           $is_camera_dates           same as `PreComputedPhotoData::$is_camera_date`
+	 * @param bool[]                           $is_taken_at_modifieds     same as `PreComputedPhotoData::$is_taken_at_modified`
 	 * @param (ColourPaletteResource|null)[]   $palette                   nested
 	 * @param (SizeVariantsResouce|null)[]     $size_variants             nested, all 9 variants
 	 * @param (PhotoStatisticsResource|null)[] $statistics                nested; null per-row per `metrics_enabled` + per-row `metrics_access=owner`
@@ -66,6 +68,8 @@ class PhotoDetailResource extends Data
 	 * @param (string|null)[]|Optional         $shutters
 	 * @param (string|null)[]|Optional         $focals
 	 * @param (string|null)[]|Optional         $isos
+	 * @param string[]|Optional                $durations                 `PreformattedPhotoData::$duration`, gated by `display_exif_data`
+	 * @param string[]|Optional                $fps                       `PreformattedPhotoData::$fps`, gated by `display_exif_data`
 	 * @param (float|null)[]|Optional          $latitudes                 gated by `gps_coordinate_display`(+`_public` for guests)
 	 * @param (float|null)[]|Optional          $longitudes
 	 * @param (float|null)[]|Optional          $altitudes
@@ -88,6 +92,8 @@ class PhotoDetailResource extends Data
 		public array $live_photo_urls,
 		public array $panoramas,
 		public array $face_counts,
+		public array $is_camera_dates,
+		public array $is_taken_at_modifieds,
 		public array $palette,
 		public array $size_variants,
 		public array $statistics,
@@ -98,6 +104,8 @@ class PhotoDetailResource extends Data
 		public array|Optional $shutters,
 		public array|Optional $focals,
 		public array|Optional $isos,
+		public array|Optional $durations,
+		public array|Optional $fps,
 		public array|Optional $latitudes,
 		public array|Optional $longitudes,
 		public array|Optional $altitudes,

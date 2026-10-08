@@ -38,6 +38,7 @@ import AlbumService from "@/services/album-service";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/UserState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useAppToast();
 const emits = defineEmits<{
@@ -47,6 +48,7 @@ const emits = defineEmits<{
 const togglableStore = useTogglablesStateStore();
 const userStore = useUserStore();
 const albumListStore = useAlbumListStore();
+const lycheeStore = useLycheeStateStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
@@ -66,7 +68,8 @@ function login() {
 			userStore.setUser(undefined);
 			AlbumService.clearCache();
 			albumListStore.invalidate();
-			emits("logged-in");
+			// Init data depends on the user (e.g. face recognition availability).
+			return lycheeStore.refresh().finally(() => emits("logged-in"));
 		})
 		.catch((e) =>
 			toast.add({

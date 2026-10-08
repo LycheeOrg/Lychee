@@ -14,13 +14,15 @@ import { formatServerDateTime } from "@/v8/utils/phpDateFormat";
  * `mergePhotoDetail()` once tier 3 resolves for that specific photo — see
  * `AlbumState.ts`'s `loadPhotoDetails()`.
  *
- * Two fields are *never* filled even after `mergePhotoDetail()` (accepted,
- * documented regressions — NG11/Q-065-06, both because no lightweight field
- * exists in `ratios` and eagerly fetching `details` per tile would defeat
- * the on-demand-only discipline G5 requires):
- * - `face_count` stays `0`, making `PhotoThumb.vue`/`PhotoListItem.vue`'s
- *   hover-triggered face-recognition prefetch a permanent no-op for
- *   SoA-sourced tiles.
+ * Two fields are not filled by the tile itself (accepted, documented
+ * regressions — NG11/Q-065-06, both because no lightweight field exists in
+ * `ratios` and eagerly fetching `details` per tile would defeat the
+ * on-demand-only discipline G5 requires):
+ * - `face_count` stays `0` until `mergePhotoDetail()` resolves it from
+ *   `details`' `face_counts`. Grid/list tiles never trigger that fetch, so
+ *   `PhotoThumb.vue`/`PhotoListItem.vue`'s hover-triggered face-recognition
+ *   prefetch stays a no-op for SoA-sourced tiles, but the photo view (which
+ *   does trigger it) loads its faces.
  * - `preformatted.filesize` stays `""` until `mergePhotoDetail()` actually
  *   resolves it from `size_variants` (see there) — grid/list tiles never
  *   trigger that fetch, so it stays empty for them, hiding
@@ -152,9 +154,7 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		statistics: null,
 		rating: ratingAvg === null && ratingUser === null ? null : { rating_avg: ratingAvg ?? 0, rating_user: ratingUser ?? 0, rating_count: 0 },
 		// Accepted regression (NG11/Q-065-06) — see this file's own doc
-		// comment. Never backfilled, even once `details` resolves: `details`
-		// doesn't carry `face_count` for the *bounded* on-demand tier's own
-		// sake, so hover-prefetch stays inert on the SoA path by design.
+		// comment. Backfilled by `mergePhotoDetail()` once `details` resolves.
 		face_count: 0,
 		is_validated: ratios.is_validateds[i],
 		owner_id: ratios.owner_ids[i],
@@ -182,6 +182,9 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 	photo.live_photo_url = detail.live_photo_urls[i];
 	photo.palette = detail.palette[i];
 	photo.panorama = detail.panoramas[i];
+	photo.face_count = detail.face_counts[i] ?? 0;
+	photo.precomputed.is_camera_date = detail.is_camera_dates[i] ?? false;
+	photo.precomputed.is_taken_at_modified = detail.is_taken_at_modifieds[i] ?? false;
 	photo.statistics = detail.statistics[i];
 	photo.size_variants = sizeVariants;
 
@@ -201,6 +204,8 @@ export function mergePhotoDetail(photo: AdaptedPhotoTile, detail: PhotoDetailRes
 	photo.preformatted.shutter = detail.shutters?.[i] ?? "";
 	photo.preformatted.focal = detail.focals?.[i] ?? null;
 	photo.preformatted.iso = detail.isos?.[i] ?? "";
+	photo.preformatted.duration = detail.durations?.[i] ?? "";
+	photo.preformatted.fps = detail.fps?.[i] ?? "";
 	photo.preformatted.latitude = detail.latitudes?.[i]?.toString() ?? null;
 	photo.preformatted.longitude = detail.longitudes?.[i]?.toString() ?? null;
 	photo.preformatted.altitude = detail.altitudes?.[i]?.toString() ?? null;

@@ -555,9 +555,10 @@ watchEffect(
 );
 
 watch(
-	[() => photoStore.photo?.id, isFaceEnabled],
-	([photoId, faceEnabled]) => {
-		if (!faceEnabled || photoId === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, isFaceEnabled, () => photoStore.photo?.face_count ?? 0],
+	([photoId, faceEnabled, faceCount]) => {
+		// face_count is a source too: on the SoA path it only arrives once the tier-3 details resolve.
+		if (!faceEnabled || photoId === undefined || faceCount <= 0) {
 			return;
 		}
 
