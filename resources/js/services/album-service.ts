@@ -216,8 +216,8 @@ const AlbumService = {
 		});
 	},
 
-	unlock(album_id: string, password: string): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}Album::unlock`, { album_id: album_id, password: password });
+	unlock(album_id: string, password: string, signal?: AbortSignal): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Album::unlock`, { album_id: album_id, password: password }, { signal: signal });
 	},
 
 	getLayout(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.PhotoLayoutConfig>> {

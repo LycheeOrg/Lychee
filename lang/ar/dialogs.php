@@ -227,6 +227,7 @@ return [
     ],
     'unlock' => [
         'password_required' => 'هذا الألبوم محمي بكلمة مرور. أدخل كلمة المرور أدناه لعرض صور هذا الألبوم:',
+        'password_required_named' => 'The album “:title” is protected by a password. Enter the password below to view the photos of this album:',
         'password' => 'كلمة المرور',
         'unlock' => 'فتح',
         'invalid_password' => 'Incorrect password for this album. Please try again.',
