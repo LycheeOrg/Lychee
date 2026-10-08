@@ -155,7 +155,6 @@
 									:lens-falloff="lycheeStore.timeline_lens_falloff / 10"
 									:lens-magnification="lycheeStore.timeline_lens_magnification / 10"
 									:count-label-key="dateScrubberSource === 'albums' ? 'gallery.album.date_scrubber.albums_count' : undefined"
-									@load="jumpToDateScrubberEntry"
 									@scrub="scrubDateScrubberTo"
 								/>
 							</div>
@@ -296,7 +295,7 @@ function onPhotoScrubberScroll(offset: number): void {
 	photoScrollOffset.value = offset;
 }
 
-/** Drag-scrub, and the in-place jump below — never a route push (FR-071-10). */
+/** Drag-scrub and click-scrub — the grid stays exactly where the rail was pressed or released, never snapped to a section top, never a route push (FR-071-10). */
 function scrubDateScrubberTo(px: number): void {
 	if (dateScrubberSource.value === "albums") {
 		albumPanelVirtualRef.value?.scrollToPixelOffset(px);
@@ -305,12 +304,6 @@ function scrubDateScrubberTo(px: number): void {
 	photoPanelVirtualRef.value?.scrollToPixelOffset(px);
 }
 
-function jumpToDateScrubberEntry(bucketId: string): void {
-	const entry = dateScrubberLayout.value?.entries.find((e) => e.bucketId === bucketId);
-	if (entry !== undefined) {
-		scrubDateScrubberTo(entry.top);
-	}
-}
 const { is_download_album_visible } = storeToRefs(togglableStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
