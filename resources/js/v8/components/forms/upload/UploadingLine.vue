@@ -102,8 +102,9 @@ const { stop: stopObserving } = useIntersectionObserver(
 );
 
 function onThumbnailReady(url: string, generation: number) {
-	if (keepUploadThumbnail(props.uid, url, generation) && !unmounted) {
-		thumbUrl.value = url;
+	const shown = keepUploadThumbnail(props.uid, url, generation);
+	if (shown !== undefined && !unmounted) {
+		thumbUrl.value = shown;
 	}
 }
 

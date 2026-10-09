@@ -51,5 +51,12 @@ _Last updated: 2026-10-09_
 
 - [ ] T-087-09 – Owner check: RTL locale (S-087-08, NFR-087-03).
 
+- [x] T-087-10 – One kept miniature per file when a row mounts again during its decode (FR-087-06, S-087-09).  
+  _Intent:_ `keepUploadThumbnail()` keeps the first miniature of a uid and revokes later ones, returning the URL to show. Assertion script extended first (second keep of a uid revokes its URL and returns the first); Playwright Run D reproduces the leak on the build before the fix (large JPEGs, list scrolled out and back during decodes, every WebP object URL created must be revoked after Cancel), then passes after it.  
+  _Verification commands:_  
+  - `node --experimental-strip-types <scratchpad>/check-upload-list.ts`  
+  - `npm run format`, `npm run check`, `npx eslint` on the touched files  
+  - `npx vite build`, `node <scratchpad>/upload-virtualization.mjs <scratchpad> ACD`
+
 ## Notes / TODOs
 - Scratch-instance login route allows 10 attempts per hour: reuse a saved Playwright `storageState`.

@@ -34,16 +34,22 @@ export function uploadListGeneration(): number {
 }
 
 /**
- * Keeps the miniature of a queued file until the list is cleared.
- * Returns false, after revoking the URL, when the list was cleared since `generation`.
+ * Keeps the first miniature built for a queued file until the list is cleared and returns the URL to show.
+ * A row mounted again while its first decode ran decodes the file again: that later URL is revoked.
+ * Returns undefined, after revoking the URL, when the list was cleared since `generation`.
  */
-export function keepUploadThumbnail(uid: string, url: string, generation: number): boolean {
+export function keepUploadThumbnail(uid: string, url: string, generation: number): string | undefined {
 	if (generation !== listGeneration) {
 		URL.revokeObjectURL(url);
-		return false;
+		return undefined;
+	}
+	const existing = kept.get(uid);
+	if (existing !== undefined) {
+		URL.revokeObjectURL(url);
+		return existing;
 	}
 	kept.set(uid, url);
-	return true;
+	return url;
 }
 
 /** Called when the upload list is cleared. */
