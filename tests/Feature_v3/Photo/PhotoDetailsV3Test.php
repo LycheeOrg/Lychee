@@ -25,7 +25,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Statistics;
 use App\Models\Tag;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
