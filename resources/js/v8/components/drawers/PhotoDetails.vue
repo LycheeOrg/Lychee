@@ -441,9 +441,10 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 }
 
 watch(
-	() => photoStore.photo?.id,
-	(photo_id) => {
-		if (photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, () => photoStore.photo?.face_count ?? 0],
+	([photo_id, faceCount]) => {
+		// face_count is a source too: on the SoA path it only arrives once the tier-3 details resolve.
+		if (photo_id === undefined || faceCount <= 0) {
 			return;
 		}
 
