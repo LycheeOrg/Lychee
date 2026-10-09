@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Planning |
+| Status | Testing |
 | Last updated | 2026-10-09 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |

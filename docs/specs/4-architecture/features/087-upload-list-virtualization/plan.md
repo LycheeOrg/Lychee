@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
-_Status:_ Planning  
+_Status:_ Testing  
 _Last updated:_ 2026-10-09
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -50,6 +50,25 @@ Queuing thousands of files keeps the v8 upload modal light: a bounded number of 
 
 ## Implementation Drift Gate
 After T-087-08, map each FR/NFR to code and to the Playwright checks in a drift report below, rerun `npm run check`, `npm run format` and eslint on the touched files, and record any divergence in [open-questions.md](open-questions.md).
+
+### Drift Gate Report – 2026-10-09
+
+| Requirement | Code | Evidence |
+|-------------|------|----------|
+| FR-087-01, NFR-087-01 | `UploadPanel.vue` (`useVirtualizer`, `measureRow`, sizer, `gap`/`paddingStart`/`paddingEnd`) | Run A: 14 rows mounted at the start, 17 at the top while uploads run, 21 when finished (bound 24); scroll height 72 028 px for 2000 files, equal to 16 + 2000 × 32 + 1999 × 4 + 16 (the 32 px estimate is the single-line row height). Run C: 16 px padding, 4 px gaps, 32 px rows. |
+| FR-087-02, FR-087-03 | `uploadList.ts::uploadingIndexes()`, `withPinnedIndexes()`, `rangeExtractor` in `UploadPanel.vue` | Run A: running rows 300–302 mounted with the list scrolled to the top, same DOM nodes (expando kept), their completions counted (300 → 303) and rows 303–305 started; every one of 2000 files sent once. Negative control (default range only): rows unmounted, counter stuck at 300, no next start. |
+| FR-087-04 | `UploadingLine.vue::progressBar` (`hasEnded`) | Run A: 422 and 409 rows show their message and `aria-valuenow` 100, also after unmount and remount. Run B: unsupported text file row. |
+| FR-087-05 | `uploadNext()` → `scrollToIndex(…, { align: "center", behavior: "smooth" })` | Run A: rows 292–312 mounted around running rows 300–302; after the next starts, row 305 inside the list box. |
+| FR-087-06 | `uploadThumbnail.ts` (`keepUploadThumbnail`, `keptUploadThumbnail`, `releaseUploadThumbnails`, generation), `UploadingLine.vue`, `clearList()` | Assertion script; Run A: same blob URL after unmount and remount, URL revoked (fetch fails) after Close. |
+| FR-087-07 | `UModal :dismissible="!showCancel" :close="!showCancel"` | Run A: no header close button, Escape and click outside keep the modal open while files remain; button back and Escape closes after completion. |
+| NFR-087-02 | — | `package.json` unchanged. |
+| NFR-087-03 | rows `absolute inset-x-0` | T-087-09 (owner, RTL). |
+
+Verification commands: `node --experimental-strip-types <scratchpad>/check-upload-list.ts`, `npm run format`, `npm run check`, `npx eslint` on the four touched files, `npx vite build`, `node <scratchpad>/upload-virtualization.mjs <scratchpad> ABC`.
+
+Scratch instance: SQLite database, uploads and temporary upload folders in the session scratchpad, `CACHE_STORE=array` (the shared file cache holds files owned by the web server user), `upload_processing_limit` = 3, PHP built-in server started from `public/` with 4 workers and `variables_order=EGPCS`, Playwright with the system Chromium. Run A mocks `POST /api/v2/Photo` and holds responses so running rows can be checked with the list scrolled away; Run B goes through the real backend (40 distinct JPEGs created, one text file rejected, 3 uploads in flight at most); Run C appends files one by one through the store, as a folder drop does. 41/41 checks green, no page errors. The login answers 500 on this checkout because `storage/logs/login.log` is owned by the web server user; the session is authenticated before the log write fails.
+
+No divergence from the spec. Low-level adjustment: the list box keeps its `pr-3` class (`py-4` moves into the virtualizer padding).
 
 ## Increment Map
 1. **I1 – Pure helpers** (T-087-01, T-087-02)

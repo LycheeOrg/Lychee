@@ -1,6 +1,6 @@
 # Feature 087 Tasks – Upload List Virtualization
 
-_Status: Planning_  
+_Status: Testing_  
 _Last updated: 2026-10-09_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -40,13 +40,13 @@ _Last updated: 2026-10-09_
   - `npm run check`  
   - `npx eslint resources/js/v8/components/modals/UploadPanel.vue resources/js/v8/components/forms/upload/UploadingLine.vue resources/js/v8/utils/uploadThumbnail.ts resources/js/v8/utils/uploadList.ts`
 
-- [ ] T-087-07 – Playwright on a scratch instance (S-087-01 … S-087-07, S-087-09, S-087-10).  
+- [x] T-087-07 – Playwright on a scratch instance (S-087-01 … S-087-07, S-087-09, S-087-10).  
   _Intent:_ `vite build`, scratch instance with SQLite, storage and uploads in the session scratchpad; Chromium run asserting row counts, completion and counters, one send per file, scroll position, miniature reuse, modal lock. Results recorded in [plan.md](plan.md).  
   _Verification commands:_  
   - `npx vite build`  
   - `node <scratchpad>/upload-virtualization.mjs`
 
-- [ ] T-087-08 – Documentation (spec Documentation Deliverables).  
+- [x] T-087-08 – Documentation (spec Documentation Deliverables).  
   _Intent:_ knowledge map, roadmap row, drift report in [plan.md](plan.md).
 
 - [ ] T-087-09 – Owner check: RTL locale (S-087-08, NFR-087-03).

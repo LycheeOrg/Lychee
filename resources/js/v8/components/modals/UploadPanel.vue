@@ -114,8 +114,8 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { hasEnded, uploadingIndexes, withPinnedIndexes } from "@/v8/utils/uploadList";
 import { releaseUploadThumbnails } from "@/v8/utils/uploadThumbnail";
 
-/** Height of a row whose name and status fit on one line; actual heights are measured. */
-const ROW_ESTIMATE_PX = 36;
+/** Height of a row whose name and status fit on one line (the h-8 miniature box); actual heights are measured. */
+const ROW_ESTIMATE_PX = 32;
 
 const togglableStore = useTogglablesStateStore();
 const { is_upload_visible, list_upload_files, upload_config: setup } = storeToRefs(togglableStore);
