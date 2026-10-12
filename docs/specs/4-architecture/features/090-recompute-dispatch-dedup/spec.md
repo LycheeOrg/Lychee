@@ -47,6 +47,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | FR-090-11 | On an asynchronous queue (`queue.default` not `sync`) the unique locks of the seven jobs live in the `database` cache store (`uniqueVia()`, `App\Jobs\Traits\HasSharedUniqueLockTrait`); on `sync` they live in the default cache store. | The web container takes the lock on dispatch and the worker releases it in the same `cache_locks` table, whatever `CACHE_DRIVER` is. | — | — | — | Q-090-06 A, ADR-090-01 |
 | FR-090-12 | The Docker compose file sets `CACHE_DRIVER` (the variable `config/cache.php` reads). `deploy-worker-mode.md` and `.env.example` state that a separate worker container needs a cache store shared with the web container (`database` or `redis`). | — | — | — | — | Q-090-06 B, ADR-090-01 |
 | FR-090-13 | Diagnostics check `WorkerCacheCheck`: inside a LycheeOrg image, with a queue connection other than `sync` and a default cache store whose driver is `file`, `array` or `apc`, a warning says the cache is not shared with the worker container and recommends `CACHE_DRIVER=database` or `CACHE_DRIVER=redis`. | `sync`, outside a LycheeOrg image (one host, one cache directory), or a `database`/`redis`/`memcached`/`dynamodb` cache → no line. | — | — | Diagnostics warning line. | Q-090-06 B |
+| FR-090-14 | The `database` cache driver is `App\Services\Cache\TransactionSafeDatabaseStore`, registered by `AppServiceProvider` with the configuration keys of Laravel's `database` driver. Its locks (`TransactionSafeDatabaseLock`) insert the lock row with `insertOrIgnore` (`ON CONFLICT DO NOTHING` on PostgreSQL, `INSERT IGNORE` on MySQL/MariaDB, `INSERT OR IGNORE` on SQLite) and, when the key exists, take the row over with Laravel's update (same owner, or expired). No statement of a lock acquisition fails. | A recompute job dispatched inside an open transaction while its copy waits (`AlbumSaved` fired inside `BulkAlbumController::patch`) is dropped and the transaction goes on, on every supported database. Applies to every lock of the `database` store (`Album\Create` tree lock, `ChunkSequenceRule`, `WatermarkerJob`, `EmbedMetadataJob` with `CACHE_DRIVER=database`). | — | — | — | ADR-090-01 |
 
 ## Non-Functional Requirements
 
@@ -80,6 +81,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | S-090-19 | Diagnostics, LycheeOrg image, `database` queue, `file` cache: warning. |
 | S-090-20 | Diagnostics, LycheeOrg image, `database` queue, `database` or `redis` cache: no line. |
 | S-090-21 | Diagnostics, `sync` queue or outside a LycheeOrg image, `file` cache: no line. |
+| S-090-22 | `database` queue, inside an open transaction: two dispatches for one key push one job, take one `cache_locks` row, and the transaction commits (PostgreSQL included). |
 
 ## Test Strategy
 - **Jobs (Precomputing suite, `BasePrecomputingTest`):** new `RecomputeJobDispatchDedupTest` covering S-090-02 … S-090-08 for each of the seven jobs, under `Queue::fake()` (the lock is taken on dispatch and never released, so a second dispatch is visibly dropped) and on the `sync` connection (lock released by processing). Written first, red before the jobs change.
@@ -87,7 +89,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 - **End to end:** `RecomputeJobDispatchDedupTest::testDatabaseQueueRunsOneRecomputeAfterTheUploads` pushes on the real `database` driver (SQLite test database) and drains it with `queue:work --once --queue=default,low` (S-090-01, S-090-05, S-090-09).
 - **Regression:** every existing class asserting on these jobs (`EventListenersTest`, `EventPropagationIntegrationTest`, `RecomputeAlbumStatsJobTest`, `RecomputeAlbumSizeJobTest`, `AlbumSizeEventListenerTest`, `AlbumSizePropagationTest`, `FulfillPreComputeTest`, `RecomputeAlbumStatsCommandTest`, `PhotoAddTest`, `RecomputeAlbumUserThumbsJobTest`, `RecomputePhotoBucketsJobTest`, `RecomputeAlbumPhotoBucketsJobTest`, `RecomputeChildAlbumBucketsJobTest`, `RecomputeRootAlbumBucketsJobTest`, `PhotoSortingBucketDispatchTest`, `AlbumSortingBucketDispatchTest`, `UpdateSettingsTest`).
 - **Diagnostics (Unit):** `RecomputeQueueCheckTest` covers S-090-10 … S-090-15; the LycheeOrg-image detection is overridden in the test (the marker files live in the image root).
-- **Lock store:** `RecomputeJobDispatchDedupTest` covers S-090-16 … S-090-18 (the migration is exercised through the lock rows, not tested on its own).
+- **Lock store:** `RecomputeJobDispatchDedupTest` covers S-090-16 … S-090-18 (the migration is exercised through the lock rows, not tested on its own) and S-090-22 (`testDuplicateDispatchInsideATransactionKeepsItUsable`; it and `testDatabaseQueueRunsOneRecomputeAfterTheUploads`, which runs inside the test transaction, fail on PostgreSQL with Laravel's own `DatabaseLock`).
 - **Diagnostics (Unit):** `WorkerCacheCheckTest` covers S-090-19 … S-090-21.
 - **REST / CLI / Frontend:** no change.
 
@@ -98,6 +100,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 |----|-------------|---------|
 | DO-090-01 | Unique key per recompute job (FR-090-03). | `app/Jobs/Recompute*Job.php` |
 | DO-090-02 | Tables `cache` (`key` primary, `value` mediumText, `expiration` bigint indexed) and `cache_locks` (`key` primary, `owner`, `expiration` bigint indexed), Laravel's stub. | `database/migrations/2026_10_12_000000_create_cache_tables.php`, `config/cache.php` |
+| DO-090-03 | `database` cache store whose locks never run a failing statement (FR-090-14). | `app/Services/Cache/TransactionSafeDatabaseStore.php`, `app/Services/Cache/TransactionSafeDatabaseLock.php`, `app/Providers/AppServiceProvider.php` |
 
 ### CLI Commands / Flags
 | ID | Command | Behaviour |
@@ -169,3 +172,4 @@ telemetry_events:
 - `dispatchSync` releases the lock of a waiting copy with the same key (force release, no owner): at most one extra copy can then be pushed.
 - `ApcStore` has no lock support; the admin "Flush cache" action clears the locks of the default store, not the `cache_locks` rows.
 - The LycheeOrg compose file mounts `uploads`, `logs` and `tmp` only: `storage/framework/cache` is per container.
+- Laravel 13.35 `DatabaseLock::acquire()` inserts the lock row and, on a unique-constraint violation, updates it. PostgreSQL aborts the open transaction on the violation (`SQLSTATE[25P02]` on the update); MySQL/MariaDB and SQLite keep the transaction usable.

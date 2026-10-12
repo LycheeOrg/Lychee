@@ -76,6 +76,17 @@ _Last updated: 2026-10-12_
 
 - [x] T-090-16 – Compose `CACHE_DRIVER`, `deploy-worker-mode.md` worker cache section, `.env.example` (FR-090-12).
 
+- [x] T-090-18 – Transaction test, red on PostgreSQL (FR-090-14, S-090-22).  
+  _Intent:_ `testDuplicateDispatchInsideATransactionKeepsItUsable`: two dispatches inside `DB::transaction` on the `database` queue. SQLite and MySQL/MariaDB keep the transaction usable: red only on PostgreSQL.  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeJobDispatchDedupTest` with `DB_CONNECTION=pgsql` (red: `SQLSTATE[25P02]`)
+
+- [x] T-090-19 – `TransactionSafeDatabaseStore` / `TransactionSafeDatabaseLock`, `database` driver registered in `AppServiceProvider` (FR-090-14).  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeJobDispatchDedupTest` on SQLite and with `DB_CONNECTION=pgsql` (green)  
+  - `php artisan test --filter=WorkerCacheCheckTest`  
+  - `vendor/bin/php-cs-fixer fix`, `make phpstan`
+
 - [ ] T-090-17 – Regression, quality gate, ADR-090-01, knowledge map, roadmap, drift gate.  
   _Verification commands:_  
   - regression classes of T-090-09 (one command at a time)  

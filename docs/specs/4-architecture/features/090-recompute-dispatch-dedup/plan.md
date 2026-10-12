@@ -17,6 +17,7 @@ Two uploads into one album on an asynchronous queue give `ProcessImageJob(1)`, `
 ## Dependencies & Interfaces
 - Laravel 13.35 `Illuminate\Bus\UniqueLock`, `PendingDispatch::shouldDispatch()`, `CallQueuedHandler` (lock released before `handle()` for `ShouldBeUniqueUntilProcessing`).
 - Default cache store with lock support (`file`, `database`, `redis`, `memcached`, `array` in tests).
+- Laravel 13.35 `Illuminate\Cache\DatabaseStore` / `DatabaseLock` (constructor and acquisition mirrored by `TransactionSafeDatabaseStore` / `TransactionSafeDatabaseLock`, FR-090-14).
 
 ## Assumptions & Risks
 - **Assumptions:** tests run on the `sync` connection and the `array` cache (`phpunit.xml`); the array store lives for one test.
@@ -89,6 +90,10 @@ Regression: 182 + 110 + 208 tests across the T-090-09 classes green. One existin
    - _Steps:_ red tests on `uniqueVia()` and `cache_locks`; migration with Laravel's `cache`/`cache_locks` stub; `HasSharedUniqueLockTrait` (`database` store when `queue.default` is not `sync`); `WorkerCacheCheck` (test first); compose `CACHE_DRIVER`; worker-cache docs; ADR-090-01.
    - _Approval:_ the schema change (two new tables) was approved by the owner on 2026-10-12 by choosing Q-090-06 A.
    - _Commands:_ `php artisan test --filter=RecomputeJobDispatchDedupTest`, `--filter=WorkerCacheCheckTest`, regression classes, php-cs-fixer, `make phpstan`.
+
+10. **I10 – Transaction-safe database locks (T-090-18, T-090-19)**
+   - _Steps:_ red test dispatching one key twice inside `DB::transaction` on the `database` queue (red on PostgreSQL only); `TransactionSafeDatabaseLock` (`insertOrIgnore`, then Laravel's owner/expiry update) and `TransactionSafeDatabaseStore`; `Cache::extend('database', …)` in `AppServiceProvider` with Laravel's configuration keys; FR-090-14, S-090-22, ADR-090-01 decision 3.
+   - _Commands:_ `php artisan test --filter=RecomputeJobDispatchDedupTest` on SQLite and with `DB_CONNECTION=pgsql DB_HOST=127.0.0.1 DB_PORT=<port>` against a throwaway `postgres:16` container (migrated with `php artisan migrate --force` under the same variables), `--filter=WorkerCacheCheckTest`, php-cs-fixer, `make phpstan`.
 
 ## Analysis Gate
 2026-10-12: spec, plan, tasks agree; Q-090-01 … 05 resolved and folded into FR-090-01 … 10. No UI, no ADR needed (job-local contract, no cross-module boundary). Every FR maps to a task; tests precede code.

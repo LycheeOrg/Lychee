@@ -260,6 +260,27 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 		self::assertSame(1, DB::table('cache_locks')->count());
 	}
 
+	/**
+	 * PostgreSQL aborts a transaction on its first failing statement: the
+	 * dropped duplicate dispatch (e.g. `AlbumSaved` fired inside the
+	 * transaction of `BulkAlbumController::patch`) must not run one.
+	 */
+	public function testDuplicateDispatchInsideATransactionKeepsItUsable(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->admin)->create();
+		Config::set('queue.default', 'database');
+
+		DB::transaction(function () use ($album): void {
+			RecomputeAlbumStatsJob::dispatch($album->id);
+			RecomputeAlbumStatsJob::dispatch($album->id);
+
+			self::assertSame(1, $this->countQueuedJobs('low'));
+		});
+
+		self::assertSame(1, $this->countQueuedJobs('low'));
+		self::assertSame(1, DB::table('cache_locks')->count());
+	}
+
 	private function countQueuedJobs(string $queue): int
 	{
 		return DB::table('jobs')->where('queue', '=', $queue)->count();
