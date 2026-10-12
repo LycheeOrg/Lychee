@@ -31,14 +31,18 @@ use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\TransactionSafeDatabaseStore;
 use App\Services\MoneyService;
 use App\Services\Telemetry\TraceService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Cache\Repository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -115,6 +119,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->registerOctaneSettings();
 		$this->registerThrottleQueues();
 		$this->registerObservers();
+		$this->registerDatabaseCacheStore();
 	}
 
 	/**
@@ -462,5 +467,28 @@ class AppServiceProvider extends ServiceProvider
 	{
 		Photo::observe(PhotoObserver::class);
 		Face::observe(FaceObserver::class);
+	}
+
+	/**
+	 * The `database` cache driver, built like Laravel's own but with
+	 * {@see TransactionSafeDatabaseStore}: its locks can be taken inside an open
+	 * transaction on PostgreSQL (ADR-090-01).
+	 */
+	private function registerDatabaseCacheStore(): void
+	{
+		Cache::extend('database', function (Application $app, array $config): Repository {
+			$store = new TransactionSafeDatabaseStore(
+				$app['db']->connection($config['connection'] ?? null),
+				$config['table'],
+				$config['prefix'] ?? $app['config']['cache.prefix'],
+				$config['lock_table'] ?? 'cache_locks',
+				$config['lock_lottery'] ?? [2, 100],
+				$config['lock_timeout'] ?? 86400,
+				$app['config']['cache.serializable_classes'] ?? null,
+			);
+			$store->setLockConnection($app['db']->connection($config['lock_connection'] ?? $config['connection'] ?? null));
+
+			return Cache::repository($store, $config);
+		});
 	}
 }
