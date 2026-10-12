@@ -41,6 +41,7 @@ use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WorkerCacheCheck;
 use App\DTO\DiagnosticData;
 use Illuminate\Pipeline\Pipeline;
 
@@ -83,6 +84,7 @@ class Errors
 		LocalGeoDecodingServiceCheck::class,
 		StatisticsIntegrityCheck::class,
 		RecomputeQueueCheck::class,
+		WorkerCacheCheck::class,
 		WebshopCheck::class,
 		SecurityAdvisoriesCheck::class,
 	];

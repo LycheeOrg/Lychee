@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\Constants\JobQueue;
 use App\DTO\AlbumSortingCriterion;
 use App\Events\AlbumChildrenChanged;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -49,6 +50,7 @@ class RecomputeRootAlbumBucketsJob implements ShouldQueue, ShouldBeUniqueUntilPr
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	public $tries = 3;
 

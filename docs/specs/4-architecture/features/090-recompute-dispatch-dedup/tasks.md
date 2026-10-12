@@ -1,6 +1,6 @@
 # Feature 090 Tasks – Recompute Dispatch Deduplication
 
-_Status: Testing_  
+_Status: In progress_  
 _Last updated: 2026-10-12_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -54,6 +54,32 @@ _Last updated: 2026-10-12_
   - `make phpstan`
 
 - [x] T-090-11 – Docs: knowledge map Jobs section, roadmap row, session snapshot.
+
+- [x] T-090-12 – Diagnostic checks `QUEUE_NAMES` inside LycheeOrg images, test first (FR-090-10, S-090-12, S-090-14, S-090-15).  
+  _Intent:_ `RecomputeQueueCheckTest` cases red, then `config('queue.worker_queues')` and the warning branch; `deploy-worker-mode.md` tells to set `QUEUE_NAMES` in the shared environment.  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeQueueCheckTest`  
+  - `vendor/bin/php-cs-fixer fix`, `make phpstan`
+
+- [x] T-090-13 – Lock-store tests, red (FR-090-11, S-090-16 … S-090-18).  
+  _Intent:_ `RecomputeJobDispatchDedupTest`: `uniqueVia()` per job on `database` and `sync`; end-to-end test counts `cache_locks` rows.  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeJobDispatchDedupTest` (red)
+
+- [x] T-090-14 – Migration `create_cache_tables` + `HasSharedUniqueLockTrait` on the seven jobs (FR-090-11, NFR-090-02).  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeJobDispatchDedupTest` (green)
+
+- [x] T-090-15 – `WorkerCacheCheck`, test first (FR-090-13, S-090-19 … S-090-21).  
+  _Verification commands:_  
+  - `php artisan test --filter=WorkerCacheCheckTest`
+
+- [x] T-090-16 – Compose `CACHE_DRIVER`, `deploy-worker-mode.md` worker cache section, `.env.example` (FR-090-12).
+
+- [ ] T-090-17 – Regression, quality gate, ADR-090-01, knowledge map, roadmap, drift gate.  
+  _Verification commands:_  
+  - regression classes of T-090-09 (one command at a time)  
+  - `vendor/bin/php-cs-fixer fix`, `make phpstan`
 
 ## Notes / TODOs
 - Never run two test commands at once (shared SQLite test database).

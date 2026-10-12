@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\Constants\JobQueue;
 use App\DTO\PhotoSortingCriterion;
 use App\Factories\AlbumFactory;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\AlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\PersonAlbum;
@@ -46,6 +47,7 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue, ShouldBeUniqueUntilPro
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	public const KIND_TAG = 'tag';
 	public const KIND_PERSON = 'person';

@@ -15,6 +15,7 @@ use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Events\AlbumComputedDataUpdated;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -53,6 +54,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue, ShouldBeUniqueUntilProcessi
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	/**
 	 * Number of times to retry the job.

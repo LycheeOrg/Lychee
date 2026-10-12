@@ -27,6 +27,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 - Merging jobs across targets (one job for several albums).
 - Behaviour on the `sync` queue.
 - Moving any other job to another queue.
+- The lock store of `WatermarkerJob` and `EmbedMetadataJob`.
 - The deployment documentation outside this repository.
 
 ## Functional Requirements
@@ -42,14 +43,17 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | FR-090-07 | No delay: the waiting copy is pushed without delay and runs when a worker reaches it. | — | — | — | — | Q-090-01 A |
 | FR-090-08 | The seven recompute jobs are pushed on the `low` queue (`#[Queue(JobQueue::LOW)]`, `App\Constants\JobQueue::LOW = 'low'`). Every other job stays on the connection's default queue. | A worker started with `--queue=default,low` runs them once `default` is empty: after every waiting upload/import, so with FR-090-01 a backlog ends with one recompute per target. | — | A worker that does not list `low` never runs them: stats, covers, sizes and buckets stay stale (FR-090-10 informs the admin). Uploads that never stop delay recomputes until `default` drains. | — | Q-090-05 B |
 | FR-090-09 | The Docker entrypoint (`docker/scripts/entrypoint.sh`, both LycheeOrg images) defaults `QUEUE_NAMES` to `default,low`; `deploy-worker-mode.md` and `.env.example` document `low`. | Docker worker without `QUEUE_NAMES` drains `default` then `low`. | — | `QUEUE_NAMES` set explicitly without `low`: recomputes never run. | Entrypoint prints the queue names on start. | Q-090-05 B |
-| FR-090-10 | Diagnostics check `RecomputeQueueCheck`: when the default queue connection is not `sync` and Lychee does not run in a LycheeOrg image (no `docker_target`/`frankenphp_target` marker: bare metal, linuxserver.io, custom images), Diagnostics show an info line saying recompute jobs use the `low` queue, with the worker command `php artisan queue:work --queue=<default queue of the connection>,low`. | `sync`, or a LycheeOrg image → no line. | — | — | Diagnostics info line. | Owner directive 2026-10-12 (Q-090-05) |
+| FR-090-10 | Diagnostics check `RecomputeQueueCheck`, only when the default queue connection is not `sync`. Outside a LycheeOrg image (no `docker_target`/`frankenphp_target` marker: bare metal, linuxserver.io, custom images): info line saying recompute jobs use the `low` queue, with the worker command `php artisan queue:work --queue=<default queue of the connection>,low`. Inside a LycheeOrg image: `QUEUE_NAMES` (read through `config('queue.worker_queues')`) is checked; when it is set and its comma-separated names do not include `low`, a warning says recompute jobs never run and gives `QUEUE_NAMES=<value>,low`. | `sync` → no line. LycheeOrg image with `QUEUE_NAMES` unset (entrypoint default `default,low`) or including `low` → no line. | Names are trimmed before comparison. | `QUEUE_NAMES` set only on the worker service is not visible to the web container where Diagnostics run: no line (the how-to tells to set it in the shared environment). | Diagnostics info / warning line. | Owner directive 2026-10-12 (Q-090-05), owner directive 2026-10-12 on the PR #4864 review |
+| FR-090-11 | On an asynchronous queue (`queue.default` not `sync`) the unique locks of the seven jobs live in the `database` cache store (`uniqueVia()`, `App\Jobs\Traits\HasSharedUniqueLockTrait`); on `sync` they live in the default cache store. | The web container takes the lock on dispatch and the worker releases it in the same `cache_locks` table, whatever `CACHE_DRIVER` is. | — | — | — | Q-090-06 A, ADR-090-01 |
+| FR-090-12 | The Docker compose file sets `CACHE_DRIVER` (the variable `config/cache.php` reads). `deploy-worker-mode.md` and `.env.example` state that a separate worker container needs a cache store shared with the web container (`database` or `redis`). | — | — | — | — | Q-090-06 B, ADR-090-01 |
+| FR-090-13 | Diagnostics check `WorkerCacheCheck`: inside a LycheeOrg image, with a queue connection other than `sync` and a default cache store whose driver is `file`, `array` or `apc`, a warning says the cache is not shared with the worker container and recommends `CACHE_DRIVER=database` or `CACHE_DRIVER=redis`. | `sync`, outside a LycheeOrg image (one host, one cache directory), or a `database`/`redis`/`memcached`/`dynamodb` cache → no line. | — | — | Diagnostics warning line. | Q-090-06 B |
 
 ## Non-Functional Requirements
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
 | NFR-090-01 | Queue size per recompute job class and key is bounded by one waiting copy (within the lock lifetime). | Queue growth on asynchronous queues. | Test: N dispatches for one key under `Queue::fake()` → one pushed. | Laravel `UniqueLock` | Owner directive 2026-10-12 |
-| NFR-090-02 | Locks use the default cache store, like `WatermarkerJob`/`EmbedMetadataJob`. No new dependency, no schema change. | Offline-only, no new services. | Review. | `config/cache.php` | AGENTS.md (dependencies) |
+| NFR-090-02 | No new dependency. One schema change: Laravel's `cache` and `cache_locks` tables (migration `2026_10_12_000000_create_cache_tables`), used by the lock store of FR-090-11 and by `CACHE_DRIVER=database`. | Offline-only, no new services; locks shared across containers. | Review; `testDatabaseQueueRunsOneRecomputeAfterTheUploads` reads `cache_locks`. | `config/cache.php` `database` store | AGENTS.md (dependencies, escalation policy: owner approved the schema change with Q-090-06 A) |
 
 ## Branch & Scenario Matrix
 
@@ -66,15 +70,25 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | S-090-09 | Each recompute job is pushed on the `low` queue, also from the upload path (`PhotoSaved`). |
 | S-090-10 | Diagnostics, `sync` connection: no recompute-queue line. |
 | S-090-11 | Diagnostics, `database` connection outside a LycheeOrg image: info line with `php artisan queue:work --queue=default,low`. |
-| S-090-12 | Diagnostics, `database` connection inside a LycheeOrg image: no line. |
+| S-090-12 | Diagnostics, `database` connection inside a LycheeOrg image, `QUEUE_NAMES` unset or including `low`: no line. |
 | S-090-13 | Diagnostics, `redis` connection with `REDIS_QUEUE=lychee`: the command names `--queue=lychee,low`. |
+| S-090-14 | Diagnostics, `database` connection inside a LycheeOrg image, `QUEUE_NAMES=default`: warning with `QUEUE_NAMES=default,low`. |
+| S-090-15 | Diagnostics, `sync` connection inside a LycheeOrg image with `QUEUE_NAMES=default`: no line. |
+| S-090-16 | Asynchronous queue: each job's `uniqueVia()` is the `database` store. |
+| S-090-17 | `sync` queue: each job's `uniqueVia()` is the default store. |
+| S-090-18 | Database queue end to end: one `cache_locks` row while the recompute waits, none after the worker started it. |
+| S-090-19 | Diagnostics, LycheeOrg image, `database` queue, `file` cache: warning. |
+| S-090-20 | Diagnostics, LycheeOrg image, `database` queue, `database` or `redis` cache: no line. |
+| S-090-21 | Diagnostics, `sync` queue or outside a LycheeOrg image, `file` cache: no line. |
 
 ## Test Strategy
 - **Jobs (Precomputing suite, `BasePrecomputingTest`):** new `RecomputeJobDispatchDedupTest` covering S-090-02 … S-090-08 for each of the seven jobs, under `Queue::fake()` (the lock is taken on dispatch and never released, so a second dispatch is visibly dropped) and on the `sync` connection (lock released by processing). Written first, red before the jobs change.
 - **Unit:** `DebouncesLatestJobTraitTest` and `RecomputeAlbumUserThumbsJobTest::testSupersededJobLogsWithItsOwnContext` are deleted with the trait (Q-090-04 A).
 - **End to end:** `RecomputeJobDispatchDedupTest::testDatabaseQueueRunsOneRecomputeAfterTheUploads` pushes on the real `database` driver (SQLite test database) and drains it with `queue:work --once --queue=default,low` (S-090-01, S-090-05, S-090-09).
 - **Regression:** every existing class asserting on these jobs (`EventListenersTest`, `EventPropagationIntegrationTest`, `RecomputeAlbumStatsJobTest`, `RecomputeAlbumSizeJobTest`, `AlbumSizeEventListenerTest`, `AlbumSizePropagationTest`, `FulfillPreComputeTest`, `RecomputeAlbumStatsCommandTest`, `PhotoAddTest`, `RecomputeAlbumUserThumbsJobTest`, `RecomputePhotoBucketsJobTest`, `RecomputeAlbumPhotoBucketsJobTest`, `RecomputeChildAlbumBucketsJobTest`, `RecomputeRootAlbumBucketsJobTest`, `PhotoSortingBucketDispatchTest`, `AlbumSortingBucketDispatchTest`, `UpdateSettingsTest`).
-- **Diagnostics (Unit):** `RecomputeQueueCheckTest` covers S-090-10 … S-090-13; the LycheeOrg-image detection is overridden in the test (the marker files live in the image root).
+- **Diagnostics (Unit):** `RecomputeQueueCheckTest` covers S-090-10 … S-090-15; the LycheeOrg-image detection is overridden in the test (the marker files live in the image root).
+- **Lock store:** `RecomputeJobDispatchDedupTest` covers S-090-16 … S-090-18 (the migration is exercised through the lock rows, not tested on its own).
+- **Diagnostics (Unit):** `WorkerCacheCheckTest` covers S-090-19 … S-090-21.
 - **REST / CLI / Frontend:** no change.
 
 ## Interface & Contract Catalogue
@@ -83,6 +97,7 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-090-01 | Unique key per recompute job (FR-090-03). | `app/Jobs/Recompute*Job.php` |
+| DO-090-02 | Tables `cache` (`key` primary, `value` mediumText, `expiration` bigint indexed) and `cache_locks` (`key` primary, `owner`, `expiration` bigint indexed), Laravel's stub. | `database/migrations/2026_10_12_000000_create_cache_tables.php`, `config/cache.php` |
 
 ### CLI Commands / Flags
 | ID | Command | Behaviour |
@@ -95,12 +110,15 @@ This feature deduplicates at dispatch time: a recompute job is pushed only when 
 | TE-090-01 | `Illuminate\Queue\Events\UniqueJobSkipped` (Laravel, not listened to) | job instance |
 
 ## Telemetry & Observability
-Dropped dispatches are not logged. The `jobs` log channel keeps the "Recomputing … for album …" line at the start of each run. Diagnostics carry the recompute-queue info line (FR-090-10).
+Dropped dispatches are not logged. Diagnostics carry the worker-cache warning line (FR-090-13). The `jobs` log channel keeps the "Recomputing … for album …" line at the start of each run. Diagnostics carry the recompute-queue info line (FR-090-10).
 
 ## Documentation Deliverables
 - Roadmap row 090.
-- `docker/scripts/entrypoint.sh` default `QUEUE_NAMES`, `docs/specs/2-how-to/deploy-worker-mode.md`, `.env.example`, Feature 002 spec (`QUEUE_NAMES` default) (FR-090-09).
-- Knowledge map: Jobs section (uniqueness of the recompute jobs; the `RecomputeAlbumStatsJob` bullet names the wrong middleware).
+- `docker/scripts/entrypoint.sh` default `QUEUE_NAMES`, `docs/specs/2-how-to/deploy-worker-mode.md` (set `QUEUE_NAMES` in the shared environment so Diagnostics can check it), `.env.example`, Feature 002 spec (`QUEUE_NAMES` default) (FR-090-09).
+- `config/queue.php` `worker_queues` (reads `QUEUE_NAMES`) (FR-090-10).
+- `docker-compose.yaml` `CACHE_DRIVER`, worker cache section in `deploy-worker-mode.md`, `.env.example` (FR-090-12).
+- ADR-090-01 (lock store and shared cache for workers).
+- Knowledge map: Jobs section (uniqueness and `low` queue of the recompute jobs, propagation notes under `RecomputeAlbumStatsJob`), Worker Mode `QUEUE_NAMES` default.
 
 ## Fixtures & Sample Data
 None.
@@ -149,4 +167,5 @@ telemetry_events:
 - `#[DebounceFor]` (Laravel 13) pushes every dispatch with a delay and deletes superseded copies when a worker pops them: one queue entry per dispatch.
 - `ShouldBeUnique` (lock until the job finishes) drops dispatches made while the job runs, after it read the database: those changes would stay uncomputed.
 - `dispatchSync` releases the lock of a waiting copy with the same key (force release, no owner): at most one extra copy can then be pushed.
-- `ApcStore` has no lock support; the admin "Flush cache" action clears the locks.
+- `ApcStore` has no lock support; the admin "Flush cache" action clears the locks of the default store, not the `cache_locks` rows.
+- The LycheeOrg compose file mounts `uploads`, `logs` and `tmp` only: `storage/framework/cache` is per container.

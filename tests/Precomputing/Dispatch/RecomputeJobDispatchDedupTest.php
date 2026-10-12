@@ -33,6 +33,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Bus\UniqueLock;
+use Illuminate\Cache\DatabaseStore;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
@@ -101,6 +102,26 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 
 		self::assertInstanceOf(ShouldBeUniqueUntilProcessing::class, $job);
 		self::assertSame(3600, $job->uniqueFor);
+	}
+
+	/**
+	 * The web container takes the lock, the worker container releases it:
+	 * on an asynchronous queue both must use the database.
+	 */
+	#[DataProvider('jobProvider')]
+	public function testUniqueLockLivesInTheDatabaseOnAsynchronousQueues(string $class, \Closure $make): void
+	{
+		Config::set('queue.default', 'database');
+
+		self::assertInstanceOf(DatabaseStore::class, $make('target-a')->uniqueVia()->getStore());
+	}
+
+	#[DataProvider('jobProvider')]
+	public function testUniqueLockLivesInTheDefaultStoreOnSync(string $class, \Closure $make): void
+	{
+		Config::set('queue.default', 'sync');
+
+		self::assertSame(Cache::store(), $make('target-a')->uniqueVia());
 	}
 
 	/**
@@ -222,17 +243,21 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 
 		self::assertSame(2, $this->countQueuedJobs('default'));
 		self::assertSame(1, $this->countQueuedJobs('low'));
+		self::assertSame(1, DB::table('cache_locks')->count());
 
 		$this->runWorkerOnce();
 		$this->runWorkerOnce();
 		self::assertSame(0, $this->countQueuedJobs('default'));
 		self::assertSame(1, $this->countQueuedJobs('low'));
+		self::assertSame(1, DB::table('cache_locks')->count());
 
 		$this->runWorkerOnce();
 		self::assertSame(0, $this->countQueuedJobs('low'));
+		self::assertSame(0, DB::table('cache_locks')->count());
 
 		RecomputeAlbumStatsJob::dispatch($album->id);
 		self::assertSame(1, $this->countQueuedJobs('low'));
+		self::assertSame(1, DB::table('cache_locks')->count());
 	}
 
 	private function countQueuedJobs(string $queue): int

@@ -221,7 +221,9 @@ x-common-env:
   # SESSION_DOMAIN: "${SESSION_DOMAIN:-null}"
 
   # Cache
-  CACHE_STORE: "${CACHE_STORE:-file}"
+  # 'file' keeps one cache per container: with the queue worker below (its own container),
+  # use a store shared by both containers, 'database' or 'redis' (Diagnostics warn otherwise).
+  CACHE_DRIVER: "${CACHE_DRIVER:-file}"
   CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
   # REDIS_HOST: "lychee_cache"
   # REDIS_PASSWORD: "null"

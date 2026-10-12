@@ -14,6 +14,7 @@ use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Events\PhotoBucketsRecomputed;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -51,6 +52,7 @@ class RecomputePhotoBucketsJob implements ShouldQueue, ShouldBeUniqueUntilProces
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 	use UTCBasedTimes;
 
 	public int $tries = 3;

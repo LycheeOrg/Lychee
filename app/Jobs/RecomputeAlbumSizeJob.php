@@ -12,6 +12,7 @@ use App\Constants\JobQueue;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumComputedDataUpdated;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\Album;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -39,6 +40,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue, ShouldBeUniqueUntilProcessin
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	/**
 	 * Number of times to retry the job.

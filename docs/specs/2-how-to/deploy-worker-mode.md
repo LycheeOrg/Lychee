@@ -52,6 +52,18 @@ QUEUE_CONNECTION=sync      # Synchronous processing (NOT recommended for worker 
 
 **Recommendation**: Use `redis` for production (faster, better concurrency). Use `database` if Redis is unavailable. **Never use `sync` in worker mode** - jobs will run synchronously, defeating the purpose of a queue worker.
 
+### CACHE_DRIVER (Critical for Worker)
+
+The web and the worker containers must share their cache:
+
+```bash
+CACHE_DRIVER=database  # Cache in the Lychee database (no extra service)
+CACHE_DRIVER=redis     # Cache in Redis (configure REDIS_HOST/REDIS_PASSWORD/REDIS_PORT)
+CACHE_DRIVER=file      # One cache per container: NOT suitable for worker mode
+```
+
+Set it in `.env` so both containers read it. With `file`, the caches evicted by jobs run in the worker stay stale in the web container; the Diagnostics page warns about it. The unique locks of the recompute jobs live in the database on any asynchronous queue, whatever the cache driver.
+
 ### QUEUE_NAMES (Optional)
 
 Comma-separated queue names, processed in order (a queue is only read once the previous ones are empty):
@@ -61,6 +73,8 @@ QUEUE_NAMES=default,low  # Default: uploads and imports first, then recomputatio
 ```
 
 Lychee pushes its recompute jobs (album statistics, covers, sizes, buckets) on the `low` queue, so they run after the waiting uploads and imports. **Keep `low` in the list**: a worker which does not process it never updates album statistics, covers, sizes or buckets.
+
+Set `QUEUE_NAMES` in `.env` (loaded by both the web and the worker container) rather than on the worker service alone: the Diagnostics page runs in the web container and warns when the list misses `low`.
 
 ### WORKER_MAX_TIME (Optional)
 
@@ -293,8 +307,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 ```
 
 **Requirements:**
-- Redis cache driver (`CACHE_STORE=redis`) for distributed locking
-- Or database cache driver for single-server deployments
+- A cache shared by every container (`CACHE_DRIVER=redis` or `CACHE_DRIVER=database`) for distributed locking
 
 ## Graceful Shutdown
 
@@ -438,7 +451,7 @@ Outside the LycheeOrg Docker images (bare metal, linuxserver.io, custom images),
 php artisan queue:work --queue=default,low
 ```
 
-Use the connection's default queue name instead of `default` if you changed it (`REDIS_QUEUE`, `SQS_QUEUE`). The Diagnostics page reminds you of this command when the queue connection is not `sync` outside a LycheeOrg image.
+Use the connection's default queue name instead of `default` if you changed it (`REDIS_QUEUE`, `SQS_QUEUE`). The Diagnostics page reminds you of this command when the queue connection is not `sync` outside a LycheeOrg image, and warns inside a LycheeOrg image when `QUEUE_NAMES` is set without `low`.
 
 ## References
 

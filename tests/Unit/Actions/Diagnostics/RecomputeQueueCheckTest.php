@@ -22,6 +22,7 @@ use App\Actions\Diagnostics\Pipes\Checks\RecomputeQueueCheck;
 use App\DTO\DiagnosticData;
 use App\Enum\MessageType;
 use Illuminate\Support\Facades\Config;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\AbstractTestCase;
 
 class RecomputeQueueCheckTest extends AbstractTestCase
@@ -75,9 +76,49 @@ class RecomputeQueueCheckTest extends AbstractTestCase
 		self::assertContains('Start the queue worker with: php artisan queue:work --queue=default,low', $result[0]->details);
 	}
 
-	public function testDatabaseConnectionInsideLycheeOrgImageAddsNothing(): void
+	/**
+	 * Unset `QUEUE_NAMES`: the entrypoint default (`default,low`) applies.
+	 */
+	#[DataProvider('queueNamesWithLowProvider')]
+	public function testLycheeOrgImageWhichProcessesLowAddsNothing(?string $queue_names): void
 	{
 		Config::set('queue.default', 'database');
+		Config::set('queue.worker_queues', $queue_names);
+
+		self::assertEmpty($this->runCheck(is_lychee_org_image: true));
+	}
+
+	/**
+	 * @return array<string,array{string|null}>
+	 */
+	public static function queueNamesWithLowProvider(): array
+	{
+		return [
+			'unset' => [null],
+			'empty' => [''],
+			'default,low' => ['default,low'],
+			'spaces' => [' default , low '],
+		];
+	}
+
+	public function testLycheeOrgImageWhichSkipsLowWarns(): void
+	{
+		Config::set('queue.default', 'database');
+		Config::set('queue.worker_queues', 'default');
+
+		$result = $this->runCheck(is_lychee_org_image: true);
+
+		self::assertCount(1, $result);
+		self::assertEquals(MessageType::WARNING, $result[0]->type);
+		self::assertEquals(RecomputeQueueCheck::class, $result[0]->from);
+		self::assertStringContainsString('QUEUE_NAMES', $result[0]->message);
+		self::assertContains('Set QUEUE_NAMES=default,low, or remove it to use the default (default,low).', $result[0]->details);
+	}
+
+	public function testSyncConnectionInsideLycheeOrgImageAddsNothing(): void
+	{
+		Config::set('queue.default', 'sync');
+		Config::set('queue.worker_queues', 'default');
 
 		self::assertEmpty($this->runCheck(is_lychee_org_image: true));
 	}

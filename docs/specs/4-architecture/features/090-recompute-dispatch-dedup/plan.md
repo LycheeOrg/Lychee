@@ -1,7 +1,7 @@
 # Feature Plan 090 – Recompute Dispatch Deduplication
 
 _Linked specification:_ [spec.md](spec.md)  
-_Status:_ Testing  
+_Status:_ In progress  
 _Last updated:_ 2026-10-12
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -39,7 +39,7 @@ Run after T-090-11: map FR-090-01 … 10 and S-090-01 … 13 to tests, rerun the
 | FR-090-07 | no delay | — (absence of delay; `testDatabaseQueueRunsOneRecomputeAfterTheUploads` pops the job right away) |
 | FR-090-08 | `#[Queue(JobQueue::LOW)]`, `App\Constants\JobQueue` | `testJobIsPushedOnTheLowQueue`, `testDatabaseQueueRunsOneRecomputeAfterTheUploads` |
 | FR-090-09 | `entrypoint.sh`, `deploy-worker-mode.md`, `.env.example`, Feature 002 spec | `bash -n docker/scripts/entrypoint.sh` |
-| FR-090-10 | `RecomputeQueueCheck` in `Errors::$pipes` | `RecomputeQueueCheckTest` (4) |
+| FR-090-10 | `RecomputeQueueCheck` in `Errors::$pipes`, `config('queue.worker_queues')` | `RecomputeQueueCheckTest` (9) |
 
 Regression: 182 + 110 + 208 tests across the T-090-09 classes green. One existing assertion changed: `ImportFromServerTest::testImportFromServerSuccess` counted `job_count + 2` pushes; creating the import album already queues its size/stats jobs, so the import's own copies are dropped (FR-090-01) and the test now asserts `job_count` pushes, `job_count - 2` `ImportImageJob`s and both recompute jobs on `low`. `php-cs-fixer` (uncached dry run on touched files) and `make phpstan` clean. No undocumented work. Not verified: a production instance with a running worker (owner).
 
@@ -80,6 +80,15 @@ Regression: 182 + 110 + 208 tests across the T-090-09 classes green. One existin
 | S-090-08 | I1 / T-090-01 | every job |
 | S-090-09 | I4 / T-090-05 | every job + upload path |
 | S-090-10 … 13 | I5 / T-090-07 | `RecomputeQueueCheckTest` |
+
+8. **I8 – PR #4864 review (T-090-12, T-090-13)**
+   - _Steps:_ owner directive: inside a LycheeOrg image the diagnostic checks `QUEUE_NAMES` (`config('queue.worker_queues')`) for `low` (tests first); how-to tells to set `QUEUE_NAMES` in the shared `.env`; stale knowledge-map note in the spec fixed. Lock store across containers blocked on Q-090-06.
+   - _Commands:_ `php artisan test --filter=RecomputeQueueCheckTest`, `--filter='ErrorsTest|InfoTest'`, php-cs-fixer, `make phpstan`.
+
+9. **I9 – Shared lock store and worker cache (T-090-13 … T-090-17, Q-090-06 A + B)**
+   - _Steps:_ red tests on `uniqueVia()` and `cache_locks`; migration with Laravel's `cache`/`cache_locks` stub; `HasSharedUniqueLockTrait` (`database` store when `queue.default` is not `sync`); `WorkerCacheCheck` (test first); compose `CACHE_DRIVER`; worker-cache docs; ADR-090-01.
+   - _Approval:_ the schema change (two new tables) was approved by the owner on 2026-10-12 by choosing Q-090-06 A.
+   - _Commands:_ `php artisan test --filter=RecomputeJobDispatchDedupTest`, `--filter=WorkerCacheCheckTest`, regression classes, php-cs-fixer, `make phpstan`.
 
 ## Analysis Gate
 2026-10-12: spec, plan, tasks agree; Q-090-01 … 05 resolved and folded into FR-090-01 … 10. No UI, no ADR needed (job-local contract, no cross-module boundary). Every FR maps to a task; tests precede code.

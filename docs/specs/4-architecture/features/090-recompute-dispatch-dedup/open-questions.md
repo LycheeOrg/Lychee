@@ -11,6 +11,7 @@ Open questions for [Feature 090](spec.md). Log every high- and medium-impact que
 | ~~Q-090-03~~ | 090 | Medium | Lock lifetime `uniqueFor`: A 1 hour, B 1 day, C no expiry | Resolved (A, spec FR-090-04) | 2026-10-12 | 2026-10-12 |
 | ~~Q-090-04~~ | 090 | Medium | `DebouncesLatestJobTrait`: A delete trait and its tests, B keep the file unused | Resolved (A, spec FR-090-05) | 2026-10-12 | 2026-10-12 |
 | ~~Q-090-05~~ | 090 | Medium | Queue priority for recompute jobs: A opt-in low-priority queue via env, B always on `low` queue, C no priority | Resolved (B + diagnostic, spec FR-090-08 … 10) | 2026-10-12 | 2026-10-12 |
+| ~~Q-090-06~~ | 090 | High | Unique locks across the web and worker containers: A database lock store when the queue is not `sync` (new `cache`/`cache_locks` migration), B require a shared cache store, C shorter `uniqueFor` | Resolved (A + B, spec FR-090-11 … 13, ADR-090-01) | 2026-10-12 | 2026-10-12 |
 
 ## Question Details
 
@@ -63,3 +64,13 @@ Open questions for [Feature 090](spec.md). Log every high- and medium-impact que
 - **A (recommended) – Opt-in low-priority queue.** New env `RECOMPUTE_QUEUE` (unset → the connection's default queue, as today). The seven recompute jobs are pushed on it. `.env.example` and `deploy-worker-mode.md` document `RECOMPUTE_QUEUE=low` together with `QUEUE_NAMES=default,low`. Pros: no existing worker stops recomputing; Docker users opt in with two variables. Cons: setting `RECOMPUTE_QUEUE` without adding it to the worker's queue list leaves stats stale; uploads that never stop delay recomputes until the default queue drains.
 - **B – Always on a `low` queue.** Docker default becomes `QUEUE_NAMES=default,low`; bare-metal workers must add `--queue=default,low`. Pros: every Docker install gets it without configuration. Cons: bare-metal workers and compose files that pass `QUEUE_NAMES=default` (the compose example in `deploy-worker-mode.md` does) silently stop recomputing.
 - **C – No priority.** Dedupe only. Pros: nothing to configure, no risk. Cons: with uploads arriving during a backlog, a recompute runs once per pass through the backlog instead of once at the end.
+
+### Q-090-06 · Unique locks across the web and worker containers
+
+**Status:** Resolved 2026-10-12, options A and B together (the owner's choice of A approves the migration).
+
+**Question:** Laravel keeps a unique-job lock in the default cache store. The web container takes the lock on dispatch; the worker releases it when it starts the job, in its own cache store. In the LycheeOrg Docker setup both containers use the `file` cache (`config/cache.php` reads `CACHE_DRIVER`, the compose file sets `CACHE_STORE`) and `storage/framework/cache` is not a shared volume: the worker's release never reaches the web container's lock, so every later dispatch for that album or photo is dropped until the lock expires (3600 s), even after the recompute ran. Bare metal and single-container images share one cache directory and are not affected. `WatermarkerJob`/`EmbedMetadataJob` (`ShouldBeUnique`) have the same problem today. Where should the locks live?
+
+- **A (recommended) – Database lock store when the queue is not `sync`.** New migration with Laravel's `cache` and `cache_locks` tables; the seven jobs' `uniqueVia()` returns `Cache::store('database')` when `queue.default` is not `sync`, the default store otherwise. Pros: web and worker always share the database, whatever the cache driver and queue driver; no deployment change; `CACHE_DRIVER=database` becomes usable (its tables are missing today). Cons: a schema change; one insert and one delete per dispatched recompute job on asynchronous queues.
+- **B – Require a shared cache store in worker mode.** Fix the compose variable (`CACHE_STORE` → `CACHE_DRIVER`), document `redis`/`database` cache for workers, Diagnostics warning when a LycheeOrg image runs a non-`sync` queue on the `file` cache. Pros: no schema change. Cons: the default Docker setup keeps dropping updates for up to an hour until reconfigured; `database` cache still needs the missing tables.
+- **C – Shorter `uniqueFor` (e.g. 60 s).** Pros: one-line change. Cons: does not fix it, every album still drops updates for up to the lock lifetime; the dedupe window shrinks with it.

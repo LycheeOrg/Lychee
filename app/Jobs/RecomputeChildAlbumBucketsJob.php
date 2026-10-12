@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Constants\JobQueue;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -44,6 +45,7 @@ class RecomputeChildAlbumBucketsJob implements ShouldQueue, ShouldBeUniqueUntilP
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	public $tries = 3;
 

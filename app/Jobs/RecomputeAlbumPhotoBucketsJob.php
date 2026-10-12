@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\Assets\DbBool;
 use App\Constants\JobQueue;
 use App\Events\AlbumPhotoSortingChanged;
+use App\Jobs\Traits\HasSharedUniqueLockTrait;
 use App\Models\Album;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
@@ -45,6 +46,7 @@ class RecomputeAlbumPhotoBucketsJob implements ShouldQueue, ShouldBeUniqueUntilP
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use HasSharedUniqueLockTrait;
 
 	public int $tries = 3;
 
