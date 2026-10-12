@@ -61,7 +61,7 @@ class WorkerCacheCheckTest extends AbstractTestCase
 		self::assertEquals(MessageType::WARNING, $result[0]->type);
 		self::assertEquals(WorkerCacheCheck::class, $result[0]->from);
 		self::assertStringContainsString('"file" cache', $result[0]->message);
-		self::assertContains('Set CACHE_DRIVER=database or CACHE_DRIVER=redis in .env (both containers).', $result[0]->details);
+		self::assertContains('Set CACHE_STORE=database or CACHE_STORE=redis in .env (both containers).', $result[0]->details);
 	}
 
 	#[DataProvider('sharedStoreProvider')]

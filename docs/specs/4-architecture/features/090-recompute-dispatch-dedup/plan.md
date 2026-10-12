@@ -87,13 +87,22 @@ Regression: 182 + 110 + 208 tests across the T-090-09 classes green. One existin
    - _Commands:_ `php artisan test --filter=RecomputeQueueCheckTest`, `--filter='ErrorsTest|InfoTest'`, php-cs-fixer, `make phpstan`.
 
 9. **I9 – Shared lock store and worker cache (T-090-13 … T-090-17, Q-090-06 A + B)**
-   - _Steps:_ red tests on `uniqueVia()` and `cache_locks`; migration with Laravel's `cache`/`cache_locks` stub; `HasSharedUniqueLockTrait` (`database` store when `queue.default` is not `sync`); `WorkerCacheCheck` (test first); compose `CACHE_DRIVER`; worker-cache docs; ADR-090-01.
+   - _Steps:_ red tests on `uniqueVia()` and `cache_locks`; migration with Laravel's `cache`/`cache_locks` stub; `HasSharedUniqueLockTrait` (`database` store when `queue.default` is not `sync`); `WorkerCacheCheck` (test first); compose `CACHE_STORE`; worker-cache docs; ADR-090-01.
    - _Approval:_ the schema change (two new tables) was approved by the owner on 2026-10-12 by choosing Q-090-06 A.
    - _Commands:_ `php artisan test --filter=RecomputeJobDispatchDedupTest`, `--filter=WorkerCacheCheckTest`, regression classes, php-cs-fixer, `make phpstan`.
 
 10. **I10 – Transaction-safe database locks (T-090-18, T-090-19)**
    - _Steps:_ red test dispatching one key twice inside `DB::transaction` on the `database` queue (red on PostgreSQL only); `TransactionSafeDatabaseLock` (`insertOrIgnore`, then Laravel's owner/expiry update) and `TransactionSafeDatabaseStore`; `Cache::extend('database', …)` in `AppServiceProvider` with Laravel's configuration keys; FR-090-14, S-090-22, ADR-090-01 decision 3.
    - _Commands:_ `php artisan test --filter=RecomputeJobDispatchDedupTest` on SQLite and with `DB_CONNECTION=pgsql DB_HOST=127.0.0.1 DB_PORT=<port>` against a throwaway `postgres:16` container (migrated with `php artisan migrate --force` under the same variables), `--filter=WorkerCacheCheckTest`, php-cs-fixer, `make phpstan`.
+
+11. **I11 – `high` queue name (T-090-21, T-090-22, Q-090-08 C)**
+   - _Steps:_ red diagnostic tests on the `high,<default>,low` command and the `high,default,low` default; `JobQueue::HIGH` (no job pushed on it); `RecomputeQueueCheck` messages; entrypoint default `QUEUE_NAMES=high,default,low`; `config/queue.php`, `.env.example`, `deploy-worker-mode.md`, Feature 002 spec, knowledge map. The warning still fires only without `low`.
+   - _Commands:_ `php artisan test --filter=RecomputeQueueCheckTest`, `--filter=RecomputeJobDispatchDedupTest`, `bash -n docker/scripts/entrypoint.sh`, php-cs-fixer, `make phpstan`.
+
+12. **I12 – `CACHE_STORE` with `CACHE_DRIVER` fallback (T-090-23, T-090-24, Q-090-07 D + fallback)**
+   - _Steps:_ red `CacheStoreEnvTest` (both config files, three environments) and `WorkerCacheCheckTest` advice; `config/cache.php` `env('CACHE_STORE', env('CACHE_DRIVER', 'file'))` (`config/data.php` already reads it so); compose `CACHE_STORE: "${CACHE_STORE:-${CACHE_DRIVER:-file}}"`; `.env.example`, `phpunit*.xml`, CI env files, docs, ADR-090-01 decision 4.
+   - _Approval:_ the `CACHE_DRIVER` fallback was requested by the owner on 2026-10-12 (Q-090-07), overriding the greenfield stance for this variable.
+   - _Commands:_ `php artisan test --filter='CacheStoreEnvTest|WorkerCacheCheckTest'`, `docker compose --env-file /dev/null config`, php-cs-fixer, `make phpstan`.
 
 ## Analysis Gate
 2026-10-12: spec, plan, tasks agree; Q-090-01 … 05 resolved and folded into FR-090-01 … 10. No UI, no ADR needed (job-local contract, no cross-module boundary). Every FR maps to a task; tests precede code.
@@ -104,5 +113,5 @@ Regression: 182 + 110 + 208 tests across the T-090-09 classes green. One existin
 - Knowledge map, roadmap, worker docs updated.
 
 ## Follow-ups / Backlog
-- The deployment documentation outside this repository (LycheeOrg website, linuxserver.io image) must mention `--queue=default,low`.
+- The deployment documentation outside this repository (LycheeOrg website, linuxserver.io image) must mention `--queue=high,default,low`.
 - Owner check on an instance with a database/redis worker: upload a batch into one album, watch the `jobs` table (`queue = 'low'` holds one row per recompute job and album).

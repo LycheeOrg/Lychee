@@ -39,7 +39,7 @@ class WorkerCacheCheck implements DiagnosticPipe
 			self::class,
 			[
 				'Jobs run by the worker do not refresh the caches of the web container.',
-				'Set CACHE_DRIVER=database or CACHE_DRIVER=redis in .env (both containers).',
+				'Set CACHE_STORE=database or CACHE_STORE=redis in .env (both containers).',
 			]
 		);
 

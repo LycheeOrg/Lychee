@@ -74,7 +74,7 @@ _Last updated: 2026-10-12_
   _Verification commands:_  
   - `php artisan test --filter=WorkerCacheCheckTest`
 
-- [x] T-090-16 – Compose `CACHE_DRIVER`, `deploy-worker-mode.md` worker cache section, `.env.example` (FR-090-12).
+- [x] T-090-16 – Compose `CACHE_STORE`, `deploy-worker-mode.md` worker cache section, `.env.example` (FR-090-12).
 
 - [x] T-090-18 – Transaction test, red on PostgreSQL (FR-090-14, S-090-22).  
   _Intent:_ `testDuplicateDispatchInsideATransactionKeepsItUsable`: two dispatches inside `DB::transaction` on the `database` queue. SQLite and MySQL/MariaDB keep the transaction usable: red only on PostgreSQL.  
@@ -85,6 +85,32 @@ _Last updated: 2026-10-12_
   _Verification commands:_  
   - `php artisan test --filter=RecomputeJobDispatchDedupTest` on SQLite and with `DB_CONNECTION=pgsql` (green)  
   - `php artisan test --filter=WorkerCacheCheckTest`  
+  - `vendor/bin/php-cs-fixer fix`, `make phpstan`
+
+- [x] T-090-20 – PR #4864 round 2: table counts for `cache`/`cache_locks` in `OptimizeTablesTest` (55 / 56 MySQL) and `OptimizeDbTest` (56 MySQL); `deploy-worker-mode.md` deduplication section and sample queue line; spec goal bounded by the lock lifetime. Compose `CACHE_STORE` → Q-090-07.  
+  _Verification commands:_  
+  - `php artisan test --filter=OptimizeTablesTest` (SQLite, PostgreSQL), `--filter=OptimizeDbTest` (SQLite)
+
+- [x] T-090-21 – `high,default,low` diagnostic tests, red (FR-090-10, S-090-11 … S-090-14, Q-090-08 C).  
+  _Intent:_ `RecomputeQueueCheckTest`: bare-metal command `--queue=high,<default>,low`, warning default `(high,default,low)`, `high,default,low` adds nothing; `RecomputeJobDispatchDedupTest` worker drains `high,default,low`.  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeQueueCheckTest` (red)
+
+- [x] T-090-22 – `JobQueue::HIGH`, `RecomputeQueueCheck`, entrypoint default `QUEUE_NAMES=high,default,low`, `config/queue.php`, `.env.example`, `deploy-worker-mode.md`, Feature 002 spec, knowledge map (FR-090-08 … FR-090-10).  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeQueueCheckTest`, `--filter=RecomputeJobDispatchDedupTest`  
+  - `bash -n docker/scripts/entrypoint.sh`  
+  - `vendor/bin/php-cs-fixer fix`, `make phpstan`
+
+- [x] T-090-23 – `CACHE_STORE` tests, red (FR-090-15, S-090-23, Q-090-07).  
+  _Intent:_ `CacheStoreEnvTest` loads `config/cache.php` and `config/data.php` with `CACHE_STORE`/`CACHE_DRIVER` set or unset; `WorkerCacheCheckTest` expects `CACHE_STORE` in the advice.  
+  _Verification commands:_  
+  - `php artisan test --filter='CacheStoreEnvTest|WorkerCacheCheckTest'` (red)
+
+- [x] T-090-24 – Rename to `CACHE_STORE` with `CACHE_DRIVER` fallback: `config/cache.php`, compose, `.env.example`, `WorkerCacheCheck`, migration comment, `phpunit*.xml`, `.github/workflows/.env.*`, `deploy-worker-mode.md`, `managed-cache-service.md`, Features 032/052/053 specs, ADR-090-01 (FR-090-15).  
+  _Verification commands:_  
+  - `php artisan test --filter='CacheStoreEnvTest|WorkerCacheCheckTest'`  
+  - `docker compose --env-file /dev/null config` with `CACHE_STORE`/`CACHE_DRIVER` combinations (only `CACHE_STORE` lines inspected)  
   - `vendor/bin/php-cs-fixer fix`, `make phpstan`
 
 - [ ] T-090-17 – Regression, quality gate, ADR-090-01, knowledge map, roadmap, drift gate.  

@@ -73,11 +73,11 @@ class RecomputeQueueCheckTest extends AbstractTestCase
 		self::assertEquals(MessageType::INFO, $result[0]->type);
 		self::assertEquals(RecomputeQueueCheck::class, $result[0]->from);
 		self::assertStringContainsString('"low" queue', $result[0]->message);
-		self::assertContains('Start the queue worker with: php artisan queue:work --queue=default,low', $result[0]->details);
+		self::assertContains('Start the queue worker with: php artisan queue:work --queue=high,default,low', $result[0]->details);
 	}
 
 	/**
-	 * Unset `QUEUE_NAMES`: the entrypoint default (`default,low`) applies.
+	 * Unset `QUEUE_NAMES`: the entrypoint default (`high,default,low`) applies.
 	 */
 	#[DataProvider('queueNamesWithLowProvider')]
 	public function testLycheeOrgImageWhichProcessesLowAddsNothing(?string $queue_names): void
@@ -97,6 +97,7 @@ class RecomputeQueueCheckTest extends AbstractTestCase
 			'unset' => [null],
 			'empty' => [''],
 			'default,low' => ['default,low'],
+			'high,default,low' => ['high,default,low'],
 			'spaces' => [' default , low '],
 		];
 	}
@@ -112,7 +113,7 @@ class RecomputeQueueCheckTest extends AbstractTestCase
 		self::assertEquals(MessageType::WARNING, $result[0]->type);
 		self::assertEquals(RecomputeQueueCheck::class, $result[0]->from);
 		self::assertStringContainsString('QUEUE_NAMES', $result[0]->message);
-		self::assertContains('Set QUEUE_NAMES=default,low, or remove it to use the default (default,low).', $result[0]->details);
+		self::assertContains('Set QUEUE_NAMES=default,low, or remove it to use the default (high,default,low).', $result[0]->details);
 	}
 
 	public function testSyncConnectionInsideLycheeOrgImageAddsNothing(): void
@@ -131,6 +132,6 @@ class RecomputeQueueCheckTest extends AbstractTestCase
 		$result = $this->runCheck(is_lychee_org_image: false);
 
 		self::assertCount(1, $result);
-		self::assertContains('Start the queue worker with: php artisan queue:work --queue=lychee,low', $result[0]->details);
+		self::assertContains('Start the queue worker with: php artisan queue:work --queue=high,lychee,low', $result[0]->details);
 	}
 }

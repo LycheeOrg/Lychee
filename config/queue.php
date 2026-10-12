@@ -94,8 +94,8 @@ return [
 	|
 	| Comma-separated queue list given to `queue:work --queue` by the worker
 	| of the LycheeOrg images (docker/scripts/entrypoint.sh, default
-	| "default,low"). Only read by Diagnostics, which warns when it misses
-	| the "low" queue of the recompute jobs.
+	| "high,default,low"). Only read by Diagnostics, which warns when it
+	| misses the "low" queue of the recompute jobs.
 	|
 	*/
 

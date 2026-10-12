@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * `cache_locks` holds the unique locks of the recompute jobs on asynchronous
  * queues, shared by the web and the worker containers (ADR-090-01). `cache`
- * makes `CACHE_DRIVER=database` usable.
+ * makes `CACHE_STORE=database` usable.
  */
 return new class() extends Migration {
 	public function up(): void

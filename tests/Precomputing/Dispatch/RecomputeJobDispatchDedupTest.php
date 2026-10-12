@@ -126,7 +126,7 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 
 	/**
 	 * The literal queue name is the contract: workers are started with
-	 * `--queue=default,low`.
+	 * `--queue=high,default,low`.
 	 */
 	#[DataProvider('jobProvider')]
 	public function testJobIsPushedOnTheLowQueue(string $class, \Closure $make): void
@@ -288,7 +288,7 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 
 	private function runWorkerOnce(): void
 	{
-		Artisan::call('queue:work', ['connection' => 'database', '--queue' => 'default,low', '--once' => true]);
+		Artisan::call('queue:work', ['connection' => 'database', '--queue' => 'high,default,low', '--once' => true]);
 	}
 
 	public function testTwoUploadsIntoOneAlbumPushOneRecomputePerJob(): void

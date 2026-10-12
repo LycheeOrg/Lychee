@@ -18,7 +18,7 @@ use App\DTO\DiagnosticData;
  * the `low` queue: a worker which does not list it never runs them.
  *
  * The LycheeOrg images start their worker with `QUEUE_NAMES` (default
- * `default,low`): warn when it was set without `low`. Every other setup
+ * `high,default,low`): warn when it was set without `low`. Every other setup
  * (bare metal, linuxserver.io, custom images) is told the worker command.
  */
 class RecomputeQueueCheck implements DiagnosticPipe
@@ -62,7 +62,7 @@ class RecomputeQueueCheck implements DiagnosticPipe
 		return DiagnosticData::warn(
 			'Queue: QUEUE_NAMES does not include "' . JobQueue::LOW . '": album statistics, covers, sizes and buckets are never recomputed.',
 			self::class,
-			['Set QUEUE_NAMES=' . $queue_names . ',' . JobQueue::LOW . ', or remove it to use the default (default,' . JobQueue::LOW . ').']
+			['Set QUEUE_NAMES=' . $queue_names . ',' . JobQueue::LOW . ', or remove it to use the default (' . JobQueue::HIGH . ',default,' . JobQueue::LOW . ').']
 		);
 	}
 
@@ -73,7 +73,7 @@ class RecomputeQueueCheck implements DiagnosticPipe
 		return DiagnosticData::info(
 			'Queue: album statistics, covers, sizes and buckets are recomputed on the "' . JobQueue::LOW . '" queue.',
 			self::class,
-			['Start the queue worker with: php artisan queue:work --queue=' . $default_queue . ',' . JobQueue::LOW]
+			['Start the queue worker with: php artisan queue:work --queue=' . JobQueue::HIGH . ',' . $default_queue . ',' . JobQueue::LOW]
 		);
 	}
 }
