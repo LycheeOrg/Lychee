@@ -54,17 +54,13 @@ QUEUE_CONNECTION=sync      # Synchronous processing (NOT recommended for worker 
 
 ### QUEUE_NAMES (Optional)
 
-Comma-separated queue names for priority processing:
+Comma-separated queue names, processed in order (a queue is only read once the previous ones are empty):
 
 ```bash
-QUEUE_NAMES=default           # Default: process only 'default' queue
-QUEUE_NAMES=high,default,low  # Process high-priority jobs first, then default, then low
+QUEUE_NAMES=default,low  # Default: uploads and imports first, then recomputations
 ```
 
-Example use cases:
-- `high`: User-initiated photo uploads/processing
-- `default`: General background tasks
-- `low`: Cleanup, maintenance, non-urgent operations
+Lychee pushes its recompute jobs (album statistics, covers, sizes, buckets) on the `low` queue, so they run after the waiting uploads and imports. **Keep `low` in the list**: a worker which does not process it never updates album statistics, covers, sizes or buckets.
 
 ### WORKER_MAX_TIME (Optional)
 
@@ -95,7 +91,7 @@ services:
     environment:
       LYCHEE_MODE: worker  # Enable worker mode
       QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
-      QUEUE_NAMES: "${QUEUE_NAMES:-default}"
+      QUEUE_NAMES: "${QUEUE_NAMES:-default,low}"
       WORKER_MAX_TIME: "${WORKER_MAX_TIME:-3600}"
 
       # Database (same as lychee_api)
@@ -434,26 +430,15 @@ docker compose up -d --scale lychee_worker=2
 
 ## Advanced: Priority Queues
 
-Dispatch jobs to specific queues:
+Every job runs on the connection's default queue (`default`), except the recompute jobs (`RecomputeAlbumStatsJob`, `RecomputeAlbumSizeJob`, `RecomputeAlbumUserThumbsJob` and the four bucket jobs), which declare `#[Queue(JobQueue::LOW)]`. A recompute job for a given album is queued once while it waits (`ShouldBeUniqueUntilProcessing`): an upload of many photos ends with one recompute per album, after the uploads.
 
-```php
-// High-priority (user-initiated)
-ExtractColoursJob::dispatch($photoId)->onQueue('high');
-
-// Default priority
-ProcessImageJob::dispatch($photoId);  // Defaults to 'default' queue
-
-// Low-priority (cleanup)
-PruneOldLogsJob::dispatch()->onQueue('low');
-```
-
-Configure worker to process high-priority first:
+Outside the LycheeOrg Docker images (bare metal, linuxserver.io, custom images), start the worker with both queues:
 
 ```bash
-QUEUE_NAMES=high,default,low
+php artisan queue:work --queue=default,low
 ```
 
-Worker processes all `high` jobs before moving to `default`, then `low`.
+Use the connection's default queue name instead of `default` if you changed it (`REDIS_QUEUE`, `SQS_QUEUE`). The Diagnostics page reminds you of this command when the queue connection is not `sync` outside a LycheeOrg image.
 
 ## References
 

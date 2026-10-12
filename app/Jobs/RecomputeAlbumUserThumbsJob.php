@@ -8,9 +8,9 @@
 
 namespace App\Jobs;
 
+use App\Constants\JobQueue;
 use App\DTO\PhotoSortingCriterion;
 use App\Factories\AlbumFactory;
-use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\PersonAlbum;
@@ -19,8 +19,10 @@ use App\Models\User;
 use App\Relations\HasManyPhotosByPerson;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
@@ -34,20 +36,20 @@ use Illuminate\Support\Facades\Log;
  * the album has no row yet, and gets one lazily seeded on their next read
  * (see {@link \App\Models\TagAlbum::getThumbAttribute()} and siblings).
  * This avoids recomputing for every user in the system on every photo edit.
+ *
+ * Unique until processing, see {@see RecomputeAlbumStatsJob}.
  */
-class RecomputeAlbumUserThumbsJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputeAlbumUserThumbsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
-	use DebouncesLatestJobTrait;
 
 	public const KIND_TAG = 'tag';
 	public const KIND_PERSON = 'person';
 	public const KIND_SMART = 'smart';
-
-	private string $jobId;
 
 	/**
 	 * Number of times to retry the job.
@@ -57,6 +59,13 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 	public $tries = 3;
 
 	/**
+	 * Lifetime of the unique lock, in seconds.
+	 *
+	 * @var int
+	 */
+	public $uniqueFor = 3600;
+
+	/**
 	 * @param string $album_kind one of {@link self::KIND_TAG}, {@link self::KIND_PERSON}, {@link self::KIND_SMART}
 	 * @param string $album_id   base_albums.id (tag/person) or a SmartAlbumType value (smart)
 	 */
@@ -64,17 +73,11 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 		public string $album_kind,
 		public string $album_id,
 	) {
-		$this->registerAsLatestJob();
 	}
 
-	protected function latestJobCacheKey(): string
+	public function uniqueId(): string
 	{
-		return 'album_user_thumb_latest_job:' . $this->album_kind . ':' . $this->album_id;
-	}
-
-	protected function latestJobLogContext(): string
-	{
-		return "{$this->album_kind} album {$this->album_id}";
+		return $this->album_kind . ':' . $this->album_id;
 	}
 
 	/**
@@ -85,7 +88,6 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::channel('jobs')->info("Recomputing user thumbs for {$this->album_kind} album {$this->album_id}");
-		$this->forgetLatestJobMarker();
 
 		/** @var array<int,int|null> $user_ids */
 		$user_ids = AlbumUserThumb::query()->where('album_id', '=', $this->album_id)->pluck('user_id')->all();

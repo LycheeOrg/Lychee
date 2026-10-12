@@ -9,12 +9,12 @@
 namespace App\Jobs;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\JobQueue;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Events\AlbumComputedDataUpdated;
-use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -24,8 +24,10 @@ use App\Policies\PhotoQueryPolicy;
 use App\Services\AlbumBucketComputer;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -38,16 +40,19 @@ use Illuminate\Support\Facades\Log;
  * - max_taken_at, min_taken_at
  * - num_children, num_photos
  * - auto_cover_id_max_privilege, auto_cover_id_least_privilege
+ *
+ * Unique until processing: while a copy for the same album waits in the
+ * queue, further dispatches are dropped - the waiting copy reads the latest
+ * state when it runs. The lock is released when a worker starts the job, so
+ * a change made after that point queues a new copy.
  */
-class RecomputeAlbumStatsJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputeAlbumStatsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
-	use DebouncesLatestJobTrait;
-
-	private string $jobId;
 
 	/**
 	 * Number of times to retry the job.
@@ -57,23 +62,28 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public $tries = 3;
 
 	/**
+	 * Lifetime of the unique lock, in seconds.
+	 *
+	 * @var int
+	 */
+	public $uniqueFor = 3600;
+
+	/**
 	 * @param string $album_id The ID of the album to recompute
 	 */
 	public function __construct(
 		public string $album_id,
 		public bool $propagate_to_parent = true,
 	) {
-		$this->registerAsLatestJob();
 	}
 
-	protected function latestJobCacheKey(): string
+	/**
+	 * The propagation flag is part of the key: a waiting copy which does not
+	 * propagate must not swallow a dispatch which has to update the ancestors.
+	 */
+	public function uniqueId(): string
 	{
-		return 'album_stats_latest_job:' . $this->album_id;
-	}
-
-	protected function latestJobLogContext(): string
-	{
-		return "album {$this->album_id}";
+		return $this->album_id . ':' . ($this->propagate_to_parent ? 'propagate' : 'local');
 	}
 
 	/**
@@ -84,7 +94,6 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::channel('jobs')->info("Recomputing stats for album {$this->album_id}");
-		$this->forgetLatestJobMarker();
 
 		// This is a safety check to avoid recomputing albums
 		// when no admin user exists.

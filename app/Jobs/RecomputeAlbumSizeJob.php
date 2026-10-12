@@ -8,14 +8,16 @@
 
 namespace App\Jobs;
 
+use App\Constants\JobQueue;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumComputedDataUpdated;
-use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\Album;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -27,16 +29,16 @@ use Illuminate\Support\Facades\Log;
  * Queries size_variants for all photos in the album (direct children only),
  * groups by variant type, sums filesize, and stores in album_size_statistics table.
  * Excludes PLACEHOLDER variants from all calculations.
+ *
+ * Unique until processing, see {@see RecomputeAlbumStatsJob}.
  */
-class RecomputeAlbumSizeJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputeAlbumSizeJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
-	use DebouncesLatestJobTrait;
-
-	private string $jobId;
 
 	/**
 	 * Number of times to retry the job.
@@ -46,23 +48,28 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	public $tries = 3;
 
 	/**
+	 * Lifetime of the unique lock, in seconds.
+	 *
+	 * @var int
+	 */
+	public $uniqueFor = 3600;
+
+	/**
 	 * @param string $album_id The ID of the album to recompute
 	 */
 	public function __construct(
 		public string $album_id,
 		public bool $propagate_to_parent = true,
 	) {
-		$this->registerAsLatestJob();
 	}
 
-	protected function latestJobCacheKey(): string
+	/**
+	 * The propagation flag is part of the key: a waiting copy which does not
+	 * propagate must not swallow a dispatch which has to update the ancestors.
+	 */
+	public function uniqueId(): string
 	{
-		return 'album_size_latest_job:' . $this->album_id;
-	}
-
-	protected function latestJobLogContext(): string
-	{
-		return "album {$this->album_id}";
+		return $this->album_id . ':' . ($this->propagate_to_parent ? 'propagate' : 'local');
 	}
 
 	/**
@@ -72,8 +79,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	 */
 	public function handle(): void
 	{
-		Log::channel('jobs')->info("Recomputing sizes for album {$this->album_id} (job {$this->jobId})");
-		$this->forgetLatestJobMarker();
+		Log::channel('jobs')->info("Recomputing sizes for album {$this->album_id}");
 
 		try {
 			// Fetch the album

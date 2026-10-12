@@ -140,7 +140,9 @@ worker)
   echo "🔄 Auto-restart enabled: worker will restart if it exits"
 
   # Get queue configuration from environment
-  QUEUE_NAMES=${QUEUE_NAMES:-default}
+  # Recompute jobs (album statistics, covers, sizes, buckets) are pushed on 'low':
+  # it must stay in the list, after 'default'.
+  QUEUE_NAMES=${QUEUE_NAMES:-default,low}
   WORKER_MAX_TIME=${WORKER_MAX_TIME:-3600}
   QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
 

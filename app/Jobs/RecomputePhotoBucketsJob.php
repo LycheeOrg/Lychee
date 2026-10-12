@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Assets\DbBool;
+use App\Constants\JobQueue;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelinePhotoGranularity;
@@ -16,8 +17,10 @@ use App\Events\PhotoBucketsRecomputed;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Services\PhotoBucketComputer;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -38,8 +41,11 @@ use Illuminate\Support\Facades\DB;
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one
  * bulk `upsert()`, never one save per linked album — in practice a photo is
  * linked into a small, bounded number of albums, never album-count-scale.
+ *
+ * Unique until processing, see {@see RecomputeAlbumStatsJob}.
  */
-class RecomputePhotoBucketsJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputePhotoBucketsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -49,9 +55,19 @@ class RecomputePhotoBucketsJob implements ShouldQueue
 
 	public int $tries = 3;
 
+	/**
+	 * Lifetime of the unique lock, in seconds.
+	 */
+	public int $uniqueFor = 3600;
+
 	public function __construct(
 		public string $photo_id,
 	) {
+	}
+
+	public function uniqueId(): string
+	{
+		return $this->photo_id;
 	}
 
 	public function handle(): void

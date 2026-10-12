@@ -8,11 +8,14 @@
 
 namespace App\Jobs;
 
+use App\Constants\JobQueue;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
@@ -31,8 +34,11 @@ use Illuminate\Support\Facades\Log;
  * direct child in one round trip, never one save per child (see plan.md
  * Risks: this is a correctness requirement for this feature's premise at
  * 7,000+-child scale, not a style nit).
+ *
+ * Unique until processing, see {@see RecomputeAlbumStatsJob}.
  */
-class RecomputeChildAlbumBucketsJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputeChildAlbumBucketsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -41,9 +47,21 @@ class RecomputeChildAlbumBucketsJob implements ShouldQueue
 
 	public $tries = 3;
 
+	/**
+	 * Lifetime of the unique lock, in seconds.
+	 *
+	 * @var int
+	 */
+	public $uniqueFor = 3600;
+
 	public function __construct(
 		public string $parent_album_id,
 	) {
+	}
+
+	public function uniqueId(): string
+	{
+		return $this->parent_album_id;
 	}
 
 	public function handle(): void

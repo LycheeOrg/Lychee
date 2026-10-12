@@ -8,13 +8,16 @@
 
 namespace App\Jobs;
 
+use App\Constants\JobQueue;
 use App\DTO\AlbumSortingCriterion;
 use App\Events\AlbumChildrenChanged;
 use App\Models\Album;
 use App\Services\AlbumBucketComputer;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
@@ -35,8 +38,12 @@ use Illuminate\Support\Facades\DB;
  * Performs exactly one `SELECT` (raw rows, no Eloquent hydration) and one
  * bulk `upsert()`, mirroring
  * {@see RecomputeChildAlbumBucketsJob}'s shape exactly.
+ *
+ * Unique until processing, see {@see RecomputeAlbumStatsJob}: one key for
+ * the whole instance.
  */
-class RecomputeRootAlbumBucketsJob implements ShouldQueue
+#[Queue(JobQueue::LOW)]
+class RecomputeRootAlbumBucketsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -44,6 +51,13 @@ class RecomputeRootAlbumBucketsJob implements ShouldQueue
 	use SerializesModels;
 
 	public $tries = 3;
+
+	/**
+	 * Lifetime of the unique lock, in seconds.
+	 *
+	 * @var int
+	 */
+	public $uniqueFor = 3600;
 
 	public function handle(): void
 	{

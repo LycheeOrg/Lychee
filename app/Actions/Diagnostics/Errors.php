@@ -33,6 +33,7 @@ use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\RecomputeQueueCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SecurityAdvisoriesCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
@@ -81,6 +82,7 @@ class Errors
 		AiVisionNsfwServiceCheck::class,
 		LocalGeoDecodingServiceCheck::class,
 		StatisticsIntegrityCheck::class,
+		RecomputeQueueCheck::class,
 		WebshopCheck::class,
 		SecurityAdvisoriesCheck::class,
 	];

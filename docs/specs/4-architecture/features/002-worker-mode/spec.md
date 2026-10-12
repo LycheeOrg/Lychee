@@ -32,7 +32,7 @@ Enable Lychee containers to operate in two distinct modes using the same Docker 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-002-01 | Container must detect `LYCHEE_MODE` environment variable and branch execution accordingly | When `LYCHEE_MODE=worker`, container starts `php artisan queue:work` instead of Octane. When unset or `LYCHEE_MODE=web`, container starts Octane (default). | Container must validate `LYCHEE_MODE` is either `worker`, `web`, or unset. Log validation result to stdout. | If `LYCHEE_MODE` contains invalid value, log error and exit with non-zero status code. | Log startup mode selection: `Starting Lychee in [worker\|web] mode`. No PII. | Docker deployment requirements, Laravel queue system documentation |
-| FR-002-02 | Worker mode must execute Laravel queue:work with configurable queue priority and max-time | Execute `php artisan queue:work --queue=$QUEUE_NAMES --tries=3 --timeout=3600 --max-time=$WORKER_MAX_TIME` in infinite loop. `QUEUE_NAMES` defaults to "default" but supports priority queues (e.g., "high,default,low"). `WORKER_MAX_TIME` defaults to 3600 seconds. If worker exits (crash, max-time reached), entrypoint automatically restarts after 5-second delay. | Worker respects `QUEUE_CONNECTION`, `QUEUE_NAMES` (comma-separated), `WORKER_MAX_TIME` from `.env`. Auto-restart loop logs exit codes and restart events. | If queue connection fails, log error (redact credentials), wait 5 seconds, retry. Container restart policy (`restart: unless-stopped`) provides outer restart layer. | Log worker lifecycle: `Starting queue worker on queues: $QUEUE_NAMES (max-time: $WORKER_MAX_TIME)`, `Queue worker exited with code N`, `Waiting 5 seconds before restart`. | Q-002-01 (queue priority), Q-002-02 (max-time configurability), Laravel queue:work documentation |
+| FR-002-02 | Worker mode must execute Laravel queue:work with configurable queue priority and max-time | Execute `php artisan queue:work --queue=$QUEUE_NAMES --tries=3 --timeout=3600 --max-time=$WORKER_MAX_TIME` in infinite loop. `QUEUE_NAMES` defaults to "default,low" (recompute jobs run on `low`, Feature 090 FR-090-09) and supports any priority list. `WORKER_MAX_TIME` defaults to 3600 seconds. If worker exits (crash, max-time reached), entrypoint automatically restarts after 5-second delay. | Worker respects `QUEUE_CONNECTION`, `QUEUE_NAMES` (comma-separated), `WORKER_MAX_TIME` from `.env`. Auto-restart loop logs exit codes and restart events. | If queue connection fails, log error (redact credentials), wait 5 seconds, retry. Container restart policy (`restart: unless-stopped`) provides outer restart layer. | Log worker lifecycle: `Starting queue worker on queues: $QUEUE_NAMES (max-time: $WORKER_MAX_TIME)`, `Queue worker exited with code N`, `Waiting 5 seconds before restart`. | Q-002-01 (queue priority), Q-002-02 (max-time configurability), Laravel queue:work documentation |
 | FR-002-03 | Web mode must remain default behavior when `LYCHEE_MODE` is unset | Container starts Octane with FrankenPHP exactly as before this feature. No behavioral changes. | Verify entrypoint script defaults to web mode when `LYCHEE_MODE` is not present. Test with existing docker compose configurations. | N/A (default path) | Existing Octane startup logs unchanged. | Backward compatibility requirement |
 | FR-002-04 | Both modes must share identical Laravel environment setup | Database migrations, config caching, and permission checks run identically in both modes before mode-specific command execution. | Entrypoint script must complete common setup (migrations, config:cache, permissions-check.sh) before branching to mode-specific commands. | If common setup fails, both modes must exit with error (existing behavior). | Existing migration/cache logs apply to both modes. | Shared Laravel application state requirement |
 | FR-002-05 | Worker healthcheck must track restart failures and trigger container restart after threshold | Healthcheck writes restart count to `/tmp/worker-restarts` with timestamp. If >10 restarts occur within 5 minutes, healthcheck exits 1 to trigger container restart. Reset counter after 5 minutes of stable operation. | Healthcheck script: `pgrep -f 'queue:work' && check_restart_count || exit 1`. Restart count increments on each worker restart detected in logs. | If worker crash-loops (>10 restarts in 5min), container becomes unhealthy, orchestrator restarts container, logs cleared for fresh debugging. | Log healthcheck failures: `Worker crash-looping detected: N restarts in 5 minutes, failing healthcheck`. | Q-002-04 (healthcheck failure behavior Option B) |
@@ -76,7 +76,7 @@ Not applicable – this feature has no user-facing UI changes. Configuration is 
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-002-01 | LYCHEE_MODE environment variable: optional, values: "web" (default), "worker", or unset | Docker entrypoint, infrastructure |
-| DO-002-02 | QUEUE_NAMES environment variable: optional, comma-separated queue names for priority processing (e.g., "high,default,low"), default: "default" | Docker entrypoint, queue worker |
+| DO-002-02 | QUEUE_NAMES environment variable: optional, comma-separated queue names for priority processing, default: "default,low" (Feature 090) | Docker entrypoint, queue worker |
 | DO-002-03 | WORKER_MAX_TIME environment variable: optional, worker restart interval in seconds for memory leak mitigation, default: 3600 | Docker entrypoint, queue worker |
 
 ### API Routes / Services
@@ -142,7 +142,7 @@ domain_objects:
   - id: DO-002-02
     name: QUEUE_NAMES
     type: environment_variable
-    default: "default"
+    default: "default,low"
     example: "high,default,low"
     description: Comma-separated queue names for priority processing
   - id: DO-002-03
@@ -198,7 +198,7 @@ This will be replaced with logic in entrypoint.sh to conditionally execute eithe
 ### Queue Connection Configuration
 Worker mode respects standard Laravel queue configuration in `.env`:
 - `QUEUE_CONNECTION`: redis, database, sync, etc.
-- `QUEUE_NAMES`: comma-separated queue names for priority processing (default: "default")
+- `QUEUE_NAMES`: comma-separated queue names for priority processing (default: "default,low"; `low` carries the recompute jobs, Feature 090)
   - Example: `QUEUE_NAMES=high,default,low` processes high-priority jobs first
 - `WORKER_MAX_TIME`: seconds before worker gracefully restarts (default: 3600)
   - Mitigates memory leaks by periodically restarting the worker process
