@@ -21,6 +21,8 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-074-02](ADR-074-02-gallery-unlock-encrypted-cookie.md) | Accepted | Gallery unlock stored in an encrypted cookie, not the server-side session |
 | [ADR-074-03](ADR-074-03-password-config-type.md) | Accepted | Write-only `password` config type (hashed on write, masked on read) |
 | [ADR-082-01](ADR-082-01-in-house-webgl2-sphere-renderer.md) | Accepted | In-house TypeScript + WebGL2 sphere renderer for 360° photos |
+| [ADR-091-01](ADR-091-01-granularity-free-bucket-keys.md) | Accepted | Granularity-free bucket keys, bucket ids derived at read time |
+| [ADR-091-02](ADR-091-02-capture-local-photo-date-buckets.md) | Accepted | Photo capture dates bucketed in the zone the photo was taken in |
 
 ## Templates
 
