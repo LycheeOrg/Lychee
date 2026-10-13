@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Schema;
 require_once 'TemporaryModels/OptimizeTables.php';
 
 /**
- * Feature 091 (FR-091-01, FR-091-02): row-intrinsic bucket keys on
+ * Feature 092 (FR-092-01, FR-092-02): row-intrinsic bucket keys on
  * `photos`. `taken_key` is `taken_at` in `taken_at_orig_tz` as `Y-m-d-H`
- * (ADR-091-02), indexed for the Timeline's bucket ranges; `title_date_key`
+ * (ADR-092-02), indexed for the Timeline's bucket ranges; `title_date_key`
  * is the leading date of the title as `Y-m-d`.
  */
 return new class() extends Migration {

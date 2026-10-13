@@ -13,7 +13,7 @@ use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
 
 /**
- * Row-intrinsic bucket keys (ADR-091-01, ADR-091-02): pure static
+ * Row-intrinsic bucket keys (ADR-092-01, ADR-092-02): pure static
  * functions called explicitly at every write site, never wired through an
  * Eloquent event, mutator or cast.
  *

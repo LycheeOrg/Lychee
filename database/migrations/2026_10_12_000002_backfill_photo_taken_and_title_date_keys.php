@@ -16,7 +16,7 @@ require_once 'TemporaryModels/BucketKeyBackfill.php';
 require_once 'TemporaryModels/BucketKeyPhoto.php';
 
 /**
- * Feature 091 (FR-091-16): backfills `photos.taken_key` and
+ * Feature 092 (FR-092-16): backfills `photos.taken_key` and
  * `photos.title_date_key` for every photo, chunked. Idempotent: both keys
  * derive from `taken_at`, `taken_at_orig_tz` and `title` only.
  */

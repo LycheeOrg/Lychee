@@ -11,9 +11,9 @@ use Safe\DateTimeImmutable;
 use function Safe\preg_match;
 
 /**
- * Standalone copy of the Feature 091 key computation
+ * Standalone copy of the Feature 092 key computation
  * ({@see \App\Services\BucketKeys}, {@see \App\Services\PhotoBucketComputer},
- * {@see \App\Services\AlbumBucketComputer}), frozen for the Feature 091
+ * {@see \App\Services\AlbumBucketComputer}), frozen for the Feature 092
  * backfill migrations. Migrations must not depend on live app code, because
  * app code may change or be removed while old migrations must remain
  * runnable.

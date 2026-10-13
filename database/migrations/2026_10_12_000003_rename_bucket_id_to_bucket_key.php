@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
 require_once 'TemporaryModels/OptimizeTables.php';
 
 /**
- * Feature 091 (FR-091-16, ADR-091-01): `photo_album.bucket_id` and
+ * Feature 092 (FR-092-16, ADR-092-01): `photo_album.bucket_id` and
  * `albums.bucket_id` become `bucket_key`, a granularity-free key whose
  * prefix is the bucket id. Each composite index is dropped before the
  * rename and recreated under the new name. `albums_parent_id_index` stays

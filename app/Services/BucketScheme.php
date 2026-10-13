@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 use function Safe\gmmktime;
 
 /**
- * Read-time bucket ids (ADR-091-01): one scheme per listing request,
+ * Read-time bucket ids (ADR-092-01): one scheme per listing request,
  * derived from the effective sort column, the resolved granularity and the
  * title bucket settings.
  *

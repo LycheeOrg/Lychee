@@ -9,7 +9,7 @@
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model class for the Feature 091 backfill of `albums.bucket_key`.
+ * Model class for the Feature 092 backfill of `albums.bucket_key`.
  */
 class BucketKeyAlbum extends Model
 {

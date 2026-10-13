@@ -31,7 +31,7 @@ use Tests\AbstractTestCase;
 
 /**
  * Covers {@see BucketScheme}: bucket ids derived at read time from a stored
- * key or a photo column (FR-091-05 … FR-091-08).
+ * key or a photo column (FR-092-05 … FR-092-08).
  */
 class BucketSchemeTest extends AbstractTestCase
 {

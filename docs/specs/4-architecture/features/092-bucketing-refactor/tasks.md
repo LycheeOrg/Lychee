@@ -1,4 +1,4 @@
-# Feature 091 Tasks – Bucketing Refactor
+# Feature 092 Tasks – Bucketing Refactor
 
 _Status: Draft_  
 _Last updated: 2026-10-12_
@@ -10,124 +10,124 @@ _Last updated: 2026-10-12_
 
 ## Checklist
 
-- [x] T-091-01 – Schema and backfill migrations (F-091-16).  
-  _Intent:_ add `photos.taken_key` (indexed) and `photos.title_date_key`; backfill them; rename `photo_album.bucket_id` and `albums.bucket_id` to `bucket_key` with their composite indexes; backfill every bucket key in the FR-091-03/04 format. Chunks of 1,000, progress bar, helpers copied under `database/migrations/TemporaryModels/`. Verified up/down on SQLite and on a populated scratch copy.  
+- [x] T-092-01 – Schema and backfill migrations (F-092-16).  
+  _Intent:_ add `photos.taken_key` (indexed) and `photos.title_date_key`; backfill them; rename `photo_album.bucket_id` and `albums.bucket_id` to `bucket_key` with their composite indexes; backfill every bucket key in the FR-092-03/04 format. Chunks of 1,000, progress bar, helpers copied under `database/migrations/TemporaryModels/`. Verified up/down on SQLite and on a populated scratch copy.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoUploadBucketTest`  
   - `make phpstan`
 
-- [x] T-091-02 – Key helper tests (F-091-01, F-091-02, S-091-14).  
-  _Intent:_ `tests/Unit/Services/BucketKeysTest.php`: taken key from a cast value and from raw UTC plus zone (named zone, fixed offset, DST, `NULL`); title date key (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`, leading spaces, no date, invalid month/day). Red before T-091-03.  
+- [x] T-092-02 – Key helper tests (F-092-01, F-092-02, S-092-14).  
+  _Intent:_ `tests/Unit/Services/BucketKeysTest.php`: taken key from a cast value and from raw UTC plus zone (named zone, fixed offset, DST, `NULL`); title date key (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`, leading spaces, no date, invalid month/day). Red before T-092-03.  
   _Verification commands:_  
   - `php artisan test --filter=BucketKeysTest`
 
-- [x] T-091-03 – Key helpers (F-091-01, F-091-02).  
+- [x] T-092-03 – Key helpers (F-092-01, F-092-02).  
   _Intent:_ `App\Services\BucketKeys` without Carbon construction (`DateTimeImmutable` for raw values).  
   _Verification commands:_  
   - `php artisan test --filter=BucketKeysTest`  
   - `make phpstan`
 
-- [ ] T-091-04 – Photo key write sites (F-091-01, F-091-02, F-091-10, S-091-04, S-091-13).  
+- [ ] T-092-04 – Photo key write sites (F-092-01, F-092-02, F-092-10, S-092-04, S-092-13).  
   _Intent:_ tests first (`tests/Feature_v3/Photo/PhotoKeysWriteTest.php` for `PATCH /Photo`, rename, bulk renamer, `lychee:takedate`; `PhotoUploadBucketTest` for upload); then assign the keys in `HydrateMetadata`, `Save`, `PhotoController::update()`/`rename()`, `RenamePhotos`, `Takedate`, and dispatch `RecomputePhotoBucketsJob` from `RenamePhotos` and `Takedate`.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoKeysWriteTest`  
   - `php artisan test --filter=PhotoUploadBucketTest`
 
-- [ ] T-091-05 – Photo bucket key computation (F-091-03).  
+- [ ] T-092-05 – Photo bucket key computation (F-092-03).  
   _Intent:_ update `PhotoBucketComputerTest` for keys per sort column (no granularity input), then rewrite `PhotoBucketComputer` to compute keys from row values (`taken_key`, raw `created_at`, `title_date_key`, `title_base`, `is_highlighted`, `type`, `rating_avg`), no Carbon.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketComputerTest`
 
-- [ ] T-091-06 – Photo write paths and chunking (F-091-03, F-091-10, F-091-14, S-091-12).  
+- [ ] T-092-06 – Photo write paths and chunking (F-092-03, F-092-10, F-092-14, S-092-12).  
   _Intent:_ update `RecomputePhotoBucketsJobTest`, `RecomputeAlbumPhotoBucketsJobTest` (1,001 links), `PhotoUploadBucketTest`; then `SetParent`, `MoveOrDuplicate`, `RecomputePhotoBucketsJob`, `RecomputeAlbumPhotoBucketsJob` (chunks of 1,000).  
   _Verification commands:_  
   - `php artisan test --filter=RecomputePhotoBucketsJobTest`  
   - `php artisan test --filter=RecomputeAlbumPhotoBucketsJobTest`  
   - `php artisan test --filter=PhotoUploadBucketTest`
 
-- [ ] T-091-07 – Album bucket keys (F-091-04, F-091-14).  
+- [ ] T-092-07 – Album bucket keys (F-092-04, F-092-14).  
   _Intent:_ update `RecomputeAlbumStatsJobBucketTest`, `RecomputeChildAlbumBucketsJobTest`; rewrite `AlbumBucketComputer`; `RecomputeAlbumStatsJob`, `RecomputeChildAlbumBucketsJob` (chunked).  
   _Verification commands:_  
   - `php artisan test --filter=RecomputeAlbumStatsJobBucketTest`  
   - `php artisan test --filter=RecomputeChildAlbumBucketsJobTest`
 
-- [ ] T-091-08 – All-row jobs and command (F-091-13, F-091-14, F-091-15, S-091-10, S-091-12, S-091-17).  
+- [ ] T-092-08 – All-row jobs and command (F-092-13, F-092-14, F-092-15, S-092-10, S-092-12, S-092-17).  
   _Intent:_ tests `RecomputeAllAlbumBucketsJobTest` (children of parents without override included), `RecomputeAllPhotoBucketsJobTest` (1,001 links), `RecomputeBucketsCommandTest` updated; then `RecomputeAllAlbumBucketsJob`, `RecomputeAllPhotoBucketsJob` and `lychee:recompute-buckets` sharing the chunked routines.  
   _Verification commands:_  
   - `php artisan test --filter=RecomputeAllAlbumBucketsJobTest`  
   - `php artisan test --filter=RecomputeAllPhotoBucketsJobTest`  
   - `php artisan test --filter=RecomputeBucketsCommandTest`
 
-- [x] T-091-09 – Read scheme tests (F-091-05, F-091-07, F-091-08).  
-  _Intent:_ `tests/Unit/Services/BucketSchemeTest.php`: prefix length per column and granularity, title date cap, alphabetical length, categorical whole key, next id per precision (year/month/day/hour, month and year rollover), labels by precision, `unknown`. Red before T-091-10.  
+- [x] T-092-09 – Read scheme tests (F-092-05, F-092-07, F-092-08).  
+  _Intent:_ `tests/Unit/Services/BucketSchemeTest.php`: prefix length per column and granularity, title date cap, alphabetical length, categorical whole key, next id per precision (year/month/day/hour, month and year rollover), labels by precision, `unknown`. Red before T-092-10.  
   _Verification commands:_  
   - `php artisan test --filter=BucketSchemeTest`
 
-- [x] T-091-10 – Read scheme (F-091-05, F-091-07, F-091-08).  
+- [x] T-092-10 – Read scheme (F-092-05, F-092-07, F-092-08).  
   _Intent:_ `App\Services\BucketScheme`: SQL id expression over a stored key or a photo column, window filter, `NULL`-last ordering, id normalisation, labels.  
   _Verification commands:_  
   - `php artisan test --filter=BucketSchemeTest`  
   - `make phpstan`
 
-- [ ] T-091-11 – Regular-album `buckets` tier (F-091-05, F-091-08, F-091-09, S-091-01, S-091-03, S-091-11, S-091-15).  
+- [ ] T-092-11 – Regular-album `buckets` tier (F-092-05, F-092-08, F-092-09, S-092-01, S-092-03, S-092-11, S-092-15).  
   _Intent:_ tests in `PhotoBucketsV3Test` (granularity switch without job, title date at hour, unvalidated photos per viewer, `unknown` last both directions); then `QueryPhotoBuckets` on `photo_album` only with the validation subquery.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketsV3Test`
 
-- [ ] T-091-12 – Regular-album `ratios` and `details` windows (F-091-05, F-091-07).  
+- [ ] T-092-12 – Regular-album `ratios` and `details` windows (F-092-05, F-092-07).  
   _Intent:_ tests in `PhotoRatiosV3Test`, `PhotoDetailsV3Test` (window per id kind, per-row ids, ordering); then `QueryPhotoRatios`, `QueryPhotoDetails` through the scheme.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoRatiosV3Test`  
   - `php artisan test --filter=PhotoDetailsV3Test`
 
-- [ ] T-091-13 – Timeline on `taken_key` (F-091-06, S-091-04, S-091-07).  
+- [ ] T-092-13 – Timeline on `taken_key` (F-092-06, S-092-04, S-092-07).  
   _Intent:_ tests in `TimelineAlbumTest` (capture-local hour buckets, windows, dateless photos excluded); then Timeline buckets/windows through the scheme.  
   _Verification commands:_  
   - `php artisan test --filter=TimelineAlbumTest`
 
-- [ ] T-091-14 – Tag, person and smart albums in SQL (F-091-06, F-091-07, S-091-05, S-091-06, S-091-15).  
+- [ ] T-092-14 – Tag, person and smart albums in SQL (F-092-06, F-092-07, S-092-05, S-092-06, S-092-15).  
   _Intent:_ tests for a tag album per sort column and a smart album (buckets, ratios windows and per-row ids, details windows); then the SQL path through the scheme; remove `liveBucketId()`, `liveTitleBucket()`, `truncateRawDate()` and the `resolveLiveBucket…` helpers.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketsV3Test`  
   - `php artisan test --filter=PhotoRatiosV3Test`  
   - `php artisan test --filter=PhotoDetailsV3Test`
 
-- [ ] T-091-15 – Album children and root listings (F-091-05, F-091-08, S-091-10).  
+- [ ] T-092-15 – Album children and root listings (F-092-05, F-092-08, S-092-10).  
   _Intent:_ tests in `AlbumBucketsV3Test`, `AlbumChildrenDataV3Test`, `AlbumRootV3Test` (prefix ids per granularity without recompute, per-row ids, labels); then `AlbumChildrenController`, `AlbumRootController`, `QueryChildrenForAlbum`, `BuildAlbumDataResource`.  
   _Verification commands:_  
   - `php artisan test --filter=AlbumBucketsV3Test`  
   - `php artisan test --filter=AlbumChildrenDataV3Test`  
   - `php artisan test --filter=AlbumRootV3Test`
 
-- [ ] T-091-16 – Album edit triggers (F-091-11, F-091-12, S-091-08, S-091-10).  
+- [ ] T-092-16 – Album edit triggers (F-092-11, F-092-12, S-092-08, S-092-10).  
   _Intent:_ update `AlbumSortingBucketDispatchTest`, `PhotoSortingBucketDispatchTest` (job only on sort column change; order/timeline change flushes the listing); then `AlbumController`.  
   _Verification commands:_  
   - `php artisan test --filter=AlbumSortingBucketDispatchTest`  
   - `php artisan test --filter=PhotoSortingBucketDispatchTest`
 
-- [ ] T-091-17 – Settings triggers and photo-listing flush (F-091-13, S-091-02, S-091-09).  
+- [ ] T-092-17 – Settings triggers and photo-listing flush (F-092-13, S-092-02, S-092-09).  
   _Intent:_ tests in `UpdateSettingsTest`, `CacheKeyProviderTest` and a new `tests/Feature_v3/Settings/BucketSettingsV3Test.php` (granularity change visible in an inheriting album without a job; sort/mode changes dispatch the all-row jobs); then the `photo-listing-global` tag on every photo-listing entry, its flush event, `SettingsController` key lists.  
   _Verification commands:_  
   - `php artisan test --filter=UpdateSettingsTest`  
   - `php artisan test --filter=CacheKeyProviderTest`  
   - `php artisan test --filter=BucketSettingsV3Test`
 
-- [ ] T-091-18 – Timeline cache invalidation (F-091-17, S-091-18).  
+- [ ] T-092-18 – Timeline cache invalidation (F-092-17, S-092-18).  
   _Intent:_ update `ManagedCachePhotoListingInvalidatorTest`; then resolve old/new Timeline buckets from `taken_key`/`created_at` (`PhotoSaved` previous values carry `taken_key`).  
   _Verification commands:_  
   - `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
 
-- [ ] T-091-19 – Date scrubber capture-local day (F-091-18, S-091-16).  
+- [ ] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
   _Intent:_ `tileDayKey()` reads `taken_at` in the tile's `taken_at_orig_tz`; browser check on a scratch instance.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
 
-- [ ] T-091-20 – Documentation.  
-  _Intent:_ knowledge map, roadmap, Feature 064/066/071 spec references to FR-091-xx, `_current-session.md`.  
+- [ ] T-092-20 – Documentation.  
+  _Intent:_ knowledge map, roadmap, Feature 064/066/071 spec references to FR-092-xx, `_current-session.md`.  
   _Verification commands:_ none.
 
-- [ ] T-091-21 – Quality gate, benchmark, drift gate (NFR-091-01 … 06).  
+- [ ] T-092-21 – Quality gate, benchmark, drift gate (NFR-092-01 … 06).  
   _Intent:_ every class above, php-cs-fixer, phpstan, `typescript:transform` without diff, scratch benchmark of the generated queries, drift gate report in plan.md.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  

@@ -24,7 +24,7 @@ use Tests\AbstractTestCase;
 
 /**
  * Covers {@see BucketKeys}: the row-intrinsic keys stored on `photos`
- * (FR-091-01, FR-091-02) and the `created_at` key (FR-091-03).
+ * (FR-092-01, FR-092-02) and the `created_at` key (FR-092-03).
  */
 class BucketKeysTest extends AbstractTestCase
 {

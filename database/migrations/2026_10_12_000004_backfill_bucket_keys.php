@@ -17,9 +17,9 @@ require_once 'TemporaryModels/BucketKeyBackfill.php';
 require_once 'TemporaryModels/BucketKeyAlbum.php';
 
 /**
- * Feature 091 (FR-091-16): rewrites every `albums.bucket_key` and
- * `photo_album.bucket_key` in the granularity-free format (FR-091-03,
- * FR-091-04), chunked. Runs after `photos.taken_key`/`title_date_key` are
+ * Feature 092 (FR-092-16): rewrites every `albums.bucket_key` and
+ * `photo_album.bucket_key` in the granularity-free format (FR-092-03,
+ * FR-092-04), chunked. Runs after `photos.taken_key`/`title_date_key` are
  * backfilled. Idempotent.
  */
 return new class() extends Migration {

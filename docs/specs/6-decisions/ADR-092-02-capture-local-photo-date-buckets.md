@@ -1,9 +1,9 @@
-# ADR-091-02: Photo Capture Dates Are Bucketed in the Zone the Photo Was Taken In
+# ADR-092-02: Photo Capture Dates Are Bucketed in the Zone the Photo Was Taken In
 
 - **Status:** Accepted
 - **Date:** 2026-10-12
-- **Related features/specs:** Feature 091 (docs/specs/4-architecture/features/091-bucketing-refactor/spec.md), Feature 071, Feature 085
-- **Related open questions:** Q-091-02
+- **Related features/specs:** Feature 092 (docs/specs/4-architecture/features/092-bucketing-refactor/spec.md), Feature 071, Feature 085
+- **Related open questions:** Q-092-02
 
 ## Context
 
@@ -12,7 +12,7 @@
 ## Decision
 
 1. `photos.taken_key` (`varchar(13)`, indexed) holds `taken_at` converted to `taken_at_orig_tz`, formatted `Y-m-d-H`, `NULL` without `taken_at`. It is assigned explicitly at every write of `taken_at`, never through a model event or cast.
-2. Every photo date bucket on `taken_at` reads `taken_key`: stored keys (ADR-091-01) and SQL-side sources alike.
+2. Every photo date bucket on `taken_at` reads `taken_key`: stored keys (ADR-092-01) and SQL-side sources alike.
 3. `photos.created_at` has no original zone and is bucketed as stored. Album dates (`created_at`, `min_taken_at`, `max_taken_at`) are aggregate instants stored and displayed without a zone and are keyed as stored.
 4. The v8 date scrubber counts a photo tile for its day in `taken_at_orig_tz`, so the rail and the header buckets agree (ADR-071-01).
 
@@ -41,5 +41,5 @@ None.
 
 ## Links
 
-- Related spec sections: `docs/specs/4-architecture/features/091-bucketing-refactor/spec.md` FR-091-01, FR-091-18
-- Related ADRs: ADR-091-01, ADR-071-01
+- Related spec sections: `docs/specs/4-architecture/features/092-bucketing-refactor/spec.md` FR-092-01, FR-092-18
+- Related ADRs: ADR-092-01, ADR-071-01
