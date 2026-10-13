@@ -11,6 +11,8 @@ namespace App\Services\Image;
 use App\Actions\Photo\Delete;
 use App\Constants\PhotoAlbum;
 use App\DTO\Nsfw\NsfwDetectionItemData;
+use App\Enum\ModerationEvent;
+use App\Enum\ModerationSource;
 use App\Enum\NsfwBlockFindingAction;
 use App\Enum\NsfwDetectionLabel;
 use App\Enum\NsfwSensitiveAlbumAction;
@@ -21,6 +23,7 @@ use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\NsfwDetection;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
+use App\Services\ModerationHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -28,6 +31,7 @@ class NsfwActionService
 {
 	public function __construct(
 		private readonly ConfigManager $config_manager,
+		private readonly ModerationHistory $moderation_history,
 	) {
 	}
 
@@ -44,6 +48,7 @@ class NsfwActionService
 			$trust_level = UserUploadTrustLevel::CHECK;
 		}
 
+		$was_hidden = $photo->is_validated === false;
 		$was_moderated = false;
 
 		if ($should_block) {
@@ -73,8 +78,25 @@ class NsfwActionService
 		}
 
 		$photo->save();
+		$this->recordOutcome($photo, $was_moderated, $was_hidden);
 
 		return true;
+	}
+
+	/**
+	 * Record the moderation event of the callback (Feature 089, FR-089-02, FR-089-03):
+	 * held when moderated, approved when a hidden photo became visible.
+	 */
+	private function recordOutcome(Photo $photo, bool $was_moderated, bool $was_hidden): void
+	{
+		$event = match (true) {
+			$was_moderated => ModerationEvent::HELD,
+			$was_hidden && $photo->is_validated => ModerationEvent::APPROVED,
+			default => null,
+		};
+		if ($event !== null) {
+			$this->moderation_history->record([$photo->id], $event, ModerationSource::NSFW_SCAN);
+		}
 	}
 
 	/**
@@ -138,7 +160,7 @@ class NsfwActionService
 	 * @param UserUploadTrustLevel $trust_level
 	 * @param bool                 $was_moderated
 	 *
-	 * @return bool
+	 * @return bool true if this action moderated the photo
 	 */
 	private function applySensitiveAction(Photo $photo, UserUploadTrustLevel $trust_level, bool $was_moderated): bool
 	{
@@ -153,6 +175,7 @@ class NsfwActionService
 		}
 
 		$album_action = $this->config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_album_action', NsfwSensitiveAlbumAction::class);
+		$moderated = false;
 
 		if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
 			$all_album_ids = DB::table(PhotoAlbum::PHOTO_ALBUM)
@@ -161,7 +184,7 @@ class NsfwActionService
 				->pluck('album_id')->all();
 
 			if ($all_album_ids === []) {
-				$this->handleNoAlbumFallback($photo);
+				$moderated = $this->handleNoAlbumFallback($photo);
 			} else {
 				ApplyNsfwAlbumSensitivityJob::dispatch($all_album_ids);
 			}
@@ -169,21 +192,27 @@ class NsfwActionService
 			Log::info("NsfwActionService: dispatched album sensitivity job for photo {$photo->id} (sensitive finding, trust={$trust_level->value}).");
 		}
 
-		return false;
+		return $moderated;
 	}
 
-	private function handleNoAlbumFallback(Photo $photo): void
+	/**
+	 * Moderate a photo without album when the fallback says so; {@see applyActions()} saves it.
+	 *
+	 * @return bool true if moderated
+	 */
+	private function handleNoAlbumFallback(Photo $photo): bool
 	{
 		if ($this->config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_no_album_action', NsfwSensitiveNoAlbumAction::class) === NsfwSensitiveNoAlbumAction::SKIP) {
 			Log::warning("NsfwActionService: photo {$photo->id} has no albums (unsorted), skipping album marking.");
 
-			return;
+			return false;
 		}
 
 		$photo->nsfw_status = NsfwStatus::REVIEW;
 		$photo->is_validated = false;
-		$photo->save();
 		Log::info("NsfwActionService: photo {$photo->id} has no albums, moderated as fallback.");
+
+		return true;
 	}
 
 	/**

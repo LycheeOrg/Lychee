@@ -42,24 +42,24 @@ _Last updated: 2026-10-13_
   - `php artisan test --filter=AutoScanNsfwOnUploadTest`  
   - `php artisan test --filter=UploadModerationFlowTest`
 
-- [ ] T-089-07 – NSFW callback tests (FR-089-02, FR-089-03, S-089-04 … 08, S-089-11, S-089-12).  
+- [x] T-089-07 – NSFW callback tests (FR-089-02, FR-089-03, S-089-04 … 08, S-089-11, S-089-12).  
   _Intent:_ `tests/AssistedVision/NsfwClassification/ModerationHistoryNsfwTest.php` through `POST NsfwDetection/results`; red.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryNsfwTest`
 
-- [ ] T-089-08 – NSFW callback recording (FR-089-02, FR-089-03).  
-  _Intent:_ `NsfwActionService::applyActions()` records `held` / `nsfw_scan` when moderated (no-album fallback included) and `approved` / `nsfw_scan` when a hidden non-`check` photo is restored.  
+- [x] T-089-08 – NSFW callback recording (FR-089-02, FR-089-03).  
+  _Intent:_ `NsfwActionService::applyActions()` records `held` / `nsfw_scan` when moderated (no-album fallback included) and `approved` / `nsfw_scan` when a hidden non-`check` photo is restored. Fallback fix (FR-089-15, Q-089-06 → A): `handleNoAlbumFallback()` returns whether it moderated, regression tests in `NsfwActionServiceTest`.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryNsfwTest`  
   - `php artisan test --filter=NsfwActionServiceTest`  
   - `php artisan test --filter=NsfwDetectionResultsTest`
 
-- [ ] T-089-09 – Approval tests (FR-089-03, NFR-089-03, S-089-09 … 11).  
+- [x] T-089-09 – Approval tests (FR-089-03, NFR-089-03, S-089-09 … 11).  
   _Intent:_ `tests/Feature_v3/Moderation/ModerationHistoryApproveTest.php`: hidden and visible ids mixed, admin id stored, query count, settings off; red.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryApproveTest`
 
-- [ ] T-089-10 – Approval recording (FR-089-03).  
+- [x] T-089-10 – Approval recording (FR-089-03).  
   _Intent:_ `ModerationController::approvePhotos()` selects hidden ids, updates them, records once per chunk.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryApproveTest`  

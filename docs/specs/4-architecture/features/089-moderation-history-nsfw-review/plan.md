@@ -33,7 +33,7 @@ Admins can tell when each photo was held and approved, and review NSFW findings 
   - Findings ordering on a grouped subquery across SQLite/MySQL/PostgreSQL → order by `MAX(nsfw_detections.id)`, a plain aggregate.
 
 ## Implementation Drift Gate
-After the last task: map FR-089-01 … 14 and NFR-089-01 … 03 to classes and tests in a table here, rerun every test class listed in the tasks, `make phpstan`, `npm run check`, and record findings.
+After the last task: map FR-089-01 … 15 and NFR-089-01 … 03 to classes and tests in a table here, rerun every test class listed in the tasks, `make phpstan`, `npm run check`, and record findings.
 
 ## Increment Map
 1. **I0 – Worktree environment**
@@ -97,7 +97,7 @@ After the last task: map FR-089-01 … 14 and NFR-089-01 … 03 to classes and t
 1. Specification completeness: goals, FR-089-01 … 14, NFR-089-01 … 03, settings, scenarios populated; Q-089-01 … 05 folded into FRs, Non-Goals and UI; ASCII mock-ups for UI-089-01 … 03. Pass.
 2. Open questions: none open. ADR-089-01 (history log) and ADR-089-02 (dismissal deletes) written and linked from the spec and open questions. Pass.
 3. Plan alignment: plan links spec and tasks; dependencies and success criteria match FR/NFR wording. Pass.
-4. Tasks coverage: FR-089-01 → T-089-02; 02 → T-089-05 … 08; 03 → T-089-07 … 10; 04 → T-089-02 … 04; 05, 06 → T-089-11, 12; 07 → T-089-19; 08 → T-089-20; 09 → T-089-13, 14; 10, 11 → T-089-15, 16; 12 → T-089-18; 13 → T-089-18; 14 → T-089-15. Each backend increment has its red test task first; success, validation (422) and failure (401/402/403/404) branches listed. Pass.
+4. Tasks coverage: FR-089-01 → T-089-02; 02 → T-089-05 … 08; 03 → T-089-07 … 10; 04 → T-089-02 … 04; 05, 06 → T-089-11, 12; 07 → T-089-19; 08 → T-089-20; 09 → T-089-13, 14; 10, 11 → T-089-15, 16; 12 → T-089-18; 13 → T-089-18; 14 → T-089-15; 15 → T-089-07, 08 (added with Q-089-06). Each backend increment has its red test task first; success, validation (422) and failure (401/402/403/404) branches listed. Pass.
 5. Working agreements: no new dependency; explicit writes at each site (no model events); branching held in the pure `shouldRecord()` predicate; new tests in Feature_v3 or AssistedVision, none in Feature_v2; v8 only. ADRs referencing Feature 089: ADR-089-01, ADR-089-02 (reviewed). Pass.
 6. Tooling: commands listed per increment and task. Pass.
 
@@ -108,6 +108,8 @@ After the last task: map FR-089-01 … 14 and NFR-089-01 … 03 to classes and t
 
 ## Intent Log
 - 2026-10-13, session 2 ("continue working the last feature"): I3 done. `ModerationHistoryUploadTest` written red (2 failed, 2 passed), then `Standalone\RecordUploadHold` appended to `handleStandalone` and to the standalone pipes of `handlePhotoLivePartner` (that path also runs `SetUploadValidated`, so a `check` live photo is held there too; FR-089-02 and DO-089-05 reworded). Duplicates never run `SetUploadValidated` and need no pipe. Commands: `php artisan test --filter=ModerationHistoryUploadTest|AutoScanNsfwOnUploadTest|UploadModerationFlowTest|PhotoAddTest|Photo360UploadTest`, `vendor/bin/php-cs-fixer fix`, `make phpstan`. `PhotoAddTest` Apple live photo tests fail identically on the untouched tree.
+- 2026-10-13, session 2: I4 done. `ModerationHistoryNsfwTest` (12 tests) written red through `POST NsfwDetection/results`; `NsfwActionService::applyActions()` notes `is_validated` on entry and calls `recordOutcome()` after the final save (`held` when moderated, `approved` when a hidden photo became visible). The no-album fallback test exposed a Feature 045 defect (fallback undone by the clean-result branch), logged as Q-089-06; owner chose A: fixed here as FR-089-15 with two `NsfwActionServiceTest` tests (skip, moderate). Commands: `php artisan test --filter=ModerationHistoryNsfwTest|NsfwActionServiceTest|NsfwDetectionResultsTest|BulkNsfwScanTest|ApplyNsfwAlbumSensitivityJobTest`, `vendor/bin/php-cs-fixer fix`, `make phpstan`.
+- 2026-10-13, session 2: I5 done. `ModerationHistoryApproveTest` (4 tests, insert count via `DB::listen`) written red; `approvePhotos()` now selects the hidden ids of the chunk, updates only those and records them with the admin id in one insert. Commands: `php artisan test --filter=ModerationHistoryApproveTest|ModerationTest|UploadModerationFlowTest`, `vendor/bin/php-cs-fixer fix`, `make phpstan`.
 
 ## Follow-ups / Backlog
 - `NsfwActionService::logDetections()` appends on re-scan, so a forced re-scan duplicates findings (out of scope).

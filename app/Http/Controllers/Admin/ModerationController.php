@@ -9,6 +9,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Constants\PhotoAlbum;
+use App\Enum\ModerationEvent;
+use App\Enum\ModerationSource;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Http\Requests\Moderation\ApproveModerationRequest;
@@ -20,6 +22,7 @@ use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\NsfwDetection;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
+use App\Services\ModerationHistory;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -84,11 +87,13 @@ class ModerationController extends Controller
 	 *
 	 * @return Response
 	 */
-	public function approve(ApproveModerationRequest $request, ConfigManager $config_manager): Response
+	public function approve(ApproveModerationRequest $request, ConfigManager $config_manager, ModerationHistory $moderation_history): Response
 	{
 		$ids = $request->photoIds();
+		/** @var int $admin_id */
+		$admin_id = $request->user()->id;
 
-		collect($ids)->chunk(100)->each(fn ($chunk) => $this->approvePhotos($chunk, $config_manager));
+		collect($ids)->chunk(100)->each(fn ($chunk) => $this->approvePhotos($chunk, $config_manager, $moderation_history, $admin_id));
 
 		return response()->noContent();
 	}
@@ -98,18 +103,23 @@ class ModerationController extends Controller
 	 * We use early returns to simplify the logic and avoid deep nesting.
 	 *
 	 * Uses a hybrid two-pass approach:
-	 * Pass 1 (bulk): set is_validated = true for all photos.
+	 * Pass 1 (bulk): set is_validated = true for the hidden photos and record their approval (Feature 089).
 	 * Pass 2 (NSFW subset): update nsfw_status and dispatch album sensitivity jobs.
 	 *
 	 * @param Collection<string> $photo_ids
 	 * @param ConfigManager      $config_manager
+	 * @param ModerationHistory  $moderation_history
+	 * @param int                $admin_id
 	 *
 	 * @return void
 	 */
-	private function approvePhotos(Collection $photo_ids, ConfigManager $config_manager): void
+	private function approvePhotos(Collection $photo_ids, ConfigManager $config_manager, ModerationHistory $moderation_history, int $admin_id): void
 	{
-		// Pass 1: Bulk approve
-		Photo::whereIn('id', $photo_ids)->update(['is_validated' => true]);
+		// Pass 1: Bulk approve the hidden photos; the visible ones get no event.
+		/** @var string[] $hidden_ids */
+		$hidden_ids = Photo::whereIn('id', $photo_ids)->where('is_validated', false)->pluck('id')->all();
+		Photo::whereIn('id', $hidden_ids)->update(['is_validated' => true]);
+		$moderation_history->record($hidden_ids, ModerationEvent::APPROVED, ModerationSource::ADMIN, $admin_id);
 
 		// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
 		$nsfw_photos = Photo::whereIn('id', $photo_ids)

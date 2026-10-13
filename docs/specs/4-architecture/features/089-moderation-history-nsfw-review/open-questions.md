@@ -11,6 +11,7 @@ Open questions for [Feature 089](spec.md). Log every high- and medium-impact que
 | ~~Q-089-03~~ | 089 – Moderation history and NSFW review | High | What can be dismissed on the findings page? (A single findings and whole photos, with bulk · B whole photos only · C single findings only) | Resolved (Option A; owner, 2026-10-13; spec FR-089-10, FR-089-11, UI-089-01) | 2026-10-10 | 2026-10-13 |
 | ~~Q-089-04~~ | 089 – Moderation history and NSFW review | High | What does a dismissal do? (A soft flag, photo state unchanged, Approve button on held rows · B soft flag, dismissing the last finding of a held photo approves it · C delete the detection rows) | Resolved (Option C; owner, 2026-10-13; spec FR-089-10, FR-089-11, ADR-089-02) | 2026-10-10 | 2026-10-13 |
 | ~~Q-089-05~~ | 089 – Moderation history and NSFW review | Medium | Which frontend trees? (A v8 only · B v7 and v8) | Resolved (Option A; owner, 2026-10-13; spec Non-Goals, UI section) | 2026-10-10 | 2026-10-13 |
+| ~~Q-089-06~~ | 089 – Moderation history and NSFW review | High | The no-album fallback of a sensitive finding (`ai_vision_nsfw_sensitive_no_album_action = moderate`) is undone by `applyActions()`, so no hold happens. (A fix the fallback here and record `held` · B leave it, drop the fallback from FR-089-02, fix in a separate change · C record `held` anyway) | Resolved (Option A; owner, 2026-10-13; spec FR-089-02, FR-089-15) | 2026-10-13 |
 
 ## Question Details
 
@@ -94,3 +95,20 @@ Open questions for [Feature 089](spec.md). Log every high- and medium-impact que
   - ❌ Two implementations of two new views.
 
 **Resolution:** Option A. Recorded in [spec.md](spec.md) Non-Goals and the UI section.
+
+### ~~Q-089-06~~ – No-album fallback undone by `applyActions()`
+
+**Context:** FR-089-02 lists the no-album fallback among the holds recorded by the NSFW callback. In `NsfwActionService`, a sensitive finding on a non-`check` photo with no album and `ai_vision_nsfw_sensitive_no_album_action = moderate` runs `handleNoAlbumFallback()`, which sets `nsfw_status = review`, `is_validated = false` and saves. `applySensitiveAction()` then returns `false`, so the end of `applyActions()` sees "not moderated", sets `nsfw_status = visible`, `is_validated = true` and saves again: the photo ends visible. `ModerationHistoryNsfwTest::testNoAlbumFallbackIsRecordedAsHeld` shows it (photo `visible`, expected `review`). No Feature 045 test covers the `moderate` value. This is a Feature 045 defect; fixing it changes NSFW behaviour on instances using that setting.
+
+- **Option A (recommended):** Fix it in this feature. `handleNoAlbumFallback()` returns whether it moderated (and no longer saves), `applySensitiveAction()` returns that, so `applyActions()` keeps the hold and records `held` / `nsfw_scan`. Add a regression test to `NsfwActionServiceTest`.
+  - ✅ The setting does what it says; FR-089-02 holds as written.
+  - ✅ Small change, covered by the test already written.
+  - ❌ Widens this feature into Feature 045 behaviour (photos without album start being held on such instances).
+- **Option B:** Leave the defect, remove the fallback from FR-089-02 and the test, fix it in a separate change.
+  - ✅ This feature stays history-only.
+  - ❌ The setting stays broken; the history gains the event only after the separate fix.
+- **Option C:** Record `held` when the fallback runs, without fixing it.
+  - ✅ No behaviour change.
+  - ❌ The history says "held" for a photo that is visible: wrong data.
+
+**Resolution:** Option A. `handleNoAlbumFallback()` returns whether it moderated and no longer saves; `applySensitiveAction()` returns that result, so `applyActions()` keeps the hold and records `held` / `nsfw_scan`. Recorded in [spec.md](spec.md) FR-089-02 and FR-089-15; regression test `NsfwActionServiceTest::testSensitiveNoAlbumModerateHoldsPhoto`.
