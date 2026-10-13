@@ -106,5 +106,8 @@ After the last task: map FR-089-01 … 14 and NFR-089-01 … 03 to classes and t
 - php-cs-fixer, phpstan, prettier, vue-tsc, eslint clean; every test class in the tasks green.
 - `lychee.d.ts` regenerated; roadmap, knowledge map, settings dependencies, Feature 033/045 pointers updated.
 
+## Intent Log
+- 2026-10-13, session 2 ("continue working the last feature"): I3 done. `ModerationHistoryUploadTest` written red (2 failed, 2 passed), then `Standalone\RecordUploadHold` appended to `handleStandalone` and to the standalone pipes of `handlePhotoLivePartner` (that path also runs `SetUploadValidated`, so a `check` live photo is held there too; FR-089-02 and DO-089-05 reworded). Duplicates never run `SetUploadValidated` and need no pipe. Commands: `php artisan test --filter=ModerationHistoryUploadTest|AutoScanNsfwOnUploadTest|UploadModerationFlowTest|PhotoAddTest|Photo360UploadTest`, `vendor/bin/php-cs-fixer fix`, `make phpstan`. `PhotoAddTest` Apple live photo tests fail identically on the untouched tree.
+
 ## Follow-ups / Backlog
 - `NsfwActionService::logDetections()` appends on re-scan, so a forced re-scan duplicates findings (out of scope).

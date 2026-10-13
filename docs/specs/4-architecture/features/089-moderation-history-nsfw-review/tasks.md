@@ -30,13 +30,13 @@ _Last updated: 2026-10-13_
   - `php artisan test --filter=ModerationHistoryPredicateTest`  
   - `make phpstan`
 
-- [ ] T-089-05 – Upload hold tests (FR-089-02, S-089-01 … 03, S-089-10).  
+- [x] T-089-05 – Upload hold tests (FR-089-02, S-089-01 … 03, S-089-10).  
   _Intent:_ `tests/Feature_v3/Moderation/ModerationHistoryUploadTest.php` uploading as `check`, `monitor` + hide-on-scan, `trusted`, and with `moderation_history_log_system = 0`; red.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryUploadTest`
 
-- [ ] T-089-06 – Upload hold pipe (FR-089-02).  
-  _Intent:_ `Standalone\RecordUploadHold` appended to the standalone pipeline in `Create`.  
+- [x] T-089-06 – Upload hold pipe (FR-089-02).  
+  _Intent:_ `Standalone\RecordUploadHold` appended to both standalone pipelines in `Create` (`handleStandalone`, `handlePhotoLivePartner`).  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryUploadTest`  
   - `php artisan test --filter=AutoScanNsfwOnUploadTest`  
@@ -134,4 +134,5 @@ _Last updated: 2026-10-13_
   _Verification commands:_ Playwright script in the session scratchpad.
 
 ## Notes / TODOs
+- 2026-10-13: `PhotoAddTest::testAppleLivePhoto1/2` fail with and without the T-089-06 change (live photo content id null, environment); not a regression of this feature.
 - Tests for the NSFW parts live in the `AssistedVision` suite next to the Feature 045 tests; the other new tests go to `Feature_v3`.
