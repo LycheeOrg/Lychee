@@ -14,13 +14,18 @@ use App\Enum\ModerationSource;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Http\Requests\Moderation\ApproveModerationRequest;
+use App\Http\Requests\Moderation\GetModerationPhotoHistoryRequest;
 use App\Http\Requests\Moderation\GetModerationPhotoRequest;
+use App\Http\Requests\Moderation\ListModerationHistoryRequest;
 use App\Http\Requests\Moderation\ListModerationRequest;
+use App\Http\Resources\Collections\PaginatedModerationHistoryResource;
 use App\Http\Resources\Collections\PaginatedModerationResource;
+use App\Http\Resources\Models\ModerationEventResource;
 use App\Http\Resources\Models\PhotoResource;
 use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\NsfwDetection;
 use App\Models\Photo;
+use App\Models\PhotoModerationEvent;
 use App\Repositories\ConfigManager;
 use App\Services\ModerationHistory;
 use Illuminate\Http\Response;
@@ -78,6 +83,48 @@ class ModerationController extends Controller
 			// This is admin view, we don't need to downgrade
 			should_downgrade_size_variants: false,
 		);
+	}
+
+	/**
+	 * Moderation history of all photos, newest first (Feature 089, FR-089-05).
+	 *
+	 * @param ListModerationHistoryRequest $request
+	 *
+	 * @return PaginatedModerationHistoryResource
+	 */
+	public function history(ListModerationHistoryRequest $request): PaginatedModerationHistoryResource
+	{
+		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,PhotoModerationEvent> $paginated */
+		$paginated = PhotoModerationEvent::query()
+			->with(['photo.size_variants', 'photo.owner', 'user'])
+			->orderBy('id', 'desc')
+			->paginate($request->per_page);
+
+		return new PaginatedModerationHistoryResource($paginated);
+	}
+
+	/**
+	 * Moderation history of one photo, newest first (Feature 089, FR-089-06).
+	 *
+	 * @param GetModerationPhotoHistoryRequest $request
+	 *
+	 * @return Collection<int,ModerationEventResource>
+	 */
+	public function photoHistory(GetModerationPhotoHistoryRequest $request): Collection
+	{
+		$photo = Photo::query()->with(['size_variants', 'owner'])->findOrFail($request->photoId());
+
+		return PhotoModerationEvent::query()
+			->where('photo_id', '=', $photo->id)
+			->with('user')
+			->orderBy('id', 'desc')
+			->get()
+			->map(function (PhotoModerationEvent $event) use ($photo) {
+				$event->setRelation('photo', $photo);
+
+				return new ModerationEventResource($event);
+			})
+			->values();
 	}
 
 	/**

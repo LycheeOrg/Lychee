@@ -66,12 +66,12 @@ _Last updated: 2026-10-13_
   - `php artisan test --filter=ModerationTest`  
   - `php artisan test --filter=UploadModerationFlowTest`
 
-- [ ] T-089-11 – History endpoint tests (FR-089-05, FR-089-06, NFR-089-01, NFR-089-02, S-089-13 … 16).  
+- [x] T-089-11 – History endpoint tests (FR-089-05, FR-089-06, NFR-089-01, NFR-089-02, S-089-13 … 16).  
   _Intent:_ `tests/Feature_v3/Moderation/ModerationHistoryListTest.php`: shape, order, paging, 401/403/404/422, photo filter, photo deletion, admin deletion, query count; red.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryListTest`
 
-- [ ] T-089-12 – History endpoints (FR-089-05, FR-089-06).  
+- [x] T-089-12 – History endpoints (FR-089-05, FR-089-06).  
   _Intent:_ `ListModerationHistoryRequest`, `GetModerationPhotoHistoryRequest`, `ModerationEventResource`, `PaginatedModerationHistoryResource`, `ModerationController::history()` / `photoHistory()`, routes.  
   _Verification commands:_  
   - `php artisan test --filter=ModerationHistoryListTest`  

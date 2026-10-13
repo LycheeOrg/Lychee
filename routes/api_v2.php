@@ -331,6 +331,8 @@ Route::delete('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeatur
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
 Route::get('/Moderation::photo', [Admin\ModerationController::class, 'photo']);
 Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
+Route::get('/Moderation::history', [Admin\ModerationController::class, 'history']);
+Route::get('/Moderation::photoHistory', [Admin\ModerationController::class, 'photoHistory']);
 
 /**
  * SETTINGS.
