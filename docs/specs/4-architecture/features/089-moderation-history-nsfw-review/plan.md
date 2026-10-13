@@ -1,0 +1,110 @@
+# Feature Plan 089 – Moderation History and NSFW Review
+
+_Linked specification:_ [spec.md](spec.md)  
+_Linked tasks:_ [tasks.md](tasks.md)  
+_Status:_ Draft  
+_Last updated:_ 2026-10-13
+
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
+
+## Vision & Success Criteria
+Admins can tell when each photo was held and approved, and review NSFW findings across the library, one row per photo, deleting the wrong ones.
+- Every write site of FR-089-02 and FR-089-03 records its event, filtered by the three settings (FR-089-04), with one insert per call (NFR-089-03).
+- History and findings listings answer with a constant number of queries per page (NFR-089-02).
+- v8 pages UI-089-01 … UI-089-03 work in the browser.
+
+## Scope Alignment
+- **In scope:** table, model, enums, settings; recorder service and its three call sites; five REST endpoints; v8 findings page, Moderation History tab, photo details section; lang keys; docs.
+- **Out of scope:** v7; filters on the findings page; undo of a dismissal; album un-marking; dedup of re-scan detections.
+
+## Dependencies & Interfaces
+- Feature 033: `photos.is_validated`, `SetUploadValidated`, `ModerationController`, v8 `Moderation.vue`.
+- Feature 045: `nsfw_detections`, `NsfwActionService`, `NsfwDetectionResource`, `usePhotoNsfwDetectionsStore`, `support:se` on NSFW admin endpoints.
+- `PhotoAlbumResource` (album id and title), `PhotoBox` (in-place photo view), `PhotoDetails.vue` drawer.
+- `BaseConfigMigration` and `configs.required_keys` ([settings_dependencies.md](../../../3-reference/settings_dependencies.md)).
+- Tooling: `php artisan typescript:transform` regenerates `resources/js/lychee.d.ts` after resources change.
+
+## Assumptions & Risks
+- **Assumptions:** the worktree needs its own `vendor/` (copied, not symlinked: Composer's autoloader resolves `app/` relative to the real `vendor` path), `node_modules/` and an empty `database/database.sqlite`.
+- **Risks / Mitigations:**
+  - Upload hold recorded before the photo row exists → the recorder runs in a new last pipe of the standalone pipeline, after `Save` and `AutoScanNsfwOnUpload`.
+  - `NsfwActionService` saves the photo in two places (end of `applyActions()`, `handleNoAlbumFallback()`) → record after the final `save()` from the computed outcome, not inside the helpers.
+  - Approval must know which photos were hidden → select hidden ids per chunk before the update (one extra query per chunk).
+  - Findings ordering on a grouped subquery across SQLite/MySQL/PostgreSQL → order by `MAX(nsfw_detections.id)`, a plain aggregate.
+
+## Implementation Drift Gate
+After the last task: map FR-089-01 … 14 and NFR-089-01 … 03 to classes and tests in a table here, rerun every test class listed in the tasks, `make phpstan`, `npm run check`, and record findings.
+
+## Increment Map
+1. **I0 – Worktree environment**
+   - _Steps:_ copy `vendor/` from the main checkout, symlink `node_modules/`, copy `.env`, create `database/database.sqlite`; run one existing test class (`ModerationTest`) to prove the setup.
+   - _Exit:_ the existing class is green.
+2. **I1 – Schema, enums, model, settings** (FR-089-01, FR-089-04)
+   - _Steps:_ migration `photo_moderation_events`; config migration for the three settings with `required_keys`; enums `ModerationEvent`, `ModerationSource`; model `PhotoModerationEvent`; `PhotosToBeDeletedDTO` deletes the events with the photos; lang `all_settings.php` (all locales); `settings_dependencies.md` row.
+   - _Commands:_ `make phpstan`.
+3. **I2 – Recorder** (FR-089-04, NFR-089-03)
+   - _Steps:_ unit test for the pure predicate (red), then `ModerationHistory::shouldRecord()` and `record()` (one bulk insert, empty input writes nothing).
+   - _Commands:_ `php artisan test --filter=ModerationHistoryPredicateTest`.
+4. **I3 – Upload holds** (FR-089-02 (1); S-089-01 … 03)
+   - _Steps:_ feature tests uploading as `check`, `monitor` with hide-on-scan, `trusted` (red); pipe `Standalone\RecordUploadHold` appended to the standalone pipeline.
+   - _Commands:_ `php artisan test --filter=ModerationHistoryUploadTest`, `--filter=AutoScanNsfwOnUploadTest`.
+5. **I4 – NSFW callback events** (FR-089-02 (2), FR-089-03 (2); S-089-04 … 08, S-089-12)
+   - _Steps:_ tests through `POST NsfwDetection/results` (red); `NsfwActionService::applyActions()` records `held` when moderated, `approved` when a hidden non-`check` photo is restored.
+   - _Commands:_ `php artisan test --filter=ModerationHistoryNsfwTest`, `--filter=NsfwActionServiceTest`, `--filter=NsfwDetectionResultsTest`.
+6. **I5 – Admin approval events** (FR-089-03 (1); S-089-09 … 11)
+   - _Steps:_ tests with query count (red); `approvePhotos()` selects hidden ids, updates, records once per chunk.
+   - _Commands:_ `php artisan test --filter=ModerationHistoryApproveTest`, `--filter=ModerationTest`, `--filter=UploadModerationFlowTest`.
+7. **I6 – History endpoints** (FR-089-05, FR-089-06; S-089-13 … 16)
+   - _Steps:_ tests (red); requests, `ModerationEventResource`, `PaginatedModerationHistoryResource`, controller methods, routes.
+   - _Commands:_ `php artisan test --filter=ModerationHistoryListTest`.
+8. **I7 – Findings listing** (FR-089-09; S-089-17, S-089-18)
+   - _Steps:_ tests with query count (red); `ListNsfwFindingsRequest`, `NsfwFindingResource`, `PaginatedNsfwFindingsResource`, `NsfwFindingsController::index`, route with `support:se`.
+   - _Commands:_ `php artisan test --filter=NsfwFindingsListTest`.
+9. **I8 – Findings deletion** (FR-089-10, FR-089-11, FR-089-14; S-089-18 … 22)
+   - _Steps:_ tests (red); two requests, `destroy`, `destroyByPhotos`, routes.
+   - _Commands:_ `php artisan test --filter=NsfwFindingsDeleteTest`.
+10. **I9 – Frontend contracts**
+    - _Steps:_ `php artisan typescript:transform`; `moderation-service.ts` (`history`, `photoHistory`), `nsfw-findings-service.ts`; `usePhotoNsfwDetectionsStore.forget()`; lang keys in `moderation.php` and `admin-dashboard.php` (all locales).
+    - _Commands:_ `npm run check`.
+11. **I10 – Findings page** (FR-089-12, FR-089-13; UI-089-01, S-089-23)
+    - _Steps:_ `v8/views/admin/NsfwFindings.vue`, `paths.ts`, v8 `routes.ts`, web route, dashboard tile.
+    - _Commands:_ `npm run format`, `npm run check`, eslint on touched files.
+12. **I11 – Moderation History tab** (FR-089-07; UI-089-02, S-089-24)
+    - _Steps:_ tabs on v8 `Moderation.vue`, History table component.
+    - _Commands:_ `npm run format`, `npm run check`.
+13. **I12 – Photo details section** (FR-089-08; UI-089-03, S-089-25)
+    - _Steps:_ admin-only section in v8 `PhotoDetails.vue`.
+    - _Commands:_ `npm run format`, `npm run check`.
+14. **I13 – Docs, quality gate, browser check**
+    - _Steps:_ roadmap, knowledge map, Feature 033/045 pointers; full quality gate; Playwright on a scratch instance for UI-089-01 … 03.
+
+## Scenario Tracking
+| Scenario ID | Increment / Task reference | Notes |
+|-------------|---------------------------|-------|
+| S-089-01 … 03 | I3 / T-089-05, T-089-06 | `ModerationHistoryUploadTest` |
+| S-089-04 … 08 | I4 / T-089-07, T-089-08 | `ModerationHistoryNsfwTest` |
+| S-089-09 … 11 | I5 / T-089-09, T-089-10 | `ModerationHistoryApproveTest` |
+| S-089-12 | I4 / T-089-07 | `ModerationHistoryNsfwTest` |
+| S-089-13 … 16 | I6 / T-089-11, T-089-12 | `ModerationHistoryListTest` |
+| S-089-17, 18 | I7 / T-089-13, T-089-14 | `NsfwFindingsListTest` |
+| S-089-18 … 22 | I8 / T-089-15, T-089-16 | `NsfwFindingsDeleteTest` |
+| S-089-23 | I10 / T-089-18, T-089-22 | browser check |
+| S-089-24 | I11 / T-089-19, T-089-22 | browser check |
+| S-089-25 | I12 / T-089-20, T-089-22 | browser check |
+
+## Analysis Gate
+2026-10-13, agent review:
+1. Specification completeness: goals, FR-089-01 … 14, NFR-089-01 … 03, settings, scenarios populated; Q-089-01 … 05 folded into FRs, Non-Goals and UI; ASCII mock-ups for UI-089-01 … 03. Pass.
+2. Open questions: none open. ADR-089-01 (history log) and ADR-089-02 (dismissal deletes) written and linked from the spec and open questions. Pass.
+3. Plan alignment: plan links spec and tasks; dependencies and success criteria match FR/NFR wording. Pass.
+4. Tasks coverage: FR-089-01 → T-089-02; 02 → T-089-05 … 08; 03 → T-089-07 … 10; 04 → T-089-02 … 04; 05, 06 → T-089-11, 12; 07 → T-089-19; 08 → T-089-20; 09 → T-089-13, 14; 10, 11 → T-089-15, 16; 12 → T-089-18; 13 → T-089-18; 14 → T-089-15. Each backend increment has its red test task first; success, validation (422) and failure (401/402/403/404) branches listed. Pass.
+5. Working agreements: no new dependency; explicit writes at each site (no model events); branching held in the pure `shouldRecord()` predicate; new tests in Feature_v3 or AssistedVision, none in Feature_v2; v8 only. ADRs referencing Feature 089: ADR-089-01, ADR-089-02 (reviewed). Pass.
+6. Tooling: commands listed per increment and task. Pass.
+
+## Exit Criteria
+- T-089-01 … T-089-22 `[x]`.
+- php-cs-fixer, phpstan, prettier, vue-tsc, eslint clean; every test class in the tasks green.
+- `lychee.d.ts` regenerated; roadmap, knowledge map, settings dependencies, Feature 033/045 pointers updated.
+
+## Follow-ups / Backlog
+- `NsfwActionService::logDetections()` appends on re-scan, so a forced re-scan duplicates findings (out of scope).
