@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Autenticarse con %s',
         'username' => 'Nombre de usuario',
+        'username_or_email' => 'Nombre de usuario o correo electrónico',
         'password' => 'Contraseña',
         'unknown_invalid' => 'Usuario desconocido o contraseña inválida.',
         'signin' => 'Iniciar sesión',

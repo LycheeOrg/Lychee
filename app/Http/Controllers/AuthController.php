@@ -60,17 +60,48 @@ class AuthController extends Controller
 		}
 
 		// Fallback to local authentication
-		if (Auth::attempt([
-			'username' => $username,
-			'password' => $password,
-		], $remember)) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip . ' [remember=' . ($remember ? 'true' : 'false') . ']');
+		$matched_attribute = $this->attemptLocalLogin($request, $username, $password, $remember);
+		if ($matched_attribute !== null) {
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip . ' [identifier=' . $matched_attribute . ', remember=' . ($remember ? 'true' : 'false') . ']');
 
 			return;
 		}
 
 		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has tried to log in from ' . $ip);
 		throw new UnauthenticatedException('Unknown user or invalid password');
+	}
+
+	/**
+	 * Attempt a local login with the submitted identifier.
+	 *
+	 * The identifier is always tried as a username first. Only when
+	 * `email_login_enabled` is set, it is then tried as an email address. That
+	 * order keeps accounts without an email signing in with their username and
+	 * makes the outcome deterministic when one account's username equals
+	 * another account's email.
+	 *
+	 * @param LoginRequest $request    the login request
+	 * @param string       $identifier submitted username or email address
+	 * @param string       $password   submitted password
+	 * @param bool         $remember   whether the user wants to be remembered
+	 *
+	 * @return string|null the user attribute which matched, or `null` when neither did
+	 */
+	private function attemptLocalLogin(LoginRequest $request, string $identifier, #[\SensitiveParameter] string $password, bool $remember): ?string
+	{
+		if (Auth::attempt(['username' => $identifier, 'password' => $password], $remember)) {
+			return 'username';
+		}
+
+		if (!$request->configs()->getValueAsBool('email_login_enabled')) {
+			return null;
+		}
+
+		if (Auth::attempt(['email' => $identifier, 'password' => $password], $remember)) {
+			return 'email';
+		}
+
+		return null;
 	}
 
 	/**

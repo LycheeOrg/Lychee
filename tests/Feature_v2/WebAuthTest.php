@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2;
 
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -243,6 +244,49 @@ class WebAuthTest extends BaseApiWithDataTest
 				],
 			],
 		]);
+	}
+
+	/**
+	 * Feature 091, S-091-16 – with `email_login_enabled` the email address
+	 * narrows the credential list just like the username (FR-091-14).
+	 */
+	public function testWebAuthLoginOptionsEmailWhenEmailLoginEnabled(): void
+	{
+		Configs::set('email_login_enabled', '1');
+		$this->createCredentials();
+
+		$response = $this->postJson('WebAuthn::login/options', ['username' => $this->admin->email]);
+		$this->assertOk($response);
+
+		$challenge_retrieved = Session::get(config('webauthn.challenge.key'));
+
+		$response->assertJson([
+			'timeout' => 60000,
+			'challenge' => $challenge_retrieved->data->toBase64Url(),
+			'allowCredentials' => [
+				0 => [
+					'id' => '_Xlz-khgFhDdkvOWyy_YqC54ExkYyp1o6HAQiybqLST-9RGBndpgI06TQygIYI7ZL2dayCMYm6J1-bXyl72obA',
+					'type' => 'public-key',
+				],
+			],
+		]);
+
+		Configs::set('email_login_enabled', '0');
+	}
+
+	/**
+	 * Feature 091, S-091-16 – without the setting, the email address narrows
+	 * nothing: the challenge falls back to the discoverable-credential flow.
+	 */
+	public function testWebAuthLoginOptionsEmailWhenEmailLoginDisabled(): void
+	{
+		Configs::set('email_login_enabled', '0');
+		$this->createCredentials();
+
+		$response = $this->postJson('WebAuthn::login/options', ['username' => $this->admin->email]);
+		$this->assertOk($response);
+
+		$response->assertJsonMissing(['allowCredentials' => []]);
 	}
 
 	/**

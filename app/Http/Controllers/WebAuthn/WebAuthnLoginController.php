@@ -12,6 +12,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\WebAuthnDisabledExecption;
 use App\Models\User;
 use App\Providers\AuthServiceProvider;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Routing\Controller;
@@ -42,9 +43,36 @@ class WebAuthnLoginController extends Controller
 		]);
 
 		$username = $fields['username'] ?? null;
+		$username = $username === null ? null : $this->resolveIdentifier($username);
 		$authenticatable = $fields['user_id'] ?? ($username !== null ? ['username' => $username] : null);
 
 		return $request->toVerify($authenticatable);
+	}
+
+	/**
+	 * Translate a submitted identifier into the username the credential list is narrowed by.
+	 *
+	 * `email_login_enabled` lets the login form accept an email address
+	 * (Feature 091), so the same identifier has to find its credentials here.
+	 * The username stays authoritative: the email lookup only runs when no
+	 * account carries that username, which mirrors the attempt order of
+	 * `AuthController::attemptLocalLogin()`.
+	 *
+	 * @param string $identifier submitted username or email address
+	 *
+	 * @return string the username to narrow the credential list by
+	 */
+	private function resolveIdentifier(string $identifier): string
+	{
+		if (!resolve(ConfigManager::class)->getValueAsBool('email_login_enabled')) {
+			return $identifier;
+		}
+
+		if (User::query()->where('username', '=', $identifier)->exists()) {
+			return $identifier;
+		}
+
+		return User::query()->where('email', '=', $identifier)->first()?->username ?? $identifier;
 	}
 
 	/**
