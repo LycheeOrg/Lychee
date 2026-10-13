@@ -52,5 +52,13 @@ export const usePhotoNsfwDetectionsStore = defineStore("photo-nsfw-detections-st
 		return fetch(photoId);
 	}
 
-	return { cache, fetch, get, invalidate };
+	/** Drop cached detections, e.g. after they were dismissed; the next fetch reloads them. */
+	function forget(photoIds: string[]): void {
+		photoIds.forEach((photoId) => {
+			cache.value.delete(photoId);
+			pending.delete(photoId);
+		});
+	}
+
+	return { cache, fetch, get, invalidate, forget };
 });

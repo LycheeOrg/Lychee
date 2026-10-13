@@ -1,7 +1,7 @@
 # Feature 089 Tasks – Moderation History and NSFW Review
 
-_Status: In progress_  
-_Last updated: 2026-10-13_
+_Status: Complete_  
+_Last updated: 2026-10-14_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -77,59 +77,59 @@ _Last updated: 2026-10-13_
   - `php artisan test --filter=ModerationHistoryListTest`  
   - `make phpstan`
 
-- [ ] T-089-13 – Findings listing tests (FR-089-09, NFR-089-01, NFR-089-02, S-089-17, S-089-18).  
+- [x] T-089-13 – Findings listing tests (FR-089-09, NFR-089-01, NFR-089-02, S-089-17, S-089-18).  
   _Intent:_ `tests/AssistedVision/NsfwClassification/NsfwFindingsListTest.php`: one entry per photo, all detections and albums, order, paging, 401/403/402/422, query count; red.  
   _Verification commands:_  
   - `php artisan test --filter=NsfwFindingsListTest`
 
-- [ ] T-089-14 – Findings listing (FR-089-09).  
+- [x] T-089-14 – Findings listing (FR-089-09).  
   _Intent:_ `ListNsfwFindingsRequest`, `NsfwFindingResource`, `PaginatedNsfwFindingsResource`, `NsfwFindingsController::index()`, route (`support:se`).  
   _Verification commands:_  
   - `php artisan test --filter=NsfwFindingsListTest`  
   - `make phpstan`
 
-- [ ] T-089-15 – Findings deletion tests (FR-089-10, FR-089-11, FR-089-14, S-089-18 … 22).  
+- [x] T-089-15 – Findings deletion tests (FR-089-10, FR-089-11, FR-089-14, S-089-18 … 22).  
   _Intent:_ `tests/AssistedVision/NsfwClassification/NsfwFindingsDeleteTest.php`: by id, by photo, photo state and history unchanged, validation, 401/403/402, approval without album marking; red.  
   _Verification commands:_  
   - `php artisan test --filter=NsfwFindingsDeleteTest`
 
-- [ ] T-089-16 – Findings deletion (FR-089-10, FR-089-11).  
+- [x] T-089-16 – Findings deletion (FR-089-10, FR-089-11).  
   _Intent:_ `DeleteNsfwFindingsRequest`, `DeleteNsfwFindingsByPhotosRequest`, `destroy()`, `destroyByPhotos()`, routes.  
   _Verification commands:_  
   - `php artisan test --filter=NsfwFindingsDeleteTest`  
   - `make phpstan`
 
-- [ ] T-089-17 – Frontend contracts.  
+- [x] T-089-17 – Frontend contracts.  
   _Intent:_ `php artisan typescript:transform`; `moderation-service.ts`, `nsfw-findings-service.ts`; `usePhotoNsfwDetectionsStore.forget()`; lang keys (`moderation.php`, `admin-dashboard.php`) in every locale.  
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-089-18 – Findings page (FR-089-12, FR-089-13, UI-089-01).  
+- [x] T-089-18 – Findings page (FR-089-12, FR-089-13, UI-089-01).  
   _Intent:_ `v8/views/admin/NsfwFindings.vue`, `paths.ts`, v8 `routes.ts`, `web_v2.php`, dashboard tile.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
 
-- [ ] T-089-19 – Moderation History tab (FR-089-07, UI-089-02).  
+- [x] T-089-19 – Moderation History tab (FR-089-07, UI-089-02).  
   _Intent:_ tabs on v8 `Moderation.vue`, History table.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
 
-- [ ] T-089-20 – Photo details section (FR-089-08, UI-089-03).  
+- [x] T-089-20 – Photo details section (FR-089-08, UI-089-03).  
   _Intent:_ admin-only section in v8 `PhotoDetails.vue`.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
 
-- [ ] T-089-21 – Docs and quality gate.  
+- [x] T-089-21 – Docs and quality gate.  
   _Intent:_ roadmap, knowledge map, Feature 033/045 pointers, drift gate report; php-cs-fixer, phpstan, prettier, vue-tsc, eslint; every test class above.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
   - `make phpstan`  
   - `npm run check`
 
-- [ ] T-089-22 – Browser check (S-089-23 … 25).  
+- [x] T-089-22 – Browser check (S-089-23 … 25).  
   _Intent:_ Playwright on a scratch instance: findings page (chip, row, bulk dismissal, links, empty state), Moderation History tab, photo details section for admin and non-admin.  
   _Verification commands:_ Playwright script in the session scratchpad.
 

@@ -84,4 +84,7 @@ return [
         'legend_mark_album' => 'Bildets album flagges som følsomt.',
         'legend_nothing' => 'Ingen handling utføres.',
     ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
+    ],
 ];

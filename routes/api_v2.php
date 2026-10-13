@@ -473,6 +473,9 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	// TODO: Those should require admin no ???
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);
+	Route::get('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'index'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'destroy'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings/photos', [AiVision\NsfwFindingsController::class, 'destroyByPhotos'])->middleware(['support:se']);
 
 	/**
 	 * AI VISION — MAINTENANCE.
