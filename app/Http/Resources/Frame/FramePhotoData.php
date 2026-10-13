@@ -23,16 +23,16 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class FramePhotoData extends Data
 {
 	/**
-	 * @param string|null        $title
+	 * @param string|null            $title
 	 * @param array<int,string>|null $albums   titles of the photo's browsable albums, null when the frame does not offer the album line
-	 * @param string|null        $focal
-	 * @param string|null        $aperture
-	 * @param string|null        $shutter
-	 * @param string|null        $iso
-	 * @param string|null        $make
-	 * @param string|null        $model
-	 * @param string|null        $lens
-	 * @param string|null        $taken_at
+	 * @param string|null            $focal
+	 * @param string|null            $aperture
+	 * @param string|null            $shutter
+	 * @param string|null            $iso
+	 * @param string|null            $make
+	 * @param string|null            $model
+	 * @param string|null            $lens
+	 * @param string|null            $taken_at
 	 */
 	public function __construct(
 		public ?string $title,

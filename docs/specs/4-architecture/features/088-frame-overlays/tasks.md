@@ -1,6 +1,6 @@
 # Feature 088 Tasks – Frame Overlays
 
-_Status: In progress_  
+_Status: Complete_  
 _Last updated: 2026-10-13_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -72,19 +72,19 @@ _Last updated: 2026-10-13_
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-088-12 – v8 overlay components (F-088-01 … F-088-04, F-088-08, F-088-09, F-088-11, F-088-12).  
+- [x] T-088-12 – v8 overlay components (F-088-01 … F-088-04, F-088-08, F-088-09, F-088-11, F-088-12).  
   _Intent:_ `resources/js/v8/components/frame/FrameClockBox.vue`, `FrameInfoBox.vue`, `FrameOverlays.vue`; `Frame.vue` wiring.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`  
   - `npx eslint resources/js/v8/components/frame resources/js/v8/utils/frameOverlay.ts resources/js/v8/views/gallery-panels/Frame.vue`
 
-- [ ] T-088-13 – Browser check (S-088-03, S-088-04, S-088-05, S-088-16 … S-088-20).  
+- [x] T-088-13 – Browser check (S-088-03, S-088-04, S-088-05, S-088-16 … S-088-20).  
   _Intent:_ scratch instance and Playwright script with a mocked clock; light and dark photos; RTL Back button corner.  
   _Verification commands:_  
   - Playwright script in the session scratchpad (results recorded in the plan's drift gate report)
 
-- [ ] T-088-14 – Documentation and drift gate.  
+- [x] T-088-14 – Documentation and drift gate.  
   _Intent:_ knowledge map, roadmap row, `_current-session.md`, drift gate report in the plan, full quality gate.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, every test class above, `make phpstan`

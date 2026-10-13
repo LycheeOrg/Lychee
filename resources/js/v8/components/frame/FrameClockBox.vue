@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="clock.is_time_enabled || clock.is_date_enabled"
-		class="rounded-xl px-5 py-3 text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.8)]"
+		class="rounded-xl px-5 py-3 text-white [text-shadow:0_0_2px_#000,0_0_2px_#000,0_0_8px_rgb(0_0_0/0.8),0_0_24px_rgb(0_0_0/0.5)]"
 		:style="{ backgroundColor: boxBackground(clock.background_color, clock.background_opacity), opacity: clock.opacity / 100 }"
 		data-frame-box="clock"
 	>

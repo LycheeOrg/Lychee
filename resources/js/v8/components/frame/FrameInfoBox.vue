@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="lines.length > 0"
-		class="max-w-[min(40rem,80vw)] rounded-xl px-5 py-3 text-[clamp(0.875rem,1.4vw,1.5rem)] leading-snug text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.8)]"
+		class="max-w-[min(40rem,80vw)] rounded-xl px-5 py-3 text-[clamp(0.875rem,1.4vw,1.5rem)] leading-snug text-white [text-shadow:0_0_2px_#000,0_0_2px_#000,0_0_8px_rgb(0_0_0/0.8),0_0_24px_rgb(0_0_0/0.5)]"
 		:style="{ backgroundColor: boxBackground(info.background_color, info.background_opacity), opacity: info.opacity / 100 }"
 		data-frame-box="info"
 	>

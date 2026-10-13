@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
-_Status:_ Ready for implementation  
+_Status:_ Complete  
 _Last updated:_ 2026-10-13
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -32,6 +32,32 @@ A Frame running on a wall tablet or a TV can show the time, the date and what th
 
 ## Implementation Drift Gate
 Run after T-088-14: map every FR/NFR to code and tests in a table appended below, rerun the quality gate (php-cs-fixer, prettier, `npm run check`, every test class listed in tasks, `make phpstan`), and record the Playwright evidence.
+
+### Drift Gate Report – 2026-10-13
+
+| Requirement | Code | Evidence |
+|-------------|------|----------|
+| FR-088-01, NFR-088-05 | `FrameClockBox.vue` (`tick()` re-armed for the next minute boundary, `hourCycle`), `frameSlideshow.ts` (clears only its own timeouts) | Playwright: `14:32` → `14:33` → `14:34` on the mocked clock, still `14:39` after a photo refresh; timer cleared in `onUnmounted`. |
+| FR-088-02 | `FrameClockBox.vue::locale()`, `Intl.DateTimeFormat` | Playwright (`en-US`): `Tuesday, October 13, 2026`, time above date. |
+| FR-088-03, FR-088-08 | `FrameBoxPosition`, migration `type_range`; `FrameOverlays.vue` (`CORNER_CLASSES`, center slot) | `FrameOverlaySettingsTest` (S-088-06); Playwright: center ±2 px, corners measured. |
+| FR-088-04, S-088-20 | `frameOverlay.ts::boxBackground()`, `:style` opacity | Playwright: `rgba(255, 0, 0, 0.25)` / `0.6`, `rgba(0, 255, 0, 0)` / `0.3`. |
+| FR-088-05, FR-088-07, FR-088-10 | `FramePhotoData`, `FrameController::get` | `FrameOverlayTest` (S-088-07 … 09), `FramePhotoDataTest` (S-088-09, 10); Playwright: five info lines, missing values left out. |
+| FR-088-06, NFR-088-06 | `ListBrowsableAlbumTitles`, `FrameRequest::offersAlbumLine()` | `FrameOverlayTest` (S-088-11 … 13). |
+| FR-088-09 | `frameOverlay.ts::infoLines()`, `FrameInfoBox.vue` `v-if` | Playwright: no info box for an all-null photo and for `photo = null`. |
+| FR-088-11 | `FrameOverlays.vue` (clock `z-30`, info `z-15`, shutter `z-20`) | Playwright, curtain down: hit test on the clock box returns the box, on the info box the shutter. |
+| FR-088-12, S-088-19 | `boxesByCorner()`, `ltr:pt-16` / `rtl:pt-16` | Playwright: both boxes in the top-left column, clock first, below the Back button (57 px → 64 px); Arabic install: Back button top right, top-right column below it, top-left column at the top. |
+| FR-088-13, FR-088-14 | migration `2026_10_13_000000_add_frame_overlay_configs`, `lang/*/all_settings.php` | `FrameOverlaySettingsTest`, `LangTest`, `FrameOverlayTest` (S-088-01); Playwright: default values render no box. |
+| FR-088-15, S-088-17, S-088-18 | `frameOverlay.ts::resolveClock()`, `resolveInfo()`, `parse*` helpers | Playwright: URL override shown on that page only; `middle`, `center`, `150`, `-5`, `red`, `yes` ignored, admin position, colour and opacities kept. |
+| FR-088-16, FR-088-17 | `FrameController::loadPhoto()`, `AlbumConfig` | `FrameSubAlbumsTest` (S-088-14, 15), `FrameTest`, `AlbumConfig` filter (20 tests). |
+| NFR-088-01, NFR-088-02 | — | No external host; `composer.json`, `package.json` unchanged. |
+| NFR-088-03 | `FramePhotoData`, `ListBrowsableAlbumTitles` | `FrameOverlayTest` (S-088-08, 09, 12). |
+| NFR-088-04 | text shadow on both boxes | Playwright screenshots, background opacity 0, on a near-white and a near-black photo. |
+
+Verification commands: `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, `npx eslint resources/js/v8/components/frame resources/js/v8/utils/frameOverlay.ts resources/js/v8/views/gallery-panels/Frame.vue resources/js/v8/composables/frame`, `php artisan test --filter=` `FrameOverlaySettingsTest` (14), `FrameOverlayTest` (7), `FramePhotoDataTest` (4), `FrameSubAlbumsTest` (4), `FrameTest` (4), `LangTest` (2), `AlbumConfig` (20), all green; `make phpstan` no errors; `npx vite build`, `node <scratchpad>/frame-overlays.mjs <scratchpad>/shots` 35/35 checks green.
+
+Scratch instance: SQLite database in the session scratchpad, migrated with `DB_DATABASE` set to it, `CACHE_DRIVER=array`, `NUXT_UI_ENABLED=true`, admin row inserted directly, PHP built-in server with `variables_order=EGPCS`. Playwright with the system Chromium mocks `GET /api/v2/Frame`, so each scenario sets the admin values and photo data, and installs a fake clock at 14:32:50 Europe/Paris. The RTL case switches the instance's `lang` to `ar`: the `ltr:` variant keys on `:lang()`, so setting `dir` alone in the page is not faithful.
+
+Low-level adjustment: the `0 1px 3px` text shadow left white text faint on a near-white photo at background opacity 0 (NFR-088-04). Both boxes now use a doubled 2 px black halo with 8 px and 24 px glows. No divergence from the spec.
 
 ## Increment Map
 1. **I1 – Settings and enums** (T-088-01 … T-088-03)
