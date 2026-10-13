@@ -146,6 +146,8 @@ class InitConfig extends Data
 	public bool $is_webauthn_enabled = true;
 	// User registration enabled
 	public bool $is_registration_enabled;
+	// The login field also accepts the email address of the account
+	public bool $is_email_login_enabled;
 
 	// Gesture settings
 	public bool $is_scroll_to_navigate_photos_enabled;
@@ -315,6 +317,7 @@ class InitConfig extends Data
 		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
 		$this->is_registration_enabled = request()->configs()->getValueAsBool('user_registration_enabled');
+		$this->is_email_login_enabled = request()->configs()->getValueAsBool('email_login_enabled');
 
 		// Gesture settings
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');

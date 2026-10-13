@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Autentiser med %s',
         'username' => 'Brukernavn',
+        'username_or_email' => 'Brukernavn eller e-post',
         'password' => 'Passord',
         'unknown_invalid' => 'Ukjent brukernavn eller feil passord.',
         'signin' => 'Logg inn',

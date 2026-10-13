@@ -135,6 +135,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Registration settings
 		is_registration_enabled: false,
+		is_email_login_enabled: false,
 
 		// Gesture settings
 		is_scroll_to_navigate_photos_enabled: true,
@@ -306,6 +307,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					togglableStore.are_details_open = data.is_photo_details_always_open;
 
 					this.is_registration_enabled = data.is_registration_enabled;
+					this.is_email_login_enabled = data.is_email_login_enabled;
 
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
