@@ -21,6 +21,7 @@ namespace Tests\Feature_v2;
 use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -145,7 +146,12 @@ class EmailLoginTest extends BaseApiWithDataTest
 
 	/**
 	 * S-091-08 – a username equal to another account's email resolves to the
-	 * username owner, because the username is attempted first.
+	 * username owner, and does so before any password is looked at: the email
+	 * owner's own password does not authenticate them through that identifier.
+	 *
+	 * The two accounts deliberately carry different passwords. Were the
+	 * attribute chosen by whichever `Auth::attempt()` happened to succeed, the
+	 * second case below would sign in the email owner instead.
 	 */
 	public function testUsernameWinsOverAnotherAccountsEmail(): void
 	{
@@ -153,16 +159,38 @@ class EmailLoginTest extends BaseApiWithDataTest
 
 		$shared = 'shared-identifier@example.com';
 		$this->userMayUpload2->email = $shared;
+		$this->userMayUpload2->password = Hash::make('email-owner-password');
 		$this->userMayUpload2->save();
 
-		/** @var User $impostor */
-		$impostor = User::factory()->create(['username' => $shared]);
+		/** @var User $username_owner */
+		$username_owner = User::factory()->create([
+			'username' => $shared,
+			'password' => Hash::make('username-owner-password'),
+		]);
 
+		// The username owner signs in with their own password.
 		$this->assertNoContent($this->postJson('Auth::login', [
 			'username' => $shared,
-			'password' => 'password',
+			'password' => 'username-owner-password',
 		]));
-		$this->assertAuthenticatedAs($impostor);
+		$this->assertAuthenticatedAs($username_owner);
+
+		$this->postJson('Auth::logout');
+
+		// The email owner's password is rejected for that identifier: the
+		// identifier never addresses their account while the username exists.
+		$this->assertUnauthorized($this->postJson('Auth::login', [
+			'username' => $shared,
+			'password' => 'email-owner-password',
+		]));
+		$this->assertGuest();
+
+		// Their own username still works.
+		$this->assertNoContent($this->postJson('Auth::login', [
+			'username' => $this->userMayUpload2->username,
+			'password' => 'email-owner-password',
+		]));
+		$this->assertAuthenticatedAs($this->userMayUpload2);
 	}
 
 	/**

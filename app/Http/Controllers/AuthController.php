@@ -74,34 +74,44 @@ class AuthController extends Controller
 	/**
 	 * Attempt a local login with the submitted identifier.
 	 *
-	 * The identifier is always tried as a username first. Only when
-	 * `email_login_enabled` is set, it is then tried as an email address. That
-	 * order keeps accounts without an email signing in with their username and
-	 * makes the outcome deterministic when one account's username equals
-	 * another account's email.
+	 * Which attribute the identifier addresses is decided *before* any password
+	 * is checked: the username is authoritative, so an account carrying it is
+	 * the only candidate whatever its password, and the identifier is only read
+	 * as an email address when no account carries it as a username. Deciding on
+	 * the password instead would let an identifier resolve to a different
+	 * account depending on which password was typed, and would disagree with
+	 * `WebAuthnLoginController::resolveIdentifier()`, which never sees one.
 	 *
 	 * @param LoginRequest $request    the login request
 	 * @param string       $identifier submitted username or email address
 	 * @param string       $password   submitted password
 	 * @param bool         $remember   whether the user wants to be remembered
 	 *
-	 * @return string|null the user attribute which matched, or `null` when neither did
+	 * @return string|null the user attribute which matched, or `null` when the password did not
 	 */
 	private function attemptLocalLogin(LoginRequest $request, string $identifier, #[\SensitiveParameter] string $password, bool $remember): ?string
 	{
-		if (Auth::attempt(['username' => $identifier, 'password' => $password], $remember)) {
+		$attribute = $this->resolveIdentifierAttribute($request, $identifier);
+
+		return Auth::attempt([$attribute => $identifier, 'password' => $password], $remember) ? $attribute : null;
+	}
+
+	/**
+	 * Decide whether the submitted identifier addresses a username or an email address.
+	 *
+	 * @param LoginRequest $request    the login request
+	 * @param string       $identifier submitted username or email address
+	 *
+	 * @return string `'username'`, or `'email'` when `email_login_enabled` is
+	 *                set and no account carries the identifier as its username
+	 */
+	private function resolveIdentifierAttribute(LoginRequest $request, string $identifier): string
+	{
+		if (!$request->configs()->getValueAsBool('email_login_enabled')) {
 			return 'username';
 		}
 
-		if (!$request->configs()->getValueAsBool('email_login_enabled')) {
-			return null;
-		}
-
-		if (Auth::attempt(['email' => $identifier, 'password' => $password], $remember)) {
-			return 'email';
-		}
-
-		return null;
+		return User::query()->where('username', '=', $identifier)->exists() ? 'username' : 'email';
 	}
 
 	/**

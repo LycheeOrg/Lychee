@@ -21,6 +21,7 @@ namespace Tests\Unit\Actions\User;
 use App\Actions\User\Create;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
@@ -78,6 +79,34 @@ class CreateUsernameFallbackTest extends AbstractTestCase
 	{
 		$this->expectException(InvalidPropertyException::class);
 		$this->create->do('', 'a-password', '');
+	}
+
+	/**
+	 * S-091-18 – with the setting on, a username that is already another
+	 * account's email address is refused: that identifier would address two
+	 * accounts. This is the direction the feature tests do not exercise.
+	 */
+	public function testUsernameMatchingAnotherAccountsEmailIsRefused(): void
+	{
+		Configs::set('email_login_enabled', '1');
+		User::factory()->create(['email' => 'owner@example.com']);
+
+		$this->expectException(ConflictingPropertyException::class);
+		$this->create->do('owner@example.com', 'a-password', 'something-else@example.com');
+	}
+
+	/**
+	 * S-091-18 – with the setting off the two attributes are independent, so
+	 * the same call succeeds.
+	 */
+	public function testUsernameMatchingAnotherAccountsEmailIsAllowedWhenSettingOff(): void
+	{
+		Configs::set('email_login_enabled', '0');
+		User::factory()->create(['email' => 'owner@example.com']);
+
+		$user = $this->create->do('owner@example.com', 'a-password', 'something-else@example.com');
+
+		self::assertSame('owner@example.com', $user->username);
 	}
 
 	/**

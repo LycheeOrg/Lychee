@@ -123,6 +123,66 @@ class RegistrationEmailLoginTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * S-091-17 – an email longer than the `users.email`/`users.username` column
+	 * is rejected on the email field, so a mirrored username can never exceed
+	 * `UsernameRule`'s limit.
+	 */
+	public function testRegistrationRejectsAnOverlongEmail(): void
+	{
+		Configs::set('email_login_enabled', '1');
+
+		$response = $this->putJson('/Profile', [
+			'email' => str_repeat('a', 90) . '@example.com', // 102 characters
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['email']);
+	}
+
+	/**
+	 * S-091-18 – with the setting on, an email that doubles as another
+	 * account's username is refused: that identifier would address two
+	 * accounts.
+	 */
+	public function testRegistrationRejectsAnEmailUsedAsAnotherUsername(): void
+	{
+		Configs::set('email_login_enabled', '1');
+
+		User::factory()->create(['username' => 'ambiguous@example.com', 'email' => null]);
+
+		$response = $this->putJson('/Profile', [
+			'username' => 'a-free-username',
+			'email' => 'ambiguous@example.com',
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+
+		$this->assertStatus($response, 409);
+	}
+
+	/**
+	 * S-091-18 – with the setting off the two attributes are independent, so
+	 * the same payload is accepted.
+	 */
+	public function testRegistrationAllowsAnEmailUsedAsAnotherUsernameWhenSettingOff(): void
+	{
+		Configs::set('email_login_enabled', '0');
+
+		User::factory()->create(['username' => 'ambiguous@example.com', 'email' => null]);
+
+		$response = $this->putJson('/Profile', [
+			'username' => 'a-free-username',
+			'email' => 'ambiguous@example.com',
+			'password' => 'password123',
+			'password_confirmation' => 'password123',
+		]);
+
+		$this->assertCreated($response);
+	}
+
+	/**
 	 * S-091-12 – the email cannot take a username which is already in use.
 	 */
 	public function testRegistrationWithoutUsernameRejectsATakenIdentifier(): void

@@ -60,6 +60,13 @@ _Last updated: 2026-10-13
   _Verification commands:_
   - `php artisan test --filter=WebAuthTest`
 
+- [x] T-091-11 – CodeRabbit review round 1 on PR #4871 (FR-091-03, FR-091-05, FR-091-15, FR-091-16, S-091-08, S-091-17, S-091-18).  
+  _Intent:_ `AuthController::resolveIdentifierAttribute()`, `RegistrationRequest` email `max:100`, `Actions\User\Create::assertIdentifierIsUnambiguous()`, strengthened `testUsernameWinsOverAnotherAccountsEmail`, three new registration tests.  
+  _Verification commands:_  
+  - `php artisan test --filter=EmailLoginTest`  
+  - `php artisan test --filter=RegistrationEmailLoginTest`  
+  - counter-check: the strengthened collision test fails against the pre-review `attemptLocalLogin()`
+
 - [x] T-091-10 – Quality gate and drift gate (all FR/NFR).  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  

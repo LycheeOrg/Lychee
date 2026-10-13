@@ -46,6 +46,7 @@ class Create
 		if ($email !== null && User::query()->where('email', '=', $email)->count() !== 0) {
 			throw new ConflictingPropertyException('email already exists');
 		}
+		$this->assertIdentifierIsUnambiguous($username, $email);
 		if ($quota_kb === 0) {
 			$default_bytes = $this->config_manager->getValueAsByteSize('default_user_quota');
 			$quota_kb = $default_bytes === 0 ? null : max(1, intdiv($default_bytes, 1024));
@@ -65,6 +66,39 @@ class Create
 		$user->save();
 
 		return $user;
+	}
+
+	/**
+	 * Reject a new account whose identifier would address two accounts.
+	 *
+	 * With `email_login_enabled` a login identifier is matched against both
+	 * `username` and `email`, so the two attributes share one namespace: a
+	 * username that doubles as another account's email (or the reverse) makes
+	 * that identifier ambiguous. `AuthController` resolves such a collision in
+	 * favour of the username, which silently costs the other account its email
+	 * login, so the collision is refused at creation instead.
+	 *
+	 * Only checked while the setting is on: with it off the two attributes are
+	 * independent and an overlap is harmless.
+	 *
+	 * @param string  $username resolved username of the new user
+	 * @param ?string $email    email address of the new user
+	 *
+	 * @throws ConflictingPropertyException if either attribute is already used as the other
+	 */
+	private function assertIdentifierIsUnambiguous(string $username, ?string $email): void
+	{
+		if (!$this->config_manager->getValueAsBool('email_login_enabled')) {
+			return;
+		}
+
+		if (User::query()->where('email', '=', $username)->count() !== 0) {
+			throw new ConflictingPropertyException('Username is already used as an email address');
+		}
+
+		if ($email !== null && User::query()->where('username', '=', $email)->count() !== 0) {
+			throw new ConflictingPropertyException('email is already used as a username');
+		}
 	}
 
 	/**

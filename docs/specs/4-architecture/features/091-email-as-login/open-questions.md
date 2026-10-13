@@ -22,7 +22,7 @@ Open questions for [Feature 091](spec.md). Log every high- and medium-impact que
 **Question**
 A new setting lets the email be used as the login username. Does the setting make the email the *only* accepted login identifier, does it make the email an *additional* accepted identifier next to the username, or does it make the `username` column itself hold the email?
 
-**Resolution:** Option B. With `email_login_enabled` on, local authentication attempts the username first and the email second; the first match wins (spec FR-091-03). A username equal to another account's email resolves to the username owner (FR-091-05).
+**Resolution:** Option B. With `email_login_enabled` on, the identifier is resolved to one attribute before any password is checked — `username` when an account carries it, `email` otherwise — and exactly one `Auth::attempt()` follows (spec FR-091-03). A username equal to another account's email therefore resolves to the username owner whatever password is typed (FR-091-05). The first implementation attempted username then email and so let the password decide; CodeRabbit flagged it on PR #4871 and it was corrected.
 
 ---
 

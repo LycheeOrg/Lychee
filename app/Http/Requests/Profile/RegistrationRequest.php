@@ -47,14 +47,17 @@ class RegistrationRequest extends BaseApiRequest implements HasUsername, HasPass
 	{
 		// With `email_login_enabled` the email alone identifies the account, so
 		// the username may be omitted; `Actions\User\Create` then stores the
-		// email as the username.
+		// email as the username. `max:100` is the width of both `users.email`
+		// and `users.username` (and what `UpdateProfileRequest` already
+		// enforces), so an email that is accepted here always fits the username
+		// column it may be copied into.
 		$is_username_optional = $this->configs()->getValueAsBool('email_login_enabled');
 
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => $is_username_optional
 				? ['sometimes', 'nullable', new UsernameRule(true)]
 				: ['required', new UsernameRule()],
-			RequestAttribute::EMAIL_ATTRIBUTE => ['required', 'string', 'email', 'max:255'],
+			RequestAttribute::EMAIL_ATTRIBUTE => ['required', 'string', 'email', 'max:100'],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', 'confirmed', new PasswordRule(true)],
 		];
 	}
