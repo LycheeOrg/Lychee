@@ -79,7 +79,7 @@ class ProcessImageJob implements ShouldQueue
 		$album = null;
 
 		if (is_string($abstract_album)) {
-			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstract_album);
+			$album = resolve(AlbumFactory::class)->findAbstractAlbumOrFail($abstract_album, false);
 		} elseif ($abstract_album instanceof AbstractAlbum) {
 			$album = $abstract_album;
 		}
@@ -161,7 +161,7 @@ class ProcessImageJob implements ShouldQueue
 
 			$album = null;
 			if ($this->album_id !== null) {
-				$album = $album_factory->findAbstractAlbumOrFail($this->album_id);
+				$album = $album_factory->findAbstractAlbumOrFail($this->album_id, false);
 			}
 
 			$photo = $create->add($copied_file, $album, $this->file_last_modified_time);

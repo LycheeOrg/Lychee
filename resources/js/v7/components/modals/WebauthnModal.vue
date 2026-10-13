@@ -11,7 +11,7 @@
 				<div class="inline-flex flex-col gap-2 px-9">
 					<FloatLabel variant="on">
 						<InputText id="username" v-model="username" />
-						<label for="username">{{ $t("dialogs.login.username") }}</label>
+						<label for="username">{{ identifierLabel }}</label>
 					</FloatLabel>
 				</div>
 				<div class="flex items-center mt-9">
@@ -47,6 +47,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import AlbumService from "@/services/album-service";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/UserState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -58,6 +59,10 @@ const userStore = useUserStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
+const { is_email_login_enabled } = storeToRefs(useLycheeStateStore());
+
+// With `email_login_enabled` the field accepts a username or an email address.
+const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
 
 const username = ref("");
 const userId = ref<number | null>(null);

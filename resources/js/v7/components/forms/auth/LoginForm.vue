@@ -39,7 +39,7 @@
 			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
 				<FloatLabel variant="on">
 					<InputText id="username" v-model="username" autocomplete="username" :autofocus="true" />
-					<label for="username">{{ $t("dialogs.login.username") }}</label>
+					<label for="username">{{ identifierLabel }}</label>
 				</FloatLabel>
 			</div>
 			<div class="inline-flex flex-col gap-2" :class="props.padding ?? 'px-9'">
@@ -105,7 +105,7 @@
 	</form>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -143,9 +143,12 @@ const rememberMe = ref(false);
 const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled, is_white_label_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled, is_white_label_enabled, is_email_login_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
+
+// With `email_login_enabled` the field accepts a username or an email address.
+const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
 
 const oauths = ref<OauthProvider[] | undefined>(undefined);
 

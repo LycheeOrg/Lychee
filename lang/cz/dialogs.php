@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Přihlásit se pomocí %s',
         'username' => 'Uživatelské jméno',
+        'username_or_email' => 'Uživatelské jméno nebo e-mail',
         'password' => 'Heslo',
         'unknown_invalid' => 'Neznámý uživatel nebo špatné heslo.',
         'signin' => 'Přihlásit se',

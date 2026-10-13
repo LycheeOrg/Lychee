@@ -26,7 +26,7 @@
 		<form class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pt-9">
 			<div class="inline-flex flex-col gap-4">
 				<UFormField :label="$t('profile.login.username')">
-					<UInput id="username" v-model="username" autocomplete="username" :autofocus="true" class="w-full" />
+					<UInput id="username" v-model="usernameInput" autocomplete="username" :autofocus="true" class="w-full" />
 				</UFormField>
 				<UFormField :label="$t('profile.login.email')">
 					<UInput id="email" v-model="email" autocomplete="email" class="w-full" />
@@ -56,7 +56,7 @@ import ProfileService from "@/services/profile-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -69,7 +69,7 @@ const userStore = useUserStore();
 const albumListStore = useAlbumListStore();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
-const { title } = storeToRefs(lycheeStore);
+const { title, is_email_login_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
 const username = ref("");
@@ -83,7 +83,30 @@ const confirmationError = computed(() => {
 });
 
 const isFormValid = computed(() => {
-	return username.value && email.value && password.value && passwordConfirmation.value && !confirmationError.value;
+	// The username is optional when the email takes its place.
+	const hasIdentifier = username.value !== "" || is_email_login_enabled.value;
+
+	return hasIdentifier && email.value && password.value && passwordConfirmation.value && !confirmationError.value;
+});
+
+// With `email_login_enabled` the username may be omitted: the backend then
+// stores the email address as the username. Mirror the email into the field so
+// the user sees the value that will be used. Typing a username stops the
+// mirroring; emptying the field hands control back to the email.
+const isUsernameMirrored = ref(true);
+
+const usernameInput = computed<string>({
+	get: () => username.value,
+	set: (value) => {
+		username.value = value;
+		isUsernameMirrored.value = value === "";
+	},
+});
+
+watch(email, (newEmail) => {
+	if (is_email_login_enabled.value && isUsernameMirrored.value) {
+		username.value = newEmail;
+	}
 });
 
 function goBack() {

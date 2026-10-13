@@ -715,6 +715,7 @@ declare namespace App {
 					is_basic_auth_enabled: boolean;
 					is_webauthn_enabled: boolean;
 					is_registration_enabled: boolean;
+					is_email_login_enabled: boolean;
 					is_scroll_to_navigate_photos_enabled: boolean;
 					is_swipe_vertically_to_go_back_enabled: boolean;
 					disable_swipe_effect: boolean;

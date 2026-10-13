@@ -2,7 +2,7 @@
 	<UModal v-if="!isWebAuthnUnavailable" v-model:open="is_webauthn_open">
 		<template #body>
 			<form class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md">
-				<UFormField :label="$t('dialogs.login.username')">
+				<UFormField :label="identifierLabel">
 					<UInput id="username" v-model="username" class="w-full" />
 				</UFormField>
 			</form>
@@ -52,6 +52,10 @@ const lycheeStore = useLycheeStateStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
+const { is_email_login_enabled } = storeToRefs(lycheeStore);
+
+// With `email_login_enabled` the field accepts a username or an email address.
+const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
 
 const username = ref("");
 const userId = ref<number | null>(null);

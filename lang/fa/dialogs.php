@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'احراز هویت با %s',
         'username' => 'نام کاربری',
+        'username_or_email' => 'نام کاربری یا ایمیل',
         'password' => 'رمز عبور',
         'unknown_invalid' => 'نام کاربری یا رمز عبور نامعتبر.',
         'signin' => 'ورود',

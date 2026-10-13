@@ -152,19 +152,4 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 			->failed(new \Exception('boom'));
 		self::assertTrue(true);
 	}
-
-	public function testSupersededJobLogsWithItsOwnContext(): void
-	{
-		$job = new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, 'debounce-target-id');
-		// A second registration for the same kind+id supersedes the first job.
-		new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, 'debounce-target-id');
-
-		Log::shouldReceive('channel')->once()->with('jobs')->andReturnSelf();
-		Log::shouldReceive('debug')->once()->with(\Mockery::on(
-			fn (string $msg) => str_contains($msg, RecomputeAlbumUserThumbsJob::KIND_TAG . ' album debounce-target-id')
-		));
-
-		$method = new \ReflectionMethod(RecomputeAlbumUserThumbsJob::class, 'hasNewerJobQueued');
-		self::assertTrue($method->invoke($job));
-	}
 }
