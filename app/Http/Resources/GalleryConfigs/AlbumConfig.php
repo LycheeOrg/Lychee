@@ -68,7 +68,7 @@ class AlbumConfig extends Data
 
 		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);
-		$this->is_mod_frame_enabled = $config_manager->getValueAsBool('mod_frame_enabled') && $album->get_photos()->count() > 0;
+		$this->is_mod_frame_enabled = $config_manager->getValueAsBool('mod_frame_enabled') && $this->hasFramePhotos($album, $config_manager);
 		if ($album instanceof Album && $album->album_thumb_aspect_ratio !== null) {
 			$this->album_thumb_css_aspect_ratio = $album->album_thumb_aspect_ratio->css();
 		} else {
@@ -158,5 +158,18 @@ class AlbumConfig extends Data
 	public function setIsSearchAccessible(bool $is_base_album): void
 	{
 		$this->is_search_accessible = (Auth::check() || app(ConfigManager::class)->getValueAsBool('search_public')) && $is_base_album;
+	}
+
+	/**
+	 * Whether the album's frame has a photo to show: the whole album tree in
+	 * sub-album mode (FR-088-17), the album's own photos otherwise.
+	 */
+	private function hasFramePhotos(AbstractAlbum $album, ConfigManager $config_manager): bool
+	{
+		if ($album instanceof Album && $config_manager->getValueAsBool('mod_frame_include_subalbums')) {
+			return $album->all_photos()->getQuery()->exists();
+		}
+
+		return $album->get_photos()->count() > 0;
 	}
 }
