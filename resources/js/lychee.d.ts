@@ -2082,6 +2082,19 @@ declare namespace App {
 					config: App.Http.Resources.GalleryConfigs.RootConfig;
 					rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 				};
+				export type FaceQueueResource = {
+					ids: string[];
+					photo_ids: string[];
+					xs: number[];
+					ys: number[];
+					widths: number[];
+					heights: number[];
+					crop_urls: (string | null)[];
+					cluster_labels: (number | null)[];
+					suggested_person_ids: (string | null)[];
+					suggested_person_names: (string | null)[];
+					is_truncated: boolean;
+				};
 				export type FlowListResource = {
 					ids: string[];
 					titles: string[];

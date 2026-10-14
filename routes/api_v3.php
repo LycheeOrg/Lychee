@@ -118,3 +118,4 @@ Route::get('/Insights', [InsightsController::class, 'index'])->middleware(['supp
 
 // Face quick naming (Feature 093): people list for the name box.
 Route::get('/People', [AiVision\PeopleListController::class, 'index']);
+Route::get('/Faces/queue', [AiVision\FaceQueueController::class, 'index']);

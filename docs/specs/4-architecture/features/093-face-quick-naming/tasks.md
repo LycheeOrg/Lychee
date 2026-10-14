@@ -31,7 +31,7 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=PeopleListV3Test`  
   - `make phpstan`
 
-- [ ] T-093-04 – Failing tests for `GET /api/v3/Faces/queue` (F-093-02, F-093-12, S-093-10, S-093-11, S-093-17).  
+- [x] T-093-04 – Failing tests for `GET /api/v3/Faces/queue` (F-093-02, F-093-12, S-093-10, S-093-11, S-093-17).  
   _Intent:_ `tests/AssistedVision/Face/FaceQueueTest.php` covering:  
   - guest 401, flag off 403, `restricted` user 403  
   - assigned/dismissed excluded  
@@ -44,7 +44,7 @@ _Last updated: 2026-10-14_
   - one query  
   _Verification commands:_ `php artisan test --filter=FaceQueueTest` (red).
 
-- [ ] T-093-05 – Implement `GET /api/v3/Faces/queue` (F-093-02, F-093-12).  
+- [x] T-093-05 – Implement `GET /api/v3/Faces/queue` (F-093-02, F-093-12).  
   _Intent:_ `GetFaceQueueRequest`, `QueryFaceQueue` (ordering, visibility and suggestion-subquery helpers), `FaceQueueResource`, `FaceQueueController`, route, TS types.  
   _Verification commands:_  
   - `php artisan test --filter=FaceQueueTest`  
