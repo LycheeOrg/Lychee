@@ -13,8 +13,10 @@
 
 namespace Tests\Feature_v3\Frame;
 
+use App\Http\Controllers\Admin\SettingsController;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
@@ -104,5 +106,64 @@ class FrameOverlaySettingsTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 		self::assertSame($value, strval(Configs::query()->where('key', '=', $key)->value('value')));
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function overlayKeys(): array
+	{
+		return Configs::query()
+			->where('key', 'LIKE', 'mod_frame_clock_%')
+			->orWhere('key', 'LIKE', 'mod_frame_info_%')
+			->pluck('key')
+			->all();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function settingsKeys(): array
+	{
+		$response = $this->actingAs($this->admin)->getJson('Settings');
+		$this->assertOk($response);
+
+		return collect($response->json())->flatMap(fn ($category) => array_column($category['configs'], 'key'))->all();
+	}
+
+	public function testOverlaySettingsHiddenWithoutV8(): void
+	{
+		Config::set('features.v8', false);
+		$keys = $this->settingsKeys();
+		foreach ($this->overlayKeys() as $key) {
+			self::assertNotContains($key, $keys);
+		}
+		// Sub-album selection is server-side and applies to the v7 Frame too.
+		self::assertContains('mod_frame_include_subalbums', $keys);
+	}
+
+	public function testOverlaySettingsVisibleWithV8(): void
+	{
+		Config::set('features.v8', true);
+		$keys = $this->settingsKeys();
+		foreach ($this->overlayKeys() as $key) {
+			self::assertContains($key, $keys);
+		}
+	}
+
+	public function testOverlayKeysAreAllV8Only(): void
+	{
+		$keys = $this->overlayKeys();
+		self::assertNotEmpty($keys);
+		self::assertEqualsCanonicalizing($keys, array_values(array_intersect(SettingsController::V8_CONFIGS, $keys)));
+	}
+
+	public function testFrameSettingsRequireModFrame(): void
+	{
+		$keys = Configs::query()->where('key', 'LIKE', 'mod_frame_%')->where('key', '!=', 'mod_frame_enabled')->pluck('key')->all();
+		$keys[] = 'hide_nsfw_in_frame';
+		foreach ($keys as $key) {
+			self::assertSame('mod_frame_enabled', Configs::query()->where('key', '=', $key)->value('required_keys'), $key);
+		}
 	}
 }
