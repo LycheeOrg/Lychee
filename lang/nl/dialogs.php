@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Authenticeren met %s',
         'username' => 'Gebruikersnaam',
+        'username_or_email' => 'Gebruikersnaam of e-mail',
         'password' => 'Wachtwoord',
         'unknown_invalid' => 'Onbekende gebruiker of ongeldig wachtwoord.',
         'signin' => 'Aanmelden',

@@ -11,6 +11,7 @@
 			/>
 		</div>
 		<div id="shutter" class="absolute w-screen h-dvh bg-neutral-950 transition-opacity duration-1000 ease-in-out top-0 left-0 z-20"></div>
+		<FrameOverlays v-if="clock !== null && info !== null" :clock="clock" :info="info" :photo="photo" />
 		<div class="absolute top-0 ltr:left-0 rtl:right-0 p-3">
 			<GoBack @go-back="goBack" />
 		</div>
@@ -18,11 +19,13 @@
 </template>
 <script setup lang="ts">
 import GoBack from "@/v8/components/headers/GoBack.vue";
-import { useSlideshowFunction } from "@/composables/photo/slideshow";
+import FrameOverlays from "@/v8/components/frame/FrameOverlays.vue";
+import { useFrameSlideshow } from "@/v8/composables/frame/frameSlideshow";
+import { resolveClock, resolveInfo } from "@/v8/utils/frameOverlay";
 import AlbumService from "@/services/album-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const props = defineProps<{
@@ -30,27 +33,33 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const route = useRoute();
 const imgSrc = ref("");
 const imgSrcset = ref("");
 const refreshTimeout = ref(5);
 const leftMenuStore = useLeftMenuStateStore();
+const frame = ref<App.Http.Resources.Frame.FrameData | null>(null);
 
-const is_slideshow_active = ref(false);
+// Admin values with this device's URL overrides on top (FR-088-15).
+const clock = computed(() => (frame.value === null ? null : resolveClock(frame.value.clock, route.query)));
+const info = computed(() => (frame.value === null ? null : resolveInfo(frame.value.info, route.query)));
+const photo = computed(() => frame.value?.photo ?? null);
 
 function getNext() {
 	AlbumService.frame(props.albumId ?? null).then((response) => {
 		imgSrc.value = response.data.src;
 		imgSrcset.value = response.data.srcset;
+		frame.value = response.data;
 	});
 }
 
-const { slideshow, clearTimeouts } = useSlideshowFunction(1000, is_slideshow_active, refreshTimeout, ref(null), getNext, undefined);
+const { start: startSlideshow, clearTimeouts } = useFrameSlideshow(1000, refreshTimeout, getNext);
 
 function start() {
 	AlbumService.frame(props.albumId ?? null).then((response) => {
 		refreshTimeout.value = response.data.timeout;
 		getNext();
-		slideshow();
+		startSlideshow();
 	});
 }
 

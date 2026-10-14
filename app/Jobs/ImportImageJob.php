@@ -49,7 +49,7 @@ class ImportImageJob implements ShouldQueue
 		NativeLocalFile $file,
 		public int $intended_owner_id,
 		public ImportMode $import_mode,
-		public ?Album $album,
+		?Album $album,
 	) {
 		$this->file_path = $file->getPath();
 		$this->album_id = $album?->id;
@@ -83,7 +83,7 @@ class ImportImageJob implements ShouldQueue
 			upload_trust_level: UserUploadTrustLevel::TRUSTED,
 		);
 
-		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id) : null;
+		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id, false) : null;
 		$photo = $create->add($copied_file, $album);
 
 		// Once the job has finished, set history status to 1.

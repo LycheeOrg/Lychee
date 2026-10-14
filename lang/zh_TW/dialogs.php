@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => '使用 %s 進行身份驗證',
         'username' => '使用者名稱',
+        'username_or_email' => '使用者名稱或電子郵件',
         'password' => '密碼',
         'unknown_invalid' => '未知的使用者或密碼無效。',
         'signin' => '登入',

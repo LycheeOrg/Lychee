@@ -14,7 +14,7 @@ This is deliberately separate from the pre-existing whole-HTTP-response cache (`
 
 ## Why tags are hand-rolled, not a native cache-tagging feature
 
-Laravel's `Cache::tags([...])->remember(...)` requires a tag-capable store (Redis or Memcached). Lychee's default `CACHE_DRIVER` is `file`, which has no native tagging support, and the project's offline-only / minimal-runtime-dependency posture rules out introducing a hard Redis requirement. So a **tag is itself a cache entry** whose value is the set of member keys currently associated with it — the same bookkeeping pattern already proven by `RouteCacher::rememberTags()`/`forgetTag()` (`app/Metadata/Cache/RouteCacher.php`), reimplemented independently here so this service has no dependency on routes, requests, or `RouteCacheManager`'s per-URI config. This means it works unmodified on any Laravel cache driver.
+Laravel's `Cache::tags([...])->remember(...)` requires a tag-capable store (Redis or Memcached). Lychee's default `CACHE_STORE` is `file`, which has no native tagging support, and the project's offline-only / minimal-runtime-dependency posture rules out introducing a hard Redis requirement. So a **tag is itself a cache entry** whose value is the set of member keys currently associated with it — the same bookkeeping pattern already proven by `RouteCacher::rememberTags()`/`forgetTag()` (`app/Metadata/Cache/RouteCacher.php`), reimplemented independently here so this service has no dependency on routes, requests, or `RouteCacheManager`'s per-URI config. This means it works unmodified on any Laravel cache driver.
 
 ## `remember()` flow
 
@@ -237,4 +237,4 @@ Guidelines drawn from the pilot consumers:
 
 - Does not replace, deprecate, or re-enable the existing whole-HTTP-response cache (`cache_enabled`, `RouteCacher`) — that remains untouched and independently toggled.
 - Not adopted anywhere beyond the two pilot consumers in this feature; broader adoption (e.g. `current_user_permissions()`, `AlbumPolicy`, `Search`) is left to future work.
-- Introduces no new runtime dependency — uses the existing `Cache` facade against whatever `CACHE_DRIVER` is configured (default `file`), consistent with the offline-only constraint.
+- Introduces no new runtime dependency — uses the existing `Cache` facade against whatever `CACHE_STORE` is configured (default `file`), consistent with the offline-only constraint.

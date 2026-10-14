@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Авторизация с помощью %s',
         'username' => 'Имя пользователя',
+        'username_or_email' => 'Имя пользователя или email',
         'password' => 'Пароль',
         'unknown_invalid' => 'Неизвестный пользователь или неверный пароль.',
         'signin' => 'Войти',

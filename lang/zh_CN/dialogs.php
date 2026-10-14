@@ -66,6 +66,7 @@ return [
     'login' => [
         'auth_with' => 'Authenticate with %s',
         'username' => '用户名',
+        'username_or_email' => '用户名或邮箱',
         'password' => '密码',
         'unknown_invalid' => '用户名不存在或密码错误',
         'signin' => '登录',
