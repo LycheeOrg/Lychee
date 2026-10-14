@@ -56,7 +56,7 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=FacePhotoAssetTest`  
   - `php artisan test --filter=PhotoAssetTest`
 
-- [ ] T-093-07 – Global right `modules.can_quick_name_faces`, tests first (F-093-07, S-093-08).  
+- [x] T-093-07 – Global right `modules.can_quick_name_faces`, tests first (F-093-07, S-093-08).  
   _Intent:_ `FaceQuickNamingRightsTest` across the four modes and the flags, then the field in `ModulesRightsResource`, TS types.  
   _Verification commands:_ `php artisan test --filter=FaceQuickNamingRightsTest`.
 

@@ -80,6 +80,7 @@ declare namespace App {
 		export type DeviceCategory = "camera" | "mobile" | "other";
 		export type DownloadVariantType = "RAW" | "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 		export type FacePermissionMode = "public" | "private" | "privacy-preserving" | "restricted";
+		export type FacePhotoAssetType = "medium" | "small2x" | "small" | "thumb";
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
@@ -1694,6 +1695,7 @@ declare namespace App {
 					is_nsfw_classifier_enabled: boolean;
 					is_face_overlay_enabled: boolean;
 					is_face_recognition_warning_enabled: boolean;
+					can_quick_name_faces: boolean;
 					is_contact_enabled: boolean;
 					messages_count: number;
 					is_design_system_enabled: boolean;
