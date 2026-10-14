@@ -15,7 +15,7 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=ConfigIntegrity`  
   - `vendor/bin/php-cs-fixer fix`
 
-- [ ] T-093-02 – Failing tests for `GET /api/v3/People` (F-093-03, NFR-093-05, NFR-093-07).  
+- [x] T-093-02 – Failing tests for `GET /api/v3/People` (F-093-03, NFR-093-05, NFR-093-07).  
   _Intent:_ `tests/AssistedVision/People/PeopleListV3Test.php` covering:  
   - flag off 403, face recognition off 403, `privacy-preserving` user 403, guest allowed in `public` mode (mirrors v2)  
   - admin sees all  
@@ -25,7 +25,7 @@ _Last updated: 2026-10-14_
   - one query (`DB::listen`)  
   _Verification commands:_ `php artisan test --filter=PeopleListV3Test` (red).
 
-- [ ] T-093-03 – Implement `GET /api/v3/People` (F-093-03).  
+- [x] T-093-03 – Implement `GET /api/v3/People` (F-093-03).  
   _Intent:_ `GetPeopleListRequest`, `PeopleListResource`, `PeopleListController`, route, `php artisan typescript:transform`.  
   _Verification commands:_  
   - `php artisan test --filter=PeopleListV3Test`  

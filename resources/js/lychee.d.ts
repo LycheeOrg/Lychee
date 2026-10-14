@@ -2127,6 +2127,12 @@ declare namespace App {
 					latitudes: number[];
 					longitudes: number[];
 				};
+				export type PeopleListResource = {
+					ids: string[];
+					names: string[];
+					face_counts: number[];
+					crop_urls: (string | null)[];
+				};
 				export type PhotoBucketResource = {
 					bucket_ids: string[];
 					counts: number[];

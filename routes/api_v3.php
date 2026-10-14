@@ -115,3 +115,6 @@ Route::get('/Metrics', [Gallery\LiveMetricsListController::class, 'index'])->mid
 // Library insights (Feature 085): aggregates over one owner or the whole
 // instance for a period; replaces the v2 Statistics counts endpoint.
 Route::get('/Insights', [InsightsController::class, 'index'])->middleware(['support:se']);
+
+// Face quick naming (Feature 093): people list for the name box.
+Route::get('/People', [AiVision\PeopleListController::class, 'index']);
