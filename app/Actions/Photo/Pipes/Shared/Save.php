@@ -10,6 +10,7 @@ namespace App\Actions\Photo\Pipes\Shared;
 
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
+use App\Services\BucketKeys;
 use App\Services\TitleSplitter;
 
 /**
@@ -22,6 +23,8 @@ class Save implements PhotoPipe
 		$title_split = TitleSplitter::split($state->getPhoto()->title);
 		$state->getPhoto()->title_base = $title_split->base;
 		$state->getPhoto()->title_index = $title_split->index;
+		// FR-092-02: assigned at every write of `title`.
+		$state->getPhoto()->title_date_key = BucketKeys::titleDateKey($state->getPhoto()->title ?? '');
 
 		$state->getPhoto()->save();
 		$state->getPhoto()->tags()->sync($state->getTags()->pluck('id')->all());

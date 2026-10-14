@@ -15,9 +15,9 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * Response body of `GET /api/v3/Albums/{album_id}/Photos/buckets`.
  *
  * Struct-of-Arrays per ADR-0009: `bucket_ids`/`counts`/`labels` are
- * parallel, index-aligned arrays. `bucket_ids`/`counts` are grouped from the
- * materialized `photo_album.bucket_id` column (never a live date-truncation
- * function); `labels[i]` is a ready-to-render display string for
+ * parallel, index-aligned arrays. `bucket_ids`/`counts` are grouped in SQL
+ * on the bucket id of {@see \App\Services\BucketScheme} (FR-092-05,
+ * FR-092-06); `labels[i]` is a ready-to-render display string for
  * `bucket_ids[i]`, computed at read time (not materialized) so a client can
  * render sticky headers with zero client-side date formatting.
  * `bucketable` is `false` (all three arrays empty) when the album's own

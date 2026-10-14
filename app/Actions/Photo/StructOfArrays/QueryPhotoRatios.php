@@ -10,22 +10,16 @@ namespace App\Actions\Photo\StructOfArrays;
 
 use App\Assets\DbBool;
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
-use App\Enum\OrderSortingType;
 use App\Enum\PhotoThumbInfoType;
 use App\Enum\VisibilityType;
 use App\Http\Resources\V3\PhotoRatioResource;
-use App\Models\Album;
-use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
 use App\Repositories\ConfigManager;
+use App\Services\BucketScheme;
 use App\Services\Image\FileExtensionService;
-use App\Services\PhotoBucketComputer;
-use App\SmartAlbums\TimelineAlbum;
 use GrahamCampbell\Markdown\Facades\Markdown;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Spatie\LaravelData\Optional;
@@ -45,7 +39,6 @@ class QueryPhotoRatios
 	public function __construct(
 		private readonly ConfigManager $config_manager,
 		private readonly FileExtensionService $file_extension_service,
-		private readonly PhotoBucketComputer $bucket_computer,
 	) {
 	}
 
@@ -64,7 +57,7 @@ class QueryPhotoRatios
 	public function do(AbstractAlbum $album, ?User $user, ?array $bucket_ids = null, ?array $photo_ids = null, ?int $limit = null): PhotoRatioResource
 	{
 		$sorting = $this->resolveEffectiveSorting($album);
-		$is_regular_album = $album instanceof Album;
+		$scheme = $this->resolveScheme($album, $sorting);
 
 		$rating_enabled = $this->config_manager->getValueAsBool('rating_enabled');
 		// PhotoPolicy::canReadRatings() ignores its own $photo argument
@@ -80,7 +73,7 @@ class QueryPhotoRatios
 
 		$query = $this->resolvePhotoQuery($album, $user);
 		$this->joinRatioSizeVariants($query);
-		$this->applyScopeFilter($query, $album, $user, $bucket_ids, $photo_ids);
+		$this->applyScopeFilter($query, $album, $scheme, $bucket_ids, $photo_ids);
 
 		$select = [
 			'photos.id',
@@ -95,19 +88,14 @@ class QueryPhotoRatios
 			'photos.taken_at_orig_tz',
 			'photos.live_photo_short_path',
 			'photos.is_360',
-			// Always selected, independent of $can_read_ratings: a
-			// non-`Album` source needs the raw value for live bucket
-			// computation (RATING_AVG may be the effective sort column) even
-			// when the viewer isn't permitted to see ratings - the output
-			// array below still only ever gets populated when
-			// $can_read_ratings is true, so nothing extra reaches the
-			// response.
 			'photos.rating_avg',
 		];
-		if ($is_regular_album) {
-			$select[] = 'photo_album.bucket_id';
-		}
 		$selects_raw = [self::RATIO_SELECT_RAW];
+		if ($scheme->isBucketable()) {
+			// Per-row id from the same expression the `buckets` tier groups
+			// on (FR-092-06).
+			$selects_raw[] = $this->bucketIdSql($album, $scheme) . ' as bucket_id';
+		}
 
 		if ($can_read_ratings && $user !== null) {
 			$query->leftJoin('photo_ratings as pr', function (JoinClause $join) use ($user): void {
@@ -125,20 +113,7 @@ class QueryPhotoRatios
 			$select[] = 'tag_agg.tag_names';
 		}
 
-		if ($is_regular_album) {
-			$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
-			// Order by bucket_id first (mirrors QueryPhotoBuckets exactly,
-			// "unknown" always last) so grouping this endpoint's rows by
-			// bucket_id reproduces the buckets endpoint's own {bucket_ids,counts}
-			// byte-for-byte, then the album's effective photo sort criterion as
-			// intra-bucket tie-break.
-			$query->orderByRaw('(photo_album.bucket_id IS NULL) ASC')
-				->orderBy('photo_album.bucket_id', $direction);
-		}
-		// For a non-`Album` source there is no stored `bucket_id` to
-		// pre-sort by - `buildResource()` computes it live per row below
-		// instead, off the same effective-sort-ordered rows.
-		(new SortingDecorator($query))->orderPhotosBy($sorting->column, $sorting->order)->applyOrdering();
+		$this->orderByBucket($query, $album, $scheme, $sorting);
 
 		if ($limit !== null) {
 			$query->limit($limit);
@@ -146,132 +121,29 @@ class QueryPhotoRatios
 
 		$rows = $query->select($select)->selectRaw(implode(', ', $selects_raw))->toBase()->get();
 
-		return $this->buildResource($rows, $can_read_ratings, $user !== null, $thumb_infos_on, $tags_on, $blank_titles, $is_regular_album, $sorting, $album);
+		return $this->buildResource($rows, $can_read_ratings, $user !== null, $thumb_infos_on, $tags_on, $blank_titles, $scheme);
 	}
 
 	/**
 	 * Applies the optional, mutually exclusive `bucket_ids[]`/`photo_ids[]`
-	 * window (FR-066-06) - both `null` is a no-op, preserving today's
-	 * whole-scope behaviour byte-for-byte (NFR-066-03).
+	 * window (FR-066-06) in SQL for every source (FR-092-07) - both `null`
+	 * is a no-op (whole scope).
 	 *
 	 * @param FixedQueryBuilder<Photo> $query
 	 * @param string[]|null            $bucket_ids
 	 * @param string[]|null            $photo_ids
 	 */
-	private function applyScopeFilter(FixedQueryBuilder $query, AbstractAlbum $album, ?User $user, ?array $bucket_ids, ?array $photo_ids): void
+	private function applyScopeFilter(FixedQueryBuilder $query, AbstractAlbum $album, BucketScheme $scheme, ?array $bucket_ids, ?array $photo_ids): void
 	{
 		if ($photo_ids !== null) {
-			// Source-agnostic: works identically for every AbstractAlbum
-			// kind, stored or live bucket_id alike.
 			$query->whereIn('photos.id', $photo_ids);
 
 			return;
 		}
 
-		if ($bucket_ids === null) {
-			return;
+		if ($bucket_ids !== null) {
+			$this->applyBucketWindow($query, $album, $scheme, $bucket_ids);
 		}
-
-		if ($album instanceof Album) {
-			$this->applyAlbumBucketWindowFilter($query, $bucket_ids);
-
-			return;
-		}
-
-		if ($album instanceof TimelineAlbum) {
-			// SQL-pushdown bounded (NFR-066-01), mirrors QueryPhotoDetails::applyTimelineBucketFilter().
-			$this->applyTimelineBucketWindowFilter($query, $album, $bucket_ids);
-
-			return;
-		}
-
-		// TagAlbum/PersonAlbum/every other BaseSmartAlbum: no stored
-		// bucket_id and no SQL-pushdown live computation for them
-		// (ResolvesPhotoSource) - resolve the matching ids the same
-		// full-scan way QueryPhotoDetails::resolveLiveBucketphoto_ids()
-		// already does for a single bucket, generalized to a requested set;
-		// bounded by this source's own (album-scale) candidate set, exactly
-		// like every other live-bucket computation for these sources
-		// (Non-Goals: their existing live-scan path itself stays untouched).
-		$query->whereIn('photos.id', $this->resolveLiveBucketSetphoto_ids($album, $user, $bucket_ids));
-	}
-
-	/**
-	 * @param FixedQueryBuilder<Photo> $query
-	 * @param string[]                 $bucket_ids
-	 */
-	private function applyAlbumBucketWindowFilter(FixedQueryBuilder $query, array $bucket_ids): void
-	{
-		$known = array_values(array_diff($bucket_ids, ['unknown']));
-		$wants_unknown = in_array('unknown', $bucket_ids, true);
-
-		$query->where(function (Builder $q) use ($known, $wants_unknown): void {
-			if ($known !== []) {
-				$q->orWhereIn('photo_album.bucket_id', $known);
-			}
-			if ($wants_unknown) {
-				$q->orWhereNull('photo_album.bucket_id');
-			}
-		});
-	}
-
-	/**
-	 * @param FixedQueryBuilder<Photo> $query
-	 * @param string[]                 $bucket_ids
-	 */
-	private function applyTimelineBucketWindowFilter(FixedQueryBuilder $query, TimelineAlbum $album, array $bucket_ids): void
-	{
-		$sorting = $this->resolveEffectiveSorting($album);
-		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
-		$column = $sorting->column->value;
-
-		$query->where(function (Builder $q) use ($bucket_ids, $column, $granularity): void {
-			foreach ($bucket_ids as $bucket_id) {
-				if ($bucket_id === 'unknown') {
-					$q->orWhereNull($column);
-					continue;
-				}
-
-				[$start, $end] = $this->bucket_computer->bucketDateRange($bucket_id, $granularity);
-				$q->orWhere(function (Builder $sub) use ($column, $start, $end): void {
-					$sub->where($column, '>=', $start)->where($column, '<', $end);
-				});
-			}
-		});
-	}
-
-	/**
-	 * Full-scan resolution of every candidate photo whose live-computed
-	 * bucket falls in `$bucket_ids`, for a `TagAlbum`/`PersonAlbum`/
-	 * non-`TimelineAlbum` `BaseSmartAlbum` source - generalizes
-	 * {@see QueryPhotoDetails::resolveLiveBucketphoto_ids()}'s single-bucket
-	 * version to a requested set.
-	 *
-	 * @param string[] $bucket_ids
-	 *
-	 * @return string[]
-	 */
-	private function resolveLiveBucketSetphoto_ids(AbstractAlbum $album, ?User $user, array $bucket_ids): array
-	{
-		$sorting = $this->resolveEffectiveSorting($album);
-		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
-
-		$query = $this->resolvePhotoQuery($album, $user);
-		$rows = $query->select([
-			'photos.id', 'photos.title', 'photos.title_base', 'photos.created_at', 'photos.taken_at',
-			'photos.is_highlighted', 'photos.type', 'photos.rating_avg',
-		])->toBase()->get();
-
-		$wanted = array_flip($bucket_ids);
-		$matching_ids = [];
-		foreach ($rows as $row) {
-			$row_bucket_id = $this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown';
-			if (isset($wanted[$row_bucket_id])) {
-				$matching_ids[] = $row->id;
-			}
-		}
-
-		return $matching_ids;
 	}
 
 	/**
@@ -308,18 +180,8 @@ class QueryPhotoRatios
 		bool $thumb_infos_on,
 		bool $tags_on,
 		bool $blank_titles,
-		bool $is_regular_album,
-		PhotoSortingCriterion $sorting,
-		AbstractAlbum $album,
+		BucketScheme $scheme,
 	): PhotoRatioResource {
-		// Only used for a non-`Album` source (see below) - there is no
-		// stored `bucket_id` to read off the row in that case, so it is
-		// computed live per row instead, mirroring
-		// `QueryPhotoBuckets::queryLiveBuckets()` exactly so both tiers
-		// agree on the same bucket for the same photo. Harmless to resolve
-		// unconditionally - cheap, and simply unused for a regular `Album`.
-		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
-
 		$ids = [];
 		$titles = [];
 		$types = [];
@@ -348,9 +210,7 @@ class QueryPhotoRatios
 			$ids[] = $row->id;
 			$titles[] = $blank_titles ? '' : $row->title;
 			$types[] = $type;
-			$bucket_ids[] = $is_regular_album
-				? ($row->bucket_id ?? 'unknown')
-				: ($this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown');
+			$bucket_ids[] = $scheme->normalizeId($row->bucket_id ?? null);
 			$ratios[] = (float) $row->ratio;
 			$owner_ids[] = (int) $row->owner_id;
 			$is_highlighteds[] = DbBool::parse($row->is_highlighted);

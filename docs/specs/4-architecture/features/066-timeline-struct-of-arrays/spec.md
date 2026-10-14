@@ -13,6 +13,8 @@
 
 ## Overview
 
+> Feature 092 ([spec](../092-bucketing-refactor/spec.md)) supersedes this spec's live Timeline bucket computation: ids come from `photos.taken_key` (capture-local, FR-092-01) or `created_at` through `BucketScheme` (FR-092-06), windows are key ranges (FR-092-07), and cache invalidation resolves buckets from `taken_key` (FR-092-17).
+
 The v8 global Timeline (`/timeline`, the cross-album "all photos by date" view) still runs on the
 v2 paginated API (`GET /api/Timeline`, page-based, a "count-youngers-then-resolve-page" trick for
 deep-linking) and renders through the old, non-virtualized `PhotoThumbPanel.vue` path — every

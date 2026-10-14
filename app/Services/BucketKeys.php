@@ -61,6 +61,23 @@ final class BucketKeys
 	}
 
 	/**
+	 * Key of a model datetime (`created_at`, `min_taken_at`, …) as stored
+	 * (UTC), to the hour.
+	 */
+	public static function storedHourKey(\DateTimeInterface $date): string
+	{
+		return \DateTimeImmutable::createFromInterface($date)->setTimezone(new \DateTimeZone('UTC'))->format(self::HOUR_KEY_FORMAT);
+	}
+
+	/**
+	 * Key of a model datetime as stored (UTC), to the day.
+	 */
+	public static function storedDayKey(?\DateTimeInterface $date): ?string
+	{
+		return $date === null ? null : \DateTimeImmutable::createFromInterface($date)->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d');
+	}
+
+	/**
 	 * `photos.title_date_key`: the leading `YYYY`, `YYYY-MM` or `YYYY-MM-DD`
 	 * of the trimmed title as `Y-m-d` (missing month and day read as `01`),
 	 * or `null` when there is none or it is not a calendar date.

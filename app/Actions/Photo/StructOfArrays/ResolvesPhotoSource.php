@@ -8,29 +8,26 @@
 
 namespace App\Actions\Photo\StructOfArrays;
 
-use App\Assets\DbBool;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Enum\ColumnSortingPhotoType;
-use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
-use App\Enum\TitleBucketMode;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FiltersUploadValidation;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\User;
+use App\Services\BucketScheme;
+use App\Services\PhotoBucketComputer;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Safe\Exceptions\PcreException;
-use function Safe\preg_match;
 
 /**
  * Resolves the base photo query for any {@see AbstractAlbum} implementation
@@ -40,13 +37,14 @@ use function Safe\preg_match;
  * {@see QueryPhotoDetails}.
  *
  * Only a regular `Album` has a `photo_album` pivot row per photo (and
- * therefore a stored `bucket_id`). The other three types have no such row —
+ * therefore a stored `bucket_key`). The other three types have no such row —
  * `TagAlbum`/`PersonAlbum` membership resolves via `photos_tags`/face
  * matching, and `BaseSmartAlbum`'s own `leftJoin` to `photo_album` is
  * unscoped access-control plumbing, not a per-photo bucket source — so they
  * are resolved through their own existing `photos()` accessor instead,
  * which already applies membership/visibility filtering, and their
- * `bucket_id` must be computed live instead (see {@see self::liveBucketId()}).
+ * bucket id is computed in SQL from photo columns instead
+ * ({@see BucketScheme::sourceIdSql()}, FR-092-06).
  */
 trait ResolvesPhotoSource
 {
@@ -139,109 +137,58 @@ trait ResolvesPhotoSource
 	}
 
 	/**
-	 * Computes one row's live `bucket_id`, given the raw scalar columns
-	 * selected via {@see self::resolvePhotoQuery()} (`title`, `title_base`,
-	 * `created_at`, `taken_at`, `is_highlighted`, `type`, `rating_avg`),
-	 * mirroring {@see \App\Services\PhotoBucketComputer::compute()}'s write-path logic
-	 * exactly - but deliberately reimplemented Carbon-free (raw string
-	 * truncation instead of `Carbon::parse()` per row), the same "no Carbon
-	 * in this request-path tier" discipline {@see QueryPhotoBuckets::formatBucketLabel()}
-	 * already documents and follows, here applied to a call that runs once
-	 * per candidate photo rather than once per distinct bucket.
+	 * Read-time bucket scheme of `$album` (FR-092-05, FR-092-06): its
+	 * effective sort column and resolved granularity.
 	 */
-	private function liveBucketId(ColumnSortingType $column, TimelinePhotoGranularity $granularity, \stdClass $row): ?string
+	private function resolveScheme(AbstractAlbum $album, PhotoSortingCriterion $sorting): BucketScheme
 	{
-		if ($column === ColumnSortingType::OWNER_ID) {
-			return null;
-		}
-
-		if ($column === ColumnSortingType::TITLE) {
-			return $this->liveTitleBucket($granularity, $row->title ?? '', $row->title_base ?? '');
-		}
-
-		if ($column === ColumnSortingType::IS_HIGHLIGHTED) {
-			return DbBool::parse($row->is_highlighted) ? '1' : '0';
-		}
-
-		if ($column === ColumnSortingType::TYPE) {
-			return $row->type ?? '';
-		}
-
-		if ($column === ColumnSortingType::RATING_AVG) {
-			return $row->rating_avg === null ? null : (string) round((float) $row->rating_avg);
-		}
-
-		$raw_date = match ($column) {
-			ColumnSortingType::CREATED_AT => $row->created_at,
-			ColumnSortingType::TAKEN_AT => $row->taken_at,
-			default => null,
-		};
-
-		return $raw_date === null ? null : $this->truncateRawDate((string) $raw_date, $granularity);
+		return resolve(PhotoBucketComputer::class)->scheme($sorting->column, $this->resolvePhotoTimeline($album));
 	}
 
 	/**
-	 * Bucket computation for a `TITLE`-sorted, non-`Album` source, mirroring
-	 * {@see \App\Services\PhotoBucketComputer::computeTitleBucket()} - the date-prefix
-	 * branch reimplements {@see \App\Http\Resources\Models\Utils\TimelineData::parseDateFromTitle()}'s
-	 * own regex directly rather than calling it, purely to avoid the
-	 * `Carbon` instance that helper constructs and immediately discards
-	 * (only `$year`/`$month`/`$day` are ever used here).
+	 * SQL bucket id of a row of {@see self::resolvePhotoQuery()}: a prefix of
+	 * the stored `photo_album.bucket_key` for a regular album, computed from
+	 * photo columns for every other source.
 	 */
-	private function liveTitleBucket(TimelinePhotoGranularity $granularity, string $title, string $title_base): ?string
+	private function bucketIdSql(AbstractAlbum $album, BucketScheme $scheme): string
 	{
-		$mode = request()->configs()->getValueAsEnum('photo_title_bucket_mode', TitleBucketMode::class) ?? TitleBucketMode::DATE_PREFIX;
-
-		if ($mode === TitleBucketMode::ALPHABETICAL) {
-			$length = max(1, request()->configs()->getValueAsInt('photo_title_bucket_prefix_length'));
-
-			return mb_substr($title_base, 0, $length);
-		}
-
-		try {
-			if (preg_match('/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/', trim($title), $matches) !== 1) {
-				return null;
-			}
-			// @codeCoverageIgnoreStart
-		} catch (PcreException) {
-			// Mirrors TimelineData::parseDateFromTitle()'s own "fail
-			// silently" handling of this same pattern.
-			return null;
-		}
-		// @codeCoverageIgnoreEnd
-
-		$year = $matches[1];
-		$month = $matches[2] ?? '01';
-		$day = $matches[3] ?? '01';
-
-		return match ($granularity) {
-			TimelinePhotoGranularity::YEAR => $year,
-			TimelinePhotoGranularity::MONTH => $year . '-' . $month,
-			TimelinePhotoGranularity::DAY, TimelinePhotoGranularity::HOUR => $year . '-' . $month . '-' . $day,
-			// @codeCoverageIgnoreStart
-			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid resolved granularity for photos'),
-			// @codeCoverageIgnoreEnd
-		};
+		return $album instanceof Album ? $scheme->storedIdSql(PA::BUCKET_KEY) : $scheme->sourceIdSql();
 	}
 
 	/**
-	 * Truncates a raw, un-cast `photos.created_at`/`photos.taken_at`
-	 * datetime string (`"Y-m-d H:i:s[.u]"`, the exact form every supported
-	 * DB driver's PDO layer returns for a `toBase()` row) at `$granularity`,
-	 * matching {@see \App\Services\PhotoBucketComputer::truncateDate()}'s output format
-	 * byte-for-byte - via plain substring slicing, deliberately never a
-	 * `Carbon`/`DateTime` object.
+	 * Restricts a query of {@see self::resolvePhotoQuery()} to `$bucket_ids`
+	 * (FR-092-07).
+	 *
+	 * @param FixedQueryBuilder<Photo> $query
+	 * @param string[]                 $bucket_ids
 	 */
-	private function truncateRawDate(string $raw_date, TimelinePhotoGranularity $granularity): string
+	private function applyBucketWindow(FixedQueryBuilder $query, AbstractAlbum $album, BucketScheme $scheme, array $bucket_ids): void
 	{
-		return match ($granularity) {
-			TimelinePhotoGranularity::YEAR => substr($raw_date, 0, 4),
-			TimelinePhotoGranularity::MONTH => substr($raw_date, 0, 7),
-			TimelinePhotoGranularity::DAY => substr($raw_date, 0, 10),
-			TimelinePhotoGranularity::HOUR => substr($raw_date, 0, 10) . '-' . substr($raw_date, 11, 2),
-			// @codeCoverageIgnoreStart
-			TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid resolved granularity for photos'),
-			// @codeCoverageIgnoreEnd
-		};
+		if (!$scheme->isBucketable()) {
+			// Every row of an unbucketable source is `unknown`.
+			$query->whereRaw(in_array(BucketScheme::UNKNOWN, $bucket_ids, true) ? '1 = 1' : '1 = 0');
+
+			return;
+		}
+
+		$query->where($album instanceof Album ? $scheme->storedWindow(PA::BUCKET_KEY, $bucket_ids) : $scheme->sourceWindow($bucket_ids));
+	}
+
+	/**
+	 * Orders rows by bucket (`unknown` last), then by the effective sort
+	 * criterion, replacing any ordering the source query carries, so grouping rows by bucket id reproduces the `buckets`
+	 * tier (FR-092-07).
+	 *
+	 * @param FixedQueryBuilder<Photo> $query
+	 */
+	private function orderByBucket(FixedQueryBuilder $query, AbstractAlbum $album, BucketScheme $scheme, PhotoSortingCriterion $sorting): void
+	{
+		// A tag/person relation query arrives already ordered by the album
+		// sort: the bucket order must come first.
+		$query->reorder();
+		if ($scheme->isBucketable()) {
+			$scheme->orderRows($query, $this->bucketIdSql($album, $scheme), $sorting->order);
+		}
+		(new SortingDecorator($query))->orderPhotosBy($sorting->column, $sorting->order)->applyOrdering();
 	}
 }

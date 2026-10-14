@@ -424,6 +424,17 @@ class CacheKeyProvider
 	}
 
 	/**
+	 * Coarse tag carried by every cached photo-listing entry of every album
+	 * — sufficient alone to flush the whole photo-listing cache when an
+	 * instance-wide bucket setting changes (FR-092-13), mirroring
+	 * {@see self::albumListingGlobalTag()}.
+	 */
+	public function photoListingGlobalTag(): string
+	{
+		return 'photo-listing-global';
+	}
+
+	/**
 	 * @param string[] $album_ids
 	 *
 	 * @return string[]

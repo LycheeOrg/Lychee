@@ -1,7 +1,7 @@
 # Feature 092 Tasks – Bucketing Refactor
 
-_Status: Draft_  
-_Last updated: 2026-10-12_
+_Status: Testing_  
+_Last updated: 2026-10-14_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -27,31 +27,31 @@ _Last updated: 2026-10-12_
   - `php artisan test --filter=BucketKeysTest`  
   - `make phpstan`
 
-- [ ] T-092-04 – Photo key write sites (F-092-01, F-092-02, F-092-10, S-092-04, S-092-13).  
+- [x] T-092-04 – Photo key write sites (F-092-01, F-092-02, F-092-10, S-092-04, S-092-13).  
   _Intent:_ tests first (`tests/Feature_v3/Photo/PhotoKeysWriteTest.php` for `PATCH /Photo`, rename, bulk renamer, `lychee:takedate`; `PhotoUploadBucketTest` for upload); then assign the keys in `HydrateMetadata`, `Save`, `PhotoController::update()`/`rename()`, `RenamePhotos`, `Takedate`, and dispatch `RecomputePhotoBucketsJob` from `RenamePhotos` and `Takedate`.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoKeysWriteTest`  
   - `php artisan test --filter=PhotoUploadBucketTest`
 
-- [ ] T-092-05 – Photo bucket key computation (F-092-03).  
+- [x] T-092-05 – Photo bucket key computation (F-092-03).  
   _Intent:_ update `PhotoBucketComputerTest` for keys per sort column (no granularity input), then rewrite `PhotoBucketComputer` to compute keys from row values (`taken_key`, raw `created_at`, `title_date_key`, `title_base`, `is_highlighted`, `type`, `rating_avg`), no Carbon.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketComputerTest`
 
-- [ ] T-092-06 – Photo write paths and chunking (F-092-03, F-092-10, F-092-14, S-092-12).  
+- [x] T-092-06 – Photo write paths and chunking (F-092-03, F-092-10, F-092-14, S-092-12).  
   _Intent:_ update `RecomputePhotoBucketsJobTest`, `RecomputeAlbumPhotoBucketsJobTest` (1,001 links), `PhotoUploadBucketTest`; then `SetParent`, `MoveOrDuplicate`, `RecomputePhotoBucketsJob`, `RecomputeAlbumPhotoBucketsJob` (chunks of 1,000).  
   _Verification commands:_  
   - `php artisan test --filter=RecomputePhotoBucketsJobTest`  
   - `php artisan test --filter=RecomputeAlbumPhotoBucketsJobTest`  
   - `php artisan test --filter=PhotoUploadBucketTest`
 
-- [ ] T-092-07 – Album bucket keys (F-092-04, F-092-14).  
+- [x] T-092-07 – Album bucket keys (F-092-04, F-092-14).  
   _Intent:_ update `RecomputeAlbumStatsJobBucketTest`, `RecomputeChildAlbumBucketsJobTest`; rewrite `AlbumBucketComputer`; `RecomputeAlbumStatsJob`, `RecomputeChildAlbumBucketsJob` (chunked).  
   _Verification commands:_  
   - `php artisan test --filter=RecomputeAlbumStatsJobBucketTest`  
   - `php artisan test --filter=RecomputeChildAlbumBucketsJobTest`
 
-- [ ] T-092-08 – All-row jobs and command (F-092-13, F-092-14, F-092-15, S-092-10, S-092-12, S-092-17).  
+- [x] T-092-08 – All-row jobs and command (F-092-13, F-092-14, F-092-15, S-092-10, S-092-12, S-092-17).  
   _Intent:_ tests `RecomputeAllAlbumBucketsJobTest` (children of parents without override included), `RecomputeAllPhotoBucketsJobTest` (1,001 links), `RecomputeBucketsCommandTest` updated; then `RecomputeAllAlbumBucketsJob`, `RecomputeAllPhotoBucketsJob` and `lychee:recompute-buckets` sharing the chunked routines.  
   _Verification commands:_  
   - `php artisan test --filter=RecomputeAllAlbumBucketsJobTest`  
@@ -69,65 +69,65 @@ _Last updated: 2026-10-12_
   - `php artisan test --filter=BucketSchemeTest`  
   - `make phpstan`
 
-- [ ] T-092-11 – Regular-album `buckets` tier (F-092-05, F-092-08, F-092-09, S-092-01, S-092-03, S-092-11, S-092-15).  
+- [x] T-092-11 – Regular-album `buckets` tier (F-092-05, F-092-08, F-092-09, S-092-01, S-092-03, S-092-11, S-092-15).  
   _Intent:_ tests in `PhotoBucketsV3Test` (granularity switch without job, title date at hour, unvalidated photos per viewer, `unknown` last both directions); then `QueryPhotoBuckets` on `photo_album` only with the validation subquery.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketsV3Test`
 
-- [ ] T-092-12 – Regular-album `ratios` and `details` windows (F-092-05, F-092-07).  
+- [x] T-092-12 – Regular-album `ratios` and `details` windows (F-092-05, F-092-07).  
   _Intent:_ tests in `PhotoRatiosV3Test`, `PhotoDetailsV3Test` (window per id kind, per-row ids, ordering); then `QueryPhotoRatios`, `QueryPhotoDetails` through the scheme.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoRatiosV3Test`  
   - `php artisan test --filter=PhotoDetailsV3Test`
 
-- [ ] T-092-13 – Timeline on `taken_key` (F-092-06, S-092-04, S-092-07).  
+- [x] T-092-13 – Timeline on `taken_key` (F-092-06, S-092-04, S-092-07).  
   _Intent:_ tests in `TimelineAlbumTest` (capture-local hour buckets, windows, dateless photos excluded); then Timeline buckets/windows through the scheme.  
   _Verification commands:_  
   - `php artisan test --filter=TimelineAlbumTest`
 
-- [ ] T-092-14 – Tag, person and smart albums in SQL (F-092-06, F-092-07, S-092-05, S-092-06, S-092-15).  
+- [x] T-092-14 – Tag, person and smart albums in SQL (F-092-06, F-092-07, S-092-05, S-092-06, S-092-15).  
   _Intent:_ tests for a tag album per sort column and a smart album (buckets, ratios windows and per-row ids, details windows); then the SQL path through the scheme; remove `liveBucketId()`, `liveTitleBucket()`, `truncateRawDate()` and the `resolveLiveBucket…` helpers.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBucketsV3Test`  
   - `php artisan test --filter=PhotoRatiosV3Test`  
   - `php artisan test --filter=PhotoDetailsV3Test`
 
-- [ ] T-092-15 – Album children and root listings (F-092-05, F-092-08, S-092-10).  
+- [x] T-092-15 – Album children and root listings (F-092-05, F-092-08, S-092-10).  
   _Intent:_ tests in `AlbumBucketsV3Test`, `AlbumChildrenDataV3Test`, `AlbumRootV3Test` (prefix ids per granularity without recompute, per-row ids, labels); then `AlbumChildrenController`, `AlbumRootController`, `QueryChildrenForAlbum`, `BuildAlbumDataResource`.  
   _Verification commands:_  
   - `php artisan test --filter=AlbumBucketsV3Test`  
   - `php artisan test --filter=AlbumChildrenDataV3Test`  
   - `php artisan test --filter=AlbumRootV3Test`
 
-- [ ] T-092-16 – Album edit triggers (F-092-11, F-092-12, S-092-08, S-092-10).  
+- [x] T-092-16 – Album edit triggers (F-092-11, F-092-12, S-092-08, S-092-10).  
   _Intent:_ update `AlbumSortingBucketDispatchTest`, `PhotoSortingBucketDispatchTest` (job only on sort column change; order/timeline change flushes the listing); then `AlbumController`.  
   _Verification commands:_  
   - `php artisan test --filter=AlbumSortingBucketDispatchTest`  
   - `php artisan test --filter=PhotoSortingBucketDispatchTest`
 
-- [ ] T-092-17 – Settings triggers and photo-listing flush (F-092-13, S-092-02, S-092-09).  
+- [x] T-092-17 – Settings triggers and photo-listing flush (F-092-13, S-092-02, S-092-09).  
   _Intent:_ tests in `UpdateSettingsTest`, `CacheKeyProviderTest` and a new `tests/Feature_v3/Settings/BucketSettingsV3Test.php` (granularity change visible in an inheriting album without a job; sort/mode changes dispatch the all-row jobs); then the `photo-listing-global` tag on every photo-listing entry, its flush event, `SettingsController` key lists.  
   _Verification commands:_  
   - `php artisan test --filter=UpdateSettingsTest`  
   - `php artisan test --filter=CacheKeyProviderTest`  
   - `php artisan test --filter=BucketSettingsV3Test`
 
-- [ ] T-092-18 – Timeline cache invalidation (F-092-17, S-092-18).  
+- [x] T-092-18 – Timeline cache invalidation (F-092-17, S-092-18).  
   _Intent:_ update `ManagedCachePhotoListingInvalidatorTest`; then resolve old/new Timeline buckets from `taken_key`/`created_at` (`PhotoSaved` previous values carry `taken_key`).  
   _Verification commands:_  
   - `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
 
-- [ ] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
+- [x] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
   _Intent:_ `tileDayKey()` reads `taken_at` in the tile's `taken_at_orig_tz`; browser check on a scratch instance.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
 
-- [ ] T-092-20 – Documentation.  
+- [x] T-092-20 – Documentation.  
   _Intent:_ knowledge map, roadmap, Feature 064/066/071 spec references to FR-092-xx, `_current-session.md`.  
   _Verification commands:_ none.
 
-- [ ] T-092-21 – Quality gate, benchmark, drift gate (NFR-092-01 … 06).  
+- [x] T-092-21 – Quality gate, benchmark, drift gate (NFR-092-01 … 06).  
   _Intent:_ every class above, php-cs-fixer, phpstan, `typescript:transform` without diff, scratch benchmark of the generated queries, drift gate report in plan.md.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
@@ -138,3 +138,5 @@ _Last updated: 2026-10-12_
 
 - FR coverage: FR-01/02 → T-02…04; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16; FR-13 → T-08, T-17; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
 - Test classes in `tests/Feature_v2` are updated where they encode the old triggers; no new class is added there.
+- T-092-19: the browser check of S-092-16 was not run in the implementation session (no scratch instance); the helper was exercised with esbuild under `TZ=Asia/Tokyo` instead. Tracked in plan.md Follow-ups.
+- Drift gate, benchmark and adjustments: plan.md § Implementation Drift Gate.

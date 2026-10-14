@@ -21,7 +21,9 @@ namespace Tests\Feature_v2\Settings;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoBucketsRecomputed;
-use App\Jobs\RecomputeRootAlbumBucketsJob;
+use App\Events\PhotoListingCacheFlushRequested;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
+use App\Jobs\RecomputeAllPhotoBucketsJob;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -29,73 +31,76 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UpdateSettingsTest extends BaseApiWithDataTest
 {
-	// ── Feature 062 (FR-062-07, G6, S-062-10..12): root bucket recompute ──
+	// ── Feature 092 (FR-092-13, S-092-09, S-092-10): bucket settings ──
 
-	/** @return array<int,array<string,string>> */
-	public static function rootBucketRecomputeConfigsProvider(): array
+	/** @return array<string,array{0:array<string,string>,1:class-string,2:bool}> */
+	public static function bucketRecomputeConfigsProvider(): array
 	{
 		return [
-			'sorting_albums_col' => [['key' => 'sorting_albums_col', 'value' => 'created_at']],
-			'sorting_albums_order' => [['key' => 'sorting_albums_order', 'value' => 'ASC']],
-			'title_bucket_mode' => [['key' => 'title_bucket_mode', 'value' => 'date_prefix']],
-			'title_bucket_prefix_length' => [['key' => 'title_bucket_prefix_length', 'value' => '1']],
+			'sorting_albums_col' => [['key' => 'sorting_albums_col', 'value' => 'created_at'], RecomputeAllAlbumBucketsJob::class, true],
+			'title_bucket_mode' => [['key' => 'title_bucket_mode', 'value' => 'date_prefix'], RecomputeAllAlbumBucketsJob::class, true],
+			'sorting_albums_order' => [['key' => 'sorting_albums_order', 'value' => 'ASC'], RecomputeAllAlbumBucketsJob::class, false],
+			'title_bucket_prefix_length' => [['key' => 'title_bucket_prefix_length', 'value' => '1'], RecomputeAllAlbumBucketsJob::class, false],
+			'sorting_photos_col' => [['key' => 'sorting_photos_col', 'value' => 'created_at'], RecomputeAllPhotoBucketsJob::class, true],
+			'photo_title_bucket_mode' => [['key' => 'photo_title_bucket_mode', 'value' => 'date_prefix'], RecomputeAllPhotoBucketsJob::class, true],
+			'photo_title_bucket_prefix_length' => [['key' => 'photo_title_bucket_prefix_length', 'value' => '1'], RecomputeAllPhotoBucketsJob::class, false],
+			'unrelated' => [['key' => 'version', 'value' => '1'], RecomputeAllPhotoBucketsJob::class, false],
 		];
 	}
 
 	/**
+	 * Only a change of the sort column or the title bucket mode rewrites
+	 * keys; order and prefix length only change the read scheme.
+	 *
 	 * @param array<string,string> $config
+	 * @param class-string         $job
 	 */
-	#[DataProvider('rootBucketRecomputeConfigsProvider')]
-	public function testChangingRootBucketRecomputeConfigDispatchesJob(array $config): void
+	#[DataProvider('bucketRecomputeConfigsProvider')]
+	public function testBucketConfigDispatchesRecomputeOnlyForKeyShapingSettings(array $config, string $job, bool $expected): void
 	{
-		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeAllPhotoBucketsJob::class]);
 
 		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
 			'configs' => [$config],
 		]);
 		$this->assertOk($response);
 
-		Queue::assertPushed(RecomputeRootAlbumBucketsJob::class);
+		$expected ? Queue::assertPushed($job) : Queue::assertNotPushed($job);
 	}
 
 	/**
-	 * `timeline_albums_granularity` is a level-1 (Supporter Edition) config —
-	 * kept as its own test rather than folded into the data provider above,
-	 * which runs unconditionally.
+	 * Granularity settings (Supporter Edition) rewrite no key: the photo one
+	 * flushes every cached photo listing.
 	 */
-	public function testChangingTimelineGranularityConfigDispatchesJob(): void
+	public function testGranularityConfigsDispatchNoRecompute(): void
 	{
 		$this->requireSe();
-		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeAllPhotoBucketsJob::class]);
+		Event::fake([PhotoListingCacheFlushRequested::class]);
 
 		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
 			'configs' => [
-				[
-					'key' => 'timeline_albums_granularity',
-					'value' => 'year',
-				],
+				['key' => 'timeline_albums_granularity', 'value' => 'month'],
+				['key' => 'timeline_photos_granularity', 'value' => 'hour'],
 			],
 		]);
 		$this->assertOk($response);
 
-		Queue::assertPushed(RecomputeRootAlbumBucketsJob::class);
+		Queue::assertNotPushed(RecomputeAllAlbumBucketsJob::class);
+		Queue::assertNotPushed(RecomputeAllPhotoBucketsJob::class);
+		Event::assertDispatched(PhotoListingCacheFlushRequested::class);
 	}
 
-	public function testChangingUnrelatedConfigDoesNotDispatchRootBucketRecompute(): void
+	public function testPhotoPrefixLengthFlushesPhotoListings(): void
 	{
-		Queue::fake([RecomputeRootAlbumBucketsJob::class]);
+		Event::fake([PhotoListingCacheFlushRequested::class]);
 
 		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
-			'configs' => [
-				[
-					'key' => 'version',
-					'value' => '1',
-				],
-			],
+			'configs' => [['key' => 'photo_title_bucket_prefix_length', 'value' => '2']],
 		]);
 		$this->assertOk($response);
 
-		Queue::assertNotPushed(RecomputeRootAlbumBucketsJob::class);
+		Event::assertDispatched(PhotoListingCacheFlushRequested::class);
 	}
 
 	public function testChangingAlbumSortingConfigDispatchesCoarseFlush(): void

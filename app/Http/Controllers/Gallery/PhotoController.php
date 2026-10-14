@@ -57,6 +57,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\BucketKeys;
 use App\Services\Telemetry\TraceService;
 use App\Services\TitleSplitter;
 use Illuminate\Routing\Controller;
@@ -210,13 +211,14 @@ class PhotoController extends Controller
 		// is still available - see PhotoSaved::$previous_dates.
 		$previous_dates = [
 			'created_at' => $photo->getRawOriginal('created_at'),
-			'taken_at' => $photo->getRawOriginal('taken_at'),
+			'taken_key' => $photo->getRawOriginal('taken_key'),
 		];
 
 		$photo->title = $request->title();
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
+		$photo->title_date_key = BucketKeys::titleDateKey($photo->title);
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
 
@@ -229,18 +231,18 @@ class PhotoController extends Controller
 
 		// if the request takenAt is null, then we set the initial value back.
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
+		$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
 
 		// Feature 082: the manual 360° flag, left untouched when not sent (v7).
 		$photo->is_360 = $request->is360() ?? $photo->is_360;
 
 		$photo->save();
 
-		// title/title_base/created_at/taken_at are all bucket-relevant
-		// columns - created_at is writable here via uploadDate() above, not
-		// immutable - recompute every album this photo is linked into
-		// whenever any of them actually changed. Explicit call site, not an
-		// Eloquent hook, per repo convention.
-		$bucket_relevant_changed = $photo->wasChanged(['title', 'title_base', 'created_at', 'taken_at']);
+		// title/created_at/taken_at are bucket-relevant columns - created_at
+		// is writable here via uploadDate() above - recompute every album
+		// this photo is linked into whenever any of them actually changed
+		// (FR-092-10). Explicit call site, not an Eloquent hook.
+		$bucket_relevant_changed = $photo->wasChanged(['title', 'title_base', 'title_date_key', 'created_at', 'taken_at', 'taken_key']);
 		RecomputePhotoBucketsJob::dispatchIf($bucket_relevant_changed, $photo->id);
 
 		// RecomputePhotoBucketsJob (above) only reaches real albums via their
@@ -375,6 +377,7 @@ class PhotoController extends Controller
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
+		$photo->title_date_key = BucketKeys::titleDateKey($photo->title);
 		$photo->save();
 
 		// title/title_base are bucket-relevant columns - recompute every

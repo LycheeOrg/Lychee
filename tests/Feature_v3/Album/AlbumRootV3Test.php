@@ -20,7 +20,7 @@ namespace Tests\Feature_v3\Album;
 
 use App\Actions\Albums\Top;
 use App\Jobs\RecomputeAlbumStatsJob;
-use App\Jobs\RecomputeRootAlbumBucketsJob;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
@@ -49,7 +49,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 
 	private function recomputeRootBuckets(): void
 	{
-		(new RecomputeRootAlbumBucketsJob())->handle();
+		(new RecomputeAllAlbumBucketsJob())->handle();
 	}
 
 	// ── Flag gate ─────────────────────────────────────────────────
@@ -123,7 +123,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		self::assertEqualsCanonicalizing([$mine1->id, $mine2->id], $ids);
 	}
 
-	public function testOwnScopeBucketsGroupByPersistedBucketIdWithDateBuckets(): void
+	public function testOwnScopeBucketsGroupByStoredKeyPrefixWithDateBuckets(): void
 	{
 		$user = User::factory()->create();
 		$a = Album::factory()->as_root()->owned_by($user)->create(['created_at' => new \Illuminate\Support\Carbon('2023-05-01')]);
@@ -532,11 +532,11 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 
 	/**
 	 * SettingsController::setConfigs dispatches AlbumListingCacheFlushRequested
-	 * (synchronous, coarse) *before* queuing RecomputeRootAlbumBucketsJob. A
-	 * request landing in that gap re-warms the root buckets cache with the
-	 * pre-upsert bucket_id — a plain global-tag flush can never catch that
-	 * refill, since it already ran. The job itself must therefore evict
-	 * albumChildrenTag(null) again once its own upsert() actually lands.
+	 * (synchronous, coarse) *before* queuing RecomputeAllAlbumBucketsJob. A
+	 * request landing in that gap re-warms the root buckets cache from the
+	 * pre-upsert bucket_key — a plain global-tag flush can never catch that
+	 * refill, since it already ran. The job itself must therefore flush the
+	 * album listings again once its own upsert() actually lands.
 	 */
 	public function testRecomputeJobInvalidatesRootCacheRewarmedDuringTheFlushDispatchGap(): void
 	{
@@ -560,16 +560,15 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		event(new \App\Events\AlbumListingCacheFlushRequested());
 
 		// The race: a request lands after the flush but before the queued
-		// job runs, re-warming the cache — bucket_id in the DB has not been
-		// touched yet, so this is still correct *at this instant*, but the
-		// entry it leaves behind is now stale the moment the job upserts.
+		// job runs, re-warming the cache from the keys in the DB, which have
+		// not been rewritten yet: the entry it leaves behind is stale the
+		// moment the job upserts.
 		$rewarmed = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
-		self::assertSame(['2024'], $rewarmed);
 
-		// The queued job finally runs and upserts the new bucket_id.
+		// The queued job finally runs and upserts the new bucket_key.
 		$this->recomputeRootBuckets();
 
 		$after = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
-		self::assertNotSame(['2024'], $after, 'Root buckets cache served stale pre-upsert data after the recompute job ran.');
+		self::assertNotSame($rewarmed, $after, 'Root buckets cache served stale pre-upsert data after the recompute job ran.');
 	}
 }

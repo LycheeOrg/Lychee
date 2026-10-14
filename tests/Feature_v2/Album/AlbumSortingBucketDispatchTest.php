@@ -20,16 +20,17 @@ namespace Tests\Feature_v2\Album;
 
 use App\Events\AlbumChildrenChanged;
 use App\Jobs\RecomputeChildAlbumBucketsJob;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
 
 /**
- * Covers Feature 061 FR-061-03 / S-061-14/15: the write site that must
- * dispatch {@see RecomputeChildAlbumBucketsJob} when a parent's own
- * `album_sorting_col`/`album_sorting_order`/`album_timeline` changes, and
- * must NOT dispatch it for an unrelated attribute change.
+ * Covers FR-092-12 / S-092-10: the write site dispatches
+ * {@see RecomputeChildAlbumBucketsJob} only when a parent's effective
+ * `album_sorting_col` changes; an order or granularity change only flushes
+ * the children listing, an unrelated change does neither.
  */
 class AlbumSortingBucketDispatchTest extends BaseApiWithDataTest
 {
@@ -88,10 +89,15 @@ class AlbumSortingBucketDispatchTest extends BaseApiWithDataTest
 		Queue::assertPushed(RecomputeChildAlbumBucketsJob::class, fn (RecomputeChildAlbumBucketsJob $job) => $job->parent_album_id === $this->album1->id);
 	}
 
-	public function testAlbumTimelineChangeDispatches(): void
+	/**
+	 * FR-092-12, S-092-10: a granularity change rewrites no key - the job is
+	 * not dispatched, only the children listing is flushed.
+	 */
+	public function testAlbumTimelineChangeOnlyFlushesTheListing(): void
 	{
 		$this->requireSe();
 		Queue::fake([RecomputeChildAlbumBucketsJob::class]);
+		Event::fake([AlbumChildrenChanged::class]);
 
 		$payload = $this->basePayload();
 		$payload['album_timeline'] = 'month';
@@ -99,7 +105,28 @@ class AlbumSortingBucketDispatchTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', $payload);
 		$this->assertOk($response);
 
-		Queue::assertPushed(RecomputeChildAlbumBucketsJob::class, fn (RecomputeChildAlbumBucketsJob $job) => $job->parent_album_id === $this->album1->id);
+		Queue::assertNotPushed(RecomputeChildAlbumBucketsJob::class);
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $event) => $event->parent_ids === [$this->album1->id]);
+	}
+
+	/**
+	 * FR-092-12: an order-only change rewrites no key either.
+	 */
+	public function testAlbumSortingOrderOnlyChangeOnlyFlushesTheListing(): void
+	{
+		DB::table('albums')->where('id', '=', $this->album1->id)->update(['album_sorting_col' => 'title', 'album_sorting_order' => 'DESC']);
+		Queue::fake([RecomputeChildAlbumBucketsJob::class]);
+		Event::fake([AlbumChildrenChanged::class]);
+
+		$payload = $this->basePayload();
+		$payload['album_sorting_column'] = 'title';
+		$payload['album_sorting_order'] = 'ASC';
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', $payload);
+		$this->assertOk($response);
+
+		Queue::assertNotPushed(RecomputeChildAlbumBucketsJob::class);
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $event) => $event->parent_ids === [$this->album1->id]);
 	}
 
 	/**

@@ -15,6 +15,7 @@ use App\Enum\ConfigType;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\MapListingCacheFlushRequested;
 use App\Events\PhotoBucketsRecomputed;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Http\Requests\Settings\GetAllConfigsRequest;
@@ -23,7 +24,8 @@ use App\Http\Requests\Settings\SetCSSSettingRequest;
 use App\Http\Requests\Settings\SetJSSettingRequest;
 use App\Http\Resources\GalleryConfigs\SettingsConfig;
 use App\Http\Resources\Models\ConfigCategoryResource;
-use App\Jobs\RecomputeRootAlbumBucketsJob;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
+use App\Jobs\RecomputeAllPhotoBucketsJob;
 use App\Models\ConfigCategory;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
@@ -56,17 +58,34 @@ class SettingsController extends Controller
 	];
 
 	/**
-	 * Config keys whose change governs root albums' `own`-scope `bucket_id`
-	 * — closes the dispatch gap {@see \App\Jobs\RecomputeChildAlbumBucketsJob}
-	 * deliberately doesn't cover (parent-scoped only):
-	 * root albums have no parent whose settings would otherwise trigger a recompute.
+	 * Config keys whose change rewrites every `albums.bucket_key`
+	 * (FR-092-13): they decide which value the key holds for root albums
+	 * and the children of every parent without its own album sorting.
+	 * Granularity, prefix length and order only change the read scheme:
+	 * {@see self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS} covers them.
 	 */
-	public const ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS = [
+	public const ALBUM_BUCKET_RECOMPUTE_CONFIGS = [
 		'sorting_albums_col',
-		'sorting_albums_order',
-		'timeline_albums_granularity',
 		'title_bucket_mode',
-		'title_bucket_prefix_length',
+	];
+
+	/**
+	 * Config keys whose change rewrites every `photo_album.bucket_key`
+	 * (FR-092-13); {@see \App\Jobs\RecomputeAllPhotoBucketsJob} flushes
+	 * every cached photo listing once the keys are written.
+	 */
+	public const PHOTO_BUCKET_RECOMPUTE_CONFIGS = [
+		'sorting_photos_col',
+		'photo_title_bucket_mode',
+	];
+
+	/**
+	 * Config keys whose change only changes the photo read scheme
+	 * (FR-092-13): every cached photo listing is flushed, no key rewritten.
+	 */
+	public const PHOTO_LISTING_COARSE_FLUSH_CONFIGS = [
+		'timeline_photos_granularity',
+		'photo_title_bucket_prefix_length',
 	];
 
 	/**
@@ -243,12 +262,17 @@ class SettingsController extends Controller
 		$empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => '']));
 		$non_empty_write_only_configs->each(fn ($config) => Configs::query()->where('key', $config->key)->update(['value' => Hash::make($config->value)]));
 
+		// Before any dispatch: a job running on the sync queue must read the
+		// new values.
+		$request->configs()->invalidateCache();
+
 		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
-		RecomputeRootAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ROOT_ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
+		RecomputeAllAlbumBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
+		RecomputeAllPhotoBucketsJob::dispatchIf($configs->pluck('key')->intersect(self::PHOTO_BUCKET_RECOMPUTE_CONFIGS)->isNotEmpty());
+		PhotoListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::PHOTO_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 		PhotoBucketsRecomputed::dispatchIf($configs->pluck('key')->intersect(self::TIMELINE_PHOTO_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty(), ['timeline']);
 		MapListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::MAP_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 
-		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return $this->getAll($request, $docker_info);

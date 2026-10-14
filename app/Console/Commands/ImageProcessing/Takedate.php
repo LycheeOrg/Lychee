@@ -12,8 +12,10 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
+use App\Jobs\RecomputePhotoBucketsJob;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Services\BucketKeys;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -205,7 +207,7 @@ class Takedate extends Command
 					// For example "2022-01-31 20:50 CET" is deemed equal to
 					// "2022-01-31 19:50 GMT".
 					// So, we must check for equality of timezones separately.
-					if ($photo->taken_at->equalTo($info->taken_at) && $photo->taken_at->timezoneName === $info->taken_at->timezoneName) {
+					if ($photo->taken_at !== null && $photo->taken_at->equalTo($info->taken_at) && $photo->taken_at->timezoneName === $info->taken_at->timezoneName) {
 						$this->printInfo($photo, 'Takestamp up-to-date.');
 					} else {
 						$photo->taken_at = $info->taken_at;
@@ -225,7 +227,11 @@ class Takedate extends Command
 					}
 				}
 
+				// FR-092-01, FR-092-10: assigned at every write of `taken_at`,
+				// then every `photo_album` key of the photo is recomputed.
+				$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
 				$photo->save();
+				RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['taken_at', 'taken_key', 'created_at']), $photo->id);
 			}
 
 			return 0;

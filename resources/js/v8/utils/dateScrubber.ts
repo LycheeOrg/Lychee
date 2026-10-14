@@ -1,4 +1,4 @@
-import { phpDateFormat } from "@/v8/utils/phpDateFormat";
+import { formatServerDateTime, phpDateFormat } from "@/v8/utils/phpDateFormat";
 import type { VirtualAlbumRow } from "@/v8/composables/album/virtualAlbumRows";
 
 /**
@@ -27,6 +27,8 @@ export type DatedTile = {
 	title: string;
 	created_at: string | null;
 	taken_at?: string | null;
+	/** Zone the photo was taken in: its `taken_at` day is read there, like the server's `taken_key` (Feature 092, FR-092-18). */
+	taken_at_orig_tz?: string | null;
 	min_taken_at?: string | null;
 	max_taken_at?: string | null;
 };
@@ -56,7 +58,23 @@ export function tileDayKey(tile: DatedTile, field: DateScrubberField): string | 
 	if (field === "title") {
 		return parseTitleDatePrefix(tile.title);
 	}
+	if (field === "taken_at") {
+		return takenDayKeyOf(tile.taken_at ?? null, tile.taken_at_orig_tz ?? null);
+	}
 	return dayKeyOf(tile[field]);
+}
+
+/**
+ * A photo's capture day in the zone it was taken in — the day of its
+ * `taken_key`, so the rail agrees with the header buckets (FR-092-18). A
+ * photo without zone keeps the stored (UTC) day, like the server.
+ */
+export function takenDayKeyOf(raw: string | null, timeZone: string | null): string | null {
+	if (timeZone === null || timeZone === "") {
+		return dayKeyOf(raw);
+	}
+	const day = formatServerDateTime(raw, "Y-m-d", timeZone);
+	return day === "" ? null : day;
 }
 
 export function formatDayLabel(day: string, format: string): string {

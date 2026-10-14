@@ -18,8 +18,11 @@
 
 namespace Tests\Feature_v2\Photo;
 
+use App\Events\AlbumPhotoSortingChanged;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Jobs\RecomputePhotoBucketsJob;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -223,5 +226,26 @@ class PhotoSortingBucketDispatchTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		Queue::assertNotPushed(RecomputeAlbumPhotoBucketsJob::class);
+	}
+
+	/**
+	 * FR-092-11, S-092-08: an order-only or granularity change rewrites no
+	 * key - no job, only the album's cached photo listing is flushed.
+	 */
+	public function testAlbumPhotoSortingOrderOrTimelineChangeOnlyFlushesTheListing(): void
+	{
+		DB::table('base_albums')->where('id', '=', $this->album1->id)->update(['sorting_col' => 'title', 'sorting_order' => 'DESC']);
+		Queue::fake([RecomputeAlbumPhotoBucketsJob::class]);
+		Event::fake([AlbumPhotoSortingChanged::class]);
+
+		$payload = $this->baseAlbumPayload();
+		$payload['photo_sorting_column'] = 'title';
+		$payload['photo_sorting_order'] = 'ASC';
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', $payload);
+		$this->assertOk($response);
+
+		Queue::assertNotPushed(RecomputeAlbumPhotoBucketsJob::class);
+		Event::assertDispatched(AlbumPhotoSortingChanged::class, fn (AlbumPhotoSortingChanged $event) => $event->album_ids === [$this->album1->id]);
 	}
 }

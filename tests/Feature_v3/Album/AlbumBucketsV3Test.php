@@ -415,4 +415,42 @@ class AlbumBucketsV3Test extends BaseApiWithDataTest
 		$this->assertOk($after);
 		self::assertSame([1], $after->json('counts'));
 	}
+
+	/**
+	 * S-092-10 (FR-092-05, FR-092-08): ids are prefixes of the stored key;
+	 * a granularity switch shows the new ids and labels with no recompute,
+	 * and the children listing carries the same per-row ids.
+	 */
+	public function testGranularitySwitchNeedsNoRecomputeAndRowsCarryTheSameIds(): void
+	{
+		$this->setInstanceDefaults('year');
+		foreach (['year' => 'Y', 'month' => 'Y-m', 'day' => 'Y-m-d'] as $precision => $format) {
+			DB::table('configs')->where('key', '=', 'timeline_album_date_format_' . $precision)->update(['value' => $format]);
+		}
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::ASC);
+		$parent->save();
+		$a = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2023-05-01 10:00:00')]);
+		$b = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2023-05-20 10:00:00')]);
+		$this->recompute($a);
+		$this->recompute($b);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2023'], 'counts' => [2], 'labels' => ['2023']]);
+
+		$keys_before = DB::table('albums')->whereIn('id', [$a->id, $b->id])->orderBy('id')->pluck('bucket_key')->all();
+		$parent->album_timeline = \App\Enum\TimelineAlbumGranularity::DAY;
+		$parent->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2023-05-01', '2023-05-20'], 'counts' => [1, 1], 'labels' => ['2023-05-01', '2023-05-20']]);
+		$this->assertSame($keys_before, DB::table('albums')->whereIn('id', [$a->id, $b->id])->orderBy('id')->pluck('bucket_key')->all());
+
+		$children = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}");
+		$this->assertOk($children);
+		self::assertSame([$a->id, $b->id], $children->json('ids'));
+		self::assertSame(['2023-05-01', '2023-05-20'], $children->json('bucket_ids'));
+	}
 }

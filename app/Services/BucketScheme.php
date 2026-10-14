@@ -127,6 +127,20 @@ final class BucketScheme
 	}
 
 	/**
+	 * Bucket id of a key computed in PHP (a stored key, or for `CREATED_AT`
+	 * the `Y-m-d-H` key of the raw column), the same value
+	 * {@see self::storedIdSql()} yields in SQL.
+	 */
+	public function idOfKey(?string $key): string
+	{
+		if ($key === null) {
+			return self::UNKNOWN;
+		}
+
+		return $this->length === null ? $this->normalizeId($key) : mb_substr($key, 0, $this->length);
+	}
+
+	/**
 	 * SQL bucket id computed from photo columns, for sources without stored key.
 	 */
 	public function sourceIdSql(): string

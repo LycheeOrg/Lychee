@@ -13,6 +13,9 @@
 > Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
+
+> Feature 092 ([spec](../092-bucketing-refactor/spec.md), FR-092-18): a photo tile's `taken_at` day is read in its `taken_at_orig_tz`, matching the capture-local header buckets; `created_at` and album dates stay as stored.
+
 Feature 066 (T-067) gave the v8 Timeline view a right-hand date scrubber rail (`TimelineDatesV3.vue`). The rail shows year labels and month ticks at rest, a playhead that follows scrolling, a fisheye lens and readout pill on hover, and continuous drag-scrubbing. This feature brings the same rail to **v8 album views** on the Struct-of-Arrays path (`is_struct_of_array_enabled`, `albumStore.isPhotoSoaActive`). It is controlled by a global gallery setting (default **on**), a per-album override, and a viewer show/hide toggle. The rail is offered only on albums whose visible content is a single kind (photos only, or sub-albums only) and whose ordering is date-based.
 
 Per `[[project_v8_migration_scope]]` this is v8-only. v7 and the v2 (non-SoA, paginated) album path are untouched. Per ADR-071-01, bucket storage is untouched: the rail's day-level entries are derived in the browser from per-tile dates the album view already loads.

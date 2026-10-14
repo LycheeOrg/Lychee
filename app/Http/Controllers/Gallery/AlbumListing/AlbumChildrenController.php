@@ -15,9 +15,6 @@ use App\Actions\Album\StructOfArrays\QueryRightsForAlbum;
 use App\Actions\Album\StructOfArrays\QueryRightsForMatchingAlbums;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ColumnSortingType;
-use App\Enum\OrderSortingType;
-use App\Enum\TimelineAlbumGranularity;
-use App\Enum\TitleBucketMode;
 use App\Http\Requests\Album\GetAlbumBucketsRequest;
 use App\Http\Requests\Album\GetAlbumChildrenDataRequest;
 use App\Http\Requests\Album\GetAlbumChildrenRightsRequest;
@@ -37,7 +34,7 @@ use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use function Safe\mktime;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Serves the sub-album tier: `GET /api/v3/Albums/{album_id}`,
@@ -101,78 +98,19 @@ class AlbumChildrenController extends Controller
 			return new AlbumBucketResource(bucket_ids: [], counts: [], labels: [], bucketable: false);
 		}
 
+		$scheme = $this->bucket_computer->scheme($sorting->column, $album->album_timeline);
+		$id_sql = $scheme->storedIdSql('albums.bucket_key');
+
 		$query = Album::query()->where('parent_id', '=', $album->id);
 		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
-
-		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
-
-		$rows = $query
-			->select(['albums.bucket_id'])
+		$query->select(DB::raw($id_sql . ' as bucket_id'))
 			->selectRaw('COUNT(*) as bucket_count')
-			->groupBy('albums.bucket_id')
-			// NULL ("unknown") always sorts last, regardless of $direction.
-			->orderByRaw('(albums.bucket_id IS NULL) ASC')
-			->orderBy('albums.bucket_id', $direction)
-			->toBase()
-			->get();
+			->groupByRaw($id_sql);
+		$scheme->orderRows($query, $id_sql, $sorting->order);
 
-		$bucket_ids = [];
-		$counts = [];
-		foreach ($rows as $row) {
-			$bucket_ids[] = $row->bucket_id ?? 'unknown';
-			$counts[] = (int) $row->bucket_count;
-		}
+		[$bucket_ids, $counts] = $scheme->collectBuckets($query->toBase()->get());
 
-		$labels = $this->computeLabels($bucket_ids, $sorting->column, $album->album_timeline);
-
-		return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
-	}
-
-	/**
-	 * Computes one display label per distinct bucket — bounded
-	 * by bucket count, never by child-row count: it runs entirely in PHP,
-	 * after the `GROUP BY`.
-	 *
-	 * @param string[] $bucket_ids
-	 */
-	private function computeLabels(array $bucket_ids, ColumnSortingType $sorting_column, ?TimelineAlbumGranularity $album_timeline): array
-	{
-		$is_alphabetical_title = $sorting_column === ColumnSortingType::TITLE &&
-			(request()->configs()->getValueAsEnum('title_bucket_mode', TitleBucketMode::class) ?? TitleBucketMode::DATE_PREFIX) === TitleBucketMode::ALPHABETICAL;
-
-		if ($is_alphabetical_title) {
-			// Already human-readable; never date-parsed.
-			return $bucket_ids;
-		}
-
-		$granularity = $this->bucket_computer->resolveGranularity($album_timeline);
-		$format = match ($granularity) {
-			TimelineAlbumGranularity::YEAR => request()->configs()->getValueAsString('timeline_album_date_format_year'),
-			TimelineAlbumGranularity::MONTH => request()->configs()->getValueAsString('timeline_album_date_format_month'),
-			TimelineAlbumGranularity::DAY => request()->configs()->getValueAsString('timeline_album_date_format_day'),
-			default => request()->configs()->getValueAsString('timeline_album_date_format_year'),
-		};
-
-		return array_map(
-			fn (string $bucket_id): string => $bucket_id === 'unknown' ? 'unknown' : $this->formatBucketLabel($bucket_id, $format),
-			$bucket_ids,
-		);
-	}
-
-	/**
-	 * Formats one `bucket_id` (`"Y"`/`"Y-m"`/`"Y-m-d"`, the exact truncation
-	 * format {@see AlbumBucketComputer::truncateDate()} writes) against an
-	 * arbitrary admin-configured PHP `date()` format string — via `mktime()` +
-	 * `date()`, not a `Carbon`/`DateTime` object.
-	 */
-	private function formatBucketLabel(string $bucket_id, string $format): string
-	{
-		$parts = explode('-', $bucket_id);
-		$year = (int) $parts[0];
-		$month = (int) ($parts[1] ?? 1);
-		$day = (int) ($parts[2] ?? 1);
-
-		return date($format, mktime(0, 0, 0, $month, $day, $year));
+		return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $scheme->labels($bucket_ids), bucketable: true);
 	}
 
 	// ── GET /Albums/{album_id} ──────────────────────────────────────

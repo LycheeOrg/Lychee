@@ -24,6 +24,7 @@ use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
@@ -69,6 +70,7 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Services\TitleSplitter;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -160,35 +162,24 @@ class AlbumController extends Controller
 			is_map: $request->is_map_header(),
 		);
 
-		// The parent's own sort column/order or timeline granularity governs
-		// its *direct children's* bucket_id, not its own — so a change to any
-		// of the three needs to recompute every direct child, not just this album.
-		$sorting_or_timeline_changed = $album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']);
-		RecomputeChildAlbumBucketsJob::dispatchIf($sorting_or_timeline_changed, $album->id);
-		// The job above bulk-`upsert()`s every direct child's `bucket_id`,
-		// bypassing Eloquent events entirely - AlbumSaved below invalidates
-		// $album's own tag and its *parent's* children-listing tag, neither
-		// of which covers $album's own children-listing cache (the one the
-		// bucket recompute actually affects). Invalidate it explicitly.
-		AlbumChildrenChanged::dispatchIf($sorting_or_timeline_changed, [$album->id]);
+		// The album's effective album sort column governs its direct
+		// children's `bucket_key` (FR-092-12): only a change of that column
+		// rewrites keys. A change of only the order or the granularity
+		// rewrites nothing, but the children listing (ordering, ids) is
+		// stale: AlbumSaved below covers $album's own tag and its parent's
+		// children listing, not $album's own children listing.
+		$child_column_changed = self::effectiveColumnChanged($album, 'album_sorting_col', 'album_sorting_order');
+		RecomputeChildAlbumBucketsJob::dispatchIf($child_column_changed, $album->id);
+		AlbumChildrenChanged::dispatchIf($album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']), [$album->id]);
 
-		// This album's own *photo*-sort settings
-		// (`sorting_col`/`sorting_order`/`photo_timeline`) govern its direct
-		// photos' `bucket_id`, mirroring the album-bucket trigger above -
-		// a change to any of the three needs to recompute every direct
-		// photo's `photo_album.bucket_id`, not just this album's own.
-		// Unlike `album_sorting_col`/`album_timeline` above (columns on
-		// `albums` itself), these three columns live on `base_albums`,
-		// written via `ForwardsToParentImplementation::setAttribute()`'s
-		// forwarding to `$album->base_class` - so the dirty-tracking that
-		// matters here is `base_class`'s own, not `$album`'s.
-		$photo_sorting_or_timeline_changed = $album->base_class->wasChanged(['sorting_col', 'sorting_order', 'photo_timeline']);
-		// The job bulk-`upsert()`s every direct photo's `bucket_id`,
-		// bypassing Eloquent events entirely - it dispatches its own
-		// `AlbumPhotoSortingChanged` cache-invalidation signal internally,
-		// after that write actually lands, so eviction can't race ahead of
-		// this queued (possibly-delayed) job the way firing it here would.
-		RecomputeAlbumPhotoBucketsJob::dispatchIf($photo_sorting_or_timeline_changed, $album->id);
+		// Same for the album's photos (FR-092-11). These columns live on
+		// `base_albums`, written through `$album->base_class`, whose dirty
+		// tracking is the one that matters. The job dispatches its own
+		// cache eviction once its write landed; an order or granularity
+		// change only evicts the album's cached photo listing.
+		$photo_column_changed = self::effectiveColumnChanged($album->base_class, 'sorting_col', 'sorting_order');
+		RecomputeAlbumPhotoBucketsJob::dispatchIf($photo_column_changed, $album->id);
+		AlbumPhotoSortingChanged::dispatchIf(!$photo_column_changed && $album->base_class->wasChanged(['sorting_order', 'photo_timeline']), [$album->id]);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
@@ -498,5 +489,22 @@ class AlbumController extends Controller
 		}
 
 		return !$size_variant->is_watermarked;
+	}
+
+	/**
+	 * Whether the last save changed the effective sort column: the column
+	 * itself, or the order switching between set and unset (an album's
+	 * sorting only applies when both are set).
+	 */
+	private static function effectiveColumnChanged(Model $model, string $column, string $order): bool
+	{
+		if ($model->wasChanged($column)) {
+			return true;
+		}
+		if (!$model->wasChanged($order)) {
+			return false;
+		}
+
+		return (($model->getPrevious()[$order] ?? null) === null) !== (($model->getAttributes()[$order] ?? null) === null);
 	}
 }
