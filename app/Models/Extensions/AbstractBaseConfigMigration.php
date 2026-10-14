@@ -22,7 +22,7 @@ abstract class AbstractBaseConfigMigration extends Migration
 	public const PERCENT_RANGE = 'int:0:100';
 
 	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int,details?:string}>
+	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int,details?:string,required_keys?:string}>
 	 */
 	abstract public function getConfigs(): array;
 

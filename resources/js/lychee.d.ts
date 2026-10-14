@@ -83,6 +83,8 @@ declare namespace App {
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
+		export type FrameBoxPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
+		export type FrameTimeFormat = "24h" | "12h";
 		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 		export type InsightsPeriodType = "library" | "year" | "range";
@@ -546,10 +548,46 @@ declare namespace App {
 				};
 			}
 			namespace Frame {
+				export type FrameClockData = {
+					is_time_enabled: boolean;
+					time_format: App.Enum.FrameTimeFormat;
+					is_date_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
 				export type FrameData = {
 					timeout: number;
 					src: string;
 					srcset: string;
+					clock: App.Http.Resources.Frame.FrameClockData;
+					info: App.Http.Resources.Frame.FrameInfoData;
+					photo: App.Http.Resources.Frame.FramePhotoData | null;
+				};
+				export type FrameInfoData = {
+					is_title_enabled: boolean;
+					is_albums_enabled: boolean;
+					is_exif_enabled: boolean;
+					is_exif_exposure_enabled: boolean;
+					is_exif_camera_enabled: boolean;
+					is_exif_taken_at_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
+				export type FramePhotoData = {
+					title: string | null;
+					albums: string[] | null;
+					focal: string | null;
+					aperture: string | null;
+					shutter: string | null;
+					iso: string | null;
+					make: string | null;
+					model: string | null;
+					lens: string | null;
+					taken_at: string | null;
 				};
 			}
 			namespace GalleryConfigs {
