@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Nakonfigurujte odchádzajúce webhooky, ktoré sa spustia pri pridaní, presunutí alebo odstránení fotografií.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Zatiaľ nie sú nakonfigurované žiadne webhooky.',
+    'create_first' => 'Vytvorte svoj prvý webhook',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Názov',
+    'col_event' => 'Udalosť',
+    'col_method' => 'Metóda',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Formát',
+    'col_enabled' => 'Zapnuté',
+    'col_actions' => 'Akcie',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Fotografia pridaná',
+    'event_photo_move' => 'Fotografia presunutá',
+    'event_photo_delete' => 'Fotografia odstránená',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Query string',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Vytvoriť webhook',
+    'edit' => 'Upraviť',
+    'delete' => 'Odstrániť',
+    'cancel' => 'Zrušiť',
+    'save' => 'Uložiť',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Názov',
+    'field_name_placeholder' => 'napr. Môj webhook',
+    'field_event' => 'Udalosť',
+    'field_method' => 'HTTP metóda',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Formát payloadu',
+    'field_enabled' => 'Zapnuté',
+    'field_secret' => 'Tajný kľúč',
+    'field_secret_placeholder' => 'Ponechajte prázdne pre zachovanie existujúceho tajného kľúča',
+    'field_secret_header' => 'Hlavička tajného kľúča',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Odoslať ID fotografie',
+    'field_send_album_id' => 'Odoslať ID albumu',
+    'field_send_title' => 'Odoslať názov',
+    'field_send_size_variants' => 'Odoslať veľkostné varianty',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Vytvoriť webhook',
+    'modal_edit_title' => 'Upraviť webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Odstrániť webhook',
+    'confirm_delete_message' => 'Naozaj chcete odstrániť webhook ":name"? Túto akciu nie je možné vrátiť späť.',
+    'delete_warning' => 'Túto akciu nie je možné vrátiť späť.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Webhook bol úspešne vytvorený.',
+    'updated' => 'Webhook bol úspešne aktualizovaný.',
+    'deleted' => 'Webhook bol úspešne odstránený.',
+    'error_load' => 'Webhooky sa nepodarilo načítať.',
+    'error_save' => 'Webhook sa nepodarilo uložiť.',
+    'error_delete' => 'Webhook sa nepodarilo odstrániť.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Tajný kľúč nastavený',
+    'no_secret' => 'Bez tajného kľúča',
 ];
