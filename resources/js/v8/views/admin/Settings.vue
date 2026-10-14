@@ -65,7 +65,13 @@
 									class="configDescription w-full text-highlighted pl-6 pb-8"
 									v-html="tCatDesc({ key: config.cat, description: config.description })"
 								></div>
-								<ConfigGroup :configs="config.configs" :modified="modified" @filled="update" @reset="reset" />
+								<ConfigGroup
+									:configs="config.configs"
+									:all-configs="allConfigs"
+									:modified="modified"
+									@filled="update"
+									@reset="reset"
+								/>
 							</Fieldset>
 						</template>
 					</div>
@@ -110,6 +116,8 @@ const modified = ref<App.Http.Resources.Editable.EditableConfigResource[]>([]);
 
 const { spliter } = useSplitter();
 const { tCatName, tCatDesc } = useTranslation();
+
+const allConfigs = computed(() => configs.value?.flatMap((c) => c.configs) ?? []);
 
 const isCollapsed = computed(() => {
 	return tab.value === "" || tab.value === "CssJs";

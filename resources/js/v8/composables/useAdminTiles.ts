@@ -144,6 +144,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, globalRightsStore: 
 			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (rights.value?.modules.is_nsfw_classifier_enabled ?? false)),
 		},
 		{
+			key: "nsfw-findings",
+			group: "extensions",
+			label: "admin-dashboard.nsfw_findings.title",
+			icon: "lucide:shield-alert",
+			to: "/admin/nsfw-findings",
+			isExternal: false,
+			visible: computed(() => (rights.value?.settings.can_edit ?? false) && (rights.value?.modules.is_nsfw_classifier_enabled ?? false)),
+		},
+		{
 			key: "watermark-preview",
 			group: "extensions",
 			label: "watermark.preview.title",

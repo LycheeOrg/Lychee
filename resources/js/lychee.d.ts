@@ -83,6 +83,8 @@ declare namespace App {
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
+		export type FrameBoxPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
+		export type FrameTimeFormat = "24h" | "12h";
 		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 		export type InsightsPeriodType = "library" | "year" | "range";
@@ -136,6 +138,8 @@ declare namespace App {
 		export type MessageType = "info" | "warning" | "error";
 		export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
 		export type MetricsAction = "visit" | "favourite" | "download" | "shared";
+		export type ModerationEvent = "held" | "approved";
+		export type ModerationSource = "upload" | "nsfw_scan" | "admin";
 		export type NsfwBlockFindingAction = "block" | "moderate" | "approve";
 		export type NsfwDetectionLabel =
 			| "FEMALE_GENITALIA_COVERED"
@@ -346,8 +350,22 @@ declare namespace App {
 					per_page: number;
 					total: number;
 				};
+				export type PaginatedModerationHistoryResource = {
+					events: App.Http.Resources.Models.ModerationEventResource[];
+					current_page: number;
+					last_page: number;
+					per_page: number;
+					total: number;
+				};
 				export type PaginatedModerationResource = {
 					photos: App.Http.Resources.Models.ModerationResource[];
+					current_page: number;
+					last_page: number;
+					per_page: number;
+					total: number;
+				};
+				export type PaginatedNsfwFindingsResource = {
+					photos: App.Http.Resources.Models.NsfwFindingResource[];
 					current_page: number;
 					last_page: number;
 					per_page: number;
@@ -546,10 +564,46 @@ declare namespace App {
 				};
 			}
 			namespace Frame {
+				export type FrameClockData = {
+					is_time_enabled: boolean;
+					time_format: App.Enum.FrameTimeFormat;
+					is_date_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
 				export type FrameData = {
 					timeout: number;
 					src: string;
 					srcset: string;
+					clock: App.Http.Resources.Frame.FrameClockData;
+					info: App.Http.Resources.Frame.FrameInfoData;
+					photo: App.Http.Resources.Frame.FramePhotoData | null;
+				};
+				export type FrameInfoData = {
+					is_title_enabled: boolean;
+					is_albums_enabled: boolean;
+					is_exif_enabled: boolean;
+					is_exif_exposure_enabled: boolean;
+					is_exif_camera_enabled: boolean;
+					is_exif_taken_at_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
+				export type FramePhotoData = {
+					title: string | null;
+					albums: string[] | null;
+					focal: string | null;
+					aperture: string | null;
+					shutter: string | null;
+					iso: string | null;
+					make: string | null;
+					model: string | null;
+					lens: string | null;
+					taken_at: string | null;
 				};
 			}
 			namespace GalleryConfigs {
@@ -1235,6 +1289,17 @@ declare namespace App {
 					title: string;
 					url: string | null;
 				};
+				export type ModerationEventResource = {
+					id: number;
+					photo_id: string;
+					photo_title: string;
+					thumb_url: string | null;
+					owner_username: string;
+					event: App.Enum.ModerationEvent;
+					source: App.Enum.ModerationSource;
+					username: string | null;
+					created_at: string;
+				};
 				export type ModerationResource = {
 					photo_id: string;
 					title: string;
@@ -1257,6 +1322,17 @@ declare namespace App {
 					is_block: boolean;
 					is_review: boolean;
 					is_sensitive: boolean;
+				};
+				export type NsfwFindingResource = {
+					photo_id: string;
+					title: string;
+					thumb_url: string | null;
+					owner_username: string;
+					nsfw_status: string | null;
+					is_validated: boolean;
+					detections: App.Http.Resources.Models.NsfwDetectionResource[];
+					albums: App.Http.Resources.Models.PhotoAlbumResource[];
+					scanned_at: string | null;
 				};
 				export type PanoramaResource = {
 					full_width: number;

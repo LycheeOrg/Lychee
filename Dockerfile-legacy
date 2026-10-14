@@ -50,7 +50,7 @@ RUN composer install \
 # ============================================================================
 # Stage 2: Node.js Build for Frontend Assets
 # ============================================================================
-FROM node:26-alpine@sha256:0b36e8c136b94cd4fcf02188228e76c31ad5872eef3fec8cbd2eee500cfd9e80 AS node
+FROM node:26-alpine@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS node
 
 # Build argument to control dev vs production build
 ARG NODE_ENV
@@ -76,7 +76,7 @@ RUN npm run build
 
 # TODO: migrate to trixie once php8.5-zip is fixed.
 # TODO: Fix Imagick sed once we update the version of Imagick.
-FROM debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a AS base
+FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS base
 
 LABEL maintainer="lycheeorg"
 LABEL org.opencontainers.image.title="Lychee"

@@ -207,6 +207,23 @@ class SettingsController extends Controller
 		'photo_minimap_idle_opacity',
 		'photo_minimap_idle_opacity_mobile',
 		'photo_minimap_fade_delay',
+		'mod_frame_clock_time_enabled',
+		'mod_frame_clock_time_format',
+		'mod_frame_clock_date_enabled',
+		'mod_frame_clock_position',
+		'mod_frame_clock_background_color',
+		'mod_frame_clock_background_opacity',
+		'mod_frame_clock_opacity',
+		'mod_frame_info_title_enabled',
+		'mod_frame_info_albums_enabled',
+		'mod_frame_info_exif_enabled',
+		'mod_frame_info_exif_exposure_enabled',
+		'mod_frame_info_exif_camera_enabled',
+		'mod_frame_info_exif_taken_at_enabled',
+		'mod_frame_info_position',
+		'mod_frame_info_background_color',
+		'mod_frame_info_background_opacity',
+		'mod_frame_info_opacity',
 	];
 
 	/**

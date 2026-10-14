@@ -244,9 +244,12 @@ class Album extends BaseAlbum implements Node
 	 * Returns the relationship between this album and all photos incl.
 	 * photos which are recursive children of this album.
 	 */
-	public function all_photos(): HasManyPhotosRecursively
+	/**
+	 * @param bool $include_nsfw if false, photos in sensitive sub-albums are left out
+	 */
+	public function all_photos(bool $include_nsfw = true): HasManyPhotosRecursively
 	{
-		return new HasManyPhotosRecursively($this);
+		return new HasManyPhotosRecursively($this, $include_nsfw);
 	}
 
 	public function thumb(): HasAlbumThumb

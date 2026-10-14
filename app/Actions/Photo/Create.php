@@ -221,6 +221,7 @@ class Create
 				Shared\NotifyAlbums::class,
 				Standalone\AutoScanFacesOnUpload::class,
 				Standalone\AutoScanNsfwOnUpload::class,
+				Standalone\RecordUploadHold::class,
 			];
 
 			return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
@@ -319,6 +320,7 @@ class Create
 			Shared\UploadSizeVariantsToS3::class,
 			Shared\GeodecodeLocation::class,
 			Shared\ExtractColourPalette::class,
+			Standalone\RecordUploadHold::class,
 		];
 		$stand_alone_dto = $this->executePipeOnDTO($stand_alone_pipes, $stand_alone_dto);
 

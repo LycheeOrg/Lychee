@@ -84,4 +84,7 @@ return [
         'legend_mark_album' => 'آلبوم عکس به‌عنوان حساس علامت‌گذاری می‌شود.',
         'legend_nothing' => 'هیچ اقدامی انجام نمی‌شود.',
     ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
+    ],
 ];

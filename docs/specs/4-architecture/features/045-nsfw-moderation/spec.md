@@ -533,6 +533,9 @@ config_keys:
 
 ## Appendix
 
+### Later features
+- [Feature 089](../089-moderation-history-nsfw-review/spec.md) records the holds and approvals made by the NSFW callback in the moderation history, adds a v8 findings page (`GET`/`DELETE NsfwDetection/findings`, one row per photo; dismissal deletes `nsfw_detections` rows, ADR-089-02) and fixes the no-album fallback (`ai_vision_nsfw_sensitive_no_album_action = moderate`), which the clean-result branch of `applyActions()` used to undo (FR-089-15).
+
 ### Trust-Tier × Finding-Tier Action Matrix (detailed)
 
 This matrix is the core decision engine for the NSFW action system. It replaces the previous per-finding-tier config approach with a unified trust-aware model.
