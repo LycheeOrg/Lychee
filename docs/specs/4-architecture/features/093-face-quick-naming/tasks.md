@@ -9,7 +9,7 @@ _Last updated: 2026-10-14_
 > When new high- or medium-impact questions arise during execution, add them to the feature's [open-questions.md](open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/6-decisions/` reflect the clarified behaviour.
 
 ## Checklist
-- [ ] T-093-01 – Setting `ai_vision_face_queue_limit` migration and translations (F-093-02, NFR-093-06).  
+- [x] T-093-01 – Setting `ai_vision_face_queue_limit` migration and translations (F-093-02, NFR-093-06).  
   _Intent:_ Add the `BaseConfigMigration` and title/details in all `lang/*/all_settings.php`.  
   _Verification commands:_  
   - `php artisan test --filter=ConfigIntegrity`  
