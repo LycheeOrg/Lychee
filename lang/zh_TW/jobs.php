@@ -12,8 +12,8 @@ return [
     'success' => '成功',
     'failure' => '失敗',
     'started' => '已開始',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'col_date' => '日期',
+    'col_status' => '狀態',
+    'col_username' => '使用者',
+    'col_job' => '工作',
 ];
