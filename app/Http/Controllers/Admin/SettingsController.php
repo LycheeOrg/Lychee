@@ -80,12 +80,14 @@ class SettingsController extends Controller
 	];
 
 	/**
-	 * Config keys whose change only changes the photo read scheme
-	 * (FR-092-13): every cached photo listing is flushed, no key rewritten.
+	 * Config keys whose change only changes the photo read scheme or the
+	 * row order (FR-092-13): every cached photo listing is flushed, no key
+	 * rewritten.
 	 */
 	public const PHOTO_LISTING_COARSE_FLUSH_CONFIGS = [
 		'timeline_photos_granularity',
 		'photo_title_bucket_prefix_length',
+		'sorting_photos_order',
 	];
 
 	/**

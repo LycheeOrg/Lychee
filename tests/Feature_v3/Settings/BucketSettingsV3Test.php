@@ -74,6 +74,35 @@ class BucketSettingsV3Test extends BaseApiWithDataTest
 	}
 
 	/**
+	 * S-092-20: an instance photo order change shows in an album inheriting
+	 * the default, through a warm cache, with no job.
+	 */
+	public function testSortOrderChangeFlushesListingsWithoutJob(): void
+	{
+		Configs::set('sorting_photos_col', 'created_at');
+		Configs::set('sorting_photos_order', 'ASC');
+		Configs::set('timeline_photos_granularity', 'year');
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => '2023-05-01 10:00:00']);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => '2024-05-01 10:00:00']);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($before);
+		self::assertSame(['2023', '2024'], $before->json('bucket_ids'));
+
+		Queue::fake([RecomputeAllPhotoBucketsJob::class, RecomputeAlbumPhotoBucketsJob::class]);
+		$this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'sorting_photos_order', 'value' => 'DESC']],
+		])->assertOk();
+		Queue::assertNothingPushed();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($after);
+		self::assertSame(['2024', '2023'], $after->json('bucket_ids'));
+	}
+
+	/**
 	 * S-092-09: a sort column change rewrites every key, then the listing
 	 * shows the new buckets through a warm cache.
 	 */

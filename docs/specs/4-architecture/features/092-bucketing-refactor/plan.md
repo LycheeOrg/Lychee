@@ -2,8 +2,8 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
-_Status:_ Draft  
-_Last updated:_ 2026-10-12
+_Status:_ Testing  
+_Last updated:_ 2026-10-14
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -87,6 +87,10 @@ This machine runs the Q-092-01 baseline queries about 1.9× slower than the owne
 
 Prompt: "implement all increments in one go". T-092-04 … T-092-21 implemented in task order, tests first per task (existing classes rewritten for granularity-free keys; new `RecomputeAllAlbumBucketsJobTest`, `RecomputeAllPhotoBucketsJobTest`, `BucketSettingsV3Test`). Commands: `php artisan test --filter=<Class>` per task, then one combined `--filter='(…)'` run; `vendor/bin/php-cs-fixer fix`; `vendor/bin/phpstan analyse`; `npm run format`; `npm run check`; `php artisan typescript:transform`; scratch benchmark `bench.php`/`bench2.php` (session scratchpad, not committed). `RecomputeRootAlbumBucketsJob` and its test removed per the 2026-10-12 approval.
 
+### Intent log — 2026-10-14 (spec review)
+
+Prompt: "look through the specifications and make sure there is no clarifications required or ambiguities", then "A A A A and fix the rest". Review of spec against the implemented code logged Q-092-04 … 07 (all Option A): FR-092-12 bulk album rename, NFR-092-01 restated as a speed-up, FR-092-05 `unknown` per-row ids outside `own`, FR-092-13 `sorting_photos_order`. Tidied: FR-092-01 duplicate wording, FR-092-04 `OWNER_ID` (not an album sort column), duplicate Fixtures section, plan status, T-092-19 reopened (browser check not run). Implemented T-092-22 (`RenameAlbums` dispatches `AlbumSaved` for renamed albums; `AlbumKeysWriteTest`) and T-092-23 (`sorting_photos_order` in `SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS`; `BucketSettingsV3Test`). Commands: `php artisan test --filter='(AlbumKeysWriteTest|PhotoKeysWriteTest|BucketSettingsV3Test|UpdateSettingsTest|RenameTest|RenamerTest|AlbumSortingBucketDispatchTest|RecomputeAlbumStatsJobBucketTest)'` → 95 passed; `vendor/bin/php-cs-fixer fix`; `make phpstan` (only the 46 inherited `lang/*/all_settings.php` duplicate keys).
+
 ## Increment Map
 
 1. **I1 – Schema and backfill**
@@ -141,6 +145,10 @@ Prompt: "implement all increments in one go". T-092-04 … T-092-21 implemented 
 13. **I12 – Documentation and quality gate**
     - _Goal:_ knowledge map, roadmap, Feature 064/066/071 spec references, NFR benchmark, drift gate.
     - _Commands:_ every class touched above, `vendor/bin/php-cs-fixer fix`, `make phpstan`, `php artisan typescript:transform` (no diff), scratch benchmark.
+14. **I13 – Post-review gaps (Q-092-04 … Q-092-07, owner 2026-10-14)**
+    - _Goal:_ FR-092-12 bulk album rename (S-092-19), FR-092-13 `sorting_photos_order` (S-092-20); Q-092-05/06 are spec-only (NFR-092-01 restated as a ratio, FR-092-05 records `unknown` per-row ids outside the `own` scope).
+    - _Steps:_ tests first; `RenameAlbums` dispatches `AlbumSaved` for renamed albums; `sorting_photos_order` joins `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`.
+    - _Commands:_ `php artisan test --filter=AlbumKeysWriteTest`, `--filter=BucketSettingsV3Test`, `--filter=UpdateSettingsTest`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 
 ## Scenario Tracking
 
@@ -164,6 +172,8 @@ Prompt: "implement all increments in one go". T-092-04 … T-092-21 implemented 
 | S-092-16 | I11 / T-092-19 | browser check |
 | S-092-17 | I5 / T-092-08 | `RecomputeBucketsCommandTest` |
 | S-092-18 | I10 / T-092-18 | `ManagedCachePhotoListingInvalidatorTest` |
+| S-092-19 | I13 / T-092-22 | `AlbumKeysWriteTest` |
+| S-092-20 | I13 / T-092-23 | `BucketSettingsV3Test` |
 
 ## Analysis Gate
 

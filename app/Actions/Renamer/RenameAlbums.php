@@ -8,6 +8,7 @@
 
 namespace App\Actions\Renamer;
 
+use App\Events\AlbumSaved;
 use App\Metadata\Renamer\AlbumRenamer;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -44,6 +45,16 @@ class RenameAlbums
 				$album_instance = new BaseAlbumImpl();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($album_instance, $values, 'id');
+
+				// FR-092-12: the bulk write bypasses Eloquent, so every renamed
+				// album gets the same `AlbumSaved` as `PATCH /Album`: its own
+				// `bucket_key` is recomputed and its parent's listing flushed.
+				$renamed = $albums->filter(fn (Album $album, int $index) => $values[$index]['title'] !== $album->title)->values();
+				AlbumSaved::dispatchIf(
+					$renamed->isNotEmpty(),
+					$renamed->map(fn (Album $album) => $album->id)->all(),
+					$renamed->map(fn (Album $album) => $album->parent_id)->all(),
+				);
 			});
 	}
 

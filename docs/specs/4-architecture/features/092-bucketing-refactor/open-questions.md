@@ -9,6 +9,10 @@ Open questions for [Feature 092](spec.md). Log every high- and medium-impact que
 | ~~Q-092-01~~ | 092 – Bucketing refactor | High | What does a stored bucket id hold? (A finest-grained key per sort column, granularity applied at read time as a SQL prefix, SQL for every source · B today's model with the missing recompute triggers · C no stored id, computed in SQL at read time) | Resolved (Option A; owner, 2026-10-12; spec FR-092-02 … FR-092-09, ADR-092-01) | 2026-10-12 | 2026-10-12 |
 | ~~Q-092-02~~ | 092 – Bucketing refactor | High | Time basis of date buckets (A capture-local time, stored local key on `photos` · B UTC everywhere) | Resolved (Option A; owner, 2026-10-12; spec FR-092-01, FR-092-18, ADR-092-02) | 2026-10-12 | 2026-10-12 |
 | ~~Q-092-03~~ | 092 – Bucketing refactor | High | Persistence changes and file replacement (A rename `bucket_id` → `bucket_key`, two new `photos` columns, backfill migrations, `RecomputeRootAlbumBucketsJob` replaced by `RecomputeAllAlbumBucketsJob` · B same, keeping the column name `bucket_id`) | Resolved (Option A; owner, 2026-10-12; spec FR-092-13, FR-092-16, plan Approvals) | 2026-10-12 | 2026-10-12 |
+| ~~Q-092-04~~ | 092 – Bucketing refactor | Medium | The bulk album renamer (`RenameAlbums`) rewrites album titles with `batch()->update()`, so `albums.bucket_key` (title-sorted parents) is never recomputed and album listings are not flushed (A recompute the renamed albums' keys and flush · B follow-up feature) | Resolved (Option A; owner, 2026-10-14; spec FR-092-12, S-092-19) | 2026-10-14 | 2026-10-14 |
+| ~~Q-092-05~~ | 092 – Bucketing refactor | Medium | NFR-092-01 states absolute times (≤ 45 / ≤ 20 ms); the drift gate measured 81 / 33 ms and passed it as a speed-up ratio (A restate as a ratio against the old query on the same machine · B keep absolute, re-measure on the reference machine) | Resolved (Option A; owner, 2026-10-14; spec NFR-092-01) | 2026-10-14 | 2026-10-14 |
+| ~~Q-092-06~~ | 092 – Bucketing refactor | Medium | Tag, person and search album listings now return `unknown` as every per-row album `bucket_id`, which no FR describes (A record it in FR-092-05 · B keep a computed id) | Resolved (Option A; owner, 2026-10-14; spec FR-092-05) | 2026-10-14 | 2026-10-14 |
+| ~~Q-092-07~~ | 092 – Bucketing refactor | Medium | FR-092-13 is silent on `sorting_photos_order`; no settings list flushes cached photo listings when it changes (A add it to the photo-listing flush · B leave out of scope) | Resolved (Option A; owner, 2026-10-14; spec FR-092-13, S-092-20) | 2026-10-14 | 2026-10-14 |
 
 ## Question Details
 
@@ -84,3 +88,56 @@ Measured on SQLite 3.46 (scratchpad, synthetic data: 300,000 photos, one album w
   - ❌ A missed reader keeps working and returns full keys.
 
 **Resolution:** Option A. The owner approved the schema changes and the removal of `app/Jobs/RecomputeRootAlbumBucketsJob.php` and `tests/Precomputing/CoverSelection/RecomputeRootAlbumBucketsJobTest.php`. Recorded in [spec.md](spec.md) FR-092-13, FR-092-16 and [plan.md](plan.md) Approvals.
+
+### ~~Q-092-04~~ – Bulk album renamer and album bucket keys
+
+**Context:** FR-092-04 makes `albums.bucket_key` depend on the album title when the parent sorts by `TITLE` (`date_prefix` → title date, `alphabetical` → `title_base`). `PATCH /Album` recomputes it through `AlbumSaved` → `RecomputeAlbumStatsJob`. The bulk renamer (`RenameAlbums`, called by `RenamerController`) writes `title`/`title_base` with `batch()->update()` and dispatches nothing, so the key and the parent's cached children listing go stale. This is the album side of D-092-06, which FR-092-10 fixes for photos only.
+
+- **Option A (chosen):** FR-092-12 gains "a bulk album rename recomputes the renamed albums' `bucket_key` and flushes their parents' children listings"; `RenameAlbums` dispatches the existing per-album recompute (or `AlbumSaved`) for albums whose title changed.
+  - ✅ Closes the same defect class as D-092-06 for albums.
+  - ✅ Reuses an existing job and event, no new code path.
+  - ❌ One job per renamed album (bounded by the renamer's selection).
+- **Option B:** Leave it out of scope and record it as a follow-up.
+  - ✅ No scope growth.
+  - ❌ Stale album buckets after a bulk rename until the next stats recompute.
+
+**Resolution:** Option A. FR-092-12 now requires a title change through `PATCH /Album` or `RenameAlbums` to recompute the album's own `bucket_key` and flush its parent's children listing; scenario S-092-19.
+
+### ~~Q-092-05~~ – NFR-092-01 measured as absolute or relative
+
+**Context:** NFR-092-01 requires ≤ 45 ms (non-admin) and ≤ 20 ms (admin) for the bucket list of a 60,000-photo album. On the implementation machine the old query takes 339 / 199 ms (1.9× slower than the owner's 173 / 110 ms) and the new one 81 / 33 ms. The drift gate passed the NFR by its ratio (4.2× / 6.0× ≥ the required 3.8× / 5.5×), which the NFR does not say.
+
+- **Option A (chosen):** Restate NFR-092-01 as a speed-up against the old query on the same machine and data (≥ 3.8× non-admin, ≥ 5.5× admin), keeping 45 / 20 ms as the reference-machine figures.
+  - ✅ Measurable on any machine; matches what was measured.
+  - ❌ The NFR no longer states a hard latency.
+- **Option B:** Keep the absolute figures and have the owner re-run the scratch benchmark on the reference machine.
+  - ✅ The NFR stays a hard latency.
+  - ❌ Only verifiable on one machine.
+
+**Resolution:** Option A. NFR-092-01 is now a speed-up against the pre-feature query on the same machine (≥ 3.8× non-admin, ≥ 5.5× admin), with 45 / 20 ms kept as the reference-machine figures.
+
+### ~~Q-092-06~~ – Per-row album bucket ids outside the `own` scope
+
+**Context:** FR-092-05 defines album ids for the children and root (`own`) listings only. During implementation, tag, person and search album listings (`BuildAlbumDataResource` without a scheme) were changed to return `unknown` for every per-row `bucket_id`. Before, they echoed the stored id computed for the album's own parent. The response shape is unchanged (NFR-092-06), but the values change, and no FR says so. The plan notes that no client reads per-row album ids (`albumBucketBoundaries.ts` reads only the `buckets` tier).
+
+- **Option A (chosen):** Add to FR-092-05: "listings without a governing parent (tag, person, search) return `unknown` per-row album ids".
+  - ✅ The spec matches the code; such listings have no parent sort to bucket by.
+  - ❌ Any future client reading per-row ids there gets no grouping.
+- **Option B:** Compute ids from the instance default album sort for those listings.
+  - ✅ Non-trivial ids everywhere.
+  - ❌ New code path, and the ids would not match any `buckets` tier.
+
+**Resolution:** Option A. FR-092-05 now states that album listings with no governing parent (tag, person, search) return `unknown` per-row album ids.
+
+### ~~Q-092-07~~ – `sorting_photos_order` and cached photo listings
+
+**Context:** FR-092-13 lists the settings that recompute keys or flush photo listings and covers `sorting_albums_order` for albums, but not `sorting_photos_order`. `SettingsController` flushes photo listings for `timeline_photos_granularity` and `photo_title_bucket_prefix_length` only, so after changing the instance photo order, cached listings of albums inheriting it keep the old row and bucket order until they expire. FR-092-11 already flushes on an album's own `sorting_order` change.
+
+- **Option A (chosen):** Add `sorting_photos_order` to FR-092-13's "flush every cached photo listing, no key rewritten" list (and to `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`).
+  - ✅ Consistent with FR-092-11 and the album side.
+  - ❌ Slight scope growth (one config key, one test).
+- **Option B:** Leave it out of scope (it predates this feature) and record a follow-up.
+  - ✅ No scope growth.
+  - ❌ Stale order after an instance-wide change.
+
+**Resolution:** Option A. FR-092-13 now lists `sorting_photos_order` among the settings that flush every cached photo listing without rewriting keys; scenario S-092-20.

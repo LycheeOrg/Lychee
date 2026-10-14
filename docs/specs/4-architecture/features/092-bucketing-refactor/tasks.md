@@ -117,8 +117,9 @@ _Last updated: 2026-10-14_
   _Verification commands:_  
   - `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
 
-- [x] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
+- [ ] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
   _Intent:_ `tileDayKey()` reads `taken_at` in the tile's `taken_at_orig_tz`; browser check on a scratch instance.  
+  _Status:_ code done 2026-10-14 (`npm run check` green); the S-092-16 browser check has not been run yet, so the task stays open.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
@@ -134,9 +135,21 @@ _Last updated: 2026-10-14_
   - `make phpstan`  
   - `php artisan typescript:transform`
 
+- [x] T-092-22 – Album title bulk rename recomputes album keys (F-092-12, S-092-19).  
+  _Intent:_ test first in `tests/Feature_v3/Album/AlbumKeysWriteTest.php` (bulk renamer gives a child of a `date_prefix` title-sorted parent a dated title → child's `bucket_key` is the title date, `AlbumSaved` dispatched for it); then `RenameAlbums` dispatches `AlbumSaved` for albums whose title changed (Q-092-04).  
+  _Verification commands:_  
+  - `php artisan test --filter=AlbumKeysWriteTest`  
+  - `make phpstan`
+
+- [x] T-092-23 – `sorting_photos_order` flushes photo listings (F-092-13, S-092-20).  
+  _Intent:_ test first in `BucketSettingsV3Test` (change → `PhotoListingCacheFlushRequested`, no all-row job); then add the key to `SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS` (Q-092-07).  
+  _Verification commands:_  
+  - `php artisan test --filter=BucketSettingsV3Test`  
+  - `php artisan test --filter=UpdateSettingsTest`
+
 ## Notes / TODOs
 
-- FR coverage: FR-01/02 → T-02…04; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16; FR-13 → T-08, T-17; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
+- FR coverage: FR-01/02 → T-02…04; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
 - Test classes in `tests/Feature_v2` are updated where they encode the old triggers; no new class is added there.
 - T-092-19: the browser check of S-092-16 was not run in the implementation session (no scratch instance); the helper was exercised with esbuild under `TZ=Asia/Tokyo` instead. Tracked in plan.md Follow-ups.
 - Drift gate, benchmark and adjustments: plan.md § Implementation Drift Gate.
