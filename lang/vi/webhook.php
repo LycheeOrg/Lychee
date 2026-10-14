@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Cấu hình các webhook gửi đi được kích hoạt khi ảnh được thêm, di chuyển hoặc xóa.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Chưa cấu hình webhook nào.',
+    'create_first' => 'Tạo webhook đầu tiên của bạn',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Tên',
+    'col_event' => 'Sự kiện',
+    'col_method' => 'Phương thức',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Định dạng',
+    'col_enabled' => 'Đã bật',
+    'col_actions' => 'Thao tác',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Đã thêm ảnh',
+    'event_photo_move' => 'Đã di chuyển ảnh',
+    'event_photo_delete' => 'Đã xóa ảnh',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Chuỗi truy vấn',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Tạo webhook',
+    'edit' => 'Sửa',
+    'delete' => 'Xóa',
+    'cancel' => 'Hủy',
+    'save' => 'Lưu',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Tên',
+    'field_name_placeholder' => 'vd: Webhook của tôi',
+    'field_event' => 'Sự kiện',
+    'field_method' => 'Phương thức HTTP',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
+    'field_format' => 'Định dạng payload',
+    'field_enabled' => 'Đã bật',
     'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_secret_placeholder' => 'Để trống để giữ secret hiện tại',
+    'field_secret_header' => 'Header secret',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Gửi ID ảnh',
+    'field_send_album_id' => 'Gửi ID album',
+    'field_send_title' => 'Gửi tiêu đề',
+    'field_send_size_variants' => 'Gửi các biến thể kích thước',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Tạo webhook',
+    'modal_edit_title' => 'Sửa webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Xóa webhook',
+    'confirm_delete_message' => 'Bạn có chắc muốn xóa webhook ":name"? Thao tác này không thể hoàn tác.',
+    'delete_warning' => 'Thao tác này không thể hoàn tác.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Đã tạo webhook thành công.',
+    'updated' => 'Đã cập nhật webhook thành công.',
+    'deleted' => 'Đã xóa webhook thành công.',
+    'error_load' => 'Không thể tải webhook.',
+    'error_save' => 'Không thể lưu webhook.',
+    'error_delete' => 'Không thể xóa webhook.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Đã đặt secret',
+    'no_secret' => 'Không có secret',
 ];
