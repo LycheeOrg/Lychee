@@ -36,7 +36,7 @@ return [
     'update' => [
         'title' => 'وضعیت به‌روزرسانی',
         'update_available' => 'نسخهٔ جدیدتری در دسترس است (فعلی: :current، آخرین: :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'نصب شما :count کامیت از master عقب است.',
     ],
     'nsfw_config' => [
         'title' => 'تشخیص محتوای نامناسب و نظارت',
@@ -85,6 +85,6 @@ return [
         'legend_nothing' => 'هیچ اقدامی انجام نمی‌شود.',
     ],
     'nsfw_findings' => [
-        'title' => 'NSFW findings',
+        'title' => 'یافته‌های NSFW',
     ],
 ];
