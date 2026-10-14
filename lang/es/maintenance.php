@@ -6,7 +6,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Mantenimiento',
-    'description' => 'You will find on this page, all the required actions to keep your Lychee installation running smooth and nicely.',
+    'description' => 'En esta página encontrarás todas las acciones necesarias para que tu instalación de Lychee funcione de forma fluida y correcta.',
     'cleaning' => [
         'title' => 'Limpieza %s',
         'result' => '%s eliminado.',
@@ -80,7 +80,7 @@ return [
     ],
     'fulfill-precompute' => [
         'title' => 'Campos precalculados del álbum',
-        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
+        'description' => 'Se encontraron %d álbumes con campos precalculados ausentes.<br/><br/>Equivale a ejecutar: php artisan lychee:recompute-album-fields',
         'button' => 'Cálculo de campos',
     ],
     'flush-queue' => [
@@ -90,7 +90,7 @@ return [
     ],
     'backfill-album-sizes' => [
         'title' => 'Estadísticas sobre el tamaño de los álbumes',
-        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
+        'description' => 'Se encontraron %d álbumes sin estadísticas de tamaño.<br/><br/>Equivale a ejecutar: php artisan lychee:recompute-album-sizes',
         'button' => 'Tamaños de los servidores',
     ],
     'face_quality' => [
@@ -153,10 +153,10 @@ return [
         'success' => 'Los estados del escaneo facial se han restablecido correctamente.',
     ],
     'purge-orphan-face-embeddings' => [
-        'title' => 'Purge Orphan Face Embeddings',
-        'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
-        'action' => 'Purge Now',
-        'success' => 'Orphaned face embeddings purged successfully.',
+        'title' => 'Purgar embeddings de caras huérfanos',
+        'description' => 'Es posible que el servicio AI Vision conserve hasta %d embedding(s) que ya no existen en Lychee. Al purgar, se enviará la lista actual de caras a AI Vision y se eliminará permanentemente todo lo que sobre.',
+        'action' => 'Purgar ahora',
+        'success' => 'Los embeddings de caras huérfanos se purgaron correctamente.',
     ],
     'bulk-scan-nsfw' => [
         'title' => 'Escaneo masivo de contenido no apto para el trabajo (NSFW)',
