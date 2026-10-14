@@ -7,108 +7,118 @@
 	</UHeader>
 
 	<UCard class="max-w-5xl mx-auto mt-4">
-		<p class="text-muted mb-6 text-center">{{ $t("moderation.description") }}</p>
+		<UTabs v-model="activeTab" :items="tabItems" class="w-full" variant="link" :dir="isLTR() ? 'ltr' : 'rtl'">
+			<template #pending>
+				<p class="text-muted mb-6 text-center">{{ $t("moderation.description") }}</p>
 
-		<!-- Loading initial -->
-		<div v-if="loading && photos.length === 0" class="flex justify-center py-12">
-			<LycheeLoadingIcon fast class="text-3xl" />
-		</div>
-
-		<!-- Empty state -->
-		<div v-else-if="!loading && photos.length === 0" class="text-center py-12">
-			<div class="text-muted mb-4">
-				<UIcon name="lucide:check-circle" class="text-4xl" />
-			</div>
-			<p class="text-muted">{{ $t("moderation.no_pending") }}</p>
-		</div>
-
-		<!-- Bulk actions bar (always visible to prevent layout shift) -->
-		<div class="flex items-center gap-2 mb-3 px-1 h-8">
-			<span class="text-muted text-sm">{{ selectedIds.size }} {{ $t("moderation.selected") }}</span>
-			<template v-if="selectedIds.size > 0">
-				<UButton
-					variant="solid"
-					icon="lucide:check"
-					color="success"
-					size="sm"
-					:label="$t('moderation.approve_selected')"
-					@click="approveSelected"
-				/>
-				<UButton
-					variant="solid"
-					icon="lucide:trash"
-					color="error"
-					size="sm"
-					:label="$t('moderation.delete_selected')"
-					@click="deleteSelected"
-				/>
-			</template>
-		</div>
-
-		<!-- Photos table -->
-		<UTable v-if="photos.length > 0" :data="photos" :columns="columns" sticky class="max-h-[65vh] text-sm">
-			<template #select-header>
-				<UCheckbox :model-value="allSelected" @update:model-value="toggleAll" />
-			</template>
-			<template #select-cell="{ row }">
-				<UCheckbox :model-value="selectedIds.has(row.original.photo_id)" @update:model-value="() => toggleOne(row.original.photo_id)" />
-			</template>
-
-			<template #thumbnail-cell="{ row }">
-				<img
-					v-if="row.original.thumb_url"
-					:src="row.original.thumb_url"
-					:alt="row.original.title"
-					class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80"
-					@click="openPhoto(row.original.photo_id)"
-				/>
-				<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
-			</template>
-
-			<template #album-cell="{ row }">
-				<RouterLink
-					v-if="row.original.album_title"
-					:to="{ name: 'album', params: { albumId: row.original.album_id } }"
-					class="text-primary-400 hover:underline"
-				>
-					{{ row.original.album_title }}
-				</RouterLink>
-				<span v-else class="text-muted">—</span>
-			</template>
-
-			<template #created_at-cell="{ row }">
-				<span class="whitespace-nowrap">{{ new Date(row.original.created_at).toLocaleDateString() }}</span>
-			</template>
-
-			<template #nsfw_status-cell="{ row }">
-				<UBadge v-if="row.original.nsfw_status === 'review'" color="warning" class="text-xs">
-					{{ $t("moderation.nsfw_review") }}
-				</UBadge>
-			</template>
-
-			<template #actions-cell="{ row }">
-				<div class="flex gap-1">
-					<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(row.original.photo_id)" />
-					<UButton
-						icon="lucide:trash"
-						color="error"
-						variant="ghost"
-						size="sm"
-						@click="deleteSingle(row.original.photo_id, row.original.album_id)"
-					/>
+				<!-- Loading initial -->
+				<div v-if="loading && photos.length === 0" class="flex justify-center py-12">
+					<LycheeLoadingIcon fast class="text-3xl" />
 				</div>
-			</template>
 
-			<template #body-bottom>
-				<tr>
-					<td colspan="8">
-						<div ref="sentinel" class="flex justify-center py-4">
-							<LycheeLoadingIcon fast v-if="loading && photos.length > 0" class="text-2xl" />
+				<!-- Empty state -->
+				<div v-else-if="!loading && photos.length === 0" class="text-center py-12">
+					<div class="text-muted mb-4">
+						<UIcon name="lucide:check-circle" class="text-4xl" />
+					</div>
+					<p class="text-muted">{{ $t("moderation.no_pending") }}</p>
+				</div>
+
+				<!-- Bulk actions bar (always visible to prevent layout shift) -->
+				<div class="flex items-center gap-2 mb-3 px-1 h-8">
+					<span class="text-muted text-sm">{{ selectedIds.size }} {{ $t("moderation.selected") }}</span>
+					<template v-if="selectedIds.size > 0">
+						<UButton
+							variant="solid"
+							icon="lucide:check"
+							color="success"
+							size="sm"
+							:label="$t('moderation.approve_selected')"
+							@click="approveSelected"
+						/>
+						<UButton
+							variant="solid"
+							icon="lucide:trash"
+							color="error"
+							size="sm"
+							:label="$t('moderation.delete_selected')"
+							@click="deleteSelected"
+						/>
+					</template>
+				</div>
+
+				<!-- Photos table -->
+				<UTable v-if="photos.length > 0" :data="photos" :columns="columns" sticky class="max-h-[65vh] text-sm">
+					<template #select-header>
+						<UCheckbox :model-value="allSelected" @update:model-value="toggleAll" />
+					</template>
+					<template #select-cell="{ row }">
+						<UCheckbox
+							:model-value="selectedIds.has(row.original.photo_id)"
+							@update:model-value="() => toggleOne(row.original.photo_id)"
+						/>
+					</template>
+
+					<template #thumbnail-cell="{ row }">
+						<img
+							v-if="row.original.thumb_url"
+							:src="row.original.thumb_url"
+							:alt="row.original.title"
+							class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80"
+							@click="openPhoto(row.original.photo_id)"
+						/>
+						<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
+					</template>
+
+					<template #album-cell="{ row }">
+						<RouterLink
+							v-if="row.original.album_title"
+							:to="{ name: 'album', params: { albumId: row.original.album_id } }"
+							class="text-primary-400 hover:underline"
+						>
+							{{ row.original.album_title }}
+						</RouterLink>
+						<span v-else class="text-muted">—</span>
+					</template>
+
+					<template #created_at-cell="{ row }">
+						<span class="whitespace-nowrap">{{ new Date(row.original.created_at).toLocaleDateString() }}</span>
+					</template>
+
+					<template #nsfw_status-cell="{ row }">
+						<UBadge v-if="row.original.nsfw_status === 'review'" color="warning" class="text-xs">
+							{{ $t("moderation.nsfw_review") }}
+						</UBadge>
+					</template>
+
+					<template #actions-cell="{ row }">
+						<div class="flex gap-1">
+							<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(row.original.photo_id)" />
+							<UButton
+								icon="lucide:trash"
+								color="error"
+								variant="ghost"
+								size="sm"
+								@click="deleteSingle(row.original.photo_id, row.original.album_id)"
+							/>
 						</div>
-					</td>
-				</tr>
+					</template>
+
+					<template #body-bottom>
+						<tr>
+							<td colspan="8">
+								<div ref="sentinel" class="flex justify-center py-4">
+									<LycheeLoadingIcon fast v-if="loading && photos.length > 0" class="text-2xl" />
+								</div>
+							</td>
+						</tr>
+					</template>
+				</UTable>
 			</template>
-		</UTable>
+			<template #history>
+				<ModerationHistoryTable @open-photo="openPhoto" />
+			</template>
+		</UTabs>
 	</UCard>
 
 	<!-- Photo lightbox (full screen) -->
@@ -122,20 +132,29 @@ import { RouterLink } from "vue-router";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PhotoBox from "@/v8/components/gallery/photoModule/PhotoBox.vue";
+import ModerationHistoryTable from "@/v8/components/admin/moderation/ModerationHistoryTable.vue";
 import ModerationService from "@/services/moderation-service";
 import PhotoService from "@/services/photo-service";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
+import { useLtRorRtL } from "@/utils/Helpers";
 import UButton from "@nuxt/ui/components/Button.vue";
 import UCheckbox from "@nuxt/ui/components/Checkbox.vue";
 import UBadge from "@nuxt/ui/components/Badge.vue";
-import type { TableColumn } from "@nuxt/ui";
+import type { TableColumn, TabsItem } from "@nuxt/ui";
 
 type Photo = App.Http.Resources.Models.ModerationResource;
 
 const toast = useAppToast();
 const photoStore = usePhotoStore();
+const { isLTR } = useLtRorRtL();
+
+const activeTab = ref("pending");
+const tabItems: TabsItem[] = [
+	{ label: trans("moderation.tab_pending"), value: "pending", icon: "lucide:clock", slot: "pending" },
+	{ label: trans("moderation.tab_history"), value: "history", icon: "lucide:history", slot: "history" },
+];
 
 const loading = ref(false);
 const photoVisible = ref(false);

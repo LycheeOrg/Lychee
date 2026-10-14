@@ -84,4 +84,7 @@ return [
         'legend_mark_album' => 'Photo\'s album is flagged as sensitive.',
         'legend_nothing' => 'No action taken.',
     ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
+    ],
 ];

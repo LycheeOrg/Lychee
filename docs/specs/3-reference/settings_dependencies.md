@@ -200,6 +200,12 @@ The rating smart albums (`enable_unrated`, `enable_1_star` … `enable_my_best_p
 listed by `SmartAlbumType::is_enabled()` without consulting `rating_enabled`, so they stay
 independent.
 
+### Users Management
+
+| Setting | Requires | Reason |
+| --- | --- | --- |
+| `moderation_history_log_nsfw_holds` | `ai_vision_enabled,ai_vision_nsfw_enabled,moderation_history_log_system` | NSFW holds are system events, written only when NSFW scanning runs and system events are recorded (Feature 089). |
+
 ### AI Vision
 
 | Setting | Requires | Reason |

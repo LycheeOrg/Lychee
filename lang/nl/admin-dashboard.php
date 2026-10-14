@@ -84,4 +84,7 @@ return [
         'legend_mark_album' => 'Het album van de foto wordt als gevoelig gemarkeerd.',
         'legend_nothing' => 'Geen actie ondernomen.',
     ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
+    ],
 ];

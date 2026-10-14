@@ -82,4 +82,7 @@ return [
         'legend_mark_album' => 'Das Fotoalbum ist als vertraulich gekennzeichnet.',
         'legend_nothing' => 'Es wurden keine Maßnahmen ergriffen.',
     ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
+    ],
 ];
