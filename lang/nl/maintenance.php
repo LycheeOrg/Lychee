@@ -156,10 +156,10 @@ return [
     ],
 
         'purge-orphan-face-embeddings' => [
-            'title' => 'Purge Orphan Face Embeddings',
-            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
-            'action' => 'Purge Now',
-            'success' => 'Orphaned face embeddings purged successfully.',
+            'title' => 'Verweesde gezichtsembeddings opschonen',
+            'description' => 'De AI Vision-service bevat mogelijk tot %d embedding(s) die niet meer in Lychee bestaan. Bij het opschonen wordt de huidige lijst met gezichten naar AI Vision gestuurd en wordt alles wat overblijft definitief verwijderd.',
+            'action' => 'Nu opschonen',
+            'success' => 'Verweesde gezichtsembeddings succesvol opgeschoond.',
         ],
         'bulk-scan-nsfw' => [
         'title' => 'Bulk NSFW-scan',
