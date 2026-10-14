@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | In progress |
-| Last updated | 2026-10-14 |
+| Status | Implemented |
+| Last updated | 2026-10-15 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md)  |
 | Linked tasks | [tasks.md](tasks.md)  |

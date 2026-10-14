@@ -46,6 +46,13 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `is_dismissed` — operator/owner has chosen to ignore this face detection
     - Belongs to `Photo` (cascade delete), belongs to `Person` (null on delete)
     - Has many `FaceSuggestion` (similar faces ranked by confidence)
+    - `Face::cropUrlFromToken()` builds the crop URL from a raw token, for `toBase()` query paths (Feature 093)
+  - **Face quick naming endpoints** (Feature 093, `app/Http/Controllers/AiVision/`)
+    - `FaceQueueController` + `App\Actions\Face\QueryFaceQueue`: `GET /api/v3/Faces/queue[?cluster_label=N]`, one `toBase()` SELECT, unassigned non-dismissed faces (admins all, users own photos), largest cluster first then unclustered, capped by `ai_vision_face_queue_limit` with `is_truncated` (ADR-069-01 strategy 3); best visible suggested person through correlated subqueries
+    - `PeopleListController`: `GET /api/v3/People`, whole-scope SoA person list (ids, names, face counts, representative crops), same visibility as v2 `GET /People`
+    - `FacePhotoAssetController`: `GET /api/v3/Faces/{face_id}/photo/{variant}` (ADR-093-01), owner or admin, `FacePhotoAssetType` medium → small2x → small → thumb; shares `Http\Controllers\Traits\ServesSizeVariantAssetTrait` and `Http\Requests\Traits\ResolvesSizeVariantAssetTrait` (temporary-link MAC, size fallback) with `PhotoAssetController`
+    - `PATCH /api/v2/Face/{id}` takes an optional `is_dismissed` target (idempotent set); absent keeps the toggle
+    - Global right `modules.can_quick_name_faces` (`ModulesRightsResource`)
   - **Album Model** - Nested set tree structure with pre-computed statistical fields:
     - `num_children` - Count of direct child albums
     - `num_photos` - Count of photos directly in this album (not descendants)
@@ -147,6 +154,7 @@ This document tracks modules, dependencies, and architectural relationships acro
     - **FaceOverlay** (`photoModule/FaceOverlay.vue`) - Absolutely-positioned bounding boxes over the photo detail view; opens `FaceAssignmentModal` on click of unknown faces
   - Forms, modals, drawers, settings components
     - **FaceAssignmentModal** - Assign an unknown face to an existing or new Person; shows suggestions ranked by confidence
+    - **FaceQuickNaming** (`resources/js/v8/views/face-recog/FaceQuickNaming.vue`, Feature 093) - Keyboard-first naming view at `/people/quick-naming`; state in `v8/composables/useQuickNamingSession.ts` (optimistic actions, per-face request chains, pending-person reuse), pure rules in `v8/utils/quickNaming.ts` (`rankMatches`, `resolveSuggestion`, `decideKey`), name box `v8/components/forms/people/QuickNamingInput.vue`; images through `services/face-quick-naming-service.ts` (axios blob, `X-Mac` added by `config/axios-config.ts`)
     - **SelfieClaimModal** - Upload a selfie to match and claim a Person profile (links Person ↔ User)
   - Maintenance components
     - **MaintenanceBulkScanFaces** - Card to trigger a bulk scan of all unscanned photos

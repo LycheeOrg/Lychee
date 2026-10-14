@@ -1,6 +1,6 @@
 # Feature 093 Tasks – Face Quick Naming
 
-_Status: Ready_  
+_Status: Done_  
 _Last updated: 2026-10-14_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -88,7 +88,7 @@ _Last updated: 2026-10-14_
   _Intent:_ `lang/*/people.php` keys, a quick naming section in `KeybindingsHelp.vue`.  
   _Verification commands:_ `npm run format`, `npm run check`.
 
-- [ ] T-093-15 – Docs and quality gate.  
+- [x] T-093-15 – Docs and quality gate.  
   _Intent:_ roadmap row, knowledge map, drift gate report, full scoped gate, commit prepared.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  

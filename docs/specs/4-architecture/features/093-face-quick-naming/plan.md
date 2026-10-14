@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
-_Status:_ Ready for implementation  
+_Status:_ Implemented (drift gate passed)  
 _Last updated:_ 2026-10-14
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -188,6 +188,48 @@ Third pass, run on 2026-10-14 by the implementing agent against [analysis-gate-c
 6. **Tooling readiness:** Pass.
 
 **Outcome:** ready for implementation.
+
+## Drift Gate Report
+Run on 2026-10-15 by the implementing agent after all 16 tasks were checked.
+
+**Traceability**
+| Requirement | Code | Verification |
+|-------------|------|--------------|
+| FR-093-01 | `FaceQuickNaming.vue` (photo, rect-fitted highlight), `FacePhotoAssetController` | `FacePhotoAssetTest`; browser run (screenshots 02, 07) |
+| FR-093-02 | `QueryFaceQueue`, `GetFaceQueueRequest` | `FaceQueueTest` (ordering, filter, visibility, cap, single query) |
+| FR-093-03 | `rankMatches`, `QuickNamingInput.vue`, `PeopleListController` | `PeopleListV3Test`; browser run ("Ali" → Alice) |
+| FR-093-04 | `decideKey`, `useQuickNamingSession.skip/back` | Browser run, LTR and RTL |
+| FR-093-05 | `QuickNamingInput.submit`, `useQuickNamingSession.unassign` | Browser run (revisit named, prefill) |
+| FR-093-06 | `decideKey` (repeat/IME guards), `discard()` | Browser run; DB check (dismissed face) |
+| FR-093-07 | `ModulesRightsResource::canQuickNameFaces`, entry buttons | `FaceQuickNamingRightsTest` |
+| FR-093-08 | Input remount + autofocus, window focus listener | Browser run (focus asserted) |
+| FR-093-09 | `enqueue()` failure marking, toast "Go back", explicit `is_dismissed` | `FaceDismissTest`; browser run with the assign route forced to 500 |
+| FR-093-10 | "?" button, `KeybindingsHelp` `only` prop | Browser run (screenshot 13) |
+| FR-093-11 | In-memory session, `reloadPeople()` after dismissing a named face | Code review |
+| FR-093-12 | Suggestion subqueries, `resolveSuggestion` | `FaceQueueTest` (suggestions); browser run (same-cluster suggestion accepted) |
+| FR-093-13 | Per-face chains, pending creations | Browser run (Shift+Enter creates a third "John Smith", DB shows one new person) |
+| FR-093-14 | `?from=` back target, cluster-card button | Code review |
+| NFR-093-03/06 | `lang/*/people.php`, `dialogs.php`, `all_settings.php` | Key-parity check across 23 locales |
+| NFR-093-05 | Single `toBase()` SELECT | `DB::listen` assertions |
+
+**Findings fixed during the gate** (commit `c4e80e5b`):
+- The highlight drifted when the photo area shrank. It is now fitted to the rendered image rectangle.
+- RTL direction was read at render time. It is now read at key time.
+- A failed creation left its pending person in the list (raw-object vs reactive-proxy comparison). Removal now filters by id.
+
+**Deviations from the plan:**
+- The v3 asset route only allows thumbnail-class variants, so the face route got its own `FacePhotoAssetType` (medium allowed). This is recorded in ADR-093-01 and API-093-05.
+- The quick naming help section is hidden from the global help modal and only shown from the view's "?" button.
+
+**Environment notes:**
+- The local test SQLite file carried the schema of another branch (`albums.min_takestamp` already dropped). It was moved aside to the scratchpad and rebuilt, which fixed every face test at once.
+- The browser checks ran on a scratch instance (env overrides for the DB, uploads, cache and SoA flag; `php artisan serve` on port 8123; Playwright with the system Chromium) and never touched the development database.
+
+**Gate:** `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check` and `make phpstan` all pass. The scoped run of 12 test classes passes (155 tests).
+
+**Lessons:**
+- Overlays on `object-contain` images need the rendered rectangle, not percentages of a shrinking wrapper.
+- Never compare objects pushed into a Vue reactive array by identity.
 
 ## Exit Criteria
 - All tasks checked, and scoped tests, `make phpstan`, `npm run check` and the formatters are green.
