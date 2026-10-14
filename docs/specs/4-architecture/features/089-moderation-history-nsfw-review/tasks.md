@@ -133,6 +133,12 @@ _Last updated: 2026-10-14_
   _Intent:_ Playwright on a scratch instance: findings page (chip, row, bulk dismissal, links, empty state), Moderation History tab, photo details section for admin and non-admin.  
   _Verification commands:_ Playwright script in the session scratchpad.
 
+- [x] T-089-23 – Photo details section shows only the latest event (FR-089-08, UI-089-03).  
+  _Intent:_ panel shows the newest event, a "Show all (N)" link opens a modal with the full list. Frontend only, `moderation.history_show_all` added to every locale.  
+  _Verification commands:_  
+  - `npm run format`  
+  - `npm run check`
+
 ## Notes / TODOs
 - 2026-10-13: `PhotoAddTest::testAppleLivePhoto1/2` fail with and without the T-089-06 change (live photo content id null, environment); not a regression of this feature.
 - Tests for the NSFW parts live in the `AssistedVision` suite next to the Feature 045 tests; the other new tests go to `Feature_v3`.

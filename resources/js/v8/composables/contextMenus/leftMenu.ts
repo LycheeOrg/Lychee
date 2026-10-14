@@ -293,19 +293,19 @@ export function useLeftMenu(
 				label: "insights.title",
 				icon: "lucide:chart-column",
 				route: "/insights",
-				access: is_se_enabled.value === true,
+				access: is_se_enabled.value === true && user.value?.id !== null,
 			},
 			{
 				label: "insights.title",
 				icon: "lucide:chart-column",
 				route: "/insights",
-				access: is_se_enabled.value === false && is_se_preview_enabled.value === true,
+				access: is_se_enabled.value === false && is_se_preview_enabled.value === true && user.value?.id !== null,
 				seTag: true,
 			},
 			{
 				label: "renamer.title",
 				icon: "lucide:file-edit",
-				access: rights.value.modules.is_mod_renamer_enabled ?? false,
+				access: (rights.value.modules.is_mod_renamer_enabled ?? false) && user.value?.id !== null,
 				route: "/renamerRules",
 			},
 		]);

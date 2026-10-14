@@ -40,7 +40,12 @@
 					</div>
 				</div>
 
-				<PersonInput ref="personInputRef" v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" />
+				<PersonInput
+					ref="personInputRef"
+					v-model:person-id="selectedPersonId"
+					v-model:new-person-name="newPersonName"
+					@submit="submitOnEnter"
+				/>
 			</div>
 		</template>
 		<template #footer>
@@ -105,6 +110,13 @@ function selectSuggestion(suggestion: App.Http.Resources.Models.FaceSuggestionRe
 	if (suggestion.person_name) {
 		personInputRef.value?.selectByName(suggestion.person_name);
 	}
+}
+
+function submitOnEnter() {
+	if (submitting.value || (!selectedPersonId.value && !newPersonName.value.trim())) {
+		return;
+	}
+	submit();
 }
 
 function submit() {
