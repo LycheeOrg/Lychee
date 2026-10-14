@@ -5,6 +5,16 @@
 				<GoBack @go-back="$router.push({ name: 'people' })" />
 			</template>
 			{{ $t("people.clusters_title") }}
+			<template #right>
+				<UButton
+					v-if="rights?.modules.can_quick_name_faces"
+					:label="$t('people.quick_naming.button')"
+					color="primary"
+					variant="outline"
+					icon="lucide:keyboard"
+					@click="$router.push({ name: 'face-quick-naming', query: { from: 'clusters' } })"
+				/>
+			</template>
 		</UHeader>
 
 		<FaceRecognitionWarning />
@@ -123,6 +133,17 @@
 								variant="outline"
 								size="sm"
 								@click="requestDismissCluster(cluster)"
+							/>
+							<UButton
+								v-if="rights?.modules.can_quick_name_faces"
+								:label="$t('people.quick_naming.button_cluster')"
+								icon="lucide:keyboard"
+								color="neutral"
+								variant="outline"
+								size="sm"
+								@click="
+									$router.push({ name: 'face-quick-naming', query: { from: 'clusters', cluster: String(cluster.cluster_label) } })
+								"
 							/>
 						</div>
 					</div>
@@ -262,9 +283,11 @@ import GoBack from "@/v8/components/headers/GoBack.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { usePeopleList } from "@/composables/usePeopleList";
 import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 
 const toast = useAppToast();
 const rawToast = useToast();
+const { rights } = useGlobalRights();
 
 const clusters = ref<App.Http.Resources.Models.ClusterPreviewResource[]>([]);
 // Per-cluster selected person (string name or PersonResource)

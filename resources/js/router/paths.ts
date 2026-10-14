@@ -228,6 +228,10 @@ export const paths: RoutePath[] = [
 		path: "/people/clusters",
 	},
 	{
+		name: "face-quick-naming",
+		path: "/people/quick-naming",
+	},
+	{
 		name: "person",
 		path: "/people/:personId/:photoId?",
 		props: true,

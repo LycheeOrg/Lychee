@@ -34,6 +34,7 @@ const OrderDownload = () => import("@/v8/views/webshop/OrderDownload.vue");
 const People = () => import("@/v8/views/face-recog/People.vue");
 const PersonDetail = () => import("@/v8/views/face-recog/PersonDetail.vue");
 const FaceClusters = () => import("@/v8/views/face-recog/FaceClusters.vue");
+const FaceQuickNaming = () => import("@/v8/views/face-recog/FaceQuickNaming.vue");
 const Permissions = () => import("@/v8/views/Permissions.vue");
 const Profile = () => import("@/v8/views/Profile.vue");
 const TagsManagement = () => import("@/v8/views/TagsManagement.vue");
@@ -93,6 +94,7 @@ const componentByName: Record<string, any> = {
 	order: OrderDownload,
 	people: People,
 	"face-clusters": FaceClusters,
+	"face-quick-naming": FaceQuickNaming,
 	person: PersonDetail,
 	permissions: Permissions,
 	profile: Profile,

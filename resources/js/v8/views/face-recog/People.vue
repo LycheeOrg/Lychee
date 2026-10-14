@@ -7,6 +7,18 @@
 			{{ $t("people.title") }}
 			<template #right>
 				<UButton
+					v-if="rights?.modules.can_quick_name_faces"
+					:label="$t('people.quick_naming.button')"
+					color="primary"
+					variant="outline"
+					icon="lucide:keyboard"
+					@click="
+						() => {
+							$router.push({ name: 'face-quick-naming' });
+						}
+					"
+				/>
+				<UButton
 					v-if="userStore.isAdmin"
 					:label="$t('maintenance.face_quality.title')"
 					color="neutral"

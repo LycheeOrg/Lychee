@@ -60,15 +60,15 @@ _Last updated: 2026-10-14_
   _Intent:_ `FaceQuickNamingRightsTest` across the four modes and the flags, then the field in `ModulesRightsResource`, TS types.  
   _Verification commands:_ `php artisan test --filter=FaceQuickNamingRightsTest`.
 
-- [ ] T-093-08 – Frontend services, adapters and route (F-093-02, F-093-03).  
+- [x] T-093-08 – Frontend services, adapters and route (F-093-02, F-093-03).  
   _Intent:_ `face-queue-service.ts`, SoA adapters, `quick-naming` path and route.  
   _Verification commands:_ `npm run check`.
 
-- [ ] T-093-09 – Pure transition helpers (F-093-03…06, F-093-09).  
+- [x] T-093-09 – Pure transition helpers (F-093-03…06, F-093-09).  
   _Intent:_ `rankMatches` (exact, prefix, substring; max 8; homonyms ordered suggestion first then face count; create entry always last, "Create another" when the name exists), `resolveSuggestion` (same-cluster override), `nextIndex`, `applyResult`, handled-id dedupe.  
   _Verification commands:_ `npm run check`.
 
-- [ ] T-093-10 – `useQuickNamingSession` composable (F-093-02…06, F-093-09, F-093-11…14, S-093-01, S-093-02, S-093-04…06, S-093-09, S-093-11, S-093-14, S-093-17, S-093-19).  
+- [x] T-093-10 – `useQuickNamingSession` composable (F-093-02…06, F-093-09, F-093-11…14, S-093-01, S-093-02, S-093-04…06, S-093-09, S-093-11, S-093-14, S-093-17, S-093-19).  
   _Intent:_ queue, cursor, history, optimistic actions with failed-face marking and a "Go back" toast, explicit `is_dismissed` values, per-face request serialisation and pending-person reuse (FR-093-13), back target (FR-093-14), refetch on truncation, un-dismiss before assign, people-list reload after dismissing a named face, same-cluster suggestion override.  
   _Verification commands:_ `npm run check`.
 
@@ -80,11 +80,11 @@ _Last updated: 2026-10-14_
   _Intent:_ photo from API-093-05 with the face highlighted, crop, progress, "?" help button at the top right, buttons, done/error/failed/forbidden states, preload of the next 3 images.  
   _Verification commands:_ `npm run check`; manual UI-093-01…07.
 
-- [ ] T-093-13 – Entry buttons (F-093-07, S-093-08, S-093-10).  
+- [x] T-093-13 – Entry buttons (F-093-07, S-093-08, S-093-10).  
   _Intent:_ People page, clusters page, cluster cards (`?cluster=`), gated by `can_quick_name_faces`.  
   _Verification commands:_ `npm run check`.
 
-- [ ] T-093-14 – View strings in all locales and keybindings help (F-093-10, NFR-093-03, NFR-093-04).  
+- [x] T-093-14 – View strings in all locales and keybindings help (F-093-10, NFR-093-03, NFR-093-04).  
   _Intent:_ `lang/*/people.php` keys, a quick naming section in `KeybindingsHelp.vue`.  
   _Verification commands:_ `npm run format`, `npm run check`.
 

@@ -74,7 +74,9 @@ const AxiosConfig = {
 					// return Promise.reject("session_expired");
 				}
 
-				if (config.url?.includes("Asset/")) {
+				// Binary image routes needing the temporary-link signature: `Asset/...` (Feature 056)
+				// and the face-scoped photo `Faces/{id}/photo/{variant}` (Feature 093, ADR-093-01).
+				if (config.url?.includes("Asset/") || /Faces\/[^/]+\/photo\//.test(config.url ?? "")) {
 					if (!macFetched) {
 						const { data } = await InitService.fetchMac();
 						cachedMac = data.mac || null;
