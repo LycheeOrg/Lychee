@@ -13,6 +13,7 @@ Open questions for [Feature 092](spec.md). Log every high- and medium-impact que
 | ~~Q-092-05~~ | 092 – Bucketing refactor | Medium | NFR-092-01 states absolute times (≤ 45 / ≤ 20 ms); the drift gate measured 81 / 33 ms and passed it as a speed-up ratio (A restate as a ratio against the old query on the same machine · B keep absolute, re-measure on the reference machine) | Resolved (Option A; owner, 2026-10-14; spec NFR-092-01) | 2026-10-14 | 2026-10-14 |
 | ~~Q-092-06~~ | 092 – Bucketing refactor | Medium | Tag, person and search album listings now return `unknown` as every per-row album `bucket_id`, which no FR describes (A record it in FR-092-05 · B keep a computed id) | Resolved (Option A; owner, 2026-10-14; spec FR-092-05) | 2026-10-14 | 2026-10-14 |
 | ~~Q-092-07~~ | 092 – Bucketing refactor | Medium | FR-092-13 is silent on `sorting_photos_order`; no settings list flushes cached photo listings when it changes (A add it to the photo-listing flush · B leave out of scope) | Resolved (Option A; owner, 2026-10-14; spec FR-092-13, S-092-20) | 2026-10-14 | 2026-10-14 |
+| ~~Q-092-08~~ | 092 – Bucketing refactor | Low | How does the title date read `YYYYMMDD`? (A optional dashes `-?` · B a separate eight-digit branch) | Resolved (Option B; owner, 2026-10-14; spec FR-092-02, S-092-21) | 2026-10-14 | 2026-10-14 |
 
 ## Question Details
 
@@ -141,3 +142,17 @@ Measured on SQLite 3.46 (scratchpad, synthetic data: 300,000 photos, one album w
   - ❌ Stale order after an instance-wide change.
 
 **Resolution:** Option A. FR-092-13 now lists `sorting_photos_order` among the settings that flush every cached photo listing without rewriting keys; scenario S-092-20.
+
+### ~~Q-092-08~~ – Title date grammar for `YYYYMMDD`
+
+**Context:** The owner asked for `YYYYMMDD` titles (e.g. `20240315_123456`) on top of `YYYY`, `YYYY-MM`, `YYYY-MM-DD` (FR-092-02). The same grammar lives in `BucketKeys`, `BucketKeyBackfill`, `TimelineData::parseDateFromTitle()` and `dateScrubber.ts`.
+
+- **Option A (recommended):** Make each dash optional: `/^(\d{4})(?:-?(\d{2}))?(?:-?(\d{2}))?/`.
+  - ✅ Smallest change, same three groups, same shape in PHP and JS.
+  - ✅ Also reads `YYYYMM` (`202403 x` → `2024-03-01`).
+  - ❌ Also accepts mixed forms (`2024-0315`, `202403-15`) and reads seven digits as a month (`2024123 x` → `2024-12-01`).
+- **Option B (chosen):** A separate branch that only takes exactly `YYYYMMDD`: `/^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/` (JS: alternation, groups 2/3 or 4/5).
+  - ✅ Accepts exactly the four listed forms.
+  - ❌ Harder to read, branch reset is PCRE-only so JS reads different groups.
+
+**Resolution:** Option B (the owner first chose A, then switched to B). The owner also asked that every parser reject dates that are not on the calendar: `TimelineData::parseDateFromTitle()` no longer rolls `2023-13-01` over to January 2024 and `dateScrubber.ts` now checks the date, matching the `checkdate()` already in `BucketKeys` and `BucketKeyBackfill`. Recorded in FR-092-02 and S-092-21.

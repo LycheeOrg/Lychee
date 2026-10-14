@@ -35,8 +35,12 @@ export type DatedTile = {
 
 const RAW_DAY = /^\d{4}-\d{2}-\d{2}/;
 
-/** Same leading-date grammar as `TimelineData::parseDateFromTitle()` — missing month/day default to `01`. */
-const TITLE_DATE_PREFIX = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/;
+/**
+ * Same leading-date grammar as `BucketKeys::titleDateKey()` — `YYYYMMDD` (groups 2, 3) or
+ * `YYYY[-MM[-DD]]` (groups 4, 5; JS has no branch reset), missing month/day default to `01`;
+ * a match that is not a calendar date is no date (Feature 092, FR-092-02).
+ */
+const TITLE_DATE_PREFIX = /^(\d{4})(?:(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/;
 
 /** `YYYY-MM-DD` from a raw DB datetime — the same prefix the server's bucket truncation reads, so rail days agree with header buckets. */
 export function dayKeyOf(raw: string | null | undefined): string | null {
@@ -51,7 +55,14 @@ export function parseTitleDatePrefix(title: string): string | null {
 	if (match === null) {
 		return null;
 	}
-	return `${match[1]}-${match[2] ?? "01"}-${match[3] ?? "01"}`;
+	const [yyyy, mm, dd] = [match[1], match[2] ?? match[4] ?? "01", match[3] ?? match[5] ?? "01"];
+	const [year, month, day] = [Number(yyyy), Number(mm), Number(dd)];
+	const date = new Date(0);
+	date.setUTCFullYear(year, month - 1, day); // rolls an invalid month or day over, caught below
+	if (year === 0 || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+		return null;
+	}
+	return `${yyyy}-${mm}-${dd}`;
 }
 
 export function tileDayKey(tile: DatedTile, field: DateScrubberField): string | null {

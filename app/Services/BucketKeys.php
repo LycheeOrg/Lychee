@@ -24,7 +24,7 @@ final class BucketKeys
 {
 	public const HOUR_KEY_FORMAT = 'Y-m-d-H';
 
-	private const TITLE_DATE_PATTERN = '/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/';
+	private const TITLE_DATE_PATTERN = '/^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/';
 
 	/**
 	 * `photos.taken_key` of a cast `taken_at`, which is already in the zone
@@ -78,9 +78,10 @@ final class BucketKeys
 	}
 
 	/**
-	 * `photos.title_date_key`: the leading `YYYY`, `YYYY-MM` or `YYYY-MM-DD`
-	 * of the trimmed title as `Y-m-d` (missing month and day read as `01`),
-	 * or `null` when there is none or it is not a calendar date.
+	 * `photos.title_date_key`: the leading `YYYYMMDD`, `YYYY`, `YYYY-MM` or
+	 * `YYYY-MM-DD` of the trimmed title as `Y-m-d` (missing month and day
+	 * read as `01`), or `null` when there is none or it is not a calendar
+	 * date. Eight leading digits are always `YYYYMMDD`.
 	 */
 	public static function titleDateKey(string $title): ?string
 	{

@@ -95,6 +95,10 @@ Prompt: "look through the specifications and make sure there is no clarification
 
 Prompt: "continue". `npx vite build`; scratch SQLite migrated with an explicit `DB_DATABASE` (checked with `artisan db:show` first), `lychee:create_user admin admin`, `lychee:sync` of three samples into album `Scrubber`; PDO seed of `taken_at`/`taken_at_orig_tz`/`taken_key` (late photo 2026-07-01 23:30 UTC `+02:00`), album `taken_at` ASC, `photo_timeline = day`, scrubber on; `lychee:recompute-buckets`; app via `php -S` on 8291. Playwright (`scrubber.mjs`, session scratchpad, not committed) hovers the rail at both scroll ends and compares lens days with header days: PASS in `America/New_York` and `Asia/Tokyo`, no console errors. First run failed only because the rail sat below the hero and was sampled off-screen.
 
+### Intent log — 2026-10-14 (`YYYYMMDD` title dates)
+
+Prompts: "we also want to support YYYYMMDD", "why not make the - optional with ?", "okay for A but why not also validate that the months and day values are real ?", "change of plan I menat B.". Logged Q-092-08, resolved Option B (eight-digit branch) after briefly implementing A. Found four copies of the grammar (`BucketKeys`, `BucketKeyBackfill`, `TimelineData::parseDateFromTitle()`, `dateScrubber.ts`); only the first two checked the calendar, so `TimelineData` rolled `2023-13-01` over to 2024 and the scrubber accepted anything. All four now read `YYYYMMDD` and reject non-calendar dates; the two `TimelineDataTest` roll-over tests now expect `null`. Commands: `php artisan test --filter='(BucketKeysTest|TimelineDataTest)'` red then 30 passed; esbuild + node and `php -r` over 17 titles, `BucketKeys`, `TimelineData` and the scrubber agree; `vendor/bin/php-cs-fixer fix`; `npm run format`; `npm run check`; `make phpstan` (only the 46 inherited `lang/*/all_settings.php` duplicate keys).
+
 ## Increment Map
 
 1. **I1 – Schema and backfill**
@@ -153,6 +157,10 @@ Prompt: "continue". `npx vite build`; scratch SQLite migrated with an explicit `
     - _Goal:_ FR-092-12 bulk album rename (S-092-19), FR-092-13 `sorting_photos_order` (S-092-20); Q-092-05/06 are spec-only (NFR-092-01 restated as a ratio, FR-092-05 records `unknown` per-row ids outside the `own` scope).
     - _Steps:_ tests first; `RenameAlbums` dispatches `AlbumSaved` for renamed albums; `sorting_photos_order` joins `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`.
     - _Commands:_ `php artisan test --filter=AlbumKeysWriteTest`, `--filter=BucketSettingsV3Test`, `--filter=UpdateSettingsTest`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+15. **I14 – `YYYYMMDD` title dates (owner request, 2026-10-14)**
+    - _Goal:_ FR-092-02 reads a leading `YYYYMMDD` (S-092-21), identically in the four parsers (`BucketKeys`, `BucketKeyBackfill`, `TimelineData::parseDateFromTitle()`, `dateScrubber.ts`) so stored keys, album timeline headers and scrubber days agree (Q-092-08).
+    - _Steps:_ tests first; a separate eight-digit branch `^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)` (JS: an alternation, groups 2/3 or 4/5); every parser rejects a non-calendar date (`TimelineData` drops Carbon's roll-over, the scrubber checks with `setUTCFullYear`).
+    - _Commands:_ `php artisan test --filter=BucketKeysTest`, `--filter=TimelineDataTest`, `npm run check`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 
 ## Scenario Tracking
 
@@ -178,6 +186,7 @@ Prompt: "continue". `npx vite build`; scratch SQLite migrated with an explicit `
 | S-092-18 | I10 / T-092-18 | `ManagedCachePhotoListingInvalidatorTest` |
 | S-092-19 | I13 / T-092-22 | `AlbumKeysWriteTest` |
 | S-092-20 | I13 / T-092-23 | `BucketSettingsV3Test` |
+| S-092-21 | I14 / T-092-24 | `BucketKeysTest`, `TimelineDataTest` |
 
 ## Analysis Gate
 

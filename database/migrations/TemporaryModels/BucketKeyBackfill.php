@@ -38,7 +38,7 @@ class BucketKeyBackfill
 
 	public static function titleDateKey(string $title): ?string
 	{
-		if (preg_match('/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/', trim($title), $matches) !== 1) {
+		if (preg_match('/^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/', trim($title), $matches) !== 1) {
 			return null;
 		}
 

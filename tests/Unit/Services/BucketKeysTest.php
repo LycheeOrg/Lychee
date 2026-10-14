@@ -85,6 +85,15 @@ class BucketKeysTest extends AbstractTestCase
 		self::assertSame('2024-02-29', BucketKeys::titleDateKey('2024-02-29'));
 	}
 
+	public function testTitleDateKeyReadsCompactLeadingDate(): void
+	{
+		self::assertSame('2024-03-15', BucketKeys::titleDateKey('20240315 Trip'));
+		self::assertSame('2024-03-15', BucketKeys::titleDateKey('20240315_123456'));
+		self::assertSame('2024-03-15', BucketKeys::titleDateKey('20240315123456'));
+		self::assertSame('2024-01-01', BucketKeys::titleDateKey('202403 x'));
+		self::assertSame('2024-01-01', BucketKeys::titleDateKey('2024123 x'));
+	}
+
 	public function testTitleDateKeyOfTitleWithoutLeadingDateIsNull(): void
 	{
 		self::assertNull(BucketKeys::titleDateKey('Holiday 2024'));
@@ -97,5 +106,7 @@ class BucketKeysTest extends AbstractTestCase
 		self::assertNull(BucketKeys::titleDateKey('2024-13-45 x'));
 		self::assertNull(BucketKeys::titleDateKey('2023-02-29'));
 		self::assertNull(BucketKeys::titleDateKey('0000 x'));
+		self::assertNull(BucketKeys::titleDateKey('20241345 x'));
+		self::assertNull(BucketKeys::titleDateKey('20230229'));
 	}
 }

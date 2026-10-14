@@ -147,9 +147,17 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=BucketSettingsV3Test`  
   - `php artisan test --filter=UpdateSettingsTest`
 
+- [x] T-092-24 – Title date reads `YYYYMMDD` (F-092-02, S-092-21).  
+  _Intent:_ test first in `BucketKeysTest` and `TimelineDataTest` (`20240315_123456` → `2024-03-15`, `202403 x` → `2024-01-01`, `20241345 x` and `2023-12-32` → `NULL`); then a separate eight-digit branch in `BucketKeys`, `BucketKeyBackfill`, `TimelineData::parseDateFromTitle()` and `dateScrubber.ts`, each rejecting a non-calendar date (Q-092-08).  
+  _Verification commands:_  
+  - `php artisan test --filter=BucketKeysTest`  
+  - `php artisan test --filter=TimelineDataTest`  
+  - `npm run check`  
+  - `make phpstan`
+
 ## Notes / TODOs
 
-- FR coverage: FR-01/02 → T-02…04; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
+- FR coverage: FR-01/02 → T-02…04, T-24; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
 - Test classes in `tests/Feature_v2` are updated where they encode the old triggers; no new class is added there.
 - T-092-19: the browser check of S-092-16 was not run in the implementation session (no scratch instance); the helper was exercised with esbuild under `TZ=Asia/Tokyo` instead. Tracked in plan.md Follow-ups.
 - Drift gate, benchmark and adjustments: plan.md § Implementation Drift Gate.
