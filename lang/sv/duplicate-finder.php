@@ -6,21 +6,21 @@ return [
     | Duplicate Finder Page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Maintenance',
-    'intro' => 'On this page you will find the duplicate pictures found in your database.',
-    'found' => ' duplicates found!',
-    'invalid-search' => ' At least the checksum or title condition must be checked.',
-    'checksum-must-match' => 'Checksum must match.',
-    'title-must-match' => 'Title must match.',
-    'must-be-in-same-album' => 'Must be in the same album.',
+    'title' => 'Underhåll',
+    'intro' => 'På denna sida hittar du dubblettbilderna som hittats i din databas.',
+    'found' => ' dubbletter hittades!',
+    'invalid-search' => ' Minst villkoret för kontrollsumma eller titel måste vara markerat.',
+    'checksum-must-match' => 'Kontrollsumman måste matcha.',
+    'title-must-match' => 'Titeln måste matcha.',
+    'must-be-in-same-album' => 'Måste ligga i samma album.',
     'columns' => [
         'album' => 'Album',
-        'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'photo' => 'Foto',
+        'checksum' => 'Kontrollsumma',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'Inget original kvar.',
+        'keep-one' => 'Du har markerat alla dubbletter i denna grupp. Välj minst en dubblett att behålla.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Radera markerade',
 ];
