@@ -36,9 +36,9 @@ class FrameClockData extends Data
 	{
 		return new self(
 			is_time_enabled: $configs->getValueAsBool('mod_frame_clock_time_enabled'),
-			time_format: FrameTimeFormat::from($configs->getValueAsString('mod_frame_clock_time_format')),
+			time_format: $configs->getValueAsEnum('mod_frame_clock_time_format', FrameTimeFormat::class) ?? FrameTimeFormat::H24,
 			is_date_enabled: $configs->getValueAsBool('mod_frame_clock_date_enabled'),
-			position: FrameBoxPosition::from($configs->getValueAsString('mod_frame_clock_position')),
+			position: $configs->getValueAsEnum('mod_frame_clock_position', FrameBoxPosition::class) ?? FrameBoxPosition::BOTTOM_RIGHT,
 			background_color: $configs->getValueAsString('mod_frame_clock_background_color'),
 			background_opacity: $configs->getValueAsInt('mod_frame_clock_background_opacity'),
 			opacity: $configs->getValueAsInt('mod_frame_clock_opacity'),

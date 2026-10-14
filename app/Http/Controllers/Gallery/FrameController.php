@@ -130,7 +130,8 @@ class FrameController extends Controller
 			);
 		} elseif ($sub_album_root !== null) {
 			// all_photos() orders by the album's photo sorting: reorder() leaves the order to inRandomOrder().
-			$query = $sub_album_root->all_photos()->getQuery()->with(['albums.access_permissions', 'size_variants', 'palette', 'tags', 'rating'])->reorder();
+			$include_nsfw = !request()->configs()->getValueAsBool('hide_nsfw_in_frame');
+			$query = $sub_album_root->all_photos($include_nsfw)->getQuery()->with(['albums.access_permissions', 'size_variants', 'palette', 'tags', 'rating'])->reorder();
 		} else {
 			$query = $album->photos()->with(['albums.access_permissions', 'size_variants', 'palette', 'tags', 'rating']);
 		}

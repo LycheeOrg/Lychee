@@ -21,13 +21,14 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
  * Feature 088: album frames drawing from sub-albums (FR-088-16, FR-088-17,
- * S-088-14, S-088-15).
+ * S-088-14, S-088-15, S-088-21, S-088-22).
  */
 class FrameSubAlbumsTest extends BaseApiWithDataTest
 {
 	private const KEYS = [
 		'mod_frame_enabled',
 		'mod_frame_include_subalbums',
+		'hide_nsfw_in_frame',
 	];
 
 	/** @var array<string,string> */
@@ -108,5 +109,50 @@ class FrameSubAlbumsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->parent->id]);
 		$this->assertOk($response);
 		$response->assertJsonPath('config.is_mod_frame_enabled', false);
+	}
+
+	public function testSubAlbumModeSkipsSensitiveSubAlbumsWhenHidden(): void
+	{
+		Configs::set('mod_frame_include_subalbums', '1');
+		Configs::set('hide_nsfw_in_frame', '1');
+		$this->child->is_nsfw = true;
+		$this->child->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->parent->id]);
+		$this->assertStatus($response, 500);
+		$response->assertSee('PhotoCollectionEmptyException');
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->parent->id]);
+		$this->assertOk($response);
+		$response->assertJsonPath('config.is_mod_frame_enabled', false);
+	}
+
+	public function testSubAlbumModeShowsSensitiveSubAlbumsWhenNotHidden(): void
+	{
+		Configs::set('mod_frame_include_subalbums', '1');
+		Configs::set('hide_nsfw_in_frame', '0');
+		$this->child->is_nsfw = true;
+		$this->child->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->parent->id]);
+		$this->assertOk($response);
+		$response->assertJsonPath('photo.albums', ['Iceland']);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->parent->id]);
+		$this->assertOk($response);
+		$response->assertJsonPath('config.is_mod_frame_enabled', true);
+	}
+
+	public function testSubAlbumModeKeepsTheSensitiveFramedAlbumItself(): void
+	{
+		Configs::set('mod_frame_include_subalbums', '1');
+		Configs::set('hide_nsfw_in_frame', '1');
+		$this->child->is_nsfw = true;
+		$this->child->save();
+
+		// The viewer chose the sensitive album: only sensitive albums below it are skipped.
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->child->id]);
+		$this->assertOk($response);
+		$response->assertJsonPath('photo.albums', ['Iceland']);
 	}
 }

@@ -43,7 +43,7 @@ class FrameInfoData extends Data
 			is_exif_exposure_enabled: $configs->getValueAsBool('mod_frame_info_exif_exposure_enabled'),
 			is_exif_camera_enabled: $configs->getValueAsBool('mod_frame_info_exif_camera_enabled'),
 			is_exif_taken_at_enabled: $configs->getValueAsBool('mod_frame_info_exif_taken_at_enabled'),
-			position: FrameBoxPosition::from($configs->getValueAsString('mod_frame_info_position')),
+			position: $configs->getValueAsEnum('mod_frame_info_position', FrameBoxPosition::class) ?? FrameBoxPosition::BOTTOM_LEFT,
 			background_color: $configs->getValueAsString('mod_frame_info_background_color'),
 			background_opacity: $configs->getValueAsInt('mod_frame_info_background_opacity'),
 			opacity: $configs->getValueAsInt('mod_frame_info_opacity'),

@@ -89,5 +89,13 @@ _Last updated: 2026-10-13_
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`, `npm run format`, `npm run check`, every test class above, `make phpstan`
 
+- [x] T-088-15 – Sub-album mode honours `hide_nsfw_in_frame` (F-088-16, F-088-17, S-088-21, S-088-22). PR #4873 review (CodeRabbit).  
+  _Intent:_ failing tests in `FrameSubAlbumsTest` first; `HasManyPhotosRecursively` and `Album::all_photos()` take `include_nsfw` (default `true`); `FrameController::loadPhoto()` and `AlbumConfig::hasFramePhotos()` pass `!hide_nsfw_in_frame`. `applySensitivityFilter()` on top of `all_photos()` is not used: it joins `albums` a second time.  
+  _Verification commands:_  
+  - `php artisan test --filter=FrameSubAlbumsTest`  
+  - `php artisan test --filter=FrameOverlayTest`  
+  - `php artisan test --filter=FrameTest`  
+  - `make phpstan`
+
 ## Notes / TODOs
 - Restore every `Configs::set()` value in `tearDown()`: the test transaction does not roll the config cache back.

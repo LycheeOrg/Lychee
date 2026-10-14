@@ -167,7 +167,7 @@ class AlbumConfig extends Data
 	private function hasFramePhotos(AbstractAlbum $album, ConfigManager $config_manager): bool
 	{
 		if ($album instanceof Album && $config_manager->getValueAsBool('mod_frame_include_subalbums')) {
-			return $album->all_photos()->getQuery()->exists();
+			return $album->all_photos(!$config_manager->getValueAsBool('hide_nsfw_in_frame'))->getQuery()->exists();
 		}
 
 		return $album->get_photos()->count() > 0;
