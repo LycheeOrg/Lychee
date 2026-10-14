@@ -28,14 +28,19 @@ export const usePhotoNsfwDetectionsStore = defineStore("photo-nsfw-detections-st
 					imageWidth: response.data.image_width,
 					imageHeight: response.data.image_height,
 				};
-				cache.value.set(photoId, data);
+				// A request superseded by invalidate() or forget() must not restore stale detections.
+				if (pending.get(photoId) === promise) {
+					cache.value.set(photoId, data);
+				}
 				return data;
 			})
 			.catch(() => {
 				return EMPTY;
 			})
 			.finally(() => {
-				pending.delete(photoId);
+				if (pending.get(photoId) === promise) {
+					pending.delete(photoId);
+				}
 			});
 
 		pending.set(photoId, promise);

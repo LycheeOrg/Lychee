@@ -47,7 +47,11 @@ watch(
 				}
 			})
 			.catch(() => {
-				events.value = [];
+				// Only the current photo is affected, and it is fetched again next time.
+				if (cachedPhotoId === photoId) {
+					events.value = [];
+					cachedPhotoId = null;
+				}
 			});
 	},
 	{ immediate: true },

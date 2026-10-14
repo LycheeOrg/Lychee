@@ -170,6 +170,8 @@ const lastPage = ref(1);
 const perPage = 30;
 const sentinel = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
+/** Bumped on every reload: responses of requests started before it are discarded. */
+let generation = 0;
 
 const allSelected = computed(() => rows.value.length > 0 && rows.value.every((r) => selectedIds.value.has(r.photo_id)));
 
@@ -229,6 +231,7 @@ function removeRows(photoIds: string[]) {
 	photoIds.forEach((id) => next.delete(id));
 	selectedIds.value = next;
 	nsfwDetectionsStore.forget(photoIds);
+	reload();
 }
 
 /** A chip dismiss acts at once; the row leaves the list with its last finding. */
@@ -272,17 +275,45 @@ function load(page: number) {
 	if (loading.value || page > lastPage.value) {
 		return;
 	}
+	const request = generation;
 	loading.value = true;
 	NsfwFindingsService.list(page, perPage)
 		.then((response) => {
+			if (request !== generation) {
+				return;
+			}
 			rows.value = page === 1 ? response.data.photos : [...rows.value, ...response.data.photos];
 			currentPage.value = response.data.current_page;
 			lastPage.value = response.data.last_page;
+			if (page === 1) {
+				keepVisibleSelection();
+			}
 		})
-		.catch(showError)
+		.catch(() => {
+			if (request === generation) {
+				showError();
+			}
+		})
 		.finally(() => {
-			loading.value = false;
+			if (request === generation) {
+				loading.value = false;
+			}
 		});
+}
+
+/**
+ * Dismissing shifts the remaining findings forward on the server, so the pages loaded so far
+ * no longer line up: restart from the first page.
+ */
+function reload() {
+	generation++;
+	loading.value = false;
+	load(1);
+}
+
+function keepVisibleSelection() {
+	const visible = new Set(rows.value.map((r) => r.photo_id));
+	selectedIds.value = new Set([...selectedIds.value].filter((id) => visible.has(id)));
 }
 
 onMounted(() => {

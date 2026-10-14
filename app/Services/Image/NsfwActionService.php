@@ -77,8 +77,11 @@ class NsfwActionService
 			$photo->is_validated = true;
 		}
 
-		$photo->save();
-		$this->recordOutcome($photo, $was_moderated, $was_hidden);
+		// The photo change and its moderation event are written together.
+		DB::transaction(function () use ($photo, $was_moderated, $was_hidden): void {
+			$photo->save();
+			$this->recordOutcome($photo, $was_moderated, $was_hidden);
+		});
 
 		return true;
 	}

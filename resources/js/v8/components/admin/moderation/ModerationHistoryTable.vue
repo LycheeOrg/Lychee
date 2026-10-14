@@ -14,14 +14,16 @@
 
 	<UTable v-if="events.length > 0" :data="events" :columns="columns" sticky class="max-h-[65vh] text-sm">
 		<template #thumbnail-cell="{ row }">
-			<img
-				v-if="row.original.thumb_url"
-				:src="row.original.thumb_url"
-				:alt="row.original.photo_title"
-				class="w-16 min-w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80"
+			<button
+				type="button"
+				class="flex items-center justify-center w-16 min-w-16 h-16 rounded cursor-pointer hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary"
+				:aria-label="row.original.photo_title"
+				:title="row.original.photo_title"
 				@click="emits('open-photo', row.original.photo_id)"
-			/>
-			<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
+			>
+				<img v-if="row.original.thumb_url" :src="row.original.thumb_url" alt="" class="w-16 h-16 object-cover rounded" />
+				<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
+			</button>
 		</template>
 
 		<template #event-cell="{ row }">

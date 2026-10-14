@@ -163,10 +163,13 @@ class ModerationController extends Controller
 	private function approvePhotos(Collection $photo_ids, ConfigManager $config_manager, ModerationHistory $moderation_history, int $admin_id): void
 	{
 		// Pass 1: Bulk approve the hidden photos; the visible ones get no event.
-		/** @var string[] $hidden_ids */
-		$hidden_ids = Photo::whereIn('id', $photo_ids)->where('is_validated', false)->pluck('id')->all();
-		Photo::whereIn('id', $hidden_ids)->update(['is_validated' => true]);
-		$moderation_history->record($hidden_ids, ModerationEvent::APPROVED, ModerationSource::ADMIN, $admin_id);
+		// The rows are locked so that concurrent approvals record a single event per photo.
+		DB::transaction(function () use ($photo_ids, $moderation_history, $admin_id): void {
+			/** @var string[] $hidden_ids */
+			$hidden_ids = Photo::whereIn('id', $photo_ids)->where('is_validated', false)->lockForUpdate()->pluck('id')->all();
+			Photo::whereIn('id', $hidden_ids)->update(['is_validated' => true]);
+			$moderation_history->record($hidden_ids, ModerationEvent::APPROVED, ModerationSource::ADMIN, $admin_id);
+		});
 
 		// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
 		$nsfw_photos = Photo::whereIn('id', $photo_ids)
