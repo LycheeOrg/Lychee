@@ -8,22 +8,22 @@ return [
     */
     'gallery' => 'Galeri',
     'access_gallery' => 'Galeriye eriş',
-    'Powered_by_Lychee' => 'Powered by Lychee',
+    'Powered_by_Lychee' => 'Lychee ile desteklenmektedir',
     'copyright' => 'Bu web sitesindeki tüm görsellerin telif hakkı %1$s © %2$s\'ye aittir',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'client_login' => 'Müşteri Girişi',
+    'view_public_gallery' => 'Herkese açık galeriyi görüntüle',
+    'contact' => 'İletişim',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Hakkında',
+        'featured' => 'Son Çalışmalar',
+        'scroll_down' => 'Aşağı kaydır',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Keşfet',
+        'explore_caption' => 'Galeriyi görüntüle',
+        'contact_caption' => 'İletişime geçin',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Tekrar hoş geldiniz',
     ],
 ];
