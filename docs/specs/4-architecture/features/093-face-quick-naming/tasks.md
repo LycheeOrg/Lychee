@@ -50,7 +50,7 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=FaceQueueTest`  
   - `make phpstan`
 
-- [ ] T-093-06 – Face-scoped image route, tests first (F-093-01, S-093-16; ADR-093-01).  
+- [x] T-093-06 – Face-scoped image route, tests first (F-093-01, S-093-16; ADR-093-01).  
   _Intent:_ `FacePhotoAssetTest` (owner/admin 200, other user 403, guest 401, flag off 403, unknown face 404, variant fallback, MAC when temporary links are on), then `GetFacePhotoAssetRequest` + `FacePhotoAssetController` reusing the `PhotoAssetController` serving logic through an extracted helper.  
   _Verification commands:_  
   - `php artisan test --filter=FacePhotoAssetTest`  

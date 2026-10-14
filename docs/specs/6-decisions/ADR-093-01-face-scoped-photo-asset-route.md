@@ -25,6 +25,7 @@ Add `GET /api/v3/Faces/{face_id}/photo/{variant}`. It serves a size variant of t
   - The caller is an admin or owns the photo. This is the same rule as the queue (FR-093-02) and as `PhotoPolicy::CAN_DISMISS_FACE`.
   - The face is not required to be unassigned or undismissed: the session may revisit faces after naming or discarding them.
 - **Signature:** when temporary image links are required for the caller (`temporary_image_link_enabled` plus the logged-in/admin settings), the same MAC check as `GetPhotoAssetRequest` applies.
+- **Variants:** `medium`, `small2x`, `small` or `thumb`. The request resolves the first existing row, walking down medium → small2x → small → thumb. `medium` is allowed, unlike on `/Asset` (thumbnail-class only), because no album viewer without full-photo rights can reach this route.
 - **Serving:** identical to `PhotoAssetController`: the variant fallback chain, temporary redirect for S3 and other remote disks, the watermarker path, and the same middleware exemptions (read-only session, JSON errors). The serving code is extracted into a shared helper used by both controllers, with no behaviour change for `/Asset`.
 - **Queue resource:** `FaceQueueResource` drops `album_ids`. The client builds image URLs from the face id.
 

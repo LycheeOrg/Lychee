@@ -119,3 +119,15 @@ Route::get('/Insights', [InsightsController::class, 'index'])->middleware(['supp
 // Face quick naming (Feature 093): people list for the name box.
 Route::get('/People', [AiVision\PeopleListController::class, 'index']);
 Route::get('/Faces/queue', [AiVision\FaceQueueController::class, 'index']);
+// Photo carrying a face (Feature 093, ADR-093-01): binary passthrough like
+// `/Asset` above, with the same middleware exemptions.
+Route::get('/Faces/{face_id}/photo/{variant}', [AiVision\FacePhotoAssetController::class, 'show'])
+	->withoutMiddleware([
+		'accept_content_type:json',
+		'content_type:json',
+		AddQueuedCookiesToResponse::class,
+		StartSession::class,
+		ShareErrorsFromSession::class,
+		VerifyCsrfToken::class,
+	])
+	->middleware(['json_errors', ReadOnlyStartSession::class]);
