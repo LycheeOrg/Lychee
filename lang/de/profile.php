@@ -20,7 +20,7 @@ return [
         'email_instruction' => 'Fügen Sie unten Ihre E-Mail-Adresse ein, um E-Mail-Benachrichtigungen zu erhalten. Wenn Sie keine E-Mails mehr erhalten möchten, entfernen Sie Ihre E-Mail-Adresse einfach unten.',
         'email' => 'E-Mail',
         'change' => 'Anmeldung ändern',
-        'api_token' => 'API Token …',
+        'api_token' => 'API-Token …',
         'missing_fields' => 'Fehlende Felder',
         'ldap_managed' => 'Benutzer-Anmeldeinformationen werden über LDAP verwaltet.',
     ],
