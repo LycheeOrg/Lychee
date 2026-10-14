@@ -56,7 +56,7 @@ Run after all tasks are `[x]`: map each FR/NFR to classes and tests in a table a
 | FR-092-14, FR-092-15 | `BucketKeyWriter`; `RecomputeBuckets` | `RecomputeAlbumPhotoBucketsJobTest` (1,001 links), `RecomputeAllPhotoBucketsJobTest`, `RecomputeBucketsCommandTest` |
 | FR-092-16 | migrations `2026_10_12_00000{1..4}` | migrations run by every test class |
 | FR-092-17 | `ManagedCachePhotoListingInvalidator::evictTimelineBucketsFor()`, `BucketScheme::idOfKey()` | `ManagedCachePhotoListingInvalidatorTest` |
-| FR-092-18 | `dateScrubber.ts` `tileDayKey()`/`takenDayKeyOf()` | `npm run check`; scratch esbuild check (viewer `TZ=Asia/Tokyo`, offset and named zones) |
+| FR-092-18 | `dateScrubber.ts` `tileDayKey()`/`takenDayKeyOf()` | `npm run check`; scratch esbuild check (viewer `TZ=Asia/Tokyo`, offset and named zones); S-092-16 browser check 2026-10-14 (viewer `America/New_York` and `Asia/Tokyo`, rail days = header days) |
 | NFR-092-01, 02 | — | scratch benchmark below |
 | NFR-092-03, 04, 05 | no PHP per-row bucket path left; no Carbon in new bucket code; no dependency change | code review |
 | NFR-092-06 | — | `php artisan typescript:transform`: `resources/js/lychee.d.ts` unchanged |
@@ -90,6 +90,10 @@ Prompt: "implement all increments in one go". T-092-04 … T-092-21 implemented 
 ### Intent log — 2026-10-14 (spec review)
 
 Prompt: "look through the specifications and make sure there is no clarifications required or ambiguities", then "A A A A and fix the rest". Review of spec against the implemented code logged Q-092-04 … 07 (all Option A): FR-092-12 bulk album rename, NFR-092-01 restated as a speed-up, FR-092-05 `unknown` per-row ids outside `own`, FR-092-13 `sorting_photos_order`. Tidied: FR-092-01 duplicate wording, FR-092-04 `OWNER_ID` (not an album sort column), duplicate Fixtures section, plan status, T-092-19 reopened (browser check not run). Implemented T-092-22 (`RenameAlbums` dispatches `AlbumSaved` for renamed albums; `AlbumKeysWriteTest`) and T-092-23 (`sorting_photos_order` in `SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS`; `BucketSettingsV3Test`). Commands: `php artisan test --filter='(AlbumKeysWriteTest|PhotoKeysWriteTest|BucketSettingsV3Test|UpdateSettingsTest|RenameTest|RenamerTest|AlbumSortingBucketDispatchTest|RecomputeAlbumStatsJobBucketTest)'` → 95 passed; `vendor/bin/php-cs-fixer fix`; `make phpstan` (only the 46 inherited `lang/*/all_settings.php` duplicate keys).
+
+### Intent log — 2026-10-14 (S-092-16 browser check)
+
+Prompt: "continue". `npx vite build`; scratch SQLite migrated with an explicit `DB_DATABASE` (checked with `artisan db:show` first), `lychee:create_user admin admin`, `lychee:sync` of three samples into album `Scrubber`; PDO seed of `taken_at`/`taken_at_orig_tz`/`taken_key` (late photo 2026-07-01 23:30 UTC `+02:00`), album `taken_at` ASC, `photo_timeline = day`, scrubber on; `lychee:recompute-buckets`; app via `php -S` on 8291. Playwright (`scrubber.mjs`, session scratchpad, not committed) hovers the rail at both scroll ends and compares lens days with header days: PASS in `America/New_York` and `Asia/Tokyo`, no console errors. First run failed only because the rail sat below the hero and was sampled off-screen.
 
 ## Increment Map
 
@@ -202,4 +206,3 @@ Run 2026-10-12 (agent), against spec, plan, tasks and open questions:
 - Default `timeline_photo_date_format_hour` (`g:i`) shows neither date nor am/pm.
 - Date scrubber granularity follows the timeline granularity (`Todo.todo`).
 - MySQL/MariaDB and PostgreSQL behaviour through CI only (no local server).
-- Browser check of S-092-16 (scrubber rail day vs header bucket) on a scratch instance — not run in the implementation session.

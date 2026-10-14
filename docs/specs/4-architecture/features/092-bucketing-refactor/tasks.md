@@ -117,9 +117,9 @@ _Last updated: 2026-10-14_
   _Verification commands:_  
   - `php artisan test --filter=ManagedCachePhotoListingInvalidatorTest`
 
-- [ ] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
+- [x] T-092-19 – Date scrubber capture-local day (F-092-18, S-092-16).  
   _Intent:_ `tileDayKey()` reads `taken_at` in the tile's `taken_at_orig_tz`; browser check on a scratch instance.  
-  _Status:_ code done 2026-10-14 (`npm run check` green); the S-092-16 browser check has not been run yet, so the task stays open.  
+  _Status:_ browser check done 2026-10-14: scratch SQLite instance, album sorted by `taken_at` at day granularity, photo taken 2026-07-01 23:30 UTC in `+02:00` plus two controls; Playwright with viewer zones `America/New_York` and `Asia/Tokyo`: rail days equal header days (`20 Jun`, `1 Jul`, `2 Jul 2026`), late photo on `2 Jul` in both, no console errors.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`
