@@ -39,7 +39,7 @@
 						<UIcon name="lucide:user" class="text-muted" />
 					</span>
 					<span class="grow truncate">{{ entry.person.name }}</span>
-					<span class="text-sm text-muted shrink-0">{{ entry.person.faceCount }} {{ $t("people.faces") }}</span>
+					<span class="text-sm text-muted shrink-0">{{ entry.person.faceCount }} {{ $t("people.faces_label") }}</span>
 				</template>
 				<template v-else>
 					<span class="w-8 h-8 rounded-full bg-elevated flex items-center justify-center shrink-0">
@@ -63,6 +63,7 @@
 import { computed, nextTick, onMounted, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { decideKey, rankMatches, type PersonOption, type Suggestion } from "@/v8/utils/quickNaming";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 const props = defineProps<{
 	people: PersonOption[];
@@ -71,7 +72,6 @@ const props = defineProps<{
 	prefill: string | null;
 	/** Text to restore after a failed request (FR-093-09). */
 	initialText: string;
-	isRtl: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -85,6 +85,7 @@ const emits = defineEmits<{
 	discard: [];
 }>();
 
+const { isRTL } = useLtRorRtL();
 const inputEl = ref<HTMLInputElement | null>(null);
 const text = ref(props.prefill ?? props.initialText);
 const highlight = ref(0);
@@ -132,7 +133,8 @@ function onKeydown(event: KeyboardEvent): void {
 		text: text.value,
 		prefill: props.prefill,
 		hasEntries: matches.value.length > 0,
-		isRtl: props.isRtl,
+		// Read at key time: the document direction can change with the language (NFR-093-02).
+		isRtl: isRTL(),
 	});
 	if (action === "none") {
 		return;

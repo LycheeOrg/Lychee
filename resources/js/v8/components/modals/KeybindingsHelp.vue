@@ -17,7 +17,8 @@
 					:key="`list-${idx}`"
 					:data="list.shortcuts"
 					:columns="columns"
-					class="max-w-2xs w-full"
+					class="w-full"
+					:class="props.only === undefined ? 'max-w-2xs' : 'max-w-xl'"
 					:ui="{ thead: 'hidden', td: 'px-2 py-1' }"
 				>
 					<template #key-cell="{ row }">

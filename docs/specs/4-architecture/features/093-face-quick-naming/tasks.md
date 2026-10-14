@@ -72,11 +72,11 @@ _Last updated: 2026-10-14_
   _Intent:_ queue, cursor, history, optimistic actions with failed-face marking and a "Go back" toast, explicit `is_dismissed` values, per-face request serialisation and pending-person reuse (FR-093-13), back target (FR-093-14), refetch on truncation, un-dismiss before assign, people-list reload after dismissing a named face, same-cluster suggestion override.  
   _Verification commands:_ `npm run check`.
 
-- [ ] T-093-11 – `QuickNamingInput.vue` and keyboard rules (F-093-03, F-093-04, F-093-06, F-093-08, F-093-12, S-093-03, S-093-12, S-093-13, S-093-17, S-093-18, S-093-20).  
+- [x] T-093-11 – `QuickNamingInput.vue` and keyboard rules (F-093-03, F-093-04, F-093-06, F-093-08, F-093-12, S-093-03, S-093-12, S-093-13, S-093-17, S-093-18, S-093-20).  
   _Intent:_ ranked list with "Create «text»" entry, highlight, Enter on the highlighted entry, Shift+Enter always creates a new person, rows show crop + face count, greyed-out suggestion accepted by Enter on an empty box, arrows when the box is empty or holds the unchanged pre-filled name, Backspace clears an unchanged pre-filled box in one press, Backspace/Space discard on an already-empty box, ignore `repeat`/IME, RTL mirroring, focus restore.  
   _Verification commands:_ `npm run check`; manual S-093-01…06, 12 in LTR and RTL.
 
-- [ ] T-093-12 – `QuickNaming.vue` view (F-093-01, F-093-10, NFR-093-01, S-093-07, S-093-15).  
+- [x] T-093-12 – `QuickNaming.vue` view (F-093-01, F-093-10, NFR-093-01, S-093-07, S-093-15).  
   _Intent:_ photo from API-093-05 with the face highlighted, crop, progress, "?" help button at the top right, buttons, done/error/failed/forbidden states, preload of the next 3 images.  
   _Verification commands:_ `npm run check`; manual UI-093-01…07.
 

@@ -54,12 +54,21 @@
 
 		<div v-else class="flex-1 min-h-0 flex flex-col items-center gap-4 p-4">
 			<!-- Photo with the current face highlighted (FR-093-01) -->
-			<div class="flex-1 min-h-0 w-full flex items-center justify-center">
-				<div v-if="photoUrl !== undefined" class="relative inline-block max-h-full max-w-full overflow-hidden rounded-lg">
-					<img :src="photoUrl" alt="" class="block max-h-[calc(100svh-22rem)] max-w-full object-contain select-none" draggable="false" />
-					<div class="absolute rounded-sm ring-2 ring-primary pointer-events-none quick-naming-highlight" :style="highlightStyle" />
-				</div>
-				<div v-else class="flex flex-col items-center gap-3">
+			<div ref="photoBox" class="flex-1 min-h-0 w-full relative">
+				<template v-if="photoUrl !== undefined">
+					<img
+						:src="photoUrl"
+						alt=""
+						class="absolute inset-0 w-full h-full object-contain select-none"
+						draggable="false"
+						@load="onPhotoLoad"
+					/>
+					<!-- Overlay clipped to the rendered image rectangle, so the highlight always sits on the face. -->
+					<div v-if="imageRect !== null" class="absolute overflow-hidden pointer-events-none" :style="imageRect">
+						<div class="absolute rounded-sm ring-2 ring-primary quick-naming-highlight" :style="highlightStyle" />
+					</div>
+				</template>
+				<div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-3">
 					<img v-if="currentEntry.face.cropUrl" :src="currentEntry.face.cropUrl" alt="" class="w-40 h-40 rounded-lg object-cover" />
 					<LycheeLoadingIcon fast class="text-2xl" />
 				</div>
@@ -100,7 +109,6 @@
 					:suggestion="session.suggestion.value"
 					:prefill="currentEntry.status === 'named' && currentEntry.person !== null ? currentEntry.person.name : null"
 					:initial-text="currentEntry.failedText"
-					:is-rtl="isRTL()"
 					@assign="(p) => session?.assignExisting(p)"
 					@create="(name) => session?.createPerson(name)"
 					@accept-suggestion="session.acceptSuggestion()"
@@ -171,6 +179,10 @@ const { rights } = useGlobalRights();
 const { isRTL } = useLtRorRtL();
 
 const isHelpOpen = ref(false);
+const photoBox = ref<HTMLElement | null>(null);
+const naturalSize = ref<{ width: number; height: number } | null>(null);
+const boxSize = ref<{ width: number; height: number }>({ width: 0, height: 0 });
+let resizeObserver: ResizeObserver | null = null;
 const nameInput = ref<InstanceType<typeof QuickNamingInput> | null>(null);
 
 /** `?cluster=<label>` scopes the queue to one cluster (FR-093-07). */
@@ -192,6 +204,44 @@ const currentEntry = computed<SessionEntry>(() => session.value?.current.value a
 const photoUrl = computed<string | undefined>(() => {
 	const entry = session.value?.current.value ?? null;
 	return entry === null ? undefined : session.value?.photoUrls.get(entry.face.id);
+});
+
+/** Rectangle of the photo as drawn with object-contain inside the photo box. */
+const imageRect = computed<CSSProperties | null>(() => {
+	const natural = naturalSize.value;
+	const box = boxSize.value;
+	if (natural === null || natural.width === 0 || natural.height === 0 || box.width === 0 || box.height === 0) {
+		return null;
+	}
+	const scale = Math.min(box.width / natural.width, box.height / natural.height);
+	const width = natural.width * scale;
+	const height = natural.height * scale;
+	return {
+		left: `${(box.width - width) / 2}px`,
+		top: `${(box.height - height) / 2}px`,
+		width: `${width}px`,
+		height: `${height}px`,
+	};
+});
+
+function onPhotoLoad(event: Event): void {
+	const img = event.target as HTMLImageElement;
+	naturalSize.value = { width: img.naturalWidth, height: img.naturalHeight };
+}
+
+watch(photoUrl, () => {
+	naturalSize.value = null;
+});
+
+watch(photoBox, (el) => {
+	resizeObserver?.disconnect();
+	if (el === null) {
+		return;
+	}
+	resizeObserver = new ResizeObserver(([entry]) => {
+		boxSize.value = { width: entry.contentRect.width, height: entry.contentRect.height };
+	});
+	resizeObserver.observe(el);
 });
 
 const highlightStyle = computed<CSSProperties>(() => {
@@ -288,6 +338,7 @@ watch(isHelpOpen, (open) => {
 onMounted(() => window.addEventListener("focus", focusInput));
 onBeforeUnmount(() => {
 	window.removeEventListener("focus", focusInput);
+	resizeObserver?.disconnect();
 	session.value?.dispose();
 });
 </script>

@@ -226,9 +226,11 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 			return;
 		}
 		pendingCounter++;
-		const option: PersonOption = { id: `pending:${pendingCounter}`, name: trimmed, faceCount: 1, cropUrl: entry.face.cropUrl, isPending: true };
-		const pendingId = option.id;
-		people.value.push(option);
+		const draft: PersonOption = { id: `pending:${pendingCounter}`, name: trimmed, faceCount: 1, cropUrl: entry.face.cropUrl, isPending: true };
+		const pendingId = draft.id;
+		people.value.push(draft);
+		// Mutate through the reactive copy so the list updates when the server id arrives.
+		const option = people.value[people.value.length - 1];
 
 		entry.status = "named";
 		entry.person = { id: pendingId, name: trimmed };
@@ -260,7 +262,7 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 				}
 				resolveId(id);
 			} catch (error) {
-				people.value = people.value.filter((p) => p !== option);
+				people.value = people.value.filter((p) => p.id !== pendingId);
 				rejectId(error);
 				throw error;
 			} finally {
