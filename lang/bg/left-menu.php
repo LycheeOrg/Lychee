@@ -22,9 +22,9 @@ return [
     'api' => 'API документация',
     'source_code' => 'Изходен код',
     'support' => 'Поддръжка',
-    'contact' => 'Contact',
-    'messages' => 'Messages',
-    'people' => 'People',
+    'contact' => 'Контакт',
+    'messages' => 'Съобщения',
+    'people' => 'Хора',
     'webhooks' => 'Webhooks',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Каталог на размерите',
 ];
