@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'gallery' => 'Συλλογή',
+    'access_gallery' => 'Πρόσβαση στη συλλογή',
+    'Powered_by_Lychee' => 'Με την υποστήριξη του Lychee',
+    'copyright' => 'Όλες οι εικόνες σε αυτόν τον ιστότοπο προστατεύονται από πνευματικά δικαιώματα του %1$s © %2$s',
+    'client_login' => 'Σύνδεση πελάτη',
+    'view_public_gallery' => 'Προβολή δημόσιας συλλογής',
+    'contact' => 'Επικοινωνία',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Σχετικά',
+        'featured' => 'Πρόσφατη δουλειά',
+        'scroll_down' => 'Κύλιση προς τα κάτω',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Εξερεύνηση',
+        'explore_caption' => 'Δείτε τη συλλογή',
+        'contact_caption' => 'Επικοινωνήστε μαζί μας',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Καλώς ήρθατε ξανά',
     ],
 ];

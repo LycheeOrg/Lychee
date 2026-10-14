@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'title' => 'Διαγνωστικά',
+    'copy_to_clipboard' => 'Αντιγραφή διαγνωστικών στο πρόχειρο',
+    'self-diagnosis' => 'Αυτοδιάγνωση',
+    'info' => 'Πληροφορίες',
+    'space' => 'Χώρος',
+    'load_space' => 'Φόρτωση χρήσης χώρου.',
+    'configuration' => 'Διαμόρφωση',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Πανομοιότυπο περιεχόμενο',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => 'Πληροφορίες',
+        'copy' => 'Τα διαγνωστικά αντιγράφηκαν στο πρόχειρο!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Η αντιγραφή διαγνωστικών είναι διαθέσιμη μόνο σε ασφαλή περιβάλλοντα (HTTPS).',
 ];

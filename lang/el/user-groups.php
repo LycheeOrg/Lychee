@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Ομάδες χρηστών',
+    'explanation' => 'Οι ομάδες χρηστών σάς επιτρέπουν να οργανώνετε χρήστες και να διαχειρίζεστε συλλογικά τα δικαιώματα.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Δημιουργία ομάδας',
+    'edit' => 'Επεξεργασία',
+    'delete' => 'Διαγραφή',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Φόρτωση ομάδων...',
+    'empty' => 'Δεν βρέθηκαν ομάδες.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Προσθήκη μέλους...',
+    'empty_group' => 'Αυτή η ομάδα είναι κενή.',
+    'no_permission_members' => 'Δεν έχετε δικαίωμα να δείτε τα μέλη αυτής της ομάδας.',
+    'remove_success' => 'Ο/Η %s αφαιρέθηκε από την ομάδα %s.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Διαγραφή ομάδας',
+    'confirm_delete_message' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την ομάδα;',
+    'cancel' => 'Ακύρωση',
+    'confirm' => 'Διαγραφή',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Όνομα ομάδας',
+        'description' => 'Περιγραφή',
+        'users' => 'Χρήστες',
+        'cancel' => 'Ακύρωση',
+        'create' => 'Δημιουργία',
+        'edit' => 'Επεξεργασία',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'Το όνομα ομάδας είναι υποχρεωτικό.',
     ],
 ];
