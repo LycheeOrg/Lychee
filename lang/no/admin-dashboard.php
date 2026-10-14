@@ -36,7 +36,7 @@ return [
     'update' => [
         'title' => 'Oppdateringsstatus',
         'update_available' => 'En nyere versjon er tilgjengelig (nåværende: :current, nyeste: :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'Installasjonen din er :count commits bak master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW-gjenkjenning og moderering',
@@ -85,6 +85,6 @@ return [
         'legend_nothing' => 'Ingen handling utføres.',
     ],
     'nsfw_findings' => [
-        'title' => 'NSFW findings',
+        'title' => 'NSFW-funn',
     ],
 ];
