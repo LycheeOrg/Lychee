@@ -65,7 +65,7 @@ class FaceController extends Controller
 	{
 		$face = $request->face();
 		$old_person_id = $face->person_id;
-		$face->is_dismissed = !$face->is_dismissed;
+		$face->is_dismissed = self::nextDismissedState($face->is_dismissed, $request->targetDismissed());
 		if ($face->is_dismissed) {
 			$face->person_id = null;
 		}
@@ -78,6 +78,14 @@ class FaceController extends Controller
 		}
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
+	}
+
+	/**
+	 * Explicit target when given (idempotent set), otherwise toggle.
+	 */
+	private static function nextDismissedState(bool $current, ?bool $target): bool
+	{
+		return $target ?? !$current;
 	}
 
 	/**

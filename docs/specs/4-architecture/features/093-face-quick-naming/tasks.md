@@ -97,7 +97,7 @@ _Last updated: 2026-10-14_
   - scoped tests  
   - `make phpstan`
 
-- [ ] T-093-16 – Explicit `is_dismissed` on `PATCH /api/v2/Face/{id}`, tests first (F-093-09, S-093-19).  
+- [x] T-093-16 – Explicit `is_dismissed` on `PATCH /api/v2/Face/{id}`, tests first (F-093-09, S-093-19).  
   _Intent:_ failing cases in `FaceDismissTest` (`true` keeps dismissed, `false` restores, absent toggles, non-boolean 422), then the optional rule and the set-or-toggle helper.  
   _Verification commands:_  
   - `php artisan test --filter=FaceDismissTest`  
