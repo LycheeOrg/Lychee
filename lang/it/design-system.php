@@ -24,7 +24,7 @@ return [
 	'loading' => [
 		'full_page' => 'Caricamento a pagina intera',
 		'full_page_description' => 'Comparsa lenta e scaglionata — usato dietro l\'oscuramento a schermo intero mentre una vista si carica.',
-		'mini_spinner' => 'Mini spinner',
+		'mini_spinner' => 'Indicatore di caricamento piccolo',
 		'mini_spinner_description' => 'Variante veloce, visibile subito — usata in linea per pulsanti, elenchi e piccoli stati di caricamento.',
 	],
 

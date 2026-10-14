@@ -8,7 +8,7 @@ return [
     */
     'gallery' => 'Galleria',
     'access_gallery' => 'Accedi alla galleria',
-    'Powered_by_Lychee' => 'Powered by Lychee',
+    'Powered_by_Lychee' => 'Realizzato con Lychee',
     'copyright' => 'Tutte le immagini di questo sito sono protette da copyright di %1$s © %2$s',
     'client_login' => 'Accesso clienti',
     'view_public_gallery' => 'Visualizza la galleria pubblica',
