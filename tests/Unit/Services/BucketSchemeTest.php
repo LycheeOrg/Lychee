@@ -228,9 +228,9 @@ class BucketSchemeTest extends AbstractTestCase
 		$query = DB::table('photo_album')->where($this->photos(ColumnSortingType::TAKEN_AT)->storedWindow('k', ['2026-07', 'unknown']));
 
 		self::assertSame(['2026-07', '2026-08'], $query->getBindings());
-		self::assertStringContainsString('"k" >= ?', $query->toSql());
-		self::assertStringContainsString('"k" < ?', $query->toSql());
-		self::assertStringContainsString('"k" is null', $query->toSql());
+		self::assertStringContainsString(self::wrap('k') . ' >= ?', $query->toSql());
+		self::assertStringContainsString(self::wrap('k') . ' < ?', $query->toSql());
+		self::assertStringContainsString(self::wrap('k') . ' is null', $query->toSql());
 	}
 
 	public function testStoredAlphabeticalWindowComparesThePrefix(): void
@@ -259,14 +259,14 @@ class BucketSchemeTest extends AbstractTestCase
 
 		$taken = DB::table('photos')->where($this->photos(ColumnSortingType::TAKEN_AT)->sourceWindow(['2026-07']));
 		self::assertSame(['2026-07', '2026-08'], $taken->getBindings());
-		self::assertStringContainsString('"photos"."taken_key" >= ?', $taken->toSql());
+		self::assertStringContainsString(self::wrap('photos.taken_key') . ' >= ?', $taken->toSql());
 
 		$flag = DB::table('photos')->where($this->photos(ColumnSortingType::IS_HIGHLIGHTED)->sourceWindow(['1', '0']));
 		self::assertSame([true, false], $flag->getBindings());
 
 		$rating = DB::table('photos')->where($this->photos(ColumnSortingType::RATING_AVG)->sourceWindow(['4', 'unknown']));
 		self::assertSame([3.5, 4.5], $rating->getBindings());
-		self::assertStringContainsString('"photos"."rating_avg" is null', $rating->toSql());
+		self::assertStringContainsString(self::wrap('photos.rating_avg') . ' is null', $rating->toSql());
 
 		$alphabetical = $this->photos(ColumnSortingType::TITLE, overrides: ['photo_title_bucket_mode' => TitleBucketMode::ALPHABETICAL]);
 		$prefix = DB::table('photos')->where($alphabetical->sourceWindow(['a']));
@@ -303,5 +303,13 @@ class BucketSchemeTest extends AbstractTestCase
 		];
 
 		self::assertSame([['1', '0'], [2, 5]], $this->photos(ColumnSortingType::IS_HIGHLIGHTED)->collectBuckets($rows));
+	}
+
+	/**
+	 * Quotes a column the way the test connection does: `k` on MySQL, "k" on SQLite and PostgreSQL.
+	 */
+	private static function wrap(string $column): string
+	{
+		return DB::getQueryGrammar()->wrap($column);
 	}
 }
