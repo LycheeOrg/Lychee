@@ -79,7 +79,7 @@ return [
         'view' => 'Bekijken',
         'enterContentUrl' => 'Voer hier de content-URL in.',
         'enterTrackingUrl' => 'Voer trackingcode of URL in',
-        'download' => 'Download',
+        'download' => 'Downloaden',
         'downloadNotAvailable' => 'Download nog niet beschikbaar',
         'trackShipment' => 'Zending volgen',
         'awaitingShipment' => 'Wacht op verzending',

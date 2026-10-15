@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Liên kết bổ sung',
+    'description' => 'Quản lý danh sách có thứ tự các liên kết bổ sung hiển thị trên thanh điều hướng và/hoặc chân trang của trang chủ.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Chưa cấu hình liên kết bổ sung nào.',
+    'create_first' => 'Tạo liên kết đầu tiên của bạn',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Nhãn',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Vị trí',
+    'col_enabled' => 'Đã bật',
+    'col_actions' => 'Thao tác',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Điều hướng',
+    'placement_footer' => 'Chân trang',
+    'placement_both' => 'Điều hướng & Chân trang',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Tích hợp sẵn',
+    'built_in_cannot_delete' => 'Không thể xóa liên kết tích hợp sẵn này. Thay vào đó hãy tắt nó, hoặc sắp xếp lại như mọi liên kết khác.',
+    'built_in_url_hint' => 'Đây là liên kết tích hợp sẵn và không thể thay đổi đích của nó.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Tạo liên kết',
+    'edit' => 'Sửa',
+    'delete' => 'Xóa',
+    'cancel' => 'Hủy',
+    'save' => 'Lưu',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Nhãn',
+    'field_label_placeholder' => 'vd: Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Vị trí',
+    'field_open_in_new_tab' => 'Mở trong tab mới',
+    'field_enabled' => 'Đã bật',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Tạo liên kết',
+    'modal_edit_title' => 'Sửa liên kết',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Xóa liên kết',
+    'confirm_delete_message' => 'Bạn có chắc muốn xóa liên kết ":label"? Thao tác này không thể hoàn tác.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Đã tạo liên kết thành công.',
+    'updated' => 'Đã cập nhật liên kết thành công.',
+    'deleted' => 'Đã xóa liên kết thành công.',
+    'reordered' => 'Đã sắp xếp lại liên kết thành công.',
+    'error_load' => 'Không thể tải liên kết.',
+    'error_save' => 'Không thể lưu liên kết.',
+    'error_delete' => 'Không thể xóa liên kết.',
+    'error_reorder' => 'Không thể sắp xếp lại liên kết.',
 ];

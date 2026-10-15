@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Etiketler',
+    'description' => 'Etiketlerinizi buradan yönetin. Etiketleri yeniden adlandırabilir, birleştirebilir ve silebilirsiniz.',
+    'no_tags' => 'Etiket bulunamadı.',
+    'loading' => 'Etiketler yükleniyor...',
+    'rename' => 'Yeniden adlandır',
+    'merge' => 'Birleştir',
+    'delete' => 'Sil',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Ad',
+    'column_photos' => 'Fotoğraflar',
+    'column_albums' => 'Albümler',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => '“%s” etiketini silmek istediğinizden emin misiniz?',
+    'delete_confirm_multiple' => 'Bu %d etiketi silmek istediğinizden emin misiniz?',
+    'delete_warning' => 'Bu işlem geri alınamaz! Bu etiketle ilişkili tüm fotoğraflar artık bu etikete sahip olmayacak.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => '“%1$s” etiketini “%2$s” etiketiyle birleştirmek istediğinizden emin misiniz?',
+    'merge_warning' => 'Bu işlem geri alınamaz! Kaynak etiketle ilişkili tüm fotoğraflar hedef etikete taşınacak.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Etiketi yeniden adlandır',
 ];

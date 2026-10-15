@@ -36,7 +36,7 @@ return [
     'update' => [
         'title' => 'État de la mise à jour',
         'update_available' => 'Une nouvelle version est disponible (actuelle : :current, dernière : :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'Votre installation a :count commits de retard sur master.',
     ],
     'nsfw_config' => [
         'title' => 'Détection NSFW et modération',
@@ -85,6 +85,6 @@ return [
         'legend_nothing' => 'Aucune action n’est effectuée.',
     ],
     'nsfw_findings' => [
-        'title' => 'NSFW findings',
+        'title' => 'Détections NSFW',
     ],
 ];

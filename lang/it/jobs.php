@@ -6,14 +6,14 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
+    'title' => 'Job',
+    'no_data' => 'Nessun job è stato ancora eseguito.',
+    'ready' => 'Pronto',
+    'success' => 'Successo',
+    'failure' => 'Errore',
+    'started' => 'Avviato',
+    'col_date' => 'Data',
+    'col_status' => 'Stato',
+    'col_username' => 'Utente',
     'col_job' => 'Job',
 ];

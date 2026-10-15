@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'title' => 'Diagnostika',
+    'copy_to_clipboard' => 'Kopírovať diagnostiku do schránky',
+    'self-diagnosis' => 'Autodiagnostika',
+    'info' => 'Informácie',
+    'space' => 'Priestor',
+    'load_space' => 'Načítať využitie priestoru.',
+    'configuration' => 'Konfigurácia',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Rovnaký obsah',
     'toast' => [
         'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'copy' => 'Diagnostika skopírovaná do schránky!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Kopírovanie diagnostiky je dostupné iba v zabezpečenom kontexte (HTTPS).',
 ];

@@ -7,8 +7,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Flow',
-    'by_author' => 'by %s',
-    'open_album' => 'Open album',
-    'show_more' => 'Show more',
-    'no_content' => 'No content.',
+    'by_author' => 'autor: %s',
+    'open_album' => 'Otwórz album',
+    'show_more' => 'Pokaż więcej',
+    'no_content' => 'Brak treści.',
 ];

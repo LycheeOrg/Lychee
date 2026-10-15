@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Synchronizácia súborov na serveri',
+    'description' => 'Synchronizujte súbory na serveri s Lychee. Importujú sa fotografie z adresára a všetkých jeho podadresárov. Tento proces je veľmi pomalý, preto odporúčame používať workery a fronty, aby nedošlo k vypršaniu časového limitu.',
+    'sync' => 'Synchronizovať',
+    'loading' => 'Načítava sa...',
+    'selected_directory' => 'Aktuálne vybraný adresár:',
+    'resync_metadata' => 'Znovu synchronizovať metadáta existujúcich súborov.',
+    'delete_imported' => 'Odstrániť pôvodné súbory.',
+    'import_via_symlink' => 'Importovať fotografie cez symbolický odkaz namiesto kopírovania súborov.',
+    'skip_duplicates' => 'Preskočiť fotografie a albumy, ktoré už v galérii existujú.',
+    'delete_missing_photos' => 'Odstrániť fotografie v albume, ktoré sa nenachádzajú v synchronizovanom adresári.',
+    'delete_missing_albums' => 'Odstrániť albumy v nadradenom albume, ktoré sa nenachádzajú v synchronizovanom adresári.',
+    'importing_please_be_patient' => 'Importuje sa, buďte trpezliví...',
 ];
 

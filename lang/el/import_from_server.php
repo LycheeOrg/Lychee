@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Συγχρονισμός αρχείων διακομιστή',
+    'description' => 'Συγχρονίστε τα αρχεία του διακομιστή σας με το Lychee. Αυτό θα εισαγάγει φωτογραφίες από έναν κατάλογο και όλους τους υποκαταλόγους του. Η διαδικασία είναι πολύ αργή και συνιστούμε τη χρήση workers και ουρών (queues) για την αποφυγή λήξης χρόνου.',
+    'sync' => 'Συγχρονισμός',
+    'loading' => 'Φόρτωση...',
+    'selected_directory' => 'Τρέχων επιλεγμένος κατάλογος:',
+    'resync_metadata' => 'Επανασυγχρονισμός μεταδεδομένων υπαρχόντων αρχείων.',
+    'delete_imported' => 'Διαγραφή των αρχικών αρχείων.',
+    'import_via_symlink' => 'Εισαγωγή φωτογραφιών μέσω συμβολικού συνδέσμου αντί για αντιγραφή των αρχείων.',
+    'skip_duplicates' => 'Παράλειψη φωτογραφιών και άλμπουμ που υπάρχουν ήδη στη συλλογή.',
+    'delete_missing_photos' => 'Διαγραφή φωτογραφιών του άλμπουμ που δεν υπάρχουν στον συγχρονισμένο κατάλογο.',
+    'delete_missing_albums' => 'Διαγραφή άλμπουμ του γονικού άλμπουμ που δεν υπάρχουν στον συγχρονισμένο κατάλογο.',
+    'importing_please_be_patient' => 'Εισαγωγή σε εξέλιξη, παρακαλούμε κάντε υπομονή...',
 ];
 

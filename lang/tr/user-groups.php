@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Kullanıcı grupları',
+    'explanation' => 'Kullanıcı grupları, kullanıcıları düzenlemenizi ve izinleri toplu olarak yönetmenizi sağlar.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Grup oluştur',
+    'edit' => 'Düzenle',
+    'delete' => 'Sil',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Gruplar yükleniyor...',
+    'empty' => 'Grup bulunamadı.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Üye ekle...',
+    'empty_group' => 'Bu grup boş.',
+    'no_permission_members' => 'Bu grubun üyelerini görme izniniz yok.',
+    'remove_success' => '%s, %s grubundan çıkarıldı.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Grubu sil',
+    'confirm_delete_message' => 'Bu grubu silmek istediğinizden emin misiniz?',
+    'cancel' => 'İptal',
+    'confirm' => 'Sil',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Grup adı',
+        'description' => 'Açıklama',
+        'users' => 'Kullanıcılar',
+        'cancel' => 'İptal',
+        'create' => 'Oluştur',
+        'edit' => 'Düzenle',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'Grup adı zorunludur.',
     ],
 ];

@@ -6,21 +6,21 @@ return [
     | Duplicate Finder Page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Maintenance',
-    'intro' => 'On this page you will find the duplicate pictures found in your database.',
-    'found' => ' duplicates found!',
-    'invalid-search' => ' At least the checksum or title condition must be checked.',
-    'checksum-must-match' => 'Checksum must match.',
-    'title-must-match' => 'Title must match.',
-    'must-be-in-same-album' => 'Must be in the same album.',
+    'title' => 'Údržba',
+    'intro' => 'Na tejto stránke nájdete duplicitné obrázky nájdené vo vašej databáze.',
+    'found' => ' nájdených duplikátov!',
+    'invalid-search' => ' Musí byť zaškrtnutá aspoň podmienka kontrolného súčtu alebo názvu.',
+    'checksum-must-match' => 'Kontrolný súčet sa musí zhodovať.',
+    'title-must-match' => 'Názov sa musí zhodovať.',
+    'must-be-in-same-album' => 'Musia byť v rovnakom albume.',
     'columns' => [
         'album' => 'Album',
-        'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'photo' => 'Fotografia',
+        'checksum' => 'Kontrolný súčet',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'Nezostal žiadny originál.',
+        'keep-one' => 'V tejto skupine ste vybrali všetky duplikáty. Vyberte aspoň jeden duplikát, ktorý sa ponechá.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Odstrániť vybrané',
 ];

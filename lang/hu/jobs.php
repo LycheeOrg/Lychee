@@ -6,14 +6,14 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'title' => 'Feladatok',
+    'no_data' => 'Még nem futott feladat.',
+    'ready' => 'Kész',
+    'success' => 'Sikeres',
+    'failure' => 'Sikertelen',
+    'started' => 'Elindítva',
+    'col_date' => 'Dátum',
+    'col_status' => 'Állapot',
+    'col_username' => 'Felhasználó',
+    'col_job' => 'Feladat',
 ];
