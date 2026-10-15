@@ -39,6 +39,7 @@ return [
     'source_upload' => 'アップロード',
     'source_nsfw_scan' => 'NSFW スキャン',
     'history_title' => 'モデレーション',
+    'history_show_all' => 'すべて表示 (:count)',
     'findings_title' => 'NSFW 検出結果',
     'findings_description' => 'NSFW 検出結果を確認し、誤ったものを却下してください。却下された検出結果は削除されますが、再スキャンで再び検出される可能性があります。',
     'findings_empty' => 'NSFW 検出結果はありません。',

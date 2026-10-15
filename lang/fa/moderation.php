@@ -39,6 +39,7 @@ return [
     'source_upload' => 'بارگذاری',
     'source_nsfw_scan' => 'اسکن NSFW',
     'history_title' => 'نظارت',
+    'history_show_all' => 'نمایش همه (:count)',
     'findings_title' => 'یافته‌های NSFW',
     'findings_description' => 'یافته‌های NSFW را بازبینی کنید و موارد نادرست را رد کنید. یافته‌های ردشده حذف می‌شوند؛ اسکن جدید ممکن است دوباره آن‌ها را پیدا کند.',
     'findings_empty' => 'یافته NSFW وجود ندارد.',

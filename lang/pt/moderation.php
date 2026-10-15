@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Carregamento',
     'source_nsfw_scan' => 'Análise NSFW',
     'history_title' => 'Moderação',
+    'history_show_all' => 'Mostrar tudo (:count)',
     'findings_title' => 'Deteções NSFW',
     'findings_description' => 'Reveja as deteções NSFW e descarte as incorretas. As deteções descartadas são eliminadas; uma nova análise pode voltar a encontrá-las.',
     'findings_empty' => 'Sem deteções NSFW.',

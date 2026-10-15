@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Yükleme',
     'source_nsfw_scan' => 'NSFW taraması',
     'history_title' => 'Moderasyon',
+    'history_show_all' => 'Tümünü göster (:count)',
     'findings_title' => 'NSFW bulguları',
     'findings_description' => 'NSFW bulgularını inceleyin ve hatalı olanları reddedin. Reddedilen bulgular silinir; yeni bir tarama onları yeniden bulabilir.',
     'findings_empty' => 'NSFW bulgusu yok.',

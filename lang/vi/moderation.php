@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Tải lên',
     'source_nsfw_scan' => 'Quét NSFW',
     'history_title' => 'Kiểm duyệt',
+    'history_show_all' => 'Hiển thị tất cả (:count)',
     'findings_title' => 'Phát hiện NSFW',
     'findings_description' => 'Xem xét các phát hiện NSFW và bỏ qua những phát hiện sai. Các phát hiện bị bỏ qua sẽ bị xóa; một lần quét mới có thể phát hiện lại chúng.',
     'findings_empty' => 'Không có phát hiện NSFW nào.',

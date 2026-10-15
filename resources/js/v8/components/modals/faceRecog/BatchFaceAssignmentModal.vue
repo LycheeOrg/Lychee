@@ -4,7 +4,7 @@
 			<span class="font-bold">{{ $t("people.assignment.batch_title", { count: String(faceIds.length) }) }}</span>
 		</template>
 		<template #body>
-			<PersonInput v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" />
+			<PersonInput v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" @submit="submitOnEnter" />
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
@@ -54,6 +54,13 @@ const toast = useAppToast();
 const selectedPersonId = ref<string | undefined>(undefined);
 const newPersonName = ref("");
 const submitting = ref(false);
+
+function submitOnEnter() {
+	if (submitting.value || (!selectedPersonId.value && !newPersonName.value.trim())) {
+		return;
+	}
+	submit();
+}
 
 function submit() {
 	submitting.value = true;

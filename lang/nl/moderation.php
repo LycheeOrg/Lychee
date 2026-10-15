@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Upload',
     'source_nsfw_scan' => 'NSFW-scan',
     'history_title' => 'Moderatie',
+    'history_show_all' => 'Alles weergeven (:count)',
     'findings_title' => 'NSFW-bevindingen',
     'findings_description' => 'Beoordeel de NSFW-bevindingen en wijs de onjuiste af. Afgewezen bevindingen worden verwijderd; een nieuwe scan kan ze opnieuw vinden.',
     'findings_empty' => 'Geen NSFW-bevindingen.',

@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Feltöltés',
     'source_nsfw_scan' => 'NSFW-vizsgálat',
     'history_title' => 'Moderálás',
+    'history_show_all' => 'Összes megjelenítése (:count)',
     'findings_title' => 'NSFW-találatok',
     'findings_description' => 'Tekintse át az NSFW-találatokat, és vesse el a hibásakat. Az elvetett találatok törlődnek; egy új vizsgálat ismét megtalálhatja őket.',
     'findings_empty' => 'Nincsenek NSFW-találatok.',

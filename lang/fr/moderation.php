@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Téléversement',
     'source_nsfw_scan' => 'Analyse NSFW',
     'history_title' => 'Modération',
+    'history_show_all' => 'Tout afficher (:count)',
     'findings_title' => 'Détections NSFW',
     'findings_description' => 'Passez en revue les détections NSFW et rejetez celles qui sont erronées. Les détections rejetées sont supprimées ; une nouvelle analyse peut les retrouver.',
     'findings_empty' => 'Aucune détection NSFW.',

@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Nahrání',
     'source_nsfw_scan' => 'Kontrola NSFW',
     'history_title' => 'Moderace',
+    'history_show_all' => 'Zobrazit vše (:count)',
     'findings_title' => 'Nálezy NSFW',
     'findings_description' => 'Projděte nálezy NSFW a zamítněte ty chybné. Zamítnuté nálezy se smažou, nová kontrola je však může najít znovu.',
     'findings_empty' => 'Žádné nálezy NSFW.',

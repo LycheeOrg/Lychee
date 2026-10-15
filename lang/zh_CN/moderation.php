@@ -39,6 +39,7 @@ return [
     'source_upload' => '上传',
     'source_nsfw_scan' => 'NSFW 扫描',
     'history_title' => '审核',
+    'history_show_all' => '显示全部 (:count)',
     'findings_title' => 'NSFW 检测结果',
     'findings_description' => '查看 NSFW 检测结果并忽略误报。被忽略的结果将被删除；重新扫描时可能会再次检测到。',
     'findings_empty' => '没有 NSFW 检测结果。',

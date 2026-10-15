@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Nahratie',
     'source_nsfw_scan' => 'NSFW sken',
     'history_title' => 'Moderovanie',
+    'history_show_all' => 'Zobraziť všetko (:count)',
     'findings_title' => 'NSFW nálezy',
     'findings_description' => 'Skontrolujte NSFW nálezy a zamietnite tie nesprávne. Zamietnuté nálezy sa odstránia; nový sken ich môže znova nájsť.',
     'findings_empty' => 'Žiadne NSFW nálezy.',

@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Качване',
     'source_nsfw_scan' => 'NSFW сканиране',
     'history_title' => 'Модерация',
+    'history_show_all' => 'Покажи всички (:count)',
     'findings_title' => 'NSFW находки',
     'findings_description' => 'Прегледайте NSFW находките и отхвърлете грешните. Отхвърлените находки се изтриват; ново сканиране може да ги открие отново.',
     'findings_empty' => 'Няма NSFW находки.',

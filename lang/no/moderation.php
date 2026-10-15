@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Opplasting',
     'source_nsfw_scan' => 'NSFW-skanning',
     'history_title' => 'Moderering',
+    'history_show_all' => 'Vis alle (:count)',
     'findings_title' => 'NSFW-funn',
     'findings_description' => 'Gå gjennom NSFW-funnene og avvis de feilaktige. Avviste funn slettes; en ny skanning kan finne dem igjen.',
     'findings_empty' => 'Ingen NSFW-funn.',

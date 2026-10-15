@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Caricamento',
     'source_nsfw_scan' => 'Scansione NSFW',
     'history_title' => 'Moderazione',
+    'history_show_all' => 'Mostra tutto (:count)',
     'findings_title' => 'Rilevamenti NSFW',
     'findings_description' => 'Controlla i rilevamenti NSFW e scarta quelli errati. I rilevamenti scartati vengono eliminati; una nuova scansione può trovarli di nuovo.',
     'findings_empty' => 'Nessun rilevamento NSFW.',

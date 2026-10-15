@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Subida',
     'source_nsfw_scan' => 'Escaneo NSFW',
     'history_title' => 'Moderación',
+    'history_show_all' => 'Mostrar todo (:count)',
     'findings_title' => 'Detecciones NSFW',
     'findings_description' => 'Revisa las detecciones NSFW y descarta las erróneas. Las detecciones descartadas se borran; un nuevo escaneo puede volver a encontrarlas.',
     'findings_empty' => 'No hay detecciones NSFW.',

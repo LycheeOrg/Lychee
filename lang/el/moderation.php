@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Μεταφόρτωση',
     'source_nsfw_scan' => 'Σάρωση NSFW',
     'history_title' => 'Εποπτεία',
+    'history_show_all' => 'Εμφάνιση όλων (:count)',
     'findings_title' => 'Ευρήματα NSFW',
     'findings_description' => 'Ελέγξτε τα ευρήματα NSFW και απορρίψτε τα λανθασμένα. Τα απορριφθέντα ευρήματα διαγράφονται· μια νέα σάρωση μπορεί να τα εντοπίσει ξανά.',
     'findings_empty' => 'Δεν υπάρχουν ευρήματα NSFW.',

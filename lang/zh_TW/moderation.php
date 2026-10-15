@@ -39,6 +39,7 @@ return [
     'source_upload' => '上傳',
     'source_nsfw_scan' => 'NSFW 掃描',
     'history_title' => '內容審核',
+    'history_show_all' => '顯示全部 (:count)',
     'findings_title' => 'NSFW 偵測結果',
     'findings_description' => '檢視 NSFW 偵測結果並駁回錯誤的項目。駁回的結果會被刪除；重新掃描時可能會再次偵測到。',
     'findings_empty' => '沒有 NSFW 偵測結果。',

@@ -39,6 +39,7 @@ return [
     'source_upload' => 'Przesłanie',
     'source_nsfw_scan' => 'Skanowanie NSFW',
     'history_title' => 'Moderacja',
+    'history_show_all' => 'Pokaż wszystko (:count)',
     'findings_title' => 'Wykrycia NSFW',
     'findings_description' => 'Przejrzyj wykrycia NSFW i odrzuć błędne. Odrzucone wykrycia są usuwane; nowe skanowanie może je wykryć ponownie.',
     'findings_empty' => 'Brak wykryć NSFW.',
