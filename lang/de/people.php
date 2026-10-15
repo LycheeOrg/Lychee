@@ -6,10 +6,10 @@ return [
  * Copyright (c) 2018-2026 LycheeOrg.
  */
     /*
-	|--------------------------------------------------------------------------
-	| People / Facial Recognition
-	|--------------------------------------------------------------------------
-	*/
+    |--------------------------------------------------------------------------
+    | People / Facial Recognition
+    |--------------------------------------------------------------------------
+    */
     'title' => 'Menschen',
     'description' => 'Fotos nach den darauf abgebildeten Personen durchsuchen.',
     'no_people' => 'Es wurden noch keine Personen gefunden. Scannen Sie einige Fotos, um Gesichter zu erkennen.',
@@ -70,6 +70,8 @@ return [
     'filter_active' => 'Fotos mit :name werden angezeigt',
     'people_in_photo' => 'Personen auf diesem Foto',
     'remove_from_person' => 'Von Person entfernen',
+    'remove_from_cluster' => 'Aus dem Cluster entfernen',
+    'removed_from_cluster' => 'Gesicht aus dem Cluster entfernt.',
     'remove_from_person_confirm' => 'Dieses Foto von „:name“ entfernen?',
     'remove_from_person_success' => 'Gesicht erfolgreich entfernt.',
     'batch_select' => 'Gesichter auswählen',
@@ -108,5 +110,41 @@ return [
         'warning' => 'Dadurch werden alle Gesichter der Quellperson auf die Zielperson verschoben und die Quellperson gelöscht. Dies kann nicht rückgängig gemacht werden.',
         'confirm' => 'Zusammenführen',
         'success' => 'Personen erfolgreich zusammengeführt.',
+    ],
+    'quick_naming' => [
+        'title' => 'Schnellbenennung',
+        'button' => 'Schnellbenennung',
+        'button_cluster' => 'Einzeln benennen',
+        'progress' => ':current / :total Gesichter',
+        'progress_more' => ':current / :total+ Gesichter',
+        'placeholder' => 'Namen eingeben…',
+        'suggested' => 'Vorschlag',
+        'suggestion_hint' => 'Enter übernimmt den Vorschlag, Tippen ersetzt ihn.',
+        'create' => '„:name“ erstellen',
+        'create_another' => 'Weitere Person „:name“ erstellen',
+        'previous' => 'Zurück',
+        'skip' => 'Überspringen',
+        'discard' => 'Verwerfen',
+        'hint_name' => 'benennen',
+        'hint_new_person' => 'neue Person',
+        'hint_skip' => 'überspringen',
+        'hint_back' => 'zurück',
+        'hint_discard' => 'verwerfen (leeres Feld)',
+        'hint_leave' => 'verlassen',
+        'revisit_named' => 'Namen bearbeiten und Enter drücken, um neu zuzuweisen; leeren und Enter drücken, um die Zuweisung aufzuheben.',
+        'revisit_discarded' => 'Namen eingeben und Enter drücken, um dieses Gesicht wiederherzustellen und zu benennen.',
+        'badge_named' => 'Benannt',
+        'badge_discarded' => 'Verworfen',
+        'badge_failed' => 'Nicht gespeichert',
+        'failed_hint' => 'Dieses Gesicht konnte nicht gespeichert werden. Enter drücken, um es erneut zu versuchen.',
+        'failed_toast' => 'Ein Gesicht konnte nicht gespeichert werden.',
+        'go_back' => 'Zurückgehen',
+        'done' => 'Alle Gesichter sind benannt.',
+        'load_error' => 'Die Gesichter konnten nicht geladen werden.',
+        'retry' => 'Erneut versuchen',
+        'forbidden' => 'Sie dürfen keine Gesichter benennen.',
+        'back_to_people' => 'Zurück zu Personen',
+        'back_to_clusters' => 'Zurück zur Gesichterprüfung',
+        'help' => 'Tastenkürzel',
     ],
 ];

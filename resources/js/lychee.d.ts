@@ -80,6 +80,7 @@ declare namespace App {
 		export type DeviceCategory = "camera" | "mobile" | "other";
 		export type DownloadVariantType = "RAW" | "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 		export type FacePermissionMode = "public" | "private" | "privacy-preserving" | "restricted";
+		export type FacePhotoAssetType = "medium" | "small2x" | "small" | "thumb";
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
@@ -1694,6 +1695,7 @@ declare namespace App {
 					is_nsfw_classifier_enabled: boolean;
 					is_face_overlay_enabled: boolean;
 					is_face_recognition_warning_enabled: boolean;
+					can_quick_name_faces: boolean;
 					is_contact_enabled: boolean;
 					messages_count: number;
 					is_design_system_enabled: boolean;
@@ -2082,6 +2084,20 @@ declare namespace App {
 					config: App.Http.Resources.GalleryConfigs.RootConfig;
 					rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 				};
+				export type FaceQueueResource = {
+					ids: string[];
+					photo_ids: string[];
+					xs: number[];
+					ys: number[];
+					widths: number[];
+					heights: number[];
+					crop_urls: (string | null)[];
+					cluster_labels: (number | null)[];
+					suggested_person_ids: (string | null)[];
+					suggested_person_names: (string | null)[];
+					laplacian_variances: number[];
+					is_truncated: boolean;
+				};
 				export type FlowListResource = {
 					ids: string[];
 					titles: string[];
@@ -2126,6 +2142,12 @@ declare namespace App {
 					album_ids: (string | null)[];
 					latitudes: number[];
 					longitudes: number[];
+				};
+				export type PeopleListResource = {
+					ids: string[];
+					names: string[];
+					face_counts: number[];
+					crop_urls: (string | null)[];
 				};
 				export type PhotoBucketResource = {
 					bucket_ids: string[];

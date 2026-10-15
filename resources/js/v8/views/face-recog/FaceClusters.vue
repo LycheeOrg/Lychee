@@ -5,6 +5,16 @@
 				<GoBack @go-back="$router.push({ name: 'people' })" />
 			</template>
 			{{ $t("people.clusters_title") }}
+			<template #right>
+				<UButton
+					v-if="rights?.modules.can_quick_name_faces"
+					:label="$t('people.quick_naming.button')"
+					color="neutral"
+					variant="outline"
+					icon="lucide:keyboard"
+					@click="$router.push({ name: 'face-quick-naming', query: { from: 'clusters' } })"
+				/>
+			</template>
 		</UHeader>
 
 		<FaceRecognitionWarning />
@@ -124,6 +134,17 @@
 								size="sm"
 								@click="requestDismissCluster(cluster)"
 							/>
+							<UButton
+								v-if="rights?.modules.can_quick_name_faces"
+								:label="$t('people.quick_naming.button_cluster')"
+								icon="lucide:keyboard"
+								color="neutral"
+								variant="outline"
+								size="sm"
+								@click="
+									$router.push({ name: 'face-quick-naming', query: { from: 'clusters', cluster: String(cluster.cluster_label) } })
+								"
+							/>
 						</div>
 					</div>
 				</div>
@@ -158,8 +179,8 @@
 								</div>
 								<button
 									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600"
-									:title="$t('people.remove_from_person')"
-									@click="dismissSingleFace(face)"
+									:title="$t('people.remove_from_cluster')"
+									@click="removeFaceFromCluster(face)"
 								>
 									×
 								</button>
@@ -262,9 +283,11 @@ import GoBack from "@/v8/components/headers/GoBack.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { usePeopleList } from "@/composables/usePeopleList";
 import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 
 const toast = useAppToast();
 const rawToast = useToast();
+const { rights } = useGlobalRights();
 
 const clusters = ref<App.Http.Resources.Models.ClusterPreviewResource[]>([]);
 // Per-cluster selected person (string name or PersonResource)
@@ -609,9 +632,14 @@ function runClustering() {
 function openQueue(cluster: App.Http.Resources.Models.ClusterPreviewResource) {
 	const idx = clusters.value.findIndex((c) => c.cluster_label === cluster.cluster_label);
 	if (idx === -1) return;
+	// The queueIndex watcher loads the faces; calling the loader here too sent the request twice.
 	queueIndex.value = idx;
 	queueVisible.value = true;
-	loadQueueClusterFaces();
+}
+
+/** A response is stale when the queue has moved to another cluster (or closed) since the request. */
+function isCurrentCluster(label: number): boolean {
+	return queueVisible.value && queueCluster.value?.cluster_label === label;
 }
 
 function loadQueueClusterFaces() {
@@ -622,8 +650,12 @@ function loadQueueClusterFaces() {
 	detailCurrentPage.value = 1;
 	detailHasMorePages.value = false;
 	detailFacesLoading.value = true;
-	FaceClusterService.getClusterFaces(cluster.cluster_label, 1)
+	const label = cluster.cluster_label;
+	FaceClusterService.getClusterFaces(label, 1)
 		.then((response) => {
+			if (!isCurrentCluster(label)) {
+				return;
+			}
 			detailFaces.value = response.data.data as unknown as App.Http.Resources.Models.FaceResource[];
 			detailCurrentPage.value = response.data.current_page;
 			detailHasMorePages.value = response.data.current_page < response.data.last_page;
@@ -632,7 +664,9 @@ function loadQueueClusterFaces() {
 			/* already handled elsewhere */
 		})
 		.finally(() => {
-			detailFacesLoading.value = false;
+			if (isCurrentCluster(label)) {
+				detailFacesLoading.value = false;
+			}
 		});
 }
 
@@ -688,8 +722,12 @@ function loadMoreDetailFaces() {
 	if (!queueCluster.value || detailFacesLoadingMore.value || !detailHasMorePages.value) return;
 	detailFacesLoadingMore.value = true;
 	const nextPage = detailCurrentPage.value + 1;
-	FaceClusterService.getClusterFaces(queueCluster.value.cluster_label, nextPage)
+	const label = queueCluster.value.cluster_label;
+	FaceClusterService.getClusterFaces(label, nextPage)
 		.then((response) => {
+			if (!isCurrentCluster(label)) {
+				return;
+			}
 			detailFaces.value = [...detailFaces.value, ...(response.data.data as unknown as App.Http.Resources.Models.FaceResource[])];
 			detailCurrentPage.value = response.data.current_page;
 			detailHasMorePages.value = response.data.current_page < response.data.last_page;
@@ -746,49 +784,18 @@ definePanelShortcuts({
 	" ": () => queueVisible.value && !confirmDialogVisible.value && skipQueueCluster(),
 });
 
-function undoSingleFace(face: App.Http.Resources.Models.FaceResource, clusterLabel: number) {
-	FaceDetectionService.toggleDismissed(face.id)
-		.then(() => {
-			if (queueCluster.value?.cluster_label === clusterLabel && !detailFaces.value.some((f) => f.id === face.id)) {
-				detailFaces.value = [face, ...detailFaces.value];
-			}
-			const cluster = clusters.value.find((c) => c.cluster_label === clusterLabel);
-			if (cluster) {
-				cluster.face_count += 1;
-			}
-			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
-		})
-		.catch((e: { response?: { data?: { message?: string } } }) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		});
-}
-
-function dismissSingleFace(face: App.Http.Resources.Models.FaceResource) {
+/** Take one face out of the reviewed cluster; the face stays unassigned and nameable (not dismissed). */
+function removeFaceFromCluster(face: App.Http.Resources.Models.FaceResource) {
 	const clusterLabel = queueCluster.value?.cluster_label;
-	FaceDetectionService.toggleDismissed(face.id)
+	if (clusterLabel === undefined) return;
+	FaceClusterService.unclusterFaces(clusterLabel, [face.id])
 		.then(() => {
 			detailFaces.value = detailFaces.value.filter((f) => f.id !== face.id);
 			const cluster = clusters.value.find((c) => c.cluster_label === clusterLabel);
 			if (cluster) {
 				cluster.face_count = Math.max(0, cluster.face_count - 1);
 			}
-			rawToast.add({
-				color: "info",
-				title: trans("toasts.success"),
-				description: trans("people.assignment.dismissed"),
-				duration: 6000,
-				actions:
-					clusterLabel !== undefined
-						? [
-								{
-									label: trans("people.undismiss_face"),
-									color: "neutral",
-									variant: "outline",
-									onClick: () => undoSingleFace(face, clusterLabel),
-								},
-							]
-						: [],
-			});
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.removed_from_cluster"), life: 3000 });
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });

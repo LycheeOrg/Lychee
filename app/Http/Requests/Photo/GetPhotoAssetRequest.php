@@ -16,6 +16,7 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\ResolvesSizeVariantAssetTrait;
 use App\Models\Album;
 use App\Models\PersonAlbum;
 use App\Models\SizeVariant;
@@ -24,9 +25,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
-use App\Services\TemporaryLinkSigner;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -68,17 +67,13 @@ use Illuminate\Validation\Rules\Enum;
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
-	private const MAC_HEADER = 'X-Mac';
+	use ResolvesSizeVariantAssetTrait;
 
 	/** Internal validation-bag key the header is merged into (see prepareForValidation()). */
-	private const MAC_ATTRIBUTE = 'temporary_link_mac';
-
 	private AbstractAlbum $album;
 	private string $photo_id;
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
-
-	private ?string $mac = null;
 
 	/**
 	 * Set to true only when a required temporary-link signature is absent,
@@ -89,8 +84,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * (FR-056-05), since the inherited `Auth::check()`-based mechanism
 	 * cannot express this endpoint's required mapping.
 	 */
-	private bool $signature_check_failed = false;
-
 	public function sizeVariant(): SizeVariant
 	{
 		return $this->size_variant;
@@ -259,93 +252,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
 		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
-		// The requested type may simply never have been generated for this
-		// photo (e.g. a `small2x` variant when the source is too small to
-		// warrant a 2x thumbnail) - walk the same fallback chain
-		// PhotoAssetController::fallback() uses for a missing *file*
-		// (SizeVariantType::fallbackType()) so a missing DB *row* degrades
-		// the same way instead of 404ing outright. The controller then
-		// continues that exact chain from whichever type we resolve to here
-		// if that type's file also turns out to be missing on disk.
-		$type = $this->size_variant_type;
-		$size_variant = null;
-		while ($size_variant === null) {
-			// SizeVariant must stay a real model: Watermarker::get_path() and
-			// the controller rely on its enum casts (type, storage_disk). We
-			// still limit the hydrated columns to only what those two call
-			// sites read.
-			$size_variant = SizeVariant::query()
-				->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
-				->where('photo_id', '=', $this->photo_id)
-				->where('type', '=', $type)
-				->first();
-
-			if ($size_variant !== null) {
-				break;
-			}
-
-			$next = $type->fallbackType();
-			if ($next === null) {
-				throw (new ModelNotFoundException())->setModel(SizeVariant::class);
-			}
-			$type = $next;
-		}
-
-		$this->size_variant_type = $type;
+		$size_variant = $this->resolveSizeVariant($this->photo_id, $this->size_variant_type);
+		$this->size_variant_type = $size_variant->type;
 		$this->size_variant = $size_variant;
 
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
-	}
-
-	/**
-	 * Determines whether `$user` must additionally present a valid
-	 * temporary-link signature to be authorized (ADR-0008).
-	 *
-	 * `false` for every caller — guests included — when
-	 * `temporary_image_link_enabled` is off (Q-056-05): disabling the
-	 * feature drops the extra signature requirement outright rather than
-	 * locking guests out, so a disabled-feature guest relies solely on the
-	 * ordinary `AlbumPolicy`/`PhotoPolicy` check like any other caller.
-	 * Otherwise, guests are only ever authorized via a valid temporary link
-	 * (FR-056-05) — there's no session to fall back on. For authenticated
-	 * users, this mirrors
-	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
-	 * generation-time predicate, re-purposed for validation.
-	 */
-	private function signatureRequired(?User $user): bool
-	{
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($user === null) {
-			return true;
-		}
-
-		if ($user->may_administrate) {
-			return $this->configs()->getValueAsBool('temporary_image_link_when_admin');
-		}
-
-		return $this->configs()->getValueAsBool('temporary_image_link_when_logged_in');
-	}
-
-	/**
-	 * Validates the temporary-link signature: the feature must be globally
-	 * enabled, the header must be present (FR-056-04), and the code must
-	 * verify against the current time step (or its one-step grace window —
-	 * see {@link TemporaryLinkSigner}), which is what bounds its freshness;
-	 * there is no separate timestamp/TTL check to make here any more.
-	 */
-	public function isSignatureValid(): bool
-	{
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($this->mac === null) {
-			return false;
-		}
-
-		return (new TemporaryLinkSigner())->verify($this->mac);
 	}
 }

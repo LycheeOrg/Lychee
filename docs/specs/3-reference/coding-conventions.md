@@ -128,6 +128,17 @@ namespace App\Example;
 
 - **Views:** Do not use Blade views. The application uses Vue3 for all frontend rendering.
 
+- **No Eloquent observers or model events:** Do not register Eloquent observers (`Model::observe()`, `#[ObservedBy]`) and do not hook Eloquent model events (`static::creating()`, `static::saved()`, `static::deleting()`, … in `boot()`/`booted()`). Side effects such as maintaining denormalized counters or dispatching cleanup jobs must be called explicitly from the action/controller performing the write. Observers hide behaviour, silently skip query-builder writes (`->update()`, `->delete()`, `DB::table()`), and fire on every `save()`, which makes counters drift. Prefer idempotent helpers that recompute from source (e.g. `App\Actions\Face\RecountFaceCounters`) over increment/decrement.
+  ```php
+  // ✅ Correct
+  $face->save();
+  $recount->forPhotos([$face->photo_id]);
+
+  // ❌ Incorrect
+  Face::observe(FaceObserver::class);
+  ```
+  Known remaining violations, scheduled for a follow-up refactor: the `static::creating` hooks in `LandingFeaturedItem`, `Webhook`, `LandingLink` (ULID ids) and `Track` (default `disk`).
+
 ### Translations
 
 - **Source files:** Translation sources are the PHP arrays in `lang/<locale>/*.php` (e.g. `lang/en/gallery.php`). Only edit these files; use snake_case keys and group related translations in nested arrays.
