@@ -38,6 +38,7 @@ return [
     'source_upload' => 'Upload',
     'source_nsfw_scan' => 'NSFW scan',
     'history_title' => 'Moderation',
+    'history_show_all' => 'Show all (:count)',
     'findings_title' => 'NSFW findings',
     'findings_description' => 'Review the NSFW findings and dismiss the wrong ones. Dismissed findings are deleted; a new scan can find them again.',
     'findings_empty' => 'No NSFW findings.',

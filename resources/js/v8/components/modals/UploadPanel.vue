@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="is_upload_visible" :dismissible="!showCancel" :close="!showCancel">
+	<UModal v-model:open="is_upload_visible" :dismissible="!showCancel" :close="false">
 		<template #body>
 			<div v-if="setup" class="w-full flex flex-col">
 				<div v-if="counts.files > 0" class="flex flex-wrap justify-center w-full">
@@ -268,6 +268,14 @@ watch(
 		}
 	},
 );
+
+// Closing the modal once every upload has ended (overlay click, Escape, Close button)
+// clears the list so the next opening starts fresh.
+watch(is_upload_visible, (isVisible) => {
+	if (!isVisible && counts.value.files > 0 && counts.value.completed === counts.value.files) {
+		clearList();
+	}
+});
 
 watch(
 	() => route.params.albumId,
