@@ -6,8 +6,8 @@ return [
     | Toasts
     |--------------------------------------------------------------------------
     */
-    'error' => 'Error',
-    'success' => 'Success',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'error' => 'Hiba',
+    'success' => 'Siker',
+    'album_updated' => 'Album frissítve',
+    'update_failed' => 'Az album frissítése sikertelen',
 ];

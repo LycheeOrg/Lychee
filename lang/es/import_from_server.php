@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Sincroniza los archivos de tu servidor',
+    'description' => 'Sincroniza los archivos de tu servidor con Lychee. Esto importará las fotos de un directorio y de todos sus subdirectorios. Este proceso es muy lento y recomendamos usar workers y colas para evitar que se agote el tiempo de espera.',
+    'sync' => 'Sincronizar',
+    'loading' => 'Cargando...',
+    'selected_directory' => 'Directorio seleccionado actualmente:',
+    'resync_metadata' => 'Volver a sincronizar los metadatos de los archivos existentes.',
+    'delete_imported' => 'Eliminar los archivos originales.',
+    'import_via_symlink' => 'Importar las fotos mediante enlaces simbólicos en lugar de copiar los archivos.',
+    'skip_duplicates' => 'Omitir fotos y álbumes si ya existen en la galería.',
+    'delete_missing_photos' => 'Eliminar las fotos del álbum que no estén presentes en el directorio sincronizado.',
+    'delete_missing_albums' => 'Eliminar los álbumes del álbum principal que no estén presentes en el directorio sincronizado.',
+    'importing_please_be_patient' => 'Importando, ten paciencia...',
 ];
 

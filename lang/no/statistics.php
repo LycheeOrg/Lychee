@@ -50,7 +50,7 @@ return [
         'favourite_plural' => '%1$s satte %2$s som favoritt',
         'download_plural' => '%1$s lastet ned %2$s',
         'shared_plural' => '%1$s delte %2$s',
-        'truncated' => 'Older activity is not shown.',
+        'truncated' => 'Eldre aktivitet vises ikke.',
         'ago' => [
             'days' => '%d dager siden',
             'day' => 'en dag siden',

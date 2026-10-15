@@ -7,7 +7,7 @@
 				<OpenLeftMenu />
 			</template>
 
-			<span class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-center hidden md:block">{{ title }}</span>
+			<span class="absolute top-0 left-1/2 -translate-x-1/2 h-14 text-lg font-semibold hidden md:flex items-center">{{ title }}</span>
 		</UHeader>
 		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-white w-xs -translate-x-1/2 md:hidden">
 			{{ title }}
@@ -42,7 +42,7 @@
 			<template #left>
 				<OpenLeftMenu />
 			</template>
-			<span class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-center hidden md:block">{{ title }}</span>
+			<span class="absolute top-0 left-1/2 -translate-x-1/2 h-14 text-lg font-semibold hidden md:flex items-center">{{ title }}</span>
 		</UHeader>
 		<div v-if="config !== undefined" class="px-8 mb-16">
 			<div v-if="flowState.flowV3.length === 0 && flowState.flowV3Loaded" class="h-[70vh] text-muted flex items-center justify-center">

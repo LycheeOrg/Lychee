@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'gallery' => 'Thư viện ảnh',
+    'access_gallery' => 'Vào thư viện ảnh',
+    'Powered_by_Lychee' => 'Được vận hành bởi Lychee',
+    'copyright' => 'Mọi hình ảnh trên trang web này đều thuộc bản quyền của %1$s © %2$s',
+    'client_login' => 'Đăng nhập khách hàng',
+    'view_public_gallery' => 'Xem thư viện ảnh công khai',
+    'contact' => 'Liên hệ',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Giới thiệu',
+        'featured' => 'Tác phẩm gần đây',
+        'scroll_down' => 'Cuộn xuống',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Khám phá',
+        'explore_caption' => 'Xem thư viện ảnh',
+        'contact_caption' => 'Liên hệ với chúng tôi',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Chào mừng trở lại',
     ],
 ];

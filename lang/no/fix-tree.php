@@ -30,7 +30,7 @@ return [
         'left' => 'Venstre',
         'right' => 'Høyre',
         'id' => 'Id',
-        'parent' => 'Parent Id',
+        'parent' => 'Foreldre-ID',
     ],
     'errors' => [
         'invalid' => 'Ugyldig tre!',

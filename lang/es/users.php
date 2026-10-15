@@ -26,11 +26,11 @@ return [
         'upload_trust_level' => 'Nivel de confianza de subida',
         'upload_trust_level_check' => 'Verificación: las subidas requieren la aprobación del administrador antes de hacerse públicas',
         'upload_trust_level_monitor' => 'Monitoreo - las subidas son públicas a menos que estén marcadas por contenido',
-        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
+        'upload_trust_level_trust_but_verify' => 'Confiar pero verificar: las subidas son públicas; los resultados de revisión se aprueban automáticamente y los de bloqueo son configurables.',
         'upload_trust_level_trusted' => 'De confianza: las subidas son públicas de inmediato',
         'trust_level_options' => [
             'trusted' => 'De confianza',
-            'trust_but_verify' => 'Trust but Verify',
+            'trust_but_verify' => 'Confiar pero verificar',
             'monitor' => 'Monitoreo',
             'check' => 'Verificación',
         ],
@@ -47,7 +47,7 @@ return [
     ],
     'line' => [
         'owner' => 'Propietario',
-        'admin' => 'Admin user',
+        'admin' => 'Usuario administrador',
         'edit' => 'Editar',
         'delete' => 'Borrar',
     ],

@@ -36,7 +36,7 @@ return [
     'update' => [
         'title' => 'حالة التحديث',
         'update_available' => 'يتوفر إصدار أحدث (الحالي: :current، الأحدث: :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'تثبيتك متأخر بمقدار :count من الإيداعات عن master.',
     ],
     'nsfw_config' => [
         'title' => 'الكشف عن المحتوى الحساس والإشراف عليه',
@@ -85,6 +85,6 @@ return [
         'legend_nothing' => 'لا يُتخذ أي إجراء.',
     ],
     'nsfw_findings' => [
-        'title' => 'NSFW findings',
+        'title' => 'نتائج فحص المحتوى الحساس',
     ],
 ];

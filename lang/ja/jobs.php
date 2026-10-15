@@ -6,14 +6,14 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'title' => 'ジョブ',
+    'no_data' => 'まだ実行されたジョブはありません。',
+    'ready' => '準備完了',
+    'success' => '成功',
+    'failure' => '失敗',
+    'started' => '開始',
+    'col_date' => '日付',
+    'col_status' => 'ステータス',
+    'col_username' => 'ユーザー',
+    'col_job' => 'ジョブ',
 ];

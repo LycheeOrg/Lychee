@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Configure webhooks de saída acionados quando fotos são adicionadas, movidas ou eliminadas.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Ainda não há webhooks configurados.',
+    'create_first' => 'Crie o seu primeiro webhook',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Nome',
+    'col_event' => 'Evento',
+    'col_method' => 'Método',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Formato',
+    'col_enabled' => 'Ativo',
+    'col_actions' => 'Ações',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Foto adicionada',
+    'event_photo_move' => 'Foto movida',
+    'event_photo_delete' => 'Foto eliminada',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Query string',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Criar webhook',
+    'edit' => 'Editar',
+    'delete' => 'Eliminar',
+    'cancel' => 'Cancelar',
+    'save' => 'Guardar',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Nome',
+    'field_name_placeholder' => 'ex.: O meu webhook',
+    'field_event' => 'Evento',
+    'field_method' => 'Método HTTP',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Formato do payload',
+    'field_enabled' => 'Ativo',
+    'field_secret' => 'Segredo',
+    'field_secret_placeholder' => 'Deixe vazio para manter o segredo existente',
+    'field_secret_header' => 'Cabeçalho do segredo',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Enviar ID da foto',
+    'field_send_album_id' => 'Enviar ID do álbum',
+    'field_send_title' => 'Enviar título',
+    'field_send_size_variants' => 'Enviar variantes de tamanho',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Criar webhook',
+    'modal_edit_title' => 'Editar webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Eliminar webhook',
+    'confirm_delete_message' => 'Tem a certeza de que pretende eliminar o webhook ":name"? Esta ação não pode ser anulada.',
+    'delete_warning' => 'Esta ação não pode ser anulada.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Webhook criado com sucesso.',
+    'updated' => 'Webhook atualizado com sucesso.',
+    'deleted' => 'Webhook eliminado com sucesso.',
+    'error_load' => 'Falha ao carregar os webhooks.',
+    'error_save' => 'Falha ao guardar o webhook.',
+    'error_delete' => 'Falha ao eliminar o webhook.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Segredo definido',
+    'no_secret' => 'Sem segredo',
 ];

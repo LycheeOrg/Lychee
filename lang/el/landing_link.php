@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Επιπλέον σύνδεσμοι',
+    'description' => 'Διαχειριστείτε μια ελεύθερη, ταξινομημένη λίστα επιπλέον συνδέσμων που εμφανίζονται στο μενού πλοήγησης ή/και στο υποσέλιδο της αρχικής σελίδας.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Δεν έχουν ρυθμιστεί ακόμη επιπλέον σύνδεσμοι.',
+    'create_first' => 'Δημιουργήστε τον πρώτο σας σύνδεσμο',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Ετικέτα',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Θέση',
+    'col_enabled' => 'Ενεργό',
+    'col_actions' => 'Ενέργειες',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Πλοήγηση',
+    'placement_footer' => 'Υποσέλιδο',
+    'placement_both' => 'Πλοήγηση & υποσέλιδο',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Ενσωματωμένος',
+    'built_in_cannot_delete' => 'Αυτός ο ενσωματωμένος σύνδεσμος δεν μπορεί να διαγραφεί. Απενεργοποιήστε τον ή αλλάξτε τη σειρά του όπως με κάθε άλλο σύνδεσμο.',
+    'built_in_url_hint' => 'Αυτός είναι ενσωματωμένος σύνδεσμος και ο προορισμός του δεν μπορεί να αλλάξει.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Δημιουργία συνδέσμου',
+    'edit' => 'Επεξεργασία',
+    'delete' => 'Διαγραφή',
+    'cancel' => 'Ακύρωση',
+    'save' => 'Αποθήκευση',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Ετικέτα',
+    'field_label_placeholder' => 'π.χ. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Θέση',
+    'field_open_in_new_tab' => 'Άνοιγμα σε νέα καρτέλα',
+    'field_enabled' => 'Ενεργό',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Δημιουργία συνδέσμου',
+    'modal_edit_title' => 'Επεξεργασία συνδέσμου',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Διαγραφή συνδέσμου',
+    'confirm_delete_message' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε τον σύνδεσμο ":label"; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Ο σύνδεσμος δημιουργήθηκε επιτυχώς.',
+    'updated' => 'Ο σύνδεσμος ενημερώθηκε επιτυχώς.',
+    'deleted' => 'Ο σύνδεσμος διαγράφηκε επιτυχώς.',
+    'reordered' => 'Η σειρά των συνδέσμων άλλαξε επιτυχώς.',
+    'error_load' => 'Αποτυχία φόρτωσης των συνδέσμων.',
+    'error_save' => 'Αποτυχία αποθήκευσης του συνδέσμου.',
+    'error_delete' => 'Αποτυχία διαγραφής του συνδέσμου.',
+    'error_reorder' => 'Αποτυχία αλλαγής σειράς των συνδέσμων.',
 ];

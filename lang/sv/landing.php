@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'gallery' => 'Galleri',
+    'access_gallery' => 'Gå till galleriet',
+    'Powered_by_Lychee' => 'Drivs av Lychee',
+    'copyright' => 'Alla bilder på denna webbplats är upphovsrättsskyddade av %1$s © %2$s',
+    'client_login' => 'Kundinloggning',
+    'view_public_gallery' => 'Visa offentligt galleri',
+    'contact' => 'Kontakt',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Om',
+        'featured' => 'Senaste arbeten',
+        'scroll_down' => 'Scrolla ned',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Utforska',
+        'explore_caption' => 'Visa galleriet',
+        'contact_caption' => 'Kontakta oss',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Välkommen tillbaka',
     ],
 ];

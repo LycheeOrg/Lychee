@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Szerverfájlok szinkronizálása',
+    'description' => 'Szinkronizálja a szerveren lévő fájlokat a Lychee-vel. Ez egy könyvtárból és annak összes alkönyvtárából importálja a fotókat. A folyamat nagyon lassú, ezért az időtúllépés elkerülése érdekében workerek és várólisták használatát javasoljuk.',
+    'sync' => 'Szinkronizálás',
+    'loading' => 'Betöltés...',
+    'selected_directory' => 'Jelenleg kiválasztott könyvtár:',
+    'resync_metadata' => 'A meglévő fájlok metaadatainak újraszinkronizálása.',
+    'delete_imported' => 'Az eredeti fájlok törlése.',
+    'import_via_symlink' => 'Fotók importálása szimbolikus hivatkozással a fájlok másolása helyett.',
+    'skip_duplicates' => 'Fotók és albumok kihagyása, ha már léteznek a galériában.',
+    'delete_missing_photos' => 'Az albumban lévő azon fotók törlése, amelyek nincsenek a szinkronizált könyvtárban.',
+    'delete_missing_albums' => 'A szülőalbumban lévő azon albumok törlése, amelyek nincsenek a szinkronizált könyvtárban.',
+    'importing_please_be_patient' => 'Importálás folyamatban, kérjük, legyen türelemmel...',
 ];
 

@@ -15,8 +15,8 @@ return [
     'loading' => 'Cargando…',
     'identical_content' => 'Contenido idéntico',
     'toast' => [
-        'info' => 'Info',
+        'info' => 'Información',
         'copy' => '¡Diagnóstico copiado al portapapeles!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Copiar los diagnósticos solo está disponible en contextos seguros (HTTPS).',
 ];

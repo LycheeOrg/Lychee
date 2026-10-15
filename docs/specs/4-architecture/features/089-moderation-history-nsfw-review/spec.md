@@ -45,7 +45,7 @@ Affected layers: a new table and model, the photo creation pipeline, `NsfwAction
 | FR-089-05 | `GET /api/v2/Moderation::history` returns the events of all photos, newest first (`id` descending), paginated. Each entry: event id, photo id, photo title, thumbnail URL, owner username, `event`, `source`, acting admin username (`null` for the system or a deleted admin), `created_at` (ISO 8601). | Admin gets `PaginatedModerationHistoryResource`. | `page` (integer ≥ 1) and `per_page` (integer 1–100) required. | Non-admin → 403, guest → 401, invalid paging → 422. | — | Q-089-02 → C |
 | FR-089-06 | `GET /api/v2/Moderation::photoHistory` returns the events of one photo, newest first, unpaginated, as a list of the FR-089-05 entries. | Admin gets `ModerationEventResource[]` (empty when the photo has none). | `photo_id` required (random id). | Non-admin → 403, guest → 401, unknown photo → 404. | — | Q-089-02 → C |
 | FR-089-07 | The v8 Moderation page has two tabs: "Pending" (the current list) and "History" (FR-089-05, infinite scroll, 30 per page). History rows: thumbnail (opens the photo in place, as on the Pending tab), title, owner, event badge, by (admin username for source `admin`, "Upload" or "NSFW scan" for the system, "—" for a deleted admin), date and time. | UI-089-02. | — | Load failure → error toast, as on the Pending tab. | — | Q-089-02 → C |
-| FR-089-08 | The v8 photo details panel shows a "Moderation" section to admins: the photo's events (FR-089-06), newest first, each with event, source or admin, date and time. Fetched when the panel is open and the user is admin, once per photo. Hidden when the user is not admin or the photo has no event. | UI-089-03. | — | Fetch failure → section hidden. | — | Q-089-02 → C |
+| FR-089-08 | The v8 photo details panel shows a "Moderation" section to admins: the photo's most recent event (FR-089-06) with event, source or admin, date and time. When the photo has more than one event, a "Show all (N)" link opens a modal listing every event, newest first, in the same format. Fetched when the panel is open and the user is admin, once per photo. Hidden when the user is not admin or the photo has no event. | UI-089-03. | — | Fetch failure → section hidden. | — | Q-089-02 → C |
 
 ### NSFW findings review
 
@@ -139,13 +139,20 @@ Category `Users Management`, after the trust-level settings. `required_keys` per
 │ Moderation                    │
 │   ✓ Approved · admin          │
 │     2026-10-13 14:02          │
-│   ⏸ Held · NSFW scan          │
-│     2026-10-09 09:12          │
-│   ⏸ Held · Upload             │
-│     2026-10-09 09:11          │
+│   Show all (3)                │
 │ …                             │
 └───────────────────────────────┘
-(admins only; hidden when the photo has no event)
+(admins only; hidden when the photo has no event;
+ "Show all" only when there is more than one event)
+
+┌─ Moderation ─────────────── ✕ ┐
+│ ✓ Approved · admin            │
+│   2026-10-13 14:02            │
+│ ⏸ Held · NSFW scan            │
+│   2026-10-09 09:12            │
+│ ⏸ Held · Upload               │
+│   2026-10-09 09:11            │
+└───────────────────────────────┘
 ```
 
 ## Branch & Scenario Matrix
