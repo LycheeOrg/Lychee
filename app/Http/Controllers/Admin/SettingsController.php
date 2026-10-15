@@ -53,6 +53,9 @@ class SettingsController extends Controller
 		'ai_vision_face_enabled',
 		'albums_per_page',
 		'timeline_albums_granularity',
+		'timeline_album_date_format_year',
+		'timeline_album_date_format_month',
+		'timeline_album_date_format_day',
 		'title_bucket_mode',
 		'title_bucket_prefix_length',
 	];
@@ -80,12 +83,16 @@ class SettingsController extends Controller
 	];
 
 	/**
-	 * Config keys whose change only changes the photo read scheme or the
-	 * row order (FR-092-13): every cached photo listing is flushed, no key
-	 * rewritten.
+	 * Config keys whose change only changes the photo read scheme, its
+	 * labels or the row order (FR-092-13): every cached photo listing is
+	 * flushed, no key rewritten.
 	 */
 	public const PHOTO_LISTING_COARSE_FLUSH_CONFIGS = [
 		'timeline_photos_granularity',
+		'timeline_photo_date_format_year',
+		'timeline_photo_date_format_month',
+		'timeline_photo_date_format_day',
+		'timeline_photo_date_format_hour',
 		'photo_title_bucket_prefix_length',
 		'sorting_photos_order',
 	];

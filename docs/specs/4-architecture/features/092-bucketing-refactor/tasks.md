@@ -1,7 +1,7 @@
 # Feature 092 Tasks – Bucketing Refactor
 
 _Status: Testing_  
-_Last updated: 2026-10-14_
+_Last updated: 2026-10-15_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -155,9 +155,15 @@ _Last updated: 2026-10-14_
   - `npm run check`  
   - `make phpstan`
 
+- [x] T-092-25 – Instance settings flush every cached listing (F-092-08, F-092-13, S-092-22).  
+  _Intent:_ test first in `BucketSettingsV3Test` (warm photo and child-album `buckets` caches, change a `timeline_photo_date_format_*` / `timeline_album_date_format_*` key or `timeline_albums_granularity` → new labels and ids, no job); then add the four photo keys to `SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, the three album keys to `ALBUM_LISTING_COARSE_FLUSH_CONFIGS`, and `albumListingGlobalTag()` to the child `buckets`/`data`/`rights` cache entries of `AlbumChildrenController`.  
+  _Verification commands:_  
+  - `php artisan test --filter=BucketSettingsV3Test`  
+  - `php artisan test --filter=UpdateSettingsTest`  
+  - `make phpstan`
+
 ## Notes / TODOs
 
-- FR coverage: FR-01/02 → T-02…04, T-24; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
+- FR coverage: FR-01/02 → T-02…04, T-24; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23, T-25; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
 - Test classes in `tests/Feature_v2` are updated where they encode the old triggers; no new class is added there.
-- T-092-19: the browser check of S-092-16 was not run in the implementation session (no scratch instance); the helper was exercised with esbuild under `TZ=Asia/Tokyo` instead. Tracked in plan.md Follow-ups.
 - Drift gate, benchmark and adjustments: plan.md § Implementation Drift Gate.

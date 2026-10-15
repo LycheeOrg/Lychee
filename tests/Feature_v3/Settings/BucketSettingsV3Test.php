@@ -18,17 +18,24 @@
 
 namespace Tests\Feature_v3\Settings;
 
+use App\DTO\AlbumSortingCriterion;
+use App\Enum\ColumnSortingType;
+use App\Enum\OrderSortingType;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
+use App\Jobs\RecomputeAlbumStatsJob;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
 use App\Jobs\RecomputeAllPhotoBucketsJob;
+use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
- * FR-092-13 (S-092-02, S-092-09): instance-wide bucket settings, seen
+ * FR-092-13 (S-092-02, S-092-09, S-092-20, S-092-22): instance-wide bucket settings, seen
  * through the v3 photo listing with the managed cache enabled.
  */
 class BucketSettingsV3Test extends BaseApiWithDataTest
@@ -100,6 +107,96 @@ class BucketSettingsV3Test extends BaseApiWithDataTest
 		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
 		$this->assertOk($after);
 		self::assertSame(['2024', '2023'], $after->json('bucket_ids'));
+	}
+
+	/**
+	 * S-092-22: a photo label format change shows through a warm cache,
+	 * with no job.
+	 */
+	public function testPhotoLabelFormatChangeFlushesListingsWithoutJob(): void
+	{
+		$this->requireSe();
+		Configs::set('sorting_photos_col', 'created_at');
+		Configs::set('timeline_photos_granularity', 'year');
+		Configs::set('timeline_photo_date_format_year', 'Y');
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['created_at' => '2024-05-01 10:00:00']);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($before);
+		self::assertSame(['2024'], $before->json('labels'));
+
+		Queue::fake([RecomputeAllPhotoBucketsJob::class, RecomputeAlbumPhotoBucketsJob::class]);
+		$this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'timeline_photo_date_format_year', 'value' => 'y']],
+		])->assertOk();
+		Queue::assertNothingPushed();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($after);
+		self::assertSame(['24'], $after->json('labels'));
+	}
+
+	/**
+	 * S-092-22: an album label format change shows through a warm cache,
+	 * with no job.
+	 */
+	public function testAlbumLabelFormatChangeFlushesListingsWithoutJob(): void
+	{
+		$this->requireSe();
+		Configs::set('timeline_albums_granularity', 'year');
+		Configs::set('timeline_album_date_format_year', 'Y');
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::ASC);
+		$parent->save();
+		$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon('2024-05-01')]);
+		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
+
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($before);
+		self::assertSame(['2024'], $before->json('labels'));
+
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeChildAlbumBucketsJob::class]);
+		$this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'timeline_album_date_format_year', 'value' => 'y']],
+		])->assertOk();
+		Queue::assertNothingPushed();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($after);
+		self::assertSame(['24'], $after->json('labels'));
+	}
+
+	/**
+	 * S-092-22: an album granularity change shows in the children of a
+	 * parent inheriting the default, through a warm cache, with no job.
+	 */
+	public function testAlbumGranularityChangeShowsInChildListingWithoutJob(): void
+	{
+		$this->requireSe();
+		Configs::set('timeline_albums_granularity', 'year');
+		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::ASC);
+		$parent->save();
+		foreach (['2024-05-01', '2024-07-01'] as $date) {
+			$child = Album::factory()->children_of($parent)->owned_by($this->userMayUpload1)->create(['created_at' => new Carbon($date)]);
+			(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
+		}
+
+		$before = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($before);
+		self::assertSame(['2024'], $before->json('bucket_ids'));
+
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeChildAlbumBucketsJob::class]);
+		$this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'timeline_albums_granularity', 'value' => 'month']],
+		])->assertOk();
+		Queue::assertNothingPushed();
+
+		$after = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$parent->id}/buckets");
+		$this->assertOk($after);
+		self::assertSame(['2024-05', '2024-07'], $after->json('bucket_ids'));
 	}
 
 	/**

@@ -80,6 +80,7 @@ class AlbumChildrenController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag($album->id),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumBucketResource => $this->queryBuckets($album, $user),
 			ttl: $ttl,
@@ -141,6 +142,7 @@ class AlbumChildrenController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumDataResource => $this->queryChildren($album, $user),
 			ttl: $ttl,
@@ -185,6 +187,7 @@ class AlbumChildrenController extends Controller
 			[
 				$this->cache_key_provider->albumChildrenTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->albumListingGlobalTag(),
 			],
 			fn (): AlbumRightsResource => $this->queryRights($album, $user),
 			ttl: $ttl,

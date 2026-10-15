@@ -111,8 +111,9 @@ class CacheKeyProvider
 
 	/**
 	 * Coarse tag carried by every cached entry across all six listing
-	 * query types, in addition to its own specific tag(s); evicting it
-	 * alone is sufficient to flush the whole album-listing cache.
+	 * query types and the root and child `buckets`/`data`/`rights` tiers,
+	 * in addition to its own specific tag(s); evicting it alone is
+	 * sufficient to flush the whole album-listing cache (FR-092-13).
 	 */
 	public function albumListingGlobalTag(): string
 	{

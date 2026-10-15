@@ -17,9 +17,10 @@ use Illuminate\Foundation\Events\Dispatchable;
  * mirroring {@see AlbumListingCacheFlushRequested}.
  *
  * Dispatched when an instance-wide photo bucket setting changes
- * (FR-092-13): directly for `timeline_photos_granularity` and
- * `photo_title_bucket_prefix_length`, and by
- * {@see \App\Jobs\RecomputeAllPhotoBucketsJob} once the keys are rewritten.
+ * (FR-092-13): directly for every key of
+ * {@see \App\Http\Controllers\Admin\SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS},
+ * and by {@see \App\Jobs\RecomputeAllPhotoBucketsJob} once the keys are
+ * rewritten.
  */
 class PhotoListingCacheFlushRequested
 {

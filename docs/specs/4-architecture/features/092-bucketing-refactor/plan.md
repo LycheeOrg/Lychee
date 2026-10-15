@@ -3,7 +3,7 @@
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
 _Status:_ Testing  
-_Last updated:_ 2026-10-14
+_Last updated:_ 2026-10-15
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -11,8 +11,8 @@ _Last updated:_ 2026-10-14
 
 Bucket ids and labels always agree with the settings in effect, capture dates are bucketed in the zone the photo was taken in, and no listing computes buckets in PHP from every row (G1–G5). Success signals:
 
-- S-092-01 … S-092-18 covered by green tests (S-092-16 by a browser check).
-- NFR-092-01: bucket list of a 60,000-photo album ≤ 45 ms (non-admin) / ≤ 20 ms (admin) on the scratch SQLite benchmark.
+- S-092-01 … S-092-22 covered by green tests (S-092-16 by a browser check).
+- NFR-092-01: bucket list of a 60,000-photo album ≥ 3.8× (non-admin) / ≥ 5.5× (admin) faster than the pre-feature query on the same machine and data (≈ 45 / 20 ms on the reference machine).
 - `lychee.d.ts` unchanged after `php artisan typescript:transform` (NFR-092-06).
 
 ## Scope Alignment
@@ -161,6 +161,10 @@ Prompts: "we also want to support YYYYMMDD", "why not make the - optional with ?
     - _Goal:_ FR-092-02 reads a leading `YYYYMMDD` (S-092-21), identically in the four parsers (`BucketKeys`, `BucketKeyBackfill`, `TimelineData::parseDateFromTitle()`, `dateScrubber.ts`) so stored keys, album timeline headers and scrubber days agree (Q-092-08).
     - _Steps:_ tests first; a separate eight-digit branch `^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)` (JS: an alternation, groups 2/3 or 4/5); every parser rejects a non-calendar date (`TimelineData` drops Carbon's roll-over, the scrubber checks with `setUTCFullYear`).
     - _Commands:_ `php artisan test --filter=BucketKeysTest`, `--filter=TimelineDataTest`, `npm run check`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+16. **I15 – Instance settings flush every cached listing (PR review, 2026-10-15)**
+    - _Goal:_ FR-092-13 (S-092-22): `BucketScheme` reads the granularity and the FR-092-08 formats at read time, so a change must evict the cached labels and ids of every listing, child-album listings included.
+    - _Steps:_ tests first; the four `timeline_photo_date_format_*` keys join `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, the three `timeline_album_date_format_*` keys join `ALBUM_LISTING_COARSE_FLUSH_CONFIGS`; the child `buckets`/`data`/`rights` cache entries of `AlbumChildrenController` carry `albumListingGlobalTag()`, like the root ones.
+    - _Commands:_ `php artisan test --filter=BucketSettingsV3Test`, `--filter=UpdateSettingsTest`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 
 ## Scenario Tracking
 
@@ -187,6 +191,7 @@ Prompts: "we also want to support YYYYMMDD", "why not make the - optional with ?
 | S-092-19 | I13 / T-092-22 | `AlbumKeysWriteTest` |
 | S-092-20 | I13 / T-092-23 | `BucketSettingsV3Test` |
 | S-092-21 | I14 / T-092-24 | `BucketKeysTest`, `TimelineDataTest` |
+| S-092-22 | I15 / T-092-25 | `BucketSettingsV3Test` |
 
 ## Analysis Gate
 

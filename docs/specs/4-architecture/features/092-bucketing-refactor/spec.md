@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Testing |
-| Last updated | 2026-10-14 |
+| Last updated | 2026-10-15 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -59,7 +59,7 @@ The feature removes these defects:
 | FR-092-10 | A change of a photo's `taken_at`, `created_at`, `title`, `is_highlighted`, `type` or `rating_avg` recomputes every `photo_album` key of that photo (`RecomputePhotoBucketsJob`), including through `lychee:takedate` and the bulk renamer. | `lychee:takedate` moves a photo to its new hour bucket. | — | — | none | D-092-06 |
 | FR-092-11 | A change of an album's `sorting_col` recomputes its `photo_album` keys (`RecomputeAlbumPhotoBucketsJob`). A change of only `sorting_order` or `photo_timeline` rewrites no key and flushes that album's cached photo listing. | Switching an album from day to hour granularity runs no job. | — | — | none | G1 |
 | FR-092-12 | A change of an album's `album_sorting_col` recomputes its direct children's keys (`RecomputeChildAlbumBucketsJob`). A change of only `album_sorting_order` or `album_timeline` rewrites no key and flushes the album's children listing. A change of an album's `title`, through `PATCH /Album` or the bulk renamer (`RenameAlbums`), recomputes that album's own `bucket_key` and flushes its parent's children listing. | The bulk renamer turns `Trip` into `2024-03 Trip` under a title-sorted parent → the album moves to the `2024-03` bucket. | — | — | none | G1, Q-092-04 |
-| FR-092-13 | Settings: `sorting_photos_col` or `photo_title_bucket_mode` → every `photo_album` key is recomputed (`RecomputeAllPhotoBucketsJob`), then every cached photo listing is flushed; `timeline_photos_granularity`, `photo_title_bucket_prefix_length` or `sorting_photos_order` → every cached photo listing is flushed, no key rewritten. `sorting_albums_col` or `title_bucket_mode` → every album key is recomputed (`RecomputeAllAlbumBucketsJob`); `timeline_albums_granularity`, `title_bucket_prefix_length`, `sorting_albums_order` → no key rewritten (the album-listing flush applies as today). | Changing `timeline_photos_granularity` from day to hour shows hour buckets in every album inheriting the default. | — | — | none | D-092-01, Q-092-07 |
+| FR-092-13 | Settings: `sorting_photos_col` or `photo_title_bucket_mode` → every `photo_album` key is recomputed (`RecomputeAllPhotoBucketsJob`), then every cached photo listing is flushed; `timeline_photos_granularity`, `photo_title_bucket_prefix_length`, `sorting_photos_order` or a label format of FR-092-08 (`timeline_photo_date_format_year`/`_month`/`_day`/`_hour`) → every cached photo listing is flushed, no key rewritten. `sorting_albums_col` or `title_bucket_mode` → every album key is recomputed (`RecomputeAllAlbumBucketsJob`); `timeline_albums_granularity`, `title_bucket_prefix_length`, `sorting_albums_order` or `timeline_album_date_format_year`/`_month`/`_day` → no key rewritten, every cached album listing is flushed, the child `buckets`/`data`/`rights` tiers included. | Changing `timeline_photos_granularity` from day to hour shows hour buckets in every album inheriting the default; changing `timeline_photo_date_format_day` shows the new labels at once. | — | — | none | D-092-01, Q-092-07 |
 | FR-092-14 | Every bulk key write (jobs, `lychee:recompute-buckets`, migrations) writes at most 1,000 rows per statement. | A 60,000-photo album is recomputed in 60 statements. | — | — | none | D-092-05 |
 | FR-092-15 | `lychee:recompute-buckets` rewrites every album key and every `photo_album` key in the FR-092-03/FR-092-04 format; `--chunk` sets the rows per statement (default 1,000). | — | `--chunk` below 1 reads as 1. | — | console progress | — |
 | FR-092-16 | Migrations add `photos.taken_key` (indexed) and `photos.title_date_key`, rename `photo_album.bucket_id` and `albums.bucket_id` to `bucket_key` (their composite indexes follow), then backfill `taken_key`, `title_date_key` and every bucket key, chunked, with self-contained helpers (`database/migrations/TemporaryModels/`). | Upgrading an instance shows correct buckets without running a command. | — | — | migration progress bar | Q-092-03 |
@@ -111,6 +111,7 @@ Header bucket (hour)      Rail day (before)   Rail day (after)
 | S-092-19 | Bulk renamer gives a child of a title-sorted (`date_prefix`) parent a dated title → the child's `bucket_key` becomes the title date and the parent's children listing is flushed (FR-092-12). |
 | S-092-20 | `sorting_photos_order` changed → every cached photo listing is flushed, no job dispatched (FR-092-13). |
 | S-092-21 | Title `20240315_123456` → `title_date_key` `2024-03-15`, album timeline and scrubber day `2024-03-15`; title `20241345 x` or `2023-12-32 x` → `NULL` in all three (FR-092-02). |
+| S-092-22 | A photo or album label format (`timeline_photo_date_format_*`, `timeline_album_date_format_*`) or `timeline_albums_granularity` changed → every cached photo or album listing, child-album tiers included, is flushed, no job dispatched; the next `buckets` request returns the new labels and ids (FR-092-08, FR-092-13). |
 
 ## Test Strategy
 
