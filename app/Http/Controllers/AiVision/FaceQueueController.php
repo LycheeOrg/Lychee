@@ -29,6 +29,7 @@ class FaceQueueController extends Controller
 			$user,
 			$request->clusterLabel(),
 			$request->configs()->getValueAsInt('ai_vision_face_queue_limit'),
+			$request->seen(),
 		);
 	}
 }

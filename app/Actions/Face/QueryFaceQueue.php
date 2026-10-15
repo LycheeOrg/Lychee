@@ -23,13 +23,18 @@ use Illuminate\Support\Facades\DB;
  */
 class QueryFaceQueue
 {
+	public const MAX_SEEN_FACTOR = 10;
+
 	/**
 	 * @param User     $user          caller; admins see every face, others only faces on photos they own
 	 * @param int|null $cluster_label restricts the queue to one cluster when set
 	 * @param int      $limit         cap from `ai_vision_face_queue_limit` (ADR-069-01, strategy 3)
+	 * @param int      $seen          faces of the session still queued; widens the window from the top (Q-093-14)
 	 */
-	public function do(User $user, ?int $cluster_label, int $limit): FaceQueueResource
+	public function do(User $user, ?int $cluster_label, int $limit, int $seen): FaceQueueResource
 	{
+		$window = self::windowSize($limit, $seen);
+
 		$owner_id = $user->may_administrate ? null : $user->id;
 
 		$query = $this->pendingFaces(DB::table('faces'), 'faces', $owner_id)
@@ -41,9 +46,19 @@ class QueryFaceQueue
 
 		$this->applyOrdering($query);
 
-		$rows = $query->limit($limit + 1)->get();
+		$rows = $query->limit($window + 1)->get();
 
-		return $this->toResource($rows->all(), $limit);
+		return $this->toResource($rows->all(), $window);
+	}
+
+	/**
+	 * Rows to return: the cap plus the session's still-queued faces, so a refetch
+	 * yields up to `$limit` new faces even when they are all re-listed first.
+	 * `$seen` is clamped to {@see self::MAX_SEEN_FACTOR} × `$limit`.
+	 */
+	private static function windowSize(int $limit, int $seen): int
+	{
+		return $limit + min($seen, self::MAX_SEEN_FACTOR * $limit);
 	}
 
 	/**

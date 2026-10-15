@@ -19,6 +19,7 @@ Open questions for [Feature 093](spec.md). Log every high- and medium-impact que
 | ~~Q-093-11~~ | 093 | Medium | How to create a new name that prefix-matches an existing one (typing "Ali" highlights "Alice")? Options: A) last list entry "Create «Ali»" reachable with ↑/↓ plus Shift+Enter always creates, B) nothing highlighted by default unless exact match; ↓ to pick, Enter creates, C) Shift+Enter only | Resolved (A; spec FR-093-03, FR-093-10) | 2026-10-14 | 2026-10-14 |
 | ~~Q-093-12~~ | 093 | Medium | `PATCH /Face/{id}` is a blind toggle, so retrying a discard or an un-dismiss whose first request actually succeeded (timeout) flips the face back. Options: A) add an optional explicit `is_dismissed` boolean to the PATCH (sets instead of toggling when given), B) client re-reads the face state before retrying, C) never retry dismiss changes; the user re-acts by hand | Resolved (A; spec FR-093-09, API-093-02) | 2026-10-14 | 2026-10-14 |
 | ~~Q-093-13~~ | 093 | Medium | Two persons with the same name. Options: A) homonyms allowed: list rows show crop + face count, exact-name auto-reuse only when the name is unique, "Create another «name»" entry and Shift+Enter always create, B) names unique case-insensitive, enforced server-side, C) keep exact-match reuse; homonyms only created elsewhere | Resolved (A; spec FR-093-03, FR-093-10, FR-093-13) | 2026-10-14 | 2026-10-14 |
+| ~~Q-093-14~~ | 093 | Medium | Refetching a capped queue returns the same skipped faces first, so a session that skips a whole batch ends early and never reaches the faces past the cap (PR #4886 review). Options: A) refetch asks for a larger window from the top (`seen` = faces of the session still pending, server returns `limit + seen` rows), B) POST the skipped face ids as an exclusion list, C) offset paging | Resolved (A; spec FR-093-02, API-093-03) | 2026-10-15 | 2026-10-15 |
 
 ## Question Details
 
@@ -118,3 +119,17 @@ Open questions for [Feature 093](spec.md). Log every high- and medium-impact que
   - Cons: when a name is shared, picking by face is still on the user.
 - **Option B – unique names:** enforce case-insensitive uniqueness when creating (and renaming) persons; users disambiguate with names like "John Smith (work)". Pros: names are unambiguous everywhere. Cons: changes `PersonFactory`, the rename endpoint and the People page; existing duplicates need a migration or a merge prompt; it is a cross-feature rule (Feature 030), outside the scope of a naming UI.
 - **Option C – keep exact-match reuse:** quick naming always reuses the first exact match; homonyms are created elsewhere (People page) and then picked from the list. Pros: no change. Cons: quick naming silently merges two real people into one when you type a shared name.
+
+### Q-093-14 – Paging past skipped faces
+
+- **Context:** the queue is capped at `ai_vision_face_queue_limit` (ADR-069-01, strategy 3). At the end of a truncated batch, `refetch()` calls the same endpoint again and drops faces already in the session. Named and discarded faces leave the server-side queue, but skipped faces stay, in the same order, at the front. If the user skipped the whole batch, the refetch returns only those faces, `fresh` is empty, `isTruncated` turns false and the view shows "All faces named" while faces past the cap are never reached. Ordering is not stable across a refetch either: naming faces shrinks clusters, and clusters are ordered by size, so a cursor or an offset can jump over faces the user has not seen.
+- **Option A (recommended) – larger window from the top:** `GET /api/v3/Faces/queue` takes an optional `seen` integer (≥ 0, capped server-side, for example at 10 × limit). The server returns the first `limit + seen` faces of the current order; `is_truncated` keeps its meaning. On refetch the client sends `seen` = number of faces of the session the server still lists (open, skipped or failed). At most `seen` of the returned rows are already in the session, so at least `limit` fresh faces arrive whenever more exist, whatever the reordering. The client keeps its de-duplication.
+  - Pros: stays a cacheable GET with a short URL; robust to cluster reordering because it always reads from the top; one SELECT as today (NFR-093-05).
+  - Cons: the response grows with the number of skipped faces (bounded by the cap on `seen`); the client re-receives rows it drops.
+- **Option B – exclusion list:** the refetch sends the ids of the session's pending faces and the server adds `whereNotIn('faces.id', …)`. Up to `limit` ids of 24 characters do not fit a query string (about 12 KB for 500), so the endpoint would accept POST.
+  - Pros: exact; the response holds only fresh faces.
+  - Cons: a read endpoint on POST; large request bodies; `whereNotIn` with hundreds of placeholders on every refetch.
+- **Option C – offset paging:** `offset` = number of the session's pending faces.
+  - Pros: smallest change.
+  - Cons: wrong when clusters reorder after naming. An offset taken from the top can skip unseen faces, which is the bug in another form.
+

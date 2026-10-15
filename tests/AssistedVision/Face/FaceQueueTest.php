@@ -177,6 +177,54 @@ class FaceQueueTest extends BaseApiWithDataTest
 		self::assertFalse($response->json('is_truncated'));
 	}
 
+	// ── Refetch window (Q-093-14) ──────────────────────────────
+
+	public function testSeenWidensTheWindow(): void
+	{
+		Configs::set('ai_vision_face_queue_limit', '2');
+		Face::factory()->for_photo($this->photo1)->count(3)->create();
+
+		$response = $this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=1');
+		$this->assertOk($response);
+		self::assertCount(3, $response->json('ids'));
+		self::assertFalse($response->json('is_truncated'));
+	}
+
+	public function testSkippedBatchStillReachesFacesPastTheCap(): void
+	{
+		Configs::set('ai_vision_face_queue_limit', '2');
+		Face::factory()->for_photo($this->photo1)->count(5)->create();
+
+		$first = $this->actingAs($this->admin)->getJsonV3('Faces/queue');
+		$this->assertOk($first);
+		$skipped = $first->json('ids');
+		self::assertTrue($first->json('is_truncated'));
+
+		// Both faces skipped: they stay in the queue, the refetch reports them as seen.
+		$refetch = $this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=' . count($skipped));
+		$this->assertOk($refetch);
+		$fresh = array_values(array_diff($refetch->json('ids'), $skipped));
+		self::assertCount(2, $fresh);
+		self::assertTrue($refetch->json('is_truncated'));
+	}
+
+	public function testSeenIsClampedToTenTimesTheLimit(): void
+	{
+		Configs::set('ai_vision_face_queue_limit', '1');
+		Face::factory()->for_photo($this->photo1)->count(13)->create();
+
+		$response = $this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=100');
+		$this->assertOk($response);
+		self::assertCount(11, $response->json('ids'));
+		self::assertTrue($response->json('is_truncated'));
+	}
+
+	public function testInvalidSeenIsRejected(): void
+	{
+		$this->assertUnprocessable($this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=-1'));
+		$this->assertUnprocessable($this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=abc'));
+	}
+
 	// ── Suggestions (FR-093-12) ─────────────────────────────────
 
 	public function testSuggestionPicksHighestConfidenceAssignedFace(): void

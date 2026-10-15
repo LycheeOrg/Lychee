@@ -117,5 +117,16 @@ _Last updated: 2026-10-14_
   _Intent:_ `leave` key action in `decideKey`, emitted by the name box and wired to the view's `leave()`; help modal row and `qn_leave` string in every locale; Esc in the on-screen hints.  
   _Verification commands:_ `npm run format`, `npm run check`; manual check from People and from face review.
 
+- [x] T-093-20 – Queue `seen` window, tests first (FR-093-02, API-093-03, Q-093-14).  
+  _Intent:_ failing `FaceQueueTest` cases (window widened by `seen`, a fully skipped batch still reaches faces past the cap, `seen` clamped to 10 × limit, invalid `seen` → 422), then the request rule, the action window, and `refetch()` sending `seen`.  
+  _Verification commands:_  
+  - `php artisan test --filter=FaceQueueTest`  
+  - `make phpstan`  
+  - `npm run check`
+
+- [x] T-093-21 – Stale MAC retry on the face photo route (PR #4886 review).  
+  _Intent:_ one `needsMac()` predicate shared by the request interceptor and the 401 retry, so `Faces/{id}/photo/{variant}` refreshes an expired MAC like `Asset/`.  
+  _Verification commands:_ `npm run format`, `npm run check`.
+
 ## Notes / TODOs
 - The frontend has no Vue unit-test harness in the repo; S-093-01…12 are verified manually (recorded in the plan's drift gate).

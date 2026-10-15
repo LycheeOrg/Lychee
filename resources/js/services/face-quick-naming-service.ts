@@ -15,8 +15,9 @@ export type FacePhotoVariant = "medium" | "small2x" | "small" | "thumb";
  * and the v2 assign / dismiss calls with an explicit target value.
  */
 const FaceQuickNamingService = {
-	getQueue(clusterLabel: number | null): Promise<AxiosResponse<App.Http.Resources.V3.FaceQueueResource>> {
-		const params = clusterLabel === null ? {} : { cluster_label: clusterLabel };
+	/** `seen`: faces of the session the server still lists, re-read from the top on refetch (Q-093-14). */
+	getQueue(clusterLabel: number | null, seen: number): Promise<AxiosResponse<App.Http.Resources.V3.FaceQueueResource>> {
+		const params = clusterLabel === null ? { seen } : { cluster_label: clusterLabel, seen };
 		return axios.get(`${Constants.getApiUrlV3()}Faces/queue`, { params, data: {} });
 	},
 

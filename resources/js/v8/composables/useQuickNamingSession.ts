@@ -72,7 +72,7 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 		isLoading.value = true;
 		loadError.value = false;
 		try {
-			const [queue, list] = await Promise.all([FaceQuickNamingService.getQueue(clusterLabel), FaceQuickNamingService.getPeople()]);
+			const [queue, list] = await Promise.all([FaceQuickNamingService.getQueue(clusterLabel, 0), FaceQuickNamingService.getPeople()]);
 			entries.value = adaptFaceQueue(queue.data).map(toEntry);
 			isTruncated.value = queue.data.is_truncated;
 			people.value = adaptPeopleList(list.data);
@@ -85,11 +85,19 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 		}
 	}
 
-	/** Fetch more faces when the end of a capped queue is reached; already seen faces are dropped. */
+	/**
+	 * Faces of the session the server still lists: not named or discarded, or whose request failed.
+	 * Skipped faces stay at the front of the queue, so the refetch widens its window by this count.
+	 */
+	function stillQueuedCount(): number {
+		return entries.value.filter((e) => e.failed || (e.status !== "named" && e.status !== "discarded")).length;
+	}
+
+	/** Fetch more faces when the end of a capped queue is reached; already seen faces are dropped (Q-093-14). */
 	async function refetch(): Promise<void> {
 		isRefetching.value = true;
 		try {
-			const queue = await FaceQuickNamingService.getQueue(clusterLabel);
+			const queue = await FaceQuickNamingService.getQueue(clusterLabel, stillQueuedCount());
 			const seen = new Set(entries.value.map((e) => e.face.id));
 			const fresh = adaptFaceQueue(queue.data).filter((f) => !seen.has(f.id));
 			entries.value.push(...fresh.map(toEntry));
