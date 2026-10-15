@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => '標籤',
+    'description' => '在此管理您的標籤，可重新命名、合併及刪除標籤。',
+    'no_tags' => '找不到標籤。',
+    'loading' => '正在載入標籤...',
+    'rename' => '重新命名',
+    'merge' => '合併',
+    'delete' => '刪除',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => '名稱',
+    'column_photos' => '相片',
+    'column_albums' => '相簿',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => '確定要刪除標籤「%s」嗎？',
+    'delete_confirm_multiple' => '確定要刪除這 %d 個標籤嗎？',
+    'delete_warning' => '此操作無法復原！所有帶有此標籤的相片都將不再有此標籤。',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => '確定要將標籤「%1$s」合併至標籤「%2$s」嗎？',
+    'merge_warning' => '此操作無法復原！所有帶有來源標籤的相片都將移至目標標籤。',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => '重新命名標籤',
 ];

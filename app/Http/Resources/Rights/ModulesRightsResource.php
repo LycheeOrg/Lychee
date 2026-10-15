@@ -35,6 +35,7 @@ class ModulesRightsResource extends Data
 	public bool $is_nsfw_classifier_enabled = false;
 	public bool $is_face_overlay_enabled = true;
 	public bool $is_face_recognition_warning_enabled = true;
+	public bool $can_quick_name_faces = false;
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
 	public bool $is_design_system_enabled = false;
@@ -56,7 +57,23 @@ class ModulesRightsResource extends Data
 		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->is_face_recognition_warning_enabled = request()->configs()->getValueAsBool('ai_vision_face_recognition_warning');
 		$this->is_design_system_enabled = request()->configs()->getValueAsBool('enable_design_system');
+		$this->can_quick_name_faces = $this->canQuickNameFaces($is_logged_in);
 		$this->isContactEnabled();
+	}
+
+	/**
+	 * Whether the face quick naming view is available (Feature 093, FR-093-07):
+	 * struct-of-array flag on, AI Vision and face recognition enabled, and the
+	 * library-wide batch face right (admins in every mode, logged-in users in
+	 * `public`/`private` mode).
+	 */
+	private function canQuickNameFaces(bool $is_logged_in): bool
+	{
+		return $is_logged_in &&
+			config('features.struct-of-array') === true &&
+			request()->configs()->getValueAsBool('ai_vision_enabled') &&
+			request()->configs()->getValueAsBool('ai_vision_face_enabled') &&
+			Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]);
 	}
 
 	/**

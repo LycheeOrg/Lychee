@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Настройте исходящие вебхуки, срабатывающие при добавлении, перемещении или удалении фотографий.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Вебхуки ещё не настроены.',
+    'create_first' => 'Создайте свой первый вебхук',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Название',
+    'col_event' => 'Событие',
+    'col_method' => 'Метод',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Формат',
+    'col_enabled' => 'Включён',
+    'col_actions' => 'Действия',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Фото добавлено',
+    'event_photo_move' => 'Фото перемещено',
+    'event_photo_delete' => 'Фото удалено',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Строка запроса',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Создать вебхук',
+    'edit' => 'Изменить',
+    'delete' => 'Удалить',
+    'cancel' => 'Отмена',
+    'save' => 'Сохранить',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Название',
+    'field_name_placeholder' => 'например, Мой вебхук',
+    'field_event' => 'Событие',
+    'field_method' => 'Метод HTTP',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Формат полезной нагрузки',
+    'field_enabled' => 'Включён',
+    'field_secret' => 'Секрет',
+    'field_secret_placeholder' => 'Оставьте пустым, чтобы сохранить текущий секрет',
+    'field_secret_header' => 'Заголовок секрета',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Отправлять ID фото',
+    'field_send_album_id' => 'Отправлять ID альбома',
+    'field_send_title' => 'Отправлять название',
+    'field_send_size_variants' => 'Отправлять варианты размеров',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Создать вебхук',
+    'modal_edit_title' => 'Изменить вебхук',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Удалить вебхук',
+    'confirm_delete_message' => 'Вы уверены, что хотите удалить вебхук ":name"? Это действие нельзя отменить.',
+    'delete_warning' => 'Это действие нельзя отменить.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Вебхук успешно создан.',
+    'updated' => 'Вебхук успешно обновлён.',
+    'deleted' => 'Вебхук успешно удалён.',
+    'error_load' => 'Не удалось загрузить вебхуки.',
+    'error_save' => 'Не удалось сохранить вебхук.',
+    'error_delete' => 'Не удалось удалить вебхук.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Секрет задан',
+    'no_secret' => 'Без секрета',
 ];

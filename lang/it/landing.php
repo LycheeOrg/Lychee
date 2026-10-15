@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'gallery' => 'Galleria',
+    'access_gallery' => 'Accedi alla galleria',
+    'Powered_by_Lychee' => 'Realizzato con Lychee',
+    'copyright' => 'Tutte le immagini di questo sito sono protette da copyright di %1$s © %2$s',
+    'client_login' => 'Accesso clienti',
+    'view_public_gallery' => 'Visualizza la galleria pubblica',
+    'contact' => 'Contatti',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Chi sono',
+        'featured' => 'Lavori recenti',
+        'scroll_down' => 'Scorri verso il basso',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Esplora',
+        'explore_caption' => 'Visualizza la galleria',
+        'contact_caption' => 'Mettiti in contatto',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Bentornato',
     ],
 ];

@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'アルバムや写真を検索、またはページへ移動…',
+    'navigation' => '移動',
+    'actions' => '操作',
+    'albums' => 'アルバム',
+    'results' => '検索結果',
+    'empty' => '結果が見つかりません。',
+    'dark_mode' => 'ダークモードに切り替え',
+    'light_mode' => 'ライトモードに切り替え',
+    'language' => '言語',
 ];

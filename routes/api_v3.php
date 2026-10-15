@@ -115,3 +115,19 @@ Route::get('/Metrics', [Gallery\LiveMetricsListController::class, 'index'])->mid
 // Library insights (Feature 085): aggregates over one owner or the whole
 // instance for a period; replaces the v2 Statistics counts endpoint.
 Route::get('/Insights', [InsightsController::class, 'index'])->middleware(['support:se']);
+
+// Face quick naming (Feature 093): people list for the name box.
+Route::get('/People', [AiVision\PeopleListController::class, 'index']);
+Route::get('/Faces/queue', [AiVision\FaceQueueController::class, 'index']);
+// Photo carrying a face (Feature 093, ADR-093-01): binary passthrough like
+// `/Asset` above, with the same middleware exemptions.
+Route::get('/Faces/{face_id}/photo/{variant}', [AiVision\FacePhotoAssetController::class, 'show'])
+	->withoutMiddleware([
+		'accept_content_type:json',
+		'content_type:json',
+		AddQueuedCookiesToResponse::class,
+		StartSession::class,
+		ShareErrorsFromSession::class,
+		VerifyCsrfToken::class,
+	])
+	->middleware(['json_errors', ReadOnlyStartSession::class]);

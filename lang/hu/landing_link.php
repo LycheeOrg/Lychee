@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'További hivatkozások',
+    'description' => 'A nyitóoldal navigációs sávjában és/vagy láblécében megjelenő további hivatkozások tetszőleges, rendezett listájának kezelése.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Még nincsenek beállított további hivatkozások.',
+    'create_first' => 'Hozza létre első hivatkozását',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Felirat',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Elhelyezés',
+    'col_enabled' => 'Engedélyezve',
+    'col_actions' => 'Műveletek',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Navigáció',
+    'placement_footer' => 'Lábléc',
+    'placement_both' => 'Navigáció és lábléc',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Beépített',
+    'built_in_cannot_delete' => 'Ez a beépített hivatkozás nem törölhető. Helyette tiltsa le, vagy rendezze át, mint bármely más hivatkozást.',
+    'built_in_url_hint' => 'Ez egy beépített hivatkozás, a célja nem módosítható.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Hivatkozás létrehozása',
+    'edit' => 'Szerkesztés',
+    'delete' => 'Törlés',
+    'cancel' => 'Mégse',
+    'save' => 'Mentés',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Felirat',
+    'field_label_placeholder' => 'pl. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Elhelyezés',
+    'field_open_in_new_tab' => 'Megnyitás új lapon',
+    'field_enabled' => 'Engedélyezve',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Hivatkozás létrehozása',
+    'modal_edit_title' => 'Hivatkozás szerkesztése',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Hivatkozás törlése',
+    'confirm_delete_message' => 'Biztosan törli a(z) ":label" hivatkozást? Ez a művelet nem vonható vissza.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'A hivatkozás létrehozása sikeres.',
+    'updated' => 'A hivatkozás frissítése sikeres.',
+    'deleted' => 'A hivatkozás törlése sikeres.',
+    'reordered' => 'A hivatkozások átrendezése sikeres.',
+    'error_load' => 'Nem sikerült betölteni a hivatkozásokat.',
+    'error_save' => 'Nem sikerült menteni a hivatkozást.',
+    'error_delete' => 'Nem sikerült törölni a hivatkozást.',
+    'error_reorder' => 'Nem sikerült átrendezni a hivatkozásokat.',
 ];

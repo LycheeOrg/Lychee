@@ -34,7 +34,7 @@ return [
     'update' => [
         'title' => 'Status aktualisieren',
         'update_available' => 'Es ist eine neuere Version verfügbar (aktuell: :current, neueste: :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'Ihre Installation liegt :count Commits hinter master.',
     ],
     'nsfw_config' => [
         'title' => 'Erkennung und Moderation von nicht jugendfreien Inhalten',
@@ -83,6 +83,6 @@ return [
         'legend_nothing' => 'Es wurden keine Maßnahmen ergriffen.',
     ],
     'nsfw_findings' => [
-        'title' => 'NSFW findings',
+        'title' => 'NSFW-Befunde',
     ],
 ];

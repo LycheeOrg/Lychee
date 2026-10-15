@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => '使用者群組',
+    'explanation' => '使用者群組可讓您組織使用者並統一管理權限。',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => '建立群組',
+    'edit' => '編輯',
+    'delete' => '刪除',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => '正在載入群組...',
+    'empty' => '找不到群組。',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => '新增成員...',
+    'empty_group' => '此群組沒有成員。',
+    'no_permission_members' => '您沒有權限檢視此群組的成員。',
+    'remove_success' => '已將 %s 從 %s 中移除。',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => '刪除群組',
+    'confirm_delete_message' => '確定要刪除此群組嗎？',
+    'cancel' => '取消',
+    'confirm' => '刪除',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => '群組名稱',
+        'description' => '說明',
+        'users' => '使用者',
+        'cancel' => '取消',
+        'create' => '建立',
+        'edit' => '編輯',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => '請填寫群組名稱。',
     ],
 ];

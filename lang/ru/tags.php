@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Теги',
+    'description' => 'Управляйте своими тегами здесь. Теги можно переименовывать, объединять и удалять.',
+    'no_tags' => 'Теги не найдены.',
+    'loading' => 'Загрузка тегов...',
+    'rename' => 'Переименовать',
+    'merge' => 'Объединить',
+    'delete' => 'Удалить',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Название',
+    'column_photos' => 'Фотографии',
+    'column_albums' => 'Альбомы',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Вы уверены, что хотите удалить тег «%s»?',
+    'delete_confirm_multiple' => 'Вы уверены, что хотите удалить эти теги (%d)?',
+    'delete_warning' => 'Это действие нельзя отменить! Все фотографии с этим тегом лишатся его.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Вы уверены, что хотите объединить тег «%1$s» с тегом «%2$s»?',
+    'merge_warning' => 'Это действие нельзя отменить! Все фотографии с исходным тегом будут перенесены в целевой тег.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Переименовать тег',
 ];
