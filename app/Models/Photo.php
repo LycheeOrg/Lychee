@@ -55,6 +55,8 @@ use function Safe\preg_match;
  * @property string                $title
  * @property string|null           $title_base
  * @property int                   $title_index
+ * @property string|null           $title_date_key           Leading date of the title as `Y-m-d` (FR-092-02).
+ * @property string|null           $taken_key                `taken_at` in `taken_at_orig_tz` as `Y-m-d-H` (FR-092-01).
  * @property string|null           $description
  * @property Collection<int,Tag>   $tags
  * @property int                   $owner_id

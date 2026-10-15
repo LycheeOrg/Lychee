@@ -386,6 +386,53 @@ class PhotoRatiosV3Test extends BaseApiWithDataTest
 		self::assertNotContains($photo_2022->id, $response->json('ids'));
 	}
 
+	/**
+	 * FR-092-07: a date window on a stored key is a key range - a day id
+	 * covers every hour key of that day; per-row ids equal the window id and
+	 * rows come in bucket order.
+	 */
+	public function testDateWindowOnStoredKeyIsAKeyRange(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'taken_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'day']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$ids = [];
+		foreach (['2026-07-01-16', '2026-07-01-09', '2026-07-02-01'] as $key) {
+			$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+			DB::table('photos')->where('id', '=', $photo->id)->update(['taken_key' => $key]);
+			$ids[$key] = $photo->id;
+		}
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['bucket_ids' => ['2026-07-01']]);
+		$this->assertOk($response);
+		self::assertEqualsCanonicalizing([$ids['2026-07-01-16'], $ids['2026-07-01-09']], $response->json('ids'));
+		self::assertSame(['2026-07-01', '2026-07-01'], $response->json('bucket_ids'));
+
+		$whole = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos");
+		$this->assertOk($whole);
+		self::assertSame(['2026-07-01', '2026-07-01', '2026-07-02'], $whole->json('bucket_ids'));
+	}
+
+	/**
+	 * FR-092-07: an alphabetical window is a prefix of the stored title
+	 * base, at the configured length.
+	 */
+	public function testAlphabeticalWindowIsAPrefix(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'title']);
+		DB::table('configs')->where('key', '=', 'photo_title_bucket_mode')->update(['value' => 'alphabetical']);
+		DB::table('configs')->where('key', '=', 'photo_title_bucket_prefix_length')->update(['value' => '2']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$zebra = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['title_base' => 'zebra']);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['title_base' => 'zoo']);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos", ['bucket_ids' => ['ze']]);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$zebra->id], 'bucket_ids' => ['ze']]);
+	}
+
 	public function testBucketIdsAndPhotoIdsBothProvidedReturns422(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();

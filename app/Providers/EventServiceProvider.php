@@ -31,6 +31,7 @@ use App\Events\PhotoAdded;
 use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoRatingChanged;
@@ -189,6 +190,7 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');
 		Event::listen(AlbumPhotoSortingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handleAlbumPhotoSortingChanged');
 		Event::listen(PhotoBucketsRecomputed::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoBucketsRecomputed');
+		Event::listen(PhotoListingCacheFlushRequested::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoListingCacheFlushRequested');
 		Event::listen(PhotoTagsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoTagsChanged');
 		Event::listen(PhotoPersonsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoPersonsChanged');
 		Event::listen(PhotoRatingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoRatingChanged');

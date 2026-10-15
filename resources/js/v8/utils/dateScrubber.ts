@@ -1,4 +1,4 @@
-import { phpDateFormat } from "@/v8/utils/phpDateFormat";
+import { formatServerDateTime, phpDateFormat } from "@/v8/utils/phpDateFormat";
 import type { VirtualAlbumRow } from "@/v8/composables/album/virtualAlbumRows";
 
 /**
@@ -27,14 +27,20 @@ export type DatedTile = {
 	title: string;
 	created_at: string | null;
 	taken_at?: string | null;
+	/** Zone the photo was taken in: its `taken_at` day is read there, like the server's `taken_key` (Feature 092, FR-092-18). */
+	taken_at_orig_tz?: string | null;
 	min_taken_at?: string | null;
 	max_taken_at?: string | null;
 };
 
 const RAW_DAY = /^\d{4}-\d{2}-\d{2}/;
 
-/** Same leading-date grammar as `TimelineData::parseDateFromTitle()` — missing month/day default to `01`. */
-const TITLE_DATE_PREFIX = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/;
+/**
+ * Same leading-date grammar as `BucketKeys::titleDateKey()` — `YYYYMMDD` (groups 2, 3) or
+ * `YYYY[-MM[-DD]]` (groups 4, 5; JS has no branch reset), missing month/day default to `01`;
+ * a match that is not a calendar date is no date (Feature 092, FR-092-02).
+ */
+const TITLE_DATE_PREFIX = /^(\d{4})(?:(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/;
 
 /** `YYYY-MM-DD` from a raw DB datetime — the same prefix the server's bucket truncation reads, so rail days agree with header buckets. */
 export function dayKeyOf(raw: string | null | undefined): string | null {
@@ -49,14 +55,37 @@ export function parseTitleDatePrefix(title: string): string | null {
 	if (match === null) {
 		return null;
 	}
-	return `${match[1]}-${match[2] ?? "01"}-${match[3] ?? "01"}`;
+	const [yyyy, mm, dd] = [match[1], match[2] ?? match[4] ?? "01", match[3] ?? match[5] ?? "01"];
+	const [year, month, day] = [Number(yyyy), Number(mm), Number(dd)];
+	const date = new Date(0);
+	date.setUTCFullYear(year, month - 1, day); // rolls an invalid month or day over, caught below
+	if (year === 0 || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+		return null;
+	}
+	return `${yyyy}-${mm}-${dd}`;
 }
 
 export function tileDayKey(tile: DatedTile, field: DateScrubberField): string | null {
 	if (field === "title") {
 		return parseTitleDatePrefix(tile.title);
 	}
+	if (field === "taken_at") {
+		return takenDayKeyOf(tile.taken_at ?? null, tile.taken_at_orig_tz ?? null);
+	}
 	return dayKeyOf(tile[field]);
+}
+
+/**
+ * A photo's capture day in the zone it was taken in — the day of its
+ * `taken_key`, so the rail agrees with the header buckets (FR-092-18). A
+ * photo without zone keeps the stored (UTC) day, like the server.
+ */
+export function takenDayKeyOf(raw: string | null, timeZone: string | null): string | null {
+	if (timeZone === null || timeZone === "") {
+		return dayKeyOf(raw);
+	}
+	const day = formatServerDateTime(raw, "Y-m-d", timeZone);
+	return day === "" ? null : day;
 }
 
 export function formatDayLabel(day: string, format: string): string {

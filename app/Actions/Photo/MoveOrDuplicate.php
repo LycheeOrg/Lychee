@@ -71,30 +71,17 @@ class MoveOrDuplicate
 				->where(PA::ALBUM_ID, '=', $to_album->id)
 				->delete();
 
-			// Compute each new pivot row's bucket_id inline, against
-			// $to_album's own currently effective photo-sort/timeline
-			// settings. A photo kept in its $from_album link too (the "copy"
-			// case) correctly keeps that other row's own, potentially
-			// different, bucket_id untouched.
+			// Each new pivot row's key, for $to_album's effective photo sort
+			// column (FR-092-03). A photo kept in its $from_album link too
+			// (the "copy" case) keeps that other row's key untouched.
 			$bucket_computer = resolve(PhotoBucketComputer::class);
-			$sorting = $to_album->getEffectivePhotoSorting();
-			$granularity = $bucket_computer->resolveGranularity($to_album->photo_timeline);
+			$column = $to_album->getEffectivePhotoSorting()->column;
 
 			// Add the new links.
 			DB::table(PA::PHOTO_ALBUM)->insert($photos->map(fn (Photo $photo) => [
 				'photo_id' => $photo->id,
 				'album_id' => $to_album->id,
-				'bucket_id' => $bucket_computer->compute(
-					sorting_column: $sorting->column,
-					granularity: $granularity,
-					title: $photo->title,
-					title_base: $photo->title_base ?? '',
-					created_at: $photo->created_at,
-					taken_at: $photo->taken_at,
-					is_highlighted: $photo->is_highlighted,
-					type: $photo->type ?? '',
-					rating_avg: $photo->rating_avg,
-				),
+				'bucket_key' => $bucket_computer->keyForPhoto($column, $photo),
 			])->all());
 
 			// Dispatch event for destination album (photos added)

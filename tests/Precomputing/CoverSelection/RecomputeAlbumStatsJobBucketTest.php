@@ -22,7 +22,9 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test RecomputeAlbumStatsJob::computeBucket() (Feature 061, FR-061-02).
+ * Test RecomputeAlbumStatsJob::computeBucketKey(): the granularity-free key
+ * of the parent's effective sort column (FR-092-04). Granularity and
+ * prefix length never shape it.
  */
 class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 {
@@ -43,7 +45,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
 
 		$album->refresh();
-		$this->assertSame($album->created_at->format('Y'), $album->bucket_id);
+		$this->assertSame($album->created_at->copy()->utc()->format('Y-m-d'), $album->bucket_key);
 	}
 
 	public function testNonRootAlbumUsesParentsExplicitOverrides(): void
@@ -60,7 +62,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame($child->created_at->format('Y-m'), $child->bucket_id);
+		$this->assertSame($child->created_at->copy()->utc()->format('Y-m-d'), $child->bucket_key);
 	}
 
 	public function testNonRootAlbumWithParentOnDefaultGranularityFallsBackToInstanceWide(): void
@@ -74,7 +76,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame($child->created_at->format('Y-m-d'), $child->bucket_id);
+		$this->assertSame($child->created_at->copy()->utc()->format('Y-m-d'), $child->bucket_key);
 	}
 
 	public function testOwnerIdParentSortColumnAlwaysYieldsNullBucket(): void
@@ -90,7 +92,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertNull($child->bucket_id);
+		$this->assertNull($child->bucket_key);
 	}
 
 	// ─── T-061-03: truncation correctness + NULL cases ──────────────────────
@@ -108,7 +110,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame('2024-03', $child->bucket_id);
+		$this->assertSame('2024-03-15', $child->bucket_key);
 	}
 
 	public function testMaxTakenAtBucketing(): void
@@ -124,7 +126,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame('2024-03-15', $child->bucket_id);
+		$this->assertSame('2024-03-15', $child->bucket_key);
 	}
 
 	public function testNoDatedPhotosYieldsNullBucketForMinTakenAt(): void
@@ -137,7 +139,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertNull($child->bucket_id);
+		$this->assertNull($child->bucket_key);
 	}
 
 	public function testTitleDatePrefixModeParsesLeadingDate(): void
@@ -151,7 +153,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame('2022-07', $child->bucket_id);
+		$this->assertSame('2022-07-01', $child->bucket_key);
 	}
 
 	public function testTitleDatePrefixModeUnparseableTitleYieldsNull(): void
@@ -165,7 +167,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertNull($child->bucket_id);
+		$this->assertNull($child->bucket_key);
 	}
 
 	public function testTitleAlphabeticalModeUsesTitleBasePrefix(): void
@@ -182,7 +184,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame('v', $child->bucket_id);
+		$this->assertSame('vacation photos', $child->bucket_key);
 	}
 
 	public function testTitleAlphabeticalModeNeverNullEvenForUnparseableTitle(): void
@@ -199,7 +201,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertSame('va', $child->bucket_id);
+		$this->assertSame('vacation photos', $child->bucket_key);
 	}
 
 	public function testCreatedAtBucketingIsNeverNull(): void
@@ -212,7 +214,7 @@ class RecomputeAlbumStatsJobBucketTest extends BasePrecomputingTest
 		(new RecomputeAlbumStatsJob($child->id, propagate_to_parent: false))->handle();
 
 		$child->refresh();
-		$this->assertNotNull($child->bucket_id);
-		$this->assertSame($child->created_at->format('Y'), $child->bucket_id);
+		$this->assertNotNull($child->bucket_key);
+		$this->assertSame($child->created_at->copy()->utc()->format('Y-m-d'), $child->bucket_key);
 	}
 }

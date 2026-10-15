@@ -16,10 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test the `lychee:recompute-buckets` backfill command (Feature 061,
- * FR-061-04, CLI-061-01, NFR-061-03; Feature 064) — joins what used to be
- * two separate commands (`lychee:recompute-album-buckets`,
- * `lychee:recompute-photo-buckets`) into one.
+ * Test the `lychee:recompute-buckets` command: every key in the
+ * granularity-free format (FR-092-15, S-092-17), chunked (FR-092-14).
  */
 class RecomputeBucketsCommandTest extends BasePrecomputingTest
 {
@@ -35,7 +33,7 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => $granularity]);
 	}
 
-	public function testCommandRecomputesBucketIdForEveryAlbumAgainstAFixture(): void
+	public function testCommandRecomputesBucketKeyForEveryAlbumAgainstAFixture(): void
 	{
 		$this->setAlbumInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
 		$user = User::factory()->create();
@@ -43,20 +41,19 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		$child1 = Album::factory()->children_of($root)->owned_by($user)->create();
 		$child2 = Album::factory()->children_of($root)->owned_by($user)->create();
 
-		// bucket_id starts unpopulated (never ran RecomputeAlbumStatsJob).
-		$this->assertNull($child1->fresh()->bucket_id);
-		$this->assertNull($child2->fresh()->bucket_id);
+		// bucket_key starts unpopulated (never ran RecomputeAlbumStatsJob).
+		$this->assertNull($child1->fresh()->bucket_key);
+		$this->assertNull($child2->fresh()->bucket_key);
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
 
-		$expected = $root->created_at->format('Y');
-		$this->assertSame($expected, $child1->fresh()->bucket_id);
-		$this->assertSame($expected, $child2->fresh()->bucket_id);
+		$this->assertSame($child1->created_at->copy()->utc()->format('Y-m-d'), $child1->fresh()->bucket_key);
+		$this->assertSame($child2->created_at->copy()->utc()->format('Y-m-d'), $child2->fresh()->bucket_key);
 		// Root album itself has no parent -> governed by the same instance-wide default.
-		$this->assertSame($root->created_at->format('Y'), $root->fresh()->bucket_id);
+		$this->assertSame($root->created_at->copy()->utc()->format('Y-m-d'), $root->fresh()->bucket_key);
 	}
 
-	public function testCommandRecomputesBucketIdForEveryPhotoAlbumRowAgainstAFixture(): void
+	public function testCommandRecomputesBucketKeyForEveryPhotoAlbumRowAgainstAFixture(): void
 	{
 		$this->setPhotoInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
 		$user = User::factory()->create();
@@ -64,16 +61,14 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		$photo1 = Photo::factory()->owned_by($user)->in($album)->create();
 		$photo2 = Photo::factory()->owned_by($user)->in($album)->create();
 
-		// bucket_id starts unpopulated (attached directly via factory, bypassing SetParent).
-		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo1->id)->first()->bucket_id);
-		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo2->id)->first()->bucket_id);
+		// bucket_key starts unpopulated (attached directly via factory, bypassing SetParent).
+		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo1->id)->first()->bucket_key);
+		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo2->id)->first()->bucket_key);
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
 
-		$expected1 = $photo1->created_at->format('Y');
-		$expected2 = $photo2->created_at->format('Y');
-		$this->assertSame($expected1, DB::table('photo_album')->where('photo_id', '=', $photo1->id)->first()->bucket_id);
-		$this->assertSame($expected2, DB::table('photo_album')->where('photo_id', '=', $photo2->id)->first()->bucket_id);
+		$this->assertSame($photo1->created_at->copy()->utc()->format('Y-m-d-H'), DB::table('photo_album')->where('photo_id', '=', $photo1->id)->first()->bucket_key);
+		$this->assertSame($photo2->created_at->copy()->utc()->format('Y-m-d-H'), DB::table('photo_album')->where('photo_id', '=', $photo2->id)->first()->bucket_key);
 	}
 
 	public function testCommandIssuesZeroQueriesAgainstSizeVariantsOrTags(): void
@@ -113,13 +108,14 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
 		// date_prefix mode, unparseable title -> unknown/null.
-		$this->assertNull($child->fresh()->bucket_id);
+		$this->assertNull($child->fresh()->bucket_key);
 
 		DB::table('configs')->where('key', '=', 'title_bucket_mode')->update(['value' => 'alphabetical']);
 		DB::table('configs')->where('key', '=', 'title_bucket_prefix_length')->update(['value' => '1']);
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
-		$this->assertSame('v', $child->fresh()->bucket_id);
+		// The whole title base: the prefix length applies at read time.
+		$this->assertSame('vacation photos', $child->fresh()->bucket_key);
 	}
 
 	public function testRerunAfterPhotoTitleBucketModeConfigChangeUpdatesExistingRows(): void
@@ -134,19 +130,18 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
 		// date_prefix mode, unparseable title -> null/"unknown".
-		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo->id)->first()->bucket_id);
+		$this->assertNull(DB::table('photo_album')->where('photo_id', '=', $photo->id)->first()->bucket_key);
 
 		DB::table('configs')->where('key', '=', 'photo_title_bucket_mode')->update(['value' => 'alphabetical']);
 		DB::table('configs')->where('key', '=', 'photo_title_bucket_prefix_length')->update(['value' => '1']);
 
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
-		$this->assertSame('v', DB::table('photo_album')->where('photo_id', '=', $photo->id)->first()->bucket_id);
+		$this->assertSame('vacation photos', DB::table('photo_album')->where('photo_id', '=', $photo->id)->first()->bucket_key);
 	}
 
 	/**
-	 * A photo linked into two albums with different effective settings
-	 * recomputes to two different `bucket_id` values in a single full-table
-	 * pass.
+	 * A photo linked into two albums with different sort columns recomputes
+	 * to two different keys in a single full-table pass.
 	 */
 	public function testFullTablePassRespectsPerAlbumDivergentSettings(): void
 	{
@@ -154,9 +149,7 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		$user = User::factory()->create();
 		$album_a = Album::factory()->as_root()->owned_by($user)->create();
 		$album_b = Album::factory()->as_root()->owned_by($user)->create();
-		$album_a->photo_timeline = \App\Enum\TimelinePhotoGranularity::YEAR;
-		$album_a->save();
-		$album_b->photo_timeline = \App\Enum\TimelinePhotoGranularity::MONTH;
+		$album_b->photo_sorting = new \App\DTO\PhotoSortingCriterion(\App\Enum\ColumnSortingType::TYPE, \App\Enum\OrderSortingType::ASC);
 		$album_b->save();
 
 		$photo = Photo::factory()->owned_by($user)->create();
@@ -168,8 +161,8 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 		$row_a = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_a->id)->first();
 		$row_b = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_b->id)->first();
 
-		$this->assertSame($photo->created_at->format('Y'), $row_a->bucket_id);
-		$this->assertSame($photo->created_at->format('Y-m'), $row_b->bucket_id);
+		$this->assertSame($photo->created_at->copy()->utc()->format('Y-m-d-H'), $row_a->bucket_key);
+		$this->assertSame('image/jpeg', $row_b->bucket_key);
 	}
 
 	/**
@@ -192,11 +185,11 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 
 		$this->artisan('lychee:recompute-buckets', ['--chunk' => 1])->assertExitCode(0);
 
-		$this->assertSame(0, DB::table('photo_album')->whereNull('bucket_id')->count());
+		$this->assertSame(0, DB::table('photo_album')->whereNull('bucket_key')->count());
 		foreach ([$shared, $photo1, $photo2] as $photo) {
-			$buckets = DB::table('photo_album')->where('photo_id', '=', $photo->id)->pluck('bucket_id')->all();
-			foreach ($buckets as $bucket_id) {
-				$this->assertSame($photo->created_at->format('Y'), $bucket_id);
+			$keys = DB::table('photo_album')->where('photo_id', '=', $photo->id)->pluck('bucket_key')->all();
+			foreach ($keys as $key) {
+				$this->assertSame($photo->created_at->copy()->utc()->format('Y-m-d-H'), $key);
 			}
 		}
 	}

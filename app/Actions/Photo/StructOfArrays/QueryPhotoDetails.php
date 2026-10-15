@@ -17,12 +17,9 @@ use App\Http\Resources\Models\PanoramaResource;
 use App\Http\Resources\Models\PhotoStatisticsResource;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Http\Resources\V3\PhotoDetailResource;
-use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use App\Repositories\ConfigManager;
-use App\Services\PhotoBucketComputer;
-use App\SmartAlbums\TimelineAlbum;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\LaravelData\Optional;
@@ -49,7 +46,6 @@ class QueryPhotoDetails
 
 	public function __construct(
 		private readonly ConfigManager $config_manager,
-		private readonly PhotoBucketComputer $bucket_computer,
 		private readonly ResolvesPhotoGrants $resolve_photo_grants,
 	) {
 	}
@@ -62,33 +58,15 @@ class QueryPhotoDetails
 		$query = $this->resolvePhotoQuery($album, $user)->select('photos.*');
 
 		if ($bucket_id !== null) {
-			if ($album instanceof Album) {
-				// The literal "unknown" sentinel maps to a NULL bucket_id -
-				// uncapped, resolves every matching row.
-				if ($bucket_id === 'unknown') {
-					$query->whereNull('photo_album.bucket_id');
-				} else {
-					$query->where('photo_album.bucket_id', '=', $bucket_id);
-				}
-			} elseif ($album instanceof TimelineAlbum) {
-				// SQL-pushdown bounded (NFR-066-01) - never the full-library
-				// PHP row scan self::resolveLiveBucketPhotoIds() uses for
-				// TagAlbum/PersonAlbum (left untouched, see below).
-				$this->applyTimelineBucketFilter($query, $album, $bucket_id);
-			} else {
-				// TagAlbum/PersonAlbum/BaseSmartAlbum have no stored
-				// `bucket_id` to filter by in SQL - resolve the matching ids
-				// live first (mirrors QueryPhotoBuckets/QueryPhotoRatios),
-				// then curate the main query down to exactly those rows.
-				$query->whereIn('photos.id', $this->resolveLiveBucketPhotoIds($album, $user, $bucket_id));
-			}
+			// One bucket window in SQL for every source (FR-092-07).
+			$scheme = $this->resolveScheme($album, $this->resolveEffectiveSorting($album));
+			$this->applyBucketWindow($query, $album, $scheme, [$bucket_id]);
 		} else {
 			// Ids not actually in this album or not visible to the caller
 			// are silently curated away, never a 4xx.
 			$query->whereIn('photos.id', $photo_ids ?? []);
 		}
 
-		/** @var Collection<int,Photo> $photos */
 		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags'])->get();
 
 		return $this->buildResource($photos, $user);
@@ -119,66 +97,6 @@ class QueryPhotoDetails
 			->get();
 
 		return $this->buildResource($photos, $user);
-	}
-
-	/**
-	 * Lean pass over this album's candidate photos to resolve exactly which
-	 * ids live-compute to `$bucket_id` (or to `NULL`/"unknown" if
-	 * `$bucket_id === 'unknown'`) - see {@see ResolvesPhotoSource} for why a
-	 * non-`Album` source has no stored `bucket_id` column to filter by
-	 * directly in SQL.
-	 *
-	 * @return string[]
-	 */
-	private function resolveLiveBucketPhotoIds(AbstractAlbum $album, ?User $user, string $bucket_id): array
-	{
-		$sorting = $this->resolveEffectiveSorting($album);
-		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
-
-		$query = $this->resolvePhotoQuery($album, $user);
-		$rows = $query->select([
-			'photos.id', 'photos.title', 'photos.title_base', 'photos.created_at', 'photos.taken_at',
-			'photos.is_highlighted', 'photos.type', 'photos.rating_avg',
-		])->toBase()->get();
-
-		$matching_ids = [];
-		foreach ($rows as $row) {
-			$row_bucket_id = $this->liveBucketId($sorting->column, $granularity, $row) ?? 'unknown';
-			if ($row_bucket_id === $bucket_id) {
-				$matching_ids[] = $row->id;
-			}
-		}
-
-		return $matching_ids;
-	}
-
-	/**
-	 * Curates `$query` (already scoped to {@see TimelineAlbum}'s candidate
-	 * photos by {@see ResolvesPhotoSource::resolvePhotoQuery()}) down to
-	 * exactly `$bucket_id`'s rows via a direct `WHERE` range on the raw
-	 * sort column - `PhotoBucketComputer::bucketDateRange()`'s SQL-pushdown
-	 * `[start, end)`, or `whereNull()` for the `"unknown"` sentinel - bounded
-	 * by the requested bucket's own size, never the full library
-	 * (NFR-066-01, FR-066-07).
-	 *
-	 * @param FixedQueryBuilder<Photo> $query
-	 */
-	private function applyTimelineBucketFilter(FixedQueryBuilder $query, TimelineAlbum $album, string $bucket_id): void
-	{
-		$sorting = $this->resolveEffectiveSorting($album);
-
-		if ($bucket_id === 'unknown') {
-			$query->whereNull($sorting->column->value);
-
-			return;
-		}
-
-		$granularity = $this->bucket_computer->resolveGranularity($this->resolvePhotoTimeline($album));
-		[$start, $end] = $this->bucket_computer->bucketDateRange($bucket_id, $granularity);
-
-		$query
-			->where($sorting->column->value, '>=', $start)
-			->where($sorting->column->value, '<', $end);
 	}
 
 	/**

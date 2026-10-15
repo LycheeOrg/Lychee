@@ -71,16 +71,18 @@ class TimelineData extends Data
 		// "YYYY something"
 		// "YYYY-MM something"
 		// "YYYY-MM-DD something"
+		// "YYYYMMDD something" (e.g. "20240315_123456")
 		// We match the first part that looks like a date.
+		// A match that is not a calendar date (e.g. "2023-13-01") is no date, like BucketKeys::titleDateKey().
 		// Then use Carbon to create a date object from the matched components.
-		$pattern = '/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/';
+		$pattern = '/^(\d{4})(?|(\d{2})(\d{2})|(?:-(\d{2}))?(?:-(\d{2}))?)/';
 		try {
 			if (preg_match($pattern, $title, $matches) === 1) {
 				$year = intval($matches[1]);
 				$month = intval($matches[2] ?? 1);
 				$day = intval($matches[3] ?? 1);
 
-				return Carbon::createFromDate($year, $month, $day);
+				return checkdate($month, $day, $year) ? Carbon::createFromDate($year, $month, $day) : null;
 			}
 
 			return null;

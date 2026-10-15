@@ -355,4 +355,29 @@ class PhotoDetailsV3Test extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson(['ids' => []]);
 	}
+
+	/**
+	 * FR-092-07: a details window on a month id over hour keys returns the
+	 * whole month, `unknown` the photos without key.
+	 */
+	public function testMonthWindowOverHourKeys(): void
+	{
+		DB::table('configs')->where('key', '=', 'sorting_photos_col')->update(['value' => 'taken_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'month']);
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$july = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+		$august = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+		$undated = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => null]);
+		DB::table('photos')->where('id', '=', $july->id)->update(['taken_key' => '2026-07-31-23']);
+		DB::table('photos')->where('id', '=', $august->id)->update(['taken_key' => '2026-08-01-00']);
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/details", ['bucket_id' => '2026-07']);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$july->id]]);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/details", ['bucket_id' => 'unknown']);
+		$this->assertOk($response);
+		$response->assertJson(['ids' => [$undated->id]]);
+	}
 }

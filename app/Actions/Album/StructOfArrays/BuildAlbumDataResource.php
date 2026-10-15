@@ -14,6 +14,7 @@ use App\Http\Resources\V3\AlbumDataResource;
 use App\Models\Album;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
+use App\Services\BucketScheme;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +30,10 @@ use Illuminate\Support\Facades\DB;
 class BuildAlbumDataResource
 {
 	/**
-	 * @param Builder<Album> $query
+	 * @param Builder<Album>    $query
+	 * @param BucketScheme|null $scheme bucket ids of the parent's children listing; `null` (tag, person, search listings) yields `unknown`
 	 */
-	public function do(Builder $query, ?User $user): AlbumDataResource
+	public function do(Builder $query, ?User $user, ?BucketScheme $scheme = null): AlbumDataResource
 	{
 		// The album's own public/anonymous grant,
 		// independent of the requesting viewer — distinct from
@@ -64,7 +66,6 @@ class BuildAlbumDataResource
 				'albums.auto_cover_id_max_privilege',
 				'albums.auto_cover_id_least_privilege',
 				'base_albums.owner_id',
-				'albums.bucket_id',
 				'computed_access_permissions.password',
 				'base_albums.is_nsfw',
 				'base_albums.is_pinned',
@@ -77,10 +78,11 @@ class BuildAlbumDataResource
 				'albums.max_taken_at',
 			])
 			->selectRaw('SUBSTR(base_albums.description, 1, 100) as description')
+			->selectRaw(($scheme?->storedIdSql('albums.bucket_key') ?? 'NULL') . ' as bucket_id')
 			->toBase()
 			->get();
 
-		return $this->toResource($rows, $user);
+		return $this->toResource($rows, $user, $scheme);
 	}
 
 	/**
@@ -90,13 +92,13 @@ class BuildAlbumDataResource
 	 */
 	public function empty(?User $user): AlbumDataResource
 	{
-		return $this->toResource(collect(), $user);
+		return $this->toResource(collect(), $user, null);
 	}
 
 	/**
 	 * @param Collection<int,TRow> $rows
 	 */
-	private function toResource(Collection $rows, ?User $user): AlbumDataResource
+	private function toResource(Collection $rows, ?User $user, ?BucketScheme $scheme): AlbumDataResource
 	{
 		$ids = [];
 		$titles = [];
@@ -122,7 +124,7 @@ class BuildAlbumDataResource
 			$titles[] = $row->title;
 			$descriptions[] = $row->description ?? '';
 			$cover_ids[] = AlbumListController::resolveCoverId($row, $user, $unlocked_album_ids);
-			$bucket_ids[] = $row->bucket_id ?? 'unknown';
+			$bucket_ids[] = $scheme?->normalizeId($row->bucket_id) ?? BucketScheme::UNKNOWN;
 			$owner_ids[] = (string) $row->owner_id;
 			$is_password_requireds[] = $row->password !== null;
 			$is_nsfws[] = DbBool::parse($row->is_nsfw);

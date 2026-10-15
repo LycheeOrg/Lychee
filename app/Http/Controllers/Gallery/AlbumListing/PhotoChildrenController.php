@@ -60,6 +60,7 @@ class PhotoChildrenController extends Controller
 				$this->cache_key_provider->photoListingTag($album->get_id()),
 				$this->cache_key_provider->photoBucketsTierTag($album->get_id()),
 				$this->cache_key_provider->userTag($user?->id),
+				$this->cache_key_provider->photoListingGlobalTag(),
 			],
 			fn (): PhotoBucketResource => $this->query_photo_buckets->do($album, $user),
 			ttl: $ttl,
@@ -110,6 +111,7 @@ class PhotoChildrenController extends Controller
 		$tags = [
 			$this->cache_key_provider->photoListingTag($album_id),
 			$this->cache_key_provider->userTag($user_id),
+			$this->cache_key_provider->photoListingGlobalTag(),
 		];
 
 		if ($bucket_ids !== null) {
@@ -137,6 +139,7 @@ class PhotoChildrenController extends Controller
 		$tags = [
 			$this->cache_key_provider->photoListingTag($album->get_id()),
 			$this->cache_key_provider->userTag($user?->id),
+			$this->cache_key_provider->photoListingGlobalTag(),
 		];
 		if ($bucket_id !== null) {
 			// Fine per-bucket tag (FR-066-09) - a `photo_ids[]`-scoped

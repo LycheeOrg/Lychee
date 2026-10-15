@@ -37,15 +37,16 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 		$album->photo_timeline = TimelinePhotoGranularity::MONTH;
 		$album->save();
 
-		$photo = Photo::factory()->owned_by($user)->in($album)->create();
+		$photo = Photo::factory()->owned_by($user)->in($album)->create(['created_at' => '2026-07-01 14:05:00']);
 
 		$row = DB::table('photo_album')->where('photo_id', '=', $photo->id)->first();
-		$this->assertNull($row->bucket_id);
+		$this->assertNull($row->bucket_key);
 
 		(new RecomputePhotoBucketsJob($photo->id))->handle();
 
+		// Granularity-free: the album's month granularity does not shape it.
 		$row = DB::table('photo_album')->where('photo_id', '=', $photo->id)->first();
-		$this->assertSame($photo->created_at->format('Y-m'), $row->bucket_id);
+		$this->assertSame('2026-07-01-14', $row->bucket_key);
 	}
 
 	public function testUnknownPhotoOrZeroLinksIsNoOp(): void
@@ -61,7 +62,7 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * The job bulk-`upsert()`s every linked album's `photo_album.bucket_id`,
+	 * The job bulk-`upsert()`s every linked album's `photo_album.bucket_key`,
 	 * bypassing Eloquent events entirely - it must dispatch the dedicated
 	 * photo-listing cache-invalidation signal itself once that write has
 	 * landed, since nothing else will (regression coverage for the bucket
@@ -112,22 +113,19 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * From the other trigger direction: recomputing one photo that is
-	 * linked into two albums with different effective settings yields two
-	 * different `bucket_id` values, one per `photo_album` row.
+	 * Recomputing one photo linked into two albums with different sort
+	 * columns yields one key per `photo_album` row.
 	 */
-	public function testSamePhotoInTwoAlbumsWithDifferentSettingsDivergesCorrectly(): void
+	public function testSamePhotoInTwoAlbumsWithDifferentSortColumnsDiverges(): void
 	{
 		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
 		$user = User::factory()->create();
 		$album_a = Album::factory()->as_root()->owned_by($user)->create();
 		$album_b = Album::factory()->as_root()->owned_by($user)->create();
-		$album_a->photo_timeline = TimelinePhotoGranularity::YEAR;
-		$album_a->save();
-		$album_b->photo_timeline = TimelinePhotoGranularity::MONTH;
+		$album_b->photo_sorting = new \App\DTO\PhotoSortingCriterion(\App\Enum\ColumnSortingType::IS_HIGHLIGHTED, \App\Enum\OrderSortingType::DESC);
 		$album_b->save();
 
-		$photo = Photo::factory()->owned_by($user)->create();
+		$photo = Photo::factory()->owned_by($user)->create(['created_at' => '2026-07-01 14:05:00', 'is_highlighted' => true]);
 		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album_a->id]);
 		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album_b->id]);
 
@@ -136,9 +134,25 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 		$row_a = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_a->id)->first();
 		$row_b = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_b->id)->first();
 
-		$this->assertSame($photo->created_at->format('Y'), $row_a->bucket_id);
-		$this->assertSame($photo->created_at->format('Y-m'), $row_b->bucket_id);
-		$this->assertNotSame($row_a->bucket_id, $row_b->bucket_id);
+		$this->assertSame('2026-07-01-14', $row_a->bucket_key);
+		$this->assertSame('1', $row_b->bucket_key);
+	}
+
+	/**
+	 * FR-092-01/ADR-092-02: a photo sorted by `taken_at` is keyed in the
+	 * zone it was taken in (S-092-04).
+	 */
+	public function testTakenAtKeyIsCaptureLocal(): void
+	{
+		$this->setInstanceDefaults(sorting_col: 'taken_at', granularity: 'hour');
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$photo = Photo::factory()->owned_by($user)->in($album)->create();
+		DB::table('photos')->where('id', '=', $photo->id)->update(['taken_key' => '2026-07-01-16']);
+
+		(new RecomputePhotoBucketsJob($photo->id))->handle();
+
+		$this->assertSame('2026-07-01-16', DB::table('photo_album')->where('photo_id', '=', $photo->id)->value('bucket_key'));
 	}
 
 	public function testAlbumWithOwnPerAlbumSortOverrideIsUsedOverInstanceDefault(): void
@@ -155,6 +169,6 @@ class RecomputePhotoBucketsJobTest extends BasePrecomputingTest
 		(new RecomputePhotoBucketsJob($photo->id))->handle();
 
 		$row = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album->id)->first();
-		$this->assertNull($row->bucket_id);
+		$this->assertNull($row->bucket_key);
 	}
 }

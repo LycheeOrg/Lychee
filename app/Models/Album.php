@@ -69,6 +69,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property LicenseType              $license
  * @property string|null              $album_sorting_col
  * @property string|null              $album_sorting_order
+ * @property string|null              $bucket_key                    Granularity-free bucket key for the parent's sort column (FR-092-04).
  * @property string|null              $cover_id
  * @property Photo|null               $cover
  * @property string|null              $header_id

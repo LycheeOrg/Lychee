@@ -416,4 +416,10 @@ class CacheKeyProviderTest extends AbstractTestCase
 	{
 		self::assertSame('map-listing-global', $this->provider->mapListingGlobalTag());
 	}
+
+	public function testPhotoListingGlobalTagIsStableAndDistinctFromPerAlbumTags(): void
+	{
+		self::assertSame('photo-listing-global', $this->provider->photoListingGlobalTag());
+		self::assertNotSame($this->provider->photoListingTag('global'), $this->provider->photoListingGlobalTag());
+	}
 }

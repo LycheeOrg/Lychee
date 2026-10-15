@@ -25,10 +25,11 @@ use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
+use App\Jobs\RecomputeAllPhotoBucketsJob;
 use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Jobs\RecomputePersonStatsJob;
 use App\Jobs\RecomputePhotoBucketsJob;
-use App\Jobs\RecomputeRootAlbumBucketsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
@@ -78,7 +79,8 @@ class RecomputeJobDispatchDedupTest extends BasePrecomputingTest
 	public static function jobProvider(): array
 	{
 		return array_merge(self::keyedJobProvider(), [
-			'root album buckets' => [RecomputeRootAlbumBucketsJob::class, fn (string $id) => new RecomputeRootAlbumBucketsJob()],
+			'all album buckets' => [RecomputeAllAlbumBucketsJob::class, fn (string $id) => new RecomputeAllAlbumBucketsJob()],
+			'all photo buckets' => [RecomputeAllPhotoBucketsJob::class, fn (string $id) => new RecomputeAllPhotoBucketsJob()],
 		]);
 	}
 

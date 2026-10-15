@@ -21,7 +21,9 @@ namespace Tests\Feature_v3\Photo;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Enum\TimelinePhotoGranularity;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Face;
@@ -320,6 +322,221 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		$response_b = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album_b->id}/Photos/buckets");
 		$this->assertOk($response_b);
 		$response_b->assertJson(['bucket_ids' => ['2022-06']]);
+	}
+
+	// ── Feature 092: read-time ids over granularity-free keys ─────────────
+
+	private function setPhotoLabelFormats(): void
+	{
+		foreach (['year' => 'Y', 'month' => 'Y-m', 'day' => 'Y-m-d', 'hour' => 'Y-m-d H:00'] as $precision => $format) {
+			DB::table('configs')->where('key', '=', 'timeline_photo_date_format_' . $precision)->update(['value' => $format]);
+		}
+	}
+
+	/**
+	 * S-092-01: switching the album from day to hour granularity shows hour
+	 * ids with hour labels, without rewriting any key.
+	 */
+	public function testGranularitySwitchNeedsNoRecompute(): void
+	{
+		$this->setInstanceDefaults('taken_at', 'year');
+		$this->setPhotoLabelFormats();
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$album->photo_timeline = TimelinePhotoGranularity::DAY;
+		$album->save();
+		$p1 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+		$p2 = Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create();
+		DB::table('photos')->where('id', '=', $p1->id)->update(['taken_key' => '2026-07-01-16']);
+		DB::table('photos')->where('id', '=', $p2->id)->update(['taken_key' => '2026-07-01-09']);
+		$this->recompute($album);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2026-07-01'], 'counts' => [2], 'labels' => ['2026-07-01']]);
+
+		$keys_before = DB::table('photo_album')->where('album_id', '=', $album->id)->orderBy('photo_id')->pluck('bucket_key')->all();
+		$album->photo_timeline = TimelinePhotoGranularity::HOUR;
+		$album->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2026-07-01-09', '2026-07-01-16'], 'counts' => [1, 1], 'labels' => ['2026-07-01 09:00', '2026-07-01 16:00']]);
+		$this->assertSame($keys_before, DB::table('photo_album')->where('album_id', '=', $album->id)->orderBy('photo_id')->pluck('bucket_key')->all());
+	}
+
+	/**
+	 * S-092-03: a title date has no hour, so a title-sorted album at hour
+	 * granularity shows day ids with day labels.
+	 */
+	public function testTitleDateAtHourGranularityShowsDays(): void
+	{
+		DB::table('configs')->where('key', '=', 'photo_title_bucket_mode')->update(['value' => 'date_prefix']);
+		$this->setInstanceDefaults('title', 'hour');
+		$this->setPhotoLabelFormats();
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->with_title('2024-03-15 Beach')->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->with_title('2024-03 Trip')->create();
+		$this->recompute($album);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+		$this->assertOk($response);
+		$response->assertJson(['bucket_ids' => ['2024-03-01', '2024-03-15'], 'labels' => ['2024-03-01', '2024-03-15']]);
+	}
+
+	/**
+	 * S-092-11: an unvalidated photo of another owner is excluded for a
+	 * guest and a non-owner, included for its owner and an admin.
+	 */
+	public function testUnvalidatedPhotoCountsPerViewer(): void
+	{
+		$this->setInstanceDefaults('is_highlighted', 'year');
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+		AccessPermission::factory()->for_user($this->userMayUpload2)->for_album($album)->create();
+		Photo::factory()->owned_by($this->userMayUpload2)->in($album)->create(['is_validated' => false]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['is_validated' => true]);
+		$this->recompute($album);
+
+		$this->assertOk($guest = $this->getJsonV3("Albums/{$album->id}/Photos/buckets"));
+		$guest->assertJson(['counts' => [1]]);
+		$this->assertOk($non_owner = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets"));
+		$non_owner->assertJson(['counts' => [1]]);
+		$this->assertOk($owner = $this->actingAs($this->userMayUpload2)->getJsonV3("Albums/{$album->id}/Photos/buckets"));
+		$owner->assertJson(['counts' => [2]]);
+		$this->assertOk($admin = $this->actingAs($this->admin)->getJsonV3("Albums/{$album->id}/Photos/buckets"));
+		$admin->assertJson(['counts' => [2]]);
+	}
+
+	/**
+	 * S-092-15: the `unknown` bucket is last in both sort directions, for a
+	 * stored and a computed source.
+	 */
+	public function testUnknownBucketIsLastInBothDirections(): void
+	{
+		$this->setInstanceDefaults('taken_at', 'year');
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => new Carbon('2022-06-15')]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => new Carbon('2023-06-15')]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => null]);
+
+		foreach ([OrderSortingType::ASC, OrderSortingType::DESC] as $order) {
+			$album->photo_sorting = new PhotoSortingCriterion(ColumnSortingType::TAKEN_AT, $order);
+			$album->save();
+			$this->recompute($album);
+
+			$expected = $order === OrderSortingType::ASC ? ['2022', '2023', 'unknown'] : ['2023', '2022', 'unknown'];
+			$response = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album->id}/Photos/buckets");
+			$this->assertOk($response);
+			$this->assertSame($expected, $response->json('bucket_ids'));
+		}
+	}
+
+	/**
+	 * @return array<string,array{0:string,1:array<string,string>,2:array<int,array<string,mixed>>,3:string[],4:int[]}>
+	 */
+	public static function computedSourceProvider(): array
+	{
+		return [
+			'created_at' => ['created_at', ['timeline_photos_granularity' => 'month'], [
+				['created_at' => '2023-05-01 10:00:00'], ['created_at' => '2023-05-20 10:00:00'], ['created_at' => '2024-01-02 10:00:00'],
+			], ['2023-05', '2024-01'], [2, 1]],
+			'taken_at' => ['taken_at', ['timeline_photos_granularity' => 'day'], [
+				['taken_at' => new Carbon('2022-06-15 10:00:00')], ['taken_at' => new Carbon('2022-06-15 12:00:00')], ['taken_at' => null],
+			], ['2022-06-15', 'unknown'], [2, 1]],
+			'title date' => ['title', ['photo_title_bucket_mode' => 'date_prefix', 'timeline_photos_granularity' => 'year'], [
+				['title' => '2024-03 A'], ['title' => '2024 B'], ['title' => 'No date'],
+			], ['2024', 'unknown'], [2, 1]],
+			'title alphabetical' => ['title', ['photo_title_bucket_mode' => 'alphabetical', 'photo_title_bucket_prefix_length' => '1'], [
+				['title_base' => 'apple'], ['title_base' => 'avocado'], ['title_base' => 'banana'],
+			], ['a', 'b'], [2, 1]],
+			'highlighted' => ['is_highlighted', [], [
+				['is_highlighted' => false], ['is_highlighted' => false], ['is_highlighted' => true],
+			], ['0', '1'], [2, 1]],
+			'type' => ['type', [], [
+				['type' => 'image/jpeg'], ['type' => 'image/jpeg'], ['type' => 'video/mp4'],
+			], ['image/jpeg', 'video/mp4'], [2, 1]],
+			'rating' => ['rating_avg', [], [
+				['rating_avg' => '4.5000'], ['rating_avg' => '5.0000'], ['rating_avg' => null],
+			], ['5', 'unknown'], [2, 1]],
+		];
+	}
+
+	/**
+	 * S-092-05: a tag album computes ids in SQL; `ratios` and `details`
+	 * windows return exactly each bucket's photos, with per-row ids equal to
+	 * the window id.
+	 *
+	 * @param array<string,string>           $configs
+	 * @param array<int,array<string,mixed>> $photos
+	 * @param string[]                       $expected_ids
+	 * @param int[]                          $expected_counts
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('computedSourceProvider')]
+	public function testTagAlbumTiersAgreePerSortColumn(string $column, array $configs, array $photos, array $expected_ids, array $expected_counts): void
+	{
+		$this->setInstanceDefaults($column, 'year');
+		DB::table('configs')->where('key', '=', 'sorting_photos_order')->update(['value' => 'ASC']);
+		foreach ($configs as $key => $value) {
+			DB::table('configs')->where('key', '=', $key)->update(['value' => $value]);
+		}
+		$tag = Tag::factory()->with_name('feature_092_tag')->create();
+		$tag_album = TagAlbum::factory()->owned_by($this->userMayUpload1)->of_tags([$tag])->create();
+		foreach ($photos as $attributes) {
+			Photo::factory()->owned_by($this->userMayUpload1)->with_tags([$tag])->create($attributes);
+		}
+
+		$this->assertTiersAgree($tag_album->id, $expected_ids, $expected_counts);
+	}
+
+	/**
+	 * S-092-06: a smart album with the instance default sort.
+	 */
+	public function testSmartAlbumTiersAgree(): void
+	{
+		$this->setInstanceDefaults('created_at', 'month');
+		DB::table('configs')->where('key', '=', 'sorting_photos_order')->update(['value' => 'DESC']);
+		foreach (['2023-05-01 10:00:00', '2023-05-20 10:00:00', '2024-01-02 10:00:00'] as $created_at) {
+			Photo::factory()->owned_by($this->userMayUpload1)->create(['created_at' => $created_at, 'is_highlighted' => true]);
+		}
+
+		$this->assertTiersAgree('highlighted', ['2024-01', '2023-05'], [1, 2]);
+	}
+
+	/**
+	 * @param string[] $expected_ids
+	 * @param int[]    $expected_counts
+	 */
+	private function assertTiersAgree(string $album_id, array $expected_ids, array $expected_counts): void
+	{
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album_id}/Photos/buckets");
+		$this->assertOk($buckets);
+		self::assertSame($expected_ids, $buckets->json('bucket_ids'));
+		self::assertSame($expected_counts, $buckets->json('counts'));
+
+		// Grouping the whole-scope rows by id reproduces the buckets tier.
+		$whole = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album_id}/Photos");
+		$this->assertOk($whole);
+		$runs = [];
+		foreach ($whole->json('bucket_ids') as $bucket_id) {
+			$last = array_key_last($runs);
+			if ($last !== null && $runs[$last][0] === $bucket_id) {
+				$runs[$last][1]++;
+			} else {
+				$runs[] = [$bucket_id, 1];
+			}
+		}
+		self::assertSame($expected_ids, array_column($runs, 0));
+		self::assertSame($expected_counts, array_column($runs, 1));
+
+		foreach ($expected_ids as $i => $bucket_id) {
+			$ratios = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album_id}/Photos", ['bucket_ids' => [$bucket_id]]);
+			$this->assertOk($ratios);
+			self::assertSame(array_fill(0, $expected_counts[$i], $bucket_id), $ratios->json('bucket_ids'));
+
+			$details = $this->actingAs($this->userMayUpload1)->getJsonV3("Albums/{$album_id}/Photos/details", ['bucket_id' => $bucket_id]);
+			$this->assertOk($details);
+			self::assertEqualsCanonicalizing($ratios->json('ids'), $details->json('ids'));
+		}
 	}
 
 	// ── Managed cache ──────────────────────────────────────────────

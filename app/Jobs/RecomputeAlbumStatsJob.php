@@ -135,7 +135,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue, ShouldBeUniqueUntilProcessi
 			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
 			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
 
-			$album->bucket_id = $this->computeBucket($album);
+			$album->bucket_key = $this->computeBucketKey($album);
 			$album->save();
 
 			AlbumComputedDataUpdated::dispatch($album->id);
@@ -346,35 +346,15 @@ class RecomputeAlbumStatsJob implements ShouldQueue, ShouldBeUniqueUntilProcessi
 	}
 
 	/**
-	 * Compute `bucket_id`: resolves the album's own *parent's* effective
-	 * sort column (or the instance-wide default for a root album) and granularity,
-	 * then delegates the actual truncation to {@see AlbumBucketComputer} —
-	 * shared with {@see RecomputeChildAlbumBucketsJob} and the backfill command,
-	 * so the truncation logic itself lives in exactly one place.
-	 * Never queries `photos` — every value is derivable from the album row
-	 * itself plus its parent's already-loaded settings.
-	 *
-	 * @param Album $album
-	 *
-	 * @return string|null
+	 * `bucket_key` of the album for its parent's effective album sort column
+	 * (the instance default for a root album), FR-092-04.
 	 */
-	private function computeBucket(Album $album): ?string
+	private function computeBucketKey(Album $album): ?string
 	{
 		$sorting_column = $album->parent?->getEffectiveAlbumSorting()->column
 			?? AlbumSortingCriterion::createDefault()->column;
 
-		$bucket_computer = resolve(AlbumBucketComputer::class);
-		$granularity = $bucket_computer->resolveGranularity($album->parent?->album_timeline);
-
-		return $bucket_computer->compute(
-			sorting_column: $sorting_column,
-			granularity: $granularity,
-			title: $album->title,
-			title_base: $album->title_base,
-			created_at: $album->created_at,
-			min_taken_at: $album->min_taken_at,
-			max_taken_at: $album->max_taken_at,
-		);
+		return resolve(AlbumBucketComputer::class)->keyForAlbum($sorting_column, $album);
 	}
 
 	/**

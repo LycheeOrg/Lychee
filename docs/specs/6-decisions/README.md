@@ -23,6 +23,8 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-082-01](ADR-082-01-in-house-webgl2-sphere-renderer.md) | Accepted | In-house TypeScript + WebGL2 sphere renderer for 360° photos |
 | [ADR-089-01](ADR-089-01-moderation-history-event-log.md) | Accepted | Moderation history as an append-only event log |
 | [ADR-089-02](ADR-089-02-nsfw-findings-dismissal-deletes.md) | Accepted | Dismissing an NSFW finding deletes it |
+| [ADR-092-01](ADR-092-01-granularity-free-bucket-keys.md) | Accepted | Granularity-free bucket keys, bucket ids derived at read time |
+| [ADR-092-02](ADR-092-02-capture-local-photo-date-buckets.md) | Accepted | Photo capture dates bucketed in the zone the photo was taken in |
 
 ## Templates
 
