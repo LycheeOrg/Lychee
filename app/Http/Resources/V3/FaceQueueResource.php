@@ -21,7 +21,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * The photo itself is served by `GET /api/v3/Faces/{ids[i]}/photo/{variant}`
  * (ADR-093-01). `suggested_person_*[i]` is the person of the best suggestion
  * whose face is already named and visible to the caller, or null
- * (FR-093-12). `is_truncated` is set when more faces exist than
+ * (FR-093-12). `laplacian_variances[i]` is the face sharpness
+ * (FR-093-15). `is_truncated` is set when more faces exist than
  * `ai_vision_face_queue_limit` (ADR-069-01, strategy 3).
  */
 #[TypeScript()]
@@ -38,6 +39,7 @@ class FaceQueueResource extends Data
 	 * @param (int|null)[]    $cluster_labels
 	 * @param (string|null)[] $suggested_person_ids
 	 * @param (string|null)[] $suggested_person_names
+	 * @param float[]         $laplacian_variances
 	 */
 	public function __construct(
 		public array $ids,
@@ -50,6 +52,7 @@ class FaceQueueResource extends Data
 		public array $cluster_labels,
 		public array $suggested_person_ids,
 		public array $suggested_person_names,
+		public array $laplacian_variances,
 		public bool $is_truncated,
 	) {
 	}

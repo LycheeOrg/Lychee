@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Előző arc (üres mező, RTL esetén →)',
         'qn_clear' => 'Előre kitöltött név törlése',
         'qn_discard' => 'Arc elvetése (üres mező)',
+        'qn_leave' => 'Kilépés a gyors elnevezésből',
     ],
     'login' => [
         'auth_with' => 'Hitelesítés ezzel: %s',

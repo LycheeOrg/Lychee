@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Previous face (empty box, → in RTL)',
         'qn_clear' => 'Clear a pre-filled name',
         'qn_discard' => 'Discard the face (empty box)',
+        'qn_leave' => 'Leave quick naming',
     ],
     'login' => [
         'auth_with' => 'Authenticate with %s',

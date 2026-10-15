@@ -79,7 +79,7 @@ class FaceQueueTest extends BaseApiWithDataTest
 
 	public function testShape(): void
 	{
-		$face = Face::factory()->for_photo($this->photo1)->with_cluster(3)->create();
+		$face = Face::factory()->for_photo($this->photo1)->with_cluster(3)->create(['laplacian_variance' => 123.5]);
 
 		$response = $this->actingAs($this->admin)->getJsonV3('Faces/queue');
 		$this->assertOk($response);
@@ -94,6 +94,7 @@ class FaceQueueTest extends BaseApiWithDataTest
 			'cluster_labels' => [3],
 			'suggested_person_ids' => [null],
 			'suggested_person_names' => [null],
+			'laplacian_variances' => [123.5],
 			'is_truncated' => false,
 		]);
 	}

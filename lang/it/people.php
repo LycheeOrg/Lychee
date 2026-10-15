@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'salta',
         'hint_back' => 'indietro',
         'hint_discard' => 'scarta (campo vuoto)',
+        'hint_leave' => 'esci',
         'revisit_named' => 'Modifica il nome e premi Invio per riassegnare; cancellalo e premi Invio per rimuovere l’assegnazione.',
         'revisit_discarded' => 'Digita un nome e premi Invio per ripristinare e nominare questo volto.',
         'badge_named' => 'Nominato',

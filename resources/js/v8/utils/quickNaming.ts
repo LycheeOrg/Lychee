@@ -21,6 +21,8 @@ export type QueueFace = {
 	clusterLabel: number | null;
 	suggestedPersonId: string | null;
 	suggestedPersonName: string | null;
+	/** Sharpness of the face crop (FR-093-15). */
+	laplacianVariance: number;
 };
 
 export type PersonOption = {
@@ -36,7 +38,7 @@ export type MatchEntry = { kind: "person"; person: PersonOption } | { kind: "cre
 
 export type Suggestion = { personId: string; name: string };
 
-export type KeyAction = "none" | "submit" | "create" | "skip" | "back" | "discard" | "clear" | "highlight-next" | "highlight-prev";
+export type KeyAction = "none" | "submit" | "create" | "skip" | "back" | "discard" | "clear" | "highlight-next" | "highlight-prev" | "leave";
 
 export const MAX_MATCHES = 8;
 
@@ -52,6 +54,7 @@ export function adaptFaceQueue(soa: App.Http.Resources.V3.FaceQueueResource): Qu
 		clusterLabel: soa.cluster_labels[i],
 		suggestedPersonId: soa.suggested_person_ids[i],
 		suggestedPersonName: soa.suggested_person_names[i],
+		laplacianVariance: soa.laplacian_variances[i],
 	}));
 }
 
@@ -159,6 +162,8 @@ export function decideKey(input: KeyInput, state: KeyState): KeyAction {
 			return isEmpty && !input.repeat ? "discard" : "none";
 		case " ":
 			return isEmpty && !input.repeat ? "discard" : "none";
+		case "Escape":
+			return "leave";
 		default:
 			return "none";
 	}

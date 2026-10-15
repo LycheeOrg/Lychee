@@ -71,6 +71,7 @@ return [
         'qn_back' => '前の顔（空欄時、RTL では →）',
         'qn_clear' => '事前入力された名前を消去',
         'qn_discard' => '顔を除外（空欄時）',
+        'qn_leave' => 'クイック命名を終了',
     ],
     'login' => [
         'auth_with' => '%s で認証',

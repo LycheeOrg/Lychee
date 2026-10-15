@@ -128,6 +128,7 @@ return [
         'hint_skip' => 'überspringen',
         'hint_back' => 'zurück',
         'hint_discard' => 'verwerfen (leeres Feld)',
+        'hint_leave' => 'verlassen',
         'revisit_named' => 'Namen bearbeiten und Enter drücken, um neu zuzuweisen; leeren und Enter drücken, um die Zuweisung aufzuheben.',
         'revisit_discarded' => 'Namen eingeben und Enter drücken, um dieses Gesicht wiederherzustellen und zu benennen.',
         'badge_named' => 'Benannt',

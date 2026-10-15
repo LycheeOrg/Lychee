@@ -35,7 +35,7 @@ class QueryFaceQueue
 		$query = $this->pendingFaces(DB::table('faces'), 'faces', $owner_id)
 			->leftJoinSub($this->clusterSizes($owner_id), 'cs', 'cs.cluster_label', '=', 'faces.cluster_label')
 			->when($cluster_label !== null, fn (Builder $q) => $q->where('faces.cluster_label', '=', $cluster_label))
-			->select(['faces.id', 'faces.photo_id', 'faces.x', 'faces.y', 'faces.width', 'faces.height', 'faces.crop_token', 'faces.cluster_label'])
+			->select(['faces.id', 'faces.photo_id', 'faces.x', 'faces.y', 'faces.width', 'faces.height', 'faces.crop_token', 'faces.cluster_label', 'faces.laplacian_variance'])
 			->selectSub($this->suggestedPerson($owner_id, 'id'), 'suggested_person_id')
 			->selectSub($this->suggestedPerson($owner_id, 'name'), 'suggested_person_name');
 
@@ -129,6 +129,7 @@ class QueryFaceQueue
 		$cluster_labels = [];
 		$suggested_person_ids = [];
 		$suggested_person_names = [];
+		$laplacian_variances = [];
 		foreach ($rows as $row) {
 			$ids[] = $row->id;
 			$photo_ids[] = $row->photo_id;
@@ -140,6 +141,7 @@ class QueryFaceQueue
 			$cluster_labels[] = $row->cluster_label !== null ? (int) $row->cluster_label : null;
 			$suggested_person_ids[] = $row->suggested_person_id !== null ? (string) $row->suggested_person_id : null;
 			$suggested_person_names[] = $row->suggested_person_name;
+			$laplacian_variances[] = (float) $row->laplacian_variance;
 		}
 
 		return new FaceQueueResource(
@@ -153,6 +155,7 @@ class QueryFaceQueue
 			cluster_labels: $cluster_labels,
 			suggested_person_ids: $suggested_person_ids,
 			suggested_person_names: $suggested_person_names,
+			laplacian_variances: $laplacian_variances,
 			is_truncated: $is_truncated,
 		);
 	}

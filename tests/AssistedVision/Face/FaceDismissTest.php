@@ -51,11 +51,13 @@ class FaceDismissTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id);
 		$this->assertOk($response);
 		self::assertTrue($response->json('is_dismissed'));
+		self::assertEquals(1, $this->photo1->refresh()->face_count);
 
 		// Toggle back
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id);
 		$this->assertOk($response);
 		self::assertFalse($response->json('is_dismissed'));
+		self::assertEquals(2, $this->photo1->refresh()->face_count);
 	}
 
 	// ── Explicit value (Feature 093, API-093-02, Q-093-12) ─────
@@ -84,10 +86,12 @@ class FaceDismissTest extends BaseApiWithDataTest
 	public function testExplicitTrueClearsPerson(): void
 	{
 		$person = Person::factory()->create();
-		Face::query()->whereKey($this->face1->id)->update(['person_id' => $person->id]);
+		$this->face1->person_id = $person->id;
+		$this->face1->save();
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id, ['is_dismissed' => true]);
 		$this->assertOk($response);
 		self::assertNull($response->json('person_id'));
+		self::assertNull(Person::query()->find($person->id));
 	}
 
 	public function testNonBooleanValueIsRejected(): void

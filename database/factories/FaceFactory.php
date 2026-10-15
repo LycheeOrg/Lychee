@@ -8,6 +8,7 @@
 
 namespace Database\Factories;
 
+use App\Actions\Face\RecountFaceCounters;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\Photo;
@@ -38,6 +39,19 @@ class FaceFactory extends Factory
 			'is_dismissed' => false,
 			'cluster_label' => null,
 		];
+	}
+
+	/**
+	 * Keep the denormalized photo/person counters in step with the created faces,
+	 * as the production write paths do via {@see RecountFaceCounters}.
+	 */
+	public function configure(): static
+	{
+		return $this->afterCreating(function (Face $face): void {
+			$recount = new RecountFaceCounters();
+			$recount->forPhotos([$face->photo_id]);
+			$recount->forPersons([$face->person_id]);
+		});
 	}
 
 	public function for_photo(Photo $photo): self

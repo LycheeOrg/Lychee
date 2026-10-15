@@ -70,6 +70,7 @@ return [
         'qn_back' => 'Poprzednia twarz (puste pole, → w RTL)',
         'qn_clear' => 'Wyczyść wstępnie wpisane imię',
         'qn_discard' => 'Odrzuć twarz (puste pole)',
+        'qn_leave' => 'Wyjdź z szybkiego nazywania',
     ],
     'login' => [
         'auth_with' => 'Uwierzytelnij przez %s',

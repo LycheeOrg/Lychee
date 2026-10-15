@@ -70,6 +70,7 @@ return [
         'qn_back' => '上一张人脸（输入框为空时，RTL 中为 →）',
         'qn_clear' => '清除预填的名字',
         'qn_discard' => '忽略人脸（输入框为空时）',
+        'qn_leave' => '退出快速命名',
     ],
     'login' => [
         'auth_with' => '使用 %s 进行身份验证',

@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'atla',
         'hint_back' => 'geri',
         'hint_discard' => 'yok say (boş kutu)',
+        'hint_leave' => 'çık',
         'revisit_named' => 'Yeniden atamak için adı düzenleyip Enter\'a basın; atamayı kaldırmak için temizleyip Enter\'a basın.',
         'revisit_discarded' => 'Bu yüzü geri yükleyip adlandırmak için bir ad yazın ve Enter\'a basın.',
         'badge_named' => 'Adlandırıldı',

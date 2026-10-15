@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Predchádzajúca tvár (prázdne pole, → v RTL)',
         'qn_clear' => 'Vymazať predvyplnené meno',
         'qn_discard' => 'Zahodiť tvár (prázdne pole)',
+        'qn_leave' => 'Opustiť rýchle pomenovanie',
     ],
     'login' => [
         'auth_with' => 'Overiť pomocou %s',

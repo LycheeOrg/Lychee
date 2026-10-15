@@ -131,6 +131,7 @@ return [
         'hint_skip' => '跳过',
         'hint_back' => '返回',
         'hint_discard' => '忽略（输入框为空时）',
+        'hint_leave' => '退出',
         'revisit_named' => '修改名字后按 Enter 重新分配；清空后按 Enter 取消分配。',
         'revisit_discarded' => '输入名字并按 Enter 以恢复并命名此人脸。',
         'badge_named' => '已命名',

@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'přeskočit',
         'hint_back' => 'zpět',
         'hint_discard' => 'zahodit (prázdné pole)',
+        'hint_leave' => 'opustit',
         'revisit_named' => 'Upravte jméno a stiskněte Enter pro nové přiřazení; vymažte jej a stiskněte Enter pro zrušení přiřazení.',
         'revisit_discarded' => 'Zadejte jméno a stiskněte Enter pro obnovení a pojmenování této tváře.',
         'badge_named' => 'Pojmenováno',

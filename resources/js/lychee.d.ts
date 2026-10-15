@@ -2095,6 +2095,7 @@ declare namespace App {
 					cluster_labels: (number | null)[];
 					suggested_person_ids: (string | null)[];
 					suggested_person_names: (string | null)[];
+					laplacian_variances: number[];
 					is_truncated: boolean;
 				};
 				export type FlowListResource = {

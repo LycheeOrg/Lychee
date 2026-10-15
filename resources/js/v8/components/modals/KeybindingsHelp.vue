@@ -172,6 +172,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.qn_back"), key: "←" },
 			{ action: trans("dialogs.keybindings.qn_clear"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.qn_discard"), key: "BckSpace Space" },
+			{ action: trans("dialogs.keybindings.qn_leave"), key: "Esc" },
 		],
 	},
 ]);

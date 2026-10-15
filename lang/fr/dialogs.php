@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Visage précédent (champ vide, → en RTL)',
         'qn_clear' => 'Effacer un nom pré-rempli',
         'qn_discard' => 'Ignorer le visage (champ vide)',
+        'qn_leave' => 'Quitter le nommage rapide',
     ],
     'login' => [
         'auth_with' => 'S’authentifier avec %s',

@@ -324,7 +324,7 @@ The following inventory (file:line, mechanism, existing-event-or-none) was compi
 
 #### 5. Models — no boot observers exist
 
-`Album`, `BaseAlbumImpl`, `AccessPermission`, `UserGroup` have **zero** Eloquent boot-time observers (`static::saved()`, `::observe()`); only `PhotoObserver`/`FaceObserver` exist and are unrelated. **All cache-relevant signaling in this feature is via explicit `::dispatch()` calls** — confirming the premise that Eloquent observers would be structurally insufficient even if used, since `Album::fixOwnershipOfChildren()` (`app/Models/Album.php:412-426`) and the vendor nested-set internals perform raw bulk `->update()` calls that don't fire per-model events regardless of whether an observer is registered.
+`Album`, `BaseAlbumImpl`, `AccessPermission`, `UserGroup` have **zero** Eloquent boot-time observers (`static::saved()`, `::observe()`); the codebase no longer registers any Eloquent observer (forbidden by the coding conventions). **All cache-relevant signaling in this feature is via explicit `::dispatch()` calls** — confirming the premise that Eloquent observers would be structurally insufficient even if used, since `Album::fixOwnershipOfChildren()` (`app/Models/Album.php:412-426`) and the vendor nested-set internals perform raw bulk `->update()` calls that don't fire per-model events regardless of whether an observer is registered.
 
 #### 6. Runtime bulk-update commands (non-migration)
 

@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'kihagyás',
         'hint_back' => 'vissza',
         'hint_discard' => 'elvetés (üres mező)',
+        'hint_leave' => 'kilépés',
         'revisit_named' => 'Módosítsa a nevet és nyomja meg az Entert az újbóli hozzárendeléshez; törölje, és nyomja meg az Entert a hozzárendelés megszüntetéséhez.',
         'revisit_discarded' => 'Írjon be egy nevet, és nyomja meg az Entert az arc visszaállításához és elnevezéséhez.',
         'badge_named' => 'Elnevezve',

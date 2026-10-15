@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'preskočiť',
         'hint_back' => 'späť',
         'hint_discard' => 'zahodiť (prázdne pole)',
+        'hint_leave' => 'opustiť',
         'revisit_named' => 'Upravte meno a stlačte Enter na opätovné priradenie; vymažte ho a stlačte Enter na zrušenie priradenia.',
         'revisit_discarded' => 'Zadajte meno a stlačte Enter na obnovenie a pomenovanie tejto tváre.',
         'badge_named' => 'Pomenované',

@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'bỏ qua',
         'hint_back' => 'quay lại',
         'hint_discard' => 'loại bỏ (ô trống)',
+        'hint_leave' => 'thoát',
         'revisit_named' => 'Sửa tên rồi nhấn Enter để gán lại; xóa tên rồi nhấn Enter để bỏ gán.',
         'revisit_discarded' => 'Nhập tên rồi nhấn Enter để khôi phục và đặt tên cho khuôn mặt này.',
         'badge_named' => 'Đã đặt tên',

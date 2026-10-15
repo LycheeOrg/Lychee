@@ -70,6 +70,7 @@ return [
         'qn_back' => '上一張臉孔（輸入框為空時，RTL 中為 →）',
         'qn_clear' => '清除預先填入的名稱',
         'qn_discard' => '忽略臉孔（輸入框為空時）',
+        'qn_leave' => '離開快速命名',
     ],
     'login' => [
         'auth_with' => '使用 %s 進行身份驗證',

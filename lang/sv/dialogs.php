@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Föregående ansikte (tom ruta, → i RTL)',
         'qn_clear' => 'Rensa ett förifyllt namn',
         'qn_discard' => 'Avvisa ansiktet (tom ruta)',
+        'qn_leave' => 'Lämna snabbnamngivning',
     ],
     'login' => [
         'auth_with' => 'Autentisera med %s',

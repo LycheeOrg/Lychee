@@ -70,6 +70,7 @@ return [
         'qn_back' => 'Forrige ansikt (tom boks, → i RTL)',
         'qn_clear' => 'Tøm et forhåndsutfylt navn',
         'qn_discard' => 'Avvis ansiktet (tom boks)',
+        'qn_leave' => 'Avslutt hurtignavngiving',
     ],
     'login' => [
         'auth_with' => 'Autentiser med %s',

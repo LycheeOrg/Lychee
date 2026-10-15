@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'saltar',
         'hint_back' => 'voltar',
         'hint_discard' => 'descartar (campo vazio)',
+        'hint_leave' => 'sair',
         'revisit_named' => 'Edite o nome e prima Enter para reatribuir; apague-o e prima Enter para remover a atribuição.',
         'revisit_discarded' => 'Escreva um nome e prima Enter para restaurar e nomear este rosto.',
         'badge_named' => 'Nomeado',

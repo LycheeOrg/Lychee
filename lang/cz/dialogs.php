@@ -70,6 +70,7 @@ return [
         'qn_back' => 'Předchozí tvář (prázdné pole, → v RTL)',
         'qn_clear' => 'Vymazat předvyplněné jméno',
         'qn_discard' => 'Zahodit tvář (prázdné pole)',
+        'qn_leave' => 'Opustit rychlé pojmenování',
     ],
     'login' => [
         'auth_with' => 'Přihlásit se pomocí %s',

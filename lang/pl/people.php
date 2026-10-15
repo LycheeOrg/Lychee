@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'pomiń',
         'hint_back' => 'wstecz',
         'hint_discard' => 'odrzuć (puste pole)',
+        'hint_leave' => 'wyjdź',
         'revisit_named' => 'Edytuj imię i naciśnij Enter, aby przypisać ponownie; wyczyść je i naciśnij Enter, aby usunąć przypisanie.',
         'revisit_discarded' => 'Wpisz imię i naciśnij Enter, aby przywrócić i nazwać tę twarz.',
         'badge_named' => 'Nazwana',

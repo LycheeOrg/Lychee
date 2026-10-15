@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Khuôn mặt trước (ô trống, → trong RTL)',
         'qn_clear' => 'Xóa tên điền sẵn',
         'qn_discard' => 'Loại bỏ khuôn mặt (ô trống)',
+        'qn_leave' => 'Thoát đặt tên nhanh',
     ],
     'login' => [
         'auth_with' => 'Xác thực bằng %s',

@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Önceki yüz (boş kutu, RTL\'de →)',
         'qn_clear' => 'Önceden doldurulmuş adı temizle',
         'qn_discard' => 'Yüzü yok say (boş kutu)',
+        'qn_leave' => 'Hızlı adlandırmadan çık',
     ],
     'login' => [
         'auth_with' => '%s ile kimlik doğrula',

@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Volto precedente (campo vuoto, → in RTL)',
         'qn_clear' => 'Cancella un nome precompilato',
         'qn_discard' => 'Scarta il volto (campo vuoto)',
+        'qn_leave' => 'Esci dalla denominazione rapida',
     ],
     'login' => [
         'auth_with' => 'Autenticati con %s',

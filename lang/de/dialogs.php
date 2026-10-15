@@ -70,6 +70,7 @@ return [
         'qn_back' => 'Vorheriges Gesicht (leeres Feld, → bei RTL)',
         'qn_clear' => 'Vorausgefüllten Namen löschen',
         'qn_discard' => 'Gesicht verwerfen (leeres Feld)',
+        'qn_leave' => 'Schnellbenennung verlassen',
     ],
     'login' => [
         'auth_with' => 'Authentifizierung mit %s',

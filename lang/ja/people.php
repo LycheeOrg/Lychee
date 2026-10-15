@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'スキップ',
         'hint_back' => '戻る',
         'hint_discard' => '除外（空欄時）',
+        'hint_leave' => '終了',
         'revisit_named' => '名前を編集して Enter で再割り当て、消去して Enter で割り当てを解除します。',
         'revisit_discarded' => '名前を入力して Enter を押すと、この顔を復元して命名します。',
         'badge_named' => '命名済み',

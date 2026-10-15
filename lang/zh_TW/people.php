@@ -131,6 +131,7 @@ return [
         'hint_skip' => '略過',
         'hint_back' => '返回',
         'hint_discard' => '忽略（輸入框為空時）',
+        'hint_leave' => '離開',
         'revisit_named' => '修改名稱後按 Enter 重新指派；清空後按 Enter 取消指派。',
         'revisit_discarded' => '輸入名稱並按 Enter 以還原並命名此臉孔。',
         'badge_named' => '已命名',

@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'omitir',
         'hint_back' => 'atrás',
         'hint_discard' => 'descartar (campo vacío)',
+        'hint_leave' => 'salir',
         'revisit_named' => 'Edita el nombre y pulsa Enter para reasignar; bórralo y pulsa Enter para desasignar.',
         'revisit_discarded' => 'Escribe un nombre y pulsa Enter para restaurar y nombrar este rostro.',
         'badge_named' => 'Nombrado',

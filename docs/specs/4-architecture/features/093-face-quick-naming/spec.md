@@ -40,11 +40,14 @@ Naming faces today means opening clusters one by one (`/people/clusters`), or op
 | FR-093-07 | The People page and the face review (clusters) page each get a "Quick naming" button opening the view (`/people/quick-naming`); each cluster card on the review page gets one too, opening the view scoped to that cluster (`?cluster=<label>`). Buttons are shown only when the new global right `modules.can_quick_name_faces` is true: AI Vision and face recognition enabled, the struct-of-array flag on, and `AlbumPolicy::CAN_BATCH_FACE_OPS` granted with a null album (admins in every mode, logged-in users in `public`/`private` mode). | Button opens the view. | Hidden otherwise. A direct URL without rights shows the forbidden state. | — | None. | Owner request. |
 | FR-093-08 | Focus returns to the name box after every action, after a toast, and when the window regains focus. Navigation keys are handled on the input's own `keydown`, not through `definePanelShortcuts` (which ignores keystrokes typed into inputs). | — | — | — | None. | Owner request. |
 | FR-093-09 | Actions are optimistic: the view advances before the request returns. If an assign, un-assign, un-dismiss or discard request fails, a toast shows the error with a "Go back" action that jumps to that face; the face is marked failed in the session history (red badge when revisited) and its typed name is kept in the box. Discard and un-dismiss always send the target value (`is_dismissed: true|false`, API-093-02), so a retry after a request that actually succeeded is harmless. | Request succeeds silently. | — | Toast + failed badge; going back and pressing Enter retries. | None. | Q-093-07 (A); Q-093-12 (A). |
-| FR-093-10 | A "?" button at the top right of the view opens the keybindings help, showing the quick naming keys (Enter, Shift+Enter = always a new person, arrows, Backspace/Space, ↑/↓). The "?" key itself is not a shortcut in this view, since it is a printable character in the name box. | Help opens; on close, focus returns to the name box. | — | — | None. | Owner request. |
+| FR-093-10 | A "?" button at the top right of the view opens the keybindings help, showing the quick naming keys (Enter, Shift+Enter = always a new person, arrows, Backspace/Space, ↑/↓, Escape = leave). The "?" key itself is not a shortcut in this view, since it is a printable character in the name box. | Help opens; on close, focus returns to the name box. | — | — | None. | Owner request. |
 | FR-093-11 | The session is the in-memory history of faces shown since the view was opened; it is lost on reload or when leaving the view. Dismissing a face that was a person's last face deletes that person on the server (existing `recountOrDeletePersons`), so after any dismiss of a previously named face the view reloads the people list (API-093-04). | — | — | — | None. | Existing Feature 030 behaviour. |
 | FR-093-12 | Each queued face may carry a suggested person: `suggested_person_ids` / `suggested_person_names` in API-093-03, computed in the same SELECT (correlated subquery). It is the person of the highest-confidence `face_suggestions` row whose suggested face is assigned and not dismissed, limited to persons the caller may see (admins: all; others: searchable persons and their own person, as in API-093-04), else null. Client side, when the previous face in the session has the same non-null `cluster_label` and was named in this session, that person overrides the server suggestion. The suggestion is never applied without Enter. Revisited named faces show their name pre-filled and no suggestion, so clearing the box and pressing Enter un-assigns (FR-093-05). | Suggestion shown greyed out; Enter accepts. | Typing replaces it; arrows and Backspace/Space treat the box as empty. | No suggestion → empty box as usual. | None. | Q-093-10 (A). |
 | FR-093-13 | Request ordering under the optimistic flow: requests for the same face are sent one after another (a re-name waits for the previous assign of that face). A person created in this session is added to the local list immediately, even before the server returns its id. Picking it again (its row, or Enter on it as the highlighted match) while its creation is still pending waits for that creation and assigns with its `person_id` once known, so the view never creates two persons by accident. Only the create entry or Shift+Enter makes a second person with the same name. | No duplicate persons, final state matches the last action. | — | A failed creation fails every face waiting on it (FR-093-09). | None. | Consequence of Q-093-07 (A). |
 | FR-093-14 | Leaving the view: "Back" returns to the page the view was opened from (People or face review), which reloads its data. The done state offers the same button. Opened from a cluster card, the queue only holds that cluster's faces on photos the caller may name (FR-093-02), so it can be shorter than the card's count, which counts every visible face. | — | — | — | None. | Consequence of Q-093-05 (A). |
+| FR-093-15 | The name panel shows the current face's sharpness: its Laplacian variance (`faces.laplacian_variance`), rounded to an integer, labelled with the existing `people.laplacian_variance` string. Values below 50 are shown in the error colour, the same threshold as the face maintenance page, so a blurry face can be discarded at a glance. The value comes from the queue (`laplacian_variances` in API-093-03). | Value shown next to the crop. | None. | None. | None. | Owner request (2026-10-15). |
+| FR-093-16 | Layout stability: the photo keeps its size while the name box shows matches. From the `lg` breakpoint the name panel (crop, badges, name box and its match list) sits beside the photo on the inline-end side (right in LTR, left in RTL, from the flex row following `dir`), and the on-screen buttons and key hints stay under the photo and panel. Below `lg` the panel stays under the photo and the match list opens upward as an overlay over the photo, outside the layout flow (the view is one screen high, so a downward list would be cut off). | Typing a name opens the match list without moving or resizing the photo. | None. | None. | None. | Owner request (2026-10-15). |
+| FR-093-17 | Escape in the name box leaves the view, in any box state, exactly like the header Back button (FR-093-14): back to the page the view was opened from. While the keybindings help is open, Escape closes the help instead (the modal holds focus). | View left. | None. | None. | None. | Owner request (2026-10-15). |
 
 ## Non-Functional Requirements
 
@@ -60,33 +63,44 @@ Naming faces today means opening clusters one by one (`/people/clusters`), or op
 
 ## UI / Interaction Mock-ups
 
-Main state (LTR):
+Main state (LTR, `lg` and wider — FR-093-16):
 
 ```
 +--------------------------------------------------------------------------+
 | ← Back to People            Quick naming          37 / 412 faces   [?] |
 |   (when `is_truncated`: "37 / 500+" — no extra COUNT query, NFR-093-05) |
 |--------------------------------------------------------------------------|
+|  +--------------------------------------------+  [crop] Laplacian var.: 132
+|  |                                            |  ┌────────────────────┐ |
+|  |        .-----------.                       |  │ Ali|               │ |
+|  |        |  ▓▓▓▓▓▓▓  |  ← current face,      |  └────────────────────┘ |
+|  |        |  ▓▓▓▓▓▓▓  |    highlighted        |  │▸(◕) Alice Martin 42│ |
+|  |        '-----------'    (rest dimmed)      |  │ (◕) Alina Petrova 7│ |
+|  |                                            |  │ + Create “Ali” ⇧⏎  │ |
+|  |   photo keeps its size while the list      |                         |
+|  |   above opens or grows                     |                         |
+|  +--------------------------------------------+                         |
 |                                                                          |
-|        +------------------------------------------------------+          |
-|        |                                                      |          |
-|        |           .-----------.                              |          |
-|        |           |  ▓▓▓▓▓▓▓  |   ← current face, highlighted  |          |
-|        |           |  ▓▓▓▓▓▓▓  |     (rest of photo dimmed)     |          |
-|        |           '-----------'                              |          |
-|        |                                                      |          |
-|        +------------------------------------------------------+          |
-|                                                                          |
-|   [crop]   ┌──────────────────────────────────────────────┐              |
-|            │ Ali|                                          │ ← focused   |
-|            └──────────────────────────────────────────────┘              |
-|            │ ▸ (◕) Alice Martin        42 faces            │ highlighted  |
-|            │   (◕) Alina Petrova        7 faces            │              |
-|            │   + Create “Ali”              Shift+Enter     │              |
-|                                                                          |
-|   [ ‹ Previous ]      [ Discard ⌫ ]      [ Skip › ]                     |
-|   Enter: name · Shift+Enter: new person · → skip · ← back · ⌫/Space: discard |
+|          [ ‹ Previous ]      [ Discard ⌫ ]      [ Skip › ]              |
+|   Enter: name · Shift+Enter: new person · → skip · ← back · ⌫/Space: discard · Esc: leave |
 +--------------------------------------------------------------------------+
+```
+
+In RTL the panel sits on the left of the photo.
+
+Below `lg` (FR-093-16) — panel under the photo, match list opens upward over the photo:
+
+```
+|  +--------------------------------------------+                         |
+|  |                 (photo)                    |                         |
+|  |  │ ▸ (◕) Alice Martin        42 faces   │  | ← overlay, covers the   |
+|  |  │   + Create “Ali”          Shift+Enter │  |   bottom of the photo   |
+|  +--------------------------------------------+                         |
+|   [crop]  Laplacian variance: 38  (red: below 50)                        |
+|   ┌──────────────────────────────────────────────┐                       |
+|   │ Ali|                                        │                       |
+|   └──────────────────────────────────────────────┘                       |
+|   [ ‹ Previous ]      [ Discard ⌫ ]      [ Skip › ]                     |
 ```
 
 Suggested name (empty box):
@@ -166,7 +180,7 @@ In RTL the arrows swap: ← skips, → goes back; the button row is mirrored.
 |----|-----------|-------------|-------|
 | API-093-01 | REST POST /api/v2/Face/{id}/assign | Assign / create / un-assign (existing). | `AssignFaceRequest`. |
 | API-093-02 | REST PATCH /api/v2/Face/{id} | Toggle `is_dismissed` (existing). New optional boolean `is_dismissed`: when given, the face is set to that value (idempotent); when absent, the endpoint keeps toggling. Setting `true` also clears `person_id`, as the toggle does. | `ToggleDismissedRequest`; the view always sends the value. |
-| API-093-03 | REST GET /api/v3/Faces/queue[?cluster_label=N] | SoA queue of faces to name: `ids`, `photo_ids`, `xs`, `ys`, `widths`, `heights`, `crop_urls` (nullable), `cluster_labels` (nullable), `suggested_person_ids` (nullable), `suggested_person_names` (nullable), `is_truncated`. | New `FaceQueueController`, `GetFaceQueueRequest`, `QueryFaceQueue` action, `FaceQueueResource`. |
+| API-093-03 | REST GET /api/v3/Faces/queue[?cluster_label=N] | SoA queue of faces to name: `ids`, `photo_ids`, `xs`, `ys`, `widths`, `heights`, `crop_urls` (nullable), `cluster_labels` (nullable), `suggested_person_ids` (nullable), `suggested_person_names` (nullable), `laplacian_variances` (FR-093-15), `is_truncated`. | New `FaceQueueController`, `GetFaceQueueRequest`, `QueryFaceQueue` action, `FaceQueueResource`. |
 | API-093-04 | REST GET /api/v3/People | SoA list of persons the user may pick: `ids`, `names`, `face_counts`, `crop_urls` (nullable, representative face). Whole-scope, unpaginated (ADR-069-01 strategy 1): persons are few and the payload is small. Authorised like `GET /api/v2/People` (`AiVisionPolicy::CAN_VIEW_PEOPLE`, so guests may read it in `public` mode) plus the struct-of-array flag. Non-admins see searchable persons and their own person, as `GET /api/v2/People` does. Ordered by name. | New `PeopleListController`, `GetPeopleListRequest`, `PeopleListResource`. |
 | API-093-05 | REST GET /api/v3/Faces/{face_id}/photo/{variant} | Binary size variant of the photo carrying the face; `variant` ∈ `medium`, `small2x`, `small`, `thumb` (`FacePhotoAssetType`), resolved to the first existing row walking down medium → small2x → small → thumb (medium is allowed here, unlike `/Asset`, because only the owner or an admin passes); admin or photo owner; temporary-link MAC as on `/Asset`; same fallback, S3 redirect and watermark as `PhotoAssetController` (shared helper). | ADR-093-01. New `FacePhotoAssetController`, `GetFacePhotoAssetRequest`. |
 

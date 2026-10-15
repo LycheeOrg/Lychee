@@ -53,71 +53,79 @@
 		</div>
 
 		<div v-else class="flex-1 min-h-0 flex flex-col items-center gap-4 p-4">
-			<!-- Photo with the current face highlighted (FR-093-01) -->
-			<div ref="photoBox" class="flex-1 min-h-0 w-full relative">
-				<template v-if="photoUrl !== undefined">
-					<img
-						:src="photoUrl"
-						alt=""
-						class="absolute inset-0 w-full h-full object-contain select-none"
-						draggable="false"
-						@load="onPhotoLoad"
-					/>
-					<!-- Overlay clipped to the rendered image rectangle, so the highlight always sits on the face. -->
-					<div v-if="imageRect !== null" class="absolute overflow-hidden pointer-events-none" :style="imageRect">
-						<div class="absolute rounded-sm ring-2 ring-primary quick-naming-highlight" :style="highlightStyle" />
+			<!-- Photo and name panel: side by side from lg, the panel on the inline-end side (FR-093-16) -->
+			<div class="flex-1 min-h-0 w-full flex flex-col lg:flex-row items-center gap-4">
+				<!-- Photo with the current face highlighted (FR-093-01) -->
+				<div ref="photoBox" class="flex-1 min-h-0 min-w-0 w-full self-stretch relative">
+					<template v-if="photoUrl !== undefined">
+						<img
+							:src="photoUrl"
+							alt=""
+							class="absolute inset-0 w-full h-full object-contain select-none"
+							draggable="false"
+							@load="onPhotoLoad"
+						/>
+						<!-- Overlay clipped to the rendered image rectangle, so the highlight always sits on the face. -->
+						<div v-if="imageRect !== null" class="absolute overflow-hidden pointer-events-none" :style="imageRect">
+							<div class="absolute rounded-sm ring-2 ring-primary quick-naming-highlight" :style="highlightStyle" />
+						</div>
+					</template>
+					<div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-3">
+						<img v-if="currentEntry.face.cropUrl" :src="currentEntry.face.cropUrl" alt="" class="w-40 h-40 rounded-lg object-cover" />
+						<LycheeLoadingIcon fast class="text-2xl" />
 					</div>
-				</template>
-				<div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-3">
-					<img v-if="currentEntry.face.cropUrl" :src="currentEntry.face.cropUrl" alt="" class="w-40 h-40 rounded-lg object-cover" />
-					<LycheeLoadingIcon fast class="text-2xl" />
-				</div>
-			</div>
-
-			<!-- Crop, state badge and name box -->
-			<div class="w-full max-w-xl flex flex-col gap-2">
-				<div class="flex items-center gap-3 min-h-8">
-					<img v-if="currentEntry.face.cropUrl" :src="currentEntry.face.cropUrl" alt="" class="w-10 h-10 rounded-full object-cover" />
-					<UBadge
-						v-if="currentEntry.failed"
-						:label="$t('people.quick_naming.badge_failed')"
-						color="error"
-						variant="subtle"
-						icon="lucide:circle-alert"
-					/>
-					<UBadge
-						v-else-if="currentEntry.status === 'named'"
-						:label="$t('people.quick_naming.badge_named')"
-						color="success"
-						variant="subtle"
-						icon="lucide:check"
-					/>
-					<UBadge
-						v-else-if="currentEntry.status === 'discarded'"
-						:label="$t('people.quick_naming.badge_discarded')"
-						color="warning"
-						variant="subtle"
-						icon="lucide:eye-off"
-					/>
-					<span class="text-sm text-muted">{{ stateHint }}</span>
 				</div>
 
-				<QuickNamingInput
-					:key="inputKey"
-					ref="nameInput"
-					:people="session.people.value"
-					:suggestion="session.suggestion.value"
-					:prefill="currentEntry.status === 'named' && currentEntry.person !== null ? currentEntry.person.name : null"
-					:initial-text="currentEntry.failedText"
-					@assign="(p) => session?.assignExisting(p)"
-					@create="(name) => session?.createPerson(name)"
-					@accept-suggestion="session.acceptSuggestion()"
-					@unassign="session.unassign()"
-					@keep="session.goTo(session.index.value + 1)"
-					@skip="session.skip()"
-					@back="session.back()"
-					@discard="session.discard()"
-				/>
+				<!-- Crop, sharpness, state badge and name box -->
+				<div class="w-full max-w-xl lg:w-96 lg:shrink-0 flex flex-col gap-2">
+					<div class="flex flex-wrap items-center gap-x-3 gap-y-1 min-h-8">
+						<img v-if="currentEntry.face.cropUrl" :src="currentEntry.face.cropUrl" alt="" class="w-10 h-10 rounded-full object-cover" />
+						<!-- Sharpness, red below the face maintenance threshold (FR-093-15) -->
+						<span class="text-xs tabular-nums" :class="isBlurry ? 'text-error' : 'text-muted'">
+							{{ $t("people.laplacian_variance") }}: {{ Math.round(currentEntry.face.laplacianVariance) }}
+						</span>
+						<UBadge
+							v-if="currentEntry.failed"
+							:label="$t('people.quick_naming.badge_failed')"
+							color="error"
+							variant="subtle"
+							icon="lucide:circle-alert"
+						/>
+						<UBadge
+							v-else-if="currentEntry.status === 'named'"
+							:label="$t('people.quick_naming.badge_named')"
+							color="success"
+							variant="subtle"
+							icon="lucide:check"
+						/>
+						<UBadge
+							v-else-if="currentEntry.status === 'discarded'"
+							:label="$t('people.quick_naming.badge_discarded')"
+							color="warning"
+							variant="subtle"
+							icon="lucide:eye-off"
+						/>
+						<span class="text-sm text-muted">{{ stateHint }}</span>
+					</div>
+
+					<QuickNamingInput
+						:key="inputKey"
+						ref="nameInput"
+						:people="session.people.value"
+						:suggestion="session.suggestion.value"
+						:prefill="currentEntry.status === 'named' && currentEntry.person !== null ? currentEntry.person.name : null"
+						:initial-text="currentEntry.failedText"
+						@assign="(p) => session?.assignExisting(p)"
+						@create="(name) => session?.createPerson(name)"
+						@accept-suggestion="session.acceptSuggestion()"
+						@unassign="session.unassign()"
+						@keep="session.goTo(session.index.value + 1)"
+						@skip="session.skip()"
+						@back="session.back()"
+						@discard="session.discard()"
+						@leave="leave"
+					/>
+				</div>
 			</div>
 
 			<!-- On-screen controls (touch devices, FR-093-04) -->
@@ -151,6 +159,7 @@
 				<span><UKbd :value="isRTL() ? '←' : '→'" /> {{ $t("people.quick_naming.hint_skip") }}</span>
 				<span><UKbd :value="isRTL() ? '→' : '←'" /> {{ $t("people.quick_naming.hint_back") }}</span>
 				<span><UKbd value="⌫" /> <UKbd value="space" /> {{ $t("people.quick_naming.hint_discard") }}</span>
+				<span><UKbd value="escape" /> {{ $t("people.quick_naming.hint_leave") }}</span>
 			</div>
 		</div>
 
@@ -253,6 +262,10 @@ const highlightStyle = computed<CSSProperties>(() => {
 		height: `${face.height * 100}%`,
 	};
 });
+
+/** Same threshold as the face maintenance page. */
+const BLURRY_LAPLACIAN_THRESHOLD = 50;
+const isBlurry = computed(() => currentEntry.value.face.laplacianVariance < BLURRY_LAPLACIAN_THRESHOLD);
 
 const progressLabel = computed(() => {
 	if (session.value === null) {

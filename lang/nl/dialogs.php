@@ -70,6 +70,7 @@ return [
         'qn_back' => 'Vorig gezicht (leeg veld, → bij RTL)',
         'qn_clear' => 'Vooraf ingevulde naam wissen',
         'qn_discard' => 'Gezicht afwijzen (leeg veld)',
+        'qn_leave' => 'Snel benoemen verlaten',
     ],
     'login' => [
         'auth_with' => 'Authenticeren met %s',

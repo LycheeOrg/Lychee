@@ -1,5 +1,5 @@
 <template>
-	<div class="w-full max-w-xl flex flex-col gap-1">
+	<div class="relative w-full max-w-xl">
 		<div class="relative">
 			<input
 				ref="inputEl"
@@ -23,7 +23,12 @@
 			/>
 		</div>
 
-		<ul v-if="matches.length > 0" class="rounded-lg border border-default bg-default overflow-hidden" role="listbox">
+		<!-- Overlay outside the layout flow, so the photo never resizes while typing (FR-093-16): opens upward over the photo below lg, downward in the side panel from lg. -->
+		<ul
+			v-if="matches.length > 0"
+			class="absolute inset-x-0 bottom-full mb-1 lg:bottom-auto lg:top-full lg:mb-0 lg:mt-1 z-10 rounded-lg border border-default bg-default shadow-lg overflow-hidden"
+			role="listbox"
+		>
 			<li
 				v-for="(entry, i) in matches"
 				:key="entry.kind === 'person' ? entry.person.id : 'create'"
@@ -83,6 +88,7 @@ const emits = defineEmits<{
 	skip: [];
 	back: [];
 	discard: [];
+	leave: [];
 }>();
 
 const { isRTL } = useLtRorRtL();
@@ -156,6 +162,9 @@ function onKeydown(event: KeyboardEvent): void {
 			break;
 		case "discard":
 			emits("discard");
+			break;
+		case "leave":
+			emits("leave");
 			break;
 		case "clear":
 			text.value = "";

@@ -71,6 +71,7 @@ return [
         'qn_back' => 'Rosto anterior (campo vazio, → em RTL)',
         'qn_clear' => 'Limpar um nome pré-preenchido',
         'qn_discard' => 'Descartar o rosto (campo vazio)',
+        'qn_leave' => 'Sair da nomeação rápida',
     ],
     'login' => [
         'auth_with' => 'Autenticar com %s',

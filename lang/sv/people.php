@@ -131,6 +131,7 @@ return [
         'hint_skip' => 'hoppa över',
         'hint_back' => 'tillbaka',
         'hint_discard' => 'avvisa (tom ruta)',
+        'hint_leave' => 'lämna',
         'revisit_named' => 'Redigera namnet och tryck Enter för att tilldela på nytt; töm det och tryck Enter för att ta bort tilldelningen.',
         'revisit_discarded' => 'Skriv ett namn och tryck Enter för att återställa och namnge detta ansikte.',
         'badge_named' => 'Namngiven',

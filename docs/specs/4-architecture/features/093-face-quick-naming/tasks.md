@@ -103,5 +103,19 @@ _Last updated: 2026-10-14_
   - `php artisan test --filter=FaceDismissTest`  
   - `make phpstan`
 
+- [x] T-093-17 – `laplacian_variances` on the queue, tests first (FR-093-15).  
+  _Intent:_ failing assertion in `FaceQueueTest` that the queue carries each face's Laplacian variance, then the select column, `FaceQueueResource` field and TypeScript type.  
+  _Verification commands:_  
+  - `php artisan test --filter=FaceQueueTest`  
+  - `make phpstan`
+
+- [x] T-093-18 – Laplacian value and side panel layout in `FaceQuickNaming.vue` (FR-093-15, FR-093-16).  
+  _Intent:_ value next to the crop (error colour below 50); from `lg` the name panel beside the photo on the inline-end side, buttons under; below `lg` the match list as an upward overlay so the photo never resizes.  
+  _Verification commands:_ `npm run format`, `npm run check`; manual check in LTR and RTL, at `lg` and narrower.
+
+- [x] T-093-19 – Escape leaves the view (FR-093-17).  
+  _Intent:_ `leave` key action in `decideKey`, emitted by the name box and wired to the view's `leave()`; help modal row and `qn_leave` string in every locale; Esc in the on-screen hints.  
+  _Verification commands:_ `npm run format`, `npm run check`; manual check from People and from face review.
+
 ## Notes / TODOs
 - The frontend has no Vue unit-test harness in the repo; S-093-01…12 are verified manually (recorded in the plan's drift gate).

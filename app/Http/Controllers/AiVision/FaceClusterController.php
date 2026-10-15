@@ -110,7 +110,7 @@ class FaceClusterController extends Controller
 			->notDismissed()
 			->update(['person_id' => $person->id]);
 
-		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
+		// Recount denormalized counters after the bulk update.
 		$person->face_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->count();
 		$person->photo_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
 		$person->save();
