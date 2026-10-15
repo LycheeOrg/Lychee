@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Показване на снимки с :name',
     'people_in_photo' => 'Хора на тази снимка',
     'remove_from_person' => 'Премахване от човека',
+    'remove_from_cluster' => 'Премахване от групата',
+    'removed_from_cluster' => 'Лицето е премахнато от групата.',
     'remove_from_person_confirm' => 'Да се премахне ли тази снимка от ":name"?',
     'remove_from_person_success' => 'Лицето е премахнато успешно.',
     'batch_select' => 'Избиране на лица',

@@ -72,6 +72,8 @@ return [
     'filter_active' => 'نمایش عکس‌ها با :name',
     'people_in_photo' => 'افراد حاضر در این عکس',
     'remove_from_person' => 'حذف از فرد',
+    'remove_from_cluster' => 'حذف از خوشه',
+    'removed_from_cluster' => 'چهره از خوشه حذف شد.',
     'remove_from_person_confirm' => 'این عکس از ":name" حذف شود؟',
     'remove_from_person_success' => 'چهره با موفقیت حذف شد.',
     'batch_select' => 'انتخاب چهره‌ها',

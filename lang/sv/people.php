@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Visar foton med :name',
     'people_in_photo' => 'Personer i det här fotot',
     'remove_from_person' => 'Ta bort från person',
+    'remove_from_cluster' => 'Ta bort från klustret',
+    'removed_from_cluster' => 'Ansiktet togs bort från klustret.',
     'remove_from_person_confirm' => 'Ta bort det här fotot från ":name"?',
     'remove_from_person_success' => 'Ansiktet har tagits bort.',
     'batch_select' => 'Markera ansikten',

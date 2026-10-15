@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Viser bilder med :name',
     'people_in_photo' => 'Personer på dette bildet',
     'remove_from_person' => 'Fjern fra person',
+    'remove_from_cluster' => 'Fjern fra klyngen',
+    'removed_from_cluster' => 'Ansiktet er fjernet fra klyngen.',
     'remove_from_person_confirm' => 'Fjern dette bildet fra «:name»?',
     'remove_from_person_success' => 'Ansikt fjernet.',
     'batch_select' => 'Velg ansikter',

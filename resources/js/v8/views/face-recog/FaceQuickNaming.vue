@@ -123,7 +123,6 @@
 						@skip="session.skip()"
 						@back="session.back()"
 						@discard="session.discard()"
-						@leave="leave"
 					/>
 				</div>
 			</div>
@@ -348,9 +347,25 @@ watch(isHelpOpen, (open) => {
 	}
 });
 
-onMounted(() => window.addEventListener("focus", focusInput));
+/**
+ * Escape leaves the view in every state (naming, done, error), like Back (FR-093-17).
+ * Capture phase: runs before the help modal's own Escape handling, so an open help only closes.
+ */
+function onEscape(event: KeyboardEvent): void {
+	if (event.key !== "Escape" || event.isComposing || isHelpOpen.value) {
+		return;
+	}
+	event.preventDefault();
+	leave();
+}
+
+onMounted(() => {
+	window.addEventListener("focus", focusInput);
+	window.addEventListener("keydown", onEscape, true);
+});
 onBeforeUnmount(() => {
 	window.removeEventListener("focus", focusInput);
+	window.removeEventListener("keydown", onEscape, true);
 	resizeObserver?.disconnect();
 	session.value?.dispose();
 });

@@ -72,6 +72,8 @@ return [
     'filter_active' => ':name olan fotoğraflar gösteriliyor',
     'people_in_photo' => 'Bu fotoğraftaki kişiler',
     'remove_from_person' => 'Kişiden kaldır',
+    'remove_from_cluster' => 'Kümeden çıkar',
+    'removed_from_cluster' => 'Yüz kümeden çıkarıldı.',
     'remove_from_person_confirm' => 'Bu fotoğraf ":name" kişisinden kaldırılsın mı?',
     'remove_from_person_success' => 'Yüz başarıyla kaldırıldı.',
     'batch_select' => 'Yüzleri seç',

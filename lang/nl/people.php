@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Foto’s met :name worden weergegeven',
     'people_in_photo' => 'Personen op deze foto',
     'remove_from_person' => 'Verwijderen van persoon',
+    'remove_from_cluster' => 'Uit cluster verwijderen',
+    'removed_from_cluster' => 'Gezicht uit cluster verwijderd.',
     'remove_from_person_confirm' => 'Deze foto verwijderen van ":name"?',
     'remove_from_person_success' => 'Gezicht succesvol verwijderd.',
     'batch_select' => 'Gezichten selecteren',

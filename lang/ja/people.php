@@ -72,6 +72,8 @@ return [
     'filter_active' => ':name が写っている写真を表示中',
     'people_in_photo' => 'この写真の人物',
     'remove_from_person' => '人物から削除',
+    'remove_from_cluster' => 'クラスターから外す',
+    'removed_from_cluster' => '顔をクラスターから外しました。',
     'remove_from_person_confirm' => 'この写真を ":name" から削除しますか？',
     'remove_from_person_success' => '顔を削除しました。',
     'batch_select' => '顔を選択',

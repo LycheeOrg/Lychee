@@ -118,7 +118,7 @@ _Last updated: 2026-10-14_
   _Verification commands:_ `npm run format`, `npm run check`; manual check from People and from face review.
 
 - [x] T-093-20 – Queue `seen` window, tests first (FR-093-02, API-093-03, Q-093-14).  
-  _Intent:_ failing `FaceQueueTest` cases (window widened by `seen`, a fully skipped batch still reaches faces past the cap, `seen` clamped to 10 × limit, invalid `seen` → 422), then the request rule, the action window, and `refetch()` sending `seen`.  
+  _Intent:_ failing `FaceQueueTest` cases (window widened by `seen`, a fully skipped batch still reaches faces past the cap, `seen` not clamped per Q-093-15, invalid `seen` → 422), then the request rule, the action window, and `refetch()` sending `seen`.  
   _Verification commands:_  
   - `php artisan test --filter=FaceQueueTest`  
   - `make phpstan`  
@@ -127,6 +127,14 @@ _Last updated: 2026-10-14_
 - [x] T-093-21 – Stale MAC retry on the face photo route (PR #4886 review).  
   _Intent:_ one `needsMac()` predicate shared by the request interceptor and the 401 retry, so `Faces/{id}/photo/{variant}` refreshes an expired MAC like `Asset/`.  
   _Verification commands:_ `npm run format`, `npm run check`.
+
+- [x] T-093-22 – PR #4886 second review round (Q-093-15, FR-093-02, API-093-03).  
+  _Intent:_ drop the `seen` clamp (test first), count in-flight requests as still queued in `stillQueuedCount()`.  
+  _Verification commands:_ `php artisan test --filter=FaceQueueTest`, `make phpstan`, `npm run check`.
+
+- [x] T-093-23 – Owner feedback round (FR-093-17, API-093-04, FR-030-30).  
+  _Intent:_ people list crop falls back to the best face (tests first in `PeopleListV3Test`); neutral quick naming buttons; Escape leaves from every state; cluster review: one face load per open, stale responses ignored, ties ordered by `cluster_label` (test first in `FaceClusterReviewTest`), × unclusters instead of dismissing.  
+  _Verification commands:_ `php artisan test --filter='PeopleListV3Test|FaceClusterReviewTest'`, `npm run check`; browser check on the scratch instance.
 
 ## Notes / TODOs
 - The frontend has no Vue unit-test harness in the repo; S-093-01…12 are verified manually (recorded in the plan's drift gate).

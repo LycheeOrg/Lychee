@@ -72,6 +72,8 @@ return [
     'filter_active' => '正在显示包含 :name 的照片',
     'people_in_photo' => '此照片中的人物',
     'remove_from_person' => '从人物中移除',
+    'remove_from_cluster' => '移出聚类',
+    'removed_from_cluster' => '已将人脸移出聚类。',
     'remove_from_person_confirm' => '要将此照片从 ":name" 中移除吗？',
     'remove_from_person_success' => '人脸已成功移除。',
     'batch_select' => '选择人脸',

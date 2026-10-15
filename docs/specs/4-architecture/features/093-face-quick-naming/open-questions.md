@@ -20,6 +20,7 @@ Open questions for [Feature 093](spec.md). Log every high- and medium-impact que
 | ~~Q-093-12~~ | 093 | Medium | `PATCH /Face/{id}` is a blind toggle, so retrying a discard or an un-dismiss whose first request actually succeeded (timeout) flips the face back. Options: A) add an optional explicit `is_dismissed` boolean to the PATCH (sets instead of toggling when given), B) client re-reads the face state before retrying, C) never retry dismiss changes; the user re-acts by hand | Resolved (A; spec FR-093-09, API-093-02) | 2026-10-14 | 2026-10-14 |
 | ~~Q-093-13~~ | 093 | Medium | Two persons with the same name. Options: A) homonyms allowed: list rows show crop + face count, exact-name auto-reuse only when the name is unique, "Create another «name»" entry and Shift+Enter always create, B) names unique case-insensitive, enforced server-side, C) keep exact-match reuse; homonyms only created elsewhere | Resolved (A; spec FR-093-03, FR-093-10, FR-093-13) | 2026-10-14 | 2026-10-14 |
 | ~~Q-093-14~~ | 093 | Medium | Refetching a capped queue returns the same skipped faces first, so a session that skips a whole batch ends early and never reaches the faces past the cap (PR #4886 review). Options: A) refetch asks for a larger window from the top (`seen` = faces of the session still pending, server returns `limit + seen` rows), B) POST the skipped face ids as an exclusion list, C) offset paging | Resolved (A; spec FR-093-02, API-093-03) | 2026-10-15 | 2026-10-15 |
+| ~~Q-093-15~~ | 093 | Medium | The refetch window clamps `seen` at 10 × limit, so a session that skips more than that many faces gets back only known faces and ends early (PR #4886 review). Options: A) drop the clamp, the window is bounded by the caller's own pending faces, B) keep the clamp and show a distinct "out of reach" end state with a start-over button, C) POST an exclusion list of skipped ids | Resolved (A; spec FR-093-02, API-093-03) | 2026-10-15 | 2026-10-15 |
 
 ## Question Details
 
@@ -132,4 +133,17 @@ Open questions for [Feature 093](spec.md). Log every high- and medium-impact que
 - **Option C – offset paging:** `offset` = number of the session's pending faces.
   - Pros: smallest change.
   - Cons: wrong when clusters reorder after naming. An offset taken from the top can skip unseen faces, which is the bug in another form.
+
+### Q-093-15 – Skipping more than the refetch clamp
+
+- **Context:** Q-093-14 (A) reads `limit + seen` faces from the top on refetch, with `seen` clamped to 10 × limit to bound the response. A session holding more than 10 × limit still-queued faces (5000 with the default limit of 500, all skipped) gets a window made only of faces it already has. `fresh` is empty, the view clears `isTruncated` and shows "All faces named" while faces remain past the window.
+- **Option A (recommended) – drop the clamp:** the server returns the first `limit + seen` pending faces. The response can never exceed the caller's own pending faces (all faces for an admin, faces on owned photos otherwise), which the caller may already read page by page. A client sending a huge `seen` only gets its whole queue in one response.
+  - Pros: always correct; one line removed; no new state in the view.
+  - Cons: departs from the strict cap of ADR-069-01 strategy 3 for this endpoint; a session that skipped thousands of faces downloads thousands of rows on each refetch.
+- **Option B – distinct end state:** keep the clamp; when a refetch returns no new face while the server still reports `is_truncated`, show "You skipped too many faces to reach the rest" with a "Start over" button that reloads the queue from the top.
+  - Pros: response stays bounded.
+  - Cons: faces past the window stay unreachable in that session; starting over shows the skipped faces first again.
+- **Option C – exclusion list:** POST the ids of the session's still-queued faces; the server excludes them.
+  - Pros: exact and the response holds only new faces.
+  - Cons: a read endpoint on POST with up to thousands of ids and `whereNotIn` placeholders, which hits MySQL's placeholder limit beyond 65,535 and needs chunking.
 

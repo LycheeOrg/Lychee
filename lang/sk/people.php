@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Zobrazujú sa fotografie s osobou :name',
     'people_in_photo' => 'Ľudia na tejto fotografii',
     'remove_from_person' => 'Odobrať z osoby',
+    'remove_from_cluster' => 'Odobrať zo zhluku',
+    'removed_from_cluster' => 'Tvár bola odobraná zo zhluku.',
     'remove_from_person_confirm' => 'Odobrať túto fotografiu z osoby ":name"?',
     'remove_from_person_success' => 'Tvár bola úspešne odobratá.',
     'batch_select' => 'Vybrať tváre',

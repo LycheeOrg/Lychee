@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Showing photos with :name',
     'people_in_photo' => 'People in this photo',
     'remove_from_person' => 'Remove from person',
+    'remove_from_cluster' => 'Remove from cluster',
+    'removed_from_cluster' => 'Face removed from the cluster.',
     'remove_from_person_confirm' => 'Remove this photo from ":name"?',
     'remove_from_person_success' => 'Face removed successfully.',
     'batch_select' => 'Select faces',

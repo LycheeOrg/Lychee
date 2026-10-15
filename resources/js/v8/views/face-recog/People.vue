@@ -9,7 +9,7 @@
 				<UButton
 					v-if="rights?.modules.can_quick_name_faces"
 					:label="$t('people.quick_naming.button')"
-					color="primary"
+					color="neutral"
 					variant="outline"
 					icon="lucide:keyboard"
 					@click="

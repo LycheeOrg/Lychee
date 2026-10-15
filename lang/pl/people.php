@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Zdjęcia z osobą :name',
     'people_in_photo' => 'Osoby na tym zdjęciu',
     'remove_from_person' => 'Usuń z osoby',
+    'remove_from_cluster' => 'Usuń z grupy',
+    'removed_from_cluster' => 'Twarz usunięta z grupy.',
     'remove_from_person_confirm' => 'Usunąć to zdjęcie z osoby ":name"?',
     'remove_from_person_success' => 'Twarz została usunięta.',
     'batch_select' => 'Zaznacz twarze',

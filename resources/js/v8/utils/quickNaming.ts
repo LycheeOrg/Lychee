@@ -38,7 +38,7 @@ export type MatchEntry = { kind: "person"; person: PersonOption } | { kind: "cre
 
 export type Suggestion = { personId: string; name: string };
 
-export type KeyAction = "none" | "submit" | "create" | "skip" | "back" | "discard" | "clear" | "highlight-next" | "highlight-prev" | "leave";
+export type KeyAction = "none" | "submit" | "create" | "skip" | "back" | "discard" | "clear" | "highlight-next" | "highlight-prev";
 
 export const MAX_MATCHES = 8;
 
@@ -162,8 +162,6 @@ export function decideKey(input: KeyInput, state: KeyState): KeyAction {
 			return isEmpty && !input.repeat ? "discard" : "none";
 		case " ":
 			return isEmpty && !input.repeat ? "discard" : "none";
-		case "Escape":
-			return "leave";
 		default:
 			return "none";
 	}

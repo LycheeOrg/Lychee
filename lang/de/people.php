@@ -70,6 +70,8 @@ return [
     'filter_active' => 'Fotos mit :name werden angezeigt',
     'people_in_photo' => 'Personen auf diesem Foto',
     'remove_from_person' => 'Von Person entfernen',
+    'remove_from_cluster' => 'Aus dem Cluster entfernen',
+    'removed_from_cluster' => 'Gesicht aus dem Cluster entfernt.',
     'remove_from_person_confirm' => 'Dieses Foto von „:name“ entfernen?',
     'remove_from_person_success' => 'Gesicht erfolgreich entfernt.',
     'batch_select' => 'Gesichter auswählen',

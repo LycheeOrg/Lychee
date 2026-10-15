@@ -13,8 +13,10 @@ use App\Http\Resources\V3\PeopleListResource;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * `GET /api/v3/People` (Feature 093, API-093-04): the people list the face
@@ -35,6 +37,7 @@ class PeopleListController extends Controller
 			->orderBy('persons.name')
 			->orderBy('persons.id')
 			->select(['persons.id', 'persons.name', 'persons.face_count', 'faces.crop_token'])
+			->selectSub(self::bestCropToken(), 'best_crop_token')
 			->toBase()
 			->get();
 
@@ -46,9 +49,25 @@ class PeopleListController extends Controller
 			$ids[] = $row->id;
 			$names[] = $row->name;
 			$face_counts[] = (int) $row->face_count;
-			$crop_urls[] = Face::cropUrlFromToken($row->crop_token);
+			$crop_urls[] = Face::cropUrlFromToken($row->crop_token ?? $row->best_crop_token);
 		}
 
 		return new PeopleListResource(ids: $ids, names: $names, face_counts: $face_counts, crop_urls: $crop_urls);
+	}
+
+	/**
+	 * Crop of the person's highest-confidence non-dismissed face, used when no
+	 * representative face is pinned (same fallback as `PersonResource`).
+	 */
+	private static function bestCropToken(): Builder
+	{
+		return DB::table('faces as best')
+			->select('best.crop_token')
+			->whereColumn('best.person_id', 'persons.id')
+			->where('best.is_dismissed', '=', false)
+			->whereNotNull('best.crop_token')
+			->orderByDesc('best.confidence')
+			->orderBy('best.id')
+			->limit(1);
 	}
 }

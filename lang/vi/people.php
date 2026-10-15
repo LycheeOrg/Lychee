@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Đang hiển thị ảnh có :name',
     'people_in_photo' => 'Những người trong ảnh này',
     'remove_from_person' => 'Gỡ khỏi người',
+    'remove_from_cluster' => 'Xóa khỏi cụm',
+    'removed_from_cluster' => 'Đã xóa khuôn mặt khỏi cụm.',
     'remove_from_person_confirm' => 'Gỡ ảnh này khỏi ":name"?',
     'remove_from_person_success' => 'Đã gỡ khuôn mặt thành công.',
     'batch_select' => 'Chọn khuôn mặt',

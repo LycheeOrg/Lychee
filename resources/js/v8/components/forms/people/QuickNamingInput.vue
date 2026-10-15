@@ -88,7 +88,6 @@ const emits = defineEmits<{
 	skip: [];
 	back: [];
 	discard: [];
-	leave: [];
 }>();
 
 const { isRTL } = useLtRorRtL();
@@ -162,9 +161,6 @@ function onKeydown(event: KeyboardEvent): void {
 			break;
 		case "discard":
 			emits("discard");
-			break;
-		case "leave":
-			emits("leave");
 			break;
 		case "clear":
 			text.value = "";

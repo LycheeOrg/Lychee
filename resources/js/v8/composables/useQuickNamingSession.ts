@@ -21,6 +21,8 @@ export type SessionEntry = {
 	failed: boolean;
 	/** Text kept in the box after a failure. */
 	failedText: string;
+	/** Requests sent but not settled: the server still lists the face until they succeed (Q-093-14). */
+	inFlight: number;
 };
 
 /** How many photos ahead are preloaded (NFR-093-01). */
@@ -65,7 +67,7 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 	});
 
 	function toEntry(face: QueueFace): SessionEntry {
-		return { face, status: "open", person: null, mayBeDismissed: false, failed: false, failedText: "" };
+		return { face, status: "open", person: null, mayBeDismissed: false, failed: false, failedText: "", inFlight: 0 };
 	}
 
 	async function load(): Promise<void> {
@@ -86,11 +88,12 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 	}
 
 	/**
-	 * Faces of the session the server still lists: not named or discarded, or whose request failed.
-	 * Skipped faces stay at the front of the queue, so the refetch widens its window by this count.
+	 * Faces of the session the server still lists: not named or discarded, named or discarded but not
+	 * confirmed yet (request in flight), or whose request failed. Skipped faces stay at the front of the
+	 * queue, so the refetch widens its window by this count; over-counting only widens it further.
 	 */
 	function stillQueuedCount(): number {
-		return entries.value.filter((e) => e.failed || (e.status !== "named" && e.status !== "discarded")).length;
+		return entries.value.filter((e) => e.inFlight > 0 || e.failed || (e.status !== "named" && e.status !== "discarded")).length;
 	}
 
 	/** Fetch more faces when the end of a capped queue is reached; already seen faces are dropped (Q-093-14). */
@@ -150,6 +153,7 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 	/** Run `task` after the previous requests of the same face; mark the entry failed on error. */
 	function enqueue(entry: SessionEntry, keptText: string, task: () => Promise<void>): Promise<void> {
 		const previous = faceChains.get(entry.face.id) ?? Promise.resolve();
+		entry.inFlight += 1;
 		const next = previous
 			.then(task)
 			.then(() => {
@@ -162,6 +166,9 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 				entry.status = "open";
 				entry.person = null;
 				onFailure(entries.value.indexOf(entry));
+			})
+			.finally(() => {
+				entry.inFlight -= 1;
 			});
 		faceChains.set(entry.face.id, next);
 		return next;

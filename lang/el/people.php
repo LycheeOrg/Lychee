@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Εμφάνιση φωτογραφιών με :name',
     'people_in_photo' => 'Άτομα σε αυτή τη φωτογραφία',
     'remove_from_person' => 'Αφαίρεση από άτομο',
+    'remove_from_cluster' => 'Αφαίρεση από την ομάδα',
+    'removed_from_cluster' => 'Το πρόσωπο αφαιρέθηκε από την ομάδα.',
     'remove_from_person_confirm' => 'Αφαίρεση αυτής της φωτογραφίας από ":name";',
     'remove_from_person_success' => 'Το πρόσωπο αφαιρέθηκε επιτυχώς.',
     'batch_select' => 'Επιλογή προσώπων',

@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Показаны фотографии с :name',
     'people_in_photo' => 'Люди на этой фотографии',
     'remove_from_person' => 'Убрать у человека',
+    'remove_from_cluster' => 'Убрать из кластера',
+    'removed_from_cluster' => 'Лицо убрано из кластера.',
     'remove_from_person_confirm' => 'Убрать эту фотографию у ":name"?',
     'remove_from_person_success' => 'Лицо успешно удалено.',
     'batch_select' => 'Выбрать лица',

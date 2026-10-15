@@ -72,6 +72,8 @@ return [
     'filter_active' => ':name szereplésével készült fényképek',
     'people_in_photo' => 'Személyek ezen a fényképen',
     'remove_from_person' => 'Eltávolítás a személytől',
+    'remove_from_cluster' => 'Eltávolítás a csoportból',
+    'removed_from_cluster' => 'Az arc eltávolítva a csoportból.',
     'remove_from_person_confirm' => 'Eltávolítja ezt a fényképet innen: ":name"?',
     'remove_from_person_success' => 'Az arc sikeresen eltávolítva.',
     'batch_select' => 'Arcok kijelölése',

@@ -111,6 +111,31 @@ class PeopleListV3Test extends BaseApiWithDataTest
 		]);
 	}
 
+	public function testCropFallsBackToBestFaceWithoutPinnedRepresentative(): void
+	{
+		Face::factory()->for_photo($this->photo1)->for_person($this->bob)->with_confidence(0.6)->create();
+		$best = Face::factory()->for_photo($this->photo1)->for_person($this->bob)->with_confidence(0.9)->create();
+		Face::factory()->for_photo($this->photo1)->for_person($this->bob)->with_confidence(0.99)->without_crop()->create();
+		Face::factory()->for_photo($this->photo1)->for_person($this->bob)->with_confidence(0.98)->dismissed()->create();
+
+		$response = $this->actingAs($this->admin)->getJsonV3('People');
+		$this->assertOk($response);
+
+		self::assertSame([null, $best->crop_url, null], $response->json('crop_urls'));
+	}
+
+	public function testPinnedRepresentativeWinsOverBestFace(): void
+	{
+		$pinned = Face::factory()->for_photo($this->photo1)->for_person($this->alice)->with_confidence(0.5)->create();
+		Face::factory()->for_photo($this->photo1)->for_person($this->alice)->with_confidence(0.9)->create();
+		DB::table('persons')->where('id', '=', $this->alice->id)->update(['representative_face_id' => $pinned->id]);
+
+		$response = $this->actingAs($this->admin)->getJsonV3('People');
+		$this->assertOk($response);
+
+		self::assertSame($pinned->crop_url, $response->json('crop_urls.0'));
+	}
+
 	public function testSingleQuery(): void
 	{
 		$this->actingAs($this->admin);

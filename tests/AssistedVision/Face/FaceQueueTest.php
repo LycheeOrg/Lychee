@@ -208,15 +208,16 @@ class FaceQueueTest extends BaseApiWithDataTest
 		self::assertTrue($refetch->json('is_truncated'));
 	}
 
-	public function testSeenIsClampedToTenTimesTheLimit(): void
+	public function testSeenIsNotClamped(): void
 	{
+		// More still-queued faces than 10 × limit: the window must still reach past them (Q-093-15).
 		Configs::set('ai_vision_face_queue_limit', '1');
 		Face::factory()->for_photo($this->photo1)->count(13)->create();
 
-		$response = $this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=100');
+		$response = $this->actingAs($this->admin)->getJsonV3('Faces/queue?seen=12');
 		$this->assertOk($response);
-		self::assertCount(11, $response->json('ids'));
-		self::assertTrue($response->json('is_truncated'));
+		self::assertCount(13, $response->json('ids'));
+		self::assertFalse($response->json('is_truncated'));
 	}
 
 	public function testInvalidSeenIsRejected(): void

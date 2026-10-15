@@ -72,6 +72,8 @@ return [
     'filter_active' => 'Zobrazeny fotografie s osobou :name',
     'people_in_photo' => 'Lidé na této fotografii',
     'remove_from_person' => 'Odebrat z osoby',
+    'remove_from_cluster' => 'Odebrat ze shluku',
+    'removed_from_cluster' => 'Tvář byla odebrána ze shluku.',
     'remove_from_person_confirm' => 'Odebrat tuto fotografii z osoby ":name"?',
     'remove_from_person_success' => 'Obličej byl úspěšně odebrán.',
     'batch_select' => 'Vybrat obličeje',
