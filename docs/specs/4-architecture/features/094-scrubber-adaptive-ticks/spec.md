@@ -66,8 +66,9 @@ Frontend only, v8 only. No API, config, storage or bucket change.
 | FR-094-06 | Dots. `/timeline` (no `separatorTops`): one dot per unit of precision L + 1, at that unit's first entry, only when L + 1 ≤ E (L = E → no dots). Albums: one dot per section header (`separatorTops`, FR-071-12), except the header directly above an entry that starts an L-unit (the first entry at or below it, with no other header in between): that unit's label already marks it, and the header row's own height would otherwise leave its dot a few pixels above the label on short albums. Headers finer than the day runs (hour headers) fall inside a run and always draw a dot. In both views a dot within 16 px of a label is dropped (unchanged rule) and, in rail order, a dot within 4 px of the previously kept dot is dropped. | `/timeline` at hour, data over several years → L = year, month dots (today's look). | `/timeline` at month, data within 2026 → L = month = E → labels only. | — | none | Q-094-04 |
 | FR-094-07 | Lens and pill positions and animations (except the wide lens of FR-094-09), the count phrase, playhead, drag-scrub, tap, the `load`/`scrub` emits and the `countLabelKey`/`separatorTops` props behave as before. `TimelineDatesV3.vue` gets no new prop. | — | — | — | none | G4, N-094-02 |
 | FR-094-08 | Hourly lens and readout: on `/timeline`, and on album photo rails with hour runs (FR-094-10), when the rail's ids have precision 4, each lens item and the readout pill show `phpDateFormat(date_scrubber_label_format, day)` + a space + the hour in the `H:00` constant of FR-094-03, built from the bucket id with no time-zone conversion. When all dated bucket ids share the same day (S = hour, so the rail labels hours, FR-094-02), they show the hour only, `H:00`. `Timeline.vue` passes these labels in the `buckets` prop it gives `TimelineDatesV3.vue`; the bucket tier's own labels (section headers) are unchanged. Precisions 1–3 keep the server labels (`/timeline`) or the day labels (albums). The hour part is `date_scrubber_format_hour` since Feature 095 (FR-095-04). | Bucket `2026-10-14-15`, day format `d M Y`, data over several days → `14 Oct 2026 15:00`; all photos on 2026-10-14 → `15:00`. | — | — | none | Owner requests 2026-10-16 |
-| FR-094-09 | Wide lens: when the rail shows dated hour labels (bucket ids of precision 4 on more than one day, FR-094-08), the lens is `w-60` (240 px) instead of `w-50`, and the readout pill beside the open lens sits at `right-63` / `left-63` (RTL) instead of `right-53` / `left-53`. `TimelineDatesV3.vue` decides this from `buckets.bucket_ids`, with no new prop. The fade mask keeps its 26 % proportion. Hour-only labels (one day), other granularities and album rails keep `w-50`. | `/timeline` at hour, data over several days → 240 px lens; the focal `14 Oct 2026 15:00` (about 148 px) clears the faded left edge. | `/timeline` at hour, one day → 200 px lens. | — | none | Q-094-07 |
+| FR-094-09 | Wide lens: when the rail shows dated hour labels (bucket ids of precision 4 on more than one day, FR-094-08), the lens is `w-60` (240 px) instead of `w-50`, and the readout pill beside the open lens sits at `right-63` / `left-63` (RTL) instead of `right-53` / `left-53`. `TimelineDatesV3.vue` decides this from `buckets.bucket_ids`, with no new prop. The fade mask keeps its 26 % proportion. Hour-only labels (one day) open no lens at all (FR-094-11); other granularities and album rails keep `w-50`. | `/timeline` at hour, data over several days → 240 px lens; the focal `14 Oct 2026 15:00` (about 148 px) clears the faded left edge. | `/timeline` at hour, one day → 200 px lens. | — | none | Q-094-07 |
 | FR-094-10 | Album hour runs (Q-094-09): when the album's photo header ids are hour-precise (`photoBucketsV3`, 13 characters) and the rail follows photos sorted by `taken_at` or `created_at`, `PhotoGridVirtual.vue` derives **hour runs** instead of day runs: key `Y-m-d-H` from `taken_at` in `taken_at_orig_tz` (like `taken_key`, FR-092-01), or from `created_at` as stored. Each run's count is the photos of that hour, so the readout pill counts the hour. `AlbumPanel.vue` passes the rail buckets through `hourlyLensLabels()` (FR-094-08), and the wide lens follows (FR-094-09). Title-sorted photo rails and sub-album rails keep day runs (N-094-03). | Album with hour headers, three photos at 15:05–15:40 on 2026-10-14 among others that day → pill `15:00  3 photos`; rail labels `18:00`, `15:00`, … | Album with day headers → day runs, unchanged. | — | none | Q-094-09 |
+| FR-094-11 | No lens on hour-only rails: when every dated bucket id has precision 4 and they all share the same day (hour-only labels, FR-094-08), hovering the rail opens no fisheye lens. The glowing focal line on the rail and the readout pill beside the rail (`right-18` / `left-18`) show instead, as when no date is close enough to magnify. Drag-scrub, tap and the pill's label and count are unchanged. `TimelineDatesV3.vue` decides this from `buckets.bucket_ids` through a pure helper, with no new prop. Applies to `/timeline` at hour granularity and to album photo rails with hour runs (FR-094-10). | `/timeline` at hour, all photos on 2026-10-14, hover → focal line + pill `15:00  7 photos`, no lens. | Hour ids over several days → wide lens (FR-094-09); day ids → lens as before. | — | none | Owner request 2026-10-16 |
 
 ## Non-Functional Requirements
 
@@ -129,14 +130,13 @@ Lens and readout pill, `/timeline` at hour granularity, data over several days: 
                                                └──────────────────────┘
 ```
 
-Same, every photo on 2026-10-14: hour only, 200 px lens (FR-094-08, FR-094-09):
+Same, every photo on 2026-10-14: hour only, no lens, focal line on the rail and pill beside it (FR-094-08, FR-094-11):
 
 ```
-                    ┌──────────────┐ ┌────────────┐
-                    │ 15:00     7  │ │   11:00    │
-                    └──────────────┘ │ ━ 15:00 ━  │
-                                     │   18:00    │
-                                     └────────────┘
+                                   ┌──────────────┐ ┌──────┐
+                                   │ 15:00     7  │ │━━━━━━│
+                                   └──────────────┘ │      │
+                                                    └──────┘
 ```
 
 ## Example Catalogue
@@ -207,14 +207,14 @@ These rows hold for photo rails sorted by `taken_at`, `created_at` or title (`DA
 |----|-------------------|---------------|------------------------|------------|
 | EX-094-L01 | `/timeline`, hour, D-Y / D-M / D-D | `2026-10-14-15` | `14 Oct 2026 15:00` (FR-094-08) | 240 px |
 | EX-094-L02 | `/timeline`, hour, data across midnight (EX-094-B03) | `2026-10-14-00` | `14 Oct 2026 00:00` | 240 px |
-| EX-094-L07 | `/timeline`, hour, D-H (one day) | `2026-10-14-15` | `15:00` (FR-094-08) | 200 px |
-| EX-094-L08 | `/timeline`, hour, D-1H (one hour) | `2026-10-14-15` | `15:00` | 200 px |
+| EX-094-L07 | `/timeline`, hour, D-H (one day) | `2026-10-14-15` | `15:00` (FR-094-08), pill only | no lens (FR-094-11) |
+| EX-094-L08 | `/timeline`, hour, D-1H (one hour) | `2026-10-14-15` | `15:00`, pill only | no lens (FR-094-11) |
 | EX-094-L03 | `/timeline`, day | `2026-10-14` | server label (`timeline_photo_date_format_day`) | 200 px |
 | EX-094-L04 | `/timeline`, month | `2026-10` | server label (`timeline_photo_date_format_month`) | 200 px |
 | EX-094-L05 | `/timeline`, year | `2026` | server label (`timeline_photo_date_format_year`) | 200 px |
 | EX-094-L06 | album, year / month / day headers | `2026-10-14` | `14 Oct 2026` (`date_scrubber_label_format`, unchanged) | 200 px |
 | EX-094-L09 | album photos, hour headers, D-Y / D-M / D-D | `2026-10-14-10` | `14 Oct 2026 10:00`, count of that hour (FR-094-10) | 240 px |
-| EX-094-L10 | album photos, hour headers, D-H (one day) | `2026-10-14-15` | `15:00`, count 2 (15:05 and 15:40) (FR-094-10) | 200 px |
+| EX-094-L10 | album photos, hour headers, D-H (one day) | `2026-10-14-15` | `15:00`, count 2 (15:05 and 15:40) (FR-094-10), pill only | no lens (FR-094-11) |
 
 Examples assume `date_scrubber_label_format = d M Y`. Every example in this catalogue assumes an English gallery language and an en-US browser (FR-094-03).
 

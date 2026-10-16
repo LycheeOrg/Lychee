@@ -160,7 +160,7 @@ import { useElementSize } from "@vueuse/core";
 import { trans_choice } from "laravel-vue-i18n";
 import { ref, computed } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
-import { buildRailTicks, entryKeyOf, isWideLens, precisionOf, unitKeyOf } from "@/v8/utils/railTicks";
+import { buildRailTicks, entryKeyOf, hasLens, isWideLens, precisionOf, unitKeyOf } from "@/v8/utils/railTicks";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const { dir, isLTR, isRTL } = useLtRorRtL();
@@ -292,6 +292,8 @@ const highlightUnitKey = computed(() => {
 
 /** FR-094-09: dated hour labels need a wider lens (and the pill beside it moves out). */
 const isWideLensVisible = computed(() => isWideLens(props.buckets.bucket_ids));
+/** FR-094-11: hour-only rails keep the lens closed. */
+const isLensEnabled = computed(() => hasLens(props.buckets.bucket_ids));
 
 // --- Hover: cursor tracking, lens (fisheye magnify), pill ---
 
@@ -316,7 +318,7 @@ type LensItem = { bucketId: string; label: string; y: number; opacity: number; w
 
 const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 	const railH = railHeight.value;
-	if (!hovering.value || railH <= 0 || props.totalHeight <= 0) {
+	if (!hovering.value || !isLensEnabled.value || railH <= 0 || props.totalHeight <= 0) {
 		return { items: [], top: 0, focal: 0 };
 	}
 	const lensH = props.lensHeight;
@@ -437,7 +439,7 @@ const lens = computed<{ items: LensItem[]; top: number; focal: number }>(() => {
 	};
 });
 
-const isLensVisible = computed(() => hovering.value && lens.value.items.length > 0);
+const isLensVisible = computed(() => hovering.value && isLensEnabled.value && lens.value.items.length > 0);
 
 // --- Pointer interaction: hover, drag-scrub, click/release-to-jump ---
 
