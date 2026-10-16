@@ -231,6 +231,11 @@ export function isWideLens(bucketIds: string[]): boolean {
 	return hourlyModeOf(bucketIds) === "several_days";
 }
 
+/** FR-094-11: hour-only rails (every photo on one day) open no lens; the focal line and pill suffice. */
+export function hasLens(bucketIds: string[]): boolean {
+	return hourlyModeOf(bucketIds) !== "one_day";
+}
+
 /**
  * FR-094-08: on hour-precise buckets, lens and pill labels become the day in
  * `dayFormat` plus the hour in `hourFormat` (FR-095-04), or the hour only
