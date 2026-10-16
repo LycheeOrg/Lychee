@@ -238,9 +238,9 @@ function onClear() {
 	}
 }
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { albumId } = storeToRefs(albumStore);
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 // unused? Hard to say...

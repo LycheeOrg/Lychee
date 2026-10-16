@@ -17,7 +17,3 @@ reason = "This is a PHP backend, those vulnerabilities are only impacting Node b
 [[IgnoredVulns]]
 id ="GHSA-vfj7-8cjw-p6xm"
 reason = "This is a PHP backend, those vulnerabilities are only impacting Node backend"
-
-[[IgnoredVulns]]
-id = "GHSA-rj75-hqrm-r3gf"
-reason = "No solution yet"

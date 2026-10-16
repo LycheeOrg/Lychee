@@ -630,25 +630,23 @@ export function usePhotoSelection() {
 ### Development Server
 ```bash
 # Start development server with hot reload
-npm run dev
+vp dev
 
 # TypeScript type checking
-npm run check
+vp run typecheck
 
-# Linting and formatting
-npm run lint
-npm run format
+# Formatting and linting (Oxfmt + Oxlint)
+vp check --fix
 ```
 
 ### Build Process
 ```bash
 # Production build
-npm run build
+vp run build
 ```
 
 ### Code Quality
-- **ESLint** configuration for Vue 3 + TypeScript
-- **Prettier** for consistent code formatting
+- **Vite+** (`vp`): Oxlint for linting and Oxfmt for formatting, configured in the `lint` and `fmt` blocks of `vite.config.ts` (Feature 096)
 - **TypeScript** strict mode for type safety
 - **Vue Component Analyzer** for composition API analysis
 

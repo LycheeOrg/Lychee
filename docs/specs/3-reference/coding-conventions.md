@@ -334,8 +334,8 @@ Before committing PHP changes:
 
 Before committing frontend changes:
 
-1. **Prettier:** `npm run format` — Apply code formatting
-2. **Type-check:** `npm run check` — TypeScript type-check (`vue-tsc`) must pass
+1. **Format and lint:** `vp check --fix` — Oxfmt formatting and Oxlint fixes through Vite+ (configuration in `vite.config.ts`)
+2. **Type-check:** `vp run typecheck` — TypeScript type-check (`vue-tsc`) must pass
 
 ## Related References
 

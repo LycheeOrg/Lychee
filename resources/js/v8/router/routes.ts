@@ -60,7 +60,7 @@ const DuplicatesFinder = () => import("@/v8/views/DuplicatesFinder.vue");
  * Routes not yet migrated fall back to Placeholder;
  * each build-out task replaces its own entries here as it lands.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const componentByName: Record<string, any> = {
 	landing: Landing,
 	"admin-setup": AdminSetupPage,

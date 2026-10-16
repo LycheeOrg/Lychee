@@ -8,7 +8,7 @@ printf "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
 
-NPM_FORMAT="node_modules/prettier"
+VP="node_modules/.bin/vp"
 
 if [ -x "$PHP_CS_FIXER" ]; then
     # Exclude lang/ files - they use 4-space indentation for Weblate compatibility
@@ -29,19 +29,12 @@ else
     echo ""
 fi
 
-if [ -x "$NPM_FORMAT" ]; then
-    npm run format
-    # Stage any JS/TS/Vue files that were modified by prettier:
-    js_files=()
-    while IFS= read -r line; do
-        js_files+=("$line")
-    done < <(git status --porcelain | awk '/^[AM].*\.(js|ts|tsx|jsx|vue)$/ {print substr($0,4)}')
-    if [ "${#js_files[@]}" -gt 0 ]; then
-        git add "${js_files[@]}"
-    fi
+if [ -x "$VP" ]; then
+    # Format the staged frontend files (staged block of vite.config.ts) and re-stage them:
+    "$VP" staged
 else
     echo ""
-    printf "${YELLOW}Please install prettier, e.g.:${NO_COLOR}"
+    printf "${YELLOW}Please install the frontend dependencies, e.g.:${NO_COLOR}"
     echo ""
     echo "  npm ci"
     echo ""

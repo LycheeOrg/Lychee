@@ -1,31 +1,207 @@
 import { fileURLToPath, URL } from "node:url";
-import { ConfigEnv, defineConfig, HttpProxy, loadEnv, PluginOption, ProxyOptions, UserConfig } from "vite";
+import { type ConfigEnv, defineConfig, type HttpProxy, loadEnv, type Plugin, type PluginOption, type ProxyOptions, type UserConfig } from "vite-plus";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
 import tailwindcss from "@tailwindcss/vite";
 import ui from "@nuxt/ui/vite";
-import type { Plugin } from 'vite';
 
+/**
+ * Files `vp check`, `vp fmt` and `vp lint` skip when called without paths, so
+ * that the toolchain scope is resources/js, resources/sass, e2e and the root
+ * TypeScript configs (Feature 096, Q-096-04). Oxfmt would otherwise format
+ * every Markdown, YAML and JSON file of the repository. A new root directory
+ * holding frontend-like files must be added here.
+ */
+const TOOLCHAIN_SCOPE = [
+	// Non-frontend file types, anywhere.
+	"**/*.json",
+	"**/*.md",
+	"**/*.yml",
+	"**/*.yaml",
+	"**/*.toml",
+	"**/*.html",
+	// Generated at the root by the Nuxt UI plugin (gitignored).
+	"/auto-imports.d.ts",
+	"/components.d.ts",
+	// Every root directory other than resources and e2e.
+	"/.agents/**",
+	"/.claude/**",
+	"/.github/**",
+	"/.impeccable/**",
+	"/.security-audit/**",
+	"/.vscode/**",
+	"/app/**",
+	"/bootstrap/**",
+	"/composer-cache/**",
+	"/config/**",
+	"/database/**",
+	"/docker/**",
+	"/docs/**",
+	"/lang/**",
+	"/pgdata/**",
+	"/phpstan/**",
+	"/public/**",
+	"/routes/**",
+	"/scripts/**",
+	"/secrets/**",
+	"/storage/**",
+	"/tests/**",
+	"/vendor/**",
+	"/vite/**",
+	"/resources/fonts/**",
+	"/resources/img/**",
+	"/resources/views/**",
+];
+
+/**
+ * Oxlint, Oxfmt and lint-staged configuration, shared by every config this
+ * file returns (Feature 096, ADR-096-01). The lint rules are the mapping of
+ * the former ESLint configuration (vue essential + typescript recommended);
+ * Oxlint lints the <script> blocks of .vue files, vue-tsc covers templates.
+ */
+const toolchain = {
+	lint: {
+		plugins: ["oxc", "typescript", "unicorn", "vue"],
+		categories: {
+			correctness: "warn",
+		},
+		env: {
+			builtin: true,
+		},
+		// Vendored third-party code is not linted.
+		ignorePatterns: [...TOOLCHAIN_SCOPE, "resources/js/vendor/webauthn/**"],
+		rules: {
+			"vue/no-arrow-functions-in-watch": "error",
+			"vue/no-async-in-computed-properties": "error",
+			"vue/no-computed-properties-in-data": "error",
+			"vue/no-deprecated-data-object-declaration": "error",
+			"vue/no-deprecated-delete-set": "error",
+			"vue/no-deprecated-destroyed-lifecycle": "error",
+			"vue/no-deprecated-events-api": "error",
+			"vue/no-deprecated-model-definition": "error",
+			"vue/no-deprecated-props-default-this": "error",
+			"vue/no-deprecated-vue-config-keycodes": "error",
+			"vue/no-dupe-keys": "error",
+			"vue/no-export-in-script-setup": "error",
+			"vue/no-expose-after-await": "error",
+			"vue/no-lifecycle-after-await": "error",
+			"vue/no-reserved-component-names": "error",
+			"vue/no-reserved-keys": "error",
+			"vue/no-reserved-props": "error",
+			"vue/no-shared-component-data": "error",
+			"vue/no-side-effects-in-computed-properties": "error",
+			"vue/no-watch-after-await": "error",
+			"vue/prefer-import-from-vue": "error",
+			"vue/require-prop-type-constructor": "error",
+			"vue/require-render-return": "error",
+			"vue/require-slots-as-functions": "error",
+			"vue/return-in-computed-property": "error",
+			"vue/return-in-emits-validator": "error",
+			"vue/valid-define-emits": "error",
+			"vue/valid-define-options": "error",
+			"vue/valid-define-props": "error",
+			"vue/valid-next-tick": "error",
+			"no-array-constructor": "error",
+			"no-unused-expressions": "error",
+			"no-unused-vars": [
+				"error",
+				{
+					args: "all",
+					argsIgnorePattern: "^_",
+					caughtErrors: "all",
+					caughtErrorsIgnorePattern: "^_",
+					destructuredArrayIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+					ignoreRestSiblings: true,
+				},
+			],
+			"typescript/ban-ts-comment": "error",
+			"typescript/no-duplicate-enum-values": "error",
+			"typescript/no-empty-object-type": "error",
+			"typescript/no-explicit-any": "error",
+			"typescript/no-extra-non-null-assertion": "error",
+			"typescript/no-misused-new": "error",
+			"typescript/no-namespace": "error",
+			"typescript/no-non-null-asserted-optional-chain": "error",
+			"typescript/no-require-imports": "error",
+			"typescript/no-this-alias": "error",
+			"typescript/no-unnecessary-type-constraint": "error",
+			"typescript/no-unsafe-declaration-merging": "error",
+			"typescript/no-unsafe-function-type": "error",
+			"typescript/no-wrapper-object-types": "error",
+			"typescript/prefer-as-const": "error",
+			"typescript/prefer-namespace-keyword": "error",
+			"typescript/triple-slash-reference": "error",
+			"vite-plus/prefer-vite-plus-imports": "error",
+		},
+		overrides: [
+			{
+				// Core rules the TypeScript compiler already enforces.
+				files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.vue"],
+				rules: {
+					"constructor-super": "off",
+					"getter-return": "off",
+					"no-class-assign": "off",
+					"no-const-assign": "off",
+					"no-dupe-class-members": "off",
+					"no-dupe-keys": "off",
+					"no-func-assign": "off",
+					"no-import-assign": "off",
+					"no-new-native-nonconstructor": "off",
+					"no-obj-calls": "off",
+					"no-redeclare": "off",
+					"no-setter-return": "off",
+					"no-this-before-super": "off",
+					"no-undef": "off",
+					"no-unreachable": "off",
+					"no-unsafe-negation": "off",
+					"no-var": "error",
+					"no-with": "off",
+					"prefer-const": "error",
+					"prefer-rest-params": "error",
+					"prefer-spread": "error",
+				},
+			},
+		],
+		options: {
+			// vue-tsc is the type-checker (`vp run typecheck`); tsgolint does not type-check .vue files.
+			typeAware: false,
+			typeCheck: false,
+		},
+		jsPlugins: [
+			{
+				name: "vite-plus",
+				specifier: "vite-plus/oxlint-plugin",
+			},
+		],
+	},
+	fmt: {
+		// Same output as the former Prettier setup (.prettierrc.json + .editorconfig tabs);
+		// insertFinalNewline overrides the .editorconfig `insert_final_newline = false`.
+		printWidth: 150,
+		semi: true,
+		useTabs: true,
+		tabWidth: 4,
+		insertFinalNewline: true,
+		sortPackageJson: false,
+		ignorePatterns: TOOLCHAIN_SCOPE,
+	},
+	staged: {
+		"*.{ts,vue,css}": "vp fmt",
+	},
+};
 
 function leafletGlobalPlugin(): Plugin {
-  const LEAFLET_PLUGINS = [
-    'leaflet-gpx',
-    'leaflet-rotatedmarker',
-	'leaflet.markercluster',
-  ];
-  return {
-    name: 'vite-plugin-leaflet-global',
-    transform(code, id) {
-      if (
-        LEAFLET_PLUGINS.some((p) => id.includes(p)) &&
-        !id.endsWith('.css') &&
-        !id.includes('?vue&type=style')
-      ) {
-        return { code: `import L from 'leaflet';\n${code}`, map: null };
-      }
-    },
-  };
+	const LEAFLET_PLUGINS = ["leaflet-gpx", "leaflet-rotatedmarker", "leaflet.markercluster"];
+	return {
+		name: "vite-plugin-leaflet-global",
+		transform(code, id) {
+			if (LEAFLET_PLUGINS.some((p) => id.includes(p)) && !id.endsWith(".css") && !id.includes("?vue&type=style")) {
+				return { code: `import L from 'leaflet';\n${code}`, map: null };
+			}
+		},
+	};
 }
 
 const laravelPlugin = laravel({
@@ -34,52 +210,53 @@ const laravelPlugin = laravel({
 });
 
 const localDevelopMiddleware: PluginOption = {
-  name: "develop-rewrite-middleware",
-  configureServer(server) {
-    const viteIndexPath = "/vite/index.html";
+	name: "develop-rewrite-middleware",
+	configureServer(server) {
+		const viteIndexPath = "/vite/index.html";
 
-    server.middlewares.use((req, res, next) => {
-      if (!req.url) {
-        next();
-        return;
-      }
+		server.middlewares.use((req, _res, next) => {
+			if (!req.url) {
+				next();
+				return;
+			}
 
-      const requestUrl : string = req.url;
-      const doNotTouch = ["/@", "/api", "/resources", "/node_modules"];
-      if (doNotTouch.some((page) => requestUrl.startsWith(page))) {
-        next();
-        return;
-      }
+			const requestUrl: string = req.url;
+			const doNotTouch = ["/@", "/api", "/resources", "/node_modules"];
+			if (doNotTouch.some((page) => requestUrl.startsWith(page))) {
+				next();
+				return;
+			}
 
-	const startsWithPages = ["/gallery", "/frame", "/map", "/search"];
-      // Check if req.url starts with pages
-      if (startsWithPages.some((page) => requestUrl.startsWith(page))) {
-        req.url = viteIndexPath;
-      }
+			const startsWithPages = ["/gallery", "/frame", "/map", "/search"];
+			// Check if req.url starts with pages
+			if (startsWithPages.some((page) => requestUrl.startsWith(page))) {
+				req.url = viteIndexPath;
+			}
 
-      const pages = [
-        "/",
-        "/diagnostics",
-        "/permissions",
-        "/jobs",
-        "/maintenance",
-        "/profile",
-        "/settings",
-        "/sharing",
-        "/statistics",
-        "/users",
-      ];
-      // Check if requestUrl is in pages
-      if (pages.includes(requestUrl)) {
-        req.url = viteIndexPath;
-      }
+			const pages = [
+				"/",
+				"/diagnostics",
+				"/permissions",
+				"/jobs",
+				"/maintenance",
+				"/profile",
+				"/settings",
+				"/sharing",
+				"/statistics",
+				"/users",
+			];
+			// Check if requestUrl is in pages
+			if (pages.includes(requestUrl)) {
+				req.url = viteIndexPath;
+			}
 
-      next();
-    });
-  },
-}
+			next();
+		});
+	},
+};
 
 const baseConfig = {
+	...toolchain,
 	base: "./",
 	plugins: [
 		leafletGlobalPlugin(),
@@ -120,7 +297,6 @@ const baseConfig = {
 	},
 	resolve: {
 		alias: {
-			// @ts-ignore-next-line
 			"@": fileURLToPath(new URL("./resources/js/", import.meta.url)),
 			vue: "vue/dist/vue.runtime.esm-bundler.js",
 		},
@@ -130,7 +306,7 @@ const baseConfig = {
 		// DesignTokens/MenuItem types, some via inline `import { type X } from ...`)
 		// only expose a `types` export condition, no runtime `import` condition. With
 		// two Vite entries (app.ts + app-v8.ts) sharing one dependency scan, the
-		// optimizer now eagerly resolves those paths and fails. `npm run build` is
+		// optimizer now eagerly resolves those paths and fails. `vp build` is
 		// unaffected (native ESM resolution handles them fine at request time) -
 		// this only skips the dev-server pre-bundling scan for them.
 		exclude: ["@primeuix/themes", "primevue"],
@@ -166,18 +342,17 @@ const baseConfig = {
 
 function getCorsSettings(env: Record<string, string>) {
 	return {
-		"origin": env.APP_URL ?? 'http://localhost',
-		"methods": "GET",
-		"preflightContinue": false,
-		"optionsSuccessStatus": 204
+		origin: env.APP_URL ?? "http://localhost",
+		methods: "GET",
+		preflightContinue: false,
+		optionsSuccessStatus: 204,
 	};
 }
 
-/** @type {import('vite').UserConfig} */
-export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEnv) : UserConfig => {
+export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
 	const config = { ...baseConfig };
 
-	if (mode === 'development') {
+	if (mode === "development") {
 		console.log("DEVELOPMENT MODE detected");
 		config.build.sourcemap = true;
 		config.build.minify = false; // Ensure no minification in development
@@ -210,23 +385,23 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview } : ConfigEn
 			}
 			config.server.open = "vite/index.html";
 			config.server.proxy = {
-				"/api/":  {
+				"/api/": {
 					target: env.VITE_HTTP_PROXY_TARGET,
 					changeOrigin: true,
 					secure: true,
 					ws: true,
 					configure: (proxy: HttpProxy.Server, _options: ProxyOptions) => {
-					  proxy.on('error', (err, _req, _res) => {
-						console.log('proxy error', err);
-					  });
-					  proxy.on('proxyReq', (proxyReq, req, _res) => {
-						console.log(req.method?.padEnd(4), '=> ', proxyReq.host + req.url);
-					  });
-					  proxy.on('proxyRes', (proxyRes, req, _res) => {
-						console.log(proxyRes.statusCode?.toString().padEnd(4), '<=', req.url);
-					  });
+						proxy.on("error", (err, _req, _res) => {
+							console.log("proxy error", err);
+						});
+						proxy.on("proxyReq", (proxyReq, req, _res) => {
+							console.log(req.method?.padEnd(4), "=> ", proxyReq.host + req.url);
+						});
+						proxy.on("proxyRes", (proxyRes, req, _res) => {
+							console.log(proxyRes.statusCode?.toString().padEnd(4), "<=", req.url);
+						});
 					},
-				}
+				},
 			};
 			config.plugins.push(localDevelopMiddleware);
 			return config;

@@ -5,9 +5,9 @@ import { trans } from "laravel-vue-i18n";
 import WebshopService from "@/services/webshop-service";
 import { AxiosError, AxiosResponse } from "axios";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const mollie = ref<any | undefined>(undefined);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const mollieComponent = ref<any | undefined>(undefined);
 
 // Check in the DOM if body has dark mode class
