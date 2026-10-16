@@ -145,6 +145,7 @@ Divergences from the draft, folded into the spec: `vite-plus` sits under `depend
 - Removal of `@vue/test-utils`, `jsdom`, `@types/jsdom`, the `rollup` override (no package depends on `rollup` any more) — dependency changes need approval (N-096-01, N-096-07).
 - Oxlint Vue template parsing: re-enable the 55 rules when available (Q-096-01).
 - `vp run` task caching for `build` (`vp run --cache build`) once CI uses the Vite Task cache.
+- `overrides["@tailwindcss/typography"]["postcss-selector-parser"] = ^7.1.6` (owner directive 2026-10-17): the plugin pins 6.0.10, affected by GHSA-rj75-hqrm-r3gf; the override installs 7.1.6 for it, the built CSS is byte-identical, `npm audit` is clean and the osv-scanner ignore for that advisory is gone. Remove the override once `@tailwindcss/typography` ships tailwindlabs/tailwindcss-typography#429 (open on 2026-10-17; 0.5.20 still pins 6.0.10).
 
 ## Intent Log
 

@@ -87,6 +87,9 @@
 	],
 	"overrides": {
 		"rollup": "npm:@rollup/wasm-node",
-		"vite": "npm:@voidzero-dev/vite-plus-core@1.3.0"
+		"vite": "npm:@voidzero-dev/vite-plus-core@1.3.0",
+		"@tailwindcss/typography": {
+			"postcss-selector-parser": "^7.1.6"
+		}
 	}
 }
