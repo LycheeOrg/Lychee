@@ -1,16 +1,23 @@
 <template>
-	<div class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 group" :class="props.is_next ? 'ltr:right-0 rtl:left-0' : 'ltr:left-0 rtl:right-0'">
+	<div
+		ref="zone"
+		class="absolute w-1/6 h-1/2 top-1/2 -translate-y-1/2 pointer-events-none"
+		:class="props.is_next ? 'ltr:right-0 rtl:left-0' : 'ltr:left-0 rtl:right-0'"
+	>
 		<router-link
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
 			:to="photoRoute(props.photoId)"
 			:class="{
-				'absolute top-1/2 border border-solid border-muted': true,
-				'-mt-5 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
+				'absolute top-1/2 border border-solid border-muted pointer-events-auto': true,
+				'-mt-5 transition-all bg-cover': true,
+				'opacity-0': !isHovered,
 				'py-10.75 px-11': photo_previous_next_size === 'large',
 				'py-2 px-3': photo_previous_next_size === 'small',
 				'hover:border-primary-400 fill-neutral-400 hover:fill-primary-400': true,
-				'-right-px group-hover:translate-x-0 translate-x-full': (props.is_next && isLTR()) || (!props.is_next && !isLTR()),
-				'-left-px group-hover:translate-x-0 -translate-x-full': (!props.is_next && isLTR()) || (props.is_next && !isLTR()),
+				'-right-px': (props.is_next && isLTR()) || (!props.is_next && !isLTR()),
+				'-left-px': (!props.is_next && isLTR()) || (props.is_next && !isLTR()),
+				'translate-x-full': !isHovered && ((props.is_next && isLTR()) || (!props.is_next && !isLTR())),
+				'-translate-x-full': !isHovered && ((!props.is_next && isLTR()) || (props.is_next && !isLTR())),
 			}"
 			:style="props.style"
 		>
@@ -26,6 +33,8 @@ import { useRouter } from "vue-router";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { ref } from "vue";
+import { usePointerZone } from "@/v8/composables/photo/usePointerZone";
 
 const { isLTR } = useLtRorRtL();
 const lycheeStateStore = useLycheeStateStore();
@@ -39,4 +48,8 @@ const props = defineProps<{
 
 const router = useRouter();
 const { photoRoute } = usePhotoRoute(router);
+
+// The reveal zone ignores pointer events so clicks reach the face overlay below; only the arrow is interactive.
+const zone = ref<HTMLElement | null>(null);
+const { isInside: isHovered } = usePointerZone(zone);
 </script>

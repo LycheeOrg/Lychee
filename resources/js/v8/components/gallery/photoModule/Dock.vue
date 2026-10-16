@@ -1,10 +1,13 @@
 <template>
 	<div
 		v-if="photoStore.photo"
+		ref="dockZone"
 		:class="{
-			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2': true,
-			'lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': !isTouchDevice(),
-			'opacity-50 lg:opacity-20': !isTouchDevice() && !isFullTransparency,
+			'absolute top-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 pointer-events-none': true,
+			'transition-opacity duration-500 ease-in-out': !isTouchDevice(),
+			'lg:opacity-100': !isTouchDevice() && isHovered,
+			'opacity-50': !isTouchDevice() && !isFullTransparency,
+			'lg:opacity-20': !isTouchDevice() && !isFullTransparency && !isHovered,
 			'opacity-75': isTouchDevice() && !isFullTransparency,
 			'opacity-0': isFullTransparency,
 			'z-20 mt-14 sm:mt-0': true,
@@ -55,7 +58,8 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { usePointerZone } from "@/v8/composables/photo/usePointerZone";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import { useGlobalRights } from "@/composables/useGlobalRights";
@@ -76,6 +80,10 @@ const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 const props = defineProps<{
 	isNarrowMenu: boolean;
 }>();
+
+// The dock zone ignores pointer events so clicks reach the face overlay below; only the buttons are interactive.
+const dockZone = ref<HTMLElement | null>(null);
+const { isInside: isHovered } = usePointerZone(dockZone);
 
 const isWatermarkerEnabled = computed(
 	() =>

@@ -1,21 +1,23 @@
 <template>
 	<div
 		v-if="isRatingEnabled && !are_details_open && !photoStore.is_zoomed"
+		ref="ratingZone"
 		:class="{
-			'group absolute bottom-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 z-20 sm:h-1/8 h-14': true,
-			'opacity-50 lg:opacity-20': isHoverMode && !isTouchDevice() && !isFullTransparency,
-			'hover:opacity-100 transition-opacity duration-500 ease-in-out': isHoverMode && !isTouchDevice(),
+			'absolute bottom-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 z-20 sm:h-1/8 h-14 pointer-events-none': true,
+			'opacity-100': isHoverMode && isRevealed,
+			'opacity-50 lg:opacity-20': isHoverMode && !isTouchDevice() && !isFullTransparency && !isRevealed,
+			'transition-opacity duration-500 ease-in-out': isHoverMode && !isTouchDevice(),
 			'opacity-75': isHoverMode && isTouchDevice() && !isFullTransparency,
-			'opacity-0': isHoverMode && isFullTransparency,
+			'opacity-0': isHoverMode && isFullTransparency && !isRevealed,
 			hidden: is_slideshow_active,
 		}"
 	>
-		<div v-if="displayedRating > 0" class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow group-hover:opacity-0">
+		<div v-if="displayedRating > 0" class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow" :class="{ 'opacity-0': isHovered }">
 			<StarRow :rating="displayedRating" size="large" />
 		</div>
 		<div
 			v-if="userStore.isLoggedIn && photoStore?.photo && photoStore?.photo.rating"
-			class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow"
+			class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow pointer-events-auto"
 		>
 			<!-- Star rating buttons (1-5) -->
 			<Rating :loading="loading" :selectedRating="photoStore.photo.rating.rating_user" :handleRatingClick="rate" :amber="true" />
@@ -24,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { usePointerZone } from "@/v8/composables/photo/usePointerZone";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
@@ -45,6 +48,11 @@ const toast = useAppToast();
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const { loading, handleRatingClick } = useRating(photoStore, toast, userStore);
+
+// The overlay zone ignores pointer events so clicks reach the face overlay below; only the stars are interactive.
+const ratingZone = ref<HTMLElement | null>(null);
+const { isInside: isHovered } = usePointerZone(ratingZone);
+const isRevealed = computed(() => isHovered.value && !isTouchDevice());
 
 function rate(rating: 1 | 2 | 3 | 4 | 5 | 0) {
 	if (photoStore?.photo) {
