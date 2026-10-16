@@ -8,15 +8,15 @@
 		@pointerleave="onPointerLeave"
 		dir="ltr"
 	>
-		<!-- Resting-state ticks: year labels + month dots, positioned by real pixel fraction (T-067). -->
+		<!-- Resting-state ticks: labels in the unit the data spans + dots, positioned by real pixel fraction (T-067, Feature 094). -->
 		<div
 			v-for="t in ticks"
-			:key="t.bucketId"
+			:key="t.key"
 			class="absolute ltr:right-3 rtl:left-3 -translate-y-1/2 pointer-events-none whitespace-nowrap"
 			:style="{ top: `${t.topPx}px` }"
 		>
-			<span v-if="t.kind === 'year'" class="text-xs font-bold" :class="t.year === highlightBucketId?.year ? 'text-primary' : 'text-muted'">
-				{{ t.year }}
+			<span v-if="t.kind === 'label'" class="text-xs font-bold" :class="t.unitKey === highlightUnitKey ? 'text-primary' : 'text-muted'">
+				{{ t.label }}
 			</span>
 			<span v-else class="block w-1 h-1 rounded-full bg-toned" />
 		</div>
@@ -39,8 +39,8 @@
 		>
 			<div
 				v-if="isLensVisible"
-				class="absolute w-50 pointer-events-none z-20"
-				:class="isLTR() ? 'right-0 origin-right' : 'left-0 origin-left'"
+				class="absolute pointer-events-none z-20"
+				:class="[isLTR() ? 'right-0 origin-right' : 'left-0 origin-left', isWideLensVisible ? 'w-60' : 'w-50']"
 				:style="{ top: `${lens.top}px`, height: `${props.lensHeight}px` }"
 			>
 				<div
@@ -108,9 +108,11 @@
 				v-if="hovering && hoverBucket !== null"
 				class="absolute -translate-y-1/2 rounded-lg border border-default bg-default px-3 py-1.5 text-xs font-semibold text-highlighted whitespace-nowrap shadow-lg pointer-events-none z-20 transition-[left,right] duration-200 ease-out motion-reduce:transition-none"
 				:class="{
-					'right-53': isLTR() && isLensVisible,
+					'right-53': isLTR() && isLensVisible && !isWideLensVisible,
+					'right-63': isLTR() && isLensVisible && isWideLensVisible,
 					'right-18': isLTR() && !isLensVisible,
-					'left-53': isRTL() && isLensVisible,
+					'left-53': isRTL() && isLensVisible && !isWideLensVisible,
+					'left-63': isRTL() && isLensVisible && isWideLensVisible,
 					'left-18': isRTL() && !isLensVisible,
 				}"
 				:style="{ top: `${cursorY}px` }"
@@ -136,7 +138,8 @@
  * fixed` (overlapping the photo grid) list of every date into a narrow,
  * non-overlapping rail — a real flex sibling of the grid (`Timeline.vue`
  * wraps both in a `<div class="flex">`, same pattern `AlbumNavPanel.vue`
- * uses) — showing only year labels + month ticks at rest. Hovering shows a
+ * uses) — showing only labels and dots at rest (Feature 094: in the unit
+ * the data spans, `railTicks.ts`). Hovering shows a
  * fisheye "lens" magnifying nearby dates plus a readout pill; dragging
  * scrubs the grid continuously by pixel offset (not bucket-snapped).
  *
@@ -151,6 +154,7 @@ import { useElementSize } from "@vueuse/core";
 import { trans_choice } from "laravel-vue-i18n";
 import { ref, computed } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { buildRailTicks, entryKeyOf, isWideLens, precisionOf, unitKeyOf } from "@/v8/utils/railTicks";
 
 const { dir, isLTR, isRTL } = useLtRorRtL();
 
@@ -221,60 +225,32 @@ function bucketAt(contentPx: number): { bucketId: string; top: number; height: n
 	return list[lo];
 }
 
-// --- Resting-state ticks (year labels + month dots, or one dot per album bucket separator) ---
+// --- Resting-state ticks (Feature 094: labels in the unit the data spans; dots one unit finer, or one per album bucket separator) ---
 
-type Tick = { bucketId: string; kind: "year" | "month"; year: string; topPx: number };
+type Tick = { key: string; kind: "label" | "dot"; unitKey: string; label: string; topPx: number };
 
 function clampTickPx(contentTop: number): number {
 	return Math.min(railHeight.value - 10, Math.max(10, topPxFor(contentTop)));
 }
 
-const ticks = computed<Tick[]>(() => {
-	const seenYears = new Set<string>();
-	const seenMonths = new Set<string>();
-	const out: Tick[] = [];
-	for (const bucketId of props.buckets.bucket_ids) {
-		if (bucketId === "unknown") {
-			continue;
-		}
-		const layoutEntry = bucketLayoutById.value.get(bucketId);
-		if (layoutEntry === undefined) {
-			continue;
-		}
-		const segments = bucketId.split("-");
-		const year = segments[0];
-		const month = segments.length > 1 ? segments[1] : null;
-		const topPx = clampTickPx(layoutEntry.top);
+// Colliding ticks are dropped rather than nudged (`buildRailTicks()`): pushing
+// them cascaded down the rail and off-screen, while dropping keeps every
+// rendered tick exactly proportional to the real timeline.
+const railTicks = computed(() =>
+	buildRailTicks({
+		entries: props.buckets.bucket_ids.flatMap((bucketId) => {
+			const layoutEntry = bucketLayoutById.value.get(bucketId);
+			return layoutEntry === undefined ? [] : [{ bucketId, top: layoutEntry.top }];
+		}),
+		separatorTops: props.separatorTops,
+		toRailPx: clampTickPx,
+	}),
+);
 
-		if (!seenYears.has(year)) {
-			seenYears.add(year);
-			out.push({ bucketId, kind: "year", year, topPx });
-		} else if (month !== null && props.separatorTops === undefined) {
-			const key = `${year}-${month}`;
-			if (!seenMonths.has(key)) {
-				seenMonths.add(key);
-				out.push({ bucketId, kind: "month", year, topPx });
-			}
-		}
-	}
-	// Album rail (FR-071-12): one dot per grid bucket separator, drawn like a month dot.
-	props.separatorTops?.forEach((top, i) => out.push({ bucketId: `separator-${i}`, kind: "month", year: "", topPx: clampTickPx(top) }));
-
-	// Collision avoidance: a bucket's raw pixel position can land a month tick
-	// right on top of a year label (e.g. a year with very few photos, or many
-	// buckets compressed into a short span of `totalHeight`), making the label
-	// unreadable. Earlier attempt pushed the colliding tick further down — but
-	// with dozens of month ticks per year that push cascaded (each nudge adds
-	// to the next), eventually dragging every subsequent year's whole block
-	// past `railHeight` and off-screen entirely. Dropping the offending month
-	// tick instead — rather than repositioning anything — keeps every rendered
-	// tick's position exactly proportional to the real timeline (matters for a
-	// scrubber, unlike the lens's own magnified view, which already drops
-	// crowded rim items the same way for the same reason).
-	const YEAR_EXCLUSION_PX = 16;
-	const yearTops = out.filter((t) => t.kind === "year").map((t) => t.topPx);
-	return out.filter((t) => t.kind === "year" || yearTops.every((y) => Math.abs(t.topPx - y) >= YEAR_EXCLUSION_PX));
-});
+const ticks = computed<Tick[]>(() => [
+	...railTicks.value.labels.map((l) => ({ key: `label-${l.unitKey}`, kind: "label" as const, unitKey: l.unitKey, label: l.label, topPx: l.topPx })),
+	...railTicks.value.dots.map((d, i) => ({ key: `dot-${i}`, kind: "dot" as const, unitKey: "", label: "", topPx: d.topPx })),
+]);
 
 // --- Playhead + active-year highlight ---
 
@@ -289,14 +265,19 @@ const scrollBucket = computed(() => {
 	return fallbackId !== null && fallbackId !== undefined ? (bucketLayoutById.value.get(fallbackId) ?? null) : null;
 });
 
-/** Whichever bucket should currently be highlighted — the hovered one while hovering (mirrors the mockup's `onMove()` taking over from `syncHead()`), otherwise the one under the playhead. */
-const highlightBucketId = computed(() => {
+/** The label unit to highlight — the one of the hovered bucket while hovering (mirrors the mockup's `onMove()` taking over from `syncHead()`), otherwise of the one under the playhead (FR-094-05). */
+const highlightUnitKey = computed(() => {
 	const bucket = hovering.value ? hoverBucketLayout.value : scrollBucket.value;
-	if (bucket === null) {
+	const unit = railTicks.value.unit;
+	const key = bucket === null ? null : entryKeyOf(bucket.bucketId);
+	if (key === null || unit === null || precisionOf(key) < unit) {
 		return null;
 	}
-	return { bucketId: bucket.bucketId, year: bucket.bucketId.split("-")[0] };
+	return unitKeyOf(key, unit);
 });
+
+/** FR-094-09: dated hour labels need a wider lens (and the pill beside it moves out). */
+const isWideLensVisible = computed(() => isWideLens(props.buckets.bucket_ids));
 
 // --- Hover: cursor tracking, lens (fisheye magnify), pill ---
 

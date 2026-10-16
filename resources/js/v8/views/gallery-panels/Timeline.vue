@@ -102,7 +102,7 @@
 				</div>
 				<TimelineDates :dates="timelineStore.dates" v-if="!isTimelineSoaActive && !photoStore.isLoaded" @load="goToDate" />
 				<TimelineDatesV3
-					:buckets="timelineStore.bucketsV3"
+					:buckets="railBuckets"
 					:active-bucket-id="activeBucketId"
 					:bucket-layout="timelineLayout.buckets"
 					:total-height="timelineLayout.totalHeight"
@@ -110,7 +110,7 @@
 					:lens-height="lycheeStore.timeline_lens_height"
 					:lens-falloff="lycheeStore.timeline_lens_falloff / 10"
 					:lens-magnification="lycheeStore.timeline_lens_magnification / 10"
-					v-if="isTimelineSoaActive && !photoStore.isLoaded && timelineStore.bucketsV3 !== undefined"
+					v-if="isTimelineSoaActive && !photoStore.isLoaded && railBuckets !== undefined"
 					@load="goToBucket"
 					@scrub="(px) => photoGridRef?.scrollToPixelOffset(px)"
 				/>
@@ -230,6 +230,7 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import TimelineDates from "@/v8/components/gallery/timelineModule/TimelineDates.vue";
 import TimelineDatesV3 from "@/v8/components/gallery/timelineModule/TimelineDatesV3.vue";
+import { hourlyLensLabels } from "@/v8/utils/railTicks";
 import PhotoGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoGridVirtual.vue";
 import PhotoTagDialog from "@/v8/components/forms/photo/PhotoTagDialog.vue";
 import PhotoLicenseDialog from "@/v8/components/forms/photo/PhotoLicenseDialog.vue";
@@ -325,6 +326,11 @@ const isInitialLoading = ref(true);
  * reads) rather than re-deriving the flag here.
  */
 const isTimelineSoaActive = computed(() => timelineStore.isTimelineSoaActive);
+
+/** Feature 094 (FR-094-08): the rail's lens and pill tell the hour on hour buckets; section headers keep the server labels. */
+const railBuckets = computed(() =>
+	timelineStore.bucketsV3 === undefined ? undefined : hourlyLensLabels(timelineStore.bucketsV3, lycheeStore.date_scrubber_label_format),
+);
 
 /** Bucket currently scrolled into view in `PhotoGridVirtual.vue` (its own `activeHeaderEntry`), forwarded to `TimelineDatesV3.vue` so the sidebar's highlighted entry tracks scrolling, not just `route.params.date` (which only changes on an explicit navigation/deep-link). */
 const activeBucketId = ref<string | null>(null);
