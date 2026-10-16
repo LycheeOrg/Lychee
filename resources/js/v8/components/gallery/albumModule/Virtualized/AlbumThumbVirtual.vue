@@ -51,7 +51,7 @@
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
 				:alt="$t('gallery.thumbnail')"
 				:src="noCoverIconSrc"
-				:class="[chromeClass, cornerClass]"
+				:class="[chromeClass, cornerClass, cssClass]"
 				draggable="false"
 			/>
 			<!-- </span> -->

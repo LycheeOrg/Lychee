@@ -7,7 +7,7 @@ import { AlbumsStore } from "@/stores/AlbumsState";
 import { PhotosStore } from "@/stores/PhotosState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useAlbumStore } from "@/stores/AlbumState";
-import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/album/albumTileWidth";
+import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
@@ -48,6 +48,11 @@ export function useDragAndSelect(
 	const lycheeStore = useLycheeStateStore();
 	const albumStore = useAlbumStore();
 	const layoutStore = useLayoutStore();
+	// The very geometry the grids render with: AlbumThumbGridVirtual.vue (sub-albums, beside
+	// the date scrubber) and AlbumRootGridVirtual.vue (root gallery). Measuring the grid root
+	// instead drifts from it whenever the analytic container width differs from the real one.
+	const subAlbumTileGeometry = useAlbumTileWidth(true);
+	const rootAlbumTileGeometry = useAlbumTileWidth(false);
 
 	const cache = {
 		max_height: 0,
@@ -314,7 +319,7 @@ export function useDragAndSelect(
 	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue (sub-album children)
 	 * or AlbumRootGridVirtual.vue/AlbumRootListViewVirtual.vue (root gallery
 	 * own/shared, 2026-09-02 root-SoA addendum) lay their tiles out with —
-	 * same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure functions,
+	 * same `useAlbumTileWidth()` geometry and `buildVirtualAlbumRows` pure function,
 	 * same inputs — and anchors it via `getBounding()` on each mounted grid
 	 * root (`[data-album-grid-root]`, always in the DOM even when its tiles
 	 * aren't), so the result lands in the exact same coordinate system
@@ -352,8 +357,6 @@ export function useDragAndSelect(
 				isAlbumTimelineEnabled;
 
 			const isListMode = lycheeStore.album_view_mode === "list";
-			const viewportWidth = window.innerWidth;
-			const containerWidth = gridRootEl.getBoundingClientRect().width;
 
 			let itemsPerRow: number;
 			let tileWidth: number;
@@ -365,11 +368,10 @@ export function useDragAndSelect(
 				gap = 0;
 				aspectRatioNumber = 1;
 			} else {
-				const breakpoint = resolveBreakpoint(viewportWidth);
-				const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
-				itemsPerRow = geometry.itemsPerRow;
-				tileWidth = geometry.tileWidth;
-				gap = geometry.gap;
+				const geometry = scope === null ? subAlbumTileGeometry : rootAlbumTileGeometry;
+				itemsPerRow = geometry.itemsPerRow.value;
+				tileWidth = geometry.tileWidth.value;
+				gap = geometry.gap.value;
 				aspectRatioNumber = aspectRatioCssToNumber(
 					scope === null ? albumStore.config?.album_thumb_css_aspect_ratio : albumsStore.rootConfig?.album_thumb_css_aspect_ratio,
 				);

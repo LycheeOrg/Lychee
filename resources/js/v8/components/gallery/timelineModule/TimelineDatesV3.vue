@@ -2,6 +2,7 @@
 	<div
 		ref="railRef"
 		class="sticky top-(--ui-header-height) z-20 h-[calc(100svh-var(--ui-header-height))] shrink-0 w-16 select-none touch-none ltr:border-s rtl:border-e border-default"
+		data-stop-drag-select="true"
 		@pointerdown="onPointerDown"
 		@pointermove="onPointerMove"
 		@pointerup="onPointerUp"

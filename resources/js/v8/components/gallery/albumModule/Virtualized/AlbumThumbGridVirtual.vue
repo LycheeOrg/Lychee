@@ -120,7 +120,7 @@ const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const containerRef = ref<HTMLElement>();
-const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth();
+const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth(true);
 
 // Document-relative top of this component's own root element — reactive to
 // both scroll (viewportTop and window.scrollY move in lockstep, so their
