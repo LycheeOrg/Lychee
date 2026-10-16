@@ -1,6 +1,6 @@
 # Quality Gate – Usage & Troubleshooting
 
-_Last updated: September 27, 2026_
+_Last updated: October 16, 2026_
 
 The quality gate for Lychee enforces code style, static analysis, and test coverage standards across both backend (PHP/Laravel) and frontend (Vue3/TypeScript) code. Run the appropriate checks locally before committing changes, and rely on the CI workflow ([.github/workflows/CICD.yml](../../../.github/workflows/CICD.yml)) for enforcement on every push and pull request.
 
@@ -12,8 +12,8 @@ This guide is aligned with the coding conventions defined in [docs/specs/3-refer
 
 ```bash
 vendor/bin/php-cs-fixer fix    # Apply PHP code style fixes
-npm run format                 # Apply frontend code formatting
-npm run check                  # TypeScript type-check (vue-tsc)
+vp check --fix                 # Format (Oxfmt) and lint (Oxlint) the frontend sources
+vp run typecheck               # TypeScript type-check (vue-tsc)
 php artisan test --filter=<ClassName>   # Tests touched by/related to the change
 make phpstan                   # Run static analysis
 ```
@@ -29,8 +29,8 @@ make phpstan                   # Run static analysis (level from phpstan.neon)
 ### Frontend-Only Changes
 
 ```bash
-npm run format                 # Apply frontend code formatting (Prettier)
-npm run check                  # TypeScript type-check (vue-tsc)
+vp check --fix                 # Format (Oxfmt) and lint (Oxlint) the frontend sources
+vp run typecheck               # TypeScript type-check (vue-tsc)
 ```
 
 ## Commands in Detail
@@ -97,19 +97,23 @@ vendor/bin/phpstan analyse --debug              # For detailed error messages
 
 ### Frontend Quality Checks
 
-#### 1. Code Formatting: `npm run format`
+#### 1. Format and lint: `vp check --fix`
 
-Applies Prettier formatting to Vue, TypeScript, JavaScript, and CSS files.
+Runs Oxfmt (formatting) and Oxlint (lint with safe fixes) through Vite+ on the toolchain scope: `resources/js/`, `resources/sass/`, `e2e/`, `vite.config.ts`, `vite.embed.config.ts`, `playwright.config.ts`. `vp check` without `--fix` only reports (this is what CI runs); `vp fmt` and `vp lint` run one of the two. The global CLI comes from https://viteplus.dev/guide/; without it, `npx vp …` runs the project-local binary.
 
 **When to run:**
 - Before every commit that touches frontend files
 - After making Vue/TypeScript/CSS changes
 
-**Configuration:** `.prettierrc` and `eslint.config.ts`
+**Configuration:** the `fmt`, `lint` and `staged` blocks of `vite.config.ts` (Feature 096, ADR-096-01). Oxlint lints the `<script>` blocks of Vue files; templates are covered by `vue-tsc` and the Vue compiler.
 
-#### 2. Type-check: `npm run check`
+#### 2. Type-check: `vp run typecheck`
 
-Runs `vue-tsc --noEmit` to check TypeScript type correctness across the frontend. ESLint is a separate script (`npm run lint`).
+Runs `scripts/generate-js-types.sh` (regenerates `auto-imports.d.ts` and `components.d.ts`) and then `vue-tsc --noEmit` across the frontend.
+
+#### 3. Toolchain upgrades: `vp migrate`
+
+`vp migrate` bumps `vite-plus` and the `vite` alias (`@voidzero-dev/vite-plus-core`) to the same version; follow it with `vp check`, `vp run typecheck` and `vp run build`. Dependabot proposes both packages in one group.
 
 ## Standards & Conventions
 
@@ -169,8 +173,8 @@ GitHub Actions runs the full quality gate on every push and pull request via `.g
 **Problem:** TypeScript type errors
 - **Solution:** Check generated types: `php artisan typescript:transform`
 
-**Problem:** ESLint violations
-- **Solution:** Run `npm run format` to auto-fix formatting issues
+**Problem:** Oxfmt or Oxlint findings
+- **Solution:** Run `vp check --fix`; a remaining lint error needs a code change
 
 **Problem:** Vue component errors
 - **Solution:** Ensure proper Composition API usage (no `await`, use `function` not arrow functions)
@@ -199,4 +203,4 @@ GitHub Actions runs the full quality gate on every push and pull request via `.g
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: October 16, 2026*

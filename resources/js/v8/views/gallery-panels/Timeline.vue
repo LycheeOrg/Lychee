@@ -277,7 +277,7 @@ const layoutStore = useLayoutStore();
 const userStore = useUserStore();
 const timelineStore = useTimelineStore();
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 lycheeStore.load();

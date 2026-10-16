@@ -2,9 +2,8 @@
   "recommendations": [
     "Vue.volar",
     "vitest.explorer",
-    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
     "EditorConfig.EditorConfig",
-    "esbenp.prettier-vscode",
     "mikestead.dotenv",
     "bradlc.vscode-tailwindcss",
     "aaron-bond.better-comments",

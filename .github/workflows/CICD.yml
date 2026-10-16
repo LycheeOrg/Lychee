@@ -54,8 +54,8 @@ jobs:
               - 'vite.config.ts'
               - 'vite.embed.config.ts'
               - 'vite/**'
-              - 'eslint.config.ts'
-              - '.prettierrc.json'
+              - 'e2e/**'
+              - 'playwright.config.ts'
             php:
               - 'app/**/*.php'
               - 'config/**/*.php'
@@ -460,10 +460,10 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: none
 
-      - name: Use Node.js 20
+      - name: Use Node.js 26
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-            node-version: 20
+            node-version: 26
 
       - name: Build Dist
         run: |

@@ -4,7 +4,7 @@ Use this appendix to accelerate hand-offs and new-session spin-up. Update it whe
 
 ## Session Kickoff Checklist
 - [ ] Run `git status -sb` to review branch, staged changes, and repo cleanliness.
-- [ ] Confirm environment prerequisites: PHP 8.4+, Composer installed, npm/Node.js available; log the command/output in `_current-session.md` for traceability.
+- [ ] Confirm environment prerequisites: PHP 8.4+, Composer installed, Node.js, npm and the Vite+ CLI (`vp`) available; log the command/output in `_current-session.md` for traceability.
 - [ ] Review current context: latest roadmap entry, active specification, feature plan, tasks checklist, and the feature's `open-questions.md` (list unresolved questions across all features with `grep -H '^| Q-' docs/specs/4-architecture/features/*/open-questions.md | grep -v '| ~~Q'`).
 - [ ] Confirm that the active feature spec already encodes known decisions directly in its requirements/NFR/behaviour/telemetry sections (no per-feature `## Clarifications` appendices).
 - [ ] If new clarifications arise, record them in the active feature's `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md`, pause planning until answers are agreed, then update the spec sections and mark the questions as resolved with links to those sections; create or reference an ADR for architectural or other high‑impact decisions.
@@ -12,8 +12,8 @@ Use this appendix to accelerate hand-offs and new-session spin-up. Update it whe
 - [ ] If scope introduces or modifies UI, confirm the spec includes an ASCII mock-up ([docs/specs/4-architecture/spec-guidelines/ui-ascii-mockups.md](../4-architecture/spec-guidelines/ui-ascii-mockups.md)).
 - [ ] If the last build is stale or after syncing, run quality checks to ensure the baseline is green (capture or resolve any failures before proceeding):
   - PHP changes: `vendor/bin/php-cs-fixer fix && php artisan test --filter=<ClassName> && make phpstan`
-  - Frontend changes: `npm run format && npm run check`
-- [ ] When changing dependencies (approved): update `composer.json` or `package.json`, run `composer update` or `npm install`, and verify tests still pass.
+  - Frontend changes: `vp check --fix && vp run typecheck`
+- [ ] When changing dependencies (approved): update `composer.json` or `package.json`, run `composer update` or `vp install`, and verify tests still pass.
 - [ ] Check [docs/specs/_current-session.md](../_current-session.md) for the active snapshot; refresh it with today's status and update the `## Next suggested actions` section before you hand off.
 - [ ] Confirm whether the user granted a compatibility exception; default is no fallbacks for any interface unless explicitly requested.
 
@@ -67,8 +67,8 @@ composer dump-autoload                   # Rebuild autoload files
 
 ### Frontend Quality Checks
 ```bash
-npm run format                           # Apply Prettier formatting
-npm run check                            # ESLint + TypeScript + tests
+vp check --fix                           # Oxfmt formatting + Oxlint fixes
+vp run typecheck                         # TypeScript type-check (vue-tsc)
 ```
 
 ### Laravel Development
@@ -87,20 +87,20 @@ php artisan cache:clear                  # Clear application cache
 composer install                         # Install PHP dependencies
 composer update                          # Update PHP dependencies
 composer show                            # List installed packages
-npm install                              # Install frontend dependencies
-npm update                               # Update frontend dependencies
+vp install                               # Install frontend dependencies
+vp update                                # Update frontend dependencies
 ```
 
 ### Full Quality Gate (Combined)
 ```bash
 # PHP + Frontend changes
-vendor/bin/php-cs-fixer fix && npm run format && npm run check && php artisan test --filter=<ClassName> && make phpstan
+vendor/bin/php-cs-fixer fix && vp check --fix && vp run typecheck && php artisan test --filter=<ClassName> && make phpstan
 
 # PHP only
 vendor/bin/php-cs-fixer fix && php artisan test && make phpstan
 
 # Frontend only
-npm run format && npm run check
+vp check --fix && vp run typecheck
 ```
 
 ### Documentation
@@ -122,7 +122,7 @@ See [quality-gate.md](quality-gate.md) for comprehensive details on:
 
 Quick reference:
 - **PHP changes:** `vendor/bin/php-cs-fixer fix` → `php artisan test --filter=<ClassName>` → `make phpstan`
-- **Frontend changes:** `npm run format` → `npm run check`
+- **Frontend changes:** `vp check --fix` → `vp run typecheck`
 - **Both:** Run all checks in sequence before committing
 
 ---

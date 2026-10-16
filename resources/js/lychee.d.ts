@@ -56,7 +56,15 @@ declare namespace App {
 		export type ColumnSortingAlbumType = "created_at" | "title" | "min_taken_at" | "max_taken_at";
 		export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
 		export type ColumnSortingType =
-			"owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
+			| "owner_id"
+			| "created_at"
+			| "title"
+			| "min_taken_at"
+			| "max_taken_at"
+			| "taken_at"
+			| "is_highlighted"
+			| "type"
+			| "rating_avg";
 		export type ConfigType =
 			| "int"
 			| "positive"
@@ -220,7 +228,14 @@ declare namespace App {
 			| "timeline";
 		export type StorageDiskType = "images" | "s3";
 		export type ThumbAlbumSubtitleType =
-			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
+			| "disabled"
+			| "description"
+			| "takedate"
+			| "creation"
+			| "oldstyle"
+			| "num_photos"
+			| "num_albums"
+			| "num_photos_albums";
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 		export type TimelineCategory = "first_last" | "device" | "milestone" | "record" | "break";
 		export type TimelineEventKind =

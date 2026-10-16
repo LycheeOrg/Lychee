@@ -24,22 +24,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Set up Vite+ with Node.js ${{ matrix.node-version }}
+        uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: true
+          run-install: false
 
       - name: Install
-        run: npm ci -D
+        run: vp install --frozen-lockfile
 
-      - name: Check Style
-        run: npm run check-formatting
-
-      - name: Check Lint
-        run: npm run lint
+      - name: Check formatting and lint
+        run: vp check
 
       - name: Check TypeScript
-        run: npm run check
+        run: vp run typecheck
 
       - name: Compile Front-end
-        run: npm run build
+        run: vp run build

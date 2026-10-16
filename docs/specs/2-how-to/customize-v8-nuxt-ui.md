@@ -5,9 +5,9 @@ Lychee is mid-migration from PrimeVue (v7, `resources/js/v7/`) to Nuxt UI (v8, `
 ## Seeing your changes
 
 1. Set `NUXT_UI_ENABLED=true` in `.env` (backs the `nuxt_ui` key in `config/features.php`) so `resources/views/vueapp.blade.php` serves `app-v8.ts`/`app-v8.css` instead of the v7 bundle.
-2. `npm run dev` and open the app — every route resolves to a `v8/views/**` component while the flag is on (route parity is a hard gate; see ADR-0006 item 7).
+2. `vp dev` and open the app — every route resolves to a `v8/views/**` component while the flag is on (route parity is a hard gate; see ADR-0006 item 7).
 3. There is no automated frontend test suite (see the ADR-0005 "Operational Impact" section) — verification is manual/browser-based. Always check both light and dark mode (toggle via Settings → General → dark mode, or add/remove the `.dark` class on `<body>` directly in devtools for a quick check).
-4. Before considering a change done: `npm run check` (vue-tsc), `npm run lint`, `npm run check-formatting`, and `npm run build` — all four run in CI ([.github/workflows/js_check.yml](../../../.github/workflows/js_check.yml)) and cover both `app.ts` and `app-v8.ts`.
+4. Before considering a change done: `vp run typecheck` (vue-tsc), `vp check` (Oxfmt + Oxlint) and `vp run build` — all three run in CI ([.github/workflows/js_check.yml](../../../.github/workflows/js_check.yml)) and cover both `app.ts` and `app-v8.ts`.
 
 ## How the color theme is wired
 
