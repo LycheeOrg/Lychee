@@ -12,6 +12,7 @@ Open questions for [Feature 096](spec.md). Log every high- and medium-impact que
 | ~~Q-096-04~~ | 096 – Vite+ migration | Medium | Toolchain scope of `vp check` / `vp fmt` / `vp lint` without paths (A frontend sources + root frontend configs + `e2e/` · B frontend sources only, as Prettier today · C whole repository, Markdown, YAML and JSON included) | Resolved (Option A; owner, 2026-10-16; spec Definitions (toolchain scope), FR-096-04, FR-096-05; ADR-096-01) | 2026-10-16 | 2026-10-16 |
 | ~~Q-096-05~~ | 096 – Vite+ migration | Medium | Lint plugin set (A `vp migrate` mapping with Oxlint's default `oxc` and `unicorn` plugins, 18 warnings allowed, zero errors required · B strict parity: `typescript` and `vue` plugins only · C also enable type-aware rules now and fix the 100 findings) | Resolved (Option A; owner, 2026-10-16; spec FR-096-05, N-096-02; owner: type-aware rules (tsgolint) later) | 2026-10-16 | 2026-10-16 |
 | ~~Q-096-06~~ | 096 – Vite+ migration | Low | Completed features' `plan.md` / `tasks.md` record `npm run format` / `npm run check` as verification commands in 179 files (A leave them · B rewrite them to the new commands) | Resolved (Option A; owner, 2026-10-16; spec FR-096-17, N-096-05) | 2026-10-16 | 2026-10-16 |
+| ~~Q-096-07~~ | 096 – Vite+ migration | High | GitHub's dependency graph names the aliased lockfile entry `node_modules/vite` as `vite@1.3.0`, so the Dependency Review action fails PR #4891 with 16 old Vite advisories (4 high, 10 moderate, 2 low) and Dependabot will raise the same alerts on `master`; osv-scanner and Trivy read the real package (A replace the Dependency Review step with osv-scanner's PR scan, which honours `osv-scanner.toml` · B keep the action and allow-list the 16 GHSA IDs · C switch to pnpm, whose lockfile keys the real package name) | Resolved (Option B; owner, 2026-10-16; spec FR-096-10, S-096-17; ADR-096-01) | 2026-10-16 | 2026-10-16 |
 
 ## Question Details
 
@@ -104,3 +105,20 @@ Open questions for [Feature 096](spec.md). Log every high- and medium-impact que
   - ❌ Large diff of no behavioural value.
 
 **Resolution:** Option A. Completed features' documents keep the commands they record.
+
+### ~~Q-096-07~~ – Dependency Review reads the `vite` alias as `vite@1.3.0`
+
+**Context:** On npm, Vite+ requires `node_modules/vite` to be the `@voidzero-dev/vite-plus-core` alias (`vp` refuses a registry `vite` there; `vp migrate` normalises the alias and adds the override). The lockfile records the path `node_modules/vite` with `name: @voidzero-dev/vite-plus-core`, `version: 1.3.0`. GitHub's dependency graph ignores the `name` field and reports `vite@1.3.0`, which is below every patched Vite version: the Dependency Review action (`actions/dependency-review-action`, run 38969372644 on PR #4891) lists 16 advisories (GHSA-mv48-hcvh-8jj8, GHSA-353f-5xf4-qw67, GHSA-c27g-q93r-2cwf, GHSA-fx2h-pf6j-xcff, GHSA-9cwx-2883-4wfx, GHSA-64vr-g452-qvp3, GHSA-vg6x-rcgg-rjx6, GHSA-x574-m823-4x7w, GHSA-4r4m-qw57-chr8, GHSA-xcj6-pq6g-qj4x, GHSA-356w-63v5-8wf4, GHSA-859w-5945-r5v3, GHSA-4w7w-66w2-5vf9, GHSA-v6wh-96g9-6wx3, GHSA-jqfw-vq24-v9c3, GHSA-g4jq-h2w9-997c), all false. The same graph feeds Dependabot alerts on the default branch. osv-scanner (with the repository's `osv-scanner.toml`) and Trivy read the alias correctly and report no Vite finding; `npm audit` neither. The action has no per-package ignore, only `allow-ghsas`. Dropping the alias is not an option (owner question, tested on the scratch copy with `vite: ^8.3.4` and no override): `vp build` refuses it ("Expected @voidzero-dev/vite-plus-core@1.3.0, but found vite@8.3.4 … Run `vp migrate` to align the Vite alias"), and `vite-plus` itself depends on `vite: npm:@voidzero-dev/vite-plus-core@1.3.0`, so the lockfile still carries `node_modules/vite-plus/node_modules/vite` at version 1.3.0, which the graph reads the same way.
+
+- **Option A (recommended):** Replace the Dependency Review step with osv-scanner's PR scan (`google/osv-scanner-action` reusable workflow `osv-scanner-reusable-pr.yml`, pinned by SHA), which diffs base and head lockfiles, reads the alias correctly and honours `osv-scanner.toml`. On `master`, add a Dependabot auto-triage rule that dismisses alerts for package `vite` (npm) as inaccurate, or dismiss the alerts once.
+  - ✅ Accurate PR gate; no recurring allow-list edits when new Vite advisories with open ranges appear.
+  - ✅ The ignore list the repository already maintains (`osv-scanner.toml`) applies in CI.
+  - ❌ A new third-party action to pin and keep updated; the GitHub-native step goes.
+- **Option B:** Keep the action and put the 16 GHSA IDs in `allow-ghsas` (next to GHSA-g7r4-m6w7-qqqr), with a comment explaining the alias; dismiss the Dependabot alerts on `master` as inaccurate (or the same auto-triage rule).
+  - ✅ Smallest change.
+  - ❌ Every future Vite advisory whose range starts below 1.x blocks PRs until its ID is added; the allow-list hides nothing real only as long as `vite` really is the alias.
+- **Option C:** Switch the package manager to pnpm (`pnpm-lock.yaml` keys packages by their real name, `@voidzero-dev/vite-plus-core@1.3.0`).
+  - ✅ Likely fixes the graph at the source.
+  - ❌ Q-096-02 chose npm; Dockerfiles, Makefile, post-merge, Dependabot and docs would change; the graph's pnpm handling of the alias is unverified.
+
+**Resolution:** Option B. `dependency-review.yml` allow-lists the 16 advisories with a comment explaining the alias; Dependabot alerts for `vite` on `master` are dismissed as inaccurate; the list grows when a new Vite advisory with an open range appears (FR-096-10).

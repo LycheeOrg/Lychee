@@ -26,6 +26,31 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
-          # Something related to windows.
+          # GHSA-g7r4-m6w7-qqqr: something related to windows.
           # We don't care because we use Linux, hue hue hue.
-          allow-ghsas: GHSA-g7r4-m6w7-qqqr
+          #
+          # The Vite advisories below are false positives of the dependency
+          # graph: `vite` is an alias of `@voidzero-dev/vite-plus-core` (Vite+,
+          # Feature 096), recorded in package-lock.json as `node_modules/vite`
+          # at the Vite+ version (1.x), which the graph reads as `vite@1.x`.
+          # The Vite that actually runs is the 8.x bundled by Vite+. A new Vite
+          # advisory whose range starts below 1.x matches again until its ID is
+          # added here (docs/specs/4-architecture/features/096-vite-plus-migration/open-questions.md, Q-096-07).
+          allow-ghsas: >-
+            GHSA-g7r4-m6w7-qqqr,
+            GHSA-mv48-hcvh-8jj8,
+            GHSA-353f-5xf4-qw67,
+            GHSA-c27g-q93r-2cwf,
+            GHSA-fx2h-pf6j-xcff,
+            GHSA-9cwx-2883-4wfx,
+            GHSA-64vr-g452-qvp3,
+            GHSA-vg6x-rcgg-rjx6,
+            GHSA-x574-m823-4x7w,
+            GHSA-4r4m-qw57-chr8,
+            GHSA-xcj6-pq6g-qj4x,
+            GHSA-356w-63v5-8wf4,
+            GHSA-859w-5945-r5v3,
+            GHSA-4w7w-66w2-5vf9,
+            GHSA-v6wh-96g9-6wx3,
+            GHSA-jqfw-vq24-v9c3,
+            GHSA-g4jq-h2w9-997c

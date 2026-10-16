@@ -1,6 +1,6 @@
 # Feature 096 Tasks – Vite+ Migration
 
-_Status: Complete (CI run pending)_  
+_Status: Complete (CI run pending, T-096-14 verified by the next Dependency Review run)_  
 _Last updated: 2026-10-16_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -75,6 +75,13 @@ _Last updated: 2026-10-16_
   _Verification commands:_  
   - assertion script  
   - `vp check && vp run typecheck && vp run build`
+
+- [x] T-096-14 – Dependency Review allow-list (F-096-10, S-096-17).  
+  _Intent:_ allow-list the 16 Vite advisories the dependency graph attaches to the `vite` alias, with the explanation in the workflow comment; verify each ID against the advisory API.  
+  _Verification commands:_  
+  - `python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/dependency-review.yml"))'`  
+  - `gh api advisories/<id>` for each ID (package `vite`, range open below 1.x)  
+  - Dependency Review check on PR #4891 after the push (owner)
 
 ## Notes / TODOs
 

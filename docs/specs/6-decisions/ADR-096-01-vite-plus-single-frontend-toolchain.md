@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-16
 - **Related features/specs:** Feature 096 (docs/specs/4-architecture/features/096-vite-plus-migration/spec.md)
-- **Related open questions:** Q-096-01, Q-096-02, Q-096-03, Q-096-04, Q-096-05
+- **Related open questions:** Q-096-01, Q-096-02, Q-096-03, Q-096-04, Q-096-05, Q-096-07
 
 ## Context
 
@@ -33,6 +33,7 @@ Constraints: nothing shipped may change (same bundles, offline runtime); buildin
 - Template-level Vue lint rules (for example `v-for` without `:key`) are not enforced until Oxlint parses templates.
 - `vp` is a new tool for contributors; the project-local binary covers scripts, but the documented commands assume the CLI.
 - Two spellings coexist: `npm ci` in bootstrap files, `vp install --frozen-lockfile` in documentation and the JS CI job.
+- GitHub's dependency graph reads the aliased lockfile entry `node_modules/vite` as `vite@<Vite+ version>`, so the Dependency Review action and Dependabot attach every Vite advisory with an open range to it. The action keeps running with those advisory IDs allow-listed (Q-096-07, 16 IDs on 2026-10-16), Dependabot alerts for `vite` are dismissed as inaccurate, and the list grows when a new such advisory appears. The alias cannot be dropped: `vp` refuses a registry Vite at `node_modules/vite`, and `vite-plus` itself depends on the alias. osv-scanner, Trivy and `npm audit` read the real package.
 
 ## Alternatives Considered
 
