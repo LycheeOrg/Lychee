@@ -469,8 +469,8 @@ export function formatServerDateTime(raw: string | null, format: string, timeZon
  *   present — that is **not** a single-value collapse case) → returns
  *   `null`, the same early-return PHP takes for both "neither present" and
  *   "exactly one present".
- * - both present and equal → single value.
- * - both present and different → ordered join per `dateOrder`.
+ * - both present and equal *once formatted* → single value.
+ * - both present and formatted differently → ordered join per `dateOrder`.
  *
  * @param minTakenAt Raw server datetime (`parseServerDateTime()`) or `null`.
  * @param maxTakenAt Raw server datetime (`parseServerDateTime()`) or `null`.
@@ -489,12 +489,13 @@ export function formatMinMaxDate(
 		return null;
 	}
 
-	if (maxTakenAt === minTakenAt) {
-		return phpDateFormat(format, maxDate);
-	}
-
 	const minFormatted = phpDateFormat(format, minDate);
 	const maxFormatted = phpDateFormat(format, maxDate);
+
+	// PHP compares the formatted strings, so dates within the same displayed unit (e.g. month) collapse.
+	if (maxFormatted === minFormatted) {
+		return maxFormatted;
+	}
 
 	return dateOrder === "younger_older" ? `${maxFormatted} - ${minFormatted}` : `${minFormatted} - ${maxFormatted}`;
 }

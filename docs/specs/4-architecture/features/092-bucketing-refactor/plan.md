@@ -217,6 +217,6 @@ Run 2026-10-12 (agent), against spec, plan, tasks and open questions:
 
 ## Follow-ups / Backlog
 
-- Default `timeline_photo_date_format_hour` (`g:i`) shows neither date nor am/pm.
-- Date scrubber granularity follows the timeline granularity (`Todo.todo`).
+- ~~Default `timeline_photo_date_format_hour` (`g:i`) shows neither date nor am/pm.~~ Done by Feature 095 (FR-095-07): `H:00` on untouched instances.
+- ~~Date scrubber granularity follows the timeline granularity (`Todo.todo`).~~ Done by Feature 094 (scrubber adaptive ticks).
 - MySQL/MariaDB and PostgreSQL behaviour through CI only (no local server).

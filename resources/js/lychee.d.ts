@@ -702,6 +702,11 @@ declare namespace App {
 					date_format_sidebar_uploaded: string;
 					date_format_sidebar_taken_at: string;
 					date_scrubber_label_format: string;
+					date_scrubber_album_label_format: string;
+					date_scrubber_format_year: string;
+					date_scrubber_format_month: string;
+					date_scrubber_format_day: string;
+					date_scrubber_format_hour: string;
 					album_layout: App.Enum.AlbumLayoutType;
 					is_raw_download_enabled: boolean;
 					is_thumb_download_enabled: boolean;

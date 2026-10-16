@@ -22,6 +22,8 @@ export type AlbumBucketBoundary = {
  *          falls back to one single unbucketed section in that case, the
  *          same flat rendering path used for `bucketable: false`.
  */
+const UNKNOWN_LABEL = "unknown";
+
 export function computeBucketBoundaries(buckets: App.Http.Resources.V3.AlbumBucketResource, childrenCount: number): AlbumBucketBoundary[] | null {
 	const total = buckets.counts.reduce((sum, count) => sum + count, 0);
 	if (total !== childrenCount) {
@@ -33,15 +35,18 @@ export function computeBucketBoundaries(buckets: App.Http.Resources.V3.AlbumBuck
 	for (let i = 0; i < buckets.bucket_ids.length; i++) {
 		const count = buckets.counts[i];
 		const label = buckets.labels[i];
-		// Adjacent buckets sharing a label are merged into one — e.g. the
-		// root "shared" scope buckets by owner_id, but a guest can never see
-		// owner names and gets every label hardcoded "unknown"
+		// Adjacent "unknown" buckets are merged into one: the root "shared"
+		// scope buckets by owner_id, but a guest can never see owner names
+		// and gets every label hardcoded "unknown"
 		// (`AlbumRootController::querySharedBuckets()`), which would
 		// otherwise render one repeated "unknown" header per distinct owner.
+		// Any other equal labels stay separate (Feature 095, FR-095-09): two
+		// distinct date buckets can share a label (`10:00` on two days), and
+		// merging them would hide the album's headers and its date scrubber.
 		// Safe because tier 2's children are already ordered to match tier
 		// 1's bucket order, so same-label runs are always contiguous.
 		const previous = boundaries[boundaries.length - 1];
-		if (previous !== undefined && previous.label === label) {
+		if (previous !== undefined && label === UNKNOWN_LABEL && previous.label === UNKNOWN_LABEL) {
 			previous.count += count;
 		} else {
 			boundaries.push({

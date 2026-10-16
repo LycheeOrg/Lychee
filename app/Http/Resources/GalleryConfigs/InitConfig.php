@@ -91,6 +91,11 @@ class InitConfig extends Data
 	public string $date_format_sidebar_uploaded;
 	public string $date_format_sidebar_taken_at;
 	public string $date_scrubber_label_format;
+	public string $date_scrubber_album_label_format;
+	public string $date_scrubber_format_year;
+	public string $date_scrubber_format_month;
+	public string $date_scrubber_format_day;
+	public string $date_scrubber_format_hour;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -278,6 +283,11 @@ class InitConfig extends Data
 		$this->date_format_sidebar_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
 		$this->date_format_sidebar_taken_at = request()->configs()->getValueAsString('date_format_sidebar_taken_at');
 		$this->date_scrubber_label_format = request()->configs()->getValueAsString('timeline_photo_date_format_day');
+		$this->date_scrubber_album_label_format = request()->configs()->getValueAsString('timeline_album_date_format_day');
+		$this->date_scrubber_format_year = request()->configs()->getValueAsString('date_scrubber_format_year');
+		$this->date_scrubber_format_month = request()->configs()->getValueAsString('date_scrubber_format_month');
+		$this->date_scrubber_format_day = request()->configs()->getValueAsString('date_scrubber_format_day');
+		$this->date_scrubber_format_hour = request()->configs()->getValueAsString('date_scrubber_format_hour');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
