@@ -56,6 +56,8 @@ jobs:
               - 'vite/**'
               - 'e2e/**'
               - 'playwright.config.ts'
+              - 'github/workflows/js_check.yml'
+              - 'scripts/generate-js-types.sh'
             php:
               - 'app/**/*.php'
               - 'config/**/*.php'
