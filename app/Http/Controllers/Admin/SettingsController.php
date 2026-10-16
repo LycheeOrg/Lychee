@@ -93,6 +93,7 @@ class SettingsController extends Controller
 		'timeline_photo_date_format_month',
 		'timeline_photo_date_format_day',
 		'timeline_photo_date_format_hour',
+		'timeline_photo_date_format_hour_multi_day',
 		'photo_title_bucket_prefix_length',
 		'sorting_photos_order',
 	];

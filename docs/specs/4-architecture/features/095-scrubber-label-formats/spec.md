@@ -8,7 +8,7 @@
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
 | Roadmap entry | #095 |
-| Decisions | — (Q-095-01 … 07 resolved in [open-questions.md](open-questions.md)) |
+| Decisions | — (Q-095-01 … 09 resolved in [open-questions.md](open-questions.md)) |
 
 > Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in the feature's [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
@@ -28,7 +28,7 @@ Feature 094 made the date scrubber rail label the unit the data spans, with four
 | L-095-06 | Lens and pill, `/timeline` at hour | day + hour, or hour only on one day | `timeline_photo_date_format_day` + `H:00` constant → `timeline_photo_date_format_day` + `date_scrubber_format_hour` |
 | L-095-07 | Lens and pill, album photo rails | day | `timeline_photo_date_format_day` (unchanged) |
 | L-095-08 | Lens and pill, sub-album rails | day | `timeline_photo_date_format_day` (`j M Y`) → `timeline_album_date_format_day`, default `j M` → `j M Y` (Q-095-07) |
-| L-095-09 | Section headers (grid) | per bucket | server formats (unchanged), except the defaults `timeline_photo_date_format_hour` `g:i` → `H:00` and `timeline_album_date_format_day` `j M` → `j M Y` |
+| L-095-09 | Section headers (grid) | per bucket | server formats; defaults `timeline_photo_date_format_hour` `g:i` → `H:00` and `timeline_album_date_format_day` `j M` → `j M Y`; hour headers of a listing spanning several days use the new `timeline_photo_date_format_hour_multi_day` (`j M Y H:00`, FR-095-08) |
 
 Supporter Edition settings (`level 1`) are not listed in the admin Settings of a non-SE instance (`SettingsController::getAll`, unless `enable_se_preview`), and saving one there fails with 422 (`ConfigKeyRequireSupportRule`). The backend always serves the stored value: an instance that stops being SE keeps the formats it set, as it does for the other timeline formats.
 
@@ -41,7 +41,8 @@ All formats are PHP `date()` strings: the server applies them with `date()`, the
 - G3 – Settings sit with the other timeline date formats.
 - G4 – The day order (`DD/MM`) is free to change on every instance; the other three formats are Supporter Edition, like the other timeline formats.
 - G5 – Every pill matches the section headers of its own view (L-095-08).
-- G6 – Hour section headers are unambiguous by default, and sub-album day labels carry the year (L-095-08, L-095-09).
+- G6 – Hour section headers are unambiguous: the hour alone when every photo is on one day, the date and hour otherwise; sub-album day labels carry the year (L-095-08, L-095-09).
+- G7 – Section headers always match the server's buckets: distinct buckets never merge because their labels are equal (FR-095-09).
 
 ## Non-Goals
 
@@ -62,6 +63,8 @@ All formats are PHP `date()` strings: the server applies them with `date()`, the
 | FR-095-05 | Resting labels are clipped to the rail's inner width (52 px: `max-w-13`, `overflow-hidden`, no ellipsis), so they never cover the grid, in LTR and RTL. Label alignment is unchanged from Feature 094 (the rail is `dir="ltr"`), so the clipped part is the end of the text. Label and dot culling (FR-094-04/06) are unchanged. | `l j F Y` → the label shows its first ~7 characters inside the rail. | — | — | none | Q-095-03 |
 | FR-095-06 | Sub-album rails format their lens and pill days with `date_scrubber_album_label_format` (`timeline_album_date_format_day`); photo rails keep `date_scrubber_label_format` (`timeline_photo_date_format_day`). | `timeline_album_date_format_day = d.m.Y` → sub-album pill `14.10.2026`, matching the sub-album day headers. | — | — | none | Q-095-04 |
 | FR-095-07 | Migration fixing two defaults on rows that still hold them, other values left alone: `timeline_photo_date_format_hour` `g:i` → `H:00`, `timeline_album_date_format_day` `j M` → `j M Y` (Q-095-05, Q-095-07). Rollback turns `H:00` back into `g:i` and `j M Y` into `j M`. The migration then clears the application cache (`Artisan::call('cache:clear')` in a try/catch, as the `bump_version*` migrations do), because the settings-controller flush of FR-092-13 does not run for a direct DB update and cached listings would keep `6:00` labels. | Instance on the defaults → hour headers `18:00` instead of `6:00`; sub-album day headers and pill `14 Oct 2026` instead of `14 Oct`. | Customised value (`h A`, `d.m.`) → unchanged. | — | none | Q-095-05, Q-095-07; Feature 092 backlog |
+| FR-095-08 | Hour headers by span (Q-095-08): `BucketScheme::labels()` formats hour ids (precision 4) with `timeline_photo_date_format_hour` (**same-day** format, default `H:00`) when every hour id of the list is on the same day, and with the new config `timeline_photo_date_format_hour_multi_day` (**multi-day** format, default `j M Y H:00`, category `Mod Timeline`, `STRING_REQ`, level 1, in `SE_FIELDS`, order 18 so it follows the hour format) otherwise. The decision is per listing (the whole `buckets` tier: `/timeline`, album, tag, person and smart album photo listings), not per header. Year/month/day ids are unaffected. A change of the new config flushes every cached photo listing (`PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, FR-092-13). Lang entries in every locale. | Album, hour granularity, photos on 2026-10-14 only → `18:00`, `15:00`; photos on 2026-10-13 and 2026-10-14 → `13 Oct 2026 22:00`, `14 Oct 2026 01:00`. | Empty value → 422. | — | none | Q-095-08 |
+| FR-095-09 | `computeBucketBoundaries()` (`albumBucketBoundaries.ts`) merges adjacent buckets only when both labels are `unknown` (the root shared scope, where a guest sees every owner as `unknown`); buckets with any other equal labels stay separate sections. | Four hour buckets labelled `10:00` on four days → four sections, the rail is offered. | Root shared scope as a guest → one `unknown` section, as before. | — | none | Q-095-08 |
 
 ## Non-Functional Requirements
 
@@ -113,6 +116,9 @@ Rail with day format `j.n.` and hour format `G\h`, and a too-long day format `l 
 | S-095-07 | `timeline_album_date_format_day = d.m.Y` → sub-album rail pill `14.10.2026`; photo rail pill keeps `timeline_photo_date_format_day`; with the defaults, sub-album pill `14 Oct 2026` (FR-095-06, FR-095-07). |
 | S-095-08 | Migration on `g:i` → `H:00` and `j M` → `j M Y`; on `h A` / `d.m.` → unchanged; rollback restores `g:i` and `j M`; application cache cleared (FR-095-07). |
 | S-095-10 | Settings page → the four rows follow the quick-access date formats, year … hour (FR-095-01). |
+| S-095-11 | Hour granularity, one day of photos → headers `18:00`; two days → `13 Oct 2026 22:00` … (FR-095-08). |
+| S-095-12 | Album with one photo at 10:00 on each of four days, hour granularity → four headers, the rail is shown (FR-095-08, FR-095-09). |
+| S-095-13 | Root albums listing as a guest, shared scope → one `unknown` section (FR-095-09). |
 | S-095-09 | `InitConfig` returns the five fields with their defaults and with updated values (FR-095-02). |
 
 ## Test Strategy
@@ -126,10 +132,13 @@ Rail with day format `j.n.` and hour format `G\h`, and a too-long day format `l 
 
 | Surface | Change |
 |---------|--------|
-| `configs` | + `date_scrubber_format_year` / `_month` / `_hour` (level 1, SE), `date_scrubber_format_day` (level 0), orders 23–26; defaults `timeline_photo_date_format_hour` `g:i` → `H:00`, `timeline_album_date_format_day` `j M` → `j M Y` |
+| `configs` | + `timeline_photo_date_format_hour_multi_day` (`j M Y H:00`, level 1, SE, order 18); + `date_scrubber_format_year` / `_month` / `_hour` (level 1, SE), `date_scrubber_format_day` (level 0), orders 23–26; defaults `timeline_photo_date_format_hour` `g:i` → `H:00`, `timeline_album_date_format_day` `j M` → `j M Y` |
 | `ConfigIntegrity::SE_FIELDS` | + `date_scrubber_format_year`, `_month`, `_hour` |
 | `InitConfig` / `LycheeState` | + `date_scrubber_format_year`, `_month`, `_day`, `_hour`, `date_scrubber_album_label_format` |
 | `railTicks.ts` | `TickFormats` parameter; constants removed |
+| `BucketScheme::labels()` | same-day / multi-day hour format by span (FR-095-08) |
+| `albumBucketBoundaries.ts` | merge only `unknown` labels (FR-095-09) |
+| `SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS` | + `timeline_photo_date_format_hour_multi_day` |
 | `TimelineDatesV3.vue`, `Timeline.vue`, `albumDateScrubber.ts` | pass the formats; sub-album lens uses the album day format |
 | `lang/<locale>/all_settings.php` | descriptions and details for the four keys, translated per locale |
 

@@ -13,6 +13,7 @@
 
 namespace Tests\Feature_v3\Settings;
 
+use App\Http\Controllers\Admin\SettingsController;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Testing\TestResponse;
@@ -22,12 +23,13 @@ use Tests\Traits\RequireSE;
 /**
  * Feature 095 (FR-095-01): date scrubber label formats. Year, month and hour
  * are Supporter Edition settings; the day format is free (Q-095-02).
+ * FR-095-08: the multi-day hour header format, also SE.
  */
 class ScrubberLabelFormatsSettingsTest extends BaseApiWithDataTest
 {
 	use RequireSE;
 
-	private const SE_KEYS = ['date_scrubber_format_year', 'date_scrubber_format_month', 'date_scrubber_format_hour'];
+	private const SE_KEYS = ['date_scrubber_format_year', 'date_scrubber_format_month', 'date_scrubber_format_hour', 'timeline_photo_date_format_hour_multi_day'];
 	private const FREE_KEY = 'date_scrubber_format_day';
 
 	/** @var array<string,string> */
@@ -93,6 +95,14 @@ class ScrubberLabelFormatsSettingsTest extends BaseApiWithDataTest
 		self::assertSame(24, $rows['date_scrubber_format_month']->order);
 		self::assertSame(25, $rows['date_scrubber_format_day']->order);
 		self::assertSame(26, $rows['date_scrubber_format_hour']->order);
+
+		self::assertSame('j M Y H:00', $rows['timeline_photo_date_format_hour_multi_day']->value);
+		self::assertSame(18, $rows['timeline_photo_date_format_hour_multi_day']->order);
+	}
+
+	public function testMultiDayHourFormatFlushesPhotoListings(): void
+	{
+		self::assertContains('timeline_photo_date_format_hour_multi_day', SettingsController::PHOTO_LISTING_COARSE_FLUSH_CONFIGS);
 	}
 
 	public function testFreeInstanceListsOnlyTheDayFormat(): void

@@ -32,6 +32,7 @@ class ConfigIntegrity
 		'timeline_photo_date_format_month',
 		'timeline_photo_date_format_day',
 		'timeline_photo_date_format_hour',
+		'timeline_photo_date_format_hour_multi_day',
 		'timeline_album_date_format_year',
 		'timeline_album_date_format_month',
 		'timeline_album_date_format_day',

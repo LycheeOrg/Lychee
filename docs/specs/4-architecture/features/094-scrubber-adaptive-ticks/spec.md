@@ -23,7 +23,7 @@ This feature makes the label unit follow the **precision of the rail's entries**
 | several years | year | `2026`, `2025`, `2024` |
 | several months of one year | month | `Oct`, `Nov`, `Dec` (short month name, FR-094-03) |
 | several days of one month | day | `14/10`, `15/10` (`DD/MM`, configurable in a later feature) |
-| one day (`/timeline` at hour granularity only) | hour | `09:00`, `15:00` |
+| one day (hour granularity: `/timeline`, or album photos sorted by date, FR-094-10) | hour | `09:00`, `15:00` |
 
 On `/timeline` at hour granularity, the lens and the readout pill show the date **and** the hour (`14 Oct 2026 15:00`), instead of the server's hour label; when every photo is on the same day, they show the hour only (`15:00`) (owner requests 2026-10-16).
 
@@ -35,13 +35,13 @@ Frontend only, v8 only. No API, config, storage or bucket change.
 - G2 – One rule for `/timeline` and album rails.
 - G3 – Labels never overlap.
 - G4 – Playhead, drag-scrub and tap behaviour unchanged.
-- G5 – On `/timeline` at hour granularity the lens and readout pill tell the time (with the date, unless every photo is on the same day).
+- G5 – At hour granularity (`/timeline`, and album photo rails, FR-094-10) the lens and readout pill tell the time (with the date, unless every photo is on the same day), and the pill counts the photos of that hour.
 
 ## Non-Goals
 
 - N-094-01 – Configurable label formats. `d/m` and `H:00` are fixed constants here; done by Feature 095 ([spec](../095-scrubber-label-formats/spec.md)): `date_scrubber_format_year` … `_hour`.
 - N-094-02 – Lens and readout pill labels other than `/timeline` at hour granularity. They keep the bucket labels (`/timeline` at year, month, day) and `date_scrubber_label_format` (albums).
-- N-094-03 – Hour entries on album rails. Album rails keep day runs (FR-071-08, ADR-071-01), so they never show hour labels (Q-094-01).
+- N-094-03 – Hour entries on title-sorted photo rails and on sub-album rails: their headers stop at day (FR-092-04/05), so they keep day runs (Q-094-01, narrowed by Q-094-09).
 - N-094-04 – v7 (`TimelineDates.vue`) and the v2 Timeline path.
 - N-094-05 – Backend: bucket ids, labels, granularity resolution, `AlbumConfig`, `InitConfig`.
 - N-094-06 – Rail eligibility (FR-071-06) and settings layers (FR-071-01 … 07). An album whose grid has a single section header keeps showing no rail (Q-094-08).
@@ -51,7 +51,7 @@ Frontend only, v8 only. No API, config, storage or bucket change.
 
 - **Precision.** A date key `Y`, `Y-m`, `Y-m-d`, `Y-m-d-H` has precision 1 (year), 2 (month), 3 (day), 4 (hour): its number of `-` segments. Unit *a* is **coarser** than *b* when its precision is lower.
 - **Entry key.** The date key of a rail entry: `/timeline` → the bucket id (FR-092-05: a prefix of the granularity-free key, so its length is the effective granularity); album → the day key of FR-071-08, without the `#n` run suffix.
-- **Entry precision E.** The precision of the rail's first dated entry key: `/timeline` → the granularity (1–4); album → 3.
+- **Entry precision E.** The precision of the rail's first dated entry key: `/timeline` → the granularity (1–4); album → 3, or 4 for hour runs (FR-094-10).
 - **Span unit S.** From the smallest and largest dated entry key: the coarsest unit whose prefix differs between them; when they are equal, S = E.
 
 ## Functional Requirements
@@ -65,8 +65,9 @@ Frontend only, v8 only. No API, config, storage or bucket change.
 | FR-094-05 | Highlight: the label of the L-unit that contains the hovered entry (while hovering), otherwise the entry under the playhead, is drawn `text-primary`; the others `text-muted` (generalises today's year highlight). When that label was dropped by FR-094-04, no label is highlighted. | Scrolling from October into November moves the highlight from `Oct` to `Nov`. | — | — | none | Parity |
 | FR-094-06 | Dots. `/timeline` (no `separatorTops`): one dot per unit of precision L + 1, at that unit's first entry, only when L + 1 ≤ E (L = E → no dots). Albums: one dot per section header (`separatorTops`, FR-071-12), except the header directly above an entry that starts an L-unit (the first entry at or below it, with no other header in between): that unit's label already marks it, and the header row's own height would otherwise leave its dot a few pixels above the label on short albums. Headers finer than the day runs (hour headers) fall inside a run and always draw a dot. In both views a dot within 16 px of a label is dropped (unchanged rule) and, in rail order, a dot within 4 px of the previously kept dot is dropped. | `/timeline` at hour, data over several years → L = year, month dots (today's look). | `/timeline` at month, data within 2026 → L = month = E → labels only. | — | none | Q-094-04 |
 | FR-094-07 | Lens and pill positions and animations (except the wide lens of FR-094-09), the count phrase, playhead, drag-scrub, tap, the `load`/`scrub` emits and the `countLabelKey`/`separatorTops` props behave as before. `TimelineDatesV3.vue` gets no new prop. | — | — | — | none | G4, N-094-02 |
-| FR-094-08 | Hourly lens and readout: on `/timeline`, when the bucket ids have precision 4, each lens item and the readout pill show `phpDateFormat(date_scrubber_label_format, day)` + a space + the hour in the `H:00` constant of FR-094-03, built from the bucket id with no time-zone conversion. When all dated bucket ids share the same day (S = hour, so the rail labels hours, FR-094-02), they show the hour only, `H:00`. `Timeline.vue` passes these labels in the `buckets` prop it gives `TimelineDatesV3.vue`; the bucket tier's own labels (section headers) are unchanged. Precisions 1–3 keep the server labels; album rails keep their day labels (N-094-03). | Bucket `2026-10-14-15`, day format `d M Y`, data over several days → `14 Oct 2026 15:00`; all photos on 2026-10-14 → `15:00`. | — | — | none | Owner requests 2026-10-16 |
+| FR-094-08 | Hourly lens and readout: on `/timeline`, and on album photo rails with hour runs (FR-094-10), when the rail's ids have precision 4, each lens item and the readout pill show `phpDateFormat(date_scrubber_label_format, day)` + a space + the hour in the `H:00` constant of FR-094-03, built from the bucket id with no time-zone conversion. When all dated bucket ids share the same day (S = hour, so the rail labels hours, FR-094-02), they show the hour only, `H:00`. `Timeline.vue` passes these labels in the `buckets` prop it gives `TimelineDatesV3.vue`; the bucket tier's own labels (section headers) are unchanged. Precisions 1–3 keep the server labels (`/timeline`) or the day labels (albums). The hour part is `date_scrubber_format_hour` since Feature 095 (FR-095-04). | Bucket `2026-10-14-15`, day format `d M Y`, data over several days → `14 Oct 2026 15:00`; all photos on 2026-10-14 → `15:00`. | — | — | none | Owner requests 2026-10-16 |
 | FR-094-09 | Wide lens: when the rail shows dated hour labels (bucket ids of precision 4 on more than one day, FR-094-08), the lens is `w-60` (240 px) instead of `w-50`, and the readout pill beside the open lens sits at `right-63` / `left-63` (RTL) instead of `right-53` / `left-53`. `TimelineDatesV3.vue` decides this from `buckets.bucket_ids`, with no new prop. The fade mask keeps its 26 % proportion. Hour-only labels (one day), other granularities and album rails keep `w-50`. | `/timeline` at hour, data over several days → 240 px lens; the focal `14 Oct 2026 15:00` (about 148 px) clears the faded left edge. | `/timeline` at hour, one day → 200 px lens. | — | none | Q-094-07 |
+| FR-094-10 | Album hour runs (Q-094-09): when the album's photo header ids are hour-precise (`photoBucketsV3`, 13 characters) and the rail follows photos sorted by `taken_at` or `created_at`, `PhotoGridVirtual.vue` derives **hour runs** instead of day runs: key `Y-m-d-H` from `taken_at` in `taken_at_orig_tz` (like `taken_key`, FR-092-01), or from `created_at` as stored. Each run's count is the photos of that hour, so the readout pill counts the hour. `AlbumPanel.vue` passes the rail buckets through `hourlyLensLabels()` (FR-094-08), and the wide lens follows (FR-094-09). Title-sorted photo rails and sub-album rails keep day runs (N-094-03). | Album with hour headers, three photos at 15:05–15:40 on 2026-10-14 among others that day → pill `15:00  3 photos`; rail labels `18:00`, `15:00`, … | Album with day headers → day runs, unchanged. | — | none | Q-094-09 |
 
 ## Non-Functional Requirements
 
@@ -173,7 +174,7 @@ Every combination of view, granularity and data span, with the resulting resting
 
 Dots appear between labels only when a label unit holds more than one finer unit. With a denser variant of a dataset (photos on several days of each month, several hours of each day), T03/T06/T10 add one dot per further month, T07/T11 one per further day, T12 one per further hour, all subject to the 16 px and 4 px culls.
 
-### Album rails (entries = day runs, E = day)
+### Album rails (entries = day runs, E = day; hour runs, E = hour, for photo rails with hour headers, FR-094-10)
 
 A rail is shown only when the grid has at least two section headers (FR-071-06, Q-094-08); rows with a single header bucket show no rail. Labels depend only on the span. Dots are the grid's section headers (FR-071-12); a header of the same or a coarser unit than L always sits directly above the start of an L-unit and draws no dot (FR-094-06), so only headers finer than L, and not first in their L-unit, show as dots.
 
@@ -194,7 +195,7 @@ A rail is shown only when the grid has at least two section headers (FR-071-06, 
 | EX-094-A13 | year | D-H, D-1H | — | no rail: one header (Q-094-08) | — |
 | EX-094-A14 | month | D-H, D-1H | — | no rail: one header (Q-094-08) | — |
 | EX-094-A15 | day | D-H, D-1H | — | no rail: one header (Q-094-08) | — |
-| EX-094-A16 | hour (photos only) | D-H | day | `14/10` (no hour labels, N-094-03) | hour headers `-15`, `-11`, `-09` |
+| EX-094-A16 | hour (photos only) | D-H | hour | `18:00`, `15:00`, `11:00`, `09:00` (hour runs, FR-094-10) | none (each hour header on its label) |
 | EX-094-A17 | hour (photos only) | D-1H | — | no rail: one header (Q-094-08) | — |
 | EX-094-A18 | `disabled` | any | — | no rail (FR-071-06) | — |
 
@@ -211,7 +212,9 @@ These rows hold for photo rails sorted by `taken_at`, `created_at` or title (`DA
 | EX-094-L03 | `/timeline`, day | `2026-10-14` | server label (`timeline_photo_date_format_day`) | 200 px |
 | EX-094-L04 | `/timeline`, month | `2026-10` | server label (`timeline_photo_date_format_month`) | 200 px |
 | EX-094-L05 | `/timeline`, year | `2026` | server label (`timeline_photo_date_format_year`) | 200 px |
-| EX-094-L06 | album, any header granularity (hour included) | `2026-10-14` | `14 Oct 2026` (`date_scrubber_label_format`, unchanged) | 200 px |
+| EX-094-L06 | album, year / month / day headers | `2026-10-14` | `14 Oct 2026` (`date_scrubber_label_format`, unchanged) | 200 px |
+| EX-094-L09 | album photos, hour headers, D-Y / D-M / D-D | `2026-10-14-10` | `14 Oct 2026 10:00`, count of that hour (FR-094-10) | 240 px |
+| EX-094-L10 | album photos, hour headers, D-H (one day) | `2026-10-14-15` | `15:00`, count 2 (15:05 and 15:40) (FR-094-10) | 200 px |
 
 Examples assume `date_scrubber_label_format = d M Y`. Every example in this catalogue assumes an English gallery language and an en-US browser (FR-094-03).
 
@@ -244,7 +247,7 @@ Examples assume `date_scrubber_label_format = d M Y`. Every example in this cata
 | S-094-07 | `/timeline`, day, data 2025-12-20 … 2026-01-10 → labels `2026`, `2025`, no visible dots: each month dot sits on its year label (FR-094-02, EX-094-B01). |
 | S-094-08 | Album whose photos fall into a single header bucket (year headers, all photos in 2026) → no rail, as before (FR-071-06, Q-094-08). |
 | S-094-09 | Album, day headers, photos across months of one year → month labels, one dot per day header that is not the first of its month (FR-094-06, EX-094-A07). |
-| S-094-10 | Album, hour granularity, photos within one day → a single `DD/MM` label; no hour labels (N-094-03). |
+| S-094-10 | Album sorted by `taken_at`, hour headers, photos within one day → hour labels; the pill shows the hour and counts that hour's photos (FR-094-10, EX-094-A16, EX-094-L10). |
 | S-094-11 | Album, month headers, photos across several years → year labels, one dot per month header that is not the first of its year (FR-094-02, FR-094-06, EX-094-A02). |
 | S-094-12 | Sub-album rail sorted by `max_taken_at`, albums across days of one month → `DD/MM` labels (FR-094-02). |
 | S-094-13 | Ascending and descending sort of the same data → same label unit and the same labels (FR-094-02). |
@@ -269,14 +272,15 @@ Examples assume `date_scrubber_label_format = d M Y`. Every example in this cata
 | `resources/js/v8/utils/railTicks.ts` (new) | `entryKeyOf()`, `precisionOf()`, `spanUnit()`, `formatTickLabel()`, `buildRailTicks()`, `hourlyLensLabels()`, `isWideLens()` |
 | `Timeline.vue` | passes hourly lens labels (`hourlyLensLabels()`) in the rail's `buckets` prop when ids have precision 4 (FR-094-08) |
 | `TimelineDatesV3.vue` | `ticks` built by `buildRailTicks()`; `Tick.kind` becomes `"label" \| "dot"`; highlight compares L-prefixes; wide lens and pill offset from `isWideLens()` (FR-094-09). No prop change. |
-| `AlbumPanel.vue`, `dateScrubber.ts`, grids | none |
+| `dateScrubber.ts`, `PhotoGridVirtual.vue` | hour runs when the photo headers are hourly (FR-094-10) |
+| `AlbumPanel.vue` | rail buckets through `hourlyLensLabels()` (FR-094-10) |
 | API, config, DB, lang | none |
 
 ### UI States
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-094-01 | Label unit year / month / day / hour | L = S (FR-094-02); hour only on `/timeline`. |
+| UI-094-01 | Label unit year / month / day / hour | L = S (FR-094-02); hour on `/timeline` and on album photo rails with hour runs (FR-094-10). |
 | UI-094-02 | Highlighted label | The unit containing the playhead or hovered entry (FR-094-05). |
 
 ## Telemetry & Observability

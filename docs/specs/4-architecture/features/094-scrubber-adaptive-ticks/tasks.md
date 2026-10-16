@@ -41,7 +41,25 @@ _Last updated: 2026-10-16_
   _Intent:_ Feature 071 spec (NG2, FR-071-12 note), Feature 092 backlog item closed, knowledge map, roadmap, drift gate report.  
   _Verification commands:_ `php artisan typescript:transform` (no diff in `resources/js/lychee.d.ts`).
 
+- [x] T-094-07 – Album hour runs (F-094-10, S-094-10).  
+  _Intent:_ `dateScrubber.ts` tile key at hour precision; `PhotoGridVirtual.vue` picks hour runs when the photo header ids are hour-precise and the field is `taken_at` / `created_at`.  
+  _Verification commands:_  
+  - `npm run format`  
+  - `npm run check`  
+  - Node check of the key helper (UTC, zone, missing date)
+
+- [x] T-094-08 – Album hourly lens and pill (F-094-08, F-094-09, F-094-10, EX-094-L09, EX-094-L10).  
+  _Intent:_ `AlbumPanel.vue` passes the rail buckets through `hourlyLensLabels()`.  
+  _Verification commands:_  
+  - `npm run format`  
+  - `npm run check`
+
+- [x] T-094-09 – Browser check of hourly albums (S-094-10, EX-094-A16, L09, L10) and docs (spec, plan drift note, roadmap).  
+  _Verification commands:_ `run-lychee` scratch instance.
+
 ## Notes / TODOs
+
+- 2026-10-16 (Q-094-09): browser — A16 (hour headers, one day): rail `18:00` … `09:00`, pill `15:00  2 photos`; AD (hour headers, months): wide lens with date and hour, pill `18 Jun 2026 04:00  1 photo`. A11 (one photo at 10:00 on four days) shows no rail: its four hour buckets are merged into one `10:00` boundary by `computeBucketBoundaries()` — Q-095-08.
 
 - 2026-10-16: seed `scratchpad/seed094.php` (users uy/um/ud/uh/udense for `/timeline`, admin albums A02/A05/A11/A16/AD), helpers checked in Node against EX-094-T01 … T14, A01/A02/A03/A05/A16, B01 … B04, B07, B08 and L01/L07 (`scratchpad/railcheck/check.ts`, stubbed `phpDateFormat`). Browser: T10 … T13, dense, A02, A11, A16, AD, wide lens LTR/RTL, tap-to-scrub. A05 shows no rail: Q-094-08 (→ B, no rail on single-header albums). Light mode via `dark_mode_enabled = 0`: labels, dots, wide lens and pill follow the theme tokens.
 

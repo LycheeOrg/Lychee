@@ -14,7 +14,7 @@ Open questions for [Feature 094](spec.md). Log every high- and medium-impact que
 | ~~Q-094-06~~ | 094 – Scrubber adaptive ticks | Low | Month label: the request shows `Oct.`; the locale short month gives `Oct` (en), `oct.` (fr) (A locale short month · B English-style abbreviation with a period) | Resolved (Option A; owner, 2026-10-16; spec FR-094-03) | 2026-10-16 | 2026-10-16 |
 | ~~Q-094-07~~ | 094 – Scrubber adaptive ticks | Medium | Hourly lens labels `14 Oct 2026 15:00` (17 characters) do not fit the 200 px lens: the focal item, about 148 px wide in monospace, reaches into the lens's faded left edge (A widen the lens when dated hour labels are shown · B shorter lens date `14/10 15:00`, full label in the pill · C keep the width, accept the fade) | Resolved (Option A; owner, 2026-10-16; spec FR-094-09, S-094-19, EX-094-L01 … L08) | 2026-10-16 | 2026-10-16 |
 | ~~Q-094-08~~ | 094 – Scrubber adaptive ticks | Medium | Feature 071 shows no album rail when the grid has a single section header (`photoBucketableV3` needs more than one bucket), so EX-094-A05, A09, A10, A13 … A15 and A17 never render (A show the rail on single-header albums · B keep 071 eligibility, mark those rows "no rail") | Resolved (Option B; owner, 2026-10-16; spec FR-094-02, N-094-06, S-094-08, Example Catalogue) | 2026-10-16 | 2026-10-16 |
-
+| ~~Q-094-09~~ | 094 – Scrubber adaptive ticks | Medium | Album rails count photos per day even when the album's photo headers are hourly: the pill shows the day's total next to hour headers (A hour runs on album photo rails when the headers are hourly · B keep day runs, show the day in the pill · C keep as is) | Resolved (Option A; owner, 2026-10-16; spec FR-094-10, N-094-03, EX-094-A16, L09, L10) | 2026-10-16 | 2026-10-16 |
 ## Question Details
 
 ### ~~Q-094-01~~ – Hour labels on album rails
@@ -138,3 +138,20 @@ Open questions for [Feature 094](spec.md). Log every high- and medium-impact que
   - ❌ Albums at year granularity with one year of photos (the default setup) never get the adaptive labels.
 
 **Resolution:** Option B. Feature 071 eligibility unchanged; single-header rows of the Example Catalogue show no rail. Consequence for Q-094-02: an album rail always has at least two headers, so the data spans at least one header unit and album labels are never finer than the headers; Q-094-02 → B no longer changes what an album shows (FR-094-02).
+
+### ~~Q-094-09~~ – Album pill counts at hour granularity
+
+**Context:** Owner report 2026-10-16: with the album's photo timeline set to `hour`, the readout pill shows the number of photos of the day. Album rail entries are day runs (FR-071-08, kept by Q-094-01 → B, which assumed albums have no hourly timeline); the pill's count is the hovered entry's count (`dateScrubber.ts` `deriveDayScrubEntries()` → `toRailBuckets()`). Album photo headers do accept `hour` (`timelinePhotoGranularityOptions`, FR-092-05), so the pill's day total sits next to hour headers. `/timeline` is not affected: its entries are the server's hour buckets.
+
+- **Option A (recommended):** When the album's photo header ids are hour-precise (13 characters) and the rail follows photos sorted by `taken_at` or `created_at`, derive **hour runs** instead of day runs: key `Y-m-d-H` (`taken_at` in `taken_at_orig_tz`, like `taken_key`; `created_at` as stored). The pill counts the hour; its label becomes `date_scrubber_label_format` + `date_scrubber_format_hour` like `/timeline` (FR-094-08), the rail can show hour labels for a one-day album, and the wide lens applies (FR-094-09). Title-sorted and sub-album rails keep day runs (their headers stop at day).
+  - ✅ Pill count matches the hour headers; album and `/timeline` behave the same.
+  - ✅ Still client-side (ADR-071-01 holds); reuses the `/timeline` hourly helpers.
+  - ❌ Reverses Q-094-01 → B for this case; more entries on large albums (one per hour run, still O(n)).
+- **Option B:** Keep day runs; the pill keeps the day label and the day total.
+  - ✅ No change.
+  - ❌ The pill disagrees with the hour headers it sits beside.
+- **Option C:** Keep day runs but drop the count from the pill when the headers are finer than a day.
+  - ✅ No wrong-looking number.
+  - ❌ Loses information the pill gives everywhere else.
+
+**Resolution:** Option A (FR-094-10). Q-094-01 → B is narrowed: only title-sorted photo rails and sub-album rails keep day runs (N-094-03).

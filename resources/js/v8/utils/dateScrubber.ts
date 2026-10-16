@@ -65,6 +65,31 @@ export function parseTitleDatePrefix(title: string): string | null {
 	return `${yyyy}-${mm}-${dd}`;
 }
 
+/**
+ * Feature 094 (FR-094-10): `Y-m-d-H` of a raw DB datetime, the server's hour
+ * bucket key — in `timeZone` for `taken_at` (like `taken_key`), as stored
+ * (`+00:00`) otherwise.
+ */
+export function hourKeyOf(raw: string | null, timeZone: string | null): string | null {
+	const key = formatServerDateTime(raw, "Y-m-d-H", timeZone === null || timeZone === "" ? "+00:00" : timeZone);
+	return key === "" ? null : key;
+}
+
+/**
+ * The rail key of a tile: its hour when the album's photo granularity is hour
+ * and the field carries a time (`taken_at`, `created_at`), its day otherwise
+ * (FR-094-10).
+ */
+export function tileKey(tile: DatedTile, field: DateScrubberField, hourly: boolean): string | null {
+	if (hourly && field === "taken_at") {
+		return hourKeyOf(tile.taken_at ?? null, tile.taken_at_orig_tz ?? null);
+	}
+	if (hourly && field === "created_at") {
+		return hourKeyOf(tile.created_at, null);
+	}
+	return tileDayKey(tile, field);
+}
+
 export function tileDayKey(tile: DatedTile, field: DateScrubberField): string | null {
 	if (field === "title") {
 		return parseTitleDatePrefix(tile.title);
@@ -95,7 +120,8 @@ export function formatDayLabel(day: string, format: string): string {
 
 /**
  * Groups tiles (in grid order, each with its laid-out `top`) into
- * consecutive same-day runs. Undated tiles join no run and do not break one.
+ * consecutive same-day runs — same-hour runs when the keys are hours
+ * (FR-094-10). Undated tiles join no run and do not break one.
  * A day recurring in a later run gets a `#n` suffix so ids stay unique —
  * `TimelineDatesV3.vue` only reads the year/month segments, which are
  * unaffected. Tops are forced non-decreasing (masonry columns interleave)

@@ -13,6 +13,8 @@ Open questions for [Feature 095](spec.md). Log every high- and medium-impact que
 | ~~Q-095-05~~ | 095 – Scrubber label formats | Medium | Fix the `timeline_photo_date_format_hour` default `g:i` here (A yes, `H:00` for new installs and untouched values · B separate follow-up) | Resolved (Option A; owner, 2026-10-16; spec FR-095-07) | 2026-10-16 | 2026-10-16 |
 | ~~Q-095-06~~ | 095 – Scrubber label formats | Medium | Where the four settings appear in the Timeline category (A right after the quick-access date formats, order 23–26 · B with the lens settings at the end of the category · C right after the photo hour format, quick-access formats renumbered) | Resolved (Option A; owner, 2026-10-16; spec FR-095-01, S-095-10) | 2026-10-16 | 2026-10-16 |
 | ~~Q-095-07~~ | 095 – Scrubber label formats | Medium | `timeline_album_date_format_day` defaults to `j M` (no year), so Q-095-04 turns the sub-album pill `14 Oct 2026` into `14 Oct` (A accept: it matches the headers · B change that default to `j M Y` for untouched instances · C keep the photo day format for the pill) | Resolved (Option B; owner, 2026-10-16; spec FR-095-07, S-095-07, S-095-08) | 2026-10-16 | 2026-10-16 |
+| ~~Q-095-08~~ | 095 – Scrubber label formats | Medium | Hour section headers carry no date (`H:00`), so on a multi-day album they are ambiguous, and `computeBucketBoundaries()` merges adjacent buckets with equal labels: four days with one photo at 10:00 become one `10:00` header and the album loses its rail (A both: hour default `j M Y H:00` and merge only `unknown` labels · B only the new default · C only the merge fix) | Resolved (Option A, amended; owner, 2026-10-16; spec FR-095-08, FR-095-09) | 2026-10-16 | 2026-10-16 |
+| ~~Q-095-09~~ | 095 – Scrubber label formats | Medium | Where the same-day / multi-day hour header choice is made (A server, in `BucketScheme::labels()` as all section labels today · B browser, relabelling hour headers from the bucket ids) | Resolved (Option A; owner, 2026-10-16; spec FR-095-08) | 2026-10-16 | 2026-10-16 |
 ## Question Details
 
 ### ~~Q-095-01~~ – Which labels become configurable
@@ -119,3 +121,35 @@ Open questions for [Feature 095](spec.md). Log every high- and medium-impact que
   - ❌ Pill and headers can disagree, the issue Q-095-04 fixed.
 
 **Resolution:** Option B. The FR-095-07 migration also turns untouched `j M` into `j M Y`; rollback restores `j M`.
+
+### ~~Q-095-08~~ – Hour headers without a date
+
+**Context:** Found in the Q-094-09 browser check (2026-10-16). An album at hour granularity whose photos span several days shows headers `22:00`, `17:00`, … with no day (`timeline_photo_date_format_hour`, default `H:00` since FR-095-07; `g:i` before). Worse, `computeBucketBoundaries()` (`albumBucketBoundaries.ts`) merges adjacent buckets that share a label — a rule meant for the root "shared" scope, where a guest sees every owner as `unknown`. Album A11 (one photo at 10:00 on each of four days) gets four distinct buckets from the server but one merged `10:00` boundary: `photoBucketableV3` is false, no headers, no rail. The same merge hits any date format coarser than the bucket (an admin day format `M Y` merges days).
+
+- **Option A (recommended):** Both: the FR-095-07 migration writes `j M Y H:00` instead of `H:00` for untouched `g:i` rows (the migration is not released yet, so no extra migration), and `computeBucketBoundaries()` merges adjacent buckets only when their label is `unknown`.
+  - ✅ Hour headers say which day; distinct buckets never collapse.
+  - ✅ The shared-scope `unknown` case keeps its single header.
+  - ❌ Longer hour headers; an admin who relied on coarse formats merging headers loses that.
+- **Option B:** Only the new hour default.
+  - ✅ Fixes the default case.
+  - ❌ A custom format coarser than the bucket still merges buckets and can hide the rail.
+- **Option C:** Only the merge fix.
+  - ✅ Headers and rail always match the server's buckets.
+  - ❌ Repeated `10:00` headers on consecutive days stay ambiguous.
+
+**Resolution:** Option A, amended by the owner: two configurable hour formats chosen by the listing's span — **same day** (`timeline_photo_date_format_hour`, `H:00`) when every photo is on one day, **multi day** (new `timeline_photo_date_format_hour_multi_day`, `j M Y H:00`) otherwise (FR-095-08); boundaries merge only `unknown` labels (FR-095-09). Interpreted as a per-listing decision (all hour headers in one mode), recorded in the spec.
+
+### ~~Q-095-09~~ – Server or browser for the hour header mode
+
+**Context:** Section labels are built on the server (`BucketScheme::labels()`, FR-092-08) for every v3 bucket tier (`/timeline`, album / tag / person / smart photo listings, album children and root) and cached with the listing; the v8 grid displays them as received. The rail formats of Feature 095 are applied in the browser. FR-095-08 needs the whole bucket list to pick the mode; both sides have it (the `buckets` tier is fetched whole).
+
+- **Option A (recommended):** Server: `labels()` picks the hour format from the list it formats.
+  - ✅ One place builds every section label, as today; any v3 client gets correct labels.
+  - ✅ Smallest change; no new `InitConfig` field.
+  - ❌ A change of the new format needs the listing flush (`PHOTO_LISTING_COARSE_FLUSH_CONFIGS`), like the other label formats.
+- **Option B:** Browser: `InitConfig` serves both hour formats; the album and Timeline stores relabel hour ids (13 characters) after the `buckets` tier arrives.
+  - ✅ Same mechanism as the rail formats; no cache flush when the format changes.
+  - ❌ Two places build section labels (server for every other id, browser for hours); the API's `labels` would no longer be what v8 shows.
+  - ❌ Every consumer of the bucket tier must apply the relabel (album photos, Timeline, tag/person/smart albums).
+
+**Resolution:** Option A. `BucketScheme::labels()` picks the hour format (FR-095-08).

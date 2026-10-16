@@ -46,7 +46,24 @@ _Last updated: 2026-10-16_
   _Intent:_ scratch instance (settings page order, S-095-10); Feature 092/094 docs, knowledge map, roadmap; drift gate report.  
   _Verification commands:_ `run-lychee`; `npm run check`; `make phpstan`.
 
+- [x] T-095-07 – Multi-day hour format (F-095-08, S-095-11).  
+  _Intent:_ failing tests first (`BucketSchemeTest` same-day / multi-day labels; settings defaults, level, order, flush); config migration, `SE_FIELDS`, `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, lang entries; `BucketScheme::labels()`.  
+  _Verification commands:_  
+  - `php artisan test --filter=BucketSchemeTest`  
+  - `php artisan test --filter=ScrubberLabelFormatsSettingsTest`  
+  - `make phpstan`
+
+- [x] T-095-08 – Boundary merge only for `unknown` (F-095-09, S-095-12, S-095-13).  
+  _Verification commands:_  
+  - `npm run format`  
+  - `npm run check`
+
+- [x] T-095-09 – Browser check (S-095-11, S-095-12) and docs.  
+  _Verification commands:_ `run-lychee`.
+
 ## Notes / TODOs
+
+- 2026-10-16 (Q-095-08/09): `BucketSchemeTest` 24, `ScrubberLabelFormatsSettingsTest` 8, related bucket/settings classes green (BucketSettingsV3Test, ManagedCachePhotoListingInvalidatorTest, PhotoBucketComputerTest, PhotoBucketsV3Test, RecomputePhotoBucketsJobTest, TimelineAlbumTest, UpdateSettingsTest); phpstan clean. Browser: A11 (four days at 10:00) → four headers `28 Oct 2026 10:00` … and the rail; A16 (one day) → `18:00` …; `/timeline` ud → dated hour headers, uh → `18:00` ….
 
 - 2026-10-16: verified with `php artisan test` (ScrubberLabelFormatsSettingsTest 7, TimelineDateFormatDefaultsMigrationTest 3, DateFormatsInitTest 3, ConfigTranslationKeysTest 8, GetAllSettingsTest 5), `make phpstan`, `php-cs-fixer`, `npm run check`; Node helper check 29/29 plus custom formats; browser on a fresh scratch instance (seed094.php + seed095.php): settings page free / SE preview, `j.n.`, `G\h`, clipped `l j F Y`, sub-album pill `21 Oct 2026` / `21.10.2026`, hour headers `18:00`.
 

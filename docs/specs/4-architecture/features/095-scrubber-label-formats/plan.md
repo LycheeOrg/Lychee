@@ -101,6 +101,9 @@ First run, 2026-10-16, agent review (superseded):
 | FR-095-07 | `2026_10_16_000002_fix_timeline_date_format_defaults.php` | `TimelineDateFormatDefaultsMigrationTest`; fresh install `H:00`, `j M Y`; hour headers `18:00` |
 | NFR-095-01 … 03 | — | No dependency change; `lychee.d.ts` diff limited; formats apply on reload |
 
+| FR-095-08 | `BucketScheme::labels()` / `spansSeveralDays()`, `2026_10_16_000003_add_timeline_hour_multi_day_format.php`, `SE_FIELDS`, `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, lang | `BucketSchemeTest` (one day, several days, day ids unaffected); `ScrubberLabelFormatsSettingsTest` (default, level, order, flush list); browser A11/A16 and `/timeline` ud/uh |
+| FR-095-09 | `albumBucketBoundaries.ts` merges only `unknown` | Browser A11: four sections and the rail |
+
 Divergences: none. Note: the Timeline settings tab lists the new rows after the granularity selectors (the photo date formats of orders 15–22 are not on that tab); order 23–26 still holds in "All settings".
 
 ## Exit Criteria
@@ -121,3 +124,4 @@ Divergences: none. Note: the Timeline settings tab lists the new rows after the 
 - 2026-10-16: owner answered Q-095-06 A (orders 23–26) and Q-095-07 B (album day default `j M` → `j M Y` in the FR-095-07 migration); analysis gate re-run.
 - 2026-10-16: implemented T-095-01 … 06 (tests first: settings, migration, Init); translations written for 23 locales via `scratchpad/lang095.py`; drift gate passed.
 - 2026-10-16: PR #4888 CodeRabbit review → `railTicks.ts` license header added; date keys built as UTC and formatted at `+00:00` so a capture-local hour skipped by the viewer's DST change keeps its hour (FR-094-03 "no time-zone conversion"); helper check 31/31 under America/New_York, Europe/Paris, UTC.
+- 2026-10-16: Q-095-08 (owner: same-day `H:00` / multi-day `j M Y H:00`, both configurable; boundaries merge only `unknown`) and Q-095-09 A (decided on the server) → FR-095-08/09 implemented test-first; translations via `scratchpad/lang095b.py`.
