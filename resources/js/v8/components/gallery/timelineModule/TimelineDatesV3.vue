@@ -8,14 +8,19 @@
 		@pointerleave="onPointerLeave"
 		dir="ltr"
 	>
-		<!-- Resting-state ticks: labels in the unit the data spans + dots, positioned by real pixel fraction (T-067, Feature 094). -->
+		<!-- Resting-state ticks: labels in the unit the data spans + dots, positioned by real pixel fraction (T-067, Feature 094).
+		     Labels are clipped to the rail's inner width so a long admin format never covers the grid (FR-095-05). -->
 		<div
 			v-for="t in ticks"
 			:key="t.key"
 			class="absolute ltr:right-3 rtl:left-3 -translate-y-1/2 pointer-events-none whitespace-nowrap"
 			:style="{ top: `${t.topPx}px` }"
 		>
-			<span v-if="t.kind === 'label'" class="text-xs font-bold" :class="t.unitKey === highlightUnitKey ? 'text-primary' : 'text-muted'">
+			<span
+				v-if="t.kind === 'label'"
+				class="block max-w-13 overflow-hidden text-xs font-bold"
+				:class="t.unitKey === highlightUnitKey ? 'text-primary' : 'text-muted'"
+			>
 				{{ t.label }}
 			</span>
 			<span v-else class="block w-1 h-1 rounded-full bg-toned" />
@@ -155,8 +160,10 @@ import { trans_choice } from "laravel-vue-i18n";
 import { ref, computed } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { buildRailTicks, entryKeyOf, isWideLens, precisionOf, unitKeyOf } from "@/v8/utils/railTicks";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const { dir, isLTR, isRTL } = useLtRorRtL();
+const lycheeStore = useLycheeStateStore();
 
 const props = defineProps<{
 	buckets: App.Http.Resources.V3.PhotoBucketResource;
@@ -244,6 +251,12 @@ const railTicks = computed(() =>
 		}),
 		separatorTops: props.separatorTops,
 		toRailPx: clampTickPx,
+		formats: {
+			year: lycheeStore.date_scrubber_format_year,
+			month: lycheeStore.date_scrubber_format_month,
+			day: lycheeStore.date_scrubber_format_day,
+			hour: lycheeStore.date_scrubber_format_hour,
+		},
 	}),
 );
 

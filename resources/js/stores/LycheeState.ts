@@ -73,6 +73,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		date_format_sidebar_uploaded: "M j, Y, g:i:s A e",
 		date_format_sidebar_taken_at: "M j, Y, g:i:s A e",
 		date_scrubber_label_format: "j M Y",
+		date_scrubber_album_label_format: "j M Y",
+		date_scrubber_format_year: "Y",
+		date_scrubber_format_month: "M",
+		date_scrubber_format_day: "d/m",
+		date_scrubber_format_hour: "H:00",
 
 		// Enhanced Album Display
 		is_album_enhanced_display_enabled: false,
@@ -283,6 +288,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.date_format_sidebar_uploaded = data.date_format_sidebar_uploaded;
 					this.date_format_sidebar_taken_at = data.date_format_sidebar_taken_at;
 					this.date_scrubber_label_format = data.date_scrubber_label_format;
+					this.date_scrubber_album_label_format = data.date_scrubber_album_label_format;
+					this.date_scrubber_format_year = data.date_scrubber_format_year;
+					this.date_scrubber_format_month = data.date_scrubber_format_month;
+					this.date_scrubber_format_day = data.date_scrubber_format_day;
+					this.date_scrubber_format_hour = data.date_scrubber_format_hour;
 					this.album_view_mode = data.album_layout;
 
 					this.is_raw_download_enabled = data.is_raw_download_enabled;

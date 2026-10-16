@@ -39,7 +39,7 @@ Frontend only, v8 only. No API, config, storage or bucket change.
 
 ## Non-Goals
 
-- N-094-01 – Configurable label formats. `d/m` and `H:00` are fixed constants here; a later feature moves them into `InitConfig` next to `date_scrubber_label_format`.
+- N-094-01 – Configurable label formats. `d/m` and `H:00` are fixed constants here; done by Feature 095 ([spec](../095-scrubber-label-formats/spec.md)): `date_scrubber_format_year` … `_hour`.
 - N-094-02 – Lens and readout pill labels other than `/timeline` at hour granularity. They keep the bucket labels (`/timeline` at year, month, day) and `date_scrubber_label_format` (albums).
 - N-094-03 – Hour entries on album rails. Album rails keep day runs (FR-071-08, ADR-071-01), so they never show hour labels (Q-094-01).
 - N-094-04 – v7 (`TimelineDates.vue`) and the v2 Timeline path.

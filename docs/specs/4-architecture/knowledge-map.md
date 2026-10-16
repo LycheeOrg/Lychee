@@ -490,7 +490,7 @@ Key modules:
 
 ### Client-Side Date Formatting
 - v3 (struct-of-arrays) endpoints return raw UTC SQL datetimes; v2 resources return server-formatted strings.
-- Every date format the frontend applies is instance-wide and served once by `InitConfig` (`Gallery::Init` → `LycheeState`): `date_format_album_thumb`, `thumb_min_max_order`, `date_format_photo_overlay`, `date_format_sidebar_uploaded`, `date_format_sidebar_taken_at`, `date_scrubber_label_format`. `AlbumConfig`/`RootConfig` carry none.
+- Every date format the frontend applies is instance-wide and served once by `InitConfig` (`Gallery::Init` → `LycheeState`): `date_format_album_thumb`, `thumb_min_max_order`, `date_format_photo_overlay`, `date_format_sidebar_uploaded`, `date_format_sidebar_taken_at`, `date_scrubber_label_format`, `date_scrubber_album_label_format` (sub-album rail lens), `date_scrubber_format_year` / `_month` / `_day` / `_hour` (rail resting labels, Feature 095; day free, the others SE). `AlbumConfig`/`RootConfig` carry none.
 - `resources/js/v8/utils/phpDateFormat.ts`: `parseServerDateTime()` (never `new Date(raw)`), `phpDateFormat(format, date, timeZone?)` reproducing PHP `date()`, `formatServerDateTime()`. A photo's `taken_at` formats in its `taken_at_orig_tz`.
 
 ### Money Handling

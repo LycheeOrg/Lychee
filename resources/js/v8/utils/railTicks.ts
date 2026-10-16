@@ -5,7 +5,8 @@ import { phpDateFormat } from "@/v8/utils/phpDateFormat";
  * resting-state label unit of `TimelineDatesV3.vue` from the rail entries'
  * own date keys (FR-094-02): the coarsest calendar unit in which the data
  * varies, never finer than the entries themselves. Also the hourly lens
- * labels and lens width of `/timeline` (FR-094-08, FR-094-09).
+ * labels and lens width of `/timeline` (FR-094-08, FR-094-09). Label formats
+ * are admin settings (Feature 095, FR-095-03).
  */
 
 /** 1 = year, 2 = month, 3 = day, 4 = hour: the number of `-` segments of a date key. */
@@ -18,9 +19,8 @@ export type RailTicks = { unit: Precision | null; labels: RailLabel[]; dots: Rai
 /** Rail entry as `TimelineDatesV3.vue` lays it out: an id and its content-space `top`. */
 export type RailEntry = { bucketId: string; top: number };
 
-/** Day and hour tick formats — fixed until made configurable (N-094-01). */
-export const DAY_TICK_FORMAT = "d/m";
-export const HOUR_TICK_FORMAT = "H:00";
+/** PHP `date()` formats of the resting labels by unit: `date_scrubber_format_year` … `_hour` (FR-095-01). */
+export type TickFormats = { year: string; month: string; day: string; hour: string };
 
 const LABEL_EXCLUSION_PX = 16;
 const DOT_SPACING_PX = 4;
@@ -59,11 +59,13 @@ function dateOfKey(key: string): Date {
 	return new Date(year, (month ?? 1) - 1, day ?? 1, hour ?? 0);
 }
 
-const TICK_FORMATS: Record<Precision, string> = { 1: "Y", 2: "M", 3: DAY_TICK_FORMAT, 4: HOUR_TICK_FORMAT };
+function formatOfUnit(formats: TickFormats, unit: Precision): string {
+	return [formats.year, formats.month, formats.day, formats.hour][unit - 1];
+}
 
 /** Resting label of the `unit` containing `key` (FR-094-03). Keys are capture-local: no zone conversion. */
-export function formatTickLabel(key: string, unit: Precision): string {
-	return phpDateFormat(TICK_FORMATS[unit], dateOfKey(unitKeyOf(key, unit)));
+export function formatTickLabel(key: string, unit: Precision, formats: TickFormats): string {
+	return phpDateFormat(formatOfUnit(formats, unit), dateOfKey(unitKeyOf(key, unit)));
 }
 
 type KeyedEntry = { key: string; top: number };
@@ -169,7 +171,12 @@ function cullDots(dotPx: number[], labels: RailLabel[]): RailDot[] {
  * order with non-decreasing tops; `toRailPx` maps a content-space top to the
  * rail. `separatorTops` given → album dots, else `/timeline` dots.
  */
-export function buildRailTicks(input: { entries: RailEntry[]; separatorTops?: number[]; toRailPx: (contentTop: number) => number }): RailTicks {
+export function buildRailTicks(input: {
+	entries: RailEntry[];
+	separatorTops?: number[];
+	toRailPx: (contentTop: number) => number;
+	formats: TickFormats;
+}): RailTicks {
 	const entries = keyedEntries(input.entries);
 	const unit = labelUnitOf(entries.map((entry) => entry.key));
 	if (unit === null) {
@@ -179,7 +186,11 @@ export function buildRailTicks(input: { entries: RailEntry[]; separatorTops?: nu
 	const labels = cullLabels(
 		entries
 			.filter((_, i) => starts[i])
-			.map((entry) => ({ unitKey: unitKeyOf(entry.key, unit), label: formatTickLabel(entry.key, unit), topPx: input.toRailPx(entry.top) })),
+			.map((entry) => ({
+				unitKey: unitKeyOf(entry.key, unit),
+				label: formatTickLabel(entry.key, unit, input.formats),
+				topPx: input.toRailPx(entry.top),
+			})),
 	);
 	const dotTops = input.separatorTops === undefined ? unitDotTops(entries, unit) : separatorDotTops(entries, input.separatorTops, unit);
 	return { unit, labels, dots: cullDots(dotTops.map(input.toRailPx), labels) };
@@ -204,10 +215,15 @@ export function isWideLens(bucketIds: string[]): boolean {
 
 /**
  * FR-094-08: on hour-precise buckets, lens and pill labels become the day in
- * `dayFormat` plus the hour, or the hour only when every photo is on one day.
+ * `dayFormat` plus the hour in `hourFormat` (FR-095-04), or the hour only
+ * when every photo is on one day.
  * Other precisions are returned unchanged; undated ids keep their label.
  */
-export function hourlyLensLabels(buckets: App.Http.Resources.V3.PhotoBucketResource, dayFormat: string): App.Http.Resources.V3.PhotoBucketResource {
+export function hourlyLensLabels(
+	buckets: App.Http.Resources.V3.PhotoBucketResource,
+	dayFormat: string,
+	hourFormat: string,
+): App.Http.Resources.V3.PhotoBucketResource {
 	const mode = hourlyModeOf(buckets.bucket_ids);
 	if (mode === "none") {
 		return buckets;
@@ -217,7 +233,7 @@ export function hourlyLensLabels(buckets: App.Http.Resources.V3.PhotoBucketResou
 		if (key === null) {
 			return buckets.labels[i];
 		}
-		const hour = phpDateFormat(HOUR_TICK_FORMAT, dateOfKey(key));
+		const hour = phpDateFormat(hourFormat, dateOfKey(key));
 		return mode === "one_day" ? hour : `${phpDateFormat(dayFormat, dateOfKey(key))} ${hour}`;
 	});
 	return { ...buckets, labels };

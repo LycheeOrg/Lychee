@@ -329,7 +329,9 @@ const isTimelineSoaActive = computed(() => timelineStore.isTimelineSoaActive);
 
 /** Feature 094 (FR-094-08): the rail's lens and pill tell the hour on hour buckets; section headers keep the server labels. */
 const railBuckets = computed(() =>
-	timelineStore.bucketsV3 === undefined ? undefined : hourlyLensLabels(timelineStore.bucketsV3, lycheeStore.date_scrubber_label_format),
+	timelineStore.bucketsV3 === undefined
+		? undefined
+		: hourlyLensLabels(timelineStore.bucketsV3, lycheeStore.date_scrubber_label_format, lycheeStore.date_scrubber_format_hour),
 );
 
 /** Bucket currently scrolled into view in `PhotoGridVirtual.vue` (its own `activeHeaderEntry`), forwarded to `TimelineDatesV3.vue` so the sidebar's highlighted entry tracks scrolling, not just `route.params.date` (which only changes on an explicit navigation/deep-link). */
