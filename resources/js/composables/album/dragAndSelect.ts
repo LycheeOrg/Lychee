@@ -99,12 +99,18 @@ export function useDragAndSelect(
 		return y(e.clientY);
 	}
 
+	// The pointer's x in the gallery view, where `#selector` is absolutely positioned: the view
+	// does not start at the page's left edge when AlbumNavPanel.vue is open beside it.
+	function pointerX(e: MouseEvent): number {
+		return e.clientX - (document.getElementById("galleryView")?.getBoundingClientRect().left ?? 0);
+	}
+
 	// Resize the selection box based on mouse position.
 	function resize(e: MouseEvent) {
 		if (initialPosition.value === undefined) return false;
 		togglableStore.isDragging = true;
 
-		const diffX = e.pageX - initialPosition.value.left;
+		const diffX = pointerX(e) - initialPosition.value.left;
 		const diffY = pointerY(e) - initialPosition.value.top;
 
 		position.value = {
@@ -238,11 +244,11 @@ export function useDragAndSelect(
 
 		initialPosition.value = {
 			top: pointerY(e),
-			left: e.pageX,
+			left: pointerX(e),
 		};
 		position.value = {
 			top: pointerY(e),
-			left: e.pageX,
+			left: pointerX(e),
 		};
 		document.addEventListener("mousemove", resize);
 		document.addEventListener("mouseup", stopResize);
