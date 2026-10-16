@@ -1,3 +1,9 @@
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
 import { phpDateFormat } from "@/v8/utils/phpDateFormat";
 
 /**
@@ -54,9 +60,21 @@ export function spanUnit(min: string, max: string, e: Precision): Precision {
 	return e;
 }
 
+/**
+ * Keys are capture-local wall-clock fields, so they are built as a UTC instant
+ * and formatted at a fixed `+00:00` offset: built in the viewer's zone, an hour
+ * skipped by its DST change (`2026-03-08-02` in America/New_York) would print
+ * as `03:00`.
+ */
+const KEY_ZONE = "+00:00";
+
 function dateOfKey(key: string): Date {
 	const [year, month, day, hour] = key.split("-").map(Number);
-	return new Date(year, (month ?? 1) - 1, day ?? 1, hour ?? 0);
+	return new Date(Date.UTC(year, (month ?? 1) - 1, day ?? 1, hour ?? 0));
+}
+
+function formatKey(format: string, key: string): string {
+	return phpDateFormat(format, dateOfKey(key), KEY_ZONE);
 }
 
 function formatOfUnit(formats: TickFormats, unit: Precision): string {
@@ -65,7 +83,7 @@ function formatOfUnit(formats: TickFormats, unit: Precision): string {
 
 /** Resting label of the `unit` containing `key` (FR-094-03). Keys are capture-local: no zone conversion. */
 export function formatTickLabel(key: string, unit: Precision, formats: TickFormats): string {
-	return phpDateFormat(formatOfUnit(formats, unit), dateOfKey(unitKeyOf(key, unit)));
+	return formatKey(formatOfUnit(formats, unit), unitKeyOf(key, unit));
 }
 
 type KeyedEntry = { key: string; top: number };
@@ -233,8 +251,8 @@ export function hourlyLensLabels(
 		if (key === null) {
 			return buckets.labels[i];
 		}
-		const hour = phpDateFormat(hourFormat, dateOfKey(key));
-		return mode === "one_day" ? hour : `${phpDateFormat(dayFormat, dateOfKey(key))} ${hour}`;
+		const hour = formatKey(hourFormat, key);
+		return mode === "one_day" ? hour : `${formatKey(dayFormat, key)} ${hour}`;
 	});
 	return { ...buckets, labels };
 }
