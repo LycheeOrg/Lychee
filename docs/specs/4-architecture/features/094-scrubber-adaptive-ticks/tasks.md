@@ -57,7 +57,16 @@ _Last updated: 2026-10-16_
 - [x] T-094-09 – Browser check of hourly albums (S-094-10, EX-094-A16, L09, L10) and docs (spec, plan drift note, roadmap).  
   _Verification commands:_ `run-lychee` scratch instance.
 
+- [x] T-094-10 – No lens on hour-only rails (FR-094-11).  
+  _Intent:_ `railTicks.ts` `hasLens()` pure helper; `TimelineDatesV3.vue` keeps the lens closed when it returns false, so the focal line and the pill beside the rail show.  
+  _Verification commands:_  
+  - `npm run format`  
+  - `npm run check`  
+  - `run-lychee` browser check: album with hour headers on one day (no lens), several days (wide lens)
+
 ## Notes / TODOs
+
+- 2026-10-16 (FR-094-11): browser — `/timeline` as `uh` (D-H, one day): hover shows the focal line and pill `15:00  2 photos`, no lens. As `udense` (hours over months): wide lens unchanged.
 
 - 2026-10-16 (Q-094-09): browser — A16 (hour headers, one day): rail `18:00` … `09:00`, pill `15:00  2 photos`; AD (hour headers, months): wide lens with date and hour, pill `18 Jun 2026 04:00  1 photo`. A11 (one photo at 10:00 on four days) shows no rail: its four hour buckets are merged into one `10:00` boundary by `computeBucketBoundaries()` — Q-095-08.
 

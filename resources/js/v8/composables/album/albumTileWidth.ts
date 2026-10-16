@@ -3,6 +3,9 @@ import { storeToRefs } from "pinia";
 import { useBreakpoints, useWindowSize, breakpointsTailwind } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
+import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 
 /**
  * `breakpointsTailwind` (`@vueuse/core`) only carries Tailwind's own
@@ -108,6 +111,16 @@ const GAP_PX: Record<string, number> = {
 
 const REM_PX = 16;
 
+/** `TimelineDatesV3.vue`'s rail (`w-16`), mounted beside the grids of `AlbumPanel.vue`. */
+const DATE_SCRUBBER_WIDTH_PX = 64;
+
+/** `--nav-bar-width`, resolved once on first use: it is a constant of the stylesheet. */
+let navBarWidthPx: number | undefined = undefined;
+function getNavBarWidthPx(): number {
+	navBarWidthPx ??= resolveCssLengthPx("var(--nav-bar-width)");
+	return navBarWidthPx;
+}
+
 /**
  * Imperative, synchronous equivalent of `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()`
  * — same threshold table, but a plain function of a width
@@ -205,9 +218,12 @@ export type AlbumTileWidthResult = {
  * post-mount correction (see WRAPPER_PADDING_PX's own comment for why that
  * matters here specifically).
  */
-export function useAlbumTileWidth(): AlbumTileWidthResult {
+export function useAlbumTileWidth(withDateScrubber: boolean = false): AlbumTileWidthResult {
 	const lycheeStore = useLycheeStateStore();
-	const { number_albums_per_row_mobile } = storeToRefs(lycheeStore);
+	const { number_albums_per_row_mobile, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+	const { isNavOpen } = storeToRefs(useTogglablesStateStore());
+	const { isAvailable: isDateScrubberAvailable, isHidden: isDateScrubberHidden } = useAlbumDateScrubberState();
+	const isNavPanelInline = useBreakpoints(breakpointsTailwind).greaterOrEqual("lg");
 
 	const { width: viewportWidth } = useWindowSize();
 	const breakpoints = useBreakpoints(ALBUM_TILE_BREAKPOINTS);
@@ -242,10 +258,21 @@ export function useAlbumTileWidth(): AlbumTileWidthResult {
 	// recomputed total size on a large album. Deriving padding from the
 	// breakpoint (a synchronously-available value, no DOM/mount dependency)
 	// avoids that transition entirely.)
+	// Width taken beside the grid by AlbumNavPanel.vue (inline on desktop only, a slideover
+	// below lg) and, for AlbumPanel.vue's grids, the date scrubber rail. Not subtracted, the
+	// tiles overflow under them and drag selection hit-boxes no longer match the rendered tiles.
+	// The scrubber counts even while a photo is open (and the rail hidden), so opening a photo
+	// does not relayout the grid underneath.
+	const sideChromeWidth = computed(() => {
+		const nav = is_struct_of_array_enabled.value && isNavOpen.value && isNavPanelInline.value ? getNavBarWidthPx() : 0;
+		const scrubber = withDateScrubber && isDateScrubberAvailable.value && !isDateScrubberHidden.value ? DATE_SCRUBBER_WIDTH_PX : 0;
+		return nav + scrubber;
+	});
+
 	const containerWidth = computed(() => {
 		const paddingPx = activeBreakpoint.value === "" ? WRAPPER_PADDING_PX_MOBILE : WRAPPER_PADDING_PX;
 		const scrollbarWidth = isTouchDevice() ? 0 : ASSUMED_SCROLLBAR_WIDTH;
-		return Math.max(0, viewportWidth.value - paddingPx * 2 - scrollbarWidth);
+		return Math.max(0, viewportWidth.value - paddingPx * 2 - scrollbarWidth - sideChromeWidth.value);
 	});
 
 	const geometry = computed<AlbumTileGeometry>(() =>
