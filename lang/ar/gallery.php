@@ -383,6 +383,7 @@ return [
         'download_all' => 'تنزيل المحدد',
         'merge' => 'دمج',
         'merge_all' => 'دمج المحدد',
+        'open_in_new_tab' => 'فتح في علامة تبويب جديدة',
         'apply_renamer' => 'تطبيق إعادة التسمية',
         'apply_renamer_all' => 'تطبيق إعادة التسمية على المحدد',
         'scan_faces' => 'مسح بحثًا عن الوجوه',

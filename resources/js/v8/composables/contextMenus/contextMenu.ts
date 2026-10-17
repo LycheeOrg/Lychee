@@ -3,6 +3,8 @@ import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { computed, Ref, ref } from "vue";
+import { useRouter } from "vue-router";
+import { albumHref, openInNewTab } from "@/composables/album/openAlbumInNewTab";
 
 export type Selectors = {
 	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
@@ -58,6 +60,11 @@ type MenuItem = {
 	callback?: () => void;
 };
 
+/** Whether at least one entry survives the `access` filter: gates the divider that precedes a group. */
+function hasAccessibleItem(items: MenuItem[]): boolean {
+	return items.some((item) => item.access !== false);
+}
+
 // Helpers functions to reduce.
 function canMove(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_move;
@@ -77,6 +84,7 @@ function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Mode
 
 export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallbacks, albumCallbacks: AlbumCallbacks) {
 	const { rights } = useGlobalRights();
+	const router = useRouter();
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
@@ -332,13 +340,13 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			return [];
 		}
 
-		const menuItems = [];
+		const actions: MenuItem[] = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
 		const lycheeStateStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
 			const parent_album = selectors.album?.value as App.Http.Resources.Models.HeadAlbumResource | undefined;
-			menuItems.push({
+			actions.push({
 				label: parent_album?.cover_id === selectedAlbum.thumb?.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "lucide:id-card",
 				callback: albumCallbacks.setAsCover,
@@ -346,7 +354,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		menuItems.push(
+		actions.push(
 			...[
 				{
 					label: "gallery.menus.rename",
@@ -399,7 +407,20 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			],
 		);
 
-		return menuItems;
+		function openSelectedAlbumInNewTab(): void {
+			openInNewTab(albumHref(router, selectedAlbum.id));
+		}
+
+		return [
+			{
+				label: "gallery.menus.open_in_new_tab",
+				icon: "lucide:external-link",
+				callback: openSelectedAlbumInNewTab,
+				access: true,
+			},
+			{ is_divider: true, access: hasAccessibleItem(actions) },
+			...actions,
+		];
 	}
 
 	function albumsMenu() {

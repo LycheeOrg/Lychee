@@ -383,6 +383,7 @@ return [
         'download_all' => 'Last ned valgte',
         'merge' => 'Slå sammen',
         'merge_all' => 'Slå sammen valgte',
+        'open_in_new_tab' => 'Åpne i ny fane',
         'apply_renamer' => 'Bruk omdøper',
         'apply_renamer_all' => 'Bruk omdøper på valgte',
         'scan_faces' => 'Skann etter ansikter',

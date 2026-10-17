@@ -383,6 +383,7 @@ return [
         'download_all' => 'Download Selected',
         'merge' => 'Merge',
         'merge_all' => 'Merge Selected',
+        'open_in_new_tab' => 'Open in a new tab',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
         'scan_faces' => 'Scan for Faces',

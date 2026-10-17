@@ -383,6 +383,7 @@ return [
         'download_all' => 'Auswahl herunterladen',
         'merge' => 'Zusammenführen',
         'merge_all' => 'Auswahl zusammenführen',
+        'open_in_new_tab' => 'In neuem Tab öffnen',
         'apply_renamer' => 'Umbenennungsregeln auf Auswahl anwenden',
         'apply_renamer_all' => 'Auswahl umbenennen',
         'scan_faces' => 'Nach Gesichtern suchen',

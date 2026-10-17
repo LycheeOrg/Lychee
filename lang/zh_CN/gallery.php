@@ -383,6 +383,7 @@ return [
         'download_all' => '下载所选',
         'merge' => '合并',
         'merge_all' => '合并所选',
+        'open_in_new_tab' => '在新标签页中打开',
         'apply_renamer' => '应用重命名器',
         'apply_renamer_all' => '对所选应用重命名器',
         'scan_faces' => '扫描人脸',

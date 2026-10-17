@@ -383,6 +383,7 @@ return [
         'download_all' => 'Seçilenleri İndir',
         'merge' => 'Birleştir',
         'merge_all' => 'Seçilenleri Birleştir',
+        'open_in_new_tab' => 'Yeni sekmede aç',
         'apply_renamer' => 'Yeniden Adlandırıcıyı Uygula',
         'apply_renamer_all' => 'Seçilenlere Yeniden Adlandırıcıyı Uygula',
         'scan_faces' => 'Yüzleri Tara',
