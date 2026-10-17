@@ -9,6 +9,8 @@ return [
     'title' => 'Gallery',
     'smart_albums' => 'Smart Albums',
     'pinned_albums' => 'Featured Albums',
+    'tag_albums' => 'Tag Albums',
+    'person_albums' => 'Person Albums',
     'albums' => 'Albums',
     'set_focus' => 'Set Focus',
     'set_header_focus' => 'Set Header Focus',

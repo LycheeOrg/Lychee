@@ -8,6 +8,8 @@ return [
     'title' => 'Galéria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Rögzített albumok',
+    'tag_albums' => 'Címkealbumok',
+    'person_albums' => 'Személyalbumok',
     'albums' => 'Albumok',
     'root' => 'Albumok',
     'nav_tree' => [

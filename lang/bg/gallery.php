@@ -8,6 +8,8 @@ return [
     'title' => 'Галерия',
     'smart_albums' => 'Умни албуми',
     'pinned_albums' => 'Избрани албуми',
+    'tag_albums' => 'Албуми с етикети',
+    'person_albums' => 'Албуми на хора',
     'albums' => 'Албуми',
     'root' => 'Албуми',
     'nav_tree' => [

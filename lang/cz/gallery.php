@@ -8,6 +8,8 @@ return [
     'title' => 'Galerie',
     'smart_albums' => 'Chytrá alba',
     'pinned_albums' => 'Připnutá alba',
+    'tag_albums' => 'Štítková alba',
+    'person_albums' => 'Alba osob',
     'albums' => 'Alba',
     'root' => 'Alba',
     'nav_tree' => [

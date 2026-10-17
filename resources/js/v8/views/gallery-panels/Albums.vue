@@ -30,15 +30,35 @@
 						@scroll="onScroll"
 					>
 						<SelectDrag :with-scroll="false" />
-						<!-- Smart Albums (always visible, above tabs per spec) -->
-						<AlbumThumbPanel
-							v-if="albumsStore.smartAlbums.length > 0"
-							header="gallery.smart_albums"
-							:albums="albumsStore.smartAlbums"
-							:is-alone="!albumsStore.albums.length"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
+						<!-- Virtual album panels: the gap separates consecutive rendered panels only (FR-098-08). -->
+						<div class="flex flex-col gap-4">
+							<!-- Smart Albums (always visible, above tabs per spec) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.smartAlbumsPanel.length > 0"
+								header="gallery.smart_albums"
+								:albums="albumsStore.smartAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.tagAlbumsPanel.length > 0"
+								header="gallery.tag_albums"
+								:albums="albumsStore.tagAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<AlbumThumbPanel
+								v-if="albumsStore.personAlbumsPanel.length > 0"
+								header="gallery.person_albums"
+								:albums="albumsStore.personAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+						</div>
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">
@@ -480,6 +500,15 @@ const hasSharedAlbums = computed(() => {
 
 // Check if we should show shared albums section (for inline mode)
 const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
+
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-098-07).
+const isVirtualPanelAlone = computed(
+	() =>
+		albumsStore.virtualPanelCount === 1 &&
+		albumsStore.albums.length === 0 &&
+		albumsStore.pinnedAlbums.length === 0 &&
+		!shouldShowSharedAlbums.value,
+);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {
