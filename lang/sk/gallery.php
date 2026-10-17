@@ -8,6 +8,8 @@ return [
     'title' => 'Galéria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Pripnuté albumy',
+    'tag_albums' => 'Albumy štítkov',
+    'person_albums' => 'Albumy osôb',
     'albums' => 'Albumy',
     'root' => 'Albumy',
     'nav_tree' => [

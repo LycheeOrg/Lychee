@@ -8,6 +8,8 @@ return [
     'title' => 'گالری',
     'smart_albums' => 'آلبوم‌های هوشمند',
     'pinned_albums' => 'آلبوم‌های سنجاق‌شده',
+    'tag_albums' => 'آلبوم‌های برچسب',
+    'person_albums' => 'آلبوم‌های شخص',
     'albums' => 'آلبوم‌ها',
     'root' => 'آلبوم‌ها',
     'nav_tree' => [
