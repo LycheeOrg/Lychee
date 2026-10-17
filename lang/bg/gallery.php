@@ -8,6 +8,8 @@ return [
     'title' => 'Галерия',
     'smart_albums' => 'Умни албуми',
     'pinned_albums' => 'Избрани албуми',
+    'tag_albums' => 'Албуми с етикети',
+    'person_albums' => 'Албуми на хора',
     'albums' => 'Албуми',
     'root' => 'Албуми',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Изтегли избраните',
         'merge' => 'Слей',
         'merge_all' => 'Слей избраните',
+        'open_in_new_tab' => 'Отваряне в нов раздел',
         'apply_renamer' => 'Приложи преименуване',
         'apply_renamer_all' => 'Приложи преименуване към избраните',
         'scan_faces' => 'Сканирай за лица',

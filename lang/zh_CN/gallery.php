@@ -8,6 +8,8 @@ return [
     'title' => '相册',
     'smart_albums' => '智能相册',
     'pinned_albums' => '置顶相册',
+    'tag_albums' => '标签相册',
+    'person_albums' => '人物相册',
     'albums' => '相册',
     'root' => '相册',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => '下载所选',
         'merge' => '合并',
         'merge_all' => '合并所选',
+        'open_in_new_tab' => '在新标签页中打开',
         'apply_renamer' => '应用重命名器',
         'apply_renamer_all' => '对所选应用重命名器',
         'scan_faces' => '扫描人脸',

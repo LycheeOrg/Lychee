@@ -885,6 +885,8 @@ declare namespace App {
 					is_header_bar_transparent: boolean;
 					is_header_bar_gradient: boolean;
 					shared_albums_visibility_mode: App.Enum.SharedAlbumsVisibility;
+					is_tag_albums_separate_category_enabled: boolean;
+					is_person_albums_separate_category_enabled: boolean;
 				};
 				export type SettingsConfig = {
 					default_old_settings: boolean;

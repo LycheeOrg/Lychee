@@ -8,6 +8,8 @@ return [
     'title' => '相簿集',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => '釘選相冊',
+    'tag_albums' => '標籤相簿',
+    'person_albums' => '人物相簿',
     'albums' => '相簿',
     'root' => '相簿',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => '下載所選項目',
         'merge' => '合併',
         'merge_all' => '合併所選項目',
+        'open_in_new_tab' => '在新分頁中開啟',
         'apply_renamer' => '套用重新命名',
         'apply_renamer_all' => '對所選項目套用重新命名',
         'scan_faces' => '掃描臉孔',

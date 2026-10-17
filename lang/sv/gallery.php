@@ -8,6 +8,8 @@ return [
     'title' => 'Galleri',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Fästa album',
+    'tag_albums' => 'Taggalbum',
+    'person_albums' => 'Personalbum',
     'albums' => 'Album',
     'root' => 'Album',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Ladda ner valda',
         'merge' => 'Slå samman',
         'merge_all' => 'Slå samman valda',
+        'open_in_new_tab' => 'Öppna i ny flik',
         'apply_renamer' => 'Tillämpa namnbytare',
         'apply_renamer_all' => 'Tillämpa namnbytare på valda',
         'scan_faces' => 'Sök efter ansikten',

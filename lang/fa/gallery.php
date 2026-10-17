@@ -8,6 +8,8 @@ return [
     'title' => 'گالری',
     'smart_albums' => 'آلبوم‌های هوشمند',
     'pinned_albums' => 'آلبوم‌های سنجاق‌شده',
+    'tag_albums' => 'آلبوم‌های برچسب',
+    'person_albums' => 'آلبوم‌های شخص',
     'albums' => 'آلبوم‌ها',
     'root' => 'آلبوم‌ها',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'دانلود انتخاب شده‌ها',
         'merge' => 'ادغام',
         'merge_all' => 'ادغام انتخاب شده‌ها',
+        'open_in_new_tab' => 'باز کردن در برگه جدید',
         'apply_renamer' => 'اعمال تغییر نام',
         'apply_renamer_all' => 'اعمال تغییر نام روی انتخاب شده‌ها',
         'scan_faces' => 'اسکن چهره‌ها',

@@ -8,6 +8,8 @@ return [
     'title' => 'Galéria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Rögzített albumok',
+    'tag_albums' => 'Címkealbumok',
+    'person_albums' => 'Személyalbumok',
     'albums' => 'Albumok',
     'root' => 'Albumok',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Kijelöltek letöltése',
         'merge' => 'Egyesítés',
         'merge_all' => 'Kijelöltek egyesítése',
+        'open_in_new_tab' => 'Megnyitás új lapon',
         'apply_renamer' => 'Átnevező alkalmazása',
         'apply_renamer_all' => 'Átnevező alkalmazása a kijelöltekre',
         'scan_faces' => 'Arcok keresése',

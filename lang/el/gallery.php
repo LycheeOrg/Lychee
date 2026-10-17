@@ -8,6 +8,8 @@ return [
     'title' => 'Συλλογή',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Καρφιτσωμένα άλμπουμ',
+    'tag_albums' => 'Άλμπουμ ετικετών',
+    'person_albums' => 'Άλμπουμ προσώπων',
     'albums' => 'Άλμπουμ',
     'root' => 'Άλμπουμ',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Λήψη επιλεγμένων',
         'merge' => 'Συγχώνευση',
         'merge_all' => 'Συγχώνευση επιλεγμένων',
+        'open_in_new_tab' => 'Άνοιγμα σε νέα καρτέλα',
         'apply_renamer' => 'Εφαρμογή μετονομασίας',
         'apply_renamer_all' => 'Εφαρμογή μετονομασίας στα επιλεγμένα',
         'scan_faces' => 'Σάρωση για πρόσωπα',

@@ -8,6 +8,8 @@ return [
     'title' => 'Thư viện ảnh',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Album được ghim',
+    'tag_albums' => 'Album thẻ',
+    'person_albums' => 'Album người',
     'albums' => 'Album',
     'root' => 'Album',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Tải xuống mục đã chọn',
         'merge' => 'Gộp',
         'merge_all' => 'Gộp mục đã chọn',
+        'open_in_new_tab' => 'Mở trong thẻ mới',
         'apply_renamer' => 'Áp dụng trình đổi tên',
         'apply_renamer_all' => 'Áp dụng trình đổi tên cho mục đã chọn',
         'scan_faces' => 'Quét khuôn mặt',

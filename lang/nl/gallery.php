@@ -8,6 +8,8 @@ return [
     'title' => 'Galerij',
     'smart_albums' => 'Slimme albums',
     'pinned_albums' => 'Vastgepinde albums',
+    'tag_albums' => 'Tagalbums',
+    'person_albums' => 'Personenalbums',
     'albums' => 'Albums',
     'root' => 'Albums',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Alles downloaden',
         'merge' => 'Samenvoegen',
         'merge_all' => 'Alles samenvoegen',
+        'open_in_new_tab' => 'Openen in een nieuw tabblad',
         'apply_renamer' => 'Hernoemregels toepassen',
         'apply_renamer_all' => 'Hernoemregels toepassen op selectie',
         'scan_faces' => 'Scannen op gezichten',

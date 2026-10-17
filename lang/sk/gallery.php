@@ -8,6 +8,8 @@ return [
     'title' => 'Galéria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Pripnuté albumy',
+    'tag_albums' => 'Albumy štítkov',
+    'person_albums' => 'Albumy osôb',
     'albums' => 'Albumy',
     'root' => 'Albumy',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Stiahnuť vybrané',
         'merge' => 'Zlúčiť',
         'merge_all' => 'Zlúčiť vybrané',
+        'open_in_new_tab' => 'Otvoriť na novej karte',
         'apply_renamer' => 'Použiť premenovanie',
         'apply_renamer_all' => 'Použiť premenovanie na vybrané',
         'scan_faces' => 'Hľadať tváre',

@@ -51,8 +51,27 @@ export const useAlbumsStore = defineStore("albums-store", {
 		sharedBoundariesV3: null as AlbumBucketBoundary[] | null,
 	}),
 	getters: {
+		/** Every virtual album (smart, tag, person), whichever panel shows it. */
 		smartAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {
 			return state.baseSmartAlbums.concat(state.tagAlbums).concat(state.personAlbums);
+		},
+		/** Feature 098: tag albums shown in their own panel; empty while they stay among the smart albums. */
+		tagAlbumsPanel(state): App.Http.Resources.Models.ThumbAlbumResource[] {
+			return state.rootConfig?.is_tag_albums_separate_category_enabled === true ? state.tagAlbums : [];
+		},
+		/** Feature 098: person albums shown in their own panel; empty while they stay among the smart albums. */
+		personAlbumsPanel(state): App.Http.Resources.Models.ThumbAlbumResource[] {
+			return state.rootConfig?.is_person_albums_separate_category_enabled === true ? state.personAlbums : [];
+		},
+		/** Albums of the Smart Albums panel: `smartAlbums` minus the groups that have their own panel. */
+		smartAlbumsPanel(): App.Http.Resources.Models.ThumbAlbumResource[] {
+			const tag = this.tagAlbumsPanel.length > 0 ? [] : this.tagAlbums;
+			const person = this.personAlbumsPanel.length > 0 ? [] : this.personAlbums;
+			return this.baseSmartAlbums.concat(tag).concat(person);
+		},
+		/** Number of non-empty virtual album panels (smart, tag, person). */
+		virtualPanelCount(): number {
+			return [this.smartAlbumsPanel, this.tagAlbumsPanel, this.personAlbumsPanel].filter((panel) => panel.length > 0).length;
 		},
 		// We use state here because we want the RETURN type inference
 		selectableAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {

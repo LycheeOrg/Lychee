@@ -8,6 +8,8 @@ return [
     'title' => 'Galleria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Album fissati',
+    'tag_albums' => 'Album tag',
+    'person_albums' => 'Album persona',
     'albums' => 'Album',
     'root' => 'Album',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Scarica selezione',
         'merge' => 'Unisci',
         'merge_all' => 'Unisci selezione',
+        'open_in_new_tab' => 'Apri in una nuova scheda',
         'apply_renamer' => 'Applica rinomina',
         'apply_renamer_all' => 'Applica rinomina alla selezione',
         'scan_faces' => 'Cerca volti',

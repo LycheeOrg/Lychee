@@ -19,7 +19,10 @@
 		<div class="flex">
 			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
 			<div class="flex-1 flex-col min-w-0">
-				<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
+				<!-- Disabled only when there is no album to right-click at all: `selectableAlbums` is the pool the
+				     selection resolves against (own, pinned and shared scopes), so a guest whose public albums arrive
+				     through the shared scope still gets the menu (Feature 097, FR-097-06). -->
+				<UContextMenu :items="menuSections" :disabled="albumsStore.selectableAlbums.length === 0" class="contents">
 					<div
 						v-if="albumsStore.rootConfig && albumsStore.rootRights"
 						id="galleryView"
@@ -27,15 +30,35 @@
 						@scroll="onScroll"
 					>
 						<SelectDrag :with-scroll="false" />
-						<!-- Smart Albums (always visible, above tabs per spec) -->
-						<AlbumThumbPanel
-							v-if="albumsStore.smartAlbums.length > 0"
-							header="gallery.smart_albums"
-							:albums="albumsStore.smartAlbums"
-							:is-alone="!albumsStore.albums.length"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
+						<!-- Virtual album panels: the gap separates consecutive rendered panels only (FR-098-08). -->
+						<div class="flex flex-col gap-4">
+							<!-- Smart Albums (always visible, above tabs per spec) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.smartAlbumsPanel.length > 0"
+								header="gallery.smart_albums"
+								:albums="albumsStore.smartAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.tagAlbumsPanel.length > 0"
+								header="gallery.tag_albums"
+								:albums="albumsStore.tagAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<AlbumThumbPanel
+								v-if="albumsStore.personAlbumsPanel.length > 0"
+								header="gallery.person_albums"
+								:albums="albumsStore.personAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+						</div>
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">
@@ -477,6 +500,15 @@ const hasSharedAlbums = computed(() => {
 
 // Check if we should show shared albums section (for inline mode)
 const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
+
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-098-07).
+const isVirtualPanelAlone = computed(
+	() =>
+		albumsStore.virtualPanelCount === 1 &&
+		albumsStore.albums.length === 0 &&
+		albumsStore.pinnedAlbums.length === 0 &&
+		!shouldShowSharedAlbums.value,
+);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {

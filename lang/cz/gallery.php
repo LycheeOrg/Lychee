@@ -8,6 +8,8 @@ return [
     'title' => 'Galerie',
     'smart_albums' => 'Chytrá alba',
     'pinned_albums' => 'Připnutá alba',
+    'tag_albums' => 'Štítková alba',
+    'person_albums' => 'Alba osob',
     'albums' => 'Alba',
     'root' => 'Alba',
     'nav_tree' => [
@@ -383,6 +385,7 @@ return [
         'download_all' => 'Stáhnout vybrané',
         'merge' => 'Sloučit',
         'merge_all' => 'Sloučit vybrané',
+        'open_in_new_tab' => 'Otevřít na nové kartě',
         'approve' => 'Schválit',
         'approve_all' => 'Schválit vybrané',
         'apply_renamer' => 'Použít přejmenování',
