@@ -383,6 +383,7 @@ return [
         'download_all' => 'Stáhnout vybrané',
         'merge' => 'Sloučit',
         'merge_all' => 'Sloučit vybrané',
+        'open_in_new_tab' => 'Otevřít na nové kartě',
         'approve' => 'Schválit',
         'approve_all' => 'Schválit vybrané',
         'apply_renamer' => 'Použít přejmenování',

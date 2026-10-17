@@ -383,6 +383,7 @@ return [
         'download_all' => 'Descargar seleccionado',
         'merge' => 'Unir',
         'merge_all' => 'Fusionar seleccionados',
+        'open_in_new_tab' => 'Abrir en una pestaña nueva',
         'apply_renamer' => 'Aplicar Renamer',
         'apply_renamer_all' => 'Aplicar Renamer a los archivos seleccionados',
         'scan_faces' => 'Buscar rostros',

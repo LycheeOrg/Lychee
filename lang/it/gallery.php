@@ -383,6 +383,7 @@ return [
         'download_all' => 'Scarica selezione',
         'merge' => 'Unisci',
         'merge_all' => 'Unisci selezione',
+        'open_in_new_tab' => 'Apri in una nuova scheda',
         'apply_renamer' => 'Applica rinomina',
         'apply_renamer_all' => 'Applica rinomina alla selezione',
         'scan_faces' => 'Cerca volti',
