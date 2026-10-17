@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="isEditOpen" fullscreen :dismissible="false" :title="modalTitle" :close="{ icon: 'lucide:x' }">
+	<UModal v-model:open="isEditOpen" fullscreen :title="modalTitle" :close="{ icon: 'lucide:x' }">
 		<template #body>
 			<div class="w-full max-w-4xl mx-auto">
 				<form v-if="photo" class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,1fr)] justify-center">

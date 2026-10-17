@@ -1,7 +1,13 @@
 <template>
 	<UModal v-if="photoStore.photo" :open="true" fullscreen :dismissible="false" :close="false" :ui="{ content: 'bg-black' }">
 		<template #content>
-			<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
+			<PhotoHeader
+				@toggle-slide-show="emits('toggleSlideShow')"
+				@go-back="emits('goBack')"
+				@toggle-highlight="emits('toggleHighlight')"
+				@toggle-move="emits('toggleMove')"
+				@toggle-delete="emits('toggleDelete')"
+			/>
 			<UMain class="relative mt-(--ui-header-height)">
 				<UDashboardGroup storageKey="photo-panel" storage="local" :persistent="true" class="relative w-full h-full overflow-hidden bg-black">
 					<PhotoDetails v-if="!is_exif_disabled && !isLeftToRight" :is-map-visible="props.isMapVisible" />
@@ -33,8 +39,9 @@
 						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 						<PhotoRatingOverlay />
 						<Dock
-							v-if="canEditCurrentPhoto && !is_photo_edit_open && !photoStore.is_zoomed"
-							:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
+							v-if="
+								canEditCurrentPhoto && !is_photo_edit_open && !photoStore.is_zoomed && photoStore.imageViewMode !== ImageViewMode.Pdf
+							"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"
 							@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
@@ -139,6 +146,11 @@ function scrollTo(event: WheelEvent) {
 
 	// FR-082-10: the wheel zooms the sphere, it never changes photo.
 	if (photoStore.isSphereView && !is_slideshow_active.value) {
+		return;
+	}
+
+	// FR-099-01: the wheel scrolls the PDF pages, it never changes photo.
+	if (photoStore.imageViewMode === ImageViewMode.Pdf) {
 		return;
 	}
 
