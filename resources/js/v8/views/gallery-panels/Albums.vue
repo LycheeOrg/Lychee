@@ -36,7 +36,7 @@
 							:selected-albums="[]"
 							:is-timeline="false"
 						/>
-						<!-- Tag and Person Albums, when their settings give them their own category (Feature 097) -->
+						<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
 						<AlbumThumbPanel
 							v-if="albumsStore.tagAlbumsPanel.length > 0"
 							header="gallery.tag_albums"
@@ -495,7 +495,7 @@ const hasSharedAlbums = computed(() => {
 // Check if we should show shared albums section (for inline mode)
 const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
 
-// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-097-07).
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-098-07).
 const isVirtualPanelAlone = computed(
 	() =>
 		albumsStore.virtualPanelCount === 1 &&

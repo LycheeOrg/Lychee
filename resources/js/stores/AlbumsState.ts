@@ -55,11 +55,11 @@ export const useAlbumsStore = defineStore("albums-store", {
 		smartAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {
 			return state.baseSmartAlbums.concat(state.tagAlbums).concat(state.personAlbums);
 		},
-		/** Feature 097: tag albums shown in their own panel; empty while they stay among the smart albums. */
+		/** Feature 098: tag albums shown in their own panel; empty while they stay among the smart albums. */
 		tagAlbumsPanel(state): App.Http.Resources.Models.ThumbAlbumResource[] {
 			return state.rootConfig?.is_tag_albums_separate_category_enabled === true ? state.tagAlbums : [];
 		},
-		/** Feature 097: person albums shown in their own panel; empty while they stay among the smart albums. */
+		/** Feature 098: person albums shown in their own panel; empty while they stay among the smart albums. */
 		personAlbumsPanel(state): App.Http.Resources.Models.ThumbAlbumResource[] {
 			return state.rootConfig?.is_person_albums_separate_category_enabled === true ? state.personAlbums : [];
 		},

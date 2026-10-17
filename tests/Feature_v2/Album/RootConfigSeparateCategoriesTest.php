@@ -23,7 +23,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 097 (FR-097-01/02, S-097-01..04): the tag and person album
+ * Feature 098 (FR-098-01/02, S-098-01..04): the tag and person album
  * category flags of `RootConfig`, as returned by `GET /Albums`.
  */
 class RootConfigSeparateCategoriesTest extends BaseApiWithDataTest
