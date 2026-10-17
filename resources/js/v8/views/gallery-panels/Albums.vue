@@ -19,7 +19,10 @@
 		<div class="flex">
 			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
 			<div class="flex-1 flex-col min-w-0">
-				<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
+				<!-- Disabled only when there is no album to right-click at all: `selectableAlbums` is the pool the
+				     selection resolves against (own, pinned and shared scopes), so a guest whose public albums arrive
+				     through the shared scope still gets the menu (Feature 097, FR-097-06). -->
+				<UContextMenu :items="menuSections" :disabled="albumsStore.selectableAlbums.length === 0" class="contents">
 					<div
 						v-if="albumsStore.rootConfig && albumsStore.rootRights"
 						id="galleryView"

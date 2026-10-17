@@ -385,6 +385,7 @@ return [
         'download_all' => 'Stiahnuť vybrané',
         'merge' => 'Zlúčiť',
         'merge_all' => 'Zlúčiť vybrané',
+        'open_in_new_tab' => 'Otvoriť na novej karte',
         'apply_renamer' => 'Použiť premenovanie',
         'apply_renamer_all' => 'Použiť premenovanie na vybrané',
         'scan_faces' => 'Hľadať tváre',

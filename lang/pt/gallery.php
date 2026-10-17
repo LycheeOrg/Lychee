@@ -385,6 +385,7 @@ return [
         'download_all' => 'Transferir selecionadas',
         'merge' => 'Unir',
         'merge_all' => 'Unir selecionados',
+        'open_in_new_tab' => 'Abrir num novo separador',
         'apply_renamer' => 'Aplicar renomeador',
         'apply_renamer_all' => 'Aplicar renomeador às selecionadas',
         'scan_faces' => 'Procurar rostos',

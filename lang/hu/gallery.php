@@ -385,6 +385,7 @@ return [
         'download_all' => 'Kijelöltek letöltése',
         'merge' => 'Egyesítés',
         'merge_all' => 'Kijelöltek egyesítése',
+        'open_in_new_tab' => 'Megnyitás új lapon',
         'apply_renamer' => 'Átnevező alkalmazása',
         'apply_renamer_all' => 'Átnevező alkalmazása a kijelöltekre',
         'scan_faces' => 'Arcok keresése',

@@ -385,6 +385,7 @@ return [
         'download_all' => '選択項目をダウンロード',
         'merge' => '統合',
         'merge_all' => '選択項目を統合',
+        'open_in_new_tab' => '新しいタブで開く',
         'apply_renamer' => 'リネームを適用',
         'apply_renamer_all' => '選択項目にリネームを適用',
         'scan_faces' => '顔をスキャン',

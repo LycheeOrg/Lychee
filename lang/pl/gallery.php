@@ -385,6 +385,7 @@ return [
         'download_all' => 'Pobierz wybrane',
         'merge' => 'Scal',
         'merge_all' => 'Scal wybrane',
+        'open_in_new_tab' => 'Otwórz w nowej karcie',
         'apply_renamer' => 'Zastosuj zmianę nazw',
         'apply_renamer_all' => 'Zastosuj zmianę nazw do zaznaczonych',
         'scan_faces' => 'Skanuj w poszukiwaniu twarzy',

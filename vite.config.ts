@@ -258,6 +258,15 @@ const localDevelopMiddleware: PluginOption = {
 const baseConfig = {
 	...toolchain,
 	base: "./",
+	/**
+	 * Vitest (bundled with Vite+, run with `vp test`): frontend unit tests sit
+	 * next to the module they cover as `*.test.ts` under resources/js (Feature
+	 * 097). `e2e/` holds Playwright specs, which Vitest must not pick up.
+	 */
+	test: {
+		include: ["resources/js/**/*.test.ts"],
+		environment: "jsdom",
+	},
 	plugins: [
 		leafletGlobalPlugin(),
 		tailwindcss(),
