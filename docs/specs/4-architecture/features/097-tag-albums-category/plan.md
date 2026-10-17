@@ -64,6 +64,7 @@ After I4, re-read spec FR-097-01 … 07 against the diff; record evidence (test 
 ## Appendix – Intent log
 - 2026-10-17: owner asked for a setting (off by default) grouping tag albums outside Smart Albums. Q-097-01 A, Q-097-02 C, Q-097-03 A.
 - 2026-10-17: implemented. Config keys follow the `TA_`/`PA_` prefixes (orders 13 and 103). Migration `2026_10_17_000001_add_tag_person_albums_separate_category_configs.php`. Translations added in all 23 languages (`fr/all_settings.php` keeps `details` before `documentation`, values placed accordingly).
+- 2026-10-17: PR #4895 CodeRabbit review (comment 4301966066): a lone virtual panel hid its header while Featured or shared albums were visible. Fixed by `isVirtualPanelAlone` in both views (T-097-06). This also makes the Smart Albums panel keep its header next to Featured/shared albums, which it did not before.
 
 ## Drift gate (2026-10-17)
 - FR-097-01/02: `RootConfigSeparateCategoriesTest` 4 passed; `AlbumRootConfigV3Test` 5 passed (v3 config equals v2 config, no album query → NFR-097-01).

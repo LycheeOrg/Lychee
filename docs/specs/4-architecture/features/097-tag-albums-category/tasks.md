@@ -27,5 +27,9 @@ _Last updated: 2026-10-17_
 - [x] T-097-05 – Browser check on a scratch instance (S-097-02 … 06, v7 and v8); knowledge map and roadmap.  
   _Verification commands:_ run-lychee scratch instance.
 
+- [x] T-097-06 – PR #4895 review: virtual panels keep their header while Featured or shared albums are visible (FR-097-07).  
+  _Intent:_ `isVirtualPanelAlone` computed in v7 and v8 `Albums.vue` (one non-empty virtual panel, no regular, pinned or shared albums) replaces the per-panel `!albums.length && virtualPanelCount === 1`, for the Smart, Tag and Person panels.  
+  _Verification commands:_ `vp check --fix` (scoped), `vp run typecheck`, scratch browser check (built-in smart albums disabled, `deduplicate_pinned_albums` on, Family pinned: headers `Smart Albums | Featured Albums` in v8 and v7).
+
 ## Notes / TODOs
 - `vp check --fix` run unscoped rewrites `<\/script>` in `EmbedCodeDialog.vue` (v7, v8) into `</script>`, which breaks the SFC; the run was reverted and checks were scoped to the touched files. Pre-existing, not part of this feature.

@@ -32,7 +32,7 @@
 							v-if="albumsStore.smartAlbumsPanel.length > 0"
 							header="gallery.smart_albums"
 							:albums="albumsStore.smartAlbumsPanel"
-							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
+							:is-alone="isVirtualPanelAlone"
 							:selected-albums="[]"
 							:is-timeline="false"
 						/>
@@ -41,7 +41,7 @@
 							v-if="albumsStore.tagAlbumsPanel.length > 0"
 							header="gallery.tag_albums"
 							:albums="albumsStore.tagAlbumsPanel"
-							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
+							:is-alone="isVirtualPanelAlone"
 							:selected-albums="[]"
 							:is-timeline="false"
 						/>
@@ -49,7 +49,7 @@
 							v-if="albumsStore.personAlbumsPanel.length > 0"
 							header="gallery.person_albums"
 							:albums="albumsStore.personAlbumsPanel"
-							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
+							:is-alone="isVirtualPanelAlone"
 							:selected-albums="[]"
 							:is-timeline="false"
 						/>
@@ -494,6 +494,15 @@ const hasSharedAlbums = computed(() => {
 
 // Check if we should show shared albums section (for inline mode)
 const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
+
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-097-07).
+const isVirtualPanelAlone = computed(
+	() =>
+		albumsStore.virtualPanelCount === 1 &&
+		albumsStore.albums.length === 0 &&
+		albumsStore.pinnedAlbums.length === 0 &&
+		!shouldShowSharedAlbums.value,
+);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {
