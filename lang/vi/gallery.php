@@ -8,6 +8,8 @@ return [
     'title' => 'Thư viện ảnh',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Album được ghim',
+    'tag_albums' => 'Album thẻ',
+    'person_albums' => 'Album người',
     'albums' => 'Album',
     'root' => 'Album',
     'nav_tree' => [

@@ -29,10 +29,27 @@
 						<SelectDrag :with-scroll="false" />
 						<!-- Smart Albums (always visible, above tabs per spec) -->
 						<AlbumThumbPanel
-							v-if="albumsStore.smartAlbums.length > 0"
+							v-if="albumsStore.smartAlbumsPanel.length > 0"
 							header="gallery.smart_albums"
-							:albums="albumsStore.smartAlbums"
-							:is-alone="!albumsStore.albums.length"
+							:albums="albumsStore.smartAlbumsPanel"
+							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
+							:selected-albums="[]"
+							:is-timeline="false"
+						/>
+						<!-- Tag and Person Albums, when their settings give them their own category (Feature 097) -->
+						<AlbumThumbPanel
+							v-if="albumsStore.tagAlbumsPanel.length > 0"
+							header="gallery.tag_albums"
+							:albums="albumsStore.tagAlbumsPanel"
+							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
+							:selected-albums="[]"
+							:is-timeline="false"
+						/>
+						<AlbumThumbPanel
+							v-if="albumsStore.personAlbumsPanel.length > 0"
+							header="gallery.person_albums"
+							:albums="albumsStore.personAlbumsPanel"
+							:is-alone="!albumsStore.albums.length && albumsStore.virtualPanelCount === 1"
 							:selected-albums="[]"
 							:is-timeline="false"
 						/>

@@ -8,6 +8,8 @@ return [
     'title' => 'Galeri',
     'smart_albums' => 'Akıllı Albümler',
     'pinned_albums' => 'Öne Çıkan Albümler',
+    'tag_albums' => 'Etiket Albümleri',
+    'person_albums' => 'Kişi Albümleri',
     'albums' => 'Albümler',
     'set_focus' => 'Odak Noktası Belirle',
     'set_header_focus' => 'Başlık Odak Noktasını Belirle',
