@@ -99,6 +99,28 @@
 						"
 					/>
 				</UTooltip>
+				<!-- FR-097-03: PDFs have no dock, so move and delete live here. -->
+				<template v-if="isPdfEditable">
+					<UTooltip v-if="albumStore.rights?.can_move_content" :text="$t('gallery.photo.actions.move')">
+						<UButton
+							variant="ghost"
+							icon="lucide:folder"
+							color="neutral"
+							:aria-label="$t('gallery.photo.actions.move')"
+							@click="emits('toggleMove')"
+						/>
+					</UTooltip>
+					<UTooltip :text="$t('gallery.photo.actions.delete')">
+						<UButton
+							variant="ghost"
+							icon="lucide:trash-2"
+							color="neutral"
+							class="hover:text-red-600"
+							:aria-label="$t('gallery.photo.actions.delete')"
+							@click="emits('toggleDelete')"
+						/>
+					</UTooltip>
+				</template>
 			</div>
 		</template>
 	</UHeader>
@@ -114,7 +136,7 @@ import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import GoBack from "./GoBack.vue";
-import { usePhotoStore } from "@/stores/PhotoState";
+import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useUserStore } from "@/stores/UserState";
 import { useGlobalRights } from "@/composables/useGlobalRights";
@@ -126,6 +148,8 @@ const emits = defineEmits<{
 	toggleSlideShow: [];
 	goBack: [];
 	toggleHighlight: [];
+	toggleMove: [];
+	toggleDelete: [];
 }>();
 
 const photoStore = usePhotoStore();
@@ -160,4 +184,7 @@ const canEditCurrentPhoto = computed(() => {
 	}
 	return true;
 });
+
+/** Where the dock would show for this PDF (see `PhotoPanel.vue`), its actions show in the header instead. */
+const isPdfEditable = computed(() => photoStore.imageViewMode === ImageViewMode.Pdf && canEditCurrentPhoto.value && !is_photo_edit_open.value);
 </script>
