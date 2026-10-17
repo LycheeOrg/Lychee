@@ -99,7 +99,7 @@
 						"
 					/>
 				</UTooltip>
-				<!-- FR-097-03: PDFs have no dock, so move and delete live here. -->
+				<!-- FR-099-03: PDFs have no dock, so move and delete live here. -->
 				<template v-if="isPdfEditable">
 					<UTooltip v-if="albumStore.rights?.can_move_content" :text="$t('gallery.photo.actions.move')">
 						<UButton

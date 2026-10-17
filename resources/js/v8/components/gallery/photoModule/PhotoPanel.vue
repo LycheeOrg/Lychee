@@ -149,7 +149,7 @@ function scrollTo(event: WheelEvent) {
 		return;
 	}
 
-	// FR-097-01: the wheel scrolls the PDF pages, it never changes photo.
+	// FR-099-01: the wheel scrolls the PDF pages, it never changes photo.
 	if (photoStore.imageViewMode === ImageViewMode.Pdf) {
 		return;
 	}
