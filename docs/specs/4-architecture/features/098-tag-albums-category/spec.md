@@ -36,6 +36,7 @@ On the root gallery, tag albums and person albums are shown inside the Smart Alb
 | FR-098-05 | `PA_separate_category` on: person albums are absent from Smart Albums and listed in a "Person Albums" panel (`gallery.person_albums`) directly below the Tag Albums position (below Smart Albums when tag albums are not separated). | Panel hidden when it has no albums. | — | — | None | Q-098-02 C |
 | FR-098-06 | v7 and v8 root galleries both honour the settings. | Same panels in both. | — | — | None | Q-098-03 A |
 | FR-098-07 | `is-alone` computations of the root panels take the new panels into account. | A virtual panel (Smart, Tag, Person) hides its header only when it is the only non-empty virtual panel and no regular, Featured or shared albums are visible. | — | — | None | Consistency |
+| FR-098-08 | In v8, consecutive virtual panels (Smart, Tag, Person) are separated by a 1rem vertical gap, the spacing v7 panel headers already give. | The Tag Albums and Person Albums headers sit 1rem below the previous panel's tiles; the first rendered virtual panel gets no extra top margin. | — | — | None | Owner review |
 
 ## Non-Functional Requirements
 

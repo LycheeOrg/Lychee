@@ -24,7 +24,7 @@ Admins can pull tag albums and/or person albums out of the Smart Albums panel in
 - **Risks / Mitigations:** `is-alone` drift across many template branches → keep `smartAlbums` as the full merged list (so existing `is-alone`, `titleOf` and the guest redirect stay correct) and add per-panel getters `smartAlbumsPanel`/`tagAlbumsPanel`/`personAlbumsPanel` plus `virtualPanelCount`.
 
 ## Implementation Drift Gate
-After I4, re-read spec FR-098-01 … 07 against the diff; record evidence (test runs, browser check) in this plan's Appendix.
+After I4, re-read spec FR-098-01 … 08 against the diff; record evidence (test runs, browser check) in this plan's Appendix.
 
 ## Increment Map
 1. **I1 – Settings and RootConfig (backend, test-first)**
@@ -34,7 +34,7 @@ After I4, re-read spec FR-098-01 … 07 against the diff; record evidence (test 
    - _Steps:_ `php artisan typescript:transform`; `AlbumsState` getters `smartAlbumsPanel`, `tagAlbumsPanel`, `personAlbumsPanel`, `virtualPanelCount` (`smartAlbums` unchanged).
    - _Commands:_ `vp run typecheck`.
 3. **I3 – v7 and v8 panels + gallery strings**
-   - _Steps:_ add Tag Albums and Person Albums panels below Smart Albums in both `Albums.vue`; switch `is-alone` to the store getter; add `gallery.tag_albums` / `gallery.person_albums` in every language.
+   - _Steps:_ add Tag Albums and Person Albums panels below Smart Albums in both `Albums.vue` (v8: the three virtual panels share a `flex flex-col gap-4` container, FR-098-08); switch `is-alone` to the store getter; add `gallery.tag_albums` / `gallery.person_albums` in every language.
    - _Commands:_ `vp check --fix`, `vp run typecheck`, `php artisan test --filter=LangTest`.
 4. **I4 – Verification and docs**
    - _Steps:_ browser check on a scratch instance (S-098-02 … 06), knowledge-map note, roadmap update.
@@ -71,4 +71,5 @@ After I4, re-read spec FR-098-01 … 07 against the diff; record evidence (test 
 - NFR-098-02: `LangTest` 2 passed.
 - FR-098-03 … 06: scratch instance (`run-lychee`), tag album "Travel" and person album "Alice" created through `POST /api/v2/TagAlbum` / `PersonAlbum`. Panel headers per flag combination 00/10/01/11 — v8 (Nuxt, struct-of-array): `Smart Albums` / `+ Tag Albums` / `+ Person Albums` / `+ Tag Albums + Person Albums`; v7 (PrimeVue, v2 `GET /Albums`): same, followed by `Albums`. No console errors from the change (two image 404s present identically with both flags off).
 - S-098-05/06 not exercised in the browser; covered by the `v-if="…Panel.length > 0"` guards and the `virtualPanelCount` `is-alone` rule.
+- FR-098-08: scratch instance, v8 with both flags on: Tag Albums and Person Albums headers start 16px below the previous panel's tiles, Smart Albums header unchanged; with every built-in smart album disabled, the Tag Albums header takes the Smart Albums header position (no extra top margin). v7 already shows a 16px gap from the PrimeVue panel header and is unchanged.
 - Static checks: php-cs-fixer (0 fixes), `make phpstan` OK, `vp check --fix` (scoped) OK, `vp run typecheck` OK.

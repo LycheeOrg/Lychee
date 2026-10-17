@@ -30,32 +30,35 @@
 						@scroll="onScroll"
 					>
 						<SelectDrag :with-scroll="false" />
-						<!-- Smart Albums (always visible, above tabs per spec) -->
-						<AlbumThumbPanel
-							v-if="albumsStore.smartAlbumsPanel.length > 0"
-							header="gallery.smart_albums"
-							:albums="albumsStore.smartAlbumsPanel"
-							:is-alone="isVirtualPanelAlone"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
-						<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
-						<AlbumThumbPanel
-							v-if="albumsStore.tagAlbumsPanel.length > 0"
-							header="gallery.tag_albums"
-							:albums="albumsStore.tagAlbumsPanel"
-							:is-alone="isVirtualPanelAlone"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
-						<AlbumThumbPanel
-							v-if="albumsStore.personAlbumsPanel.length > 0"
-							header="gallery.person_albums"
-							:albums="albumsStore.personAlbumsPanel"
-							:is-alone="isVirtualPanelAlone"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
+						<!-- Virtual album panels: the gap separates consecutive rendered panels only (FR-098-08). -->
+						<div class="flex flex-col gap-4">
+							<!-- Smart Albums (always visible, above tabs per spec) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.smartAlbumsPanel.length > 0"
+								header="gallery.smart_albums"
+								:albums="albumsStore.smartAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.tagAlbumsPanel.length > 0"
+								header="gallery.tag_albums"
+								:albums="albumsStore.tagAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<AlbumThumbPanel
+								v-if="albumsStore.personAlbumsPanel.length > 0"
+								header="gallery.person_albums"
+								:albums="albumsStore.personAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+						</div>
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">

@@ -31,5 +31,9 @@ _Last updated: 2026-10-17_
   _Intent:_ `isVirtualPanelAlone` computed in v7 and v8 `Albums.vue` (one non-empty virtual panel, no regular, pinned or shared albums) replaces the per-panel `!albums.length && virtualPanelCount === 1`, for the Smart, Tag and Person panels.  
   _Verification commands:_ `vp check --fix` (scoped), `vp run typecheck`, scratch browser check (built-in smart albums disabled, `deduplicate_pinned_albums` on, Family pinned: headers `Smart Albums | Featured Albums` in v8 and v7).
 
+- [x] T-098-07 – v8 gap between consecutive virtual panels (FR-098-08).  
+  _Intent:_ wrap the Smart, Tag and Person `AlbumThumbPanel`s of v8 `Albums.vue` in a `flex flex-col gap-4` container, so the gap appears only between rendered panels. v7 unchanged (PrimeVue panel headers carry their own padding).  
+  _Verification commands:_ `vp check` (scoped), `vp run typecheck`, `vp build`, scratch browser check (v8: Tag Albums header 16px below the smart album tiles; v7 unchanged).
+
 ## Notes / TODOs
 - `vp check --fix` run unscoped rewrites `<\/script>` in `EmbedCodeDialog.vue` (v7, v8) into `</script>`, which breaks the SFC; the run was reverted and checks were scoped to the touched files. Pre-existing, not part of this feature.
