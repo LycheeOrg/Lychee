@@ -1,1 +1,1 @@
-[See on the LycheeOrg website: https://lycheeorg.dev/docs/contributions.html]([https://lycheeorg.dev/docs/contributions.html](https://lycheeorg.dev/docs/getting-started/contributions/))
+See on the LycheeOrg website: [https://lycheeorg.dev/docs/contributions.html](https://lycheeorg.dev/docs/contributions.html)
