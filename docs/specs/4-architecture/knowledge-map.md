@@ -187,6 +187,10 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `hasRatedPhotos` getter - Checks if any photo has user rating
     - `filteredPhotos` getter - Returns photos filtered by minimum rating threshold
     - `filteredPhotosTimeline` getter - Returns timeline-grouped photos filtered by rating
+  - **AlbumsState** - Root gallery lists (Feature 098 split of virtual albums):
+    - `smartAlbums` getter - every virtual album (smart + tag + person); feeds `titleOf`, the guest login redirect and the other panels' `is-alone`
+    - `smartAlbumsPanel` / `tagAlbumsPanel` / `personAlbumsPanel` getters - what each root panel shows, driven by `RootConfig.is_tag_albums_separate_category_enabled` / `is_person_albums_separate_category_enabled` (settings `TA_separate_category`, `PA_separate_category`)
+    - `virtualPanelCount` getter - number of non-empty virtual panels, used for their `is-alone`
 - Vue3 reactive state and composables
 
 #### Routing

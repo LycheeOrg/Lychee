@@ -8,6 +8,8 @@ return [
     'title' => '相簿集',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => '釘選相冊',
+    'tag_albums' => '標籤相簿',
+    'person_albums' => '人物相簿',
     'albums' => '相簿',
     'root' => '相簿',
     'nav_tree' => [

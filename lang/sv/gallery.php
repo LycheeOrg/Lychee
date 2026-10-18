@@ -8,6 +8,8 @@ return [
     'title' => 'Galleri',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Fästa album',
+    'tag_albums' => 'Taggalbum',
+    'person_albums' => 'Personalbum',
     'albums' => 'Album',
     'root' => 'Album',
     'nav_tree' => [

@@ -10,9 +10,7 @@
 			'lg:opacity-20': !isTouchDevice() && !isFullTransparency && !isHovered,
 			'opacity-75': isTouchDevice() && !isFullTransparency,
 			'opacity-0': isFullTransparency,
-			'z-20 mt-14 sm:mt-0': true,
-			'sm:h-1/4': !props.isNarrowMenu,
-			'h-14': props.isNarrowMenu,
+			'z-20 mt-14 sm:mt-0 sm:h-1/4': true,
 			hidden: is_slideshow_active,
 			'hidden sm:block': are_details_open,
 		}"
@@ -76,10 +74,6 @@ const albumStore = useAlbumStore();
 const { rights } = useGlobalRights();
 const togglableStore = useTogglablesStateStore();
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
-
-const props = defineProps<{
-	isNarrowMenu: boolean;
-}>();
 
 // The dock zone ignores pointer events so clicks reach the face overlay below; only the buttons are interactive.
 const dockZone = ref<HTMLElement | null>(null);

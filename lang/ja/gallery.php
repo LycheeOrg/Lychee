@@ -8,6 +8,8 @@ return [
     'title' => 'ギャラリー',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'ピン留めアルバム',
+    'tag_albums' => 'タグアルバム',
+    'person_albums' => '人物アルバム',
     'albums' => 'アルバム',
     'root' => 'アルバム',
     'nav_tree' => [

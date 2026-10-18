@@ -8,6 +8,8 @@ return [
     'title' => 'Galeria',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Álbuns fixados',
+    'tag_albums' => 'Álbuns de etiqueta',
+    'person_albums' => 'Álbuns de pessoas',
     'albums' => 'Álbuns',
     'root' => 'Álbuns',
     'nav_tree' => [

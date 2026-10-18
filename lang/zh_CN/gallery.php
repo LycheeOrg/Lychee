@@ -8,6 +8,8 @@ return [
     'title' => '相册',
     'smart_albums' => '智能相册',
     'pinned_albums' => '置顶相册',
+    'tag_albums' => '标签相册',
+    'person_albums' => '人物相册',
     'albums' => '相册',
     'root' => '相册',
     'nav_tree' => [

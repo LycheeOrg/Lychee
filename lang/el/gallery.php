@@ -8,6 +8,8 @@ return [
     'title' => 'Συλλογή',
     'smart_albums' => 'Smart albums',
     'pinned_albums' => 'Καρφιτσωμένα άλμπουμ',
+    'tag_albums' => 'Άλμπουμ ετικετών',
+    'person_albums' => 'Άλμπουμ προσώπων',
     'albums' => 'Άλμπουμ',
     'root' => 'Άλμπουμ',
     'nav_tree' => [

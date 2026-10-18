@@ -8,6 +8,8 @@ return [
     'title' => 'المعرض',
     'smart_albums' => 'الألبومات الذكية',
     'pinned_albums' => 'الألبومات المثبتة',
+    'tag_albums' => 'ألبومات الوسوم',
+    'person_albums' => 'ألبومات الأشخاص',
     'albums' => 'الألبومات',
     'root' => 'الألبومات',
     'nav_tree' => [
