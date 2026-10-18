@@ -821,7 +821,7 @@ return [
         'secure_image_link_enabled' => 'Stellt sicher, dass Bild-Links nicht erratbar sind.',
         'photo_previous_next_size' => 'Diese Schaltflächen sind standardmäßig ausgeblendet und werden nur sichtbar, wenn sich die Maus dem linken oder rechten Bildschirmrand nähert.',
         'photo_viewer_highest_quality_enabled' => 'Wenn aktiviert, zeigt die Vollbildansicht für jedes Foto die beste vorhandene Größenvariante (meist Original) statt Medium an. Erhöht den Bandbreitenverbrauch pro Fotoansicht.',
-        'size_variant_format' => 'Original: Thumbs sind JPEG, Small und Medium behalten das Format der hochgeladenen Datei. JPEG oder WebP: alle erzeugten Größenvarianten verwenden dieses Format. Gilt nur für neu erzeugte Größenvarianten.',
+        'size_variant_format' => 'Original: Thumbs sind JPEG, Small und Medium behalten das Format der hochgeladenen Datei. JPEG, WebP oder JPEG XL: alle erzeugten Größenvarianten verwenden dieses Format. Gilt nur für neu erzeugte Größenvarianten. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL wird nicht von allen Browsern angezeigt und erfordert Imagick mit JPEG-XL-Unterstützung (siehe Diagnose).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Dadurch werden alle Fotos sichtbar, die die Bedingungen des Smart-Albums erfüllen.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Dadurch werden alle Fotos sichtbar, die die Bedingungen des Tag-Albums erfüllen.',
         'TA_albums_listing_enabled' => 'Wenn aktiviert, listet ein Tag-Album zusätzlich zu den passenden Fotos auch die echten Alben auf, die mit seinen Kriterien-Tags versehen sind.',

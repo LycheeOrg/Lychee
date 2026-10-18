@@ -807,7 +807,7 @@ return [
         'secure_image_link_enabled' => 'This ensures that the image links are not guessable.',
         'photo_previous_next_size' => 'Those buttons are hidden by default and only visible when the mouse get close to the left/right side of the screen.',
         'photo_viewer_highest_quality_enabled' => 'When enabled, the full-screen viewer renders the best size variant that exists for each photo (typically Original) instead of Medium. Increases bandwidth usage per photo view.',
-        'size_variant_format' => 'Original: thumbs are JPEG, small and medium keep the format of the uploaded file. JPEG or WebP: all generated size variants use that format. Only applies to newly generated size variants.',
+        'size_variant_format' => 'Original: thumbs are JPEG, small and medium keep the format of the uploaded file. JPEG, WebP or JPEG XL: all generated size variants use that format. Only applies to newly generated size variants. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL is not displayed by all browsers and requires Imagick with JPEG XL support (see Diagnostics).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This will make any photos matching the smart album condition visible.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This will make any photos matching the tag album condition visible.',
         'TA_albums_listing_enabled' => 'When enabled, a Tag Album also lists the real albums tagged with its criteria tag(s), in addition to the matching photos.',

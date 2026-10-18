@@ -11,6 +11,8 @@ namespace App\Services\Image;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Repositories\ConfigManager;
+use Safe\Exceptions\FilesystemException;
+use function Safe\file_get_contents;
 
 class FileExtensionService
 {
@@ -32,6 +34,7 @@ class FileExtensionService
 		'.avif',
 		'.heic',
 		'.heif',
+		'.jxl',
 	];
 
 	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
@@ -53,6 +56,7 @@ class FileExtensionService
 		'image/avif',
 		'image/heif',
 		'image/heic',
+		'image/jxl',
 	];
 
 	public const SUPPORTED_VIDEO_MIME_TYPES = [
@@ -77,6 +81,7 @@ class FileExtensionService
 		'image/avif' => '.avif',
 		'image/heif' => '.heif',
 		'image/heic' => '.heic',
+		'image/jxl' => '.jxl',
 		'video/mp4' => '.mp4',
 		'video/mpeg' => '.mpg',
 		'image/x-tga' => '.mpg',
@@ -96,6 +101,15 @@ class FileExtensionService
 	 *
 	 * @var string[]
 	 */
+	/**
+	 * Signatures of JPEG XL files: a bare codestream or an ISO-BMFF container.
+	 * `exif_imagetype()` does not know JPEG XL, so these are checked instead.
+	 */
+	public const JXL_SIGNATURES = [
+		"\xFF\x0A",
+		"\x00\x00\x00\x0CJXL \x0D\x0A\x87\x0A",
+	];
+
 	public const CONVERTIBLE_RAW_EXTENSIONS = [
 		'.nef',
 		'.cr2',
@@ -286,7 +300,28 @@ class FileExtensionService
 	}
 
 	/**
+	 * Checks if the file starts with a JPEG XL signature.
+	 */
+	protected function isJxl(string $path): bool
+	{
+		try {
+			$header = file_get_contents($path, false, null, 0, 12);
+		} catch (FilesystemException) {
+			return false;
+		}
+
+		foreach (self::JXL_SIGNATURES as $signature) {
+			if (str_starts_with($header, $signature)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Checks if the file is a supported image.
+	 * JPEG XL files are identified by their signature, all others by their EXIF image type.
 	 *
 	 * @throws MediaFileOperationException
 	 */
@@ -295,7 +330,7 @@ class FileExtensionService
 		return
 			$this->isSupportedImageMimeType($mime_type) &&
 			$this->isSupportedImageFileExtension($extension) &&
-			$this->hasSupportedExifImageType($path);
+			(strtolower($extension) === '.jxl' ? $this->isJxl($path) : $this->hasSupportedExifImageType($path));
 	}
 
 	/**

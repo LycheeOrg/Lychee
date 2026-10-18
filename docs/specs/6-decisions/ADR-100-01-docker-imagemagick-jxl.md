@@ -11,17 +11,17 @@ Feature 100 adds JPEG XL uploads and a `jxl` value for `size_variant_format`. De
 
 Debian 13 builds ImageMagick 7.1.1-43 without the JXL coder: `magick -list format` and `Imagick::queryFormats('JXL')` show nothing although `libjxl0.11` is installable. Without a change, every Docker user selecting `jxl` (or uploading `.jxl`) gets a diagnostics error and failing uploads.
 
-Affected modules: `Dockerfile` (production stage), `.github/workflows/docker_build.yml` (smoke test), `ImagickPdfCheck` (policy file location).
+Affected modules: `Dockerfile` (new `imagemagick` stage, production stage), `ImagickPdfCheck` (policy file location).
 
 ## Decision
 
-The production stage of `Dockerfile` builds ImageMagick 7 from the official release tarball, pinned by version and SHA-256, against Debian 13's `libjxl-dev` (plus the delegates the Debian package provides today: JPEG, PNG, WebP, TIFF, HEIF, LCMS, Ghostscript/PDF, FreeType, XML, zlib), in a separate builder stage. The runtime stage copies the install prefix and the runtime libraries only, and `install-php-extensions imagick` is built against that MagickWand. The PDF policy edit targets the new `policy.xml` location, which `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS` also lists.
+The production stage of `Dockerfile` builds ImageMagick 7 from the official release tarball, pinned by version and SHA-256, against Debian 13's `libjxl-dev` (plus the delegates the Debian package provides today: JPEG, PNG, WebP, TIFF, HEIF, LCMS, Ghostscript/PDF, FreeType, XML, zlib), in a separate builder stage. Both are installed into `/opt/imagemagick` (PHP itself lives in `/usr/local`). The builder stage also compiles the `imagick` PECL extension (pinned version and SHA-256) against that MagickWand; the production stage copies the prefix, installs the runtime libraries only, and enables the extension. Debian's `policy.xml` (from `imagemagick-7-common`) replaces upstream's open policy so resource limits and disabled coders stay as before; the PDF rule is added to it, and `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS` lists the new path.
 
-The Docker build workflow smoke-tests the image: `Imagick::queryFormats('JXL')` is non-empty and a JPEG→JXL→JPEG round trip succeeds.
+The production stage ends with a build-time check: Imagick writes a JXL image and reads it back, otherwise the build fails.
 
 `Dockerfile-legacy` is unchanged (it uses Sury's `php8.5-imagick`, which links Debian's MagickCore).
 
-The implementation spike (T-100-01) first checks whether a Debian package with JXL enabled exists for trixie (backports); if so, that package replaces the source build, keeping the rest of this decision (smoke test, policy path) intact.
+No Debian 13 package (including trixie-backports) ships ImageMagick with JXL enabled, so the source build is required.
 
 ## Consequences
 
@@ -47,7 +47,7 @@ The implementation spike (T-100-01) first checks whether a Debian package with J
 
 ## Operational Impact
 
-- Docker build time and image size increase (bounded by NFR-100-05).
+- Docker build time and image size increase (bounded by NFR-100-05); the `imagemagick` stage is cached by the existing GitHub Actions build cache.
 - Maintainers bump the pinned ImageMagick version on security releases.
 - The diagnostics page (`ImagickJxlCheck`) tells non-Docker admins whether their system supports JXL.
 

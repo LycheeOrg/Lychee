@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => 'Đảm bảo rằng liên kết ảnh không thể đoán được.',
         'photo_previous_next_size' => 'Các nút này mặc định bị ẩn và chỉ hiển thị khi chuột đến gần cạnh trái/phải của màn hình.',
         'photo_viewer_highest_quality_enabled' => 'Khi bật, trình xem toàn màn hình sẽ hiển thị biến thể kích thước tốt nhất hiện có của mỗi ảnh (thường là Original) thay vì Medium. Làm tăng băng thông sử dụng cho mỗi lượt xem ảnh.',
-        'size_variant_format' => 'Original: ảnh thumb là JPEG, small và medium giữ định dạng của tệp đã tải lên. JPEG hoặc WebP: tất cả biến thể kích thước được tạo đều dùng định dạng đó. Chỉ áp dụng cho các biến thể kích thước được tạo mới.',
+        'size_variant_format' => 'Original: ảnh thumb là JPEG, small và medium giữ định dạng của tệp đã tải lên. JPEG, WebP hoặc JPEG XL: tất cả biến thể kích thước được tạo đều dùng định dạng đó. Chỉ áp dụng cho các biến thể kích thước được tạo mới. <span class="pi pi-exclamation-triangle text-orange-500"></span> Không phải trình duyệt nào cũng hiển thị được JPEG XL, và cần Imagick có hỗ trợ JPEG XL (xem Chẩn đoán).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Tùy chọn này sẽ làm hiển thị mọi ảnh khớp với điều kiện của album thông minh.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Tùy chọn này sẽ làm hiển thị mọi ảnh khớp với điều kiện của album thẻ.',
         'TA_albums_listing_enabled' => 'Khi bật, Album thẻ cũng liệt kê các album thực được gắn (các) thẻ tiêu chí của nó, ngoài các ảnh khớp.',

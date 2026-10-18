@@ -24,6 +24,7 @@ use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\HashCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
+use App\Actions\Diagnostics\Pipes\Checks\ImagickJxlCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\KeygenApiTokenCheck;
@@ -77,6 +78,7 @@ class Errors
 		CountSizeVariantsCheck::class,
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
+		ImagickJxlCheck::class,
 		WatermarkerEnabledCheck::class,
 		AiVisionFaceRecognitionServiceCheck::class,
 		AiVisionFaceRecognitionServiceConfigCheck::class,

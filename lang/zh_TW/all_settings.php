@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => '這可確保圖片連結無法被猜測。',
         'photo_previous_next_size' => '這些按鈕預設為隱藏，只有當滑鼠靠近螢幕左/右側時才會顯示。',
         'photo_viewer_highest_quality_enabled' => '啟用後，全螢幕檢視器會為每張照片呈現現有的最佳尺寸版本（通常為原始檔），而非中尺寸。這會增加每次檢視照片的頻寬用量。',
-        'size_variant_format' => '原始：縮圖為 JPEG，小尺寸與中尺寸保留上傳檔案的格式。JPEG 或 WebP：所有產生的尺寸版本皆使用該格式。僅適用於新產生的尺寸版本。',
+        'size_variant_format' => '原始：縮圖為 JPEG，小尺寸與中尺寸保留上傳檔案的格式。JPEG、WebP 或 JPEG XL：所有產生的尺寸版本皆使用該格式。僅適用於新產生的尺寸版本。<span class="pi pi-exclamation-triangle text-orange-500"></span> 並非所有瀏覽器都能顯示 JPEG XL，且需要支援 JPEG XL 的 Imagick（請參閱診斷）。',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> 這會使所有符合智慧相簿條件的照片變為可見。',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> 這會使所有符合標籤相簿條件的照片變為可見。',
         'TA_albums_listing_enabled' => '啟用後，標籤相簿除了列出符合的照片外，也會列出標有其條件標籤的實際相簿。',

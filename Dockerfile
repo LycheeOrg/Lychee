@@ -75,7 +75,66 @@ COPY vite.config.ts vite.embed.config.ts tsconfig.json ./
 RUN npm run build
 
 # ============================================================================
-# Stage 3: Production FrankenPHP Image
+# Stage 3: ImageMagick with JPEG XL support + imagick PHP extension
+# ============================================================================
+# Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-100-01).
+# Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases.
+FROM dunglas/frankenphp:1.13.1-php8-trixie@sha256:a052ae7cccd4a025eca17767e7acac57a4fc660a4f3dfc790be9b9cd5182d6e6 AS imagemagick
+
+ARG IMAGEMAGICK_VERSION=7.1.2-32
+ARG IMAGEMAGICK_SHA256=940e349f0ef394e658fd57400b83d1d7a81b954f6e7bdbfbfad31b2718c10add
+ARG IMAGICK_VERSION=3.8.1
+ARG IMAGICK_SHA256=3a3587c0a524c17d0dad9673a160b90cd776e836838474e173b549ed864352ee
+
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    curl \
+    libjxl-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libtiff-dev \
+    libheif-dev \
+    libraw-dev \
+    libopenjp2-7-dev \
+    liblcms2-dev \
+    libfreetype-dev \
+    libxml2-dev \
+    liblzma-dev \
+    libbz2-dev \
+    libzstd-dev \
+    zlib1g-dev \
+    imagemagick-7-common \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+RUN curl -fsSL -o imagemagick.tar.gz "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
+    && echo "${IMAGEMAGICK_SHA256}  imagemagick.tar.gz" | sha256sum -c - \
+    && mkdir imagemagick && tar -xzf imagemagick.tar.gz -C imagemagick --strip-components=1 \
+    && cd imagemagick \
+    && ./configure --prefix=/opt/imagemagick \
+        --enable-shared --disable-static --disable-docs --disable-hdri --with-quantum-depth=16 \
+        --without-modules --without-x --without-perl --without-magick-plus-plus \
+        --with-jxl=yes --with-heic=yes --with-raw=yes --with-openjp2=yes --with-webp=yes \
+    && make -j"$(nproc)" \
+    && make install \
+    # Keep Debian's security policy (resource limits, disabled coders) instead of the upstream open policy
+    && cp /etc/ImageMagick-7/policy.xml /opt/imagemagick/etc/ImageMagick-7/policy.xml \
+    && curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK_VERSION}.tgz" \
+    && echo "${IMAGICK_SHA256}  /build/imagick.tgz" | sha256sum -c - \
+    && mkdir /build/imagick && tar -xzf /build/imagick.tgz -C /build/imagick --strip-components=1 \
+    && cd /build/imagick \
+    && phpize \
+    && ./configure --with-imagick=/opt/imagemagick \
+    && make -j"$(nproc)" \
+    && mkdir -p /opt/imagemagick/php \
+    && cp modules/imagick.so /opt/imagemagick/php/imagick.so
+
+# ============================================================================
+# Stage 4: Production FrankenPHP Image
 # ============================================================================
 FROM dunglas/frankenphp:1.13.1-php8-trixie@sha256:a052ae7cccd4a025eca17767e7acac57a4fc660a4f3dfc790be9b9cd5182d6e6
 
@@ -92,6 +151,10 @@ LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.5-trixie"
 
+# ImageMagick with JPEG XL support and the imagick extension built against it (stage 3)
+COPY --from=imagemagick /opt/imagemagick /opt/imagemagick
+ENV PATH="/opt/imagemagick/bin:${PATH}"
+
 # Install system utilities and PHP extensions
 # hadolint ignore=DL3008,DL3009
 RUN apt-get update \
@@ -99,7 +162,6 @@ RUN apt-get update \
     linux-libc-dev \
     libimage-exiftool-perl \
     ffmpeg \
-    imagemagick \
     jpegoptim \
     procps \
     netcat-openbsd \
@@ -116,7 +178,33 @@ RUN apt-get update \
     libperl5.40 \
     perl-modules-5.40 \
     libsqlite3-0 \
-	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
+    # Runtime libraries of the ImageMagick build (stage 3)
+    libbrotli1 \
+    libdeflate0 \
+    libfreetype6 \
+    libgomp1 \
+    libheif1 \
+    libheif-plugin-libde265 \
+    libhwy1t64 \
+    libjbig0 \
+    libjpeg62-turbo \
+    libjxl0.11 \
+    liblcms2-2 \
+    liblerc4 \
+    libopenjp2-7 \
+    libpng16-16t64 \
+    libraw23t64 \
+    libsharpyuv0 \
+    libtiff6 \
+    libwebp7 \
+    libwebpdemux2 \
+    libwebpmux3 \
+    libxml2 \
+	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /opt/imagemagick/etc/ImageMagick-7/policy.xml \
+    && echo /opt/imagemagick/lib > /etc/ld.so.conf.d/imagemagick.conf \
+    && ldconfig \
+    && cp /opt/imagemagick/php/imagick.so "$(php-config --extension-dir)/imagick.so" \
+    && docker-php-ext-enable imagick \
     && install-php-extensions \
     pdo_mysql \
     pdo_pgsql \
@@ -129,10 +217,12 @@ RUN apt-get update \
     pcntl \
     exif \
     intl \
-    imagick \
     redis \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
+
+# Fail the build if Imagick cannot round-trip JPEG XL (Feature 100, FR-100-11)
+RUN php -r '$i = new Imagick(); $i->newImage(8, 8, "red"); $i->setImageFormat("jxl"); $j = new Imagick(); $j->readImageBlob($i->getImagesBlob()); exit($j->getImageWidth() === 8 ? 0 : 1);'
 
 # Telemetry flavor: native OpenTelemetry hooks and protobuf encoding
 ARG TELEMETRY=false

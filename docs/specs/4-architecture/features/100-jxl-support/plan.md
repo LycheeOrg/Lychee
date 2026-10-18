@@ -1,7 +1,7 @@
 # Feature Plan 100 – JPEG XL Support
 
 _Linked specification:_ [spec.md](spec.md)  
-_Status:_ Draft  
+_Status:_ Implemented  
 _Last updated:_ 2026-10-18
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
@@ -28,14 +28,14 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 - `App\Repositories\ConfigManager::hasImagick()` / `getValueAsEnum()`
 - `App\Actions\Diagnostics\Errors` pipe list; `ImagickPdfCheck` (pattern + policy locations)
 - `App\Models\Extensions\BaseConfigMigration`
-- `Dockerfile`, `.github/workflows/docker_build.yml`
+- `Dockerfile`
 - **Approved dependency change (Q-100-06, 2026-10-18, owner):** source-built ImageMagick 7.1.x + Debian `libjxl-dev` in the Docker image (ADR-100-01). No Composer/npm change.
 
 ## Assumptions & Risks
 
 - **Assumptions:**
   - libmagic reports `image/jxl` (verified on Debian 13 with synthetic codestream and container headers), so `mime_content_type()` needs no special case.
-  - ImageMagick's JXL coder maps quality 100 to lossless (distance 0).
+  - ImageMagick's JXL coder reads `jxl:distance`/`jxl:quality` (distance 0 is lossless).
   - The Imagick metadata reader returns width/height for JXL.
 - **Risks / Mitigations:**
   - *Local dev box and CI have no JXL delegate* → JXL encode/decode tests skip (NFR-100-04); the encoder path is verified inside the new Docker image (I6) and recorded below.
@@ -46,7 +46,25 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 
 ## Implementation Drift Gate
 
-After all tasks are `[x]` and CI is green: map FR-100-01..11 to classes/tests in a table here, confirm `git diff --stat resources/js` only touches `lychee.d.ts` (NFR-100-02), `composer.json`/`package.json` unchanged (NFR-100-01), Docker image size delta (NFR-100-05), and the `magick -list format` before/after diff.
+| Requirement | Implementation | Test |
+|-------------|----------------|------|
+| FR-100-01/02 | `FileExtensionService` (`.jxl`, `image/jxl`, `JXL_SIGNATURES`, `isJxl()`) | `FileExtensionServiceJxlTest` |
+| FR-100-03/04 | `SizeVariantFormat::JXL`, `2026_10_18_000001_add_jxl_size_variant_format.php`, `BaseSizeVariantNamingStrategy::generatedExtension()` | `JxlNamingTest`, `SizeVariantFormatConfigSanityTest`, `BaseImageHandler::testJxlUpload*`, `testSizeVariantFormatJxl` |
+| FR-100-05 | `ImagickHandler::save()` (`jxl:distance` / `jxl:quality`) | `BaseImageHandler::testSizeVariantFormatJxlLossless`, `testSizeVariantFormatJxlQuality` |
+| FR-100-06 | `ConfigManager::hasJxl()`, `BaseImageHandler::assertCanProcess()`/`supportsJxl()`, `ImagickHandler::supportsJxl()`, `GdHandler` load/save | `GdHandlerJxlTest`, `ImagickHandlerJxlTest` |
+| FR-100-07 | `ImagickJxlCheck`, registered in `Errors` | `ImagickJxlCheckTest` |
+| FR-100-08/09 | existing `Extractor` reader chain; naming applies to new variants only | `testJxlUploadWithOriginalFormat` (width/height) |
+| FR-100-10 | documentation only (setting details, `3-reference/image-processing.md`) | — |
+| FR-100-11 | `Dockerfile` `imagemagick` stage + production stage, `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS` | build-time round-trip `RUN`; Imagick suite inside the image |
+
+**Drift gate report (2026-10-18):**
+- Every FR maps to code and tests above; no undocumented behaviour. Tests were red before each implementation (T-100-01, 03, 05, 07); `testSizeVariantFormatJxlQuality` fails without the `jxl:quality` option.
+- Local run (no JXL delegate): 134 passed, 15 skipped (JXL cases skip, NFR-100-04). Inside the new image: `PhotosAddHandlerImagickTest` + JXL unit tests 44 passed; `testGoogleMotionPhotoUpload` and `testTrickyVideoUpload` fail identically in the image built from `master`, so they are environmental (video tooling), not regressions. Locally, the three PDF media-box cases fail with or without this change; they pass inside the image.
+- NFR-100-01: `composer.json`/`package.json` unchanged; ImageMagick 7.1.2-32 and imagick 3.8.1 pinned by SHA-256.
+- NFR-100-02: `resources/js` diff is the one-line `SizeVariantFormat` union in `lychee.d.ts` (`php artisan typescript:transform` reformats the whole file, so the line was applied by hand).
+- NFR-100-05: image 1.989 GB (`master`) → 2.024 GB (+34 MB).
+- Imagick formats: 271 → 280. Gained: JXL, ASE/ASEPRITE, C2PA, ICN, SCREENSHOT, SF3, WBINFO and single-channel aliases. Lost: DJVU, DOT/GV (Graphviz), EXR (OpenEXR), WMF/WMZ (libwmf), X/XWD (X11). JPEG, PNG, GIF, WebP, HEIC/HEIF, TIFF, AVIF (read), RAW (libraw) and PDF are kept.
+- `vp check --fix` rewrites unrelated files on `master` (two `EmbedCodeDialog.vue` become unparseable); those changes were discarded and `vp check` (no fix) reports 0 errors.
 
 ## Increment Map
 
@@ -64,7 +82,7 @@ After all tasks are `[x]` and CI is green: map FR-100-01..11 to classes/tests in
    - _Steps:_ tests first (`ImagickJxlCheckTest`, probe mocked: info / error with `jxl` / nothing), then `ImagickJxlCheck` registered after `ImagickPdfCheck` in `Errors`.
    - _Commands:_ `php artisan test --filter=ImagickJxlCheckTest`, `make phpstan`
 5. **I5 – Docker image (≤90 min, may run longer for build time)** — FR-100-11, NFR-100-01, NFR-100-05; S-100-13
-   - _Steps:_ spike: check for a trixie(-backports) ImageMagick package with JXL (ADR-100-01); otherwise builder stage compiling the pinned tarball against `libjxl-dev`; runtime stage copies prefix + libs; `imagick` built against it; policy path updated in `Dockerfile` and `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS`; smoke step in `docker_build.yml`; record `magick -list format` diff and image size.
+   - _Steps:_ `imagemagick` stage compiling the pinned ImageMagick tarball and imagick against `libjxl-dev` into `/opt/imagemagick` with Debian's `policy.xml`; production stage copies the prefix, installs runtime libraries, enables imagick; policy path in `Dockerfile` and `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS`; build-time JXL round-trip check; record the format list and image size.
    - _Commands:_ `docker build -t lychee-jxl .`, `docker run --rm lychee-jxl php -r "var_dump(Imagick::queryFormats('JXL'));"`, `php artisan test --filter=ImagickPdfCheck`
 6. **I6 – Fixture + image-processing cases (≤60 min)** — FR-100-01, 03, 04, 05, 08; S-100-01..04
    - _Steps:_ generate FX-100-01 inside the I5 image; image-processing cases in `BaseImageHandler` (skipped without delegate) asserting extensions and magic bytes; run them inside the image.

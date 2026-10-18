@@ -821,7 +821,7 @@ return [
         'secure_image_link_enabled' => 'Dette sikrer at bildelenkene ikke kan gjettes.',
         'photo_previous_next_size' => 'Disse knappene er skjult som standard og kun synlige når musepekeren kommer nær venstre/høyre side av skjermen.',
         'photo_viewer_highest_quality_enabled' => 'Når dette er aktivert, viser fullskjermvisningen den beste størrelsesvarianten som finnes for hvert bilde (vanligvis Original) i stedet for Medium. Øker båndbreddebruken per bildevisning.',
-        'size_variant_format' => 'Original: miniatyrer er JPEG, small og medium beholder formatet til den opplastede filen. JPEG eller WebP: alle genererte størrelsesvarianter bruker det formatet. Gjelder kun nygenererte størrelsesvarianter.',
+        'size_variant_format' => 'Original: miniatyrer er JPEG, small og medium beholder formatet til den opplastede filen. JPEG, WebP eller JPEG XL: alle genererte størrelsesvarianter bruker det formatet. Gjelder kun nygenererte størrelsesvarianter. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL vises ikke i alle nettlesere og krever Imagick med støtte for JPEG XL (se Diagnostikk).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Dette vil gjøre alle bilder som matcher smartalbum-betingelsen synlige.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Dette vil gjøre alle bilder som matcher taggalbum-betingelsen synlige.',
         'TA_albums_listing_enabled' => 'Når dette er aktivert, viser et taggalbum også de faktiske albumene som er tagget med kriterietaggen(e), i tillegg til de samsvarende bildene.',

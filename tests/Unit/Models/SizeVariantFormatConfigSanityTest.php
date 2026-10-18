@@ -33,8 +33,20 @@ class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 		$config = Configs::query()->where('key', '=', 'size_variant_format')->firstOrFail();
 
 		self::assertEquals('original', $config->value);
-		self::assertEquals('original|jpeg|webp', $config->type_range);
+		self::assertEquals('original|jpeg|webp|jxl', $config->type_range);
 		self::assertTrue((bool) $config->is_expert);
+	}
+
+	/**
+	 * S-100-12: `jxl` is accepted, unknown values are rejected (Feature 100).
+	 */
+	public function testSizeVariantFormatJxl(): void
+	{
+		/** @var Configs $config */
+		$config = Configs::query()->where('key', '=', 'size_variant_format')->firstOrFail();
+
+		self::assertEquals('', $config->sanity('jxl'));
+		self::assertNotEquals('', $config->sanity('avif'));
 	}
 
 	public function testCompressionQuality(): void

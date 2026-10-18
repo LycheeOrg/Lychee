@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => 'Zapewnia, że linków do obrazów nie da się odgadnąć.',
         'photo_previous_next_size' => 'Te przyciski są domyślnie ukryte i pojawiają się dopiero, gdy kursor zbliży się do lewej/prawej krawędzi ekranu.',
         'photo_viewer_highest_quality_enabled' => 'Gdy włączone, przeglądarka pełnoekranowa wyświetla najlepszy dostępny wariant rozmiaru każdego zdjęcia (zwykle Oryginał) zamiast Średniego. Zwiększa zużycie transferu przy każdym wyświetleniu zdjęcia.',
-        'size_variant_format' => 'Oryginalny: miniatury są w JPEG, small i medium zachowują format przesłanego pliku. JPEG lub WebP: wszystkie generowane warianty rozmiarów używają tego formatu. Dotyczy tylko nowo generowanych wariantów rozmiarów.',
+        'size_variant_format' => 'Oryginalny: miniatury są w JPEG, small i medium zachowują format przesłanego pliku. JPEG, WebP lub JPEG XL: wszystkie generowane warianty rozmiarów używają tego formatu. Dotyczy tylko nowo generowanych wariantów rozmiarów. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL nie jest wyświetlany przez wszystkie przeglądarki i wymaga Imagick z obsługą JPEG XL (zobacz Diagnostykę).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Sprawi to, że wszystkie zdjęcia spełniające warunek inteligentnego albumu staną się widoczne.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Sprawi to, że wszystkie zdjęcia spełniające warunek albumu tagów staną się widoczne.',
         'TA_albums_listing_enabled' => 'Gdy włączone, album tagów oprócz pasujących zdjęć wyświetla również rzeczywiste albumy oznaczone jego tagami.',

@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => 'Detta säkerställer att bildlänkarna inte går att gissa.',
         'photo_previous_next_size' => 'Dessa knappar är dolda som standard och visas endast när muspekaren närmar sig skärmens vänstra/högra kant.',
         'photo_viewer_highest_quality_enabled' => 'När aktiverat visar helskärmsvisaren den bästa storleksvariant som finns för varje foto (vanligtvis Original) i stället för Medium. Ökar bandbreddsanvändningen per fotovisning.',
-        'size_variant_format' => 'Original: miniatyrer är JPEG, small och medium behåller formatet från den uppladdade filen. JPEG eller WebP: alla genererade storleksvarianter använder det formatet. Gäller endast nygenererade storleksvarianter.',
+        'size_variant_format' => 'Original: miniatyrer är JPEG, small och medium behåller formatet från den uppladdade filen. JPEG, WebP eller JPEG XL: alla genererade storleksvarianter använder det formatet. Gäller endast nygenererade storleksvarianter. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL visas inte i alla webbläsare och kräver Imagick med stöd för JPEG XL (se Diagnostik).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Detta gör alla foton som matchar det smarta albumets villkor synliga.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Detta gör alla foton som matchar taggalbumets villkor synliga.',
         'TA_albums_listing_enabled' => 'När aktiverat listar ett taggalbum även de riktiga album som är taggade med dess kriterietagg(ar), utöver de matchande fotona.',

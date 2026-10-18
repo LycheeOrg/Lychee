@@ -84,8 +84,17 @@ class ImagickHandler extends BaseImageHandler
 	/**
 	 * {@inheritDoc}
 	 */
+	protected function supportsJxl(): bool
+	{
+		return resolve(ConfigManager::class)->hasJxl();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function load(MediaFile $file): void
 	{
+		$this->assertCanProcess($file->getOriginalExtension());
 		try {
 			$this->reset();
 			$this->im_image = new \Imagick();
@@ -281,11 +290,19 @@ class ImagickHandler extends BaseImageHandler
 		if ($this->im_image === null) {
 			throw new MediaFileOperationException('No image loaded');
 		}
+		$this->assertCanProcess($file->getExtension());
 		try {
 			$format = strtolower(ltrim($file->getExtension(), '.'));
 			$this->im_image->setImageCompressionQuality($this->resolveQuality());
 			if ($format === SizeVariantFormat::WEBP->value && $this->isLossless()) {
 				$this->im_image->setOption('webp:lossless', 'true');
+			}
+			// The JPEG XL coder ignores the image compression quality and reads these options instead.
+			// `jxl:distance` takes precedence over `jxl:quality`; distance 0 is lossless.
+			if ($format === SizeVariantFormat::JXL->value && $this->isLossless()) {
+				$this->im_image->setOption('jxl:distance', '0');
+			} elseif ($format === SizeVariantFormat::JXL->value) {
+				$this->im_image->setOption('jxl:quality', (string) $this->resolveQuality());
 			}
 			$profiles = $this->im_image->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes

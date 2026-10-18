@@ -822,7 +822,7 @@ return [
         'secure_image_link_enabled' => 'Bu, görsel bağlantılarının tahmin edilemez olmasını sağlar.',
         'photo_previous_next_size' => 'Bu düğmeler varsayılan olarak gizlidir ve yalnızca fare ekranın sol/sağ kenarına yaklaştığında görünür.',
         'photo_viewer_highest_quality_enabled' => 'Etkinleştirildiğinde, tam ekran görüntüleyici her fotoğraf için Medium yerine mevcut en iyi boyut varyantını (genellikle Original) gösterir. Fotoğraf görüntüleme başına bant genişliği kullanımını artırır.',
-        'size_variant_format' => 'Original: küçük resimler JPEG olur, small ve medium yüklenen dosyanın biçimini korur. JPEG veya WebP: oluşturulan tüm boyut varyantları bu biçimi kullanır. Yalnızca yeni oluşturulan boyut varyantlarına uygulanır.',
+        'size_variant_format' => 'Original: küçük resimler JPEG olur, small ve medium yüklenen dosyanın biçimini korur. JPEG, WebP veya JPEG XL: oluşturulan tüm boyut varyantları bu biçimi kullanır. Yalnızca yeni oluşturulan boyut varyantlarına uygulanır. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL tüm tarayıcılarda görüntülenmez ve JPEG XL destekli Imagick gerektirir (Tanılama bölümüne bakın).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Bu, akıllı albüm koşuluna uyan tüm fotoğrafları görünür yapar.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Bu, etiket albümü koşuluna uyan tüm fotoğrafları görünür yapar.',
         'TA_albums_listing_enabled' => 'Etkinleştirildiğinde, bir Etiket Albümü eşleşen fotoğraflara ek olarak ölçüt etiket(ler)iyle etiketlenmiş gerçek albümleri de listeler.',
