@@ -66,7 +66,7 @@ class Extractor
 	 * Length in bytes, counted from the end of the file, of the video that a
 	 * Google Motion Photo appends to its JPEG; `0` if there is none.
 	 * Read by php-exif from the legacy `MicroVideoOffset` (exiftool only),
-	 * otherwise by {@see MotionPhotoLocator} (Feature 098).
+	 * otherwise by {@see MotionPhotoLocator} (Feature 100).
 	 */
 	public int $micro_video_offset = 0;
 	public bool $is_360 = false;

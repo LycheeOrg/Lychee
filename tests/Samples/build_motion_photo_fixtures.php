@@ -7,8 +7,8 @@
  */
 
 /**
- * Rebuilds the synthetic Google Motion Photo 1.0 fixtures of Feature 098
- * (FX-098-01, FX-098-02, FX-098-04):
+ * Rebuilds the synthetic Google Motion Photo 1.0 fixtures of Feature 100
+ * (FX-100-01, FX-100-02, FX-100-04):
  *
  *  - google_motion_photo_v1.jpg        Primary + MotionPhoto
  *  - google_motion_photo_ultrahdr.jpg  Primary + GainMap + MotionPhoto

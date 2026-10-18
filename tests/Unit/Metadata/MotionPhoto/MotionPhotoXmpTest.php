@@ -22,14 +22,14 @@ use App\Metadata\MotionPhoto\MotionPhotoXmp;
 use Tests\AbstractTestCase;
 
 /**
- * Covers SVC-098-02: reading the Google camera and container XMP of motion
- * photos (Feature 098, S-098-01, S-098-03, S-098-04, S-098-09, S-098-10).
+ * Covers SVC-100-02: reading the Google camera and container XMP of motion
+ * photos (Feature 100, S-100-01, S-100-03, S-100-04, S-100-09, S-100-10).
  */
 class MotionPhotoXmpTest extends AbstractTestCase
 {
 	/**
 	 * The standard XMP packet of a Pixel 11 Pro Ultra HDR motion photo
-	 * (FX-098-03), verbatim except for the maker note, which was stripped.
+	 * (FX-100-03), verbatim except for the maker note, which was stripped.
 	 */
 	private const PIXEL_XMP = <<<'XML'
 		<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.1.0-jc003">

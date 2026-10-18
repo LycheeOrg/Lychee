@@ -40,7 +40,7 @@ afterEach(() => {
 	vi.useRealTimers();
 });
 
-describe("useMotionHover: hover intent (S-098-15, S-098-16)", () => {
+describe("useMotionHover: hover intent (S-100-15, S-100-16)", () => {
 	it("plays the loaded URL after the hover delay, not before", async () => {
 		const hover = useMotionHover(
 			() => livePhoto(),
@@ -104,7 +104,7 @@ describe("useMotionHover: hover intent (S-098-15, S-098-16)", () => {
 	});
 });
 
-describe("useMotionHover: gates (S-098-17)", () => {
+describe("useMotionHover: gates (S-100-17)", () => {
 	it("ignores photos that are not live photos", async () => {
 		const photo = reactive({ id: "p1", live_photo_url: null, precomputed: { is_livephoto: false } });
 		const loader = vi.fn(() => Promise.resolve());
@@ -172,7 +172,7 @@ describe("useMotionHover: fade-in state", () => {
 	});
 });
 
-describe("useMotionHover: playback failure (S-098-18)", () => {
+describe("useMotionHover: playback failure (S-100-18)", () => {
 	it("drops the video on error and tries again on the next hover", async () => {
 		const hover = useMotionHover(
 			() => livePhoto(),
@@ -192,7 +192,7 @@ describe("useMotionHover: playback failure (S-098-18)", () => {
 	});
 });
 
-describe("useMotionHover: URL loading (S-098-19, S-098-20)", () => {
+describe("useMotionHover: URL loading (S-100-19, S-100-20)", () => {
 	it("does not call the loader when the URL is already known", async () => {
 		const loader = vi.fn(() => Promise.resolve());
 		const hover = useMotionHover(
@@ -279,6 +279,46 @@ describe("useMotionHover: URL loading (S-098-19, S-098-20)", () => {
 		await vi.advanceTimersByTimeAsync(MOTION_HOVER_DELAY_MS);
 
 		expect(hover.videoSrc.value).toBeNull();
+	});
+
+	it("reuses the pending request when the pointer comes back before it finishes", async () => {
+		const photo = livePhoto(null);
+		const { loader, resolve } = deferredLoader(photo);
+		const hover = useMotionHover(
+			() => photo,
+			loader,
+			() => true,
+		);
+
+		hover.onEnter();
+		await vi.advanceTimersByTimeAsync(100);
+		hover.onLeave();
+		hover.onEnter();
+		hover.onLeave();
+		hover.onEnter();
+		expect(loader).toHaveBeenCalledTimes(1);
+
+		resolve();
+		await vi.advanceTimersByTimeAsync(MOTION_HOVER_DELAY_MS);
+		expect(hover.videoSrc.value).toBe(URL);
+	});
+
+	it("asks again on the next hover after a failed request", async () => {
+		const photo = livePhoto(null);
+		const { loader, reject } = deferredLoader(photo);
+		const hover = useMotionHover(
+			() => photo,
+			loader,
+			() => true,
+		);
+
+		hover.onEnter();
+		reject();
+		await vi.advanceTimersByTimeAsync(MOTION_HOVER_DELAY_MS);
+		hover.onLeave();
+		hover.onEnter();
+
+		expect(loader).toHaveBeenCalledTimes(2);
 	});
 
 	it("plays nothing without a loader when the URL is unknown", async () => {

@@ -28,11 +28,11 @@ use function Safe\set_time_limit;
 
 /**
  * Extracts the video of Google Motion Photos that were imported as plain
- * stills, before Feature 098 recognised the Motion Photo 1.0 format.
+ * stills, before Feature 100 recognised the Motion Photo 1.0 format.
  *
  * The original size variant keeps the whole camera file, video included, so
  * the video is cut from it and stored next to it, as the upload pipeline
- * does (FR-098-04).
+ * does (FR-100-04).
  */
 class ExtractMotionPhotos extends Command
 {

@@ -12,8 +12,8 @@ use App\Image\Files\NativeLocalFile;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Finds the video embedded in a Google Motion Photo JPEG (Feature 098,
- * FR-098-01, ADR-098-01).
+ * Finds the video embedded in a Google Motion Photo JPEG (Feature 100,
+ * FR-100-01, ADR-100-01).
  *
  * In order:
  *  1. the `Item:Length` of the container item with semantic `MotionPhoto`

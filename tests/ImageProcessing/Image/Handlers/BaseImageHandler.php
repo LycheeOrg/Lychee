@@ -526,7 +526,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Feature 098 (S-098-01): a Motion Photo 1.0 file declares its video in a
+	 * Feature 100 (S-100-01): a Motion Photo 1.0 file declares its video in a
 	 * `Container:Directory` instead of `MicroVideoOffset`. It is detected
 	 * without exiftool, so only FFmpeg is required.
 	 */
@@ -540,7 +540,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Feature 098 (S-098-03): an Ultra HDR motion photo has a gain map
+	 * Feature 100 (S-100-03): an Ultra HDR motion photo has a gain map
 	 * between the still and the video; the video is extracted, not the gain
 	 * map.
 	 */
@@ -554,7 +554,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Feature 098 (S-098-01, S-098-03, FX-098-03): a real Pixel 11 Pro Ultra
+	 * Feature 100 (S-100-01, S-100-03, FX-100-03): a real Pixel 11 Pro Ultra
 	 * HDR motion photo, whose primary container item has no `Item:Length`.
 	 * The stored clip must be the HEVC video, not the gain map JPEG.
 	 */
@@ -575,7 +575,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Feature 098 (S-098-07): without FFmpeg the still is imported as a plain
+	 * Feature 100 (S-100-07): without FFmpeg the still is imported as a plain
 	 * photo.
 	 */
 	public function testGoogleMotionPhotoWithoutFFMpegUpload(): void
@@ -592,7 +592,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Feature 098 (S-098-09): the legacy `MicroVideoOffset` is now read from
+	 * Feature 100 (S-100-09): the legacy `MicroVideoOffset` is now read from
 	 * the XMP packet too, so exiftool is no longer needed for old files.
 	 */
 	public function testLegacyGoogleMotionPhotoWithoutExifToolUpload(): void

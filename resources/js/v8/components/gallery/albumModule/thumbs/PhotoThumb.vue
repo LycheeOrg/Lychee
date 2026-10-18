@@ -216,7 +216,7 @@ function prefetchFaces() {
 	}
 }
 
-// Feature 098: live photos play their motion on hover; v3 tiles fetch the
+// Feature 100: live photos play their motion on hover; v3 tiles fetch the
 // video URL through the loader their view provides.
 const {
 	videoSrc: motionSrc,

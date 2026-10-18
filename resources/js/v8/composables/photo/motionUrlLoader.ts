@@ -13,7 +13,7 @@ import type { InjectionKey } from "vue";
  * Grid tiles built from the v3 struct-of-arrays payloads only know
  * `is_livephoto`; each view that renders photo thumbnails provides its
  * store's deduplicated details loader under {@link MOTION_URL_LOADER}, so a
- * thumbnail can fetch its video URL on hover (Feature 098, FR-098-05).
+ * thumbnail can fetch its video URL on hover (Feature 100, FR-100-05).
  */
 export type MotionUrlLoader = (photoIds: string[]) => Promise<void>;
 

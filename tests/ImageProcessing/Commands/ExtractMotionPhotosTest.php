@@ -32,8 +32,8 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequiresFFMpeg;
 
 /**
- * Covers `lychee:extract_motion_photos` (Feature 098, FR-098-04, S-098-11 …
- * S-098-14).
+ * Covers `lychee:extract_motion_photos` (Feature 100, FR-100-04, S-100-11 …
+ * S-100-14).
  */
 class ExtractMotionPhotosTest extends BaseApiWithDataTest
 {
@@ -160,7 +160,7 @@ class ExtractMotionPhotosTest extends BaseApiWithDataTest
 
 	/**
 	 * Uploads with FFmpeg disabled, so the file is stored as a plain still,
-	 * the way photos were imported before Feature 098. FFmpeg is restored to
+	 * the way photos were imported before Feature 100. FFmpeg is restored to
 	 * the value the test started with.
 	 */
 	private function uploadAsStill(string $filename, ?Album $album = null): Photo

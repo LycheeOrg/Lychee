@@ -25,9 +25,9 @@ use Tests\AbstractTestCase;
 use Tests\Constants\TestConstants;
 
 /**
- * Covers SVC-098-03 / FR-098-01: declared lengths checked against an MP4
- * `ftyp` box, and the scan fallback (Feature 098, S-098-01, S-098-03,
- * S-098-04, S-098-05, S-098-08, S-098-10, NFR-098-02).
+ * Covers SVC-100-03 / FR-100-01: declared lengths checked against an MP4
+ * `ftyp` box, and the scan fallback (Feature 100, S-100-01, S-100-03,
+ * S-100-04, S-100-05, S-100-08, S-100-10, NFR-100-02).
  */
 class MotionPhotoLocatorTest extends AbstractTestCase
 {

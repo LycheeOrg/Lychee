@@ -14,7 +14,7 @@ use function Safe\unpack;
 
 /**
  * Walks the marker segments of a JPEG header, from SOI to SOS, and picks the
- * standard XMP packet (ADR-098-01).
+ * standard XMP packet (ADR-100-01).
  *
  * Only the header is read: the walk stops at the start-of-scan marker, so
  * the entropy-coded image data and anything appended to the file (gain map,

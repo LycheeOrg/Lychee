@@ -1,9 +1,9 @@
-# ADR-098-01: In-house XMP reader for Google Motion Photos
+# ADR-100-01: In-house XMP reader for Google Motion Photos
 
 - **Status:** Accepted
 - **Date:** 2026-10-17
-- **Related features/specs:** Feature 098 (docs/specs/4-architecture/features/098-google-motion-photos/spec.md)
-- **Related open questions:** Q-098-02
+- **Related features/specs:** Feature 100 (docs/specs/4-architecture/features/100-google-motion-photos/spec.md)
+- **Related open questions:** Q-100-02
 
 ## Context
 
@@ -49,5 +49,5 @@ Read the motion photo XMP in Lychee itself, under `App\Metadata\MotionPhoto`:
 
 ## Links
 
-- Related spec sections: `docs/specs/4-architecture/features/098-google-motion-photos/spec.md#functional-requirements` (FR-098-01), NFR-098-02, NFR-098-03
+- Related spec sections: `docs/specs/4-architecture/features/100-google-motion-photos/spec.md#functional-requirements` (FR-100-01), NFR-100-02, NFR-100-03
 - Related issues / PRs: LycheeOrg/Lychee#753, LycheeOrg/Lychee#1283

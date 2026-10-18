@@ -203,7 +203,7 @@ const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const photosStore = usePhotosStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
-// Feature 098: thumbnails fetch their live photo video URL on hover.
+// Feature 100: thumbnails fetch their live photo video URL on hover.
 provide(MOTION_URL_LOADER, (ids) => searchStore.loadPhotoDetailsV3(ids));
 const layoutStore = useLayoutStore();
 

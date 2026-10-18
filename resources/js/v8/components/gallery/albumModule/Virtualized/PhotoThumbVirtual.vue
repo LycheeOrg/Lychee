@@ -223,7 +223,7 @@ function prefetchFaces() {
 	// Intentional no-op — see this component's own doc comment (NG11/Q-065-06).
 }
 
-// Feature 098: live photos play their motion on hover; v3 tiles fetch the
+// Feature 100: live photos play their motion on hover; v3 tiles fetch the
 // video URL through the loader their view provides.
 const {
 	videoSrc: motionSrc,

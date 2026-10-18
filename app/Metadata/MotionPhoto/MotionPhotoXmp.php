@@ -12,7 +12,7 @@ use function Safe\xml_parser_set_option;
 
 /**
  * What the XMP packet of a JPEG says about an embedded motion photo video
- * (Feature 098, DO-098-02).
+ * (Feature 100, DO-100-02).
  *
  * Both lengths count bytes from the end of the file; `0` means "not
  * declared". Nothing here is validated against the file: that is the job of

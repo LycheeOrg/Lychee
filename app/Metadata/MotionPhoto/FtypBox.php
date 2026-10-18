@@ -17,7 +17,7 @@ use function Safe\unpack;
  *     [uint32 box size][ "ftyp" ][major brand ×4] …
  *
  * A match needs a plausible box size and a known video brand, so random
- * bytes in JPEG image data are very unlikely to pass (FR-098-01).
+ * bytes in JPEG image data are very unlikely to pass (FR-100-01).
  */
 final class FtypBox
 {
@@ -41,7 +41,7 @@ final class FtypBox
 
 	/**
 	 * Finds the first `ftyp` box at or after `$from`, reading the stream in
-	 * chunks so memory use does not depend on the file size (NFR-098-02).
+	 * chunks so memory use does not depend on the file size (NFR-100-02).
 	 *
 	 * @param resource $stream
 	 *

@@ -23,8 +23,8 @@ use App\Metadata\MotionPhoto\JpegXmpReader;
 use Tests\AbstractTestCase;
 
 /**
- * Covers SVC-098-01: the JPEG marker walk that finds the standard XMP packet
- * and the start of the image data (Feature 098, S-098-10).
+ * Covers SVC-100-01: the JPEG marker walk that finds the standard XMP packet
+ * and the start of the image data (Feature 100, S-100-10).
  */
 class JpegXmpReaderTest extends AbstractTestCase
 {
