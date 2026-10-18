@@ -17,7 +17,7 @@ Lychee reads photo metadata through `lychee-org/php-exif`, with the exiftool, Im
 Read the motion photo XMP in Lychee itself, under `App\Metadata\MotionPhoto`:
 - `JpegXmpReader` walks the JPEG markers from SOI to SOS and returns the standard XMP APP1 packet.
 - `MotionPhotoXmp` parses it with `ext-xml` (namespace-aware) into a readonly record: `is_motion_photo`, `item_length`, `legacy_offset`.
-- `MotionPhotoLocator` composes them: declared length first (directory item, then legacy offset), checked against an MP4 `ftyp` box at the computed start; when `MotionPhoto="1"` and no valid declared length exists, a chunked scan for the first plausible `ftyp` box.
+- `MotionPhotoLocator` composes them: declared length first (directory item, then legacy offset), checked against an MP4 `ftyp` box at the computed start; when `MotionPhoto="1"` and no valid declared length exists, a chunked scan for the first plausible `ftyp` box after the primary image's end-of-image marker (`JpegImageEnd`), so compressed image data cannot match.
 - `Extractor::createFromFile` calls the locator for `image/jpeg` when php-exif returned no `MicroVideoOffset`, and stores the result in the existing `micro_video_offset` field. The upload pipes and `GoogleMotionPictureHandler` are unchanged.
 
 ## Consequences

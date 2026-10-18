@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Log;
  *     (Motion Photo 1.0, Android 11+),
  *  2. the legacy `GCamera:MicroVideoOffset` (Android ≤ 10),
  *  3. if the file declares `GCamera:MotionPhoto="1"` but neither length
- *     points at a video, the first MP4 `ftyp` box after the JPEG header.
+ *     points at a video, the first MP4 `ftyp` box after the end of the
+ *     primary image.
  *
  * A declared length is only trusted if an `ftyp` box starts where it says.
  */
@@ -59,7 +60,10 @@ final class MotionPhotoLocator
 			return $declared;
 		}
 
-		$video_start = FtypBox::scan($stream, $header->image_data_offset, $file_size);
+		// Scan only after the primary image, so compressed image data that
+		// happens to look like an MP4 header cannot be taken for the video.
+		$image_end = JpegImageEnd::find($stream, $header->image_data_offset, $file_size);
+		$video_start = $image_end === null ? null : FtypBox::scan($stream, $image_end, $file_size);
 
 		return $video_start === null ? 0 : $file_size - $video_start;
 	}

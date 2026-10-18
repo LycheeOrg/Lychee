@@ -12,7 +12,7 @@ A photo taken on a current Android phone shows its motion in Lychee: in the ligh
 - A Pixel `.MP.jpg` uploads as a live photo on exiftool, Imagick and Native installs (S-100-01, 03, 09).
 - Existing libraries gain their videos with `lychee:extract_motion_photos` (S-100-11).
 - Grid pages make no video request until hover intent (NFR-100-01).
-- Quality gate green: `php-cs-fixer`, `make phpstan`, scoped `php artisan test`, `vp check --fix`, `vp run typecheck`, `vp test`.
+- Quality gate green: `php-cs-fixer`, `make phpstan`, scoped `php artisan test`, `npx vp check` (no `--fix`), `vp run typecheck`, `vp test`.
 
 ## Scope Alignment
 - **In scope:** `App\Metadata\MotionPhoto` reader (FR-100-01); `Extractor` wiring (FR-100-01/02); backfill command (FR-100-04); v8 badge and hover playback for every live photo (FR-100-03); fixtures; docs.
@@ -64,10 +64,10 @@ After T-100-15, during T-100-16, compare every FR/NFR/S-ID against the tests nam
    - _Commands:_ `php artisan test --filter=ExtractMotionPhotosTest`, `--filter=PhotosAddHandlerImagickTest`, `make phpstan`.
 7. **I7 – Motion badge + lang key** (FR-100-03, UI-100-01, NFR-100-04)
    - _Steps:_ `gallery.motion_photo` in the 23 `lang/*/gallery.php`; `ThumbBadge` in `PhotoThumb.vue` and `PhotoThumbVirtual.vue`.
-   - _Commands:_ `php artisan test --filter=LangTest`, `php scripts/check_translations.php` (if present), `vp check --fix`, `vp run typecheck`.
+   - _Commands:_ `php artisan test --filter=LangTest`, `php scripts/check_translations.php` (if present), `npx vp check` (no `--fix`), `vp run typecheck`.
 8. **I8 – `useMotionHover` composable, URL loader, hover overlay** (FR-100-03, FR-100-05, S-100-15 … 20, NFR-100-01)
-   - _Steps:_ failing Vitest `useMotionHover.test.ts` (250 ms intent, cancel on leave, hover/pointer media gate, reduced motion, error reset, loader called once only when the URL is missing, late URL, leave before URL, loader rejection) → composable in `resources/js/v8/composables/photo/useMotionHover.ts`; `motionUrlLoader.ts` injection key and `provide` in the album panel, `Timeline.vue`, `Search.vue`, `Flow.vue`; overlay `<video muted loop playsinline>` in both thumbs.
-   - _Commands:_ `vp test`, `vp check --fix`, `vp run typecheck`; manual check on Chrome, Firefox, Safari, one phone, in album, timeline, search and flow views.
+   - _Steps:_ failing Vitest `useMotionHover.test.ts` (250 ms intent, cancel on leave, hover/pointer media gate, reduced motion, error reset, loader called once only when the URL is missing, late URL, leave before URL, loader rejection) → composable in `resources/js/v8/composables/photo/useMotionHover.ts`; `motionUrlLoader.ts` injection key and `provide` in `AlbumPanel.vue`, `Timeline.vue` and `Search.vue` (not `Flow.vue`, which renders no `PhotoThumb`); overlay `<video muted loop playsinline>` in both thumbs.
+   - _Commands:_ `vp test`, `npx vp check` (no `--fix`), `vp run typecheck`; manual check on Chrome, Firefox, Safari, one phone, in album, timeline and search views.
 9. **I9 – Real-sample test** (FX-100-03, S-100-01, S-100-03)
    - _Steps:_ `testGoogleMotionPhotoPixelUpload` on `google_motion_photo_pixel.jpg` (placed 2026-10-17).
    - _Commands:_ `php artisan test --filter=PhotosAddHandlerImagickTest`.
@@ -123,6 +123,7 @@ Run 2026-10-17 by the agent (owner review pending).
 ## Review Follow-up (PR #4900, 2026-10-18)
 - CodeRabbit: the feature number collided with upstream's Feature 098 (Tag Albums Category, merged meanwhile; 099 is PDF Photo View). Renumbered to the next free ID, 100: folder `features/100-google-motion-photos/`, `ADR-100-01`, every `*-098-*` identifier, and the code and test doc comments. Tag Albums' own 098 references (roadmap row, knowledge map line) left untouched.
 - CodeRabbit: repeated hover sent duplicate details requests while the first was in flight. `useMotionHover` now keeps the pending request per photo id until it settles (FR-100-05); Vitest cases added for reuse and for retry after a failure (20/20).
+- CodeRabbit (second review, on 2cdecef): (a) the fallback scan started at SOS, so compressed image data looking like an MP4 header could be taken for the video; it now starts after the primary image's EOI (`JpegImageEnd`, SVC-100-04), with tests for a look-alike header inside the image data, an EOI across a chunk boundary and a missing EOI (locator 21/21); (b) the plan and tasks still prescribed `vp check --fix`, now `npx vp check`; (c) T-100-17 and I8 still listed `Flow.vue` as a loader provider, removed.
 - CodeRabbit docstring-coverage warning (31.75 % of touched functions): not a repository rule; the new PHP classes and public methods carry doc comments, the uncovered ones are tests and Vue setup functions. No change.
 
 ## Drift Gate Report

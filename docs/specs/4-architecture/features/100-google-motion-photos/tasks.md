@@ -79,22 +79,22 @@ _Last updated: 2026-10-17_
 - [x] T-100-12 – `gallery.motion_photo` lang key (23 locales) + badge in v8 `PhotoThumb.vue` and `PhotoThumbVirtual.vue` (F-100-03, S-100-17, UI-100-01, NFR-100-04).  
   _Verification commands:_  
   - `php artisan test --filter=LangTest`  
-  - `vp check --fix`  
+  - `npx vp check` (non-mutating; format only the changed files with `npx vp fmt <file>`)  
   - `vp run typecheck`  
 
 ### I8 – Hover playback
 - [x] T-100-13 – Failing Vitest `useMotionHover.test.ts` (F-100-03, F-100-05, S-100-15, S-100-16, S-100-17, S-100-18, S-100-19, S-100-20).  
   _Intent:_ 250 ms intent timer, cancel on leave, `(hover: hover) and (pointer: fine)` gate, reduced-motion gate, error reset; loader called once and only when the URL is missing; playback at max(250 ms, URL arrival); leave before URL → nothing; loader rejection → nothing; no loader injected → URL-present tiles only.  
   _Verification commands:_ `vp test` (red)  
-- [x] T-100-17 – `motionUrlLoader.ts` injection key + `provide` in the album panel (`AlbumState.loadPhotoDetails`), `Timeline.vue`, `Search.vue`, `Flow.vue` (adapter to `loadPhotoDetailsV3(albumId, tiles)`) (F-100-05, S-100-19).  
+- [x] T-100-17 – `motionUrlLoader.ts` injection key + `provide` in the album panel (`AlbumState.loadPhotoDetails`), `Timeline.vue` and `Search.vue` (`loadPhotoDetailsV3`); `Flow.vue` renders no `PhotoThumb`, so it provides none (F-100-05, S-100-19).  
   _Verification commands:_  
-  - `vp check --fix`  
+  - `npx vp check` (non-mutating; format only the changed files with `npx vp fmt <file>`)  
   - `vp run typecheck`  
   _Notes:_ numbered after T-100-16 to keep IDs stable; do it before T-100-14.  
 - [x] T-100-14 – Implement `resources/js/v8/composables/photo/useMotionHover.ts` and the overlay `<video muted loop playsinline>` in `PhotoThumb.vue` and `PhotoThumbVirtual.vue` (F-100-03, F-100-05, S-100-15 … 20, NFR-100-01).  
   _Verification commands:_  
   - `vp test`  
-  - `vp check --fix`  
+  - `npx vp check` (non-mutating; format only the changed files with `npx vp fmt <file>`)  
   - `vp run typecheck`  
   - Manual: Chrome, Firefox, Safari desktop + one phone, in album, timeline, search and flow views; network panel shows no `.mov` before hover and one details request on the first hover of a photo.  
 
@@ -109,5 +109,5 @@ _Last updated: 2026-10-17_
   _Verification commands:_ re-run every command above.
 
 ## Notes / TODOs
-- 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check --fix`, `npx vp run typecheck`, `npx vp test`).
+- 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).
 - Image-processing tests skip silently without exiftool/FFmpeg (`assertHasExifToolOrSkip`, `assertHasFFMpegOrSkip`): a "green" run without them proves nothing for T-100-08/09/11/15.

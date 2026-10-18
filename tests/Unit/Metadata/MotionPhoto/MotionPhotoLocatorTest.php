@@ -115,9 +115,39 @@ class MotionPhotoLocatorTest extends AbstractTestCase
 	public function testScanFindsABoxAcrossAChunkBoundary(): void
 	{
 		$video = self::mp4(4000);
-		$file = $this->file(self::jpeg('GCamera:MotionPhoto="1"', self::CHUNK_SIZE - 6) . $video);
+		$file = $this->file(self::jpeg('GCamera:MotionPhoto="1"') . str_repeat("\x00", self::CHUNK_SIZE - 6) . $video);
 
 		self::assertSame(4000, MotionPhotoLocator::locate($file));
+	}
+
+	/**
+	 * PR #4900 review: compressed image data may contain bytes that look like
+	 * an MP4 header; the scan starts after the primary image's EOI marker.
+	 */
+	public function testScanSkipsTheImageDataOfThePrimaryImage(): void
+	{
+		$look_alike = self::mp4(24);
+		$video = self::mp4(4000);
+		$file = $this->file(self::jpeg('GCamera:MotionPhoto="1"', 200, $look_alike . "\x12\x12") . $video);
+
+		self::assertSame(4000, MotionPhotoLocator::locate($file));
+	}
+
+	public function testScanFindsAnEoiAcrossAChunkBoundary(): void
+	{
+		$video = self::mp4(4000);
+		// SOS at offset 0 of the image data: FF at 65535, D9 at 65536.
+		$file = $this->file(self::jpeg('GCamera:MotionPhoto="1"', self::CHUNK_SIZE + 1) . $video);
+
+		self::assertSame(4000, MotionPhotoLocator::locate($file));
+	}
+
+	public function testScanNeedsTheEndOfThePrimaryImage(): void
+	{
+		$truncated = substr(self::jpeg('GCamera:MotionPhoto="1"'), 0, -2);
+		$file = $this->file($truncated . self::mp4(4000));
+
+		self::assertSame(0, MotionPhotoLocator::locate($file));
 	}
 
 	public function testPlainJpegWithTrailingVideoIsNotAMotionPhoto(): void
@@ -205,9 +235,10 @@ class MotionPhotoLocatorTest extends AbstractTestCase
 	/**
 	 * A JPEG whose XMP carries `$camera` (attributes, optionally closing the
 	 * description early to add a container directory), and whose image data
-	 * spans `$image_bytes` bytes from the SOS marker to the end of EOI.
+	 * spans `$image_bytes` bytes from the SOS marker to the end of EOI, ending
+	 * with `$image_data`.
 	 */
-	private static function jpeg(string $camera, int $image_bytes = 64): string
+	private static function jpeg(string $camera, int $image_bytes = 64, string $image_data = ''): string
 	{
 		$xmp = $camera === '' ? '' : "http://ns.adobe.com/xap/1.0/\x00" .
 			'<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">' .
@@ -216,7 +247,7 @@ class MotionPhotoLocatorTest extends AbstractTestCase
 		$app1 = $xmp === '' ? '' : "\xFF\xE1" . pack('n', strlen($xmp) + 2) . $xmp;
 		$sos = "\xFF\xDA\x00\x08\x01\x01\x00\x00\x3F\x00";
 
-		return "\xFF\xD8" . $app1 . $sos . str_repeat("\x12\x34", intdiv($image_bytes - 12, 2)) . "\xFF\xD9";
+		return "\xFF\xD8" . $app1 . $sos . str_repeat("\x12", $image_bytes - 12 - strlen($image_data)) . $image_data . "\xFF\xD9";
 	}
 
 	private static function mp4(int $length, string $brand = 'isom', int $box_size = 24): string
