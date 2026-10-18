@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Image de basse qualité (LQIP)',
     'thumbnail' => 'Vignette de la photo',
     'live_video' => 'Partie vidéo d’une live-photo',
+    'motion_photo' => 'Photo animée',
     'download_raw' => 'Télécharger RAW',
     'download_album' => 'Sélectionnez la résolution d\'image pour l\'archive ZIP de l\'album. Si une photo ne possède pas la variante sélectionnée, l\'originale sera utilisée.',
     'downloading_part' => 'Téléchargement de la partie :current / :total',

@@ -47,6 +47,17 @@ class GoogleMotionPictureHandler extends VideoHandler
 	protected TemporaryLocalFile $working_copy;
 
 	/**
+	 * Path at which the video of a motion photo is stored: next to the
+	 * original, under the same file name, with the final video extension.
+	 *
+	 * @param string $original_path path of the original size variant, relative to its disk
+	 */
+	public static function videoPathNextTo(string $original_path): string
+	{
+		return pathinfo($original_path, PATHINFO_DIRNAME) . '/' . pathinfo($original_path, PATHINFO_FILENAME) . self::FINAL_VIDEO_FILE_EXTENSION;
+	}
+
+	/**
 	 * @throws MediaFileOperationException
 	 */
 	public function __destruct()

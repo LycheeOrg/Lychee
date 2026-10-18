@@ -45,9 +45,10 @@ A **Photo** is the fundamental content unit in Lychee. Each photo represents a s
   - Supported: All Rights Reserved, CC BY, CC BY-SA, CC BY-ND, CC BY-NC, CC BY-NC-SA, CC BY-NC-ND, CC0, Public Domain
 
 **Special Features:**
-- **Live Photos**: Support for Apple Live Photos (photo + video pair)
+- **Live Photos**: Support for Apple Live Photos (photo + video pair) and Google Motion Photos (video embedded in the JPEG, legacy `MicroVideoOffset` and Motion Photo 1.0 / Ultra HDR, Feature 098)
   - Stores video component path, checksum, and content ID
-  - Seamlessly integrates motion with still image
+  - Seamlessly integrates motion with still image; v8 grids badge live photos and play the motion on hover
+  - `php artisan lychee:extract_motion_photos` extracts the video of motion photos imported as plain stills
 - **Color Palette**: Extracted dominant colors for visual search and theming
 - **Tags**: Many-to-many relationship with tag entities (not comma-separated strings)
 - **Purchasable**: E-commerce integration for selling prints/downloads (webshop feature)

@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Zástupný obrázek nízké kvality',
     'thumbnail' => 'Miniatura fotografie',
     'live_video' => 'Video část live-photo',
+    'motion_photo' => 'Pohyblivá fotka',
     'download_raw' => 'Stáhnout RAW',
     'download_album' => 'Vyberte rozlišení obrázků pro ZIP archiv alba. Pokud fotografie nemá vybranou variantu, bude použit originál.',
     'downloading_part' => 'Stahování části :current / :total',

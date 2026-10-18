@@ -200,7 +200,8 @@
 	</UContextMenu>
 </template>
 <script setup lang="ts">
-import { computed, nextTick } from "vue";
+import { computed, nextTick, provide } from "vue";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import { useUserStore } from "@/stores/UserState";
 import { ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -276,6 +277,8 @@ const albumsStore = useAlbumsStore();
 const layoutStore = useLayoutStore();
 const userStore = useUserStore();
 const timelineStore = useTimelineStore();
+// Feature 098: thumbnails fetch their live photo video URL on hover.
+provide(MOTION_URL_LOADER, (ids) => timelineStore.loadPhotoDetailsV3(ids));
 
 // oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);

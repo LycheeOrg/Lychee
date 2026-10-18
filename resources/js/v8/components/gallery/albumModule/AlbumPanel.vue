@@ -182,7 +182,8 @@
 	</UMain>
 </template>
 <script setup lang="ts">
-import { computed, ref, ComponentPublicInstance } from "vue";
+import { computed, ref, ComponentPublicInstance, provide } from "vue";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
@@ -238,6 +239,8 @@ const props = defineProps<{
 
 const userStore = useUserStore();
 const albumStore = useAlbumStore();
+// Feature 098: thumbnails fetch their live photo video URL on hover.
+provide(MOTION_URL_LOADER, (ids) => albumStore.loadPhotoDetails(ids));
 const photosStore = usePhotosStore();
 const catalogStore = useCatalogStore();
 const albumsStore = useAlbumsStore();

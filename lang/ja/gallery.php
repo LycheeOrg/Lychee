@@ -34,6 +34,7 @@ return [
     'placeholder' => '低画質画像プレースホルダー',
     'thumbnail' => '写真のサムネイル',
     'live_video' => 'ライブフォトの動画部分',
+    'motion_photo' => 'モーションフォト',
     'download_raw' => 'RAWをダウンロード',
     'download_album' => 'アルバムZIPアーカイブの画像解像度を選択してください。選択した種類がない写真にはオリジナルが使用されます。',
     'downloading_part' => 'パート :current / :total をダウンロード中',

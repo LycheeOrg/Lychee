@@ -34,6 +34,7 @@ return [
     'placeholder' => '低质量图片占位符',
     'thumbnail' => '照片缩略图',
     'live_video' => '实况照片视频部分',
+    'motion_photo' => '动态照片',
     'download_raw' => '下载 RAW',
     'download_album' => '选择相册ZIP压缩包的图片分辨率。如果照片没有所选的版本，将使用原始版本。',
     'downloading_part' => '正在下载第 :current / :total 部分',

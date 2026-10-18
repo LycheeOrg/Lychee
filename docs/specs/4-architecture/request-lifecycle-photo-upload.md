@@ -343,6 +343,8 @@ public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $f
 }
 ```
 
+Google Motion Photos take the standalone path: `Extractor::createFromFile()` reports the length of the embedded video (php-exif `MicroVideoOffset`, otherwise `App\Metadata\MotionPhoto\MotionPhotoLocator`, Feature 098), and the standalone pipes `ExtractGoogleMotionPictures` and `PlaceGoogleMotionVideo` cut it out with FFmpeg and store it next to the original as the photo's live video.
+
 For a comprehensive understanding of the photo creation pipeline, including all pipe interfaces, DTOs, and processing stages, see the **[Photo Actions Documentation](../../../app/Actions/Photo/README.md)** which provides detailed technical documentation about the Action Pattern implementation and pipeline architecture used in photo processing.
 
 ### 11. Metadata Extraction

@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Ảnh giữ chỗ chất lượng thấp',
     'thumbnail' => 'Ảnh thu nhỏ',
     'live_video' => 'Phần video của ảnh động (live photo)',
+    'motion_photo' => 'Ảnh chuyển động',
     'download_raw' => 'Tải xuống RAW',
     'download_album' => 'Chọn độ phân giải hình ảnh cho tệp ZIP album. Nếu ảnh không có biến thể đã chọn, ảnh gốc sẽ được sử dụng.',
     'downloading_part' => 'Đang tải xuống phần :current / :total',

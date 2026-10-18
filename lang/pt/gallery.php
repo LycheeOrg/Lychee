@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Marcador de imagem de baixa qualidade',
     'thumbnail' => 'Miniatura da foto',
     'live_video' => 'Parte de vídeo da live photo',
+    'motion_photo' => 'Foto em movimento',
     'download_raw' => 'Transferir RAW',
     'download_album' => 'Selecione a resolução da imagem para o arquivo ZIP do álbum. Se uma foto não tiver a variante selecionada, a original será usada.',
     'downloading_part' => 'A transferir a parte :current / :total',

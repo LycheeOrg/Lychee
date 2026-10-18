@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Espacio para imagen de baja calidad',
     'thumbnail' => 'Miniatura de la foto',
     'live_video' => 'Vídeo parte de foto en directo',
+    'motion_photo' => 'Foto en movimiento',
     'download_raw' => 'Descargar RAW',
     'download_album' => 'Seleccione la resolución de imagen para el archivo ZIP del álbum. Si una foto no tiene la variante seleccionada, se usará la original.',
     'downloading_part' => 'Descargando parte :current / :total',

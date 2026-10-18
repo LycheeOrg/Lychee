@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Obraz zastępczy o niskiej jakości',
     'thumbnail' => 'Miniatura zdjęcia',
     'live_video' => 'Część wideo zdjęcia na żywo',
+    'motion_photo' => 'Ruchome zdjęcie',
     'download_raw' => 'Pobierz RAW',
     'download_album' => 'Wybierz rozdzielczość obrazów dla archiwum ZIP albumu. Jeśli zdjęcie nie ma wybranego wariantu, zostanie użyty oryginał.',
     'downloading_part' => 'Pobieranie części :current / :total',

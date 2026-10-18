@@ -34,6 +34,7 @@ return [
     'placeholder' => 'Platshållarbild i låg kvalitet',
     'thumbnail' => 'Fotominiatyr',
     'live_video' => 'Videodel av livefoto',
+    'motion_photo' => 'Rörligt foto',
     'download_raw' => 'Ladda ner RAW',
     'download_album' => 'Välj bildupplösning för albumets ZIP-arkiv. Om ett foto saknar den valda varianten används originalet istället.',
     'downloading_part' => 'Laddar ner del :current / :total',

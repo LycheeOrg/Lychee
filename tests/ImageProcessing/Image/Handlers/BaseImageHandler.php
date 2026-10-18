@@ -18,12 +18,14 @@
 
 namespace Tests\ImageProcessing\Image\Handlers;
 
+use App\Enum\StorageDiskType;
 use App\Facades\Helpers;
 use App\Image\Handlers\GdHandler;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use function Safe\date;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
@@ -521,6 +523,103 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertEquals(16, $photo['size_variants']['placeholder']['height']);
 		self::assertEquals(null, $photo['live_photo_url']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+	}
+
+	/**
+	 * Feature 098 (S-098-01): a Motion Photo 1.0 file declares its video in a
+	 * `Container:Directory` instead of `MicroVideoOffset`. It is detected
+	 * without exiftool, so only FFmpeg is required.
+	 */
+	public function testGoogleMotionPhotoV1Upload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE);
+
+		$this->assertMotionVideoStored($response->json('photos.0'));
+	}
+
+	/**
+	 * Feature 098 (S-098-03): an Ultra HDR motion photo has a gain map
+	 * between the still and the video; the video is extracted, not the gain
+	 * map.
+	 */
+	public function testGoogleMotionPhotoUltraHdrUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_ULTRAHDR_IMAGE);
+
+		$this->assertMotionVideoStored($response->json('photos.0'));
+	}
+
+	/**
+	 * Feature 098 (S-098-01, S-098-03, FX-098-03): a real Pixel 11 Pro Ultra
+	 * HDR motion photo, whose primary container item has no `Item:Length`.
+	 * The stored clip must be the HEVC video, not the gain map JPEG.
+	 */
+	public function testGoogleMotionPhotoPixelUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_PIXEL_IMAGE);
+		$photo = $response->json('photos.0');
+
+		$this->assertMotionVideoStored($photo);
+		self::assertEquals(3064, $photo['size_variants']['original']['width']);
+		self::assertEquals(4080, $photo['size_variants']['original']['height']);
+
+		$short_path = DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
+		$header = Storage::disk(StorageDiskType::LOCAL->value)->get($short_path);
+		self::assertSame('ftyp', substr($header, 4, 4));
+	}
+
+	/**
+	 * Feature 098 (S-098-07): without FFmpeg the still is imported as a plain
+	 * photo.
+	 */
+	public function testGoogleMotionPhotoWithoutFFMpegUpload(): void
+	{
+		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE);
+		$photo = $response->json('photos.0');
+
+		self::assertNull($photo['live_photo_url']);
+		self::assertEquals(TestConstants::MIME_TYPE_IMG_JPEG, $photo['type']);
+		self::assertEquals(1280, $photo['size_variants']['original']['width']);
+		self::assertEquals(850, $photo['size_variants']['original']['height']);
+	}
+
+	/**
+	 * Feature 098 (S-098-09): the legacy `MicroVideoOffset` is now read from
+	 * the XMP packet too, so exiftool is no longer needed for old files.
+	 */
+	public function testLegacyGoogleMotionPhotoWithoutExifToolUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 0);
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_IMAGE);
+
+		$this->assertMotionVideoStored($response->json('photos.0'));
+	}
+
+	/**
+	 * Asserts that the motion video of `$photo` was stored as a `.mov` next
+	 * to the original, under the same file name.
+	 *
+	 * @param array<string,mixed> $photo
+	 */
+	protected function assertMotionVideoStored(array $photo): void
+	{
+		self::assertNotNull($photo['live_photo_url']);
+		self::assertStringEndsWith('.mov', $photo['live_photo_url']);
+		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_DIRNAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_FILENAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_FILENAME));
+
+		$short_path = DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
+		self::assertGreaterThan(0, Storage::disk(StorageDiskType::LOCAL->value)->size($short_path));
 	}
 
 	/**

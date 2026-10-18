@@ -35,6 +35,7 @@ return [
     'placeholder' => 'Low Quality Image Placeholder',
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
+    'motion_photo' => 'Motion photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Select the image resolution for the album ZIP archive. If a photo does not have the selected variant, the original will be used instead.',
     'downloading_part' => 'Downloading part :current / :total',

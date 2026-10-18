@@ -1,0 +1,116 @@
+# Open Questions – Feature 098
+
+Open questions for [Feature 098](spec.md). Log every high- and medium-impact question here (table row + Question Details entry) before asking the user; see [open-questions-format.md](../../spec-guidelines/open-questions-format.md). Once answered, fold the outcome into [spec.md](spec.md) (and an ADR when architecturally significant), then mark the entry resolved.
+
+## Active Questions
+
+| Question ID | Feature | Priority | Summary | Status | Opened | Updated |
+|-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-098-01~~ | 098 – Google Motion Photos | High | How does the album grid let the viewer play the motion? (A hover-to-play + badge, B badge as play button, C hover only) | Resolved (Option A — hover-to-play on hover-capable pointers + motion badge everywhere; owner, 2026-10-17; spec FR-098-03, NFR-098-01, NFR-098-04, UI-098-01/02) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-02~~ | 098 – Google Motion Photos | High | How is the embedded video located in Motion Photo 1.0 files? (A pure-PHP XMP `Container:Directory` read + `ftyp` scan when the item is absent, B extend php-exif to map the tags, C `ftyp` scan only) | Resolved (Option A — pure-PHP `MotionPhotoLocator` called from `Extractor`; owner, 2026-10-17; spec FR-098-01, NFR-098-02, NFR-098-03; ADR-098-01) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-03~~ | 098 – Google Motion Photos | Medium | Does grid playback apply to Apple Live Photos too? (A all live photos, B Google only) | Resolved (Option A — every live photo; owner, 2026-10-17; spec FR-098-03) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-04~~ | 098 – Google Motion Photos | Medium | How are already-imported new-format motion photos backfilled? (A artisan command, B re-upload only) | Resolved (Option A — `lychee:extract_motion_photos`; owner, 2026-10-17; spec FR-098-04, CLI-098-01) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-05~~ | 098 – Google Motion Photos | Medium | Which frontends get grid playback? (A v8 only, B v7 and v8) | Resolved (Option A — v8 only; owner, 2026-10-17; spec FR-098-03, Non-Goals) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-06~~ | 098 – Google Motion Photos | Medium | Which test fixture covers the new format? (A synthetic fixture + one real Pixel sample from the owner, B synthetic only, C issue #1283 images) | Resolved (Option A — synthetic fixtures + one owner-supplied Pixel `.MP.jpg`; owner, 2026-10-17; spec FX-098-01 … 03) | 2026-10-17 | 2026-10-17 |
+| ~~Q-098-07~~ | 098 – Google Motion Photos | Medium | Where does a v3 grid tile get its video URL for hover playback? (A fetch tier-3 details on hover intent, B add `live_photo_urls[]` to the tier-2 resources, C hover playback only where the URL is already loaded) | Resolved (Option A — the owning view provides its details loader, called on `mouseenter`; owner, 2026-10-17; spec FR-098-03, FR-098-05, S-098-19, S-098-20) | 2026-10-17 | 2026-10-17 |
+
+## Question Details
+
+### ~~Q-098-01~~ – Grid interaction for motion photos
+
+**Context:** Today the lightbox already plays live photos through LivePhotosKit (`v8/.../PhotoBox.vue:109-133`), with its own LIVE badge. Grid thumbnails (`PhotoThumb.vue`, `PhotoThumbVirtual.vue`) carry only an unstyled `livephoto` class: no badge, no hover playback. The owner asked for "show the video when hovered over, or a play button". Touch devices have no hover, and a tap on a thumbnail opens the lightbox.
+
+- **Option A (chosen):** hover-to-play on pointer devices plus an always-visible motion badge.
+  - Pointer with hover (`matchMedia('(hover: hover)')`): after ~250 ms of hover a muted, looping `<video preload="none">` fades in over the thumbnail; it stops and unloads on leave.
+  - Every device: a small motion badge in the thumbnail badge row tells the viewer the photo moves; on touch the motion plays in the lightbox.
+  - ✅ Matches Google Photos' own behaviour; zero clicks on desktop.
+  - ✅ Badge makes motion discoverable on touch without hijacking the tap.
+  - ❌ Hover playback fetches the video on demand (1–4 MB per clip).
+- **Option B:** the badge is a play button; clicking it plays inline without opening the lightbox.
+  - ✅ Works the same on touch and pointer; no accidental downloads.
+  - ❌ Small tap target competing with selection and lightbox open.
+  - ❌ One extra click per photo on desktop.
+- **Option C:** hover-to-play only, no badge.
+  - ✅ Smallest UI change.
+  - ❌ Invisible on touch devices; nothing tells the viewer which photos move.
+
+### ~~Q-098-02~~ – Locating the embedded video
+
+**Context:** Android 11+ writes the Motion Photo 1.0 format: XMP `GCamera:MotionPhoto=1` plus a `Container:Directory` sequence of `Container:Item`s (`Item:Mime`, `Item:Semantic`, `Item:Length`, `Item:Padding`). The video is the item with `Item:Semantic="MotionPhoto"` and sits at the end of the file, so its start is `filesize − Item:Length`. Ultra HDR photos add a `GainMap` item between the primary JPEG and the video. Lychee today reads only `XMP-GCamera:MicroVideoOffset` through php-exif 1.4.0 (`Mapper/Exiftool.php:72`), which the Imagick and Native readers do not provide. Issue #1283's exiftool dump lists only the `Primary` directory item, so some files may lack the video's directory entry.
+
+- **Option A (chosen):** pure-PHP reader `App\Metadata\MotionPhotoLocator`.
+  - Reads the XMP packet from the JPEG's APP1 segments (no external tool), returns the video's byte length from the `MotionPhoto` item, or from `MicroVideoOffset` for the legacy format.
+  - When `GCamera:MotionPhoto=1` but no `MotionPhoto` item exists, scans for the MP4 `ftyp` box after the primary image's EOI marker.
+  - ✅ Works on every install (exiftool, Imagick or Native reader); no dependency change.
+  - ✅ One place handles legacy, current and Ultra HDR layouts.
+  - ❌ We maintain a small XMP/JPEG segment parser.
+- **Option B:** extend `lychee-org/php-exif` to map `XMP-GCamera:MotionPhoto` and `XMP-GContainer:DirectoryItem*`, then bump the dependency.
+  - ✅ Keeps all metadata reading in the library.
+  - ❌ Requires exiftool as the reader; Imagick/Native installs stay unsupported.
+  - ❌ Two-repository release and a dependency bump that needs owner approval.
+- **Option C:** scan for the `ftyp` box after the JPEG EOI only (the approach of ViRb3/google-camera-motion-photo-splitter).
+  - ✅ Simplest; ignores metadata entirely.
+  - ❌ Heuristic; false positives possible on any JPEG with trailing data.
+  - ❌ Does not use the declared length, so padding/gain-map layouts rely on luck.
+
+### ~~Q-098-03~~ – Apple Live Photos in the grid
+
+**Context:** Google motion videos are stored exactly like Apple Live Photo videos (`photos.live_photo_short_path`), and the frontend only knows `precomputed.is_livephoto` / `is_live_photos[]`. Apple `.mov` files are often HEVC, which Firefox and some Chromium builds cannot decode.
+
+- **Option A (chosen):** grid playback applies to every live photo (Apple and Google).
+  - ✅ No new API field or column; consistent UX.
+  - ❌ HEVC clips fail silently on browsers without HEVC; the still stays visible.
+- **Option B:** Google motion photos only.
+  - ✅ Only H.264 clips, so playback works everywhere.
+  - ❌ Needs a new `live_photo_kind` (or similar) column, migration and API field.
+
+### ~~Q-098-04~~ – Backfilling existing photos
+
+**Context:** New-format motion photos uploaded before this feature are stored as plain photos, but the original size variant keeps the full file including the video trailer, so the video can still be extracted. Feature 082 used `lychee:detect_360` for the same situation.
+
+- **Option A (chosen):** `php artisan lychee:extract_motion_photos` over JPEG photos with `live_photo_short_path IS NULL`, with `--dry-run` and an album filter; reads originals from local or S3 storage.
+  - ✅ Existing libraries gain motion without re-upload.
+  - ❌ Must read every candidate original once (I/O on large libraries).
+- **Option B:** no backfill; owners re-upload.
+  - ✅ No new command.
+  - ❌ Re-upload loses ratings, titles, album placement and tags.
+
+### ~~Q-098-05~~ – Frontend scope
+
+**Context:** Both `resources/js/v7` and `resources/js/v8` render thumbnails; Feature 077 shipped v8 only, Feature 097 shipped both.
+
+- **Option A (chosen):** v8 only (`PhotoThumb.vue`, `PhotoThumbVirtual.vue`).
+  - ✅ Half the UI work and test surface; v8 is where new work lands.
+  - ❌ v7 users get extraction (lightbox playback) but no grid playback.
+- **Option B:** v7 and v8.
+  - ✅ Parity across trees.
+  - ❌ Duplicated component and CSS work.
+
+### ~~Q-098-06~~ – Test fixture
+
+**Context:** `tests/Samples/google_motion_photo.jpg` is the legacy `MicroVideoOffset` format (checked 2026-10-17). No Motion Photo 1.0 sample exists in the repository, and fixtures must be redistributable.
+
+- **Option A (chosen):** a small synthetic fixture (existing sample JPEG + a short H.264 MP4 + a hand-written `Container:Directory` XMP) for unit and upload tests, plus one real Pixel `.MP.jpg` from the owner, downscaled, for an end-to-end test.
+  - ✅ Deterministic layout tests (including a `GainMap` item) and proof against a real camera file.
+  - ❌ Owner must supply a photo they are happy to publish.
+- **Option B:** synthetic fixture only.
+  - ✅ No owner action needed.
+  - ❌ Nothing proves the parser against real camera output.
+- **Option C:** the sample images attached to issue #1283.
+  - ✅ Real Pixel files.
+  - ❌ Licence unclear; GitHub may have stripped the video trailer.
+
+### ~~Q-098-07~~ – Video URL for grid tiles
+
+**Context:** Found while planning FR-098-03 (2026-10-17). v8 grids built from the v3 struct-of-arrays endpoints (Feature 064/065) only know `is_live_photos[i]` at tile time; `live_photo_url` arrives with the tier-3 `details` call (`adaptPhotoTile.ts` `mergePhotoDetail()`), which today runs only when a photo is selected or opened. So on hover the tile has no URL to play. Every grid store already has a deduped details loader: `AlbumState.loadPhotoDetails`, `TimelineState.loadPhotoDetailsV3`, `SearchState.loadPhotoDetailsV3`, `FlowState.loadPhotoDetailsV3`. The URL's storage disk comes from the original size variant, which the ratios query does not join (NFR-064-03 caps it at 3 fixed `size_variants` joins).
+
+- **Option A (chosen):** on `mouseenter` of a live photo tile, ask the owning store's details loader for that id (injected into `PhotoThumb` / `PhotoThumbVirtual` by the panel); play once `live_photo_url` is set and the 250 ms hover delay has passed.
+  - ✅ No API or query change; respects the Feature 064 tier split and NFR-064-03.
+  - ✅ The details fetch is deduped per id and also fills the other tier-3 fields the lightbox needs anyway.
+  - ❌ One small request per newly hovered live photo; a slow network delays the first play past 250 ms.
+- **Option B:** add a nullable `live_photo_urls[]` to `PhotoRatioResource` and `SearchPhotoResource`.
+  - ✅ URL known at render time; no extra request.
+  - ❌ API contract change (`lychee.d.ts`), and a 4th `size_variants` join for the disk, amending NFR-064-03.
+- **Option C:** hover playback only on tiles whose URL is already loaded (v2 payloads, or after the photo was selected/opened).
+  - ✅ No change beyond the thumbnail.
+  - ❌ On v3 grids hover does nothing on first visit, which looks broken.

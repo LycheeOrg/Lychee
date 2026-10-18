@@ -34,6 +34,7 @@ return [
     'placeholder' => '低畫質圖片預留位置',
     'thumbnail' => '照片縮圖',
     'live_video' => '原況照片的影片部分',
+    'motion_photo' => '動態相片',
     'download_raw' => '下載 RAW',
     'download_album' => '選擇相簿ZIP壓縮檔的圖片解析度。如果照片沒有所選的版本，將使用原始版本。',
     'downloading_part' => '正在下載第 :current / :total 部分',

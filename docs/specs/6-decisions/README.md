@@ -26,6 +26,7 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-092-01](ADR-092-01-granularity-free-bucket-keys.md) | Accepted | Granularity-free bucket keys, bucket ids derived at read time |
 | [ADR-092-02](ADR-092-02-capture-local-photo-date-buckets.md) | Accepted | Photo capture dates bucketed in the zone the photo was taken in |
 | [ADR-096-01](ADR-096-01-vite-plus-single-frontend-toolchain.md) | Accepted | Vite+ (`vp`: Vite 8, Oxlint, Oxfmt, `vp staged`) as the single frontend toolchain; `vue-tsc` and the npm bootstrap kept |
+| [ADR-098-01](ADR-098-01-in-house-motion-photo-xmp-reader.md) | Accepted | Google Motion Photo XMP (legacy `MicroVideoOffset` and Motion Photo 1.0 `Container:Directory`) read by an in-house JPEG/XMP reader under `App\Metadata\MotionPhoto`, not php-exif |
 
 ## Templates
 

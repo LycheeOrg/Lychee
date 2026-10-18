@@ -141,7 +141,8 @@ import { useSelection } from "@/composables/selections/selections";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import { useRoute, useRouter } from "vue-router";
 import AlbumMergeDialog from "@/v8/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import RenameDialog from "@/v8/components/forms/gallery-dialogs/RenameDialog.vue";
@@ -202,6 +203,8 @@ const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const photosStore = usePhotosStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
+// Feature 098: thumbnails fetch their live photo video URL on hover.
+provide(MOTION_URL_LOADER, (ids) => searchStore.loadPhotoDetailsV3(ids));
 const layoutStore = useLayoutStore();
 
 // Pre-fill the store from a bookmarked/shared URL before children (e.g. SearchBox)
