@@ -135,10 +135,37 @@ class ExtractMotionPhotosTest extends BaseApiWithDataTest
 		$broken->size_variants->getOriginal()->getFile()->delete();
 
 		$this->artisan('lychee:extract_motion_photos')
+			->expectsOutput('Failed: ' . $broken->id . ' (' . $broken->title . '): original file is missing')
 			->expectsOutput('Checked 1 photos: 0 motion photos extracted, 1 failed.')
 			->assertExitCode(1);
 
 		self::assertNull($broken->fresh()->live_photo_short_path);
+	}
+
+	/**
+	 * PR #4900 review: continuing with the printed cursor would skip a photo
+	 * that failed in the batch, so the command says to run the batch again
+	 * first.
+	 */
+	public function testCursorAfterAFailureAsksToRetryTheBatch(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		$photos = [$this->uploadAsStill(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE), $this->uploadAsStill(TestConstants::SAMPLE_FILE_GMP_ULTRAHDR_IMAGE)];
+		// Order as the database does: its collation of ids is not byte order on MySQL/PostgreSQL.
+		[$first, $second] = Photo::query()->with('size_variants')->whereIn('id', array_map(fn (Photo $p) => $p->id, $photos))->orderBy('id')->get()->all();
+		$first->size_variants->getOriginal()->getFile()->delete();
+
+		$this->artisan('lychee:extract_motion_photos', ['limit' => 1])
+			->expectsOutput('Failed: ' . $first->id . ' (' . $first->title . '): original file is missing')
+			->expectsOutput('More photos may remain: continue with --after=' . $first->id)
+			->expectsOutput('1 photos failed in this batch and would be skipped by that cursor: run it again without --after to retry them first.')
+			->assertExitCode(1);
+
+		$this->artisan('lychee:extract_motion_photos', ['limit' => 1, '--after' => $first->id])
+			->expectsOutput('Checked 1 photos: 1 motion photos extracted, 0 failed.')
+			->expectsOutput('More photos may remain: continue with --after=' . $second->id)
+			->doesntExpectOutputToContain('failed in this batch')
+			->assertExitCode(0);
 	}
 
 	public function testCursorContinuesAfterThePreviousBatch(): void

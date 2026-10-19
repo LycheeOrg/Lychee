@@ -130,6 +130,7 @@ class ExtractMotionPhotos extends Command
 		$this->line(sprintf('Checked %d photos: %d motion photos %s, %d failed.', $photos->count(), count($found), $outcome, $failed));
 		if ($photos->count() === $limit) {
 			$this->line('More photos may remain: continue with --after=' . $photos->last()->id);
+			$this->retryHint($failed, $after);
 		}
 
 		return $failed === 0 ? 0 : 1;
@@ -156,6 +157,7 @@ class ExtractMotionPhotos extends Command
 			return $video_length > 0;
 		} catch (\Throwable $e) {
 			Log::warning(__METHOD__ . ':' . __LINE__ . ' Motion photo extraction failed for photo ' . $photo->id . ': ' . $e->getMessage());
+			$this->warn('Failed: ' . $photo->id . ' (' . $photo->title . '): ' . $e->getMessage());
 
 			return null;
 		} finally {
@@ -163,6 +165,20 @@ class ExtractMotionPhotos extends Command
 				$local_file->delete();
 			}
 		}
+	}
+
+	/**
+	 * Continuing with the printed cursor would skip the photos that failed in
+	 * this batch: tell the operator to run the batch again first.
+	 */
+	private function retryHint(int $failed, mixed $after): void
+	{
+		if ($failed === 0) {
+			return;
+		}
+
+		$same_batch = is_string($after) && $after !== '' ? 'with --after=' . $after : 'without --after';
+		$this->line(sprintf('%d photos failed in this batch and would be skipped by that cursor: run it again %s to retry them first.', $failed, $same_batch));
 	}
 
 	/**
