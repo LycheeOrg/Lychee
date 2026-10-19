@@ -1,6 +1,6 @@
 # ADR-100-01: In-house XMP reader for Google Motion Photos
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-100-02
 - **Date:** 2026-10-17
 - **Related features/specs:** Feature 100 (docs/specs/4-architecture/features/100-google-motion-photos/spec.md)
 - **Related open questions:** Q-100-02

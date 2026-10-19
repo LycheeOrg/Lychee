@@ -26,6 +26,8 @@ A photo taken on a current Android phone shows its motion in Lychee: in the ligh
 - Tooling: exiftool and FFmpeg for the image-processing tests (they `assertHasExifToolOrSkip` / `assertHasFFMpegOrSkip`).
 - ADR-100-01.
 
+- **Dependency bump (owner approval, 2026-10-19):** `lychee-org/php-exif` `^1.4.0` → `^1.5.0` (lock 1.5.0, commit `05f9945`). Rationale: 1.5.0 ships the motion photo reader moved out of Lychee (LycheeOrg/php-exif#83, ADR-100-02) and runs it from `Reader::read()` for every adapter. Only `lychee-org/php-exif` changed in `composer.lock`; its source URL kept on HTTPS.
+
 ## Assumptions & Risks
 - **Assumptions:**
   - Pixel files carry the video's `Container:Item` in the standard XMP packet (extended XMP is not read).
@@ -124,6 +126,8 @@ Run 2026-10-17 by the agent (owner review pending).
 - CodeRabbit: the feature number collided with upstream's Feature 098 (Tag Albums Category, merged meanwhile; 099 is PDF Photo View). Renumbered to the next free ID, 100: folder `features/100-google-motion-photos/`, `ADR-100-01`, every `*-098-*` identifier, and the code and test doc comments. Tag Albums' own 098 references (roadmap row, knowledge map line) left untouched.
 - CodeRabbit: repeated hover sent duplicate details requests while the first was in flight. `useMotionHover` now keeps the pending request per photo id until it settles (FR-100-05); Vitest cases added for reuse and for retry after a failure (20/20).
 - CodeRabbit (second review, on 2cdecef): (a) the fallback scan started at SOS, so compressed image data looking like an MP4 header could be taken for the video; it now starts after the primary image's EOI (`JpegImageEnd`, SVC-100-04), with tests for a look-alike header inside the image data, an EOI across a chunk boundary and a missing EOI (locator 21/21); (b) the plan and tasks still prescribed `vp check --fix`, now `npx vp check`; (c) T-100-17 and I8 still listed `Flow.vue` as a loader provider, removed.
+- Maintainer ildyria (comment 6251741379): asked why the support was not added to php-exif. Owner chose to move it (Q-100-08, ADR-100-02 supersedes ADR-100-01). T-100-18 done on `mlapaglia/php-exif` `feat/google-motion-photos`; T-100-19 (php-exif PR, release, Lychee bump) pending.
+- 2026-10-19: php-exif #83 merged and released as 1.5.0; upstream `master` merged (CONTRIBUTING.md only); php-exif bumped to `^1.5.0` with owner approval. Verified: php-exif alone reports 10705 / 10705 / 3725212 / 4495341 bytes for the v1, Ultra HDR, Pixel and legacy samples with the Native and Imagick readers, `false` for a plain JPEG; upload suites, `ExtractMotionPhotosTest`, `PhotoAddTest`, `DownloadTest`, `Detect360Test` and `make phpstan` green. Lychee's own reader was then removed with owner approval of the exact paths (T-100-19): `app/Metadata/MotionPhoto/` and `tests/Unit/Metadata/MotionPhoto/` deleted, `Extractor` reads php-exif only, the command calls `PHPExif\MotionPhoto\MotionPhotoLocator`; the four upload suites, `ExtractMotionPhotosTest`, `PhotoAddTest`, `DownloadTest`, `Detect360Test`, the other `Extractor` users and `make phpstan` green.
 - CodeRabbit docstring-coverage warning (31.75 % of touched functions): not a repository rule; the new PHP classes and public methods carry doc comments, the uncovered ones are tests and Vue setup functions. No change.
 
 ## Drift Gate Report

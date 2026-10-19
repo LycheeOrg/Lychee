@@ -108,6 +108,19 @@ _Last updated: 2026-10-17_
 - [x] T-100-16 – Knowledge map, `1-concepts/photos.md`, `request-lifecycle-photo-upload.md`, roadmap; Implementation Drift Gate report in plan.md.  
   _Verification commands:_ re-run every command above.
 
+
+### I11 – Move the reader to php-exif (ADR-100-02, Q-100-08)
+- [x] T-100-18 – Port `App\Metadata\MotionPhoto` to php-exif `PHPExif\MotionPhoto`, run it from `Reader::read()`, tests and usage doc (F-100-01, S-100-01 … 10).  
+  _Intent:_ branch `feat/google-motion-photos` on `mlapaglia/php-exif`, from `upstream/master`.  
+  _Verification commands (php-exif):_  
+  - `vendor/bin/phpunit -c phpunit.xml.dist --no-coverage` (464 tests; only the pre-existing `ExifTest::testAdapterConsistency` GPS failure)  
+  - `vendor/bin/phpstan analyze` (level 7)  
+  - `composer check-code-style`, `composer validate-files`  
+  _Notes:_ exiftool tests only pass in the full run: `ExiftoolProcOpenTest` overrides `proc_open` and enables the real one as a side effect.  
+- [x] T-100-19 – Open the php-exif PR; after release, bump `lychee-org/php-exif` in Lychee (owner approval), delete `app/Metadata/MotionPhoto` and its unit tests, drop the locator call in `Extractor`, point `ExtractMotionPhotos` at `PHPExif\MotionPhoto\MotionPhotoLocator` (F-100-01, F-100-04).  
+  _Verification commands:_ `php artisan test --filter=PhotosAddHandlerImagickTest`, `--filter=ExtractMotionPhotosTest`, `make phpstan`.  
+  _Notes:_ php-exif PR opened 2026-10-18: LycheeOrg/php-exif#83, merged and released as 1.5.0 on 2026-10-19. Done 2026-10-19: upstream merged, `lychee-org/php-exif` bumped to `^1.5.0` (owner approval), suites and PHPStan green. Done 2026-10-19 (owner approved the paths): deleted `app/Metadata/MotionPhoto/` (7 files) and `tests/Unit/Metadata/MotionPhoto/` (3 files, now in php-exif), dropped the locator call in `Extractor`, `ExtractMotionPhotos` uses `PHPExif\MotionPhoto\MotionPhotoLocator`; spec, knowledge map and lifecycle doc updated. Suites and PHPStan green.  
+
 ## Notes / TODOs
 - 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).
 - Image-processing tests skip silently without exiftool/FFmpeg (`assertHasExifToolOrSkip`, `assertHasFFMpegOrSkip`): a "green" run without them proves nothing for T-100-08/09/11/15.

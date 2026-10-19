@@ -12,7 +12,6 @@ use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
-use App\Metadata\MotionPhoto\MotionPhotoLocator;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Carbon\Exceptions\InvalidFormatException;
@@ -33,7 +32,6 @@ class Extractor
 	public const SUFFIX_SEC_UNIT = ' s';
 	public const ABSOLUTE_ALTITUDE_BOUNDS = 999999.9999;
 	public const MAX_LOCATION_STRING_LENGTH = 255;
-	private const MIME_TYPE_JPEG = 'image/jpeg';
 
 	public ?string $type = null;
 	public int $width = 0;
@@ -65,8 +63,8 @@ class Extractor
 	/**
 	 * Length in bytes, counted from the end of the file, of the video that a
 	 * Google Motion Photo appends to its JPEG; `0` if there is none.
-	 * Read by php-exif from the legacy `MicroVideoOffset` (exiftool only),
-	 * otherwise by {@see MotionPhotoLocator} (Feature 100).
+	 * php-exif (1.5+) reports it for every reader, in the legacy and in the
+	 * Motion Photo 1.0 format (Feature 100, ADR-100-02).
 	 */
 	public int $micro_video_offset = 0;
 	public bool $is_360 = false;
@@ -180,9 +178,6 @@ class Extractor
 		$metadata->img_direction = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata->live_photo_content_id = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata->micro_video_offset = ($exif->getMicroVideoOffset() !== false) ? (int) $exif->getMicroVideoOffset() : 0;
-		if ($metadata->micro_video_offset === 0 && $file->getMimeType() === self::MIME_TYPE_JPEG) {
-			$metadata->micro_video_offset = MotionPhotoLocator::locate($file);
-		}
 
 		$panorama = PanoramaDetector::detect($exif, $metadata->width);
 		$metadata->is_360 = $panorama->is_360;

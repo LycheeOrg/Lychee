@@ -16,13 +16,13 @@ use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
-use App\Metadata\MotionPhoto\MotionPhotoLocator;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PHPExif\MotionPhoto\MotionPhotoLocator;
 use Safe\Exceptions\InfoException;
 use function Safe\set_time_limit;
 
@@ -136,7 +136,7 @@ class ExtractMotionPhotos extends Command
 			}
 
 			$local_file = $this->toLocalFile($original, $photo);
-			$video_length = MotionPhotoLocator::locate($local_file);
+			$video_length = MotionPhotoLocator::locate($local_file->getRealPath());
 			if ($video_length > 0 && !$dry_run) {
 				$this->extract($photo, $original, $local_file, $video_length);
 			}
