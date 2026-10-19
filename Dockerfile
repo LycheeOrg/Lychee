@@ -86,6 +86,9 @@ ARG IMAGEMAGICK_SHA256=940e349f0ef394e658fd57400b83d1d7a81b954f6e7bdbfbfad31b271
 ARG IMAGICK_VERSION=3.8.1
 ARG IMAGICK_SHA256=3a3587c0a524c17d0dad9673a160b90cd776e836838474e173b549ed864352ee
 
+# Fail on the checksum pipes below, not only on their last command
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -110,11 +113,10 @@ RUN apt-get update \
     imagemagick-7-common \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /build
-RUN curl -fsSL -o imagemagick.tar.gz "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
-    && echo "${IMAGEMAGICK_SHA256}  imagemagick.tar.gz" | sha256sum -c - \
-    && mkdir imagemagick && tar -xzf imagemagick.tar.gz -C imagemagick --strip-components=1 \
-    && cd imagemagick \
+WORKDIR /build/imagemagick
+RUN curl -fsSL -o /build/imagemagick.tar.gz "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
+    && echo "${IMAGEMAGICK_SHA256}  /build/imagemagick.tar.gz" | sha256sum -c - \
+    && tar -xzf /build/imagemagick.tar.gz --strip-components=1 \
     && ./configure --prefix=/opt/imagemagick \
         --enable-shared --disable-static --disable-docs --disable-hdri --with-quantum-depth=16 \
         --without-modules --without-x --without-perl --without-magick-plus-plus \
@@ -122,11 +124,12 @@ RUN curl -fsSL -o imagemagick.tar.gz "https://github.com/ImageMagick/ImageMagick
     && make -j"$(nproc)" \
     && make install \
     # Keep Debian's security policy (resource limits, disabled coders) instead of the upstream open policy
-    && cp /etc/ImageMagick-7/policy.xml /opt/imagemagick/etc/ImageMagick-7/policy.xml \
-    && curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK_VERSION}.tgz" \
+    && cp /etc/ImageMagick-7/policy.xml /opt/imagemagick/etc/ImageMagick-7/policy.xml
+
+WORKDIR /build/imagick
+RUN curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK_VERSION}.tgz" \
     && echo "${IMAGICK_SHA256}  /build/imagick.tgz" | sha256sum -c - \
-    && mkdir /build/imagick && tar -xzf /build/imagick.tgz -C /build/imagick --strip-components=1 \
-    && cd /build/imagick \
+    && tar -xzf /build/imagick.tgz --strip-components=1 \
     && phpize \
     && ./configure --with-imagick=/opt/imagemagick \
     && make -j"$(nproc)" \
