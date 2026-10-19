@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Segnaposto immagine a bassa qualità',
     'thumbnail' => 'Miniatura della foto',
     'live_video' => 'Parte video della live photo',
+    'motion_photo' => 'Foto in movimento',
     'download_raw' => 'Scarica RAW',
     'download_album' => 'Seleziona la risoluzione dell\'immagine per l\'archivio ZIP dell\'album. Se una foto non ha la variante selezionata, verrà utilizzato l\'originale.',
     'downloading_part' => 'Download della parte :current / :total',

@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Platzhalter für Bilder niedriger Qualität',
     'thumbnail' => 'Foto-Miniaturansicht',
     'live_video' => 'Videoteil des Live-Fotos',
+    'motion_photo' => 'Bewegtes Foto',
     'download_raw' => 'RAW Herunterladen',
     'download_album' => 'Wählen Sie die Bildauflösung für das Album-ZIP-Archiv. Falls ein Foto die gewählte Variante nicht hat, wird das Original verwendet.',
     'downloading_part' => 'part :current / :total Herunterladen',

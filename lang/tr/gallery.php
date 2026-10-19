@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Düşük Kaliteli Görüntü Yer Tutucusu',
     'thumbnail' => 'Fotoğraf küçük resmi',
     'live_video' => 'Canlı fotoğrafın video kısmı',
+    'motion_photo' => 'Hareketli fotoğraf',
     'download_raw' => 'RAW İndir',
     'download_album' => 'Albüm ZIP arşivi için görüntü çözünürlüğünü seçin. Bir fotoğrafta seçilen boyut yoksa, bunun yerine orijinali kullanılır.',
     'downloading_part' => 'Parça indiriliyor :current / :total',

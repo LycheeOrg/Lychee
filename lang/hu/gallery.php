@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Alacsony minőségű helyőrző kép',
     'thumbnail' => 'Fénykép miniatűr',
     'live_video' => 'Az élő fotó videó része',
+    'motion_photo' => 'Mozgó fotó',
     'download_raw' => 'RAW letöltése',
     'download_album' => 'Válassza ki a képfelbontást az album ZIP archívumához. Ha egy fotónak nincs meg a kiválasztott változata, az eredeti lesz használva.',
     'downloading_part' => 'Rész letöltése: :current / :total',
