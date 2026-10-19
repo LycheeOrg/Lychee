@@ -205,10 +205,37 @@ class ExtractMotionPhotosTest extends BaseApiWithDataTest
 
 		$motion = $motion->fresh();
 		self::assertSame($this->expectedVideoPath($motion), $motion->live_photo_short_path);
+		self::assertFalse(Storage::disk(StorageDiskType::LOCAL->value)->exists($motion->live_photo_short_path . '.part'));
 		$stream = $this->probeStoredVideo($motion->live_photo_short_path);
 		self::assertSame('h264', $stream->get('codec_name'));
 		self::assertSame(1080, $stream->get('width'));
 		self::assertSame(1440, $stream->get('height'));
+	}
+
+	/**
+	 * PR #4900 review: the new clip is staged next to the stored one and
+	 * moved over it, so a failed write leaves the stored clip intact.
+	 * A directory in the staging path makes that write fail.
+	 */
+	public function testReencodeKeepsTheStoredClipWhenTheWriteFails(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		$motion = $this->uploadPhoto(TestConstants::SAMPLE_FILE_GMP_PIXEL_IMAGE);
+		$this->storeHevcClip($motion);
+		$disk = Storage::disk(StorageDiskType::LOCAL->value);
+		$staging = $motion->live_photo_short_path . '.part';
+		$disk->makeDirectory($staging);
+
+		try {
+			$this->artisan('lychee:extract_motion_photos', ['--reencode' => true])
+				->expectsOutputToContain('Failed: ' . $motion->id)
+				->expectsOutput('Checked 1 photos: 0 motion photos re-extracted, 1 failed.')
+				->assertExitCode(1);
+		} finally {
+			$disk->deleteDirectory($staging);
+		}
+
+		self::assertSame('hevc', $this->probeStoredVideo($motion->live_photo_short_path)->get('codec_name'));
 	}
 
 	public function testReencodeDryRunChangesNothing(): void

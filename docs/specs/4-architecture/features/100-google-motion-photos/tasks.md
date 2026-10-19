@@ -130,6 +130,10 @@ _Last updated: 2026-10-17_
   - all four `BaseImageHandler` subclasses, `ExtractMotionPhotosTest`, `PhotoAddTest`, `DownloadTest`  
   - `make phpstan`, `vendor/bin/php-cs-fixer fix`  
 
+### I13 – Review follow-up: staged clip write
+- [x] T-100-22 – Failing test `testReencodeKeepsTheStoredClipWhenTheWriteFails` (a directory blocks the staging path), then stage the clip at `<target>.part` and move it over the target in `ExtractMotionPhotos::extract()` (F-100-04, S-100-24).  
+  _Verification commands:_ `php artisan test --filter=ExtractMotionPhotosTest` (red, then 13/13), `vendor/bin/php-cs-fixer fix`, `make phpstan`.  
+
 ## Notes / TODOs
 - 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).
 - Image-processing tests skip silently without exiftool/FFmpeg (`assertHasExifToolOrSkip`, `assertHasFFMpegOrSkip`): a "green" run without them proves nothing for T-100-08/09/11/15.

@@ -209,9 +209,11 @@ class ExtractMotionPhotos extends Command
 
 			// A re-encoded clip replaces the stored one; a new clip goes next to the original.
 			$target_path = $photo->live_photo_short_path ?? GoogleMotionPictureHandler::videoPathNextTo($original->getRelativePath());
-			$target_file = new FlysystemFile($original->getDisk(), $target_path);
-			$target_file->write($video_file->read());
-			$photo->live_photo_short_path = $target_file->getRelativePath();
+			// Staged and moved over the target, so a failed write never truncates a clip in use.
+			$staged_file = new FlysystemFile($original->getDisk(), $target_path . '.part');
+			$staged_file->write($video_file->read());
+			$staged_file->move($target_path);
+			$photo->live_photo_short_path = $target_path;
 			$photo->save();
 		} finally {
 			$video_file->close();
