@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Removes the "Co-Authored-By: Claude … <noreply@anthropic.com>" trailers from the commit message.
+# Install: cp scripts/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+set -euo pipefail
+
+message_file="$1"
+cleaned_file="$(mktemp)"
+trap 'rm -f "$cleaned_file"' EXIT
+
+# Drop the trailer lines, then the blank lines they leave at the end of the message
+awk '
+    tolower($0) ~ /^co-authored-by:[ \t]*claude.*<noreply@anthropic\.com>[ \t]*$/ { next }
+    /^[ \t]*$/ { blank_lines++; next }
+    { for (; blank_lines > 0; blank_lines--) print ""; print }
+' "$message_file" > "$cleaned_file"
+
+cat "$cleaned_file" > "$message_file"
