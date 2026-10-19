@@ -31,6 +31,7 @@ use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\Traits\ProbesStoredVideo;
 use Tests\Traits\RequiresExifTool;
 use Tests\Traits\RequiresFFMpeg;
 
@@ -43,6 +44,7 @@ use Tests\Traits\RequiresFFMpeg;
  */
 abstract class BaseImageHandler extends BaseApiWithDataTest
 {
+	use ProbesStoredVideo;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
 
@@ -535,8 +537,14 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$this->assertHasFFMpegOrSkip();
 
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE);
+		$photo = $response->json('photos.0');
 
-		$this->assertMotionVideoStored($response->json('photos.0'));
+		$this->assertMotionVideoStored($photo);
+		// S-100-22: an H.264 clip is copied as is.
+		$stream = $this->probeStoredVideo($this->livePhotoShortPath($photo));
+		self::assertSame('h264', $stream->get('codec_name'));
+		self::assertSame(320, $stream->get('width'));
+		self::assertSame(240, $stream->get('height'));
 	}
 
 	/**
@@ -569,9 +577,16 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertEquals(3064, $photo['size_variants']['original']['width']);
 		self::assertEquals(4080, $photo['size_variants']['original']['height']);
 
-		$short_path = DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
+		$short_path = $this->livePhotoShortPath($photo);
 		$header = Storage::disk(StorageDiskType::LOCAL->value)->get($short_path);
 		self::assertSame('ftyp', substr($header, 4, 4));
+
+		// S-100-21: the Pixel clip is HEVC 1440×1080 rotated by −90°; it is
+		// stored as upright H.264 so every browser can play it.
+		$stream = $this->probeStoredVideo($short_path);
+		self::assertSame('h264', $stream->get('codec_name'));
+		self::assertSame(1080, $stream->get('width'));
+		self::assertSame(1440, $stream->get('height'));
 	}
 
 	/**
@@ -618,8 +633,15 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_DIRNAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_DIRNAME));
 		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_FILENAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_FILENAME));
 
-		$short_path = DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
-		self::assertGreaterThan(0, Storage::disk(StorageDiskType::LOCAL->value)->size($short_path));
+		self::assertGreaterThan(0, Storage::disk(StorageDiskType::LOCAL->value)->size($this->livePhotoShortPath($photo)));
+	}
+
+	/**
+	 * @param array<string,mixed> $photo
+	 */
+	protected function livePhotoShortPath(array $photo): string
+	{
+		return DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
 	}
 
 	/**

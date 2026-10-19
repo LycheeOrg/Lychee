@@ -121,6 +121,15 @@ _Last updated: 2026-10-17_
   _Verification commands:_ `php artisan test --filter=PhotosAddHandlerImagickTest`, `--filter=ExtractMotionPhotosTest`, `make phpstan`.  
   _Notes:_ php-exif PR opened 2026-10-18: LycheeOrg/php-exif#83, merged and released as 1.5.0 on 2026-10-19. Done 2026-10-19: upstream merged, `lychee-org/php-exif` bumped to `^1.5.0` (owner approval), suites and PHPStan green. Done 2026-10-19 (owner approved the paths): deleted `app/Metadata/MotionPhoto/` (7 files) and `tests/Unit/Metadata/MotionPhoto/` (3 files, now in php-exif), dropped the locator call in `Extractor`, `ExtractMotionPhotos` uses `PHPExif\MotionPhoto\MotionPhotoLocator`; spec, knowledge map and lifecycle doc updated. Suites and PHPStan green.  
 
+
+### I12 – Transcode HEVC clips (Q-100-09)
+- [x] T-100-20 – Failing tests: stored clip is H.264 after uploading the Pixel (HEVC) sample and the v1 (H.264) sample; `--reencode` turns a stored HEVC clip into H.264, `--dry-run` with it changes nothing, Apple pairs are not candidates (F-100-02, F-100-04, S-100-21, S-100-22, S-100-23).  
+  _Verification commands:_ `php artisan test --filter=PhotosAddHandlerImagickTest`, `--filter=ExtractMotionPhotosTest` (red)  
+- [x] T-100-21 – `H264MOVFormat`, codec-based format choice in `GoogleMotionPictureHandler::saveVideoStream()`, `--reencode` in `lychee:extract_motion_photos` (F-100-02, F-100-04).  
+  _Verification commands:_  
+  - all four `BaseImageHandler` subclasses, `ExtractMotionPhotosTest`, `PhotoAddTest`, `DownloadTest`  
+  - `make phpstan`, `vendor/bin/php-cs-fixer fix`  
+
 ## Notes / TODOs
 - 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).
 - Image-processing tests skip silently without exiftool/FFmpeg (`assertHasExifToolOrSkip`, `assertHasFFMpegOrSkip`): a "green" run without them proves nothing for T-100-08/09/11/15.

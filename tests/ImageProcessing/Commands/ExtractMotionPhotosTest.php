@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\Traits\ProbesStoredVideo;
 use Tests\Traits\RequiresFFMpeg;
 
 /**
@@ -37,6 +38,7 @@ use Tests\Traits\RequiresFFMpeg;
  */
 class ExtractMotionPhotosTest extends BaseApiWithDataTest
 {
+	use ProbesStoredVideo;
 	use RequiresFFMpeg;
 
 	private Album $album;
@@ -159,6 +161,58 @@ class ExtractMotionPhotosTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * S-100-23: a motion photo stored before Q-100-09 kept its HEVC clip;
+	 * `--reencode` extracts it again from the original as H.264.
+	 */
+	public function testReencodeTranscodesStoredHevcClips(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		$motion = $this->uploadPhoto(TestConstants::SAMPLE_FILE_GMP_PIXEL_IMAGE);
+		$this->storeHevcClip($motion);
+		self::assertSame('hevc', $this->probeStoredVideo($motion->live_photo_short_path)->get('codec_name'));
+
+		$this->artisan('lychee:extract_motion_photos', ['--reencode' => true])
+			->expectsOutputToContain('Motion photo: ' . $motion->id)
+			->expectsOutput('Checked 1 photos: 1 motion photos re-extracted, 0 failed.')
+			->assertExitCode(0);
+
+		$motion = $motion->fresh();
+		self::assertSame($this->expectedVideoPath($motion), $motion->live_photo_short_path);
+		$stream = $this->probeStoredVideo($motion->live_photo_short_path);
+		self::assertSame('h264', $stream->get('codec_name'));
+		self::assertSame(1080, $stream->get('width'));
+		self::assertSame(1440, $stream->get('height'));
+	}
+
+	public function testReencodeDryRunChangesNothing(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		$motion = $this->uploadPhoto(TestConstants::SAMPLE_FILE_GMP_PIXEL_IMAGE);
+		$this->storeHevcClip($motion);
+
+		$this->artisan('lychee:extract_motion_photos', ['--reencode' => true, '--dry-run' => true])
+			->expectsOutputToContain('Motion photo: ' . $motion->id)
+			->expectsOutput('Checked 1 photos: 1 motion photos found (dry run), 0 failed.')
+			->assertExitCode(0);
+
+		self::assertSame('hevc', $this->probeStoredVideo($motion->live_photo_short_path)->get('codec_name'));
+	}
+
+	public function testReencodeLeavesApplePairsAlone(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		$apple = $this->uploadPhoto(TestConstants::SAMPLE_FILE_TRAIN_IMAGE);
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_VIDEO, album_id: $this->album->id);
+		$this->assertCreated($response);
+		self::assertNotNull($apple->fresh()->live_photo_content_id);
+		self::assertNotNull($apple->fresh()->live_photo_short_path);
+
+		$this->artisan('lychee:extract_motion_photos', ['--reencode' => true])
+			->expectsOutput('No photos require motion photo extraction.')
+			->assertExitCode(0);
+	}
+
+	/**
 	 * Uploads with FFmpeg disabled, so the file is stored as a plain still,
 	 * the way photos were imported before Feature 100. FFmpeg is restored to
 	 * the value the test started with.
@@ -179,6 +233,32 @@ class ExtractMotionPhotosTest extends BaseApiWithDataTest
 		self::assertNull($photo->live_photo_short_path);
 
 		return $photo;
+	}
+
+	/**
+	 * Uploads into `$album` (this test's album by default) and returns the
+	 * new photo.
+	 */
+	private function uploadPhoto(string $filename, ?Album $album = null): Photo
+	{
+		$album ??= $this->album;
+		$before = DB::table('photo_album')->where('album_id', '=', $album->id)->pluck('photo_id')->all();
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $album->id);
+		$this->assertCreated($response);
+		$id = DB::table('photo_album')->where('album_id', '=', $album->id)->whereNotIn('photo_id', $before)->sole(['photo_id'])->photo_id;
+
+		return Photo::query()->with('size_variants')->findOrFail($id);
+	}
+
+	/**
+	 * Replaces the stored clip with the raw HEVC stream embedded in the
+	 * original, as extraction did before Q-100-09.
+	 */
+	private function storeHevcClip(Photo $photo): void
+	{
+		$disk = Storage::disk(StorageDiskType::LOCAL->value);
+		$original = $disk->get($photo->size_variants->getOriginal()->short_path);
+		$disk->put($photo->live_photo_short_path, substr($original, -3725212));
 	}
 
 	private function expectedVideoPath(Photo $photo): string

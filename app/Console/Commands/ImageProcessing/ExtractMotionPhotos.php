@@ -48,7 +48,8 @@ class ExtractMotionPhotos extends Command
 		' {tm=600 : timeout time requirement}' .
 		' {--after= : continue after this photo id (printed by the previous run)}' .
 		' {--album= : only check the photos of this album}' .
-		' {--dry-run : list the motion photos without extracting their video}';
+		' {--dry-run : list the motion photos without extracting their video}' .
+		' {--reencode : extract again the video of motion photos that already have one, transcoding HEVC clips to H.264}';
 
 	/**
 	 * The console command description.
@@ -67,6 +68,7 @@ class ExtractMotionPhotos extends Command
 		$after = $this->option('after');
 		$album_id = $this->option('album');
 		$dry_run = $this->option('dry-run') === true;
+		$reencode = $this->option('reencode') === true;
 
 		try {
 			set_time_limit($timeout);
@@ -88,7 +90,12 @@ class ExtractMotionPhotos extends Command
 		$photos = Photo::query()
 			->with(['size_variants' => fn ($r) => $r->where('type', '=', SizeVariantType::ORIGINAL)])
 			->where('type', '=', self::MIME_TYPE_JPEG)
-			->whereNull('live_photo_short_path')
+			// Re-encoding only concerns Google motion photos: an Apple pair has a content id.
+			->when(
+				$reencode,
+				fn ($q) => $q->whereNotNull('live_photo_short_path')->whereNull('live_photo_content_id'),
+				fn ($q) => $q->whereNull('live_photo_short_path'),
+			)
 			->when(is_string($album_id), fn ($q) => $q->whereIn('id', DB::table(PA::PHOTO_ALBUM)->select(PA::PHOTO_ID)->where(PA::ALBUM_ID, '=', $album_id)))
 			// Cursor, not offset: extracted photos leave this set, the others stay in it.
 			->when(is_string($after) && $after !== '', fn ($q) => $q->where('id', '>', $after))
@@ -115,7 +122,12 @@ class ExtractMotionPhotos extends Command
 
 		PhotoSaved::dispatchIf(!$dry_run && $found !== [], $found);
 
-		$this->line(sprintf('Checked %d photos: %d motion photos %s, %d failed.', $photos->count(), count($found), $dry_run ? 'found (dry run)' : 'extracted', $failed));
+		$outcome = match (true) {
+			$dry_run => 'found (dry run)',
+			$reencode => 're-extracted',
+			default => 'extracted',
+		};
+		$this->line(sprintf('Checked %d photos: %d motion photos %s, %d failed.', $photos->count(), count($found), $outcome, $failed));
 		if ($photos->count() === $limit) {
 			$this->line('More photos may remain: continue with --after=' . $photos->last()->id);
 		}
@@ -179,7 +191,9 @@ class ExtractMotionPhotos extends Command
 			$handler->load($local_file, $video_length);
 			$handler->saveVideoStream($video_file);
 
-			$target_file = new FlysystemFile($original->getDisk(), GoogleMotionPictureHandler::videoPathNextTo($original->getRelativePath()));
+			// A re-encoded clip replaces the stored one; a new clip goes next to the original.
+			$target_path = $photo->live_photo_short_path ?? GoogleMotionPictureHandler::videoPathNextTo($original->getRelativePath());
+			$target_file = new FlysystemFile($original->getDisk(), $target_path);
 			$target_file->write($video_file->read());
 			$photo->live_photo_short_path = $target_file->getRelativePath();
 			$photo->save();

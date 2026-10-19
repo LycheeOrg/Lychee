@@ -14,6 +14,7 @@ Open questions for [Feature 100](spec.md). Log every high- and medium-impact que
 | ~~Q-100-06~~ | 100 – Google Motion Photos | Medium | Which test fixture covers the new format? (A synthetic fixture + one real Pixel sample from the owner, B synthetic only, C issue #1283 images) | Resolved (Option A — synthetic fixtures + one owner-supplied Pixel `.MP.jpg`; owner, 2026-10-17; spec FX-100-01 … 03) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-07~~ | 100 – Google Motion Photos | Medium | Where does a v3 grid tile get its video URL for hover playback? (A fetch tier-3 details on hover intent, B add `live_photo_urls[]` to the tier-2 resources, C hover playback only where the URL is already loaded) | Resolved (Option A — the owning view provides its details loader, called on `mouseenter`; owner, 2026-10-17; spec FR-100-03, FR-100-05, S-100-19, S-100-20) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-08~~ | 100 – Google Motion Photos | High | Where does motion photo detection live: Lychee or `lychee-org/php-exif`? (A php-exif, B keep it in Lychee) | Resolved (Option A — move it to php-exif, as maintainer ildyria asked on PR #4900; owner, 2026-10-18; ADR-100-02, spec FR-100-01) | 2026-10-18 | 2026-10-18 |
+| ~~Q-100-09~~ | 100 – Google Motion Photos | Medium | Transcode HEVC motion clips to H.264 so every browser plays them? (A Google clips at extraction, B every live photo video incl. Apple, C keep HEVC + add an H.264 fallback file, D no transcode) | Resolved (Option A — transcode Google clips at extraction, `--reencode` for stored ones; owner, 2026-10-19; spec FR-100-02, FR-100-04, S-100-21 … 23, Non-Goals) | 2026-10-19 | 2026-10-19 |
 
 ## Question Details
 
@@ -126,3 +127,22 @@ Open questions for [Feature 100](spec.md). Log every high- and medium-impact que
 - **Option B:** keep ADR-100-01.
   - ✅ No cross-repository coordination.
   - ❌ Against the maintainers' request; metadata reading split between the library and the app.
+
+### ~~Q-100-09~~ – Transcode HEVC clips
+
+**Context:** Maintainer ildyria asked on PR #4900 (comment 6264700405): "Should we transcode them with ffmpeg then?", about the Non-Goal "Transcoding HEVC clips for browsers that cannot decode them". `GoogleMotionPictureHandler` re-muxes with `MOVFormat` (codec `copy`), so Pixel clips are stored as HEVC and browsers without HEVC decoding (Firefox on many systems, Chromium without hardware support) keep the still, in the grid and in the LivePhotosKit lightbox. Modern iPhones also record Live Photo video in HEVC by default, so Apple pairs have the same gap today (the repository's `train.mov` is an older H.264 one). Measured on the Pixel sample (2.37 s, 1440×1080, HEVC 3.69 MB, rotation −90°): libx264 `veryfast` CRF 23 → 1.15 MB in 0.17 s on an Apple M5 Pro (CRF 28 → 0.42 MB); the rotation is applied to the frames. Both Docker images install Debian trixie's `ffmpeg`, which includes libx264.
+
+- **Option A (chosen):** transcode Google motion clips to H.264 during extraction (upload and `lychee:extract_motion_photos`) when the stream is not already H.264: libx264, `yuv420p`, CRF 23, `+faststart`, still `.mov` for LivePhotosKit; add `--reencode` to the command for clips already stored as HEVC.
+  - ✅ Plays in every browser, grid and lightbox; files about a third of the size; rotation baked in.
+  - ✅ FFmpeg already runs at that step; no schema change.
+  - ❌ Lossy second encode; a few hundred ms to ~2 s CPU per upload on small servers.
+  - ❌ Apple HEVC Live Photos keep the gap (follow-up).
+- **Option B:** same, for every live photo video, including Apple pairs (`VideoPartner` pipes) and a backfill for them.
+  - ✅ Fixes the gap for Apple Live Photos too.
+  - ❌ Touches the Apple pairing path and existing libraries; larger scope than this PR.
+- **Option C:** keep the original HEVC and store an extra H.264 file used as a `<source>` fallback.
+  - ✅ No quality loss where HEVC plays.
+  - ❌ New column or size variant, migration, and double storage.
+- **Option D:** no transcode; document the limitation.
+  - ✅ No change.
+  - ❌ Firefox users on systems without HEVC see no motion for Pixel (and recent iPhone) clips.
