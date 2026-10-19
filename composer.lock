@@ -13180,16 +13180,16 @@
         },
         {
             "name": "brianium/paratest",
-            "version": "v7.27.0",
+            "version": "v7.27.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "9ac7ab32637db3cd4b6451183214ac330aa16d85"
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/9ac7ab32637db3cd4b6451183214ac330aa16d85",
-                "reference": "9ac7ab32637db3cd4b6451183214ac330aa16d85",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/3b1189e2e36ac3e958d8cb362433862123eb7566",
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566",
                 "shasum": ""
             },
             "require": {
@@ -13203,7 +13203,7 @@
                 "phpunit/php-code-coverage": "^14.4.1",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-timer": "^9",
-                "phpunit/phpunit": "^13.4.1",
+                "phpunit/phpunit": "^13.4.2",
                 "sebastian/environment": "^9.3.3",
                 "symfony/console": "^7.4.20 || ^8.1.8",
                 "symfony/process": "^7.4.19 || ^8.1.7"
@@ -13257,7 +13257,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.27.0"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.27.2"
             },
             "funding": [
                 {
@@ -13269,7 +13269,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-10-13T19:05:35+00:00"
+            "time": "2026-10-16T12:01:22+00:00"
         },
         {
             "name": "clue/ndjson-react",
