@@ -7,13 +7,13 @@ Open questions for [Feature 100](spec.md). Log every high- and medium-impact que
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-100-01~~ | 100 – Google Motion Photos | High | How does the album grid let the viewer play the motion? (A hover-to-play + badge, B badge as play button, C hover only) | Resolved (Option A — hover-to-play on hover-capable pointers + motion badge everywhere; owner, 2026-10-17; spec FR-100-03, NFR-100-01, NFR-100-04, UI-100-01/02) | 2026-10-17 | 2026-10-17 |
-| ~~Q-100-02~~ | 100 – Google Motion Photos | High | How is the embedded video located in Motion Photo 1.0 files? (A pure-PHP XMP `Container:Directory` read + `ftyp` scan when the item is absent, B extend php-exif to map the tags, C `ftyp` scan only) | Resolved (Option A — pure-PHP `MotionPhotoLocator` called from `Extractor`; owner, 2026-10-17; spec FR-100-01, NFR-100-02, NFR-100-03; ADR-100-01) | 2026-10-17 | 2026-10-17 |
+| ~~Q-100-02~~ | 100 – Google Motion Photos | High | How is the embedded video located in Motion Photo 1.0 files? (A pure-PHP XMP `Container:Directory` read + `ftyp` scan when the item is absent, B extend php-exif to map the tags, C `ftyp` scan only) | Resolved (Option A — pure-PHP `MotionPhotoLocator` called from `Extractor`; owner, 2026-10-17; spec FR-100-01, NFR-100-02, NFR-100-03; reader later moved to php-exif by Q-100-08) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-03~~ | 100 – Google Motion Photos | Medium | Does grid playback apply to Apple Live Photos too? (A all live photos, B Google only) | Resolved (Option A — every live photo; owner, 2026-10-17; spec FR-100-03) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-04~~ | 100 – Google Motion Photos | Medium | How are already-imported new-format motion photos backfilled? (A artisan command, B re-upload only) | Resolved (Option A — `lychee:extract_motion_photos`; owner, 2026-10-17; spec FR-100-04, CLI-100-01) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-05~~ | 100 – Google Motion Photos | Medium | Which frontends get grid playback? (A v8 only, B v7 and v8) | Resolved (Option A — v8 only; owner, 2026-10-17; spec FR-100-03, Non-Goals) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-06~~ | 100 – Google Motion Photos | Medium | Which test fixture covers the new format? (A synthetic fixture + one real Pixel sample from the owner, B synthetic only, C issue #1283 images) | Resolved (Option A — synthetic fixtures + one owner-supplied Pixel `.MP.jpg`; owner, 2026-10-17; spec FX-100-01 … 03) | 2026-10-17 | 2026-10-17 |
 | ~~Q-100-07~~ | 100 – Google Motion Photos | Medium | Where does a v3 grid tile get its video URL for hover playback? (A fetch tier-3 details on hover intent, B add `live_photo_urls[]` to the tier-2 resources, C hover playback only where the URL is already loaded) | Resolved (Option A — the owning view provides its details loader, called on `mouseenter`; owner, 2026-10-17; spec FR-100-03, FR-100-05, S-100-19, S-100-20) | 2026-10-17 | 2026-10-17 |
-| ~~Q-100-08~~ | 100 – Google Motion Photos | High | Where does motion photo detection live: Lychee or `lychee-org/php-exif`? (A php-exif, B keep it in Lychee) | Resolved (Option A — move it to php-exif, as maintainer ildyria asked on PR #4900; owner, 2026-10-18; ADR-100-02, spec FR-100-01) | 2026-10-18 | 2026-10-18 |
+| ~~Q-100-08~~ | 100 – Google Motion Photos | High | Where does motion photo detection live: Lychee or `lychee-org/php-exif`? (A php-exif, B keep it in Lychee) | Resolved (Option A — move it to php-exif, as maintainer ildyria asked on PR #4900; owner, 2026-10-18; ADR-100-01, spec FR-100-01) | 2026-10-18 | 2026-10-18 |
 | ~~Q-100-09~~ | 100 – Google Motion Photos | Medium | Transcode HEVC motion clips to H.264 so every browser plays them? (A Google clips at extraction, B every live photo video incl. Apple, C keep HEVC + add an H.264 fallback file, D no transcode) | Resolved (Option A — transcode Google clips at extraction, `--reencode` for stored ones; owner, 2026-10-19; spec FR-100-02, FR-100-04, S-100-21 … 23, Non-Goals) | 2026-10-19 | 2026-10-19 |
 
 ## Question Details
@@ -119,12 +119,12 @@ Open questions for [Feature 100](spec.md). Log every high- and medium-impact que
 
 ### ~~Q-100-08~~ – Library or application
 
-**Context:** On PR #4900 maintainer ildyria asked why the support was not added to `lychee-org/php-exif` instead (comment 6251741379). ADR-100-01 had kept the XMP reader in Lychee because php-exif's exiftool mapping flattens `Container:Directory`. That argument is about the mapping, not about where the code lives: the same file-level reader can sit in php-exif.
+**Context:** On PR #4900 maintainer ildyria asked why the support was not added to `lychee-org/php-exif` instead (comment 6251741379). Q-100-02 had kept the XMP reader in Lychee because php-exif's exiftool mapping flattens `Container:Directory`. That argument is about the mapping, not about where the code lives: the same file-level reader can sit in php-exif.
 
 - **Option A (chosen):** move the reader into php-exif (`PHPExif\MotionPhoto\*`), run it from `Reader::read()` for every adapter, and report the result as the existing `MicroVideoOffset`.
   - ✅ What the maintainers asked for; every php-exif user gets motion photos; Lychee's `Extractor` needs no special case.
   - ❌ Two-repository change: php-exif release, then a dependency bump in Lychee.
-- **Option B:** keep ADR-100-01.
+- **Option B:** keep the reader in Lychee (Q-100-02 Option A).
   - ✅ No cross-repository coordination.
   - ❌ Against the maintainers' request; metadata reading split between the library and the app.
 

@@ -60,12 +60,6 @@ class Extractor
 	/** @var string|null TODO: What is the difference to {@link Extractor::$position}? */
 	public ?string $location = null;
 	public ?string $live_photo_content_id = null;
-	/**
-	 * Length in bytes, counted from the end of the file, of the video that a
-	 * Google Motion Photo appends to its JPEG; `0` if there is none.
-	 * php-exif (1.5+) reports it for every reader, in the legacy and in the
-	 * Motion Photo 1.0 format (Feature 100, ADR-100-02).
-	 */
 	public int $micro_video_offset = 0;
 	public bool $is_360 = false;
 	public ?int $pano_full_width = null;

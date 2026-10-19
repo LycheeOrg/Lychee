@@ -109,7 +109,7 @@ _Last updated: 2026-10-17_
   _Verification commands:_ re-run every command above.
 
 
-### I11 – Move the reader to php-exif (ADR-100-02, Q-100-08)
+### I11 – Move the reader to php-exif (ADR-100-01, Q-100-08)
 - [x] T-100-18 – Port `App\Metadata\MotionPhoto` to php-exif `PHPExif\MotionPhoto`, run it from `Reader::read()`, tests and usage doc (F-100-01, S-100-01 … 10).  
   _Intent:_ branch `feat/google-motion-photos` on `mlapaglia/php-exif`, from `upstream/master`.  
   _Verification commands (php-exif):_  
