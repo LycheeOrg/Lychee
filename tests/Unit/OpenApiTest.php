@@ -16,21 +16,31 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2;
+namespace Tests\Unit;
 
-use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\AbstractTestCase;
 
-class OpenApiTest extends BaseApiWithDataTest
+class OpenApiTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		// Create an admin user so that the check does not complain admin is not found.
+		User::factory()->may_administrate()->create();
+	}
+
 	/**
-	 * Test Languages are complete.
+	 * Test the OpenApi documentation is generated.
 	 *
 	 * @return void
 	 */
 	public function testOpenApi(): void
 	{
-		// We check one of the version from the xpaths cross product
 		$response = $this->get('/docs/api');
-		$response->assertOk();
+		$this->assertOk($response);
 	}
 }
