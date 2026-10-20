@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => '画像リンクを推測できないようにします。',
         'photo_previous_next_size' => 'これらのボタンはデフォルトでは非表示で、マウスが画面の左端/右端に近づいたときにのみ表示されます。',
         'photo_viewer_highest_quality_enabled' => '有効にすると、全画面ビューアーはMediumではなく、各写真に存在する最良のサイズバリアント(通常はオリジナル)を表示します。写真1枚あたりの通信量が増加します。',
-        'size_variant_format' => 'オリジナル: サムネイルはJPEG、smallとmediumはアップロードされたファイルの形式を維持します。JPEGまたはWebP: 生成されるすべてのサイズバリアントがその形式を使用します。新しく生成されるサイズバリアントにのみ適用されます。',
+        'size_variant_format' => 'オリジナル: サムネイルはJPEG、smallとmediumはアップロードされたファイルの形式を維持します。JPEG、WebPまたはJPEG XL: 生成されるすべてのサイズバリアントがその形式を使用します。新しく生成されるサイズバリアントにのみ適用されます。<span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XLはすべてのブラウザで表示できるわけではなく、JPEG XLに対応したImagickが必要です（診断を参照）。',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> スマートアルバムの条件に一致するすべての写真が表示されるようになります。',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> タグアルバムの条件に一致するすべての写真が表示されるようになります。',
         'TA_albums_listing_enabled' => '有効にすると、タグアルバムには一致する写真に加えて、条件のタグが付いた実際のアルバムも一覧表示されます。',

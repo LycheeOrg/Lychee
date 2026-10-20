@@ -17,4 +17,5 @@ enum SizeVariantFormat: string
 	case ORIGINAL = 'original';
 	case JPEG = 'jpeg';
 	case WEBP = 'webp';
+	case JXL = 'jxl';
 }

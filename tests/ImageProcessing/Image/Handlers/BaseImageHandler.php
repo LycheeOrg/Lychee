@@ -20,9 +20,13 @@ namespace Tests\ImageProcessing\Image\Handlers;
 
 use App\Enum\StorageDiskType;
 use App\Facades\Helpers;
+use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GdHandler;
+use App\Image\Handlers\ImagickHandler;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -397,6 +401,115 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
 			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
 		}
+	}
+
+	private function requireJxl(): void
+	{
+		if (!resolve(ConfigManager::class)->hasJxl()) {
+			self::markTestSkipped('This system cannot process JPEG XL (Imagick with JXL support required).');
+		}
+	}
+
+	private function assertIsJxl(string $content, string $message = ''): void
+	{
+		self::assertTrue(
+			str_starts_with($content, FileExtensionService::JXL_SIGNATURES[0]) || str_starts_with($content, FileExtensionService::JXL_SIGNATURES[1]),
+			$message);
+	}
+
+	/**
+	 * S-101-01: a JPEG XL original is kept byte-for-byte, its variants follow `size_variant_format`.
+	 */
+	public function testJxlUploadWithWebpVariants(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_JXL, 'webp', 80);
+
+		self::assertStringEndsWith('.jxl', $photo['size_variants']['original']['url']);
+		self::assertSame(
+			file_get_contents(base_path(TestConstants::SAMPLE_FILE_JXL)),
+			file_get_contents(public_path($this->dropUrlPrefix($photo['size_variants']['original']['url']))));
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals('WEBP', substr($content, 8, 4), $variant);
+		}
+	}
+
+	/**
+	 * S-101-02: under `original`, thumbs of a JPEG XL original are JPEG, small/medium JPEG XL.
+	 */
+	public function testJxlUploadWithOriginalFormat(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_JXL, 'original', 80);
+		$files = $this->generatedVariantFiles($photo);
+
+		self::assertEquals(800, $photo['size_variants']['original']['width']);
+		self::assertGreaterThan(0, $photo['size_variants']['original']['height']);
+		self::assertStringEndsWith('.jpeg', $photo['size_variants']['thumb']['url']);
+		self::assertEquals("\xFF\xD8", substr($files['thumb'], 0, 2));
+		self::assertStringEndsWith('.jxl', $photo['size_variants']['small']['url']);
+		$this->assertIsJxl($files['small']);
+	}
+
+	/**
+	 * S-101-03: `jxl` writes JPEG XL for every generated variant of a JPEG upload.
+	 */
+	public function testSizeVariantFormatJxl(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'jxl', 80);
+
+		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jxl', $photo['size_variants'][$variant]['url'], $variant);
+			$this->assertIsJxl($content, $variant);
+		}
+	}
+
+	/**
+	 * S-101-04: quality 0 encodes JPEG XL losslessly: decoded pixels equal the source.
+	 */
+	public function testSizeVariantFormatJxlLossless(): void
+	{
+		$this->requireJxl();
+		Configs::set('compression_quality', 0);
+		$handler = new ImagickHandler();
+		$handler->load(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_PNG)));
+		$target = new TemporaryLocalFile('.jxl');
+
+		try {
+			$handler->save($target);
+			$this->assertIsJxl(file_get_contents($target->getRealPath()));
+			$difference = (new \Imagick($target->getRealPath()))
+				->compareImages(new \Imagick(base_path(TestConstants::SAMPLE_FILE_PNG)), \Imagick::METRIC_ABSOLUTEERRORMETRIC);
+			self::assertEquals(0.0, $difference[1]);
+		} finally {
+			$target->delete();
+		}
+	}
+
+	/**
+	 * FR-101-05: the lossy JPEG XL quality follows `compression_quality`.
+	 */
+	public function testSizeVariantFormatJxlQuality(): void
+	{
+		$this->requireJxl();
+		$handler = new ImagickHandler();
+		$handler->load(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)));
+		$sizes = [];
+		foreach ([20, 95] as $quality) {
+			Configs::set('compression_quality', $quality);
+			$target = new TemporaryLocalFile('.jxl');
+			try {
+				$handler->save($target);
+				$sizes[$quality] = strlen(file_get_contents($target->getRealPath()));
+			} finally {
+				$target->delete();
+			}
+		}
+
+		self::assertLessThan($sizes[95], $sizes[20]);
 	}
 
 	public function testGIFUpload(): void

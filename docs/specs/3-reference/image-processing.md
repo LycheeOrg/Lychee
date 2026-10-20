@@ -55,8 +55,8 @@ Two settings in **Settings → Image Processing** (`size_variant_format` is show
 
 | Config | Values | Effect |
 |--------|--------|--------|
-| `size_variant_format` | `original` (default), `jpeg`, `webp` | `original`: thumbs are JPEG, and small/medium keep the uploaded file's format (videos and other non-photo media use JPEG). `jpeg`/`webp`: every generated variant uses that format. Originals, RAW files and placeholders are never affected. |
-| `compression_quality` | `0`–`100` | `1`–`100`: lossy quality. `0`: lossless WebP, or maximum quality (`100`) for formats without a lossless mode. On GD, lossless WebP needs libgd ≥ 2.3.3. Otherwise saving fails with a clear error and diagnostics show a warning. |
+| `size_variant_format` | `original` (default), `jpeg`, `webp`, `jxl` | `original`: thumbs are JPEG, and small/medium keep the uploaded file's format (videos and other non-photo media use JPEG). `jpeg`/`webp`/`jxl`: every generated variant uses that format. Originals, RAW files and placeholders are never affected. |
+| `compression_quality` | `0`–`100` | `1`–`100`: lossy quality. `0`: lossless WebP or JPEG XL, or maximum quality (`100`) for formats without a lossless mode. On GD, lossless WebP needs libgd ≥ 2.3.3. Otherwise saving fails with a clear error and diagnostics show a warning. |
 
 The format is resolved from the target file extension (`BaseSizeVariantNamingStrategy::generateExtension()` → `generatedExtension()`). Quality is resolved by `BaseImageHandler::resolveQuality()`/`isLossless()`. Changing either setting only affects newly generated variants: existing files keep their paths. To re-encode them, delete the variants and regenerate them with `lychee:generate_thumbs` (photos) or `lychee:video_data` (videos).
 
@@ -204,6 +204,14 @@ class SizeVariant extends Model
     public string $short_path;      // Relative file path
 }
 ```
+
+### JPEG XL (Feature 101)
+
+- `.jxl` uploads are always accepted (`image/jxl`). They are identified by their signature (bare codestream `FF 0A` or container `00 00 00 0C 4A 58 4C 20 0D 0A 87 0A`), because `exif_imagetype()` does not know JPEG XL. The original is stored unchanged; under `original`, its small/medium variants are JPEG XL too.
+- Reading and writing JPEG XL needs Imagick with ImageMagick built against libjxl (`ConfigManager::hasJxl()`). GD has no JPEG XL. Without support, loading or saving a `.jxl` file throws `MediaFileOperationException` (`BaseImageHandler::JXL_UNSUPPORTED`); no other format is ever written behind a `.jxl` extension.
+- `ImagickJxlCheck` adds a diagnostics line when JPEG XL is unsupported: info in general, error when `size_variant_format = jxl`.
+- Browsers without JPEG XL support show broken images for JPEG XL files; there is no fallback.
+- The official Docker image (`Dockerfile`) builds ImageMagick from source with libjxl into `/opt/imagemagick` and links the `imagick` extension against it (ADR-101-01). `Dockerfile-legacy` uses Debian's ImageMagick, without JPEG XL.
 
 ## Image Processing Engines
 

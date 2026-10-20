@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => '确保图片链接无法被猜测。',
         'photo_previous_next_size' => '这些按钮默认隐藏，仅当鼠标靠近屏幕左/右侧时才会显示。',
         'photo_viewer_highest_quality_enabled' => '启用后，全屏查看器将为每张照片呈现现有的最佳尺寸版本（通常为原图），而不是中等尺寸。这会增加每次查看照片的带宽消耗。',
-        'size_variant_format' => '原始：方形缩略图为 JPEG，小图和中图保持上传文件的格式。JPEG 或 WebP：所有生成的尺寸版本都使用该格式。仅适用于新生成的尺寸版本。',
+        'size_variant_format' => '原始：方形缩略图为 JPEG，小图和中图保持上传文件的格式。JPEG、WebP 或 JPEG XL：所有生成的尺寸版本都使用该格式。仅适用于新生成的尺寸版本。<span class="pi pi-exclamation-triangle text-orange-500"></span> 并非所有浏览器都能显示 JPEG XL，且需要支持 JPEG XL 的 Imagick（参见诊断）。',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> 这将使所有符合智能相册条件的照片可见。',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> 这将使所有符合标签相册条件的照片可见。',
         'TA_albums_listing_enabled' => '启用后，标签相册除了列出匹配的照片外，还会列出带有其条件标签的真实相册。',

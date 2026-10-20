@@ -823,7 +823,7 @@ return [
         'secure_image_link_enabled' => 'Zabezpečí, že odkazy na obrázky nebude možné uhádnuť.',
         'photo_previous_next_size' => 'Tieto tlačidlá sú predvolene skryté a zobrazia sa, iba keď sa myš priblíži k ľavému/pravému okraju obrazovky.',
         'photo_viewer_highest_quality_enabled' => 'Ak je povolené, prehliadač na celú obrazovku vykreslí najlepšiu existujúcu veľkostnú variantu každej fotografie (zvyčajne Originál) namiesto Strednej. Zvyšuje spotrebu dát pri každom zobrazení fotografie.',
-        'size_variant_format' => 'Originál: miniatúry sú JPEG, malá a stredná varianta si zachovajú formát nahraného súboru. JPEG alebo WebP: všetky generované veľkostné varianty použijú tento formát. Platí iba pre novo generované veľkostné varianty.',
+        'size_variant_format' => 'Originál: miniatúry sú JPEG, malá a stredná varianta si zachovajú formát nahraného súboru. JPEG, WebP alebo JPEG XL: všetky generované veľkostné varianty použijú tento formát. Platí iba pre novo generované veľkostné varianty. <span class="pi pi-exclamation-triangle text-orange-500"></span> JPEG XL nezobrazujú všetky prehliadače a vyžaduje Imagick s podporou JPEG XL (pozri Diagnostika).',
         'SA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Všetky fotografie spĺňajúce podmienku inteligentného albumu budú viditeľné.',
         'TA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Všetky fotografie spĺňajúce podmienku albumu štítkov budú viditeľné.',
         'TA_albums_listing_enabled' => 'Ak je povolené, album štítkov okrem zodpovedajúcich fotografií zobrazí aj skutočné albumy označené jeho štítkom (štítkami).',
