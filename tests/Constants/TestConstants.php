@@ -39,6 +39,9 @@ class TestConstants
 	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
 	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
+	public const SAMPLE_FILE_GMP_PIXEL_IMAGE = 'tests/Samples/google_motion_photo_pixel.jpg';
+	public const SAMPLE_FILE_GMP_ULTRAHDR_IMAGE = 'tests/Samples/google_motion_photo_ultrahdr.jpg';
+	public const SAMPLE_FILE_GMP_V1_IMAGE = 'tests/Samples/google_motion_photo_v1.jpg';
 	public const SAMPLE_FILE_HOCHUFERWEG = 'tests/Samples/hochuferweg.jpg';
 	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
 	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
@@ -76,6 +79,9 @@ class TestConstants
 		self::SAMPLE_FILE_GIF => self::MIME_TYPE_IMG_GIF,
 		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_GMP_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_PIXEL_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_ULTRAHDR_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_V1_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_HOCHUFERWEG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_MONGOLIA_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_NIGHT_IMAGE => self::MIME_TYPE_IMG_JPEG,

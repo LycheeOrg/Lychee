@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8bdb87358acdb351e20620bd2a80d3b9",
+    "content-hash": "dfa82bfe9c25d5ec4ee7377518956ca0",
     "packages": [
         {
             "name": "apimatic/core",
@@ -4672,16 +4672,16 @@
         },
         {
             "name": "lychee-org/php-exif",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "483a982fbf58551a0e9cd7932d97bb839d0bd905"
+                "reference": "05f9945e6393a697e4a64b3f4bb87fc86b183785"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/483a982fbf58551a0e9cd7932d97bb839d0bd905",
-                "reference": "483a982fbf58551a0e9cd7932d97bb839d0bd905",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/05f9945e6393a697e4a64b3f4bb87fc86b183785",
+                "reference": "05f9945e6393a697e4a64b3f4bb87fc86b183785",
                 "shasum": ""
             },
             "require": {
@@ -4759,11 +4759,7 @@
                 "jpeg",
                 "tiff"
             ],
-            "support": {
-                "source": "https://github.com/LycheeOrg/php-exif/tree/1.4.0",
-                "issues": "https://github.com/LycheeOrg/php-exif/issues"
-            },
-            "time": "2026-10-03T20:15:01+00:00"
+            "time": "2026-10-19T07:44:26+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -13180,16 +13176,16 @@
         },
         {
             "name": "brianium/paratest",
-            "version": "v7.27.0",
+            "version": "v7.27.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "9ac7ab32637db3cd4b6451183214ac330aa16d85"
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/9ac7ab32637db3cd4b6451183214ac330aa16d85",
-                "reference": "9ac7ab32637db3cd4b6451183214ac330aa16d85",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/3b1189e2e36ac3e958d8cb362433862123eb7566",
+                "reference": "3b1189e2e36ac3e958d8cb362433862123eb7566",
                 "shasum": ""
             },
             "require": {
@@ -13203,7 +13199,7 @@
                 "phpunit/php-code-coverage": "^14.4.1",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-timer": "^9",
-                "phpunit/phpunit": "^13.4.1",
+                "phpunit/phpunit": "^13.4.2",
                 "sebastian/environment": "^9.3.3",
                 "symfony/console": "^7.4.20 || ^8.1.8",
                 "symfony/process": "^7.4.19 || ^8.1.7"
@@ -13257,7 +13253,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.27.0"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.27.2"
             },
             "funding": [
                 {
@@ -13269,7 +13265,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-10-13T19:05:35+00:00"
+            "time": "2026-10-16T12:01:22+00:00"
         },
         {
             "name": "clue/ndjson-react",

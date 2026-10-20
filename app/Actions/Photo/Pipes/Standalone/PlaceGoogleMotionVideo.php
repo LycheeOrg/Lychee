@@ -10,6 +10,7 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Image\Files\FlysystemFile;
+use App\Image\Handlers\GoogleMotionPictureHandler;
 
 class PlaceGoogleMotionVideo extends AbstractStandalonePipe
 {
@@ -19,11 +20,7 @@ class PlaceGoogleMotionVideo extends AbstractStandalonePipe
 		// we must move the preliminary extracted video file next to the
 		// final target file
 		if ($state->tmp_video_file !== null) {
-			$video_target_path =
-				pathinfo($state->target_file->getRelativePath(), PATHINFO_DIRNAME) .
-				'/' .
-				pathinfo($state->target_file->getRelativePath(), PATHINFO_FILENAME) .
-				$state->tmp_video_file->getExtension();
+			$video_target_path = GoogleMotionPictureHandler::videoPathNextTo($state->target_file->getRelativePath());
 			$video_target_file = new FlysystemFile($state->target_file->getDisk(), $video_target_path);
 			$video_target_file->write($state->tmp_video_file->read());
 			$state->photo->live_photo_short_path = $video_target_file->getRelativePath();

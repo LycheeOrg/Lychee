@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Laagkwaliteitsafbeelding Placeholder',
     'thumbnail' => 'Foto miniatuur',
     'live_video' => 'Videodeel van live-foto',
+    'motion_photo' => 'Bewegende foto',
     'download_raw' => 'RAW downloaden',
     'download_album' => 'Selecteer de beeldresolutie voor het album-ZIP-archief. Als een foto de geselecteerde variant niet heeft, wordt het origineel gebruikt.',
     'downloading_part' => 'Deel :current van :total downloaden',

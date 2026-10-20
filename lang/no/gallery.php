@@ -36,6 +36,7 @@ return [
     'placeholder' => 'Plassholder for lavkvalitetsbilde',
     'thumbnail' => 'Bildeminiatyr',
     'live_video' => 'Videodel av live-bilde',
+    'motion_photo' => 'Bevegelsesbilde',
     'download_raw' => 'Last ned RAW',
     'download_album' => 'Velg bildeoppløsning for albumets ZIP-arkiv. Hvis et bilde ikke har den valgte varianten, brukes originalen i stedet.',
     'downloading_part' => 'Laster ned del :current / :total',
