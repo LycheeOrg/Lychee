@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Resources\OpenApi\DataToResponse;
+use App\Http\Resources\OpenApi\RedirectResponseToResponse;
 
 return [
 	/*
@@ -98,5 +99,6 @@ return [
 
 	'extensions' => [
 		DataToResponse::class,
+		RedirectResponseToResponse::class,
 	],
 ];
