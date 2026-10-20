@@ -414,7 +414,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-100-01: a JPEG XL original is kept byte-for-byte, its variants follow `size_variant_format`.
+	 * S-101-01: a JPEG XL original is kept byte-for-byte, its variants follow `size_variant_format`.
 	 */
 	public function testJxlUploadWithWebpVariants(): void
 	{
@@ -432,7 +432,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-100-02: under `original`, thumbs of a JPEG XL original are JPEG, small/medium JPEG XL.
+	 * S-101-02: under `original`, thumbs of a JPEG XL original are JPEG, small/medium JPEG XL.
 	 */
 	public function testJxlUploadWithOriginalFormat(): void
 	{
@@ -449,7 +449,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-100-03: `jxl` writes JPEG XL for every generated variant of a JPEG upload.
+	 * S-101-03: `jxl` writes JPEG XL for every generated variant of a JPEG upload.
 	 */
 	public function testSizeVariantFormatJxl(): void
 	{
@@ -464,7 +464,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-100-04: quality 0 encodes JPEG XL losslessly: decoded pixels equal the source.
+	 * S-101-04: quality 0 encodes JPEG XL losslessly: decoded pixels equal the source.
 	 */
 	public function testSizeVariantFormatJxlLossless(): void
 	{
@@ -486,7 +486,7 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	}
 
 	/**
-	 * FR-100-05: the lossy JPEG XL quality follows `compression_quality`.
+	 * FR-101-05: the lossy JPEG XL quality follows `compression_quality`.
 	 */
 	public function testSizeVariantFormatJxlQuality(): void
 	{

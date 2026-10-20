@@ -30,7 +30,7 @@ use Tests\AbstractTestCase;
 use Tests\Constants\TestConstants;
 
 /**
- * GD has no JPEG XL support (Feature 100, FR-100-06, S-100-08).
+ * GD has no JPEG XL support (Feature 101, FR-101-06, S-101-08).
  */
 class GdHandlerJxlTest extends AbstractTestCase
 {

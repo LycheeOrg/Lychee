@@ -205,13 +205,13 @@ class SizeVariant extends Model
 }
 ```
 
-### JPEG XL (Feature 100)
+### JPEG XL (Feature 101)
 
 - `.jxl` uploads are always accepted (`image/jxl`). They are identified by their signature (bare codestream `FF 0A` or container `00 00 00 0C 4A 58 4C 20 0D 0A 87 0A`), because `exif_imagetype()` does not know JPEG XL. The original is stored unchanged; under `original`, its small/medium variants are JPEG XL too.
 - Reading and writing JPEG XL needs Imagick with ImageMagick built against libjxl (`ConfigManager::hasJxl()`). GD has no JPEG XL. Without support, loading or saving a `.jxl` file throws `MediaFileOperationException` (`BaseImageHandler::JXL_UNSUPPORTED`); no other format is ever written behind a `.jxl` extension.
 - `ImagickJxlCheck` adds a diagnostics line when JPEG XL is unsupported: info in general, error when `size_variant_format = jxl`.
 - Browsers without JPEG XL support show broken images for JPEG XL files; there is no fallback.
-- The official Docker image (`Dockerfile`) builds ImageMagick from source with libjxl into `/opt/imagemagick` and links the `imagick` extension against it (ADR-100-01). `Dockerfile-legacy` uses Debian's ImageMagick, without JPEG XL.
+- The official Docker image (`Dockerfile`) builds ImageMagick from source with libjxl into `/opt/imagemagick` and links the `imagick` extension against it (ADR-101-01). `Dockerfile-legacy` uses Debian's ImageMagick, without JPEG XL.
 
 ## Image Processing Engines
 

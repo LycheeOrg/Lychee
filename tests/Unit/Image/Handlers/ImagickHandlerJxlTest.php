@@ -33,7 +33,7 @@ use Tests\AbstractTestCase;
 use Tests\Constants\TestConstants;
 
 /**
- * Imagick without the JPEG XL delegate (Feature 100, FR-100-06, S-100-07).
+ * Imagick without the JPEG XL delegate (Feature 101, FR-101-06, S-101-07).
  */
 class ImagickHandlerJxlTest extends AbstractTestCase
 {

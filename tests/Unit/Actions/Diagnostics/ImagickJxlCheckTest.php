@@ -27,7 +27,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 
 /**
- * JPEG XL support line of the diagnostics (Feature 100, FR-100-07, S-100-09..11).
+ * JPEG XL support line of the diagnostics (Feature 101, FR-101-07, S-101-09..11).
  */
 class ImagickJxlCheckTest extends AbstractTestCase
 {
@@ -63,7 +63,7 @@ class ImagickJxlCheckTest extends AbstractTestCase
 
 	public function testInfoWhenUnsupported(): void
 	{
-		// S-100-09
+		// S-101-09
 		Configs::set('size_variant_format', 'webp');
 
 		$lines = $this->lines($this->check(false));
@@ -75,7 +75,7 @@ class ImagickJxlCheckTest extends AbstractTestCase
 
 	public function testErrorWhenUnsupportedAndJxlSelected(): void
 	{
-		// S-100-10
+		// S-101-10
 		Configs::set('size_variant_format', 'jxl');
 
 		$lines = $this->lines($this->check(false));
@@ -87,7 +87,7 @@ class ImagickJxlCheckTest extends AbstractTestCase
 
 	public function testNothingWhenSupported(): void
 	{
-		// S-100-11
+		// S-101-11
 		Configs::set('size_variant_format', 'jxl');
 
 		self::assertSame([], $this->lines($this->check(true)));

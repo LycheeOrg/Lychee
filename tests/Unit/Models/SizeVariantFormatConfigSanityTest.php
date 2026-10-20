@@ -38,7 +38,7 @@ class SizeVariantFormatConfigSanityTest extends AbstractTestCase
 	}
 
 	/**
-	 * S-100-12: `jxl` is accepted, unknown values are rejected (Feature 100).
+	 * S-101-12: `jxl` is accepted, unknown values are rejected (Feature 101).
 	 */
 	public function testSizeVariantFormatJxl(): void
 	{

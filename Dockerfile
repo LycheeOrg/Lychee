@@ -77,7 +77,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: ImageMagick with JPEG XL support + imagick PHP extension
 # ============================================================================
-# Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-100-01).
+# Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-101-01).
 # Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases.
 FROM dunglas/frankenphp:1.13.1-php8-trixie@sha256:a052ae7cccd4a025eca17767e7acac57a4fc660a4f3dfc790be9b9cd5182d6e6 AS imagemagick
 
@@ -224,7 +224,7 @@ RUN apt-get update \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
-# Fail the build if Imagick cannot round-trip JPEG XL (Feature 100, FR-100-11)
+# Fail the build if Imagick cannot round-trip JPEG XL (Feature 101, FR-101-11)
 RUN php -r '$i = new Imagick(); $i->newImage(8, 8, "red"); $i->setImageFormat("jxl"); $j = new Imagick(); $j->readImageBlob($i->getImagesBlob()); exit($j->getImageWidth() === 8 ? 0 : 1);'
 
 # Telemetry flavor: native OpenTelemetry hooks and protobuf encoding

@@ -26,7 +26,7 @@ use Tests\AbstractTestCase;
 use Tests\Constants\TestConstants;
 
 /**
- * JPEG XL extension, MIME type and magic-byte detection (Feature 100, FR-100-01, FR-100-02).
+ * JPEG XL extension, MIME type and magic-byte detection (Feature 101, FR-101-01, FR-101-02).
  */
 class FileExtensionServiceJxlTest extends AbstractTestCase
 {
@@ -59,7 +59,7 @@ class FileExtensionServiceJxlTest extends AbstractTestCase
 
 	public function testCodestreamIsSupported(): void
 	{
-		// S-100-06
+		// S-101-06
 		$path = $this->writeTempFile(self::CODESTREAM);
 
 		$this->assertTrue((new FileExtensionService())->isSupportedImage($path, 'image/jxl', '.jxl'));
@@ -67,7 +67,7 @@ class FileExtensionServiceJxlTest extends AbstractTestCase
 
 	public function testContainerIsSupported(): void
 	{
-		// S-100-06
+		// S-101-06
 		$path = $this->writeTempFile(self::CONTAINER);
 
 		$this->assertTrue((new FileExtensionService())->isSupportedImage($path, 'image/jxl', '.jxl'));
@@ -75,7 +75,7 @@ class FileExtensionServiceJxlTest extends AbstractTestCase
 
 	public function testJxlExtensionWithJpegContentIsRejected(): void
 	{
-		// S-100-05
+		// S-101-05
 		$path = base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 
 		$this->assertFalse((new FileExtensionService())->isSupportedImage($path, 'image/jxl', '.jxl'));

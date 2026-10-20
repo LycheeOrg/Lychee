@@ -26,7 +26,7 @@ use App\Repositories\ConfigManager;
 use Tests\AbstractTestCase;
 
 /**
- * Extensions of generated size variants for JPEG XL (Feature 100, FR-100-03, FR-100-04).
+ * Extensions of generated size variants for JPEG XL (Feature 101, FR-101-03, FR-101-04).
  */
 class JxlNamingTest extends AbstractTestCase
 {
@@ -54,7 +54,7 @@ class JxlNamingTest extends AbstractTestCase
 	}
 
 	/**
-	 * S-100-03: `jxl` forces `.jxl` on every generated variant; the original keeps its extension.
+	 * S-101-03: `jxl` forces `.jxl` on every generated variant; the original keeps its extension.
 	 */
 	public function testJxlFormatForcesJxlExtension(): void
 	{
@@ -69,7 +69,7 @@ class JxlNamingTest extends AbstractTestCase
 	}
 
 	/**
-	 * S-100-02: under `original`, a JPEG XL original keeps `.jxl` for small/medium, thumbs stay JPEG.
+	 * S-101-02: under `original`, a JPEG XL original keeps `.jxl` for small/medium, thumbs stay JPEG.
 	 */
 	public function testOriginalFormatKeepsJxlForSmallAndMedium(): void
 	{
@@ -86,7 +86,7 @@ class JxlNamingTest extends AbstractTestCase
 	}
 
 	/**
-	 * FR-100-03: `webp` still applies to JPEG XL originals.
+	 * FR-101-03: `webp` still applies to JPEG XL originals.
 	 */
 	public function testWebpFormatAppliesToJxlOriginal(): void
 	{

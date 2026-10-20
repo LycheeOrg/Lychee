@@ -1,13 +1,13 @@
-# ADR-100-01: JXL-capable ImageMagick in the Docker image
+# ADR-101-01: JXL-capable ImageMagick in the Docker image
 
 - **Status:** Accepted
 - **Date:** 2026-10-18
-- **Related features/specs:** Feature 100 (docs/specs/4-architecture/features/100-jxl-support/spec.md)
-- **Related open questions:** Q-100-06
+- **Related features/specs:** Feature 101 (docs/specs/4-architecture/features/101-jxl-support/spec.md)
+- **Related open questions:** Q-101-06
 
 ## Context
 
-Feature 100 adds JPEG XL uploads and a `jxl` value for `size_variant_format`. Decoding and encoding JXL go through Imagick only (GD has no JXL). The production `Dockerfile` is based on `dunglas/frankenphp:…-php8-trixie` and installs Debian 13's `imagemagick` package; `install-php-extensions imagick` builds the PHP extension against Debian's MagickWand.
+Feature 101 adds JPEG XL uploads and a `jxl` value for `size_variant_format`. Decoding and encoding JXL go through Imagick only (GD has no JXL). The production `Dockerfile` is based on `dunglas/frankenphp:…-php8-trixie` and installs Debian 13's `imagemagick` package; `install-php-extensions imagick` builds the PHP extension against Debian's MagickWand.
 
 Debian 13 builds ImageMagick 7.1.1-43 without the JXL coder: `magick -list format` and `Imagick::queryFormats('JXL')` show nothing although `libjxl0.11` is installable. Without a change, every Docker user selecting `jxl` (or uploading `.jxl`) gets a diagnostics error and failing uploads.
 
@@ -47,12 +47,12 @@ No Debian 13 package (including trixie-backports) ships ImageMagick with JXL ena
 
 ## Operational Impact
 
-- Docker build time and image size increase (bounded by NFR-100-05); the `imagemagick` stage is cached by the existing GitHub Actions build cache.
+- Docker build time and image size increase (bounded by NFR-101-05); the `imagemagick` stage is cached by the existing GitHub Actions build cache.
 - Maintainers bump the pinned ImageMagick version on security releases.
 - The diagnostics page (`ImagickJxlCheck`) tells non-Docker admins whether their system supports JXL.
 
 ## Links
 
-- Related spec sections: `docs/specs/4-architecture/features/100-jxl-support/spec.md` (FR-100-06, FR-100-07, FR-100-11, NFR-100-01, NFR-100-05)
+- Related spec sections: `docs/specs/4-architecture/features/101-jxl-support/spec.md` (FR-101-06, FR-101-07, FR-101-11, NFR-101-01, NFR-101-05)
 - Related ADRs: none
 - Related issues / PRs: [discussion #2718](https://github.com/LycheeOrg/Lychee/discussions/2718)
