@@ -111,8 +111,10 @@ trait ServesSizeVariantAssetTrait
 	 * Return the damn file!
 	 *
 	 * Privately cacheable for an hour, with the file's mtime as
-	 * `Last-Modified`; a request whose `If-Modified-Since` is not older gets
-	 * an empty `304` (Feature 102, FR-102-04). Authorization already ran.
+	 * `Last-Modified` and an `ETag` of the served path, mtime and size, so
+	 * a URL that now selects another file (watermark) never answers `304`
+	 * for the old one; a request whose validators still match gets an empty
+	 * `304` (Feature 102, FR-102-04). Authorization already ran.
 	 *
 	 * @param FilesystemAdapter $disk
 	 * @param string            $path
@@ -124,9 +126,11 @@ trait ServesSizeVariantAssetTrait
 		$file = new FlysystemFile($disk, $path);
 
 		$response = response()->file($file->toLocalFile()->getPath());
+		$served = $response->getFile();
 		$response->setPrivate();
 		$response->setMaxAge(self::ASSET_MAX_AGE);
 		$response->setAutoLastModified();
+		$response->setEtag(hash('xxh128', $path . '|' . $served->getMTime() . '|' . $served->getSize()));
 		$response->isNotModified(request());
 
 		return $response;

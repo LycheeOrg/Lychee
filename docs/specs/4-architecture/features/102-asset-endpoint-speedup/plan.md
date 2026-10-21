@@ -62,6 +62,10 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Notes:_ `Thumb` takes `directUrl` (string → direct `src`, `null`/absent → `/Asset`) and `pending` (placeholder only), so covers, search and other callers keep today's behaviour without passing anything. Tiles inject `TILE_URL_LOADER` themselves rather than receiving URLs through `PhotoGridVirtual`. `useTileUrlRequests` keys on the rendered ids and on the loader's `version`, which `reset()` bumps, so an unchanged id set is asked again after a reload.
 7. **I7 – Verification and docs (NFR-102-01)** — T-102-19.
    - _Steps:_ Browser check on the scratch instance (album, timeline, smart album; unprotected and temporary-link instance; network panel). Harness rerun. Knowledge map, roadmap, Feature 056 spec cross-references to FR-102-02/04.
+8. **I8 – Per-viewer cache safety (FR-102-04, FR-102-08)** — T-102-20, T-102-21.
+   - _Steps:_ Tests first (`ETag` on 200, matching `If-None-Match` → 304, watermark switched on under the same URL → 200 with the watermarked file; `Clear-Site-Data: "cache"` on login and logout only). `ETag` of path, mtime and size in `ServesSizeVariantAssetTrait::responseFile()`; `ClearBrowserCacheOnAuthChange` listener on `Login`/`Logout` sets a request flag; `ClearBrowserCache` middleware in `web`, `web-admin`, `api` adds the header.
+   - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`, `make phpstan`.
+   - _Notes:_ Prompted by the PR #4912 review (cache reuse across sessions, `304` for another selected file). The v8 in-memory thumbnail cache (`thumb-asset-service.ts`) is dropped by the full page load that follows logout.
 
 ## Scenario Tracking
 
@@ -73,6 +77,7 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 | S-102-08 … 12 | I4 / T-102-09 … T-102-12 | `PhotoUrlsV3Test` |
 | S-102-13 | I5 / T-102-13, T-102-14 | loader Vitest |
 | S-102-14 | I6 / T-102-15 … T-102-18, I7 / T-102-19 | composable + `Thumb` Vitest, browser check |
+| S-102-06, S-102-07, S-102-15 | I8 / T-102-20, T-102-21 | `PhotoAssetV3Test`, `AuthTest` |
 
 ## Analysis Gate
 2026-10-21, agent self-review requested by the owner ("check for consistencies, ambiguities").

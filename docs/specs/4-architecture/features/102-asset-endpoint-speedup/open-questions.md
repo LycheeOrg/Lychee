@@ -12,6 +12,7 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | ~~Q-102-04~~ | 102 – Asset Endpoint Speedup | High | Should tiles get direct thumbnail URLs so they skip `/Asset`, and through which tier? | Resolved (Option A — viewport-scoped URL tier; FR-102-05, FR-102-06, ADR-102-01) | 2026-10-20 | 2026-10-21 |
 | ~~Q-102-05~~ | 102 – Asset Endpoint Speedup | Medium | How does `/Asset` drop global middleware (SE verification, full config load)? | Resolved (Option A — route-group middleware; FR-102-07, ADR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-06~~ | 102 – Asset Endpoint Speedup | Medium | For an admin, does `/Asset` still answer 404 for an unknown album and 403 for a photo outside the album? | Resolved (Option A — admins skip both; FR-102-02) | 2026-10-21 | 2026-10-21 |
+| ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (Option A — `Clear-Site-Data: "cache"` on login/logout; FR-102-08) | 2026-10-21 | 2026-10-21 |
 | Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
 
 ## Question Details
@@ -30,6 +31,20 @@ FR-102-05 decides "direct or `null`" with `UrlGenerator::shouldNotUseSignedUrl()
 
 ---
 
+
+### ~~Q-102-08~~ · Privately cached assets on a shared browser ✅ RESOLVED
+
+**Status:** Resolved — Option A. Encoded in spec FR-102-08.  
+**Feature:** F-102  
+**Priority:** High
+
+FR-102-04 lets the browser reuse an `/Asset` response for an hour without asking. The signature travels in the `X-Mac` header and the session in a cookie, so the browser's cache key is the URL alone: after a logout, or a login as someone else, the same browser still holds the previous viewer's private thumbnails, and an unwatermarked file served to the owner stays in place of the watermarked one a guest must get. `Vary: Cookie` does not help: Laravel re-encrypts its cookies on every response, so it would disable caching altogether.
+
+- **Option A (recommended): `Clear-Site-Data: "cache"` on login and logout responses.** A listener on the `Login`/`Logout` auth events flags the request and a middleware of the `web`, `web-admin` and `api` groups adds the header, so every login path (password, LDAP, OAuth, WebAuthn) is covered. Keeps the hour without requests. Browsers without `Clear-Site-Data` support keep the cached files until they expire.
+- **Option B: `private, no-cache` plus `304`.** Every view reaches the server and authorization runs again; only the bytes are saved. Always correct, but loses the requests FR-102-04 saves.
+- **Option C: a viewer token in the URL.** The listings add a hash of the viewer and the watermark state to each tile URL, so each viewer gets its own cache entry. Correct with full caching, but it touches the v3 listings and the front end.
+
+---
 
 ### ~~Q-102-01~~ · Album access and photo membership check on `/Asset` ✅ RESOLVED
 
@@ -69,7 +84,7 @@ The global `ResolveConfigs` middleware loads all ~300 `configs` rows on every re
 
 The fastest request is the one never sent. Today `/Asset` answers `Cache-Control: public` with a `Last-Modified` date, no `max-age`, and never answers `304`. So browsers fall back to heuristic freshness, and every reload or new tab fetches every thumbnail again. `public` also lets a shared cache (reverse proxy, CDN) store a private thumbnail and serve it to anyone. The v8 front end already keeps fetched thumbnails in memory for one hour per tab (`thumb-asset-service.ts`, `TTL_MS`), but that cache does not survive a reload.
 
-- **Option A (recommended): `Cache-Control: private, max-age=3600` plus `304` on `If-Modified-Since`.** Reloads and new tabs within an hour send no request at all; later ones revalidate (authorization still runs, no bytes sent). One hour matches the front end's in-memory TTL, so a rotated or regenerated thumbnail is stale for no longer than it already is today. `private` keeps shared caches out.
+- **Option A (recommended): `Cache-Control: private, max-age=3600` plus `304` on `If-Modified-Since`/`If-None-Match`.** Reloads and new tabs within an hour send no request at all; later ones revalidate (authorization still runs, no bytes sent). The `ETag` hashes the served path, mtime and size, because one URL serves the watermarked or the plain file depending on viewer and settings, and an older selected file must not validate against the cached one. One hour matches the front end's in-memory TTL, so a rotated or regenerated thumbnail is stale for no longer than it already is today. `private` keeps shared caches out.
 - **Option B: versioned URLs, cached for a year.** The listing adds a version token (for example a hash of `short_path`) to each thumbnail URL, and `/Asset` answers `private, max-age=31536000, immutable`. Never stale and never re-fetched, but it touches the v3 listing resources and the front end, which makes it a wider change.
 - **Option C: `private, no-cache` plus `304`.** Every view still reaches the server and runs authorization; only the bytes are saved.
 

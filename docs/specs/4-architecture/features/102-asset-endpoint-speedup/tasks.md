@@ -120,5 +120,18 @@ _Last updated: 2026-10-21_
   - `.claude/skills/run-lychee/scratch.sh serve` + driver script  
   - harness: `loop.php`, `run.sh`, `payload.php`
 
+### I8 – Per-viewer cache safety
+- [x] T-102-20 – Tests for the `ETag` and for `Clear-Site-Data` (F-102-04, F-102-08, S-102-06, S-102-07, S-102-15).  
+  _Intent:_ Failing tests: `ETag` on 200; matching `If-None-Match` → 304; the same URL selecting the watermarked file → 200 with it; `Clear-Site-Data: "cache"` on login and logout, absent on a failed login and on other requests.  
+  _Verification commands:_  
+  - `php artisan test --filter=PhotoAssetV3Test`  
+  - `php artisan test --filter='Tests\\Feature_v2\\AuthTest'`
+
+- [x] T-102-21 – `ETag` in `ServesSizeVariantAssetTrait`, `ClearBrowserCache` middleware and `ClearBrowserCacheOnAuthChange` listener (F-102-04, F-102-08).  
+  _Verification commands:_  
+  - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`  
+  - `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`  
+  - `make phpstan`
+
 ## Notes / TODOs
 - None.

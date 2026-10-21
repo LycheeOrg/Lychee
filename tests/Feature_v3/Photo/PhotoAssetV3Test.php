@@ -977,6 +977,7 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		self::assertStringContainsString('private', $cache_control);
 		self::assertStringContainsString('max-age=3600', $cache_control);
 		self::assertSame(gmdate('D, d M Y H:i:s', $this->thumbMtime()) . ' GMT', $response->headers->get('Last-Modified'));
+		self::assertNotNull($response->headers->get('ETag'));
 	}
 
 	/**
@@ -991,6 +992,48 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 
 		$response->assertStatus(304);
 		self::assertSame('', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: matching `If-None-Match` and `If-Modified-Since` → 304.
+	 */
+	public function testMatchingETagIsNotModified(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$first = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri());
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), [
+			'If-None-Match' => $first->headers->get('ETag'),
+			'If-Modified-Since' => $first->headers->get('Last-Modified'),
+		]);
+
+		$response->assertStatus(304);
+	}
+
+	/**
+	 * S-102-07: the same URL now selecting another file (watermark switched
+	 * on) → 200 with that file, even when it is not newer.
+	 */
+	public function testOtherSelectedFileIsServedAgain(): void
+	{
+		$variant = $this->smallVariantOf($this->photo1);
+		$variant->short_path_watermarked = 'watermarked/' . $variant->short_path;
+		$variant->save();
+		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path_watermarked, 'watermarked-bytes');
+		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path, 'plain-bytes');
+		$uri = "Asset/{$this->album1->id}/{$this->photo1->id}/small";
+		$first = $this->actingAs($this->userMayUpload1)->getV3($uri);
+		self::assertSame('plain-bytes', $first->streamedContent());
+
+		Configs::set('watermark_enabled', '1');
+		Configs::set('watermark_logged_in_users_enabled', '1');
+		$response = $this->actingAs($this->userMayUpload1)->getV3($uri, [
+			'If-None-Match' => $first->headers->get('ETag'),
+			'If-Modified-Since' => $first->headers->get('Last-Modified'),
+		]);
+
+		$response->assertOk();
+		self::assertSame('watermarked-bytes', $response->streamedContent());
 	}
 
 	/**
