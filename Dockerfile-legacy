@@ -142,6 +142,7 @@ RUN \
 	usermod -o -u "$PUID" "www-data" && \
 	groupmod -o -g "$PGID" "www-data" && \
 	echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
+	php -r 'exit(version_compare(PHP_VERSION, "8.5.12", ">=") ? 0 : 1);' && \
 	apt-get clean -qy && \
 	rm -rf /var/lib/apt/lists/*
 
