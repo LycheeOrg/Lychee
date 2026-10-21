@@ -191,6 +191,12 @@ class AppServiceProvider extends ServiceProvider
 			VerifyFactory::class,
 			DefaultVerifyFactory::class
 		);
+
+		// One instance per request: controllers are built (with their
+		// constructor dependencies) before the route middleware run, so
+		// ResolveConfigs and ResolveAssetConfigs must load the very instance
+		// those dependencies already hold.
+		$this->app->scoped(ConfigManager::class);
 	}
 
 	/**
