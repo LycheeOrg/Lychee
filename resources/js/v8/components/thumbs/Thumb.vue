@@ -1,5 +1,5 @@
 <template>
-	<img :src="src" :alt="$t('gallery.thumbnail')" />
+	<img :src="src" :alt="$t('gallery.thumbnail')" @error="onError" />
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from "vue";
@@ -10,6 +10,13 @@ const props = defineProps<{
 	albumId: string;
 	photoId: string | null;
 	type?: App.Enum.SizeVariantAssetType;
+	/**
+	 * Feature 102 (FR-102-06): a direct URL is rendered as is, falling back
+	 * to `/Asset` if it fails to load; `null`/absent loads through `/Asset`.
+	 */
+	directUrl?: string | null;
+	/** The direct URL is still being asked for: show the placeholder only. */
+	pending?: boolean;
 }>();
 
 const { getNoImageIcon } = useImageHelpers();
@@ -42,7 +49,18 @@ function load() {
 	}
 
 	src.value = placeholder;
-	const acquired = ThumbAssetService.acquire(props.albumId, props.photoId, effectiveType.value);
+	if (props.pending === true) {
+		return;
+	}
+	if (typeof props.directUrl === "string") {
+		src.value = props.directUrl;
+		return;
+	}
+	loadAsset(props.photoId, id);
+}
+
+function loadAsset(photoId: string, id: number) {
+	const acquired = ThumbAssetService.acquire(props.albumId, photoId, effectiveType.value);
 	release = acquired.release;
 
 	acquired.promise
@@ -58,9 +76,17 @@ function load() {
 		});
 }
 
+// A direct URL that does not load (missing file, expired S3 link) falls back to `/Asset`.
+function onError() {
+	if (props.photoId !== null && typeof props.directUrl === "string" && src.value === props.directUrl) {
+		releaseCurrent();
+		loadAsset(props.photoId, ++loadId);
+	}
+}
+
 load();
 
-watch([() => props.albumId, () => props.photoId, effectiveType], load);
+watch([() => props.albumId, () => props.photoId, effectiveType, () => props.directUrl, () => props.pending], load);
 
 onBeforeUnmount(() => {
 	releaseCurrent();

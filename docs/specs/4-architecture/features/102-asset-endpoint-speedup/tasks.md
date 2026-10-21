@@ -91,23 +91,23 @@ _Last updated: 2026-10-21_
   - `vp run typecheck`
 
 ### I6 – Grid wiring and `Thumb`
-- [ ] T-102-15 – Vitest for the visible-id composable (F-102-06, S-102-13).  
+- [x] T-102-15 – Vitest for the visible-id composable (F-102-06, S-102-13).  
   _Intent:_ Failing tests: ids of rendered chunks, stable key, loader called once per new id set.  
   _Verification commands:_  
   - `vp test` (scoped)
 
-- [ ] T-102-16 – Visible-id composable in `PhotoGridVirtual.vue`; tiles pass their URL to `Thumb` (F-102-06, S-102-13, S-102-14).  
+- [x] T-102-16 – Visible-id composable in `PhotoGridVirtual.vue`; tiles pass their URL to `Thumb` (F-102-06, S-102-13, S-102-14).  
   _Verification commands:_  
   - `vp test` (scoped)  
   - `vp check --fix`  
   - `vp run typecheck`
 
-- [ ] T-102-17 – Vitest for `Thumb` (F-102-06, S-102-14).  
+- [x] T-102-17 – Vitest for `Thumb` (F-102-06, S-102-14).  
   _Intent:_ Failing tests: string → direct `src` and no `ThumbAssetService` call; `undefined` → placeholder; `null` → `ThumbAssetService`; image `error` → `ThumbAssetService`.  
   _Verification commands:_  
   - `vp test` (scoped)
 
-- [ ] T-102-18 – `Thumb` direct `src` with `/Asset` fallback (F-102-06, S-102-14).  
+- [x] T-102-18 – `Thumb` direct `src` with `/Asset` fallback (F-102-06, S-102-14).  
   _Verification commands:_  
   - `vp test` (scoped)  
   - `vp check --fix`  

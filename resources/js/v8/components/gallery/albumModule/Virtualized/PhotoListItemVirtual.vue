@@ -16,7 +16,15 @@
 	>
 		<!-- Thumbnail -->
 		<div class="relative block shrink-0 w-12 h-12 md:w-16 md:h-16">
-			<Thumb class="w-full h-full object-cover object-center rounded" :album-id="albumId" :photo-id="photo.id" type="thumb" draggable="false" />
+			<Thumb
+				class="w-full h-full object-cover object-center rounded"
+				:album-id="albumId"
+				:photo-id="photo.id"
+				type="thumb"
+				:direct-url="tileUrls?.list"
+				:pending="tileUrlLoader !== undefined && tileUrls === undefined"
+				draggable="false"
+			/>
 			<!-- Video play icon overlay -->
 			<div v-if="photo.precomputed.is_video" class="absolute inset-0 flex items-center justify-center">
 				<UIcon name="lucide:play-circle" class="text-white text-xl drop-shadow-lg" />
@@ -108,7 +116,8 @@
  * `photo.preformatted.filesize` being empty already hides it via the
  * existing `v-if`, exactly the accepted-regression mechanism intended.
  */
-import { computed, toRef } from "vue";
+import { computed, inject, toRef } from "vue";
+import { TILE_URL_LOADER } from "@/v8/composables/photo/tileUrlLoader";
 import ListBadge from "@/v8/components/gallery/albumModule/thumbs/ListBadge.vue";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -139,6 +148,10 @@ const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag } = usePhotoFlags
 	toRef(props, "isCoverId"),
 	toRef(props, "isHeaderId"),
 );
+
+// Feature 102: the image comes from a direct URL when the view provides a loader.
+const tileUrlLoader = inject(TILE_URL_LOADER, undefined);
+const tileUrls = computed(() => tileUrlLoader?.urlsOf(props.photo.id));
 
 const showRating = computed(() => rating_album_view_mode.value !== "never");
 

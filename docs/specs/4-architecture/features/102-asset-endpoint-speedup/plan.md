@@ -59,6 +59,7 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 6. **I6 – Grid wiring and `Thumb` (FR-102-06)** — T-102-15 … T-102-18.
    - _Steps:_ Vitest first for the visible-id composable (ids of `virtualChunks` → `tilesForChunk()`, stable key) and for `Thumb` (string → direct `src`, `undefined` → placeholder, `null` → `ThumbAssetService`, `error` → `ThumbAssetService`). Then the composable in `PhotoGridVirtual.vue`, tiles passing their URL, `Thumb` props.
    - _Commands:_ `vp test` (scoped), `vp check --fix`, `vp run typecheck`.
+   - _Notes:_ `Thumb` takes `directUrl` (string → direct `src`, `null`/absent → `/Asset`) and `pending` (placeholder only), so covers, search and other callers keep today's behaviour without passing anything. Tiles inject `TILE_URL_LOADER` themselves rather than receiving URLs through `PhotoGridVirtual`. `useTileUrlRequests` keys on the rendered ids and on the loader's `version`, which `reset()` bumps, so an unchanged id set is asked again after a reload.
 7. **I7 – Verification and docs (NFR-102-01)** — T-102-19.
    - _Steps:_ Browser check on the scratch instance (album, timeline, smart album; unprotected and temporary-link instance; network panel). Harness rerun. Knowledge map, roadmap, Feature 056 spec cross-references to FR-102-02/04.
 

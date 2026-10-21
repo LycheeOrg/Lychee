@@ -167,6 +167,7 @@ describe("tileUrlLoader: reload (S-102-13)", () => {
 
 		loader.reset();
 
+		expect(loader.version.value).toBe(1);
 		expect(loader.disabled.value).toBe(false);
 		expect(loader.urlsOf("a")).toBeUndefined();
 		loader.request(["a"]);

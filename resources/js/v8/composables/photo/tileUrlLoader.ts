@@ -26,6 +26,8 @@ export type TileUrlLoader = {
 	reset: () => void;
 	/** Set by a non-empty response whose entries are all `null`: the viewer is protected. */
 	disabled: Ref<boolean>;
+	/** Bumped by every reset, so a grid asks again for ids it already rendered. */
+	version: Ref<number>;
 };
 
 /** Upper bound of `photo_ids[]` accepted by `GET /Albums/{album_id}/Photos/urls`. */
@@ -41,7 +43,7 @@ export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
 	const resolved = shallowReactive(new Map<string, TileUrls>());
 	const inFlight = new Set<string>();
 	const disabled = ref(false);
-	let generation = 0;
+	const version = ref(0);
 
 	function settle(chunk: string[], response: PhotoUrlResource | null): void {
 		chunk.forEach((id) => inFlight.delete(id));
@@ -54,11 +56,11 @@ export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
 	}
 
 	function send(chunk: string[]): void {
-		const sent = generation;
+		const sent = version.value;
 		chunk.forEach((id) => inFlight.add(id));
 		fetcher(chunk)
-			.then((response) => (sent === generation ? settle(chunk, response) : undefined))
-			.catch(() => (sent === generation ? settle(chunk, null) : undefined));
+			.then((response) => (sent === version.value ? settle(chunk, response) : undefined))
+			.catch(() => (sent === version.value ? settle(chunk, null) : undefined));
 	}
 
 	function request(photoIds: string[]): void {
@@ -76,13 +78,13 @@ export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
 	}
 
 	function reset(): void {
-		generation++;
+		version.value++;
 		resolved.clear();
 		inFlight.clear();
 		disabled.value = false;
 	}
 
-	return { request, urlsOf, reset, disabled };
+	return { request, urlsOf, reset, disabled, version };
 }
 
 /** A non-empty response with no URL at all: the viewer needs `/Asset` for every tile. */
