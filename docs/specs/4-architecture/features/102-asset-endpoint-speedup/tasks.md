@@ -57,23 +57,23 @@ _Last updated: 2026-10-21_
   - `make phpstan`
 
 ### I4 – URL tier backend
-- [ ] T-102-09 – `PhotoUrlsV3Test` (F-102-05, S-102-08 … S-102-12).  
+- [x] T-102-09 – `PhotoUrlsV3Test` (F-102-05, S-102-08 … S-102-12).  
   _Intent:_ Failing tests: direct URLs; fallback chain; `null` without rows; temporary link required → `null`; secure links → `null`; watermark path; S3 URL; ids outside the album dropped; 0 or >300 ids → 422; struct-of-arrays off, guest private → 401, other user → 403; unknown album → 404; smart album and `timeline`.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoUrlsV3Test`
 
-- [ ] T-102-10 – `GetPhotoUrlsRequest`, route and `PhotoChildrenController::urls()` (F-102-05, S-102-11).  
+- [x] T-102-10 – `GetPhotoUrlsRequest`, route and `PhotoChildrenController::urls()` (F-102-05, S-102-11).  
   _Verification commands:_  
   - `php artisan test --filter=PhotoUrlsV3Test`  
   - `make phpstan`
 
-- [ ] T-102-11 – `QueryPhotoUrls`, the direct-or-null helper and `PhotoUrlResource` (F-102-05, S-102-08, S-102-09, S-102-10, S-102-12).  
+- [x] T-102-11 – `QueryPhotoUrls`, the direct-or-null helper and `PhotoUrlResource` (F-102-05, S-102-08, S-102-09, S-102-10, S-102-12).  
   _Verification commands:_  
   - `php artisan test --filter=PhotoUrlsV3Test`  
   - `make phpstan`  
   - `vendor/bin/php-cs-fixer fix`
 
-- [ ] T-102-12 – Regenerate TypeScript types (F-102-05).  
+- [x] T-102-12 – Regenerate TypeScript types (F-102-05).  
   _Verification commands:_  
   - `php artisan typescript:transform`  
   - `vp run typecheck`

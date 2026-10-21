@@ -2234,6 +2234,11 @@ declare namespace App {
 					thumb_infos?: (string | null)[];
 					tags?: string[][];
 				};
+				export type PhotoUrlResource = {
+					ids: string[];
+					small2x_urls: (string | null)[];
+					thumb_urls: (string | null)[];
+				};
 				export type SearchPhotoResource = {
 					ids: string[];
 					album_ids: string[];

@@ -92,6 +92,8 @@ Route::get('/Albums/{album_id}/rights', [Gallery\AlbumListing\AlbumChildrenContr
 Route::get('/Albums/{album_id}/Photos', [Gallery\AlbumListing\PhotoChildrenController::class, 'index']);
 Route::get('/Albums/{album_id}/Photos/buckets', [Gallery\AlbumListing\PhotoChildrenController::class, 'buckets']);
 Route::get('/Albums/{album_id}/Photos/details', [Gallery\AlbumListing\PhotoChildrenController::class, 'details']);
+// Direct tile URLs for the photos about to be rendered (Feature 102, ADR-102-01).
+Route::get('/Albums/{album_id}/Photos/urls', [Gallery\AlbumListing\PhotoChildrenController::class, 'urls']);
 
 // Search's Struct-of-Arrays API (Feature 069), coexisting with the v2
 // `/Search` route (routes/api_v2.php) behind the same
