@@ -945,4 +945,89 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 			app()->setLocale('en');
 		}
 	}
+
+	private function thumbUri(): string
+	{
+		return "Asset/{$this->album1->id}/{$this->photo1->id}/thumb";
+	}
+
+	private function thumbMtime(): int
+	{
+		return Storage::disk(StorageDiskType::LOCAL->value)->lastModified($this->thumbVariantOf($this->photo1)->short_path);
+	}
+
+	private function assertNotCacheable(TestResponse $response): void
+	{
+		self::assertStringNotContainsString('max-age=3600', (string) $response->headers->get('Cache-Control'));
+		self::assertFalse($response->headers->has('Last-Modified'));
+	}
+
+	/**
+	 * S-102-06: a served file is privately cacheable for an hour and carries
+	 * its mtime.
+	 */
+	public function testServedFileIsCacheable(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri());
+
+		$response->assertOk();
+		$cache_control = (string) $response->headers->get('Cache-Control');
+		self::assertStringContainsString('private', $cache_control);
+		self::assertStringContainsString('max-age=3600', $cache_control);
+		self::assertSame(gmdate('D, d M Y H:i:s', $this->thumbMtime()) . ' GMT', $response->headers->get('Last-Modified'));
+	}
+
+	/**
+	 * S-102-07: `If-Modified-Since` not older than the file → 304, no body.
+	 */
+	public function testUnchangedFileIsNotModified(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime()) . ' GMT';
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), ['If-Modified-Since' => $since]);
+
+		$response->assertStatus(304);
+		self::assertSame('', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: `If-Modified-Since` older than the file → 200 with the bytes.
+	 */
+	public function testChangedFileIsServedAgain(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime() - 3600) . ' GMT';
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), ['If-Modified-Since' => $since]);
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: authorization runs before the `If-Modified-Since` check, and
+	 * errors are not cacheable.
+	 */
+	public function testErrorsIgnoreIfModifiedSinceAndAreNotCacheable(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime() + 3600) . ' GMT';
+
+		Configs::set('temporary_image_link_enabled', '1');
+		$unauthorized = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", ['If-Modified-Since' => $since]);
+		$unauthorized->assertUnauthorized();
+		$this->assertNotCacheable($unauthorized);
+		Configs::set('temporary_image_link_enabled', '0');
+
+		$forbidden = $this->actingAs($this->userMayUpload2)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb", ['If-Modified-Since' => $since]);
+		$forbidden->assertForbidden();
+		$this->assertNotCacheable($forbidden);
+
+		$not_found = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/placeholder", ['If-Modified-Since' => $since]);
+		$not_found->assertNotFound();
+		$this->assertNotCacheable($not_found);
+	}
 }

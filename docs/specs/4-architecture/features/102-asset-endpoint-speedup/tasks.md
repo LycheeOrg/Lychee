@@ -46,12 +46,12 @@ _Last updated: 2026-10-21_
   - `make phpstan`
 
 ### I3 – HTTP caching
-- [ ] T-102-07 – HTTP caching tests (F-102-04, S-102-06, S-102-07).  
+- [x] T-102-07 – HTTP caching tests (F-102-04, S-102-06, S-102-07).  
   _Intent:_ Failing tests: `Cache-Control: private, max-age=3600` and `Last-Modified` on 200; 304 with empty body when `If-Modified-Since` ≥ mtime; 200 when older; 401/403/404 unchanged.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoAssetV3Test`
 
-- [ ] T-102-08 – Cache headers and 304 in `ServesSizeVariantAssetTrait` (F-102-04, S-102-06, S-102-07).  
+- [x] T-102-08 – Cache headers and 304 in `ServesSizeVariantAssetTrait` (F-102-04, S-102-06, S-102-07).  
   _Verification commands:_  
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`  
   - `make phpstan`

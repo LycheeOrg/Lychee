@@ -27,6 +27,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
  */
 trait ServesSizeVariantAssetTrait
 {
+	/** Seconds the browser may reuse a served file without asking again. */
+	private const ASSET_MAX_AGE = 3600;
+
 	/**
 	 * Serve `$size_variant`, falling back to smaller sizes when its file is missing.
 	 *
@@ -107,6 +110,10 @@ trait ServesSizeVariantAssetTrait
 	/**
 	 * Return the damn file!
 	 *
+	 * Privately cacheable for an hour, with the file's mtime as
+	 * `Last-Modified`; a request whose `If-Modified-Since` is not older gets
+	 * an empty `304` (Feature 102, FR-102-04). Authorization already ran.
+	 *
 	 * @param FilesystemAdapter $disk
 	 * @param string            $path
 	 *
@@ -116,6 +123,12 @@ trait ServesSizeVariantAssetTrait
 	{
 		$file = new FlysystemFile($disk, $path);
 
-		return response()->file($file->toLocalFile()->getPath());
+		$response = response()->file($file->toLocalFile()->getPath());
+		$response->setPrivate();
+		$response->setMaxAge(self::ASSET_MAX_AGE);
+		$response->setAutoLastModified();
+		$response->isNotModified(request());
+
+		return $response;
 	}
 }
