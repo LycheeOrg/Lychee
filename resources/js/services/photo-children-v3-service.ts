@@ -5,6 +5,7 @@ import Constants from "./constants";
 export type PhotoBucketResource = App.Http.Resources.V3.PhotoBucketResource;
 export type PhotoRatioResource = App.Http.Resources.V3.PhotoRatioResource;
 export type PhotoDetailResource = App.Http.Resources.V3.PhotoDetailResource;
+export type PhotoUrlResource = App.Http.Resources.V3.PhotoUrlResource;
 
 export type PhotoDetailsScope = { bucketId: string } | { photoIds: string[] };
 
@@ -21,7 +22,7 @@ export type PhotoRatiosScope = { bucketIds: string[] } | { photoIds: string[] } 
 
 /**
  * Consumes Feature 064's three `GET /api/v3/Albums/{album_id}/Photos*`
- * endpoints. Cached the same way `AlbumChildrenV3Service`'s calls are — via
+ * endpoints, plus Feature 102's `/Photos/urls`. Cached the same way `AlbumChildrenV3Service`'s calls are — via
  * `axios-cache-interceptor`'s enumerable `id`s — rather than a bespoke
  * store-level cache.
  */
@@ -93,6 +94,21 @@ const PhotoChildrenV3Service = {
 		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/Photos/details${param}`, {
 			data: {},
 			id: `photo_v3_details_${album_id}_${cacheDigest}`,
+		});
+	},
+
+	/**
+	 * Direct tile URLs of at most 300 photos (Feature 102, FR-102-05). Not
+	 * cached: the tile URL loader asks for each id once per load of the
+	 * album's photos, and S3 presigned URLs expire.
+	 */
+	getUrls(album_id: string, photo_ids: string[]): Promise<AxiosResponse<PhotoUrlResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		const param = photo_ids.map((id) => `photo_ids[]=${encodeURIComponent(id)}`).join("&");
+
+		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/Photos/urls?${param}`, {
+			data: {},
+			cache: false,
 		});
 	},
 };

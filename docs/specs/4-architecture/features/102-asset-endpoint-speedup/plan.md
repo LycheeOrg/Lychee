@@ -54,7 +54,8 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Commands:_ `php artisan test --filter=PhotoUrlsV3Test`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 5. **I5 – Front-end URL loader (FR-102-06)** — T-102-13, T-102-14.
    - _Steps:_ Vitest first for the loader (dedup resolved and in-flight ids, chunks ≤300, stale-album guard, non-empty all-null disables, error → `null`, reset on reload). `PhotoChildrenV3Service.getUrls()`; loader provided from `AlbumPanel.vue` and `Timeline.vue` through an injection key.
-   - _Commands:_ `vp test resources/js/…loader.test.ts`, `vp check --fix`, `vp run typecheck`.
+   - _Commands:_ `vp test resources/js/v8/composables/photo/tileUrlLoader.test.ts`, `vp check --fix`, `vp run typecheck`.
+   - _Notes:_ `vp check --fix` (project-local `npx vp`) also rewrites five files this feature does not touch (`contextMenu.ts` ×2, `EmbedCodeDialog.vue` ×2, `useSpotlightRemoteSearch.ts`); those changes are reverted, not committed. The loader resets when `albumStore.albumId`/`photoRatiosV3` (album) or `timelineStore.bucketsV3` (timeline) change.
 6. **I6 – Grid wiring and `Thumb` (FR-102-06)** — T-102-15 … T-102-18.
    - _Steps:_ Vitest first for the visible-id composable (ids of `virtualChunks` → `tilesForChunk()`, stable key) and for `Thumb` (string → direct `src`, `undefined` → placeholder, `null` → `ThumbAssetService`, `error` → `ThumbAssetService`). Then the composable in `PhotoGridVirtual.vue`, tiles passing their URL, `Thumb` props.
    - _Commands:_ `vp test` (scoped), `vp check --fix`, `vp run typecheck`.

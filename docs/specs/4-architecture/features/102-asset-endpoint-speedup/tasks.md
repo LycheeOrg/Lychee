@@ -79,12 +79,12 @@ _Last updated: 2026-10-21_
   - `vp run typecheck`
 
 ### I5 – Front-end URL loader
-- [ ] T-102-13 – Vitest for the tile URL loader (F-102-06, S-102-13).  
+- [x] T-102-13 – Vitest for the tile URL loader (F-102-06, S-102-13).  
   _Intent:_ Failing tests: dedup of resolved and in-flight ids, ≤300 ids per request, stale-album guard, non-empty all-`null` response disables, error → `null`, reset on reload.  
   _Verification commands:_  
   - `vp test` (scoped to the loader test)
 
-- [ ] T-102-14 – `PhotoChildrenV3Service.getUrls()` and the loader, provided from `AlbumPanel.vue` and `Timeline.vue` (F-102-06, S-102-13).  
+- [x] T-102-14 – `PhotoChildrenV3Service.getUrls()` and the loader, provided from `AlbumPanel.vue` and `Timeline.vue` (F-102-06, S-102-13).  
   _Verification commands:_  
   - `vp test` (scoped)  
   - `vp check --fix`  
