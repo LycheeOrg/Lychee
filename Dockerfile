@@ -79,7 +79,7 @@ RUN npm run build
 # ============================================================================
 # Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-101-01).
 # Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases.
-FROM dunglas/frankenphp:1.13.1-php8-trixie@sha256:a052ae7cccd4a025eca17767e7acac57a4fc660a4f3dfc790be9b9cd5182d6e6 AS imagemagick
+FROM dunglas/frankenphp:1.13.2-php8-trixie@sha256:8a7a935deb33959200628497b8201423c8b777d513a62ac1b69a91c624afdb3d AS imagemagick
 
 ARG IMAGEMAGICK_VERSION=7.1.2-32
 ARG IMAGEMAGICK_SHA256=940e349f0ef394e658fd57400b83d1d7a81b954f6e7bdbfbfad31b2718c10add
@@ -139,7 +139,7 @@ RUN curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK
 # ============================================================================
 # Stage 4: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:1.13.1-php8-trixie@sha256:a052ae7cccd4a025eca17767e7acac57a4fc660a4f3dfc790be9b9cd5182d6e6
+FROM dunglas/frankenphp:1.13.2-php8-trixie@sha256:8a7a935deb33959200628497b8201423c8b777d513a62ac1b69a91c624afdb3d
 
 ARG USER=appuser
 
@@ -268,7 +268,8 @@ RUN mkdir -p storage/framework/cache \
     && echo "max_execution_time=\${PHP_MAX_EXECUTION_TIME:-3000}" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "display_errors=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
+    && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "session.upload_progress.enabled=Off" >> $PHP_INI_DIR/conf.d/custom.ini
 
 # Copy entrypoint and validation scripts
 COPY docker/scripts/00-conf-check.sh /usr/local/bin/00-conf-check.sh
