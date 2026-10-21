@@ -98,6 +98,13 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\DisableCSP::class,
 		],
 
+		'embed' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
+			\Illuminate\Http\Middleware\HandleCors::class,
+		],
+
 		'web-install' => [
 			\App\Http\Middleware\ResolveConfigs::class,
 			'accept_content_type:html',

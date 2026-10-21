@@ -47,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
 		// "catch all" route and the routes are considered in a "first match"
 		// fashion.
 		Route::middleware('web-admin')->group(base_path('routes/web-admin-v2.php'));
+		Route::middleware('embed')->prefix('api/v2')->group(base_path('routes/api_v2_embed.php'));
 		Route::middleware('api')->prefix('api/v2')->group(base_path('routes/api_v2.php'));
 		Route::middleware('api')->prefix('api/v2')->group(base_path('routes/api_v2_shop.php'));
 		Route::middleware('api')->prefix('api/v3')->group(base_path('routes/api_v3.php'));

@@ -124,48 +124,6 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums']);
 
 /**
- * Embed.
- * Public endpoints for embedding albums on external websites.
- * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
- * IMPORTANT: More specific routes (stream) must come before generic routes ({album_id}) to avoid conflicts.
- * The whole `api` group is excluded except its configs, verification and locale
- * middleware (excluding the group itself would strip those too, ADR-102-02).
- */
-$embed_excluded_middleware = [
-	'accept_content_type:json',
-	'content_type:json',
-	\Illuminate\Cookie\Middleware\EncryptCookies::class,
-	\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-	\Illuminate\Session\Middleware\StartSession::class,
-	\Illuminate\Session\Middleware\AuthenticateSession::class,
-	\Illuminate\View\Middleware\ShareErrorsFromSession::class,
-	\App\Http\Middleware\VerifyCsrfToken::class,
-	'gallery_password',
-	\Illuminate\Routing\Middleware\SubstituteBindings::class,
-	\App\Http\Middleware\Latency::class,
-	\App\Http\Middleware\ResolveAlbumSlug::class,
-];
-Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
-	->withoutMiddleware($embed_excluded_middleware)
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:900', // 15 minutes cache (longer for stream due to expensive query)
-		'throttle:30,1', // 30 requests per minute per IP (more restrictive)
-	])
-	->name('embed.stream');
-
-Route::match(['GET', 'OPTIONS'], '/Embed/{album_id}', [Gallery\EmbedController::class, 'getAlbum'])
-	->withoutMiddleware($embed_excluded_middleware)
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:300', // 5 minutes cache (reduced from 1 hour for more frequent updates)
-		'throttle:120,1', // 120 requests per minute per IP
-	])
-	->name('embed.album');
-
-/**
  * IMPORT.
  */
 Route::post('/Import', Admin\ImportFromServerController::class);

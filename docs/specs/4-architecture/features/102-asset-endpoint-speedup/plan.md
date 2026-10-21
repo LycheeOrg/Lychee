@@ -44,7 +44,7 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 2. **I2 – Route-group middleware (FR-102-01, FR-102-03, FR-102-07)** — T-102-03 … T-102-06.
    - _Steps:_ Tests first (no SE verification on both binary routes, which still resolve configs and the locale; a v2 and a v3 JSON endpoint still see configs, verify and locale). Move the three middleware into the groups; log-viewer API; scoped `ConfigManager` binding; route changes.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest|ResolveConfigsTest|ResolveVerifyTest|SetLocaleTest'`, `make phpstan`.
-   - _Notes:_ `withoutMiddleware('api')` on the Embed routes would also strip the three moved middleware (excluded middleware cannot be re-added), so those routes list the excluded entries.
+   - _Notes:_ `withoutMiddleware('api')` on the Embed routes would also strip the three moved middleware (excluded middleware cannot be re-added), so those routes move to `routes/api_v2_embed.php` under an `embed` group (the three plus `HandleCors`).
 3. **I3 – HTTP caching (FR-102-04)** — T-102-07, T-102-08.
    - _Steps:_ Tests first (headers on 200, 304 / 200 by `If-Modified-Since`, errors unchanged); implement in `ServesSizeVariantAssetTrait::responseFile()` with the request at hand.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `make phpstan`.
@@ -146,7 +146,7 @@ Found: with `when_logged_in=0` and `when_admin=1`, an admin still gets direct UR
 
 | Item | Result | Notes |
 |------|--------|-------|
-| FR-102-01, 03, 07 | Pass | Kernel groups and priority, scoped `ConfigManager`, Embed exclusion list, log-viewer; `AssetMiddlewareV3Test`. |
+| FR-102-01, 03, 07 | Pass | Kernel groups and priority, scoped `ConfigManager`, `embed` group, log-viewer; `AssetMiddlewareV3Test`. |
 | FR-102-02 | Pass | I1, query budgets in `PhotoAssetV3Test`. |
 | FR-102-04 | Pass | `ServesSizeVariantAssetTrait::responseFile()`; S-102-06/07 tests. |
 | FR-102-05 | Pass, Q-102-07 open | `PhotoUrlsV3Test` (20 tests). The admin rule follows `shouldNotUseSignedUrl()` as specified; Q-102-07 asks whether to align it with `/Asset`. |

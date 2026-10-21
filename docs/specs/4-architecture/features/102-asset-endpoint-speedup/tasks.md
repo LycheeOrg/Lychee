@@ -45,6 +45,12 @@ _Last updated: 2026-10-21_
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`  
   - `make phpstan`
 
+- [x] T-102-28 – `embed` group for the Embed routes (F-102-07).  
+  _Intent:_ Failing test first: the Embed routes are in the `embed` group, exclude nothing, run `HandleCors` and no session, cookie or CSRF middleware, and still resolve configs, verify and locale first. Routes move to `routes/api_v2_embed.php`.  
+  _Verification commands:_  
+  - `php artisan test --filter='AssetMiddlewareV3Test|EmbedStreamTest|EmbedAlbumTest|GalleryPasswordTest|FullPhotoAccessOverGrantTest'`  
+  - `make phpstan`
+
 ### I3 – HTTP caching
 - [x] T-102-07 – HTTP caching tests (F-102-04, S-102-06, S-102-07).  
   _Intent:_ Failing tests: `Cache-Control: private, max-age=3600` and `Last-Modified` on 200; 304 with empty body when `If-Modified-Since` ≥ mtime; 200 when older; 401/403/404 unchanged.  

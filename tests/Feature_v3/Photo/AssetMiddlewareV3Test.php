@@ -32,6 +32,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\SortedMiddleware;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -217,6 +219,36 @@ class AssetMiddlewareV3Test extends BaseApiWithDataTest
 		$middleware = $this->resolvedMiddleware($uri);
 
 		self::assertSame([ResolveConfigs::class, ResolveVerify::class, SetLocale::class], array_slice($middleware, 0, 3));
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function embedRoutes(): array
+	{
+		return [
+			'embed album' => ['/api/v2/Embed/album'],
+			'embed stream' => ['/api/v2/Embed/stream'],
+		];
+	}
+
+	/**
+	 * FR-102-07: the Embed routes run in the `embed` group (configs,
+	 * verification, locale, CORS) and nothing of the `api` group.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('embedRoutes')]
+	public function testEmbedRouteUsesTheEmbedGroupOnly(string $uri): void
+	{
+		$route = Route::getRoutes()->match(Request::create($uri));
+		self::assertContains('embed', $route->middleware());
+		self::assertNotContains('api', $route->middleware());
+		self::assertSame([], $route->excludedMiddleware());
+
+		$middleware = $this->resolvedMiddleware($uri);
+		self::assertContains(HandleCors::class, $middleware);
+		self::assertNotContains(StartSession::class, $middleware);
+		self::assertNotContains(EncryptCookies::class, $middleware);
+		self::assertNotContains(VerifyCsrfToken::class, $middleware);
 	}
 
 	/**

@@ -18,7 +18,7 @@ A code survey (2026-10-21) found nothing outside the route groups that reads the
 3. `image/{path}` keeps `ResolveConfigs` (its `SecurePathController` reads configs).
 4. `ResolveConfigs`, `ResolveVerify` and `SetLocale` lead `Kernel::$middlewarePriority`.
 6. `ConfigManager` is a scoped binding (`AppServiceProvider::register()`), and so are `AlbumFactory` and `MoneyService`, which hold it. Whatever resolves it before or after `ResolveConfigs` gets the same instance within a request, and a queue worker gets a fresh one per job.
-5. The Embed routes, which used `withoutMiddleware('api')`, list the `api` group entries they exclude instead: excluding the group would also strip the three, and Laravel never re-adds an excluded middleware.
+5. The Embed routes live in `routes/api_v2_embed.php`, registered under their own `embed` group (`ResolveConfigs`, `ResolveVerify`, `SetLocale`, `HandleCors`) instead of excluding `api`: excluding the group would also strip the three, and Laravel never re-adds an excluded middleware.
 
 ## Consequences
 
