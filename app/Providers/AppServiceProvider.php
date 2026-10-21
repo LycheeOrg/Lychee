@@ -192,8 +192,8 @@ class AppServiceProvider extends ServiceProvider
 
 		// One instance per request: controllers are built (with their
 		// constructor dependencies) before the route middleware run, so
-		// ResolveConfigs and ResolveAssetConfigs must load the very instance
-		// those dependencies already hold.
+		// ResolveConfigs must load the very instance those dependencies
+		// already hold.
 		$this->app->scoped(ConfigManager::class);
 		// They hold the ConfigManager, so they share its lifetime.
 		$this->app->scoped(AlbumFactory::class);

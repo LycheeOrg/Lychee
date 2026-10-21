@@ -21,7 +21,6 @@ namespace Tests\Feature_v3\Photo;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Http\Middleware\ReadOnlyStartSession;
-use App\Http\Middleware\ResolveAssetConfigs;
 use App\Http\Middleware\ResolveConfigs;
 use App\Http\Middleware\ResolveVerify;
 use App\Http\Middleware\SetLocale;
@@ -176,21 +175,20 @@ class AssetMiddlewareV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-102-04, FR-102-07: the binary routes load their own config subset and
-	 * skip SE verification, but still set the locale.
+	 * S-102-04, FR-102-07: the binary routes resolve configs and the locale
+	 * but skip SE verification.
 	 */
 	#[\PHPUnit\Framework\Attributes\DataProvider('binaryRoutes')]
-	public function testBinaryRouteResolvesAssetConfigsWithoutVerification(string $uri): void
+	public function testBinaryRouteResolvesConfigsWithoutVerification(string $uri): void
 	{
 		$middleware = $this->resolvedMiddleware($uri);
 
-		self::assertNotContains(ResolveConfigs::class, $middleware);
 		self::assertNotContains(ResolveVerify::class, $middleware);
-		$asset_configs = array_search(ResolveAssetConfigs::class, $middleware, true);
+		$configs = array_search(ResolveConfigs::class, $middleware, true);
 		$locale = array_search(SetLocale::class, $middleware, true);
-		self::assertNotFalse($asset_configs);
+		self::assertNotFalse($configs);
 		self::assertNotFalse($locale);
-		self::assertLessThan($locale, $asset_configs);
+		self::assertLessThan($locale, $configs);
 	}
 
 	/**

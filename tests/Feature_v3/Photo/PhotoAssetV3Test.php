@@ -38,7 +38,6 @@ use Illuminate\Testing\TestResponse;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Mockery\MockInterface;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
-use Tests\Traits\AssertsAssetConfigLoad;
 
 /**
  * Covers Feature 056 Branch & Scenario Matrix S-056-01..17.
@@ -59,8 +58,6 @@ use Tests\Traits\AssertsAssetConfigLoad;
  */
 class PhotoAssetV3Test extends BaseApiWithDataTest
 {
-	use AssertsAssetConfigLoad;
-
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -917,24 +914,10 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-102-04, S-102-05: one key-restricted config query, no SE
-	 * verification, for a signed-in user and a guest.
-	 */
-	public function testLoadsListedConfigsOnlyAndSkipsVerification(): void
-	{
-		$this->putBytes($this->thumbVariantOf($this->photo1));
-		$this->putBytes($this->thumbVariantOf($this->photo4));
-
-		$this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"))->assertOk();
-		Auth::logout();
-		$this->assertLoadsListedConfigsOnly(fn () => $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb"))->assertOk();
-	}
-
-	/**
 	 * S-102-03: a person album's membership check matches its photos
-	 * through PersonAlbumMatcher, whose keys are listed too.
+	 * through PersonAlbumMatcher.
 	 */
-	public function testPersonAlbumMembershipReadsListedConfigsOnly(): void
+	public function testPersonAlbumPhotoIsServed(): void
 	{
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
@@ -947,7 +930,8 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		])->getOriginalContent();
 		$this->putBytes($this->thumbVariantOf($this->photo1));
 
-		$this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3("Asset/{$person_album_id}/{$this->photo1->id}/thumb"))->assertOk();
+		app()->forgetScopedInstances();
+		$this->actingAs($this->userMayUpload1)->getV3("Asset/{$person_album_id}/{$this->photo1->id}/thumb")->assertOk();
 	}
 
 	/**

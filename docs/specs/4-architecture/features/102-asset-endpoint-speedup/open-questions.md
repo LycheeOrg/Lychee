@@ -7,13 +7,14 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-102-01~~ | 102 – Asset Endpoint Speedup | High | Does `GET /api/v3/Asset` keep its album access + photo membership check? | Resolved (Option A — lean check, same rules; FR-102-02) | 2026-10-20 | 2026-10-21 |
-| ~~Q-102-02~~ | 102 – Asset Endpoint Speedup | Medium | Does `GET /api/v3/Asset` keep loading the whole `configs` table? | Resolved (Option A — only the keys `/Asset` reads; FR-102-03) | 2026-10-20 | 2026-10-21 |
+| ~~Q-102-02~~ | 102 – Asset Endpoint Speedup | Medium | Does `GET /api/v3/Asset` keep loading the whole `configs` table? | Resolved (Option B — keep the full load; FR-102-03) | 2026-10-20 | 2026-10-21 |
 | ~~Q-102-03~~ | 102 – Asset Endpoint Speedup | High | Which HTTP caching headers does `GET /api/v3/Asset` send? | Resolved (Option A — `private, max-age=3600` + `304`; FR-102-04) | 2026-10-20 | 2026-10-21 |
 | ~~Q-102-04~~ | 102 – Asset Endpoint Speedup | High | Should tiles get direct thumbnail URLs so they skip `/Asset`, and through which tier? | Resolved (Option A — viewport-scoped URL tier; FR-102-05, FR-102-06, ADR-102-01) | 2026-10-20 | 2026-10-21 |
-| ~~Q-102-05~~ | 102 – Asset Endpoint Speedup | Medium | How does `/Asset` drop global middleware (SE verification, full config load)? | Resolved (Option A — route-group middleware; FR-102-07, ADR-102-02) | 2026-10-21 | 2026-10-21 |
+| ~~Q-102-05~~ | 102 – Asset Endpoint Speedup | Medium | How does `/Asset` drop global middleware (SE verification)? | Resolved (Option A — route-group middleware; FR-102-07, ADR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-06~~ | 102 – Asset Endpoint Speedup | Medium | For an admin, does `/Asset` still answer 404 for an unknown album and 403 for a photo outside the album? | Resolved (Option A — admins skip both; FR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (Option A — `Clear-Site-Data: "cache"` on login/logout; FR-102-08) | 2026-10-21 | 2026-10-21 |
 | Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
+| Q-102-09 | 102 – Asset Endpoint Speedup | Medium | Should grid tiles get `small` instead of `small2x` on 1x screens? | Open | 2026-10-21 | 2026-10-21 |
 
 ## Question Details
 
@@ -31,6 +32,20 @@ FR-102-05 decides "direct or `null`" with `UrlGenerator::shouldNotUseSignedUrl()
 
 ---
 
+
+### Q-102-09 · Grid tile variant by screen density
+
+**Status:** Open  
+**Feature:** F-102  
+**Priority:** Medium
+
+Owner remark (2026-10-21): on a 1x screen a grid tile only needs `small`. Today FR-102-05 returns `small2x_urls` along `small2x` → `small` → `thumb`, and `PhotoThumbVirtual` asks `/Asset` for `type="small2x"` too, so a 1x screen downloads about four times the pixels it shows, on both tiers. `Thumb.vue` already picks `small2x`/`small` from `window.devicePixelRatio` when no `type` is given, but the grid always passes one. `thumb` is a square crop, so it is the last resort for a justified grid tile.
+
+- **Option A (recommended): the client sends its density.** `/Photos/urls` takes `density=1|2` (default 2) and returns one `grid_urls` array along `small` → `small2x` → `thumb` for 1 and `small2x` → `small` → `thumb` for 2. `PhotoThumbVirtual` drops its hard-coded `type`, so `/Asset` uses the same `devicePixelRatio` choice. One URL array, the same choice on both tiers, and fallbacks stay on the server. The density is read once per page, so zooming the browser or moving the window to another screen keeps the first choice until the next reload. Same assumption `Thumb.vue` already makes.
+- **Option B: return both, let the browser pick.** `/Photos/urls` returns `small_urls` and `small2x_urls`, and the tile renders `srcset="small 1x, small2x 2x"`. Follows browser zoom and screen changes. Costs one more URL array (≈3 KB gzip per 300 tiles), `null` handling per entry in the `srcset`, and `/Asset` tiles (blob URLs) still need the `devicePixelRatio` choice, so the two tiers pick differently.
+- **Option C: keep `small2x` everywhere.** No change. Sharp at any zoom, but 1x screens keep paying for pixels they do not show.
+
+---
 
 ### ~~Q-102-08~~ · Privately cached assets on a shared browser ✅ RESOLVED
 
@@ -64,14 +79,14 @@ What the check protects: photo ids are 24 random characters, so they cannot be g
 
 ### ~~Q-102-02~~ · Loading the `configs` table on `/Asset` ✅ RESOLVED
 
-**Status:** Resolved — Option A. Encoded in spec FR-102-03.  
+**Status:** Resolved — Option B (owner: a per-route key list is a lasting risk and adds complexity for ≈0.35 ms). Encoded in spec FR-102-03.  
 **Feature:** F-102  
 **Priority:** Medium
 
 The global `ResolveConfigs` middleware loads all ~300 `configs` rows on every request (one query, ≈0.55 ms on SQLite). `/Asset` reads only a handful of them: the three `temporary_image_link_*` switches, the watermark switches, `temporary_image_link_life_in_seconds` for S3, and `lang` (`SetLocale`, used only by error bodies). Under Octane each request rebuilds the `ConfigManager`, so the load happens on every request. Once Q-102-01 Option A lands, a request should take ≈3–4 ms, so this load is ≈15 % of it, paid once per thumbnail.
 
-- **Option A (recommended): load only the keys `/Asset` needs.** One `WHERE key IN (…)` query (≈0.2 ms). `ResolveConfigs` and `ResolveVerify` leave the global middleware for the route groups (needed anyway for FR-102-01, since global middleware cannot be dropped per route), and `/Asset` uses a variant that loads its key list. A read outside the list throws `ConfigurationKeyMissingException`, so a missed key fails loudly in tests.
-- **Option B: keep the single full load.** No new code path; ≈0.35 ms more per thumbnail than Option A.
+- **Option A: load only the keys `/Asset` needs.** One `WHERE key IN (…)` query (≈0.2 ms). `ResolveConfigs` and `ResolveVerify` leave the global middleware for the route groups (needed anyway for FR-102-01, since global middleware cannot be dropped per route), and `/Asset` uses a variant that loads its key list. A read outside the list throws `ConfigurationKeyMissingException`, so a missed key fails loudly in tests.
+- **Option B (chosen): keep the single full load.** No new code path and no key list to maintain; ≈0.35 ms more per thumbnail than Option A.
 - **Option C: cache `configs` across requests.** Store the table in the cache store and invalidate it on every config write. Benefits every endpoint, but adds invalidation across Octane workers and is a separate, wider feature.
 
 ---
@@ -120,12 +135,12 @@ Payload, measured 2026-10-20 on a 7,000-photo album (scratch instance): the rati
 **Feature:** F-102  
 **Priority:** Medium
 
-FR-102-01 (no SE verification) and FR-102-03 (only the needed config keys) touch `ResolveVerify` and `ResolveConfigs`. Both are global middleware (`Kernel::$middleware`), and Laravel runs global middleware before routing, so `withoutMiddleware()` on a route cannot drop them. Survey of the code base (2026-10-21):
+FR-102-01 (no SE verification) touches `ResolveVerify`, which moves together with `ResolveConfigs` and `SetLocale`. Both are global middleware (`Kernel::$middleware`), and Laravel runs global middleware before routing, so `withoutMiddleware()` on a route cannot drop them. Survey of the code base (2026-10-21):
 - Nothing outside the route groups reads the `configs`/`verify` request attributes or the locale: the exception handler, error views, maintenance mode and the honeypot catch-all are clean.
 - Group-less package routes: log-viewer's API routes (only with `LOG_VIEWER_ENABLED`, default off) and clockwork (dev). They read no configs, but would lose the shared `ConfigManager` (each `app(ConfigManager::class)` would then build and load its own instance).
-- `AlbumFactory` and `MoneyService` singletons capture `ConfigManager` at construction, so `ResolveConfigs` must stay ahead of `UnlockWithPassword`, `ResolveAlbumSlug`, `LegacyLocalIdRedirect` and `LoginRequired`.
+- Controllers are built, with their constructor dependencies, before route middleware runs, and `AlbumFactory`, `MoneyService` and services such as `AlbumBucketComputer` hold a `ConfigManager`: it is a scoped binding so they share the instance `ResolveConfigs` loads.
 
-- **Option A (recommended): move them into the route groups.** `ResolveConfigs`, `ResolveVerify`, `SetLocale` become the first entries of `web`, `web-admin` and `api` (`ResolveConfigs` alone in `web-install`), and the log-viewer API middleware list gains `ResolveConfigs`. `/Asset` and `/Faces/{face_id}/photo/{variant}` then list `ResolveVerify` and `ResolveConfigs` in `withoutMiddleware()` and add a separate `ResolveAssetConfigs` (not a subclass: `withoutMiddleware()` strips subclasses too) that loads the FR-102-03 keys. Route-level control, reusable for other binary routes. Touches every request's middleware stack; the feature test suites cover it.
+- **Option A (recommended): move them into the route groups.** `ResolveConfigs`, `ResolveVerify`, `SetLocale` become the first entries of `web`, `web-admin` and `api` (`ResolveConfigs` alone in `web-install`), and the log-viewer API middleware list gains `ResolveConfigs`. `/Asset` and `/Faces/{face_id}/photo/{variant}` then list `ResolveVerify` in `withoutMiddleware()`. Route-level control, reusable for other binary routes. Touches every request's middleware stack; the feature test suites cover it.
 - **Option B: keep them global and skip by path.** A tiny helper recognises `api/v3/Asset/` and the global middleware skip or partial-load on it. Local change, no ordering risk, but the global middleware hard-code a route path: renaming the route silently loses the optimisation.
 
 ---

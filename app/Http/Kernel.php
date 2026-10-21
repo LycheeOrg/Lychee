@@ -35,16 +35,13 @@ class Kernel extends HttpKernel
 	 * Laravel's default list, plus {@see Middleware\ReadOnlyStartSession}
 	 * right after `StartSession`, so it always runs before `AuthenticateSession`.
 	 *
-	 * The config, verification and locale middleware come first: the groups
-	 * list them first anyway, and {@see Middleware\ResolveAssetConfigs},
-	 * added by the binary routes after the group, must run before
-	 * {@see Middleware\SetLocale} (ADR-102-02).
+	 * The config, verification and locale middleware come first, as the
+	 * groups list them (ADR-102-02).
 	 *
 	 * @var array<int,string>
 	 */
 	protected $middlewarePriority = [
 		Middleware\ResolveConfigs::class,
-		Middleware\ResolveAssetConfigs::class,
 		Middleware\ResolveVerify::class,
 		Middleware\SetLocale::class,
 		\Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,

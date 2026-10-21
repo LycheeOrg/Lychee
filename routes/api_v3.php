@@ -9,8 +9,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\ReadOnlyStartSession;
-use App\Http\Middleware\ResolveAssetConfigs;
-use App\Http\Middleware\ResolveConfigs;
 use App\Http\Middleware\ResolveVerify;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -37,8 +35,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 // A gallery page issues one request per thumbnail: the session is read
 // (authenticated user, unlocked albums) but never written back, and no
 // cookie (session, XSRF-TOKEN) is issued. GET only, so no CSRF check.
-// Only the config keys it reads are loaded, and no SE verification runs
-// (ADR-102-02).
+// No SE verification runs (ADR-102-02).
 Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
 	->withoutMiddleware([
 		'accept_content_type:json',
@@ -47,10 +44,9 @@ Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetCon
 		StartSession::class,
 		ShareErrorsFromSession::class,
 		VerifyCsrfToken::class,
-		ResolveConfigs::class,
 		ResolveVerify::class,
 	])
-	->middleware([ResolveAssetConfigs::class, 'json_errors', ReadOnlyStartSession::class]);
+	->middleware(['json_errors', ReadOnlyStartSession::class]);
 
 // Struct-of-Arrays JSON collection endpoint (ADR-0009).
 Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
@@ -138,7 +134,6 @@ Route::get('/Faces/{face_id}/photo/{variant}', [AiVision\FacePhotoAssetControlle
 		StartSession::class,
 		ShareErrorsFromSession::class,
 		VerifyCsrfToken::class,
-		ResolveConfigs::class,
 		ResolveVerify::class,
 	])
-	->middleware([ResolveAssetConfigs::class, 'json_errors', ReadOnlyStartSession::class]);
+	->middleware(['json_errors', ReadOnlyStartSession::class]);

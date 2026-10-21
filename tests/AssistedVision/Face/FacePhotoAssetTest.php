@@ -23,15 +23,12 @@ use App\Services\TemporaryLinkSigner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
-use Tests\Traits\AssertsAssetConfigLoad;
 
 /**
  * `GET /api/v3/Faces/{face_id}/photo/{variant}` (Feature 093, API-093-05, ADR-093-01).
  */
 class FacePhotoAssetTest extends BaseApiWithDataTest
 {
-	use AssertsAssetConfigLoad;
-
 	private Face $face;
 
 	public function setUp(): void
@@ -148,16 +145,6 @@ class FacePhotoAssetTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3($this->url(), ['X-Mac' => (new TemporaryLinkSigner())->sign()]);
 		$response->assertOk();
 		self::assertSame('medium-bytes', $response->streamedContent());
-	}
-
-	/**
-	 * Feature 102 (FR-102-01, FR-102-03): one key-restricted config query,
-	 * no SE verification.
-	 */
-	public function testLoadsListedConfigsOnlyAndSkipsVerification(): void
-	{
-		$response = $this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3($this->url()));
-		$response->assertOk();
 	}
 
 	/**

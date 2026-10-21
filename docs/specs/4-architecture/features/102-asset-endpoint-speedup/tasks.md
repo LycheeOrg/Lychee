@@ -22,16 +22,16 @@ _Last updated: 2026-10-21_
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test'`  
   - `make phpstan`
 
-### I2 – Route-group middleware and partial configs
-- [x] T-102-03 – Tests for middleware placement and partial configs (F-102-01, F-102-03, F-102-07, S-102-04, S-102-05).  
-  _Intent:_ Failing tests: `/Asset` and the faces photo route read no `license_key`/`email` and run one key-restricted `configs` query; a v2 and a v3 JSON endpoint still resolve configs, verify and locale.  
+### I2 – Route-group middleware
+- [x] T-102-03 – Tests for middleware placement (F-102-01, F-102-03, F-102-07, S-102-04, S-102-05).  
+  _Intent:_ Failing tests: `/Asset` and the faces photo route skip `ResolveVerify` but resolve configs before the locale; a v2 and a v3 JSON endpoint still resolve configs, verify and locale.  
   _Verification commands:_  
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`
 
-- [x] T-102-04 – Record the config keys read by both binary routes (F-102-03).  
-  _Intent:_ Temporarily record `ConfigManager` reads across `PhotoAssetV3Test`, `AssetMiddlewareV3Test` and the faces photo tests; write the list into `ResolveAssetConfigs`; remove the recorder.  
+- [x] T-102-04 – Scoped `ConfigManager` binding (F-102-07).  
+  _Intent:_ `ConfigManager`, `AlbumFactory` and `MoneyService` scoped in `AppServiceProvider`, so controller dependencies built before route middleware share the instance `ResolveConfigs` loads; `BucketSettingsV3Test` covers a settings change seen by `AlbumBucketComputer`.  
   _Verification commands:_  
-  - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`
+  - `php artisan test --filter='BucketSettingsV3Test|RecomputeBucketsCommandTest|AlbumFactoryTest'`
 
 - [x] T-102-05 – Move `ResolveConfigs`/`ResolveVerify`/`SetLocale` into the route groups (F-102-07, S-102-04).  
   _Intent:_ First entries of `web`, `web-admin`, `api`; `ResolveConfigs` in `web-install` and log-viewer's API middleware; `image/{path}` keeps `ResolveConfigs`.  
@@ -39,8 +39,8 @@ _Last updated: 2026-10-21_
   - `php artisan test --filter='ResolveConfigsTest|ResolveVerifyTest|SetLocaleTest|AssetMiddlewareV3Test'`  
   - `make phpstan`
 
-- [x] T-102-06 – `ConfigManager::loadOnly()` and `ResolveAssetConfigs` on both binary routes (F-102-01, F-102-03, F-102-07, S-102-04, S-102-05).  
-  _Intent:_ Partial load, scoped `ConfigManager` + `Watermarker` bindings, route `withoutMiddleware()` lists.  
+- [x] T-102-06 – Exclude `ResolveVerify` on both binary routes (F-102-01, F-102-03, F-102-07, S-102-04, S-102-05).  
+  _Intent:_ Route `withoutMiddleware()` lists drop `ResolveVerify` only; configs and locale resolve as on every route.  
   _Verification commands:_  
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`  
   - `make phpstan`

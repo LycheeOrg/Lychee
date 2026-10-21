@@ -9,13 +9,13 @@ _Last updated:_ 2026-10-21
 
 ## Vision & Success Criteria
 A gallery page issues one image request per tile, so per-request cost multiplies by thousands on large albums. Success (NFR-102-01):
-- `/Asset` on a regular album, non-admin: ≤6 queries (config query excluded), down from 15; admin: ≤3 queries for any album id; no SE verification; one partial config query (FR-102-01 … 03, FR-102-07).
+- `/Asset` on a regular album, non-admin: ≤6 queries (config query excluded), down from 15; admin: ≤3 queries for any album id; no SE verification; one full config query, as on every route (FR-102-01 … 03, FR-102-07).
 - Reloads within an hour send no `/Asset` request; later ones get `304` (FR-102-04).
 - On an unprotected instance, album and timeline grid tiles send no `/Asset` request (FR-102-05, FR-102-06, ADR-102-01).
 - Harness numbers recorded under Exit Criteria.
 
 ## Scope Alignment
-- **In scope:** `GetPhotoAssetRequest` authorization reads; route-group middleware (ADR-102-02) and `ResolveAssetConfigs`; cache headers in `ServesSizeVariantAssetTrait`; `GET /api/v3/Albums/{album_id}/Photos/urls`; v8 grid batching and the `Thumb` direct-`src` path.
+- **In scope:** `GetPhotoAssetRequest` authorization reads; route-group middleware (ADR-102-02); cache headers in `ServesSizeVariantAssetTrait`; `GET /api/v3/Albums/{album_id}/Photos/urls`; v8 grid batching and the `Thumb` direct-`src` path.
 - **Out of scope:** bootstrap cost; covers, Flow, map, search and face tiles (stay on `/Asset`); server-side caching of the URL tier; v2/v7.
 
 ## Dependencies & Interfaces
@@ -31,8 +31,7 @@ A gallery page issues one image request per tile, so per-request cost multiplies
   - Lean album load diverges from `AlbumPolicy` semantics → keep real models (album, `base_class`, `access_permissions`) and only strip the unused eager loads; the 35 `PhotoAssetV3Test` tests stay green.
   - Folding membership into the size-variant query turns a 403 into a 404 → select it as an `exists` column, never as a `WHERE` (FR-102-02).
   - Middleware move breaks a route relying on global placement → survey in Q-102-05/ADR-102-02; keep the three first in each group; CI runs the full suites.
-  - `/Asset` key list misses a key on an untested path → 500 by design (FR-102-03). Build the list by recording `ConfigManager` reads across the whole `PhotoAssetV3Test`, `AssetMiddlewareV3Test` and faces photo suites (T-102-04), not by reading code.
-  - `ResolveAssetConfigs` forgets the scoped `Watermarker` → it registers both bindings like `ResolveConfigs::resolve_configs()`.
+  - A controller's constructor dependencies are built before route middleware, so a `ConfigManager` they resolve would not be the one `ResolveConfigs` loads and invalidates → `ConfigManager`, and the `AlbumFactory`/`MoneyService` holding it, are scoped bindings (FR-102-07).
   - Direct URL points at a missing or expired file (S3 presign) → `Thumb` falls back to `/Asset` on the image `error` event (FR-102-06).
 
 ## Implementation Drift Gate
@@ -42,10 +41,10 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 1. **I1 – Lean `/Asset` authorization (FR-102-02)** — T-102-01, T-102-02.
    - _Steps:_ Query-count tests (owner, shared user, public guest; admin on a regular album, an unknown album id and a photo outside the album) and a 403-vs-404 guard test; confirm they fail. In `GetPhotoAssetRequest`, load regular/tag/person albums with only `base_class` and `access_permissions`; select membership as an `exists` column of the size-variant query for regular albums; admins skip the album read and the membership check (FR-102-02).
    - _Commands:_ `php artisan test --filter=PhotoAssetV3Test`, `php artisan test --filter=AssetMiddlewareV3Test`, `make phpstan`.
-2. **I2 – Route-group middleware and partial configs (FR-102-01, FR-102-03, FR-102-07)** — T-102-03 … T-102-06.
-   - _Steps:_ Tests first (no SE verification read and one key-restricted config query on both binary routes; a v2 and a v3 JSON endpoint still see configs, verify and locale). Move the three middleware into the groups; log-viewer API; `ConfigManager::loadOnly(array $keys)`; record the key list; `ResolveAssetConfigs`; route changes.
+2. **I2 – Route-group middleware (FR-102-01, FR-102-03, FR-102-07)** — T-102-03 … T-102-06.
+   - _Steps:_ Tests first (no SE verification on both binary routes, which still resolve configs and the locale; a v2 and a v3 JSON endpoint still see configs, verify and locale). Move the three middleware into the groups; log-viewer API; scoped `ConfigManager` binding; route changes.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest|ResolveConfigsTest|ResolveVerifyTest|SetLocaleTest'`, `make phpstan`.
-   - _Notes:_ Key list recorded with a temporary `ConfigManager` recorder on the three suites plus a probe over every smart album type and caller; keys of membership paths the probe could not reach (rating albums, person albums) taken from `app/SmartAlbums` and `AlbumPolicy`. Laravel tests share one container across requests, so `AssertsAssetConfigLoad` drops the scoped `ConfigManager` binding before the measured request. `withoutMiddleware('api')` on the Embed routes would also strip the three moved middleware (excluded middleware cannot be re-added), so those routes list the excluded entries.
+   - _Notes:_ `withoutMiddleware('api')` on the Embed routes would also strip the three moved middleware (excluded middleware cannot be re-added), so those routes list the excluded entries.
 3. **I3 – HTTP caching (FR-102-04)** — T-102-07, T-102-08.
    - _Steps:_ Tests first (headers on 200, 304 / 200 by `If-Modified-Since`, errors unchanged); implement in `ServesSizeVariantAssetTrait::responseFile()` with the request at hand.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `make phpstan`.
@@ -97,7 +96,6 @@ Fixed during the review:
 - Folding membership into the size-variant `WHERE` would have turned 403 into 404 → `exists` column.
 - Query budget "≤6" held only for regular albums; config query was ambiguous → scoped and excluded explicitly.
 - Faces photo route: covered by Q-102-05 Option A but missing from FR-102-01/03.
-- FR-102-03 key list was vague → one constant built from recorded reads.
 - FR-102-06 pending state, reset on reload, and the vacuous "all null" (empty response) case were unspecified.
 - FR-102-05 omitted the struct-of-arrays gate and the 0-ids case.
 - Front-end tasks had no tests before code → Vitest tasks added (jsdom + `@vue/test-utils` already present).
@@ -141,7 +139,7 @@ Found: with `when_logged_in=0` and `when_admin=1`, an admin still gets direct UR
 
 | Item | Result | Notes |
 |------|--------|-------|
-| FR-102-01, 03, 07 | Pass | `ResolveAssetConfigs`, Kernel groups and priority, Embed exclusion list, log-viewer; `AssetMiddlewareV3Test`, `assertLoadsListedConfigsOnly`. |
+| FR-102-01, 03, 07 | Pass | Kernel groups and priority, scoped `ConfigManager`, Embed exclusion list, log-viewer; `AssetMiddlewareV3Test`. |
 | FR-102-02 | Pass | I1, query budgets in `PhotoAssetV3Test`. |
 | FR-102-04 | Pass | `ServesSizeVariantAssetTrait::responseFile()`; S-102-06/07 tests. |
 | FR-102-05 | Pass, Q-102-07 open | `PhotoUrlsV3Test` (20 tests). The admin rule follows `shouldNotUseSignedUrl()` as specified; Q-102-07 asks whether to align it with `/Asset`. |
