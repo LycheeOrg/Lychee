@@ -114,7 +114,7 @@ _Last updated: 2026-10-21_
   - `vp run typecheck`
 
 ### I7 – Verification and docs
-- [ ] T-102-19 – Browser check, harness rerun, docs (NFR-102-01, S-102-14).  
+- [x] T-102-19 – Browser check, harness rerun, docs (NFR-102-01, S-102-14).  
   _Intent:_ Scratch instance: album, timeline, smart album; unprotected and temporary-link instance; network panel. Record numbers in the plan; update knowledge map, roadmap, Feature 056 cross-references.  
   _Verification commands:_  
   - `.claude/skills/run-lychee/scratch.sh serve` + driver script  

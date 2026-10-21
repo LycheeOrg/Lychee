@@ -115,9 +115,34 @@ After I2, with the scoped `ConfigManager`, `Watermarker` and `Verify` bindings d
 | Shared user | 7.9 ms, 10 queries | 6.9 ms, 7 queries |
 | Public guest | 6.4 ms, 8 queries | 5.5 ms, 5 queries |
 
+Final code (I1 … I6), same loop: admin 5.3 ms / 4 queries, shared user 7.1 ms / 7, public guest 5.6 ms / 5 (config load and SE verification included), against 10.4 / 12.4 / 10.9 ms and 15 / 20 / 18 queries (excluding them) at the baseline.
+
+Browser check (I7, 2026-10-21, scratch instance; uploads served same-origin-allowed from a second port with `LYCHEE_UPLOADS_URL` and `SECURITY_HEADER_CSP_IMG_SRC`, since `php artisan serve` maps `/uploads` to the developer's `public/uploads`):
+
+| View | Unprotected | Temporary links required (`enabled`, `when_logged_in`, `when_admin`) |
+|------|-------------|------------------------------------------------------------------------|
+| Album "Family" (4 photos) | 1 `/Photos/urls`, 4 direct, 0 `/Asset` | 1 `/Photos/urls` (all `null`), 0 direct, 4 `/Asset` |
+| Smart album `recent` (30 rendered) | 1 `/Photos/urls`, 30 direct; the 26 payload photos without files fall back to `/Asset` (404, placeholder) | 0 direct, all `/Asset` |
+| Album → `recent` in-app navigation | loader reset, 1 new `/Photos/urls`, 30 direct | — |
+
+Found: with `when_logged_in=0` and `when_admin=1`, an admin still gets direct URLs (`shouldNotUseSignedUrl()`), while `/Asset` requires the admin's signature → Q-102-07.
+
 ## Exit Criteria
 - Full quality gate green (php-cs-fixer, `vp check --fix`, `vp run typecheck`, scoped tests, `make phpstan`); `php artisan typescript:transform` rerun.
 - Harness numbers recorded here; roadmap and knowledge map updated; ADR-102-01/02 match the code; drift gate report appended.
+
+## Drift Gate Report
+2026-10-21.
+
+| Item | Result | Notes |
+|------|--------|-------|
+| FR-102-01, 03, 07 | Pass | `ResolveAssetConfigs`, Kernel groups and priority, Embed exclusion list, log-viewer; `AssetMiddlewareV3Test`, `assertLoadsListedConfigsOnly`. |
+| FR-102-02 | Pass | I1, query budgets in `PhotoAssetV3Test`. |
+| FR-102-04 | Pass | `ServesSizeVariantAssetTrait::responseFile()`; S-102-06/07 tests. |
+| FR-102-05 | Pass, Q-102-07 open | `PhotoUrlsV3Test` (20 tests). The admin rule follows `shouldNotUseSignedUrl()` as specified; Q-102-07 asks whether to align it with `/Asset`. |
+| FR-102-06 | Pass | Loader, composable and `Thumb` Vitest (21 tests); browser check above. |
+| NFR-102-01 | Pass | Measurements above. |
+| ADR-102-01/02 | Pass | Match the code (ADR-102-02 items 4–5 added in I2). |
 
 ## Follow-ups / Backlog
 - Search grid tiles (different album per tile) could get a `/Search/Photos/urls` tier.

@@ -12,8 +12,24 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | ~~Q-102-04~~ | 102 – Asset Endpoint Speedup | High | Should tiles get direct thumbnail URLs so they skip `/Asset`, and through which tier? | Resolved (Option A — viewport-scoped URL tier; FR-102-05, FR-102-06, ADR-102-01) | 2026-10-20 | 2026-10-21 |
 | ~~Q-102-05~~ | 102 – Asset Endpoint Speedup | Medium | How does `/Asset` drop global middleware (SE verification, full config load)? | Resolved (Option A — route-group middleware; FR-102-07, ADR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-06~~ | 102 – Asset Endpoint Speedup | Medium | For an admin, does `/Asset` still answer 404 for an unknown album and 403 for a photo outside the album? | Resolved (Option A — admins skip both; FR-102-02) | 2026-10-21 | 2026-10-21 |
+| Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
 
 ## Question Details
+
+### Q-102-07 · Temporary-link rule for admins in `/Photos/urls`
+
+**Status:** Open  
+**Feature:** F-102  
+**Priority:** Medium
+
+FR-102-05 decides "direct or `null`" with `UrlGenerator::shouldNotUseSignedUrl()`, which exempts every logged-in user, admins included, as soon as `temporary_image_link_when_logged_in` is off. `/Asset` (`ResolvesSizeVariantAssetTrait::signatureRequired()`) judges an admin by `temporary_image_link_when_admin` only. Found in the I7 browser check: with `temporary_image_link_enabled=1`, `when_logged_in=0`, `when_admin=1`, an admin gets direct URLs from `/Photos/urls`, while `/Asset` requires a signature from that admin. The photo view's `medium`/`original` URLs already follow `shouldNotUseSignedUrl()`.
+
+- **Option A (recommended): follow `/Asset`.** `QueryPhotoUrls` uses the `/Asset` rule (guest → `enabled`, admin → `when_admin`, other users → `when_logged_in`), so a tile is direct exactly when `/Asset` would need no signature. One predicate shared by both tiers; FR-102-05 reworded. Diverges from the photo view's URLs for this one configuration.
+- **Option B: keep `shouldNotUseSignedUrl()`.** Same rule as every other URL `UrlGenerator` hands out. The configuration "signatures for admins, not for other users" stays half-enforced for tiles.
+- **Option C: fix `shouldNotUseSignedUrl()` itself** to the `/Asset` rule. Both tiers and the photo view agree, but it changes `UrlGenerator` for every caller (v2, photo view), outside this feature's scope.
+
+---
+
 
 ### ~~Q-102-01~~ · Album access and photo membership check on `/Asset` ✅ RESOLVED
 
