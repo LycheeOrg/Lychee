@@ -16,6 +16,8 @@ A code survey (2026-10-21) found nothing outside the route groups that reads the
 1. `ResolveConfigs`, `ResolveVerify` and `SetLocale` leave `Kernel::$middleware` and become the first entries, in that order, of the `web`, `web-admin` and `api` groups. `web-install` gets `ResolveConfigs` only. log-viewer's API middleware list (`config/log-viewer.php`) gains `ResolveConfigs`.
 2. `/Asset` and `/Faces/{face_id}/photo/{variant}` list `ResolveConfigs` and `ResolveVerify` in `withoutMiddleware()` and add `ResolveAssetConfigs`, which loads the FR-102-03 key list through `ConfigManager` and registers the same scoped `ConfigManager` and `Watermarker`. It is a separate class, because `withoutMiddleware()` also strips subclasses.
 3. `image/{path}` keeps `ResolveConfigs` (its `SecurePathController` reads configs).
+4. `ResolveConfigs`, `ResolveAssetConfigs`, `ResolveVerify` and `SetLocale` lead `Kernel::$middlewarePriority`: route middleware runs after group middleware, so without it `SetLocale` (group) would run before `ResolveAssetConfigs` (route) and load the whole table.
+5. The Embed routes, which used `withoutMiddleware('api')`, list the `api` group entries they exclude instead: excluding the group would also strip the three, and Laravel never re-adds an excluded middleware.
 
 ## Consequences
 
@@ -25,7 +27,8 @@ A code survey (2026-10-21) found nothing outside the route groups that reads the
 
 ### Negative
 - Every request's middleware stack changes; a future route registered outside the groups gets no configs, verification or locale unless it lists them.
-- Group order matters: these three must stay first in their groups.
+- Group order matters: these three must stay first in their groups, and they lead the priority list.
+- A route excluding a whole group (`withoutMiddleware('api')`) loses them; it has to list the excluded entries instead.
 
 ## Alternatives Considered
 

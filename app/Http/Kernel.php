@@ -27,9 +27,6 @@ class Kernel extends HttpKernel
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
 		\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
-		\App\Http\Middleware\ResolveConfigs::class,
-		\App\Http\Middleware\ResolveVerify::class,
-		\App\Http\Middleware\SetLocale::class,
 	];
 
 	/**
@@ -38,9 +35,18 @@ class Kernel extends HttpKernel
 	 * Laravel's default list, plus {@see Middleware\ReadOnlyStartSession}
 	 * right after `StartSession`, so it always runs before `AuthenticateSession`.
 	 *
+	 * The config, verification and locale middleware come first: the groups
+	 * list them first anyway, and {@see Middleware\ResolveAssetConfigs},
+	 * added by the binary routes after the group, must run before
+	 * {@see Middleware\SetLocale} (ADR-102-02).
+	 *
 	 * @var array<int,string>
 	 */
 	protected $middlewarePriority = [
+		Middleware\ResolveConfigs::class,
+		Middleware\ResolveAssetConfigs::class,
+		Middleware\ResolveVerify::class,
+		Middleware\SetLocale::class,
 		\Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
 		\Illuminate\Cookie\Middleware\EncryptCookies::class,
 		\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -62,6 +68,9 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'installation:complete',
 			'admin_user:set',
 			'accept_content_type:html',
@@ -76,6 +85,9 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -88,11 +100,15 @@ class Kernel extends HttpKernel
 		],
 
 		'web-install' => [
+			\App\Http\Middleware\ResolveConfigs::class,
 			'accept_content_type:html',
 			'installation:incomplete',
 		],
 
 		'api' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,

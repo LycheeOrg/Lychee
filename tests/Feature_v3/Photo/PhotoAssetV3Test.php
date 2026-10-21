@@ -36,6 +36,7 @@ use Illuminate\Testing\TestResponse;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Mockery\MockInterface;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
+use Tests\Traits\AssertsAssetConfigLoad;
 
 /**
  * Covers Feature 056 Branch & Scenario Matrix S-056-01..17.
@@ -56,6 +57,8 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class PhotoAssetV3Test extends BaseApiWithDataTest
 {
+	use AssertsAssetConfigLoad;
+
 	public function setUp(): void
 	{
 		parent::setUp();
@@ -909,5 +912,37 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->tagAlbum1->id}/{$this->photo1b->id}/thumb");
 
 		$response->assertForbidden();
+	}
+
+	/**
+	 * S-102-04, S-102-05: one key-restricted config query, no SE
+	 * verification, for a signed-in user and a guest.
+	 */
+	public function testLoadsListedConfigsOnlyAndSkipsVerification(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$this->putBytes($this->thumbVariantOf($this->photo4));
+
+		$this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"))->assertOk();
+		Auth::logout();
+		$this->assertLoadsListedConfigsOnly(fn () => $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb"))->assertOk();
+	}
+
+	/**
+	 * S-102-04: the locale is still set from `lang`.
+	 */
+	public function testLocaleStillResolved(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		Configs::set('lang', 'fr');
+
+		try {
+			app()->forgetScopedInstances();
+			$this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb")->assertOk();
+			self::assertSame('fr', app()->getLocale());
+		} finally {
+			Configs::set('lang', 'en');
+			app()->setLocale('en');
+		}
 	}
 }

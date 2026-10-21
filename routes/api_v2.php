@@ -128,9 +128,25 @@ Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums'])
  * Public endpoints for embedding albums on external websites.
  * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
  * IMPORTANT: More specific routes (stream) must come before generic routes ({album_id}) to avoid conflicts.
+ * The whole `api` group is excluded except its configs, verification and locale
+ * middleware (excluding the group itself would strip those too, ADR-102-02).
  */
+$embed_excluded_middleware = [
+	'accept_content_type:json',
+	'content_type:json',
+	\Illuminate\Cookie\Middleware\EncryptCookies::class,
+	\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+	\Illuminate\Session\Middleware\StartSession::class,
+	\Illuminate\Session\Middleware\AuthenticateSession::class,
+	\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+	\App\Http\Middleware\VerifyCsrfToken::class,
+	'gallery_password',
+	\Illuminate\Routing\Middleware\SubstituteBindings::class,
+	\App\Http\Middleware\Latency::class,
+	\App\Http\Middleware\ResolveAlbumSlug::class,
+];
 Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
-	->withoutMiddleware('api')
+	->withoutMiddleware($embed_excluded_middleware)
 	->middleware([
 		\Illuminate\Http\Middleware\HandleCors::class,
 		\Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -140,7 +156,7 @@ Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::clas
 	->name('embed.stream');
 
 Route::match(['GET', 'OPTIONS'], '/Embed/{album_id}', [Gallery\EmbedController::class, 'getAlbum'])
-	->withoutMiddleware('api')
+	->withoutMiddleware($embed_excluded_middleware)
 	->middleware([
 		\Illuminate\Http\Middleware\HandleCors::class,
 		\Illuminate\Routing\Middleware\SubstituteBindings::class,

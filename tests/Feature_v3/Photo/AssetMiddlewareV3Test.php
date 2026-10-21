@@ -21,6 +21,10 @@ namespace Tests\Feature_v3\Photo;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Http\Middleware\ReadOnlyStartSession;
+use App\Http\Middleware\ResolveAssetConfigs;
+use App\Http\Middleware\ResolveConfigs;
+use App\Http\Middleware\ResolveVerify;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -158,5 +162,82 @@ class AssetMiddlewareV3Test extends BaseApiWithDataTest
 		self::assertNotFalse($read_only);
 		self::assertNotFalse($authenticate);
 		self::assertLessThan($authenticate, $read_only);
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function binaryRoutes(): array
+	{
+		return [
+			'asset' => ['/api/v3/Asset/album/photo/thumb'],
+			'face photo' => ['/api/v3/Faces/face/photo/medium'],
+		];
+	}
+
+	/**
+	 * S-102-04, FR-102-07: the binary routes load their own config subset and
+	 * skip SE verification, but still set the locale.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('binaryRoutes')]
+	public function testBinaryRouteResolvesAssetConfigsWithoutVerification(string $uri): void
+	{
+		$middleware = $this->resolvedMiddleware($uri);
+
+		self::assertNotContains(ResolveConfigs::class, $middleware);
+		self::assertNotContains(ResolveVerify::class, $middleware);
+		$asset_configs = array_search(ResolveAssetConfigs::class, $middleware, true);
+		$locale = array_search(SetLocale::class, $middleware, true);
+		self::assertNotFalse($asset_configs);
+		self::assertNotFalse($locale);
+		self::assertLessThan($locale, $asset_configs);
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function groupRoutes(): array
+	{
+		return [
+			'api v2' => ['/api/v2/Gallery::Init'],
+			'api v3' => ['/api/v3/Albums'],
+			'web' => ['/gallery'],
+			'web-admin' => ['/phpinfo'],
+			'image' => ['/image/medium/foo.jpg'],
+			'embed album' => ['/api/v2/Embed/album'],
+			'embed stream' => ['/api/v2/Embed/stream'],
+		];
+	}
+
+	/**
+	 * S-102-04, FR-102-07: every other route still resolves configs, SE
+	 * verification and the locale, first and in that order.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('groupRoutes')]
+	public function testGroupRouteResolvesConfigsVerifyAndLocaleFirst(string $uri): void
+	{
+		$middleware = $this->resolvedMiddleware($uri);
+
+		self::assertSame([ResolveConfigs::class, ResolveVerify::class, SetLocale::class], array_slice($middleware, 0, 3));
+	}
+
+	/**
+	 * FR-102-07: the installer has no license yet, only configs.
+	 */
+	public function testInstallRouteResolvesConfigsOnly(): void
+	{
+		$middleware = $this->resolvedMiddleware('/install/');
+
+		self::assertSame(ResolveConfigs::class, $middleware[0]);
+		self::assertNotContains(ResolveVerify::class, $middleware);
+		self::assertNotContains(SetLocale::class, $middleware);
+	}
+
+	/**
+	 * FR-102-07: log-viewer's API routes sit outside the route groups.
+	 */
+	public function testLogViewerApiResolvesConfigs(): void
+	{
+		self::assertContains(ResolveConfigs::class, config('log-viewer.api_middleware'));
 	}
 }

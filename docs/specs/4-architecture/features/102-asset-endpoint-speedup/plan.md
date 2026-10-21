@@ -45,6 +45,7 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 2. **I2 – Route-group middleware and partial configs (FR-102-01, FR-102-03, FR-102-07)** — T-102-03 … T-102-06.
    - _Steps:_ Tests first (no SE verification read and one key-restricted config query on both binary routes; a v2 and a v3 JSON endpoint still see configs, verify and locale). Move the three middleware into the groups; log-viewer API; `ConfigManager::loadOnly(array $keys)`; record the key list; `ResolveAssetConfigs`; route changes.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest|ResolveConfigsTest|ResolveVerifyTest|SetLocaleTest'`, `make phpstan`.
+   - _Notes:_ Key list recorded with a temporary `ConfigManager` recorder on the three suites plus a probe over every smart album type and caller; keys of membership paths the probe could not reach (rating albums, person albums) taken from `app/SmartAlbums` and `AlbumPolicy`. Laravel tests share one container across requests, so `AssertsAssetConfigLoad` drops the scoped `ConfigManager` binding before the measured request. `withoutMiddleware('api')` on the Embed routes would also strip the three moved middleware (excluded middleware cannot be re-added), so those routes list the excluded entries.
 3. **I3 – HTTP caching (FR-102-04)** — T-102-07, T-102-08.
    - _Steps:_ Tests first (headers on 200, 304 / 200 by `If-Modified-Since`, errors unchanged); implement in `ServesSizeVariantAssetTrait::responseFile()` with the request at hand.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `make phpstan`.
@@ -103,6 +104,14 @@ Warm loop (`ab.sh 400`, Octane-like, SQLite, `thumb` of a photo in a regular alb
 | Admin | 10.4 ms, 15 queries | 4.7 ms, 3 queries |
 | Shared user | 12.4 ms, 20 queries | 6.4 ms, 6 queries |
 | Public guest | 10.9 ms, 18 queries | 5.1 ms, 4 queries |
+
+After I2, with the scoped `ConfigManager`, `Watermarker` and `Verify` bindings dropped after each request as Octane does, so the config load and SE verification are counted (`ab.sh 400` in the scratchpad of session 7590879e, HEAD = I1):
+
+| Caller | After I1 | After I2 |
+|--------|----------|----------|
+| Admin | 6.2 ms, 7 queries | 5.2 ms, 4 queries |
+| Shared user | 7.9 ms, 10 queries | 6.9 ms, 7 queries |
+| Public guest | 6.4 ms, 8 queries | 5.5 ms, 5 queries |
 
 ## Exit Criteria
 - Full quality gate green (php-cs-fixer, `vp check --fix`, `vp run typecheck`, scoped tests, `make phpstan`); `php artisan typescript:transform` rerun.

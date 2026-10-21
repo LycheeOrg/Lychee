@@ -169,6 +169,37 @@ class ConfigManager
 	}
 
 	/**
+	 * Load only the given keys, in one query.
+	 *
+	 * Reading any other key afterwards throws {@see ConfigurationKeyMissingException}:
+	 * the cache is not empty, so it is never completed by {@see ConfigManager::load()}.
+	 *
+	 * @param string[] $keys
+	 *
+	 * @return array<string,string>
+	 */
+	public function loadOnly(array $keys): array
+	{
+		if (count($this->cache) > 0) {
+			return $this->cache;
+		}
+
+		try {
+			$this->cache = Configs::query()
+				->select(['key', 'value'])
+				->whereIn('key', $keys)
+				->pluck('value', 'key')
+				->all();
+			// @codeCoverageIgnoreStart
+		} catch (\Throwable) {
+			$this->cache = [];
+		}
+		// @codeCoverageIgnoreEnd
+
+		return $this->cache;
+	}
+
+	/**
 	 * Reset the cache.
 	 */
 	public function invalidateCache(): void
