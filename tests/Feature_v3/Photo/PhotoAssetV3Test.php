@@ -23,6 +23,8 @@ use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
 use App\Models\AlbumUserThumb;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
@@ -926,6 +928,26 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"))->assertOk();
 		Auth::logout();
 		$this->assertLoadsListedConfigsOnly(fn () => $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb"))->assertOk();
+	}
+
+	/**
+	 * S-102-03: a person album's membership check matches its photos
+	 * through PersonAlbumMatcher, whose keys are listed too.
+	 */
+	public function testPersonAlbumMembershipReadsListedConfigsOnly(): void
+	{
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		$person = Person::factory()->create(['name' => 'Alice', 'is_searchable' => true]);
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+		$person_album_id = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_asset_test',
+			'persons' => [$person->id],
+			'is_and' => false,
+		])->getOriginalContent();
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$this->assertLoadsListedConfigsOnly(fn () => $this->actingAs($this->userMayUpload1)->getV3("Asset/{$person_album_id}/{$this->photo1->id}/thumb"))->assertOk();
 	}
 
 	/**

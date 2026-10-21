@@ -81,7 +81,6 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons =
 		[
 			Helpers::class => Helpers::class,
-			AlbumFactory::class => AlbumFactory::class,
 			OmnipayFactory::class => OmnipayFactory::class,
 			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 			PhotoQueryPolicy::class => PhotoQueryPolicy::class,
@@ -96,7 +95,6 @@ class AppServiceProvider extends ServiceProvider
 
 			// JsonParsers
 
-			MoneyService::class => MoneyService::class,
 			TraceService::class => TraceService::class,
 		];
 
@@ -197,6 +195,9 @@ class AppServiceProvider extends ServiceProvider
 		// ResolveConfigs and ResolveAssetConfigs must load the very instance
 		// those dependencies already hold.
 		$this->app->scoped(ConfigManager::class);
+		// They hold the ConfigManager, so they share its lifetime.
+		$this->app->scoped(AlbumFactory::class);
+		$this->app->scoped(MoneyService::class);
 	}
 
 	/**

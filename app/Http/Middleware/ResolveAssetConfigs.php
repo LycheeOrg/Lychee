@@ -48,6 +48,10 @@ class ResolveAssetConfigs
 		'hide_nsfw_in_tag_albums',
 		'sorting_photos_col',
 		'sorting_photos_order',
+		// Person albums (PersonAlbumMatcher)
+		'PA_override_searchability',
+		'PA_override_visibility',
+		'hide_nsfw_in_person_albums',
 		// Smart albums and timeline
 		'SA_override_visibility',
 		'enable_smart_album_per_owner',
