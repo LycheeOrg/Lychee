@@ -32,8 +32,11 @@ class QueryPhotoUrls
 {
 	use ResolvesPhotoSource;
 
-	/** Grid tiles take the first existing row along this chain. */
-	private const GRID_CHAIN = [SizeVariantType::SMALL2X, SizeVariantType::SMALL, SizeVariantType::THUMB];
+	/** Grid tiles take the first existing row along the chain of their density; `thumb` is a square crop, so it comes last. */
+	private const GRID_CHAINS = [
+		1 => [SizeVariantType::SMALL, SizeVariantType::SMALL2X, SizeVariantType::THUMB],
+		2 => [SizeVariantType::SMALL2X, SizeVariantType::SMALL, SizeVariantType::THUMB],
+	];
 
 	public function __construct(
 		private readonly ConfigManager $config_manager,
@@ -44,9 +47,12 @@ class QueryPhotoUrls
 
 	/**
 	 * @param string[] $photo_ids ids not in the album or not visible to the caller are left out, never a 4xx
+	 * @param 1|2      $density   screen density of the grid
 	 */
-	public function do(AbstractAlbum $album, ?User $user, array $photo_ids): PhotoUrlResource
+	public function do(AbstractAlbum $album, ?User $user, array $photo_ids, int $density): PhotoUrlResource
 	{
+		$grid_chain = self::GRID_CHAINS[$density];
+
 		$visible = array_flip($this->resolvePhotoQuery($album, $user)
 			->whereIn('photos.id', $photo_ids)
 			->toBase()
@@ -58,21 +64,21 @@ class QueryPhotoUrls
 		/** @var Collection<string,Collection<int,SizeVariant>> $variants_by_photo */
 		$variants_by_photo = SizeVariant::query()
 			->whereIn('photo_id', $ids)
-			->whereIn('type', self::GRID_CHAIN)
+			->whereIn('type', $grid_chain)
 			->get()
 			->groupBy('photo_id');
 
 		$local_is_direct = $this->localFilesAreDirect();
-		$small2x_urls = [];
+		$grid_urls = [];
 		$thumb_urls = [];
 		foreach ($ids as $id) {
 			$by_type = ($variants_by_photo->get($id) ?? collect())->keyBy(fn (SizeVariant $variant) => $variant->type->value);
-			$grid = collect(self::GRID_CHAIN)->map(fn (SizeVariantType $type) => $by_type->get($type->value))->first(fn (?SizeVariant $variant) => $variant !== null);
-			$small2x_urls[] = $this->directUrl($grid, $local_is_direct);
+			$grid = collect($grid_chain)->map(fn (SizeVariantType $type) => $by_type->get($type->value))->first(fn (?SizeVariant $variant) => $variant !== null);
+			$grid_urls[] = $this->directUrl($grid, $local_is_direct);
 			$thumb_urls[] = $this->directUrl($by_type->get(SizeVariantType::THUMB->value), $local_is_direct);
 		}
 
-		return new PhotoUrlResource(ids: $ids, small2x_urls: $small2x_urls, thumb_urls: $thumb_urls);
+		return new PhotoUrlResource(ids: $ids, grid_urls: $grid_urls, thumb_urls: $thumb_urls);
 	}
 
 	/**

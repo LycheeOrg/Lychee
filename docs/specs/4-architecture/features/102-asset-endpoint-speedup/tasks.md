@@ -133,5 +133,23 @@ _Last updated: 2026-10-21_
   - `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`  
   - `make phpstan`
 
+### I9 – Grid tile variant by density
+- [x] T-102-22 – Tests for `density` on `/Photos/urls` (F-102-05, S-102-08).  
+  _Intent:_ Failing tests: `grid_urls` replaces `small2x_urls`; `density=1` returns `small`, falling back to `small2x` then `thumb`; default and `density=2` keep `small2x` first; `density=3` → 422.  
+  _Verification commands:_  
+  - `php artisan test --filter=PhotoUrlsV3Test`
+
+- [x] T-102-23 – `density` in `GetPhotoUrlsRequest` and `QueryPhotoUrls`, `grid_urls` in `PhotoUrlResource`, TypeScript types (F-102-05).  
+  _Verification commands:_  
+  - `php artisan test --filter=PhotoUrlsV3Test`  
+  - `make phpstan`
+
+- [x] T-102-24 – Front end: loader sends `density`, reads `grid_urls`; `PhotoThumbVirtual` drops its fixed `small2x` (F-102-06, S-102-13, S-102-14).  
+  _Intent:_ Vitest first for the loader and the tile; `getUrls()` passes the density read once from `window.devicePixelRatio`.  
+  _Verification commands:_  
+  - `vp test`  
+  - `vp check --fix`  
+  - `vp run typecheck`
+
 ## Notes / TODOs
 - None.

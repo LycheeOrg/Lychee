@@ -18,7 +18,6 @@
 				draggable="false"
 				:album-id="props.albumId"
 				:photo-id="props.photo.id"
-				type="small2x"
 				:direct-url="tileUrls?.grid"
 				:pending="tileUrlLoader !== undefined && tileUrls === undefined"
 			/>

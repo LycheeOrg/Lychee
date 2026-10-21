@@ -25,12 +25,12 @@ class PhotoUrlResource extends Data
 {
 	/**
 	 * @param string[]        $ids
-	 * @param (string|null)[] $small2x_urls grid tiles: first row of `small2x` → `small` → `thumb`
-	 * @param (string|null)[] $thumb_urls   list tiles: `thumb`
+	 * @param (string|null)[] $grid_urls  grid tiles: first row of `small2x` → `small` → `thumb`, or `small` → `small2x` → `thumb` at density 1
+	 * @param (string|null)[] $thumb_urls list tiles: `thumb`
 	 */
 	public function __construct(
 		public array $ids,
-		public array $small2x_urls,
+		public array $grid_urls,
 		public array $thumb_urls,
 	) {
 	}

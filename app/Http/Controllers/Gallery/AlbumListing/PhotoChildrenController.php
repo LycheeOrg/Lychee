@@ -173,6 +173,6 @@ class PhotoChildrenController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		return $this->query_photo_urls->do($request->album(), $user, $request->photoIds());
+		return $this->query_photo_urls->do($request->album(), $user, $request->photoIds(), $request->density());
 	}
 }

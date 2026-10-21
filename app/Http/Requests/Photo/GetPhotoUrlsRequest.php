@@ -30,12 +30,20 @@ class GetPhotoUrlsRequest extends BaseApiRequest implements HasAbstractAlbum
 	/** @var string[] */
 	private array $photo_ids = [];
 
+	/** Screen density of the grid: 1 or 2 (FR-102-05). */
+	private int $density = 2;
+
 	/**
 	 * @return string[]
 	 */
 	public function photoIds(): array
 	{
 		return $this->photo_ids;
+	}
+
+	public function density(): int
+	{
+		return $this->density;
 	}
 
 	/**
@@ -56,6 +64,7 @@ class GetPhotoUrlsRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['required', 'array', 'min:1', 'max:300'],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			RequestAttribute::DENSITY_ATTRIBUTE => ['sometimes', 'integer', 'in:1,2'],
 		];
 	}
 
@@ -83,5 +92,6 @@ class GetPhotoUrlsRequest extends BaseApiRequest implements HasAbstractAlbum
 		/** @var string[] $photo_ids */
 		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photo_ids = $photo_ids;
+		$this->density = intval($values[RequestAttribute::DENSITY_ATTRIBUTE] ?? 2);
 	}
 }

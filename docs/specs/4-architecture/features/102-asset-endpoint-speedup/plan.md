@@ -65,6 +65,10 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Steps:_ Tests first (`ETag` on 200, matching `If-None-Match` → 304, watermark switched on under the same URL → 200 with the watermarked file; `Clear-Site-Data: "cache"` on login and logout only). `ETag` of path, mtime and size in `ServesSizeVariantAssetTrait::responseFile()`; `ClearBrowserCacheOnAuthChange` listener on `Login`/`Logout` sets a request flag; `ClearBrowserCache` middleware in `web`, `web-admin`, `api` adds the header.
    - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`, `make phpstan`.
    - _Notes:_ Prompted by the PR #4912 review (cache reuse across sessions, `304` for another selected file). The v8 in-memory thumbnail cache (`thumb-asset-service.ts`) is dropped by the full page load that follows logout.
+9. **I9 – Grid tile variant by density (FR-102-05, FR-102-06)** — T-102-22 … T-102-24.
+   - _Steps:_ Tests first (`density=1|2` chains, default 2, 422 otherwise; loader query and tile fallback type). `GetPhotoUrlsRequest` validates `density`; `QueryPhotoUrls` picks the chain; `PhotoUrlResource.grid_urls`; regenerate types; loader and `PhotoThumbVirtual`.
+   - _Commands:_ `php artisan test --filter=PhotoUrlsV3Test`, `make phpstan`, `vp test`, `vp check --fix`, `vp run typecheck`.
+   - _Notes:_ Owner remark 2026-10-21 (Q-102-09): 1x screens downloaded `small2x` on both tiers.
 
 ## Scenario Tracking
 

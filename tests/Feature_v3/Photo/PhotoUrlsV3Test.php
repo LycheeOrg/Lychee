@@ -70,9 +70,14 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		return Storage::disk(StorageDiskType::LOCAL->value)->url($short_path);
 	}
 
-	private function urlsOf(string $album_id, array $photo_ids): \Illuminate\Testing\TestResponse
+	private function urlsOf(string $album_id, array $photo_ids, ?string $density = null): \Illuminate\Testing\TestResponse
 	{
-		return $this->getJsonV3("Albums/{$album_id}/Photos/urls", ['photo_ids' => $photo_ids]);
+		$params = ['photo_ids' => $photo_ids];
+		if ($density !== null) {
+			$params['density'] = $density;
+		}
+
+		return $this->getJsonV3("Albums/{$album_id}/Photos/urls", $params);
 	}
 
 	// ── Direct URLs (S-102-08) ─────────────────────────────────────
@@ -84,7 +89,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertExactJson([
 			'ids' => [$this->photo1->id],
-			'small2x_urls' => [$this->localUrl($this->variantOf($this->photo1, SizeVariantType::SMALL2X)->short_path)],
+			'grid_urls' => [$this->localUrl($this->variantOf($this->photo1, SizeVariantType::SMALL2X)->short_path)],
 			'thumb_urls' => [$this->localUrl($this->variantOf($this->photo1, SizeVariantType::THUMB)->short_path)],
 		]);
 	}
@@ -97,13 +102,50 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 		$this->assertOk($response);
-		self::assertSame([$small], $response->json('small2x_urls'));
+		self::assertSame([$small], $response->json('grid_urls'));
 		self::assertSame([$thumb], $response->json('thumb_urls'));
 
 		$this->deleteVariants($this->photo1, SizeVariantType::SMALL);
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 		$this->assertOk($response);
-		self::assertSame([$thumb], $response->json('small2x_urls'));
+		self::assertSame([$thumb], $response->json('grid_urls'));
+	}
+
+	public function testDensityTwoKeepsSmall2xFirst(): void
+	{
+		$small2x = $this->localUrl($this->variantOf($this->photo1, SizeVariantType::SMALL2X)->short_path);
+
+		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id], '2');
+
+		$this->assertOk($response);
+		self::assertSame([$small2x], $response->json('grid_urls'));
+	}
+
+	public function testDensityOneGivesSmallThenSmall2xThenThumb(): void
+	{
+		$small = $this->localUrl($this->variantOf($this->photo1, SizeVariantType::SMALL)->short_path);
+		$small2x = $this->localUrl($this->variantOf($this->photo1, SizeVariantType::SMALL2X)->short_path);
+		$thumb = $this->localUrl($this->variantOf($this->photo1, SizeVariantType::THUMB)->short_path);
+
+		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id], '1');
+		$this->assertOk($response);
+		self::assertSame([$small], $response->json('grid_urls'));
+		self::assertSame([$thumb], $response->json('thumb_urls'));
+
+		$this->deleteVariants($this->photo1, SizeVariantType::SMALL);
+		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id], '1');
+		$this->assertOk($response);
+		self::assertSame([$small2x], $response->json('grid_urls'));
+
+		$this->deleteVariants($this->photo1, SizeVariantType::SMALL2X);
+		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id], '1');
+		$this->assertOk($response);
+		self::assertSame([$thumb], $response->json('grid_urls'));
+	}
+
+	public function testUnknownDensityIsUnprocessable(): void
+	{
+		$this->assertUnprocessable($this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id], '3'));
 	}
 
 	public function testNullWithoutRows(): void
@@ -113,7 +155,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		$response->assertExactJson(['ids' => [$this->photo1->id], 'small2x_urls' => [null], 'thumb_urls' => [null]]);
+		$response->assertExactJson(['ids' => [$this->photo1->id], 'grid_urls' => [null], 'thumb_urls' => [null]]);
 	}
 
 	// ── Protected viewer (S-102-09) ────────────────────────────────
@@ -126,7 +168,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		$response->assertExactJson(['ids' => [$this->photo1->id], 'small2x_urls' => [null], 'thumb_urls' => [null]]);
+		$response->assertExactJson(['ids' => [$this->photo1->id], 'grid_urls' => [null], 'thumb_urls' => [null]]);
 	}
 
 	public function testTemporaryLinkNotRequiredForLoggedInGivesUrls(): void
@@ -136,7 +178,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		self::assertNotNull($response->json('small2x_urls.0'));
+		self::assertNotNull($response->json('grid_urls.0'));
 	}
 
 	public function testSecureLinksGiveNull(): void
@@ -146,7 +188,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		$response->assertExactJson(['ids' => [$this->photo1->id], 'small2x_urls' => [null], 'thumb_urls' => [null]]);
+		$response->assertExactJson(['ids' => [$this->photo1->id], 'grid_urls' => [null], 'thumb_urls' => [null]]);
 	}
 
 	// ── Watermark and S3 (S-102-10) ────────────────────────────────
@@ -162,7 +204,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		self::assertSame([$this->localUrl($variant->short_path_watermarked)], $response->json('small2x_urls'));
+		self::assertSame([$this->localUrl($variant->short_path_watermarked)], $response->json('grid_urls'));
 	}
 
 	public function testS3VariantGetsS3UrlEvenWhenLocalFilesAreProtected(): void
@@ -191,7 +233,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->urlsOf($this->album1->id, [$this->photo1->id]);
 
 		$this->assertOk($response);
-		self::assertSame(['https://example-bucket.s3.amazonaws.com/signed-url'], $response->json('small2x_urls'));
+		self::assertSame(['https://example-bucket.s3.amazonaws.com/signed-url'], $response->json('grid_urls'));
 		self::assertSame([null], $response->json('thumb_urls'));
 	}
 
@@ -203,7 +245,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 
 		$this->assertOk($response);
 		self::assertSame([$this->photo1->id], $response->json('ids'));
-		self::assertCount(1, $response->json('small2x_urls'));
+		self::assertCount(1, $response->json('grid_urls'));
 		self::assertCount(1, $response->json('thumb_urls'));
 	}
 
@@ -258,7 +300,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 
 		$this->assertOk($response);
 		self::assertSame([$this->photo1->id], $response->json('ids'));
-		self::assertNotNull($response->json('small2x_urls.0'));
+		self::assertNotNull($response->json('grid_urls.0'));
 	}
 
 	public function testTimelineIdSucceeds(): void

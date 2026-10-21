@@ -185,6 +185,7 @@
 import { computed, ref, ComponentPublicInstance, provide, watch } from "vue";
 import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import { createTileUrlLoader, TILE_URL_LOADER } from "@/v8/composables/photo/tileUrlLoader";
+import { screenDensity } from "@/v8/utils/screenDensity";
 import PhotoChildrenV3Service from "@/services/photo-children-v3-service";
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
@@ -244,10 +245,11 @@ const albumStore = useAlbumStore();
 // Feature 100: thumbnails fetch their live photo video URL on hover.
 provide(MOTION_URL_LOADER, (ids) => albumStore.loadPhotoDetails(ids));
 // Feature 102: grid tiles load their image from a direct URL when the viewer needs no protection.
+const density = screenDensity();
 const tileUrlLoader = createTileUrlLoader((ids) =>
 	albumStore.albumId === undefined
 		? Promise.reject(new Error("no album"))
-		: PhotoChildrenV3Service.getUrls(albumStore.albumId, ids).then((r) => r.data),
+		: PhotoChildrenV3Service.getUrls(albumStore.albumId, ids, density).then((r) => r.data),
 );
 provide(TILE_URL_LOADER, tileUrlLoader);
 watch(

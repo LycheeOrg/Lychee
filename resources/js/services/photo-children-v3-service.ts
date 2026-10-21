@@ -100,11 +100,12 @@ const PhotoChildrenV3Service = {
 	/**
 	 * Direct tile URLs of at most 300 photos (Feature 102, FR-102-05). Not
 	 * cached: the tile URL loader asks for each id once per load of the
-	 * album's photos, and S3 presigned URLs expire.
+	 * album's photos, and S3 presigned URLs expire. `density` picks `small`
+	 * (1) or `small2x` (2) first for the grid URLs.
 	 */
-	getUrls(album_id: string, photo_ids: string[]): Promise<AxiosResponse<PhotoUrlResource>> {
+	getUrls(album_id: string, photo_ids: string[], density: 1 | 2): Promise<AxiosResponse<PhotoUrlResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		const param = photo_ids.map((id) => `photo_ids[]=${encodeURIComponent(id)}`).join("&");
+		const param = photo_ids.map((id) => `photo_ids[]=${encodeURIComponent(id)}`).join("&") + `&density=${density}`;
 
 		return requester.get(`${Constants.getApiUrlV3()}Albums/${album_id}/Photos/urls?${param}`, {
 			data: {},

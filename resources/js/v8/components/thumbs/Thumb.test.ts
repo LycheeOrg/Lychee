@@ -75,6 +75,21 @@ describe("Thumb (S-102-14)", () => {
 		expect(wrapper.find("img").attributes("src")).toBe("blob:asset");
 	});
 
+	it.each([
+		[1, "small"],
+		[2, "small2x"],
+	])("asks /Asset for the variant of a %ix screen when no type is given", async (ratio, type) => {
+		vi.stubGlobal("devicePixelRatio", ratio);
+		try {
+			mountThumb({ type: undefined, directUrl: null });
+			await flushPromises();
+
+			expect(acquire).toHaveBeenCalledExactlyOnceWith("album", "p1", type);
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+
 	it("keeps today's /Asset behaviour without the new props", async () => {
 		const wrapper = mountThumb({});
 		await flushPromises();

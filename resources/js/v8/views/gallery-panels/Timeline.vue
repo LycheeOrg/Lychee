@@ -203,6 +203,7 @@
 import { computed, nextTick, provide } from "vue";
 import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import { createTileUrlLoader, TILE_URL_LOADER } from "@/v8/composables/photo/tileUrlLoader";
+import { screenDensity } from "@/v8/utils/screenDensity";
 import PhotoChildrenV3Service from "@/services/photo-children-v3-service";
 import { useUserStore } from "@/stores/UserState";
 import { ref } from "vue";
@@ -282,7 +283,8 @@ const timelineStore = useTimelineStore();
 // Feature 100: thumbnails fetch their live photo video URL on hover.
 provide(MOTION_URL_LOADER, (ids) => timelineStore.loadPhotoDetailsV3(ids));
 // Feature 102: grid tiles load their image from a direct URL when the viewer needs no protection.
-const tileUrlLoader = createTileUrlLoader((ids) => PhotoChildrenV3Service.getUrls("timeline", ids).then((r) => r.data));
+const density = screenDensity();
+const tileUrlLoader = createTileUrlLoader((ids) => PhotoChildrenV3Service.getUrls("timeline", ids, density).then((r) => r.data));
 provide(TILE_URL_LOADER, tileUrlLoader);
 watch(
 	() => timelineStore.bucketsV3,

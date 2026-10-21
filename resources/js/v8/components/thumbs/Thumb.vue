@@ -5,6 +5,7 @@
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import ThumbAssetService from "@/services/thumb-asset-service";
 import { useImageHelpers } from "@/utils/Helpers";
+import { screenDensity } from "@/v8/utils/screenDensity";
 
 const props = defineProps<{
 	albumId: string;
@@ -25,9 +26,8 @@ const placeholder = getNoImageIcon();
 const src = ref<string>(placeholder);
 
 // When `type` isn't pinned by the caller, pick the 2x variant on HiDPI screens instead of
-// always fetching the 1x one - devicePixelRatio doesn't change during a session, so this is
-// only read once rather than tracked reactively.
-const effectiveType = computed<App.Enum.SizeVariantAssetType>(() => props.type ?? (window.devicePixelRatio > 1 ? "small2x" : "small"));
+// always fetching the 1x one - the same choice as the direct grid URLs (Feature 102).
+const effectiveType = computed<App.Enum.SizeVariantAssetType>(() => props.type ?? (screenDensity() === 2 ? "small2x" : "small"));
 
 let release: (() => void) | undefined;
 let loadId = 0;

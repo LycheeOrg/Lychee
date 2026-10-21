@@ -2236,7 +2236,7 @@ declare namespace App {
 				};
 				export type PhotoUrlResource = {
 					ids: string[];
-					small2x_urls: (string | null)[];
+					grid_urls: (string | null)[];
 					thumb_urls: (string | null)[];
 				};
 				export type SearchPhotoResource = {

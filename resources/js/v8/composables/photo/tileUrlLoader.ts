@@ -51,7 +51,7 @@ export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
 			disabled.value = true;
 		}
 		const byId = new Map<string, TileUrls>();
-		response?.ids.forEach((id, i) => byId.set(id, { grid: response.small2x_urls[i] ?? null, list: response.thumb_urls[i] ?? null }));
+		response?.ids.forEach((id, i) => byId.set(id, { grid: response.grid_urls[i] ?? null, list: response.thumb_urls[i] ?? null }));
 		chunk.forEach((id) => resolved.set(id, byId.get(id) ?? NO_URLS));
 	}
 
@@ -89,7 +89,7 @@ export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
 
 /** A non-empty response with no URL at all: the viewer needs `/Asset` for every tile. */
 function isAllNull(response: PhotoUrlResource): boolean {
-	return response.ids.length > 0 && response.small2x_urls.every((url) => url === null) && response.thumb_urls.every((url) => url === null);
+	return response.ids.length > 0 && response.grid_urls.every((url) => url === null) && response.thumb_urls.every((url) => url === null);
 }
 
 /** Provided by views whose grid tiles may use direct URLs (album views, timeline). */

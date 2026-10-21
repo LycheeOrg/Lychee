@@ -14,7 +14,7 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | ~~Q-102-06~~ | 102 – Asset Endpoint Speedup | Medium | For an admin, does `/Asset` still answer 404 for an unknown album and 403 for a photo outside the album? | Resolved (Option A — admins skip both; FR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (Option A — `Clear-Site-Data: "cache"` on login/logout; FR-102-08) | 2026-10-21 | 2026-10-21 |
 | Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
-| Q-102-09 | 102 – Asset Endpoint Speedup | Medium | Should grid tiles get `small` instead of `small2x` on 1x screens? | Open | 2026-10-21 | 2026-10-21 |
+| ~~Q-102-09~~ | 102 – Asset Endpoint Speedup | Medium | Should grid tiles get `small` instead of `small2x` on 1x screens? | Resolved (Option A — client sends its density; FR-102-05, FR-102-06) | 2026-10-21 | 2026-10-21 |
 
 ## Question Details
 
@@ -33,9 +33,9 @@ FR-102-05 decides "direct or `null`" with `UrlGenerator::shouldNotUseSignedUrl()
 ---
 
 
-### Q-102-09 · Grid tile variant by screen density
+### ~~Q-102-09~~ · Grid tile variant by screen density ✅ RESOLVED
 
-**Status:** Open  
+**Status:** Resolved — Option A. Encoded in spec FR-102-05 and FR-102-06.  
 **Feature:** F-102  
 **Priority:** Medium
 

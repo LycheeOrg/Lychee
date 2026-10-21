@@ -11,12 +11,12 @@ type PhotoUrlResource = App.Http.Resources.V3.PhotoUrlResource;
 
 /** Direct URLs for every requested id. */
 function direct(ids: string[]): PhotoUrlResource {
-	return { ids, small2x_urls: ids.map((id) => `/uploads/small2x/${id}.jpg`), thumb_urls: ids.map((id) => `/uploads/thumb/${id}.jpg`) };
+	return { ids, grid_urls: ids.map((id) => `/uploads/small2x/${id}.jpg`), thumb_urls: ids.map((id) => `/uploads/thumb/${id}.jpg`) };
 }
 
 /** Protected viewer: every entry null. */
 function protectedUrls(ids: string[]): PhotoUrlResource {
-	return { ids, small2x_urls: ids.map(() => null), thumb_urls: ids.map(() => null) };
+	return { ids, grid_urls: ids.map(() => null), thumb_urls: ids.map(() => null) };
 }
 
 /** A fetcher whose calls stay pending until `settle()`. */
@@ -132,7 +132,7 @@ describe("tileUrlLoader: protected viewer (S-102-13)", () => {
 		await vi.waitFor(() => expect(loader.urlsOf("gone")).toEqual({ grid: null, list: null }));
 
 		loader.request(["a", "b"]);
-		pending[1].resolve({ ids: ["a", "b"], small2x_urls: [null, "/uploads/small2x/b.jpg"], thumb_urls: [null, null] });
+		pending[1].resolve({ ids: ["a", "b"], grid_urls: [null, "/uploads/small2x/b.jpg"], thumb_urls: [null, null] });
 		await vi.waitFor(() => expect(loader.urlsOf("b")).toBeDefined());
 
 		expect(loader.disabled.value).toBe(false);
