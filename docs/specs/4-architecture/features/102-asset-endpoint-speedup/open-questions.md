@@ -15,8 +15,24 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (Option A — `Clear-Site-Data: "cache"` on login/logout; FR-102-08) | 2026-10-21 | 2026-10-21 |
 | Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-09~~ | 102 – Asset Endpoint Speedup | Medium | Should grid tiles get `small` instead of `small2x` on 1x screens? | Resolved (Option A — client sends its density; FR-102-05, FR-102-06) | 2026-10-21 | 2026-10-21 |
+| ~~Q-102-10~~ | 102 – Asset Endpoint Speedup | Medium | How does the tile URL loader reach the grid and its tiles without `provide`/`inject`? | Resolved (Option C with the route detection of Option A; FR-102-06) | 2026-10-22 | 2026-10-22 |
 
 ## Question Details
+
+### ~~Q-102-10~~ · Handing the tile URL loader to the grid ✅ RESOLVED
+
+**Status:** Resolved — Option C, with the source taken from the route as in Option A. The store keys URLs by photo id for the page's lifetime and empties only when the viewer changes. Encoded in spec FR-102-06.  
+**Feature:** F-102  
+**Priority:** Medium
+
+Owner remark (2026-10-22): the front end should not rely on injections. `AlbumPanel.vue` and `Timeline.vue` build the loader (it needs the album id or `timeline`, the density, and a reset when the view's photos reload) and `provide(TILE_URL_LOADER)`. Three components `inject` it: `PhotoGridVirtual` (asks for the rendered ids), `PhotoThumbVirtual` and `PhotoListItemVirtual` (read their URLs). The chain is `AlbumPanel` → `PhotoThumbPanelVirtual` → `PhotoGridVirtual` → tile, and `Timeline` → `PhotoGridVirtual` → tile. Search (`ResultPanel`) provides nothing, so its tiles use `/Asset`.
+
+- **Option A (recommended): derive the source from the route.** A `useTileUrls()` composable reads `useRoute()`: route `album` → `params.albumId`, route `timeline` → `timeline`, any other route (search, tag, favourites) → no direct URLs. One shared loader resets when that source changes and when the matching store reloads its photos (`albumStore.photoRatiosV3`, `timelineStore.bucketsV3`). The density already comes from `screenDensity()`. `PhotoGridVirtual` and the tiles call the composable themselves: no `provide`, no `inject`, no pass-through prop, and the views no longer build a loader. The composable knows the route names and which store holds each view's photos.
+- **Option B: props.** `PhotoGridVirtual` takes an optional `tileUrlLoader` prop and passes each tile a plain `urls` prop (`loader?.urlsOf(photo.id)`). `AlbumPanel` hands it through `PhotoThumbPanelVirtual` (one extra prop), `Timeline` hands it directly, search omits it. The data flow is visible in the templates and the tiles only receive a value. Costs one pass-through prop on `PhotoThumbPanelVirtual`.
+- **Option C: a Pinia store.** A tile-URL store holds the resolved URLs. The views set its source (album id or `timeline`) and reset it, the grid and tiles read the store. No props, but the state is global: it outlives the view, and search must explicitly clear the source so its tiles do not read stale URLs.
+- **Option D: keep `provide`/`inject`.** No change. Same pattern Feature 100 already uses for `MOTION_URL_LOADER`, but the dependency stays invisible in the templates.
+
+---
 
 ### Q-102-07 · Temporary-link rule for admins in `/Photos/urls`
 

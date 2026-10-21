@@ -4,71 +4,99 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-import { describe, expect, it, vi } from "vite-plus/test";
-import { effectScope, nextTick, ref } from "vue";
-import { createTileUrlLoader, type TileUrlLoader } from "@/v8/composables/photo/tileUrlLoader";
-import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { createPinia, setActivePinia } from "pinia";
+import { type EffectScope, effectScope, nextTick, reactive, ref } from "vue";
 
-function spiedLoader(): TileUrlLoader {
-	const loader = createTileUrlLoader(() => new Promise(() => undefined));
-	vi.spyOn(loader, "request");
-	return loader;
-}
+const route = reactive<{ name: string | undefined; params: Record<string, string> }>({ name: "album", params: { albumId: "album1" } });
+
+vi.mock("vue-router", () => ({ useRoute: () => route }));
+vi.mock("@/services/photo-children-v3-service", () => ({ default: { getUrls: () => new Promise(() => undefined) } }));
+
+import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
+import { useUserStore } from "@/stores/UserState";
+
+const scopes: EffectScope[] = [];
 
 function run(fn: () => void): void {
-	effectScope().run(fn);
+	const scope = effectScope();
+	scopes.push(scope);
+	scope.run(fn);
 }
 
+function spiedStore() {
+	const store = useTileUrlsStore();
+	vi.spyOn(store, "request");
+	return store;
+}
+
+beforeEach(() => {
+	setActivePinia(createPinia());
+	route.name = "album";
+	route.params = { albumId: "album1" };
+});
+
+afterEach(() => {
+	scopes.splice(0).forEach((scope) => scope.stop());
+});
+
 describe("useTileUrlRequests (S-102-13)", () => {
-	it("asks for the rendered ids right away", () => {
-		const loader = spiedLoader();
+	it("sets the source from the route and asks for the rendered ids right away", () => {
+		const store = spiedStore();
 		const ids = ref(["a", "b"]);
 
-		run(() => useTileUrlRequests(loader, () => ids.value));
+		run(() => useTileUrlRequests(() => ids.value));
 
-		expect(loader.request).toHaveBeenCalledExactlyOnceWith(["a", "b"]);
+		expect(store.source).toBe("album1");
+		expect(store.request).toHaveBeenCalledExactlyOnceWith(["a", "b"]);
+	});
+
+	it("follows the route to another source and asks again", async () => {
+		const store = spiedStore();
+		run(() => useTileUrlRequests(() => ["a"]));
+
+		route.name = "timeline";
+		route.params = {};
+		await nextTick();
+
+		expect(store.source).toBe("timeline");
+		expect(store.request).toHaveBeenCalledTimes(2);
 	});
 
 	it("asks again only when the rendered id set changes", async () => {
-		const loader = spiedLoader();
+		const store = spiedStore();
 		const ids = ref(["a", "b"]);
-		run(() => useTileUrlRequests(loader, () => ids.value));
+		run(() => useTileUrlRequests(() => ids.value));
 
 		ids.value = ["a", "b"];
 		await nextTick();
-		expect(loader.request).toHaveBeenCalledTimes(1);
+		expect(store.request).toHaveBeenCalledTimes(1);
 
 		ids.value = ["b", "c"];
 		await nextTick();
-		expect(loader.request).toHaveBeenLastCalledWith(["b", "c"]);
-		expect(loader.request).toHaveBeenCalledTimes(2);
+		expect(store.request).toHaveBeenLastCalledWith(["b", "c"]);
+		expect(store.request).toHaveBeenCalledTimes(2);
 	});
 
-	it("asks again for the same ids after the loader is reset", async () => {
-		const loader = spiedLoader();
-		const ids = ref(["a"]);
-		run(() => useTileUrlRequests(loader, () => ids.value));
+	it("hands the logged-in user to the store, which starts over when it changes", async () => {
+		const store = spiedStore();
+		const userStore = useUserStore();
+		run(() => useTileUrlRequests(() => ["a"]));
+		expect(store.viewer).toBeNull();
 
-		loader.reset();
+		userStore.user = { id: 7 } as App.Http.Resources.Models.UserResource;
 		await nextTick();
 
-		expect(loader.request).toHaveBeenCalledTimes(2);
-		expect(loader.request).toHaveBeenLastCalledWith(["a"]);
+		expect(store.viewer).toBe(7);
+		expect(store.request).toHaveBeenCalledTimes(2);
 	});
 
 	it("does not ask while nothing is rendered", () => {
-		const loader = spiedLoader();
+		const store = spiedStore();
 
-		run(() => useTileUrlRequests(loader, () => []));
+		run(() => useTileUrlRequests(() => []));
 
-		expect(loader.request).not.toHaveBeenCalled();
-	});
-
-	it("does nothing without a loader (search, other grids)", () => {
-		const renderedIds = vi.fn(() => ["a"]);
-
-		run(() => useTileUrlRequests(undefined, renderedIds));
-
-		expect(renderedIds).not.toHaveBeenCalled();
+		expect(store.request).not.toHaveBeenCalled();
 	});
 });

@@ -104,7 +104,7 @@
  * regresses (NFR-066-06's spirit extended defensively to the v3 album path
  * too, even though that NFR is only actually about the v2 Timeline path).
  */
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useElementBounding, useElementSize } from "@vueuse/core";
 import { useWindowVirtualizer } from "@tanstack/vue-virtual";
 import { useRoute } from "vue-router";
@@ -136,7 +136,6 @@ import { deriveDayScrubEntries, formatDayLabel, tileKey, type DateScrubberField,
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 import { useKenBurnsHover } from "@/v8/composables/photo/kenBurnsHover";
-import { TILE_URL_LOADER } from "@/v8/composables/photo/tileUrlLoader";
 import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
 
 const props = defineProps<{
@@ -403,7 +402,7 @@ const virtualizer = useWindowVirtualizer(
 const virtualChunks = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, chunk: chunks.value[item.index] })));
 
 // Feature 102: ask for the direct URLs of every rendered tile (visible plus overscan).
-useTileUrlRequests(inject(TILE_URL_LOADER, undefined), () =>
+useTileUrlRequests(() =>
 	virtualChunks.value.flatMap((item) => (item.chunk === undefined ? [] : tilesForChunk(item.chunk).map((tile) => tile.photo.id))),
 );
 

@@ -22,7 +22,7 @@
 				:photo-id="photo.id"
 				type="thumb"
 				:direct-url="tileUrls?.list"
-				:pending="tileUrlLoader !== undefined && tileUrls === undefined"
+				:pending="tileUrls === undefined"
 				draggable="false"
 			/>
 			<!-- Video play icon overlay -->
@@ -116,8 +116,8 @@
  * `photo.preformatted.filesize` being empty already hides it via the
  * existing `v-if`, exactly the accepted-regression mechanism intended.
  */
-import { computed, inject, toRef } from "vue";
-import { TILE_URL_LOADER } from "@/v8/composables/photo/tileUrlLoader";
+import { computed, toRef } from "vue";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 import ListBadge from "@/v8/components/gallery/albumModule/thumbs/ListBadge.vue";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -149,9 +149,9 @@ const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag } = usePhotoFlags
 	toRef(props, "isHeaderId"),
 );
 
-// Feature 102: the image comes from a direct URL when the view provides a loader.
-const tileUrlLoader = inject(TILE_URL_LOADER, undefined);
-const tileUrls = computed(() => tileUrlLoader?.urlsOf(props.photo.id));
+// Feature 102: the image comes from a direct URL when the route has a tile URL source.
+const tileUrlsStore = useTileUrlsStore();
+const tileUrls = computed(() => tileUrlsStore.urlsOf(props.photo.id));
 
 const showRating = computed(() => rating_album_view_mode.value !== "never");
 

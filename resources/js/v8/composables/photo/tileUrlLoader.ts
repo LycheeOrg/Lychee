@@ -4,93 +4,40 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-import { type InjectionKey, type Ref, ref, shallowReactive } from "vue";
+import type { RouteLocationNormalizedLoaded } from "vue-router";
 
 type PhotoUrlResource = App.Http.Resources.V3.PhotoUrlResource;
 
 /** Direct URLs of one tile: `grid` for grid tiles, `list` for list rows. `null` loads through `/Asset`. */
 export type TileUrls = { grid: string | null; list: string | null };
 
-export type TileUrlFetcher = (photoIds: string[]) => Promise<PhotoUrlResource>;
-
-export type TileUrlLoader = {
-	/** Asks for the URLs of ids not yet resolved nor in flight, in chunks of {@link TILE_URL_BATCH_SIZE}. */
-	request: (photoIds: string[]) => void;
-	/**
-	 * `undefined` while pending (the tile shows its placeholder), the tile's
-	 * URLs once resolved, `null` once the loader is disabled (every tile
-	 * loads through `/Asset`).
-	 */
-	urlsOf: (photoId: string) => TileUrls | null | undefined;
-	/** Forgets every entry and re-enables the loader; call it when the view's photos are reloaded. */
-	reset: () => void;
-	/** Set by a non-empty response whose entries are all `null`: the viewer is protected. */
-	disabled: Ref<boolean>;
-	/** Bumped by every reset, so a grid asks again for ids it already rendered. */
-	version: Ref<number>;
-};
-
 /** Upper bound of `photo_ids[]` accepted by `GET /Albums/{album_id}/Photos/urls`. */
 export const TILE_URL_BATCH_SIZE = 300;
 
-const NO_URLS: TileUrls = { grid: null, list: null };
+export const NO_TILE_URLS: TileUrls = { grid: null, list: null };
 
 /**
- * Loads direct tile URLs (Feature 102, FR-102-06, ADR-102-01) for the photos
- * a grid renders. Each id is asked for at most once until {@link TileUrlLoader.reset}.
+ * The `{album_id}` the tiles of `route` ask direct URLs from (Feature 102,
+ * FR-102-06): the album of the album routes, `timeline` on the timeline,
+ * none elsewhere (search and every other grid use `/Asset`).
  */
-export function createTileUrlLoader(fetcher: TileUrlFetcher): TileUrlLoader {
-	const resolved = shallowReactive(new Map<string, TileUrls>());
-	const inFlight = new Set<string>();
-	const disabled = ref(false);
-	const version = ref(0);
-
-	function settle(chunk: string[], response: PhotoUrlResource | null): void {
-		chunk.forEach((id) => inFlight.delete(id));
-		if (response !== null && isAllNull(response)) {
-			disabled.value = true;
-		}
-		const byId = new Map<string, TileUrls>();
-		response?.ids.forEach((id, i) => byId.set(id, { grid: response.grid_urls[i] ?? null, list: response.thumb_urls[i] ?? null }));
-		chunk.forEach((id) => resolved.set(id, byId.get(id) ?? NO_URLS));
+export function tileUrlSource(route: Pick<RouteLocationNormalizedLoaded, "name" | "params">): string | undefined {
+	if (route.name === "timeline") {
+		return "timeline";
 	}
-
-	function send(chunk: string[]): void {
-		const sent = version.value;
-		chunk.forEach((id) => inFlight.add(id));
-		fetcher(chunk)
-			.then((response) => (sent === version.value ? settle(chunk, response) : undefined))
-			.catch(() => (sent === version.value ? settle(chunk, null) : undefined));
+	const album_id = route.params.albumId;
+	if ((route.name === "album" || route.name === "flow-album") && typeof album_id === "string" && album_id !== "") {
+		return album_id;
 	}
+	return undefined;
+}
 
-	function request(photoIds: string[]): void {
-		if (disabled.value) {
-			return;
-		}
-		const missing = [...new Set(photoIds)].filter((id) => !resolved.has(id) && !inFlight.has(id));
-		for (let i = 0; i < missing.length; i += TILE_URL_BATCH_SIZE) {
-			send(missing.slice(i, i + TILE_URL_BATCH_SIZE));
-		}
-	}
-
-	function urlsOf(photoId: string): TileUrls | null | undefined {
-		return disabled.value ? null : resolved.get(photoId);
-	}
-
-	function reset(): void {
-		version.value++;
-		resolved.clear();
-		inFlight.clear();
-		disabled.value = false;
-	}
-
-	return { request, urlsOf, reset, disabled, version };
+/** The URLs of each id `response` answers. */
+export function tileUrlsById(response: PhotoUrlResource): Map<string, TileUrls> {
+	return new Map(response.ids.map((id, i) => [id, { grid: response.grid_urls[i] ?? null, list: response.thumb_urls[i] ?? null }]));
 }
 
 /** A non-empty response with no URL at all: the viewer needs `/Asset` for every tile. */
-function isAllNull(response: PhotoUrlResource): boolean {
+export function isAllNull(response: PhotoUrlResource): boolean {
 	return response.ids.length > 0 && response.grid_urls.every((url) => url === null) && response.thumb_urls.every((url) => url === null);
 }
-
-/** Provided by views whose grid tiles may use direct URLs (album views, timeline). */
-export const TILE_URL_LOADER: InjectionKey<TileUrlLoader> = Symbol("tileUrlLoader");

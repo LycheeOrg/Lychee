@@ -22,7 +22,7 @@ A gallery page issues one image request per tile, so per-request cost multiplies
 - `GetPhotoAssetRequest`, `ResolvesSizeVariantAssetTrait`, `ServesSizeVariantAssetTrait`, `AlbumFactory`, `AlbumPolicy` (Feature 056, ADR-0008); `FacePhotoAssetController` and its request (Feature 093, ADR-093-01).
 - `App\Http\Kernel` groups, `ResolveConfigs`, `ResolveVerify`, `SetLocale`, `ConfigManager`, `Watermarker`, `config/log-viewer.php`, `routes/web_v2.php` (`image/{path}`).
 - `PhotoChildrenController`, `GetPhotoDetailsRequest`, `ResolvesPhotoSource`, `UrlGenerator` (Feature 064/066 tiers).
-- Front end: `PhotoGridVirtual.vue` (`virtualChunks`, `tilesForChunk()`), `PhotoThumbVirtual.vue`, `PhotoListItemVirtual.vue`, `Thumb.vue`, `thumb-asset-service.ts`, `AlbumState.ts`, `TimelineState.ts`, `photo-children-v3-service.ts`, the `MOTION_URL_LOADER` provide/inject pattern (`AlbumPanel.vue`, `Timeline.vue`).
+- Front end: `PhotoGridVirtual.vue` (`virtualChunks`, `tilesForChunk()`), `PhotoThumbVirtual.vue`, `PhotoListItemVirtual.vue`, `Thumb.vue`, `thumb-asset-service.ts`, `AlbumState.ts`, `TimelineState.ts`, `photo-children-v3-service.ts`, `useRoute()` route names (`album`, `flow-album`, `timeline`), `UserState.ts`.
 - Scratch instance (`run-lychee` skill) and the profiling harness in the scratchpad of session 432f6b23: `mkids.php` (ids + admin session cookie), `mkuser.php` (non-admin `viewer` the album is shared with, album made public for guests), `prof.php` and `run.sh` (cold), `loop.php` (warm, Octane-like, modes `admin`/`user`/`guest`; `TRACE=1` for a phase trace), `warm.sh` (all three modes), `ab.sh` (HEAD vs working copy), `boot.php`, `seedbig.php` + `payload.php` (7,000-photo payload).
 
 ## Assumptions & Risks
@@ -52,13 +52,13 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Steps:_ `PhotoUrlsV3Test` first; `GetPhotoUrlsRequest`; `QueryPhotoUrls` (scoped via `ResolvesPhotoSource`, `LEFT JOIN`s on `small2x`/`small`/`thumb`, one tiny pure helper deciding direct-or-null per row); `PhotoUrlResource` (`#[TypeScript]`); route and `PhotoChildrenController::urls()`; `php artisan typescript:transform`.
    - _Commands:_ `php artisan test --filter=PhotoUrlsV3Test`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 5. **I5 – Front-end URL loader (FR-102-06)** — T-102-13, T-102-14.
-   - _Steps:_ Vitest first for the loader (dedup resolved and in-flight ids, chunks ≤300, stale-album guard, non-empty all-null disables, error → `null`, reset on reload). `PhotoChildrenV3Service.getUrls()`; loader provided from `AlbumPanel.vue` and `Timeline.vue` through an injection key.
+   - _Steps:_ Vitest first for the loader (dedup resolved and in-flight ids, chunks ≤300, non-empty all-null disables, error → `null`). `PhotoChildrenV3Service.getUrls()`. The loader is the `TileUrlsState` Pinia store (see I10).
    - _Commands:_ `vp test resources/js/v8/composables/photo/tileUrlLoader.test.ts`, `vp check --fix`, `vp run typecheck`.
-   - _Notes:_ `vp check --fix` (project-local `npx vp`) also rewrites five files this feature does not touch (`contextMenu.ts` ×2, `EmbedCodeDialog.vue` ×2, `useSpotlightRemoteSearch.ts`); those changes are reverted, not committed. The loader resets when `albumStore.albumId`/`photoRatiosV3` (album) or `timelineStore.bucketsV3` (timeline) change.
+   - _Notes:_ `vp check --fix` (project-local `npx vp`) also rewrites five files this feature does not touch (`contextMenu.ts` ×2, `EmbedCodeDialog.vue` ×2, `useSpotlightRemoteSearch.ts`); those changes are reverted, not committed.
 6. **I6 – Grid wiring and `Thumb` (FR-102-06)** — T-102-15 … T-102-18.
    - _Steps:_ Vitest first for the visible-id composable (ids of `virtualChunks` → `tilesForChunk()`, stable key) and for `Thumb` (string → direct `src`, `undefined` → placeholder, `null` → `ThumbAssetService`, `error` → `ThumbAssetService`). Then the composable in `PhotoGridVirtual.vue`, tiles passing their URL, `Thumb` props.
    - _Commands:_ `vp test` (scoped), `vp check --fix`, `vp run typecheck`.
-   - _Notes:_ `Thumb` takes `directUrl` (string → direct `src`, `null`/absent → `/Asset`) and `pending` (placeholder only), so covers, search and other callers keep today's behaviour without passing anything. Tiles inject `TILE_URL_LOADER` themselves rather than receiving URLs through `PhotoGridVirtual`. `useTileUrlRequests` keys on the rendered ids and on the loader's `version`, which `reset()` bumps, so an unchanged id set is asked again after a reload.
+   - _Notes:_ `Thumb` takes `directUrl` (string → direct `src`, `null`/absent → `/Asset`) and `pending` (placeholder only), so covers, search and other callers keep today's behaviour without passing anything. Tiles read `useTileUrlsStore().urlsOf()` themselves rather than receiving URLs through `PhotoGridVirtual`. `useTileUrlRequests` keys on the rendered ids and on the store's `generation`, which a source or viewer change bumps, so an unchanged id set is asked again.
 7. **I7 – Verification and docs (NFR-102-01)** — T-102-19.
    - _Steps:_ Browser check on the scratch instance (album, timeline, smart album; unprotected and temporary-link instance; network panel). Harness rerun. Knowledge map, roadmap, Feature 056 spec cross-references to FR-102-02/04.
 8. **I8 – Per-viewer cache safety (FR-102-04, FR-102-08)** — T-102-20, T-102-21.
@@ -69,6 +69,9 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Steps:_ Tests first (`density=1|2` chains, default 2, 422 otherwise; loader query and tile fallback type). `GetPhotoUrlsRequest` validates `density`; `QueryPhotoUrls` picks the chain; `PhotoUrlResource.grid_urls`; regenerate types; loader and `PhotoThumbVirtual`.
    - _Commands:_ `php artisan test --filter=PhotoUrlsV3Test`, `make phpstan`, `vp test`, `vp check --fix`, `vp run typecheck`.
    - _Notes:_ Owner remark 2026-10-21 (Q-102-09): 1x screens downloaded `small2x` on both tiers.
+10. **I10 – Tile URL store driven by the route (FR-102-06)** — T-102-25 … T-102-27.
+   - _Steps:_ Vitest first for `tileUrlSource()` (route → album id, `timeline` or none) and for the `TileUrlsState` store (batching, per-viewer map kept across sources, missed ids per source, all-null disables per source, viewer change empties it). `useTileUrlRequests()` in `PhotoGridVirtual` sets the source from `useRoute()` and the viewer from `UserState`; `PhotoThumbVirtual` and `PhotoListItemVirtual` read the store; `AlbumPanel.vue` and `Timeline.vue` no longer build a loader.
+   - _Notes:_ No `provide`/`inject` for tile URLs (Q-102-10). URLs are keyed by photo id because a photo's file URL is the same in every album for one viewer; a URL gone stale (rotation, regenerated variant, expired S3 link) fails to load and `Thumb` falls back to `/Asset`. `MOTION_URL_LOADER` (Feature 100) keeps its injection.
 
 ## Scenario Tracking
 
@@ -78,7 +81,7 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 | S-102-04, S-102-05 | I2 / T-102-03 … T-102-06 | `PhotoAssetV3Test`, `AssetMiddlewareV3Test`, faces photo test |
 | S-102-06, S-102-07 | I3 / T-102-07, T-102-08 | `PhotoAssetV3Test` |
 | S-102-08 … 12 | I4 / T-102-09 … T-102-12 | `PhotoUrlsV3Test` |
-| S-102-13 | I5 / T-102-13, T-102-14 | loader Vitest |
+| S-102-13 | I5, I10 / T-102-13, T-102-14, T-102-25 … T-102-27 | tile URL store Vitest |
 | S-102-14 | I6 / T-102-15 … T-102-18, I7 / T-102-19 | composable + `Thumb` Vitest, browser check |
 | S-102-06, S-102-07, S-102-15 | I8 / T-102-20, T-102-21 | `PhotoAssetV3Test`, `AuthTest` |
 

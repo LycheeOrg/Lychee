@@ -151,5 +151,22 @@ _Last updated: 2026-10-21_
   - `vp check --fix`  
   - `vp run typecheck`
 
+### I10 – Tile URL store driven by the route
+- [x] T-102-25 – Vitest for `tileUrlSource()` and the `TileUrlsState` store (F-102-06, S-102-13).  
+  _Intent:_ Failing tests: `album`/`flow-album` → `albumId`, `timeline` → `timeline`, other routes → none; batching ≤300 and each id once; URLs kept across a source change; left-out and failed ids use `/Asset` until the source changes; all-`null` disables until the source or viewer changes; a viewer change empties the store and drops late responses; no source → `null` and no call.  
+  _Verification commands:_  
+  - `npx vp test resources/js/v8/composables/photo`
+
+- [x] T-102-26 – `TileUrlsState` store, `tileUrlSource()` and `useTileUrlRequests()` reading the route and the user (F-102-06, S-102-13).  
+  _Verification commands:_  
+  - `npx vp test resources/js/v8/composables/photo`  
+  - `npx vp run typecheck`
+
+- [x] T-102-27 – Tiles read the store; `AlbumPanel.vue` and `Timeline.vue` drop the loader and its `provide` (F-102-06, S-102-13, S-102-14).  
+  _Verification commands:_  
+  - `npx vp test resources/js/v8`  
+  - `npx vp check --fix` (changed files only)  
+  - `npx vp run typecheck`
+
 ## Notes / TODOs
 - None.

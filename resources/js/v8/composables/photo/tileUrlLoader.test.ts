@@ -4,10 +4,24 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-import { describe, expect, it, vi } from "vite-plus/test";
-import { createTileUrlLoader, TILE_URL_BATCH_SIZE, type TileUrlFetcher } from "@/v8/composables/photo/tileUrlLoader";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { createPinia, setActivePinia } from "pinia";
 
 type PhotoUrlResource = App.Http.Resources.V3.PhotoUrlResource;
+type Pending = { source: string; ids: string[]; density: number; resolve: (r: PhotoUrlResource) => void; reject: (e: Error) => void };
+
+const pending: Pending[] = [];
+const getUrls = vi.fn(
+	(source: string, ids: string[], density: number) =>
+		new Promise<{ data: PhotoUrlResource }>((resolve, reject) => {
+			pending.push({ source, ids, density, resolve: (data) => resolve({ data }), reject });
+		}),
+);
+
+vi.mock("@/services/photo-children-v3-service", () => ({ default: { getUrls: (...args: [string, string[], number]) => getUrls(...args) } }));
+
+import { tileUrlSource, TILE_URL_BATCH_SIZE } from "@/v8/composables/photo/tileUrlLoader";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 
 /** Direct URLs for every requested id. */
 function direct(ids: string[]): PhotoUrlResource {
@@ -19,158 +33,255 @@ function protectedUrls(ids: string[]): PhotoUrlResource {
 	return { ids, grid_urls: ids.map(() => null), thumb_urls: ids.map(() => null) };
 }
 
-/** A fetcher whose calls stay pending until `settle()`. */
-function deferredFetcher() {
-	const pending: { ids: string[]; resolve: (r: PhotoUrlResource) => void; reject: (e: Error) => void }[] = [];
-	const fetcher = vi.fn<TileUrlFetcher>(
-		(ids) =>
-			new Promise<PhotoUrlResource>((resolve, reject) => {
-				pending.push({ ids, resolve, reject });
-			}),
-	);
-	return { fetcher, pending };
+const ids = (n: number, prefix = "p") => Array.from({ length: n }, (_, i) => `${prefix}${i}`);
+const URLS_OF_A = { grid: "/uploads/small2x/a.jpg", list: "/uploads/thumb/a.jpg" };
+const NO_URLS = { grid: null, list: null };
+
+function storeOn(source: string | undefined) {
+	const store = useTileUrlsStore();
+	store.setSource(source);
+	return store;
 }
 
-const ids = (n: number, prefix = "p") => Array.from({ length: n }, (_, i) => `${prefix}${i}`);
+beforeEach(() => {
+	setActivePinia(createPinia());
+	pending.length = 0;
+	getUrls.mockClear();
+});
 
-describe("tileUrlLoader: batching (S-102-13)", () => {
-	it("asks for each id once, in-flight and resolved ids included", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+describe("tileUrlSource (S-102-13)", () => {
+	it("names the album of the album routes", () => {
+		expect(tileUrlSource({ name: "album", params: { albumId: "abc" } })).toBe("abc");
+		expect(tileUrlSource({ name: "flow-album", params: { albumId: "abc", photoId: "p" } })).toBe("abc");
+	});
 
-		loader.request(["a", "b"]);
-		loader.request(["a", "b", "c"]);
-		expect(fetcher.mock.calls.map((c) => c[0])).toEqual([["a", "b"], ["c"]]);
+	it("names the timeline", () => {
+		expect(tileUrlSource({ name: "timeline", params: { date: "2024-01" } })).toBe("timeline");
+	});
+
+	it("names nothing elsewhere", () => {
+		expect(tileUrlSource({ name: "search", params: { albumId: "abc" } })).toBeUndefined();
+		expect(tileUrlSource({ name: "tag", params: { tagId: "1" } })).toBeUndefined();
+		expect(tileUrlSource({ name: "album", params: {} })).toBeUndefined();
+		expect(tileUrlSource({ name: undefined, params: {} })).toBeUndefined();
+	});
+});
+
+describe("TileUrlsState: batching (S-102-13)", () => {
+	it("asks the source for each id once, in-flight and resolved ids included", async () => {
+		const store = storeOn("album1");
+
+		store.request(["a", "b"]);
+		store.request(["a", "b", "c"]);
+		expect(getUrls.mock.calls.map((c) => [c[0], c[1]])).toEqual([
+			["album1", ["a", "b"]],
+			["album1", ["c"]],
+		]);
 
 		pending[0].resolve(direct(["a", "b"]));
 		pending[1].resolve(direct(["c"]));
-		await vi.waitFor(() => expect(loader.urlsOf("c")).toBeDefined());
+		await vi.waitFor(() => expect(store.urlsOf("c")).toBeDefined());
 
-		loader.request(["a", "b", "c"]);
-		expect(fetcher).toHaveBeenCalledTimes(2);
+		store.request(["a", "b", "c"]);
+		expect(getUrls).toHaveBeenCalledTimes(2);
 	});
 
 	it("splits a request into chunks of at most 300 ids", () => {
-		const { fetcher } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request(ids(650));
+		store.request(ids(650));
 
 		expect(TILE_URL_BATCH_SIZE).toBe(300);
-		expect(fetcher.mock.calls.map((c) => c[0].length)).toEqual([300, 300, 50]);
+		expect(getUrls.mock.calls.map((c) => c[1].length)).toEqual([300, 300, 50]);
 	});
 
 	it("sends nothing for an empty or fully known id list", () => {
-		const { fetcher } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request([]);
-		loader.request(["a"]);
-		loader.request(["a"]);
+		store.request([]);
+		store.request(["a"]);
+		store.request(["a"]);
 
-		expect(fetcher).toHaveBeenCalledTimes(1);
+		expect(getUrls).toHaveBeenCalledTimes(1);
+	});
+
+	it("sends nothing and gives null without a source (search, other routes)", () => {
+		const store = storeOn(undefined);
+
+		store.request(["a"]);
+
+		expect(getUrls).not.toHaveBeenCalled();
+		expect(store.urlsOf("a")).toBeNull();
 	});
 });
 
-describe("tileUrlLoader: entries (S-102-13, S-102-14)", () => {
+describe("TileUrlsState: entries (S-102-13, S-102-14)", () => {
 	it("is pending until the response, then holds both URLs", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request(["a"]);
-		expect(loader.urlsOf("a")).toBeUndefined();
+		store.request(["a"]);
+		expect(store.urlsOf("a")).toBeUndefined();
 
 		pending[0].resolve(direct(["a"]));
-		await vi.waitFor(() => expect(loader.urlsOf("a")).toEqual({ grid: "/uploads/small2x/a.jpg", list: "/uploads/thumb/a.jpg" }));
+		await vi.waitFor(() => expect(store.urlsOf("a")).toEqual(URLS_OF_A));
 	});
 
-	it("gives null URLs to ids the response left out", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+	it("gives null URLs to ids the response left out, without disabling", async () => {
+		const store = storeOn("album1");
 
-		loader.request(["a", "gone"]);
+		store.request(["a", "gone"]);
 		pending[0].resolve(direct(["a"]));
 
-		await vi.waitFor(() => expect(loader.urlsOf("gone")).toEqual({ grid: null, list: null }));
-		expect(loader.disabled.value).toBe(false);
+		await vi.waitFor(() => expect(store.urlsOf("gone")).toEqual(NO_URLS));
+		expect(store.disabled).toBe(false);
 	});
 
 	it("gives null URLs to every id of a failed request, without disabling", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request(["a", "b"]);
+		store.request(["a", "b"]);
 		pending[0].reject(new Error("offline"));
 
-		await vi.waitFor(() => expect(loader.urlsOf("b")).toEqual({ grid: null, list: null }));
-		expect(loader.urlsOf("a")).toEqual({ grid: null, list: null });
-		expect(loader.disabled.value).toBe(false);
+		await vi.waitFor(() => expect(store.urlsOf("b")).toEqual(NO_URLS));
+		expect(store.urlsOf("a")).toEqual(NO_URLS);
+		expect(store.disabled).toBe(false);
 	});
 });
 
-describe("tileUrlLoader: protected viewer (S-102-13)", () => {
+describe("TileUrlsState: across sources (S-102-13)", () => {
+	it("keeps resolved URLs when the source changes", async () => {
+		const store = storeOn("album1");
+		store.request(["a"]);
+		pending[0].resolve(direct(["a"]));
+		await vi.waitFor(() => expect(store.urlsOf("a")).toEqual(URLS_OF_A));
+
+		store.setSource("timeline");
+		store.request(["a", "b"]);
+
+		expect(store.urlsOf("a")).toEqual(URLS_OF_A);
+		expect(getUrls).toHaveBeenLastCalledWith("timeline", ["b"], expect.any(Number));
+	});
+
+	it("asks the new source again for ids the previous one left out", async () => {
+		const store = storeOn("album1");
+		store.request(["x"]);
+		pending[0].resolve(direct([]));
+		await vi.waitFor(() => expect(store.urlsOf("x")).toEqual(NO_URLS));
+
+		store.setSource("album2");
+
+		expect(store.urlsOf("x")).toBeUndefined();
+		store.request(["x"]);
+		expect(getUrls).toHaveBeenLastCalledWith("album2", ["x"], expect.any(Number));
+	});
+
+	it("bumps its generation on a source change only", () => {
+		const store = storeOn("album1");
+		const generation = store.generation;
+
+		store.setSource("album1");
+		expect(store.generation).toBe(generation);
+
+		store.setSource("album2");
+		expect(store.generation).toBe(generation + 1);
+	});
+
+	it("stores the URLs of a late response from the previous source, but not its misses", async () => {
+		const store = storeOn("album1");
+		store.request(["a", "gone"]);
+		store.setSource("album2");
+
+		pending[0].resolve(direct(["a"]));
+		await vi.waitFor(() => expect(store.urlsOf("a")).toEqual(URLS_OF_A));
+
+		expect(store.urlsOf("gone")).toBeUndefined();
+	});
+});
+
+describe("TileUrlsState: protected viewer (S-102-13)", () => {
 	it("stops asking after a non-empty all-null response", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request(["a"]);
+		store.request(["a"]);
 		pending[0].resolve(protectedUrls(["a"]));
-		await vi.waitFor(() => expect(loader.disabled.value).toBe(true));
+		await vi.waitFor(() => expect(store.disabled).toBe(true));
 
-		loader.request(["b"]);
-		expect(fetcher).toHaveBeenCalledTimes(1);
-		expect(loader.urlsOf("b")).toBeNull();
-		expect(loader.urlsOf("a")).toBeNull();
+		store.request(["b"]);
+		expect(getUrls).toHaveBeenCalledTimes(1);
+		expect(store.urlsOf("b")).toBeNull();
+		expect(store.urlsOf("a")).toBeNull();
 	});
 
 	it("keeps asking after an empty response or a mixed one", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+		const store = storeOn("album1");
 
-		loader.request(["gone"]);
+		store.request(["gone"]);
 		pending[0].resolve(direct([]));
-		await vi.waitFor(() => expect(loader.urlsOf("gone")).toEqual({ grid: null, list: null }));
+		await vi.waitFor(() => expect(store.urlsOf("gone")).toEqual(NO_URLS));
 
-		loader.request(["a", "b"]);
+		store.request(["a", "b"]);
 		pending[1].resolve({ ids: ["a", "b"], grid_urls: [null, "/uploads/small2x/b.jpg"], thumb_urls: [null, null] });
-		await vi.waitFor(() => expect(loader.urlsOf("b")).toBeDefined());
+		await vi.waitFor(() => expect(store.urlsOf("b")).toBeDefined());
 
-		expect(loader.disabled.value).toBe(false);
-		loader.request(["c"]);
-		expect(fetcher).toHaveBeenCalledTimes(3);
+		expect(store.disabled).toBe(false);
+		store.request(["c"]);
+		expect(getUrls).toHaveBeenCalledTimes(3);
+	});
+
+	it("asks again once the source changes", async () => {
+		const store = storeOn("album1");
+		store.request(["a"]);
+		pending[0].resolve(protectedUrls(["a"]));
+		await vi.waitFor(() => expect(store.disabled).toBe(true));
+
+		store.setSource("album2");
+		store.request(["b"]);
+
+		expect(store.disabled).toBe(false);
+		expect(getUrls).toHaveBeenCalledTimes(2);
 	});
 });
 
-describe("tileUrlLoader: reload (S-102-13)", () => {
-	it("ignores responses that arrive after a reset, and asks again", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
+describe("TileUrlsState: viewer change (S-102-13)", () => {
+	it("keeps everything while the viewer stays the same", async () => {
+		const store = storeOn("album1");
+		store.setViewer(1);
+		store.request(["a"]);
+		pending[0].resolve(direct(["a"]));
+		await vi.waitFor(() => expect(store.urlsOf("a")).toEqual(URLS_OF_A));
 
-		loader.request(["a"]);
-		loader.reset();
+		store.setViewer(1);
+
+		expect(store.urlsOf("a")).toEqual(URLS_OF_A);
+	});
+
+	it("empties the store, re-enables it and bumps its generation", async () => {
+		const store = storeOn("album1");
+		store.setViewer(null);
+		store.request(["a"]);
+		pending[0].resolve(protectedUrls(["a"]));
+		await vi.waitFor(() => expect(store.disabled).toBe(true));
+		const generation = store.generation;
+
+		store.setViewer(7);
+
+		expect(store.disabled).toBe(false);
+		expect(store.generation).toBe(generation + 1);
+		expect(store.urlsOf("a")).toBeUndefined();
+		store.request(["a"]);
+		expect(getUrls).toHaveBeenCalledTimes(2);
+	});
+
+	it("ignores responses that arrive after the viewer changed", async () => {
+		const store = storeOn("album1");
+		store.setViewer(null);
+		store.request(["a"]);
+		store.setViewer(7);
+
 		pending[0].resolve(direct(["a"]));
 		await Promise.resolve();
 		await Promise.resolve();
 
-		expect(loader.urlsOf("a")).toBeUndefined();
-		loader.request(["a"]);
-		expect(fetcher).toHaveBeenCalledTimes(2);
-	});
-
-	it("starts over after a reset, re-enabled", async () => {
-		const { fetcher, pending } = deferredFetcher();
-		const loader = createTileUrlLoader(fetcher);
-
-		loader.request(["a"]);
-		pending[0].resolve(protectedUrls(["a"]));
-		await vi.waitFor(() => expect(loader.disabled.value).toBe(true));
-
-		loader.reset();
-
-		expect(loader.version.value).toBe(1);
-		expect(loader.disabled.value).toBe(false);
-		expect(loader.urlsOf("a")).toBeUndefined();
-		loader.request(["a"]);
-		expect(fetcher).toHaveBeenCalledTimes(2);
+		expect(store.urlsOf("a")).toBeUndefined();
 	});
 });
