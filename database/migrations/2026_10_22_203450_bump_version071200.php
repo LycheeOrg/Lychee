@@ -29,15 +29,15 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		DB::table('configs')->where('key', 'version')->update(['value' => '071102']);
+		DB::table('configs')->where('key', 'version')->update(['value' => '071200']);
 		try {
 			Artisan::call('cache:clear');
 		} catch (\Throwable $e) {
-			$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version 7.11.2');
+			$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version 7.12.0');
 
 			return;
 		}
-		$this->msg_section->writeln('<info>Info:</info> Cleared cache for version 7.11.2');
+		$this->msg_section->writeln('<info>Info:</info> Cleared cache for version 7.12.0');
 	}
 
 	/**
