@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Status:_ Implemented  
-_Last updated:_ 2026-10-18
+_Last updated:_ 2026-10-22
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -12,13 +12,13 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 
 - S-101-05, 06, 08..12 are green everywhere (unit level, no JXL delegate needed).
 - S-101-01..04 and S-101-07 are green on a JXL-capable Imagick (the new Docker image) and skip elsewhere (NFR-101-04).
-- The Docker image passes the JXL smoke test and still renders PDF thumbnails (S-101-13).
+- Both Docker images pass the JXL smoke test and still render PDF thumbnails (S-101-13, S-101-14).
 - The default configuration behaves exactly as before for non-JXL uploads.
 
 ## Scope Alignment
 
-- **In scope:** `FileExtensionService` (MIME, extension, magic bytes), `SizeVariantFormat::JXL`, `size_variant_format` migration, naming strategy, Imagick JXL save/quality, GD refusal, the `supportsJxl()` probe, `ImagickJxlCheck`, translations, `Dockerfile` + workflow smoke test, fixture, docs.
-- **Out of scope:** N-101-01..09 (conversion of existing files, converting originals, placeholders/watermarks, optimizer, AVIF, browser fallback, upload switch, `Dockerfile-legacy`, CI JXL job).
+- **In scope:** `FileExtensionService` (MIME, extension, magic bytes), `SizeVariantFormat::JXL`, `size_variant_format` migration, naming strategy, Imagick JXL save/quality, GD refusal, the `supportsJxl()` probe, `ImagickJxlCheck`, translations, `Dockerfile` and `Dockerfile-legacy` + build-time smoke test, fixture, docs.
+- **Out of scope:** N-101-01..07, N-101-09 (conversion of existing files, converting originals, placeholders/watermarks, optimizer, AVIF, browser fallback, upload switch, CI JXL job). N-101-08 (`Dockerfile-legacy`) moved in scope on 2026-10-22 as FR-101-12.
 
 ## Dependencies & Interfaces
 
@@ -28,7 +28,7 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 - `App\Repositories\ConfigManager::hasImagick()` / `getValueAsEnum()`
 - `App\Actions\Diagnostics\Errors` pipe list; `ImagickPdfCheck` (pattern + policy locations)
 - `App\Models\Extensions\BaseConfigMigration`
-- `Dockerfile`
+- `Dockerfile`, `Dockerfile-legacy`
 - **Approved dependency change (Q-101-06, 2026-10-18, owner):** source-built ImageMagick 7.1.x + Debian `libjxl-dev` in the Docker image (ADR-101-01). No Composer/npm change.
 
 ## Assumptions & Risks
@@ -56,6 +56,7 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 | FR-101-08/09 | existing `Extractor` reader chain; naming applies to new variants only | `testJxlUploadWithOriginalFormat` (width/height) |
 | FR-101-10 | documentation only (setting details, `3-reference/image-processing.md`) | — |
 | FR-101-11 | `Dockerfile` `imagemagick` stage + production stage, `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS` | build-time round-trip `RUN`; Imagick suite inside the image |
+| FR-101-12 | `Dockerfile-legacy` `imagemagick` stage + `base` stage | build-time round-trip `RUN`; Imagick suite inside the legacy image |
 
 **Drift gate report (2026-10-18):**
 - Every FR maps to code and tests above; no undocumented behaviour. Tests were red before each implementation (T-101-01, 03, 05, 07); `testSizeVariantFormatJxlQuality` fails without the `jxl:quality` option.
@@ -65,6 +66,12 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 - NFR-101-05: image 1.989 GB (`master`) → 2.024 GB (+34 MB).
 - Imagick formats: 271 → 280. Gained: JXL, ASE/ASEPRITE, C2PA, ICN, SCREENSHOT, SF3, WBINFO and single-channel aliases. Lost: DJVU, DOT/GV (Graphviz), EXR (OpenEXR), WMF/WMZ (libwmf), X/XWD (X11). JPEG, PNG, GIF, WebP, HEIC/HEIF, TIFF, AVIF (read), RAW (libraw) and PDF are kept.
 - `vp check --fix` rewrites unrelated files on `master` (two `EmbedCodeDialog.vue` become unparseable); those changes were discarded and `vp check` (no fix) reports 0 errors.
+
+**Drift gate addendum (2026-10-22, I8):**
+- FR-101-12 maps to the `Dockerfile-legacy` `imagemagick` stage and `base` stage; the build-time JXL round-trip `RUN` passes for both flavours (`TELEMETRY=false`/`true`, amd64). hadolint (`--failure-threshold warning`) passes.
+- Inside the legacy image: the JXL unit tests and `PhotosAddHandlerImagickTest` give 57 passed, none skipped, including the JXL and PDF cases. Four Google Motion Photo cases fail (`testGoogleMotionPhotoV1Upload`, `testGoogleMotionPhotoUltraHdrUpload`, `testGoogleMotionPhotoPixelUpload`, `testLegacyGoogleMotionPhotoWithoutExifToolUpload`). They fail the same way on the host, in the Sury-based image built from `HEAD`, and in the image before I8, so they are pre-existing, not regressions.
+- NFR-101-05: legacy image 1.307 GB → 1.312 GB (+4.5 MB). Imagick formats 271 → 280, the same diff as I5. No Debian ImageMagick package is left in the image.
+- arm64 was not built locally (no emulation on the dev box). CI builds it on native arm64 runners.
 
 ## Increment Map
 
@@ -91,6 +98,10 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
    - _Steps:_ `size_variant_format` details in all `lang/*/all_settings.php`; `3-reference/image-processing.md`; knowledge map; roadmap; `vendor/bin/php-cs-fixer fix`, `vp check --fix`, `vp run typecheck`, scoped tests, `make phpstan`; drift gate.
    - _Commands:_ `php artisan test --filter="LangTest|ConfigsTest"`, `make phpstan`
 
+8. **I8 – JXL in the legacy image (≤90 min, may run longer for build time)** — FR-101-12, NFR-101-01, NFR-101-05; S-101-14
+   - _Steps:_ `imagemagick` stage in `Dockerfile-legacy` based on `php:8.5-fpm-trixie` (same commands, versions and checksums as the `Dockerfile` stage); `base` stage copies `/opt/imagemagick`, installs the runtime libraries, enables imagick instead of `install-php-extensions imagick`, moves the PDF rule to `/opt/imagemagick/etc/ImageMagick-7/policy.xml`; build-time JXL round-trip check; record the format list and image size.
+   - _Commands:_ `docker run --rm -i hadolint/hadolint:v2.12.0 hadolint --failure-threshold warning - < Dockerfile-legacy`, `docker build -f Dockerfile-legacy --build-arg TELEMETRY=false -t lychee:local-legacy .` (and `TELEMETRY=true`), the Imagick suite inside the image
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -106,6 +117,7 @@ Lychee accepts JPEG XL originals and can generate JXL size variants, with an hon
 | S-101-09..11 | I4 / T-101-07 | |
 | S-101-12 | I2 / T-101-03 | |
 | S-101-13 | I5 / T-101-09 | workflow smoke + manual PDF check |
+| S-101-14 | I8 / T-101-14 | build-time smoke + Imagick suite inside the legacy image |
 
 ## Analysis Gate
 
@@ -127,9 +139,9 @@ _2026-10-18, agent._
 
 ## Follow-ups / Backlog
 
-- JXL in `Dockerfile-legacy` (N-101-08).
-- Process for bumping the pinned ImageMagick version on security releases (ADR-101-01).
+- Process for bumping the pinned ImageMagick version on security releases, in both Dockerfiles (ADR-101-01).
 
 ## Intent Log
 
 - 2026-10-18: feature created from discussion #2718 at the owner's request; spec drafted after reading Feature 073, `FileExtensionService`, handlers, `Extractor`, `Dockerfile`. Local probe: ImageMagick 7.1.1-43 (Debian 13) lists no JXL coder; `mime_content_type()` returns `image/jxl` for synthetic JXL headers; no `cjxl` available. Q-101-01..07 resolved.
+- 2026-10-22: owner asked to move `Dockerfile-legacy` to the official `php:8.5-fpm-trixie` image (Sury had no PHP 8.5.12 for arm64), then to add JXL to it "while at it". The base swap is a separate commit; N-101-08 moved in scope as FR-101-12 (I8, T-101-14). The legacy image needs its own `imagemagick` stage: the `Dockerfile` stage compiles imagick for FrankenPHP's thread-safe PHP, which the non-thread-safe PHP-FPM cannot load. Baseline before I8: legacy image 1.307 GB, 271 Imagick formats.

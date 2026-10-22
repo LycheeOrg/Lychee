@@ -19,7 +19,7 @@ The production stage of `Dockerfile` builds ImageMagick 7 from the official rele
 
 The production stage ends with a build-time check: Imagick writes a JXL image and reads it back, otherwise the build fails.
 
-`Dockerfile-legacy` is unchanged (it uses Sury's `php8.5-imagick`, which links Debian's MagickCore).
+`Dockerfile-legacy` follows the same decision since 2026-10-22 (FR-101-12). It used Sury's `php8.5-imagick`, which links Debian's MagickCore; once it moved to the official `php:8.5-fpm-trixie` image, nothing tied it to Debian's ImageMagick any more. It keeps its own `imagemagick` stage, with the same pinned versions, because imagick must be compiled for the non-thread-safe PHP of PHP-FPM.
 
 No Debian 13 package (including trixie-backports) ships ImageMagick with JXL enabled, so the source build is required.
 
@@ -31,7 +31,7 @@ No Debian 13 package (including trixie-backports) ships ImageMagick with JXL ena
 
 ### Negative
 - Longer multi-arch image build (ImageMagick compile per architecture).
-- LycheeOrg now tracks ImageMagick security releases itself instead of relying on Debian security updates; the pinned version must be bumped manually.
+- LycheeOrg now tracks ImageMagick security releases itself instead of relying on Debian security updates; the pinned version must be bumped manually, in both `Dockerfile` and `Dockerfile-legacy`.
 - Slightly larger image (libjxl, libhwy, libbrotli).
 
 ## Alternatives Considered
@@ -53,6 +53,6 @@ No Debian 13 package (including trixie-backports) ships ImageMagick with JXL ena
 
 ## Links
 
-- Related spec sections: `docs/specs/4-architecture/features/101-jxl-support/spec.md` (FR-101-06, FR-101-07, FR-101-11, NFR-101-01, NFR-101-05)
+- Related spec sections: `docs/specs/4-architecture/features/101-jxl-support/spec.md` (FR-101-06, FR-101-07, FR-101-11, FR-101-12, NFR-101-01, NFR-101-05)
 - Related ADRs: none
 - Related issues / PRs: [discussion #2718](https://github.com/LycheeOrg/Lychee/discussions/2718)

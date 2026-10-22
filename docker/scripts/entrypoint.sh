@@ -94,7 +94,8 @@ web)
 
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
-    php-fpm8.5
+    # The image's FPM config sets daemonize = no, nginx is started after it
+    php-fpm --daemonize
   fi
 
   # Execute the main command (from Dockerfile CMD: octane:start) as www-data

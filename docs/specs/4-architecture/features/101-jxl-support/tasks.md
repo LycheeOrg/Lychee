@@ -1,7 +1,7 @@
 # Feature 101 Tasks – JPEG XL Support
 
 _Status: Complete_  
-_Last updated: 2026-10-18_
+_Last updated: 2026-10-22_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -65,6 +65,12 @@ _Last updated: 2026-10-18_
   - `php artisan test --filter=LangTest`
 
 - [x] T-101-13 – Quality gate and drift gate: `vendor/bin/php-cs-fixer fix`, `vp check --fix`, `vp run typecheck`, scoped tests of every touched class, `make phpstan`; drift gate report in plan.md; prepare the commit.
+
+- [x] T-101-14 – `Dockerfile-legacy`: `imagemagick` stage based on `php:8.5-fpm-trixie` (same ImageMagick/imagick versions and checksums as `Dockerfile`), `base` stage copies `/opt/imagemagick`, installs runtime libraries, enables imagick, PDF rule in `/opt/imagemagick/etc/ImageMagick-7/policy.xml`, build-time JXL round-trip check; record format list and image size in plan.md (FR-101-12, NFR-101-01, NFR-101-05, S-101-14; ADR-101-01).  
+  _Verification commands:_  
+  - `docker run --rm -i hadolint/hadolint:v2.12.0 hadolint --failure-threshold warning - < Dockerfile-legacy`  
+  - `docker build -f Dockerfile-legacy --build-arg TELEMETRY=false -t lychee:local-legacy .` (and `--build-arg TELEMETRY=true`)  
+  - Imagick suite (`PhotosAddHandlerImagickTest`, JXL unit tests) inside the image; PDF upload
 
 ## Notes / TODOs
 - JXL encode/decode tests cannot run on the local box (Debian 13 ImageMagick without JXL) nor on GitHub's Ubuntu runners; they run inside the new Docker image.

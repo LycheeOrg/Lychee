@@ -211,7 +211,7 @@ class SizeVariant extends Model
 - Reading and writing JPEG XL needs Imagick with ImageMagick built against libjxl (`ConfigManager::hasJxl()`). GD has no JPEG XL. Without support, loading or saving a `.jxl` file throws `MediaFileOperationException` (`BaseImageHandler::JXL_UNSUPPORTED`); no other format is ever written behind a `.jxl` extension.
 - `ImagickJxlCheck` adds a diagnostics line when JPEG XL is unsupported: info in general, error when `size_variant_format = jxl`.
 - Browsers without JPEG XL support show broken images for JPEG XL files; there is no fallback.
-- The official Docker image (`Dockerfile`) builds ImageMagick from source with libjxl into `/opt/imagemagick` and links the `imagick` extension against it (ADR-101-01). `Dockerfile-legacy` uses Debian's ImageMagick, without JPEG XL.
+- The official Docker images (`Dockerfile` and `Dockerfile-legacy`) build ImageMagick from source with libjxl into `/opt/imagemagick` and link the `imagick` extension against it (ADR-101-01). Each Dockerfile has its own `imagemagick` stage with the same pinned versions: imagick is compiled for FrankenPHP's thread-safe PHP in `Dockerfile` and for the non-thread-safe PHP-FPM in `Dockerfile-legacy`.
 
 ## Image Processing Engines
 
