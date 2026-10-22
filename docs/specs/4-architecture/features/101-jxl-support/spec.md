@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Ready for implementation |
-| Last updated | 2026-10-18 |
+| Last updated | 2026-10-22 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -20,9 +20,9 @@ This feature:
 1. **Accepts `.jxl` uploads** as photos, with no setting. The original is stored as is (no conversion). Under `size_variant_format = original`, their small/medium are `.jxl` too (the uploader decides).
 2. **Adds `jxl` to `size_variant_format`** (Feature 073) next to `jpeg` and `webp`. This is the only JXL setting: with `jxl`, every generated variant of every upload is JXL-encoded.
 3. **Reports missing JXL support** on the diagnostics page.
-4. **Ships a JXL-capable ImageMagick in the official Docker image** ([ADR-101-01](../../../6-decisions/ADR-101-01-docker-imagemagick-jxl.md)), because Debian 13's ImageMagick is built without JXL.
+4. **Ships a JXL-capable ImageMagick in the official Docker images** (`Dockerfile` and `Dockerfile-legacy`, [ADR-101-01](../../../6-decisions/ADR-101-01-docker-imagemagick-jxl.md)), because Debian 13's ImageMagick is built without JXL.
 
-Affected modules: `App\Services\Image\FileExtensionService` (MIME type, extension, magic-byte detection), `App\Enum\SizeVariantFormat`, `App\Assets\BaseSizeVariantNamingStrategy`, the image handlers (`app/Image/Handlers`), a new diagnostics check, one config migration, `lang/*/all_settings.php`, the generated TypeScript type `App.Enum.SizeVariantFormat`, and `Dockerfile`. No REST route or frontend component changes.
+Affected modules: `App\Services\Image\FileExtensionService` (MIME type, extension, magic-byte detection), `App\Enum\SizeVariantFormat`, `App\Assets\BaseSizeVariantNamingStrategy`, the image handlers (`app/Image/Handlers`), a new diagnostics check, one config migration, `lang/*/all_settings.php`, the generated TypeScript type `App.Enum.SizeVariantFormat`, `Dockerfile` and `Dockerfile-legacy`. No REST route or frontend component changes.
 
 ## Goals
 
@@ -31,7 +31,7 @@ Affected modules: `App\Services\Image\FileExtensionService` (MIME type, extensio
 - G3: The default (`original`) is unchanged, so upgrading changes nothing for existing photo types.
 - G4: The `size_variant_format` details text warns (orange triangle, `SA_override_visibility` convention) about browser support and the Imagick + libjxl requirement. This warning is the only mitigation for unsupported browsers.
 - G5: Admins see on the diagnostics page whether this system can process JXL.
-- G6: The official Docker image (`Dockerfile`) can decode and encode JXL out of the box.
+- G6: The official Docker images (`Dockerfile` and `Dockerfile-legacy`) can decode and encode JXL out of the box.
 
 ## Non-Goals
 
@@ -42,7 +42,7 @@ Affected modules: `App\Services\Image\FileExtensionService` (MIME type, extensio
 - N-101-05: AVIF output or other new formats.
 - N-101-06: Per-viewer content negotiation or a WebP fallback set.
 - N-101-07: An opt-in setting for JXL uploads.
-- N-101-08: JXL in `Dockerfile-legacy` (Debian packages + `php8.5-imagick` from Sury; a source-built ImageMagick would conflict). Follow-up.
+- N-101-08: _Moved in scope on 2026-10-22, see FR-101-12._
 - N-101-09: A CI job with a JXL-capable ImageMagick; the Docker smoke test (FR-101-11) covers the encoder.
 
 ## Functional Requirements
@@ -60,16 +60,17 @@ Affected modules: `App\Services\Image\FileExtensionService` (MIME type, extensio
 | FR-101-09 | Switching `size_variant_format` away from `jxl` only affects newly generated variants; existing JXL originals and `.jxl` variants stay listed, served and downloadable. | Existing data unaffected. | n/a | n/a | None. | N-101-01 |
 | FR-101-10 | No runtime fallback for browsers that cannot decode JXL: no second variant set, no client banner. | Supporting browsers display JXL. | n/a | Unsupporting browsers show broken images (documented in G4). | None. | Q-101-03 |
 | FR-101-11 | The `Dockerfile` production image ships ImageMagick 7 built against libjxl, and the `imagick` PHP extension is linked against it, so `Imagick::queryFormats('JXL')` returns `['JXL']`. ImageMagick and imagick live in `/opt/imagemagick` and keep Debian's `policy.xml` (plus the PDF rule); `ImagickPdfCheck::IMAGICK_POLICY_LOCATIONS` includes `/opt/imagemagick/etc/ImageMagick-7/policy.xml`. The production stage ends with a build-time check that Imagick round-trips a JXL image. | The image writes and reads back JXL. | n/a | The Docker build fails if the check fails. | None. | Q-101-06, ADR-101-01 |
+| FR-101-12 | `Dockerfile-legacy` (official `php:8.5-fpm-trixie` image, nginx + PHP-FPM) ships the same ImageMagick and imagick build as FR-101-11, from its own `imagemagick` stage based on the legacy base image: imagick must be compiled for the non-thread-safe PHP of PHP-FPM, while the `Dockerfile` stage compiles it for FrankenPHP's thread-safe PHP. Same pinned versions and checksums, same `/opt/imagemagick` prefix, Debian's `policy.xml` plus the PDF rule, and the same build-time JXL round-trip check. | The legacy image writes and reads back JXL. | n/a | The Docker build fails if the check fails. | None. | Owner request 2026-10-22, ADR-101-01 |
 
 ## Non-Functional Requirements
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-101-01 | No new Composer or npm dependency. The Docker image gains libjxl and a source-built ImageMagick (pinned version and checksum). | AGENTS.md dependency policy | `composer.json`/`package.json` unchanged; `Dockerfile` pins the ImageMagick tarball by version and SHA-256 | ImageMagick 7.1.x, libjxl (Debian 13 `libjxl-dev`) | ADR-101-01 |
+| NFR-101-01 | No new Composer or npm dependency. The Docker image gains libjxl and a source-built ImageMagick (pinned version and checksum). | AGENTS.md dependency policy | `composer.json`/`package.json` unchanged; `Dockerfile` and `Dockerfile-legacy` pin the ImageMagick and imagick tarballs by version and SHA-256 (same values in both) | ImageMagick 7.1.x, libjxl (Debian 13 `libjxl-dev`) | ADR-101-01 |
 | NFR-101-02 | No frontend component changes; `size_variant_format` renders through the existing `ConfigGroup.vue` widget. The only TS change is the regenerated `App.Enum.SizeVariantFormat` union. | Minimal diff | `git diff --stat resources/js` limited to `lychee.d.ts` | typescript-transformer | NFR-073-02 |
 | NFR-101-03 | JXL detection, JXL support probing and the format/extension mapping live in small pure helpers (magic-byte helper in `FileExtensionService`, a single `supportsJxl()` probe reused by handlers and diagnostics, `generatedExtension()` match arm). | Straight-line increments | Code review | — | AGENTS.md |
 | NFR-101-04 | Tests needing a JXL delegate are skipped (not failed) when the local/CI ImageMagick lacks it; all other branches run everywhere. | CI portability (Ubuntu runners have no JXL) | Test output | — | Q-101-06 |
-| NFR-101-05 | The Docker image size grows by at most ~40 MB and the multi-arch build stays within the existing workflow timeout. | Operability | `docker image ls` before/after; workflow duration | — | ADR-101-01 |
+| NFR-101-05 | Each Docker image (`Dockerfile`, `Dockerfile-legacy`) grows by at most ~40 MB and the multi-arch build stays within the existing workflow timeout. | Operability | `docker image ls` before/after; workflow duration | — | ADR-101-01 |
 
 ## UI / Interaction Mock-ups
 
@@ -118,12 +119,13 @@ Diagnostics page, system without JXL support:
 | S-101-11 | Diagnostics, JXL supported: no line. |
 | S-101-12 | `size_variant_format` set to an unknown value: rejected; `jxl` accepted. |
 | S-101-13 | Docker image: `Imagick::queryFormats('JXL')` non-empty, PDF thumbnails still generated. |
+| S-101-14 | Legacy Docker image: `Imagick::queryFormats('JXL')` non-empty, PDF thumbnails still generated. |
 
 ## Test Strategy
 
 - **Unit:** `FileExtensionService` JXL extension/MIME and magic bytes (S-101-05, S-101-06) using synthetic headers; migration `type_range` (S-101-12); `ImagickJxlCheckTest` with the support probe mocked (S-101-09..11); GD refusal (S-101-08); naming strategy `jxl` arm.
 - **Image processing (Imagick, skipped without JXL delegate):** cases in `tests/ImageProcessing/Image/Handlers/BaseImageHandler.php` for S-101-01..04 and FR-101-05, asserting extension, magic bytes, pixel equality (lossless) and file size versus quality; S-101-07 with the probe reporting no support.
-- **Docker:** build-time JXL round-trip check in `Dockerfile` (S-101-13), plus the JXL image-processing cases and a PDF upload run inside the built image, recorded in the plan.
+- **Docker:** build-time JXL round-trip check in `Dockerfile` (S-101-13) and `Dockerfile-legacy` (S-101-14), plus the JXL image-processing cases and a PDF upload run inside the built image, recorded in the plan.
 - **Fixture:** FX-101-01, generated inside the new Docker image (`magick tests/Samples/night.jpg -resize 800x -quality 80 jxl.jxl`), since no local encoder exists.
 
 ## Interface & Contract Catalogue
