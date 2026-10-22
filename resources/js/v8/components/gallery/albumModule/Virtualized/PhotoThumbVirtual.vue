@@ -18,7 +18,8 @@
 				draggable="false"
 				:album-id="props.albumId"
 				:photo-id="props.photo.id"
-				type="small2x"
+				:direct-url="tileUrls?.grid"
+				:pending="tileUrls === undefined"
 			/>
 			<video
 				v-if="motionSrc"
@@ -141,6 +142,7 @@
 import { computed, inject, ref, toRef } from "vue";
 import { useMotionHover } from "@/v8/composables/photo/useMotionHover";
 import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/v8/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import ThumbRatingOverlay from "@/v8/components/gallery/albumModule/thumbs/ThumbRatingOverlay.vue";
@@ -233,6 +235,10 @@ const {
 	onPlaying: onMotionPlaying,
 	onError: onMotionError,
 } = useMotionHover(() => props.photo, inject(MOTION_URL_LOADER, undefined));
+
+// Feature 102: the image comes from a direct URL when the route has a tile URL source.
+const tileUrlsStore = useTileUrlsStore();
+const tileUrls = computed(() => tileUrlsStore.urlsOf(props.photo.id));
 
 function onMouseEnter() {
 	prefetchFaces();

@@ -23,13 +23,18 @@ use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
 use App\Models\AlbumUserThumb;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\TemporaryLinkSigner;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\TestResponse;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use Mockery\MockInterface;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -726,5 +731,352 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
 
 		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
+	}
+
+	/**
+	 * Runs `$request` and returns its response plus the SQL of every query it
+	 * issued, except statements on the `configs` table: the config load
+	 * (FR-102-03) and the SE verification (FR-102-01) are counted by their
+	 * own tests, not by FR-102-02's budget.
+	 *
+	 * @param \Closure(): TestResponse $request
+	 *
+	 * @return array{0:TestResponse,1:list<string>}
+	 */
+	private function withQueryLog(\Closure $request): array
+	{
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$response = $request();
+		DB::disableQueryLog();
+
+		$queries = array_map(fn (array $entry) => $entry['query'], DB::getQueryLog());
+		$queries = array_filter($queries, fn (string $sql) => preg_match('/[`"\']configs[`"\']/', $sql) !== 1);
+
+		return [$response, array_values($queries)];
+	}
+
+	/**
+	 * `actingAs()` hands the guard the user model directly, so the session
+	 * user and its groups, two of FR-102-02's queries, are never read during
+	 * the request. Preloading the groups keeps them out of the count too, and
+	 * the assertions below use FR-102-02's budget minus those two.
+	 */
+	private function asPreloaded(User $user): self
+	{
+		return $this->actingAs($user->load('user_groups'));
+	}
+
+	/**
+	 * S-102-01: owner of a regular album, at most 6 queries in production
+	 * (album, base album, access permissions, size variant with membership,
+	 * plus session user and groups).
+	 */
+	public function testOwnerStaysWithinQueryBudget(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$this->asPreloaded($this->userMayUpload1);
+		[$response, $queries] = $this->withQueryLog(fn () => $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"));
+
+		$response->assertOk();
+		self::assertLessThanOrEqual(4, count($queries), implode("\n", $queries));
+	}
+
+	/**
+	 * S-102-01: user the album is shared with (perm1).
+	 */
+	public function testSharedUserStaysWithinQueryBudget(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$this->asPreloaded($this->userMayUpload2);
+		[$response, $queries] = $this->withQueryLog(fn () => $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"));
+
+		$response->assertOk();
+		self::assertLessThanOrEqual(4, count($queries), implode("\n", $queries));
+	}
+
+	/**
+	 * S-102-01: guest on a public album, temporary links off. No session
+	 * user, so the budget is the 4 album and size-variant queries.
+	 */
+	public function testPublicGuestStaysWithinQueryBudget(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo4));
+
+		[$response, $queries] = $this->withQueryLog(fn () => $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb"));
+
+		$response->assertOk();
+		self::assertLessThanOrEqual(4, count($queries), implode("\n", $queries));
+	}
+
+	/**
+	 * S-102-02: an admin request reads the size variant only (3 queries in
+	 * production with the session user and groups).
+	 */
+	public function testAdminStaysWithinQueryBudget(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$this->asPreloaded($this->admin);
+		[$response, $queries] = $this->withQueryLog(fn () => $this->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb"));
+
+		$response->assertOk();
+		self::assertLessThanOrEqual(1, count($queries), implode("\n", $queries));
+	}
+
+	/**
+	 * S-102-02: an admin's `album_id` is validated but never resolved.
+	 */
+	public function testAdminWithUnknownAlbumIdIsServed(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$response = $this->actingAs($this->admin)->getV3("Asset/000000000000000000000000/{$this->photo1->id}/thumb");
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-02: no membership check for an admin.
+	 */
+	public function testAdminWithPhotoNotInGivenAlbumIsServed(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo2));
+
+		$response = $this->actingAs($this->admin)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb");
+
+		$response->assertOk();
+	}
+
+	/**
+	 * S-102-02: the size variant is still looked up for an admin.
+	 */
+	public function testAdminMissingSizeVariantRowReturnsNotFound(): void
+	{
+		$response = $this->actingAs($this->admin)->getV3("Asset/000000000000000000000000/{$this->photo1->id}/placeholder");
+
+		$response->assertNotFound();
+	}
+
+	/**
+	 * S-102-03: membership is a selected column of the size-variant query,
+	 * not a filter, so a photo outside the album with no row for the chain
+	 * is still 404, and one with a row is still 403.
+	 */
+	public function testPhotoNotInGivenAlbumWithoutSizeVariantReturnsNotFound(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/placeholder");
+
+		$response->assertNotFound();
+	}
+
+	/**
+	 * S-102-03: the membership column follows the fallback walk: the
+	 * requested type has no row, the fallback row exists, and the photo is
+	 * outside the album → 403.
+	 */
+	public function testPhotoNotInGivenAlbumAfterFallbackIsForbidden(): void
+	{
+		$this->small2xVariantOf($this->photo2)->delete();
+		$this->putBytes($this->smallVariantOf($this->photo2));
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/small2x");
+
+		$response->assertForbidden();
+	}
+
+	/**
+	 * S-102-03: the lean album load still serves a tag album's matching
+	 * photo (photo1 carries the `test` tag of tagAlbum1).
+	 */
+	public function testTagAlbumMatchingPhotoSucceeds(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->tagAlbum1->id}/{$this->photo1->id}/thumb");
+
+		$response->assertOk();
+	}
+
+	/**
+	 * S-102-03: a photo without the tag is not part of the tag album.
+	 */
+	public function testTagAlbumNonMatchingPhotoIsForbidden(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1b));
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->tagAlbum1->id}/{$this->photo1b->id}/thumb");
+
+		$response->assertForbidden();
+	}
+
+	/**
+	 * S-102-03: a person album's membership check matches its photos
+	 * through PersonAlbumMatcher.
+	 */
+	public function testPersonAlbumPhotoIsServed(): void
+	{
+		Configs::set('ai_vision_enabled', '1');
+		Configs::set('ai_vision_face_enabled', '1');
+		$person = Person::factory()->create(['name' => 'Alice', 'is_searchable' => true]);
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+		$person_album_id = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
+			'title' => 'person_album_asset_test',
+			'persons' => [$person->id],
+			'is_and' => false,
+		])->getOriginalContent();
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		app()->forgetScopedInstances();
+		$this->actingAs($this->userMayUpload1)->getV3("Asset/{$person_album_id}/{$this->photo1->id}/thumb")->assertOk();
+	}
+
+	/**
+	 * S-102-04: the locale is still set from `lang`.
+	 */
+	public function testLocaleStillResolved(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		Configs::set('lang', 'fr');
+
+		try {
+			app()->forgetScopedInstances();
+			$this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/thumb")->assertOk();
+			self::assertSame('fr', app()->getLocale());
+		} finally {
+			Configs::set('lang', 'en');
+			app()->setLocale('en');
+		}
+	}
+
+	private function thumbUri(): string
+	{
+		return "Asset/{$this->album1->id}/{$this->photo1->id}/thumb";
+	}
+
+	private function thumbMtime(): int
+	{
+		return Storage::disk(StorageDiskType::LOCAL->value)->lastModified($this->thumbVariantOf($this->photo1)->short_path);
+	}
+
+	private function assertNotCacheable(TestResponse $response): void
+	{
+		self::assertStringNotContainsString('max-age=3600', (string) $response->headers->get('Cache-Control'));
+		self::assertFalse($response->headers->has('Last-Modified'));
+	}
+
+	/**
+	 * S-102-06: a served file is privately cacheable for an hour and carries
+	 * its mtime.
+	 */
+	public function testServedFileIsCacheable(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri());
+
+		$response->assertOk();
+		$cache_control = (string) $response->headers->get('Cache-Control');
+		self::assertStringContainsString('private', $cache_control);
+		self::assertStringContainsString('max-age=3600', $cache_control);
+		self::assertSame(gmdate('D, d M Y H:i:s', $this->thumbMtime()) . ' GMT', $response->headers->get('Last-Modified'));
+		self::assertNotNull($response->headers->get('ETag'));
+	}
+
+	/**
+	 * S-102-07: `If-Modified-Since` not older than the file → 304, no body.
+	 */
+	public function testUnchangedFileIsNotModified(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime()) . ' GMT';
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), ['If-Modified-Since' => $since]);
+
+		$response->assertStatus(304);
+		self::assertSame('', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: matching `If-None-Match` and `If-Modified-Since` → 304.
+	 */
+	public function testMatchingETagIsNotModified(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$first = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri());
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), [
+			'If-None-Match' => $first->headers->get('ETag'),
+			'If-Modified-Since' => $first->headers->get('Last-Modified'),
+		]);
+
+		$response->assertStatus(304);
+	}
+
+	/**
+	 * S-102-07: the same URL now selecting another file (watermark switched
+	 * on) → 200 with that file, even when it is not newer.
+	 */
+	public function testOtherSelectedFileIsServedAgain(): void
+	{
+		$variant = $this->smallVariantOf($this->photo1);
+		$variant->short_path_watermarked = 'watermarked/' . $variant->short_path;
+		$variant->save();
+		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path_watermarked, 'watermarked-bytes');
+		Storage::disk(StorageDiskType::LOCAL->value)->put($variant->short_path, 'plain-bytes');
+		$uri = "Asset/{$this->album1->id}/{$this->photo1->id}/small";
+		$first = $this->actingAs($this->userMayUpload1)->getV3($uri);
+		self::assertSame('plain-bytes', $first->streamedContent());
+
+		Configs::set('watermark_enabled', '1');
+		Configs::set('watermark_logged_in_users_enabled', '1');
+		$response = $this->actingAs($this->userMayUpload1)->getV3($uri, [
+			'If-None-Match' => $first->headers->get('ETag'),
+			'If-Modified-Since' => $first->headers->get('Last-Modified'),
+		]);
+
+		$response->assertOk();
+		self::assertSame('watermarked-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: `If-Modified-Since` older than the file → 200 with the bytes.
+	 */
+	public function testChangedFileIsServedAgain(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime() - 3600) . ' GMT';
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->thumbUri(), ['If-Modified-Since' => $since]);
+
+		$response->assertOk();
+		self::assertSame('thumb-bytes', $response->streamedContent());
+	}
+
+	/**
+	 * S-102-07: authorization runs before the `If-Modified-Since` check, and
+	 * errors are not cacheable.
+	 */
+	public function testErrorsIgnoreIfModifiedSinceAndAreNotCacheable(): void
+	{
+		$this->putBytes($this->thumbVariantOf($this->photo1));
+		$since = gmdate('D, d M Y H:i:s', $this->thumbMtime() + 3600) . ' GMT';
+
+		Configs::set('temporary_image_link_enabled', '1');
+		$unauthorized = $this->getV3("Asset/{$this->album4->id}/{$this->photo4->id}/thumb", ['If-Modified-Since' => $since]);
+		$unauthorized->assertUnauthorized();
+		$this->assertNotCacheable($unauthorized);
+		Configs::set('temporary_image_link_enabled', '0');
+
+		$forbidden = $this->actingAs($this->userMayUpload2)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/thumb", ['If-Modified-Since' => $since]);
+		$forbidden->assertForbidden();
+		$this->assertNotCacheable($forbidden);
+
+		$not_found = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/placeholder", ['If-Modified-Since' => $since]);
+		$not_found->assertNotFound();
+		$this->assertNotCacheable($not_found);
 	}
 }

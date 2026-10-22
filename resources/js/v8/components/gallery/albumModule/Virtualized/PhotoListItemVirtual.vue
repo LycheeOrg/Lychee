@@ -16,7 +16,15 @@
 	>
 		<!-- Thumbnail -->
 		<div class="relative block shrink-0 w-12 h-12 md:w-16 md:h-16">
-			<Thumb class="w-full h-full object-cover object-center rounded" :album-id="albumId" :photo-id="photo.id" type="thumb" draggable="false" />
+			<Thumb
+				class="w-full h-full object-cover object-center rounded"
+				:album-id="albumId"
+				:photo-id="photo.id"
+				type="thumb"
+				:direct-url="tileUrls?.list"
+				:pending="tileUrls === undefined"
+				draggable="false"
+			/>
 			<!-- Video play icon overlay -->
 			<div v-if="photo.precomputed.is_video" class="absolute inset-0 flex items-center justify-center">
 				<UIcon name="lucide:play-circle" class="text-white text-xl drop-shadow-lg" />
@@ -109,6 +117,7 @@
  * existing `v-if`, exactly the accepted-regression mechanism intended.
  */
 import { computed, toRef } from "vue";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 import ListBadge from "@/v8/components/gallery/albumModule/thumbs/ListBadge.vue";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -139,6 +148,10 @@ const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag } = usePhotoFlags
 	toRef(props, "isCoverId"),
 	toRef(props, "isHeaderId"),
 );
+
+// Feature 102: the image comes from a direct URL when the route has a tile URL source.
+const tileUrlsStore = useTileUrlsStore();
+const tileUrls = computed(() => tileUrlsStore.urlsOf(props.photo.id));
 
 const showRating = computed(() => rating_album_view_mode.value !== "never");
 

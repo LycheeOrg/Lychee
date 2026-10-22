@@ -136,6 +136,7 @@ import { deriveDayScrubEntries, formatDayLabel, tileKey, type DateScrubberField,
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 import { useKenBurnsHover } from "@/v8/composables/photo/kenBurnsHover";
+import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
 
 const props = defineProps<{
 	selectedPhotos: string[];
@@ -399,6 +400,11 @@ const virtualizer = useWindowVirtualizer(
 );
 
 const virtualChunks = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, chunk: chunks.value[item.index] })));
+
+// Feature 102: ask for the direct URLs of every rendered tile (visible plus overscan).
+useTileUrlRequests(() =>
+	virtualChunks.value.flatMap((item) => (item.chunk === undefined ? [] : tilesForChunk(item.chunk).map((tile) => tile.photo.id))),
+);
 
 /** Sum of `chunk.size` for every chunk entirely above `offset` (i.e. its own bottom is at/before `offset`) — the cumulative height of "already scrolled past" content. */
 function cumulativeChunkHeightAbove(chunkList: (PhotoChunk | TimelineChunk)[], offset: number): number {

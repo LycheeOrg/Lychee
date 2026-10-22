@@ -146,4 +146,17 @@ class FacePhotoAssetTest extends BaseApiWithDataTest
 		$response->assertOk();
 		self::assertSame('medium-bytes', $response->streamedContent());
 	}
+
+	/**
+	 * Feature 102 (FR-102-04): the shared serving code makes the file
+	 * privately cacheable.
+	 */
+	public function testServedFileIsCacheable(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getV3($this->url());
+
+		$response->assertOk();
+		self::assertStringContainsString('max-age=3600', (string) $response->headers->get('Cache-Control'));
+		self::assertTrue($response->headers->has('Last-Modified'));
+	}
 }

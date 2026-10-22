@@ -34,6 +34,7 @@ use App\SmartAlbums\UnratedAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use App\SmartAlbums\UntaggedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
 class AlbumFactory
@@ -84,6 +85,43 @@ class AlbumFactory
 		}
 
 		return $this->findBaseAlbumOrFail($album_id, $with_relations);
+	}
+
+	/**
+	 * Same as {@link self::findAbstractAlbumOrFail()} without relations, for
+	 * an access check only: a real album is loaded with its base record and
+	 * access permissions, which is all {@link \App\Policies\AlbumPolicy::canAccess()}
+	 * and the album's own cover ids need. Its covers, owner and statistics
+	 * are never loaded.
+	 *
+	 * Used once per image by `GET /api/v3/Asset/...` (Feature 102, FR-102-02).
+	 *
+	 * @param string $album_id the ID of the requested album
+	 *
+	 * @return AbstractAlbum the album for the ID
+	 *
+	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
+	 */
+	public function findAbstractAlbumForAccessCheckOrFail(string $album_id): AbstractAlbum
+	{
+		$smart_album_type = SmartAlbumType::tryFrom($album_id);
+		if ($smart_album_type !== null) {
+			return $this->createSmartAlbum($smart_album_type, false);
+		}
+
+		// The defaults ($with) of each model are dropped: the album's covers
+		// and thumb, and the base record's owner and statistics. The base
+		// record keeps its access permissions.
+		$base_class = ['base_class' => fn (BelongsTo $query) => $query->without(['owner', 'statistics'])];
+
+		$ret = Album::query()->setEagerLoads($base_class)->find($album_id) ??
+			TagAlbum::query()->setEagerLoads($base_class)->find($album_id) ??
+			PersonAlbum::query()->setEagerLoads($base_class)->find($album_id);
+		if ($ret === null) {
+			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_id]);
+		}
+
+		return $ret;
 	}
 
 	/**

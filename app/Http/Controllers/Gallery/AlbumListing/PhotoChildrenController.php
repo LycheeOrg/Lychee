@@ -11,12 +11,15 @@ namespace App\Http\Controllers\Gallery\AlbumListing;
 use App\Actions\Photo\StructOfArrays\QueryPhotoBuckets;
 use App\Actions\Photo\StructOfArrays\QueryPhotoDetails;
 use App\Actions\Photo\StructOfArrays\QueryPhotoRatios;
+use App\Actions\Photo\StructOfArrays\QueryPhotoUrls;
 use App\Http\Requests\Photo\GetPhotoBucketsRequest;
 use App\Http\Requests\Photo\GetPhotoDetailsRequest;
 use App\Http\Requests\Photo\GetPhotoRatiosRequest;
+use App\Http\Requests\Photo\GetPhotoUrlsRequest;
 use App\Http\Resources\V3\PhotoBucketResource;
 use App\Http\Resources\V3\PhotoDetailResource;
 use App\Http\Resources\V3\PhotoRatioResource;
+use App\Http\Resources\V3\PhotoUrlResource;
 use App\Models\User;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
@@ -25,7 +28,8 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Serves the photo tier: `GET /api/v3/Albums/{album_id}/Photos`,
- * `/Albums/{album_id}/Photos/buckets`, `/Albums/{album_id}/Photos/details`.
+ * `/Albums/{album_id}/Photos/buckets`, `/Albums/{album_id}/Photos/details`,
+ * `/Albums/{album_id}/Photos/urls`.
  * Direct structural precedent:
  * {@see \App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController}.
  */
@@ -35,6 +39,7 @@ class PhotoChildrenController extends Controller
 		protected QueryPhotoBuckets $query_photo_buckets,
 		protected QueryPhotoRatios $query_photo_ratios,
 		protected QueryPhotoDetails $query_photo_details,
+		protected QueryPhotoUrls $query_photo_urls,
 		protected ManagedCacheService $managed_cache_service,
 		protected CacheKeyProvider $cache_key_provider,
 	) {
@@ -155,5 +160,19 @@ class PhotoChildrenController extends Controller
 			fn (): PhotoDetailResource => $this->query_photo_details->do($album, $user, $bucket_id, $request->photoIds()),
 			ttl: $ttl,
 		);
+	}
+
+	// ── GET /Albums/{album_id}/Photos/urls ──────────────────────────
+
+	/**
+	 * Direct tile URLs (Feature 102, ADR-102-01). Not cached: S3 presigned
+	 * URLs expire.
+	 */
+	public function urls(GetPhotoUrlsRequest $request): PhotoUrlResource
+	{
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $this->query_photo_urls->do($request->album(), $user, $request->photoIds(), $request->density());
 	}
 }

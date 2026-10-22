@@ -8,7 +8,6 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Constants\PhotoAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantAssetType;
@@ -63,14 +62,18 @@ use Illuminate\Validation\Rules\Enum;
  * `photo_id` is taken straight from the validated route parameter with no
  * extra Photo lookup, and {@link self::sizeVariant()}'s query is narrowed to
  * only the columns {@link \App\Image\Watermarker::get_path()} and the
- * controller actually read.
+ * controller actually read. The album is loaded with its base record and
+ * access permissions only, a regular album's membership is selected by the
+ * size variant query itself, and admins skip the album entirely: they may
+ * read every photo, so `album_id` is validated but never resolved for them
+ * (Feature 102, FR-102-02).
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
 	use ResolvesSizeVariantAssetTrait;
 
-	/** Internal validation-bag key the header is merged into (see prepareForValidation()). */
-	private AbstractAlbum $album;
+	/** `null` for admins, who skip the album checks (see {@link self::skipsAlbumCheck()}). */
+	private ?AbstractAlbum $album = null;
 	private string $photo_id;
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
@@ -101,6 +104,11 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			$this->signature_check_failed = true;
 
 			return false;
+		}
+
+		// Admins: no album was loaded (see skipsAlbumCheck()).
+		if ($this->album === null) {
+			return true;
 		}
 
 		// The album must itself be accessible to the caller (owner, shared
@@ -148,10 +156,9 @@ class GetPhotoAssetRequest extends BaseApiRequest
 				return true;
 			}
 
-			return DB::table(PhotoAlbum::PHOTO_ALBUM)
-				->where(PhotoAlbum::ALBUM_ID, $album->id)
-				->where(PhotoAlbum::PHOTO_ID, $this->photo_id)
-				->exists();
+			// Selected from `photo_album` by the size variant query (see
+			// processValidatedValues()).
+			return $this->size_variant->getAttribute(self::IS_IN_ALBUM_ATTRIBUTE) === true;
 		}
 
 		if ($album instanceof TagAlbum && $album->cover_id === $this->photo_id) {
@@ -249,13 +256,26 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		/** @var string $size_variant_token */
 		$size_variant_token = $values[RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE];
 
-		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
+		if (!$this->skipsAlbumCheck(Auth::user())) {
+			$this->album = $this->album_factory->findAbstractAlbumForAccessCheckOrFail($album_id);
+		}
 		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
-		$size_variant = $this->resolveSizeVariant($this->photo_id, $this->size_variant_type);
+		$membership_album_id = $this->album instanceof Album ? $this->album->id : null;
+		$size_variant = $this->resolveSizeVariant($this->photo_id, $this->size_variant_type, $membership_album_id);
 		$this->size_variant_type = $size_variant->type;
 		$this->size_variant = $size_variant;
 
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
+	}
+
+	/**
+	 * Admins may read every photo ({@link \App\Policies\BasePolicy::before()}),
+	 * so neither the album access nor the photo membership can deny them:
+	 * the album is not loaded at all (Feature 102, FR-102-02).
+	 */
+	private function skipsAlbumCheck(?User $user): bool
+	{
+		return $user?->may_administrate === true;
 	}
 }

@@ -124,6 +124,8 @@ return [
 	'api_middleware' => [
 		\App\Http\Middleware\FixStatusCode::class,
 		\Illuminate\Http\Middleware\TrustProxies::class,
+		// Outside the route groups, which resolve the configs everywhere else.
+		\App\Http\Middleware\ResolveConfigs::class,
 		\Opcodes\LogViewer\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 		\Illuminate\Cookie\Middleware\EncryptCookies::class,
 		\Illuminate\Session\Middleware\StartSession::class,

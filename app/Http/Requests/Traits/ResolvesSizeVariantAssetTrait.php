@@ -8,11 +8,13 @@
 
 namespace App\Http\Requests\Traits;
 
+use App\Constants\PhotoAlbum;
 use App\Enum\SizeVariantType;
 use App\Models\SizeVariant;
 use App\Models\User;
 use App\Services\TemporaryLinkSigner;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Shared by the binary image routes `GET /api/v3/Asset/...` (Feature 056)
@@ -25,6 +27,9 @@ trait ResolvesSizeVariantAssetTrait
 	protected const MAC_HEADER = 'X-Mac';
 
 	protected const MAC_ATTRIBUTE = 'temporary_link_mac';
+
+	/** Attribute selected by {@link self::resolveSizeVariant()} when given an album. */
+	protected const IS_IN_ALBUM_ATTRIBUTE = 'is_in_album';
 
 	protected ?string $mac = null;
 
@@ -42,34 +47,49 @@ trait ResolvesSizeVariantAssetTrait
 	 * continues that exact chain from whichever type we resolve to here
 	 * if that type's file also turns out to be missing on disk.
 	 *
+	 * The rows of the whole chain are read in one query. With
+	 * `$membership_album_id`, that query also selects whether the photo is
+	 * cataloged in that album (`photo_album`), as the boolean attribute
+	 * {@link self::IS_IN_ALBUM_ATTRIBUTE} of the returned model: a selected
+	 * column rather than a filter, so a photo outside the album still
+	 * resolves and can be told apart from a missing row (Feature 102,
+	 * FR-102-02).
+	 *
 	 * @throws ModelNotFoundException
 	 */
-	protected function resolveSizeVariant(string $photo_id, SizeVariantType $type): SizeVariant
+	protected function resolveSizeVariant(string $photo_id, SizeVariantType $type, ?string $membership_album_id = null): SizeVariant
 	{
-		$size_variant = null;
-		while ($size_variant === null) {
-			// SizeVariant must stay a real model: Watermarker::get_path() and
-			// the controller rely on its enum casts (type, storage_disk). We
-			// still limit the hydrated columns to only what those two call
-			// sites read.
-			$size_variant = SizeVariant::query()
-				->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
-				->where('photo_id', '=', $photo_id)
-				->where('type', '=', $type)
-				->first();
-
-			if ($size_variant !== null) {
-				break;
-			}
-
-			$next = $type->fallbackType();
-			if ($next === null) {
-				throw (new ModelNotFoundException())->setModel(SizeVariant::class);
-			}
-			$type = $next;
+		$chain = [$type];
+		for ($next = $type->fallbackType(); $next !== null; $next = $next->fallbackType()) {
+			$chain[] = $next;
 		}
 
-		return $size_variant;
+		// SizeVariant must stay a real model: Watermarker::get_path() and
+		// the controller rely on its enum casts (type, storage_disk). We
+		// still limit the hydrated columns to only what those two call
+		// sites read.
+		$query = SizeVariant::query()
+			->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
+			->where('photo_id', '=', $photo_id)
+			->whereIn('type', $chain);
+
+		if ($membership_album_id !== null) {
+			$membership = DB::table(PhotoAlbum::PHOTO_ALBUM)
+				->where(PhotoAlbum::ALBUM_ID, '=', $membership_album_id)
+				->where(PhotoAlbum::PHOTO_ID, '=', $photo_id);
+			$query->selectRaw('exists(' . $membership->toSql() . ') as ' . self::IS_IN_ALBUM_ATTRIBUTE, $membership->getBindings())
+				->withCasts([self::IS_IN_ALBUM_ATTRIBUTE => 'boolean']);
+		}
+
+		$rows = $query->get();
+		foreach ($chain as $candidate) {
+			$size_variant = $rows->first(fn (SizeVariant $row) => $row->type === $candidate);
+			if ($size_variant !== null) {
+				return $size_variant;
+			}
+		}
+
+		throw (new ModelNotFoundException())->setModel(SizeVariant::class);
 	}
 
 	/**
