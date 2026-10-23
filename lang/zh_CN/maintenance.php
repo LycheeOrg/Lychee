@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => '旧订单',
-        'description' => '发现 %d 个旧订单。<br/><br/>旧订单是指超过 14 天、没有关联用户，且仍在等待付款或不包含任何商品的订单。',
+        'description' => '发现 %d 个旧订单。<br/>旧订单是指超过 14 天、没有关联用户，且仍在等待付款或不包含任何商品的订单。',
         'button' => '删除旧订单',
     ],
     'fulfill-orders' => [
         'title' => '待履行订单',
-        'description' => '发现 %d 个订单的内容尚未交付。<br/><br/>点击按钮以在可能时分配内容。',
+        'description' => '发现 %d 个订单的内容尚未交付。<br/>点击按钮以在可能时分配内容。',
         'button' => '履行订单',
     ],
     'fulfill-precompute' => [
         'title' => '相册预计算字段',
-        'description' => '发现 %d 个相册缺少预计算字段。<br/><br/>等同于运行：php artisan lychee:recompute-album-fields',
+        'description' => '发现 %d 个相册缺少预计算字段。<br/>等同于运行：php artisan lychee:recompute-album-stats',
         'button' => '计算字段',
     ],
     'flush-queue' => [
         'title' => '清空队列',
-        'description' => '队列中发现 %d 个待处理任务。<br/><br/>注意：清空队列将永久删除所有待处理任务。此操作无法撤销。',
+        'description' => '队列中发现 %d 个待处理任务。<br/>注意：清空队列将永久删除所有待处理任务。此操作无法撤销。',
         'button' => '清空队列',
     ],
     'backfill-album-sizes' => [
         'title' => '相册大小统计',
-        'description' => '发现 %d 个相册没有大小统计数据。<br/><br/>等同于运行：php artisan lychee:recompute-album-sizes',
+        'description' => '发现 %d 个相册没有大小统计数据。<br/>等同于运行：php artisan lychee:recompute-album-sizes',
+        'description_queue' => '在后台重新计算所有相册的大小统计。<br/>等同于运行：php artisan lychee:recompute-album-sizes',
         'button' => '计算大小',
+    ],
+    'recompute-buckets' => [
+        'title' => '时间线分组',
+        'description' => '重新计算每个相册和每张照片的时间线分组，然后刷新相册和照片列表。<br/>等同于运行：php artisan lychee:recompute-buckets',
+        'button' => '重新计算',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => '已选择 :count 项',
     ],
     'bulk-scan-faces' => [
-        'description' => '发现 %d 张照片尚未进行人脸识别扫描。<br/><br/>需要 AI Vision 服务正在运行。',
+        'description' => '发现 %d 张照片尚未进行人脸识别扫描。<br/>需要 AI Vision 服务正在运行。',
     ],
     'run-clustering' => [
         'description' => '在 AI Vision 服务中触发人脸聚类。按相似度对检测到的人脸进行分组，以便您将其分配给人物。',

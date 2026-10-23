@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Encomendas antigas',
-        'description' => 'Encontradas %d encomendas antigas.<br/><br/>Uma encomenda antiga tem mais de 14 dias, não tem utilizador associado e está ainda a aguardar pagamento ou não contém artigos.',
+        'description' => 'Encontradas %d encomendas antigas.<br/>Uma encomenda antiga tem mais de 14 dias, não tem utilizador associado e está ainda a aguardar pagamento ou não contém artigos.',
         'button' => 'Eliminar encomendas antigas',
     ],
     'fulfill-orders' => [
         'title' => 'Encomendas por concluir',
-        'description' => 'Encontradas %d encomendas com conteúdo que ainda não foi disponibilizado.<br/><br/>Clique no botão para atribuir o conteúdo quando possível.',
+        'description' => 'Encontradas %d encomendas com conteúdo que ainda não foi disponibilizado.<br/>Clique no botão para atribuir o conteúdo quando possível.',
         'button' => 'Concluir encomendas',
     ],
     'fulfill-precompute' => [
         'title' => 'Campos pré-calculados dos álbuns',
-        'description' => 'Encontrados %d álbuns com campos pré-calculados em falta.<br/><br/>Equivalente a executar: php artisan lychee:recompute-album-fields',
+        'description' => 'Encontrados %d álbuns com campos pré-calculados em falta.<br/>Equivalente a executar: php artisan lychee:recompute-album-stats',
         'button' => 'Calcular campos',
     ],
     'flush-queue' => [
         'title' => 'Esvaziar fila',
-        'description' => 'Encontradas %d tarefas pendentes na fila.<br/><br/>ATENÇÃO: esvaziar a fila elimina permanentemente todas as tarefas pendentes. Esta ação não pode ser anulada.',
+        'description' => 'Encontradas %d tarefas pendentes na fila.<br/>ATENÇÃO: esvaziar a fila elimina permanentemente todas as tarefas pendentes. Esta ação não pode ser anulada.',
         'button' => 'Esvaziar fila',
     ],
     'backfill-album-sizes' => [
         'title' => 'Estatísticas de tamanho dos álbuns',
-        'description' => 'Encontrados %d álbuns sem estatísticas de tamanho.<br/><br/>Equivalente a executar: php artisan lychee:recompute-album-sizes',
+        'description' => 'Encontrados %d álbuns sem estatísticas de tamanho.<br/>Equivalente a executar: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Recalcula em segundo plano as estatísticas de tamanho de todos os álbuns.<br/>Equivalente a executar: php artisan lychee:recompute-album-sizes',
         'button' => 'Calcular tamanhos',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Grupos da linha do tempo',
+        'description' => 'Recalcula o grupo da linha do tempo de cada álbum e de cada foto e depois atualiza as listagens de álbuns e fotos.<br/>Equivale a executar: php artisan lychee:recompute-buckets',
+        'button' => 'Recalcular',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count selecionado(s)',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Encontradas %d fotos que ainda não foram analisadas para reconhecimento facial.<br/><br/>Requer que o serviço AI Vision esteja em execução.',
+        'description' => 'Encontradas %d fotos que ainda não foram analisadas para reconhecimento facial.<br/>Requer que o serviço AI Vision esteja em execução.',
     ],
     'run-clustering' => [
         'description' => 'Iniciar o agrupamento de rostos no serviço AI Vision. Agrupa os rostos detetados por semelhança para que os possa atribuir a pessoas.',

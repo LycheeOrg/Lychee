@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Staré objednávky',
-        'description' => 'Nalezeno %d starých objednávek.<br/><br/>Stará objednávka je starší než 14 dní, nemá přiřazeného uživatele a buď je stále v čekání na platbu, nebo neobsahuje žádné položky.',
+        'description' => 'Nalezeno %d starých objednávek.<br/>Stará objednávka je starší než 14 dní, nemá přiřazeného uživatele a buď je stále v čekání na platbu, nebo neobsahuje žádné položky.',
         'button' => 'Odstranit staré objednávky',
     ],
     'fulfill-orders' => [
         'title' => 'Objednávky k vyřízení',
-        'description' => 'Nalezeno %d objednávek s obsahem, který nebyl zpřístupněn.<br/><br/>Klikněte na tlačítko a přiřaďte obsah, pokud je to možné.',
+        'description' => 'Nalezeno %d objednávek s obsahem, který nebyl zpřístupněn.<br/>Klikněte na tlačítko a přiřaďte obsah, pokud je to možné.',
         'button' => 'Vyřídit objednávky',
     ],
     'fulfill-precompute' => [
         'title' => 'Předpočítaná pole alb',
-        'description' => 'Bylo nalezeno %d alb s chybějícími předpočítanými poli. <br/><br/>Odpovídá spuštění: php artisan lychee:recompute-album-fields',
+        'description' => 'Bylo nalezeno %d alb s chybějícími předpočítanými poli. <br/>Odpovídá spuštění: php artisan lychee:recompute-album-stats',
         'button' => 'Vypočítat pole',
     ],
     'flush-queue' => [
         'title' => 'Vyčistit frontu',
-        'description' => 'Ve frontě bylo nalezeno %d čekajících úloh. <br/><br/>UPOZORNĚNÍ: Vyčištění fronty trvale odstraní všechny čekající úlohy. Tuto akci nelze vrátit zpět.',
+        'description' => 'Ve frontě bylo nalezeno %d čekajících úloh. <br/>UPOZORNĚNÍ: Vyčištění fronty trvale odstraní všechny čekající úlohy. Tuto akci nelze vrátit zpět.',
         'button' => 'Vyčistit frontu',
     ],
     'backfill-album-sizes' => [
         'title' => 'Statistiky velikosti alb',
-        'description' => 'Nalezeno %d alb bez statistik velikosti.<br/><br/>Odpovídá spuštění: php artisan lychee:recompute-album-sizes',
+        'description' => 'Nalezeno %d alb bez statistik velikosti.<br/>Odpovídá spuštění: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Přepočítá na pozadí statistiky velikosti všech alb.<br/>Odpovídá spuštění: php artisan lychee:recompute-album-sizes',
         'button' => 'Přepočítat velikosti',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Skupiny časové osy',
+        'description' => 'Přepočítá skupinu časové osy každého alba a každé fotografie a poté obnoví seznamy alb a fotografií.<br/>Odpovídá příkazu: php artisan lychee:recompute-buckets',
+        'button' => 'Přepočítat',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => 'Vybráno: :count',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Nalezeno %d fotografií, které dosud nebyly prohledány rozpoznáváním obličejů.<br/><br/>Vyžaduje spuštěnou službu AI Vision.',
+        'description' => 'Nalezeno %d fotografií, které dosud nebyly prohledány rozpoznáváním obličejů.<br/>Vyžaduje spuštěnou službu AI Vision.',
     ],
     'run-clustering' => [
         'description' => 'Spustit shlukování obličejů ve službě AI Vision. Seskupí detekované obličeje podle podobnosti, abyste je mohli přiřadit osobám.',

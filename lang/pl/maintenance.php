@@ -72,28 +72,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Stare zamówienia',
-        'description' => 'Znaleziono stare zamówienia: %d.<br/><br/>Stare zamówienie to zamówienie starsze niż 14 dni, bez przypisanego użytkownika, które nadal oczekuje na płatność lub nie zawiera żadnych pozycji.',
+        'description' => 'Znaleziono stare zamówienia: %d.<br/>Stare zamówienie to zamówienie starsze niż 14 dni, bez przypisanego użytkownika, które nadal oczekuje na płatność lub nie zawiera żadnych pozycji.',
         'button' => 'Usuń stare zamówienia',
     ],
     'fulfill-orders' => [
         'title' => 'Zamówienia do realizacji',
-        'description' => 'Znaleziono zamówienia z treścią, która nie została jeszcze udostępniona: %d.<br/><br/>Kliknij przycisk, aby przypisać treść tam, gdzie to możliwe.',
+        'description' => 'Znaleziono zamówienia z treścią, która nie została jeszcze udostępniona: %d.<br/>Kliknij przycisk, aby przypisać treść tam, gdzie to możliwe.',
         'button' => 'Zrealizuj zamówienia',
     ],
     'fulfill-precompute' => [
         'title' => 'Wstępnie obliczone pola albumów',
-        'description' => 'Znaleziono albumy z brakującymi wstępnie obliczonymi polami: %d.<br/><br/>Odpowiednik uruchomienia: php artisan lychee:recompute-album-fields',
+        'description' => 'Znaleziono albumy z brakującymi wstępnie obliczonymi polami: %d.<br/>Odpowiednik uruchomienia: php artisan lychee:recompute-album-stats',
         'button' => 'Oblicz pola',
     ],
     'flush-queue' => [
         'title' => 'Opróżnij kolejkę',
-        'description' => 'Znaleziono oczekujące zadania w kolejce: %d.<br/><br/>UWAGA: Opróżnienie kolejki trwale usunie wszystkie oczekujące zadania. Tej operacji nie można cofnąć.',
+        'description' => 'Znaleziono oczekujące zadania w kolejce: %d.<br/>UWAGA: Opróżnienie kolejki trwale usunie wszystkie oczekujące zadania. Tej operacji nie można cofnąć.',
         'button' => 'Wyczyść kolejkę',
     ],
     'backfill-album-sizes' => [
         'title' => 'Statystyki rozmiarów albumów',
-        'description' => 'Znaleziono albumy bez statystyk rozmiaru: %d.<br/><br/>Odpowiednik uruchomienia: php artisan lychee:recompute-album-sizes',
+        'description' => 'Znaleziono albumy bez statystyk rozmiaru: %d.<br/>Odpowiednik uruchomienia: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Przelicza w tle statystyki rozmiaru wszystkich albumów.<br/>Odpowiednik uruchomienia: php artisan lychee:recompute-album-sizes',
         'button' => 'Oblicz rozmiary',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Grupy osi czasu',
+        'description' => 'Przelicza grupę osi czasu każdego albumu i każdego zdjęcia, a następnie odświeża listy albumów i zdjęć.<br/>Odpowiada poleceniu: php artisan lychee:recompute-buckets',
+        'button' => 'Przelicz',
     ],
 
     'face_quality' => [
@@ -131,7 +137,7 @@ return [
         'selected_count' => 'Zaznaczono: :count',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Znaleziono zdjęcia, które nie zostały jeszcze przeskanowane pod kątem rozpoznawania twarzy: %d.<br/><br/>Wymaga uruchomionej usługi AI Vision.',
+        'description' => 'Znaleziono zdjęcia, które nie zostały jeszcze przeskanowane pod kątem rozpoznawania twarzy: %d.<br/>Wymaga uruchomionej usługi AI Vision.',
     ],
     'run-clustering' => [
         'description' => 'Uruchom grupowanie twarzy w usłudze AI Vision. Grupuje wykryte twarze według podobieństwa, aby można było przypisać je do osób.',

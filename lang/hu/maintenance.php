@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Régi rendelések',
-        'description' => '%d régi rendelés található.<br/><br/>Régi rendelésnek számít az a 14 napnál régebbi rendelés, amelyhez nem tartozik felhasználó, és vagy még fizetésre vár, vagy nincs benne tétel.',
+        'description' => '%d régi rendelés található.<br/>Régi rendelésnek számít az a 14 napnál régebbi rendelés, amelyhez nem tartozik felhasználó, és vagy még fizetésre vár, vagy nincs benne tétel.',
         'button' => 'Régi rendelések törlése',
     ],
     'fulfill-orders' => [
         'title' => 'Teljesítendő rendelések',
-        'description' => '%d rendelés található, amelynek tartalma még nem lett elérhetővé téve.<br/><br/>Kattintson a gombra a tartalom hozzárendeléséhez, ahol lehetséges.',
+        'description' => '%d rendelés található, amelynek tartalma még nem lett elérhetővé téve.<br/>Kattintson a gombra a tartalom hozzárendeléséhez, ahol lehetséges.',
         'button' => 'Rendelések teljesítése',
     ],
     'fulfill-precompute' => [
         'title' => 'Album előre számított mezői',
-        'description' => '%d album található hiányzó előre számított mezőkkel.<br/><br/>Egyenértékű ennek futtatásával: php artisan lychee:recompute-album-fields',
+        'description' => '%d album található hiányzó előre számított mezőkkel.<br/>Egyenértékű ennek futtatásával: php artisan lychee:recompute-album-stats',
         'button' => 'Mezők kiszámítása',
     ],
     'flush-queue' => [
         'title' => 'Várólista ürítése',
-        'description' => '%d függőben lévő feladat található a várólistában.<br/><br/>FIGYELEM: A várólista ürítése véglegesen törli az összes függőben lévő feladatot. Ez nem vonható vissza.',
+        'description' => '%d függőben lévő feladat található a várólistában.<br/>FIGYELEM: A várólista ürítése véglegesen törli az összes függőben lévő feladatot. Ez nem vonható vissza.',
         'button' => 'Várólista ürítése',
     ],
     'backfill-album-sizes' => [
         'title' => 'Albumméret-statisztikák',
-        'description' => '%d album található méretstatisztika nélkül.<br/><br/>Egyenértékű ennek futtatásával: php artisan lychee:recompute-album-sizes',
+        'description' => '%d album található méretstatisztika nélkül.<br/>Egyenértékű ennek futtatásával: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'A háttérben újraszámolja az összes album méretstatisztikáját.<br/>Egyenértékű ennek futtatásával: php artisan lychee:recompute-album-sizes',
         'button' => 'Méretek kiszámítása',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Idővonal-csoportok',
+        'description' => 'Újraszámolja minden album és minden fénykép idővonal-csoportját, majd frissíti az album- és fényképlistákat.<br/>Megfelel a következő parancsnak: php artisan lychee:recompute-buckets',
+        'button' => 'Újraszámolás',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count kijelölve',
     ],
     'bulk-scan-faces' => [
-        'description' => '%d fénykép található, amelyet még nem vizsgáltak meg arcfelismeréssel.<br/><br/>Ehhez futnia kell az AI Vision szolgáltatásnak.',
+        'description' => '%d fénykép található, amelyet még nem vizsgáltak meg arcfelismeréssel.<br/>Ehhez futnia kell az AI Vision szolgáltatásnak.',
     ],
     'run-clustering' => [
         'description' => 'Arccsoportosítás indítása az AI Vision szolgáltatásban. Hasonlóság alapján csoportosítja az észlelt arcokat, így személyekhez rendelheti őket.',

@@ -8,6 +8,8 @@
 
 namespace App\Console\Commands;
 
+use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Services\BucketKeyWriter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -17,7 +19,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * Rewrites `bucket_key` of every album, then of every `photo_album` row,
  * in the granularity-free format (FR-092-15), chunked by
- * {@see BucketKeyWriter} (FR-092-14).
+ * {@see BucketKeyWriter} (FR-092-14), flushing the album, then the photo
+ * listings once their keys are written.
  */
 class RecomputeBuckets extends Command
 {
@@ -37,8 +40,10 @@ class RecomputeBuckets extends Command
 		$chunk_size = max(1, (int) $this->option('chunk'));
 
 		$this->recompute('albums', DB::table('albums')->count(), fn (\Closure $on_chunk): int => $writer->writeAlbumKeys(fn ($query) => $query, $chunk_size, $on_chunk));
+		AlbumListingCacheFlushRequested::dispatch();
 		$this->newLine();
 		$this->recompute('photo_album rows', DB::table('photo_album')->count(), fn (\Closure $on_chunk): int => $writer->writePhotoAlbumKeys(fn ($query) => $query, $chunk_size, $on_chunk));
+		PhotoListingCacheFlushRequested::dispatch();
 
 		return Command::SUCCESS;
 	}

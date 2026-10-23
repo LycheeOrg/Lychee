@@ -166,6 +166,15 @@ Prompts: "we also want to support YYYYMMDD", "why not make the - optional with ?
     - _Steps:_ tests first; the four `timeline_photo_date_format_*` keys join `PHOTO_LISTING_COARSE_FLUSH_CONFIGS`, the three `timeline_album_date_format_*` keys join `ALBUM_LISTING_COARSE_FLUSH_CONFIGS`; the child `buckets`/`data`/`rights` cache entries of `AlbumChildrenController` carry `albumListingGlobalTag()`, like the root ones.
     - _Commands:_ `php artisan test --filter=BucketSettingsV3Test`, `--filter=UpdateSettingsTest`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
 
+17. **I16 – Ids written for another scheme (Q-092-09)**
+    - _Goal:_ FR-092-08, FR-092-13 (S-092-23): until a recompute job has run, a date scheme reads keys written for another scheme; ids that are not date-shaped are their own labels.
+    - _Steps:_ tests first in `BucketSchemeTest` and `AlbumRootV3Test`; `BucketScheme::label()` formats only date-shaped ids.
+    - _Commands:_ `php artisan test --filter=BucketSchemeTest`, `--filter=AlbumRootV3Test`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+18. **I17 – `lychee:recompute-buckets` flushes listings**
+    - _Goal:_ FR-092-15 (S-092-17): the command flushes the album and photo listing caches after rewriting their keys, like the two recompute jobs.
+    - _Steps:_ test first in `RecomputeBucketsCommandTest`; `RecomputeBuckets::handle()` dispatches `AlbumListingCacheFlushRequested` and `PhotoListingCacheFlushRequested`.
+    - _Commands:_ `php artisan test --filter=RecomputeBucketsCommandTest`, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -186,12 +195,13 @@ Prompts: "we also want to support YYYYMMDD", "why not make the - optional with ?
 | S-092-14 | I2 / T-092-02 | `BucketKeysTest` |
 | S-092-15 | I7, I8b / T-092-11, T-092-14 | both directions |
 | S-092-16 | I11 / T-092-19 | browser check |
-| S-092-17 | I5 / T-092-08 | `RecomputeBucketsCommandTest` |
+| S-092-17 | I5, I17 / T-092-08, T-092-27 | `RecomputeBucketsCommandTest` |
 | S-092-18 | I10 / T-092-18 | `ManagedCachePhotoListingInvalidatorTest` |
 | S-092-19 | I13 / T-092-22 | `AlbumKeysWriteTest` |
 | S-092-20 | I13 / T-092-23 | `BucketSettingsV3Test` |
 | S-092-21 | I14 / T-092-24 | `BucketKeysTest`, `TimelineDataTest` |
 | S-092-22 | I15 / T-092-25 | `BucketSettingsV3Test` |
+| S-092-23 | I16 / T-092-26 | `BucketSchemeTest`, `AlbumRootV3Test` |
 
 ## Analysis Gate
 

@@ -26,6 +26,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
+use App\Services\TitleSplitter;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
@@ -406,6 +407,36 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 
 		$after = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own')->assertOk()->json('bucket_ids');
 		self::assertNotSame(['2024'], $after);
+	}
+
+	/**
+	 * S-092-23: until the recompute job has run, the date scheme reads the
+	 * alphabetical keys; an id that is not date-shaped is its own label.
+	 */
+	public function testTitleModeChangeLabelsKeysOfThePreviousModeAsIsUntilTheRecompute(): void
+	{
+		Configs::set('sorting_albums_col', 'title');
+		Configs::set('timeline_albums_granularity', 'year');
+		Configs::set('title_bucket_mode', 'alphabetical');
+		$user = User::factory()->create();
+		foreach (['2019-05 Paris', 'Alpha'] as $title) {
+			$album = Album::factory()->as_root()->owned_by($user)->with_title($title)->create();
+			$album->title_base = TitleSplitter::split($album->title)->base;
+			$album->save();
+		}
+		$this->recomputeRootBuckets();
+
+		Configs::set('title_bucket_mode', 'date_prefix');
+
+		$pending = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own');
+		$this->assertOk($pending);
+		$pending->assertJson(['bucket_ids' => ['2019', 'alph'], 'labels' => ['2019', 'alph']]);
+
+		$this->recomputeRootBuckets();
+
+		$recomputed = $this->actingAs($user)->getJsonV3('Albums/root/buckets?scope=own');
+		$this->assertOk($recomputed);
+		$recomputed->assertJson(['bucket_ids' => ['2019', 'unknown'], 'labels' => ['2019', 'unknown']]);
 	}
 
 	// ── deduplicate_pinned_albums parity (S-062-20) ──────────────────

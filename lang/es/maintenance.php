@@ -70,28 +70,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Antiguas órdenes',
-        'description' => 'Se han encontrado %d pedidos antiguos.<br/><br/>Un pedido antiguo es aquel que tiene más de 14 días de antigüedad, no tiene ningún usuario asociado y o bien sigue pendiente de pago o bien no contiene ningún artículo.',
+        'description' => 'Se han encontrado %d pedidos antiguos.<br/>Un pedido antiguo es aquel que tiene más de 14 días de antigüedad, no tiene ningún usuario asociado y o bien sigue pendiente de pago o bien no contiene ningún artículo.',
         'button' => 'Eliminar pedidos antiguos',
     ],
     'fulfill-orders' => [
         'title' => 'Pedidos pendientes de tramitar',
-        'description' => 'Se han encontrado %d pedidos con contenido que aún no está disponible.<br/><br/>Haz clic en el botón para asignar el contenido cuando sea posible.',
+        'description' => 'Se han encontrado %d pedidos con contenido que aún no está disponible.<br/>Haz clic en el botón para asignar el contenido cuando sea posible.',
         'button' => 'Tramitar pedidos',
     ],
     'fulfill-precompute' => [
         'title' => 'Campos precalculados del álbum',
-        'description' => 'Se encontraron %d álbumes con campos precalculados ausentes.<br/><br/>Equivale a ejecutar: php artisan lychee:recompute-album-fields',
+        'description' => 'Se encontraron %d álbumes con campos precalculados ausentes.<br/>Equivale a ejecutar: php artisan lychee:recompute-album-stats',
         'button' => 'Cálculo de campos',
     ],
     'flush-queue' => [
         'title' => 'Vaciar la cola',
-        'description' => 'Se han encontrado %d trabajos pendientes en la cola.<br/><br/>PRECAUCIÓN: Al vaciar la cola se eliminarán de forma permanente todos los trabajos pendientes. Esta acción no se puede deshacer.',
+        'description' => 'Se han encontrado %d trabajos pendientes en la cola.<br/>PRECAUCIÓN: Al vaciar la cola se eliminarán de forma permanente todos los trabajos pendientes. Esta acción no se puede deshacer.',
         'button' => 'Borrar cola',
     ],
     'backfill-album-sizes' => [
         'title' => 'Estadísticas sobre el tamaño de los álbumes',
-        'description' => 'Se encontraron %d álbumes sin estadísticas de tamaño.<br/><br/>Equivale a ejecutar: php artisan lychee:recompute-album-sizes',
+        'description' => 'Se encontraron %d álbumes sin estadísticas de tamaño.<br/>Equivale a ejecutar: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Recalcula en segundo plano las estadísticas de tamaño de todos los álbumes.<br/>Equivale a ejecutar: php artisan lychee:recompute-album-sizes',
         'button' => 'Tamaños de los servidores',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Grupos de la línea de tiempo',
+        'description' => 'Recalcula el grupo de la línea de tiempo de cada álbum y cada foto, y luego actualiza los listados de álbumes y fotos.<br/>Equivale a ejecutar: php artisan lychee:recompute-buckets',
+        'button' => 'Recalcular',
     ],
     'face_quality' => [
         'title' => 'Revisión de la calidad de las caras',
@@ -128,7 +134,7 @@ return [
         'selected_count' => ':número de elementos seleccionados',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Se han encontrado %d fotos que aún no se han analizado para el reconocimiento facial.<br/><br/>Es necesario que el servicio AI Vision esté en ejecución.',
+        'description' => 'Se han encontrado %d fotos que aún no se han analizado para el reconocimiento facial.<br/>Es necesario que el servicio AI Vision esté en ejecución.',
     ],
     'run-clustering' => [
         'description' => 'Activa la agrupación de rostros en el servicio AI Vision. Agrupa los rostros detectados por similitud para que puedas asignarlos a personas.',

@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Old Orders',
-        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'description' => 'Found %d old orders.<br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
         'button' => 'Delete old orders',
     ],
     'fulfill-orders' => [
         'title' => 'Orders to fulfill',
-        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+        'description' => 'Found %d orders with content that has not been made available.<br/>Click on the button to assign content when possible.',
         'button' => 'Fulfill orders',
     ],
     'fulfill-precompute' => [
         'title' => 'Album Precomputed Fields',
-        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/>Equivalent to running: php artisan lychee:recompute-album-stats',
         'button' => 'Compute fields',
     ],
     'flush-queue' => [
         'title' => 'Flush Queue',
-        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+        'description' => 'Found %d pending jobs in the queue.<br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
         'button' => 'Clear queue',
     ],
     'backfill-album-sizes' => [
         'title' => 'Album Size Statistics',
-        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
+        'description' => 'Found %d albums without size statistics.<br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Recompute the size statistics of every album in the background.<br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
         'button' => 'Compute sizes',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Timeline Buckets',
+        'description' => 'Rewrite the timeline bucket of every album and photo, then refresh the album and photo listings.<br/>Equivalent to running: php artisan lychee:recompute-buckets',
+        'button' => 'Recompute',
     ],
     'face_quality' => [
         'title' => 'Face Quality Review',
@@ -129,7 +135,7 @@ return [
         'selected_count' => ':count selected',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Found %d photos that have not yet been scanned for facial recognition.<br/><br/>Requires the AI Vision service to be running.',
+        'description' => 'Found %d photos that have not yet been scanned for facial recognition.<br/>Requires the AI Vision service to be running.',
     ],
     'run-clustering' => [
         'description' => 'Trigger face clustering in the AI Vision service. Groups detected faces by similarity so you can assign them to people.',
