@@ -31,6 +31,7 @@
 		<MaintenanceFulfillOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceBackfillAlbumSizes />
+		<MaintenanceRecomputeBuckets v-if="lycheeStore.is_struct_of_array_enabled" />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
@@ -65,6 +66,7 @@ import MaintenanceOldOrders from "@/v7/components/maintenance/MaintenanceOldOrde
 import MaintenanceFulfillOrders from "@/v7/components/maintenance/MaintenanceFulfillOrders.vue";
 import MaintenanceFulfillPrecompute from "@/v7/components/maintenance/MaintenanceFulfillPrecompute.vue";
 import MaintenanceBackfillAlbumSizes from "@/v7/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
+import MaintenanceRecomputeBuckets from "@/v7/components/maintenance/MaintenanceRecomputeBuckets.vue";
 import MaintenanceFlushQueue from "@/v7/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/v7/components/maintenance/MaintenanceBulkScanFaces.vue";
 import MaintenanceBulkScanNsfw from "@/v7/components/maintenance/MaintenanceBulkScanNsfw.vue";

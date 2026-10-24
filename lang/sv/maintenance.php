@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Gamla beställningar',
-        'description' => 'Hittade %d gamla beställningar.<br/><br/>En gammal beställning är äldre än 14 dagar, saknar kopplad användare och väntar antingen fortfarande på betalning eller innehåller inga artiklar.',
+        'description' => 'Hittade %d gamla beställningar.<br/>En gammal beställning är äldre än 14 dagar, saknar kopplad användare och väntar antingen fortfarande på betalning eller innehåller inga artiklar.',
         'button' => 'Radera gamla beställningar',
     ],
     'fulfill-orders' => [
         'title' => 'Beställningar att leverera',
-        'description' => 'Hittade %d beställningar med innehåll som inte har gjorts tillgängligt.<br/><br/>Klicka på knappen för att tilldela innehåll där det är möjligt.',
+        'description' => 'Hittade %d beställningar med innehåll som inte har gjorts tillgängligt.<br/>Klicka på knappen för att tilldela innehåll där det är möjligt.',
         'button' => 'Leverera beställningar',
     ],
     'fulfill-precompute' => [
         'title' => 'Förberäknade albumfält',
-        'description' => 'Hittade %d album med saknade förberäknade fält.<br/><br/>Motsvarar att köra: php artisan lychee:recompute-album-fields',
+        'description' => 'Hittade %d album med saknade förberäknade fält.<br/>Motsvarar att köra: php artisan lychee:recompute-album-stats',
         'button' => 'Beräkna fält',
     ],
     'flush-queue' => [
         'title' => 'Töm kö',
-        'description' => 'Hittade %d väntande jobb i kön.<br/><br/>VARNING: Om kön töms raderas alla väntande jobb permanent. Detta kan inte ångras.',
+        'description' => 'Hittade %d väntande jobb i kön.<br/>VARNING: Om kön töms raderas alla väntande jobb permanent. Detta kan inte ångras.',
         'button' => 'Töm kö',
     ],
     'backfill-album-sizes' => [
         'title' => 'Statistik över albumstorlek',
-        'description' => 'Hittade %d album utan storleksstatistik.<br/><br/>Motsvarar att köra: php artisan lychee:recompute-album-sizes',
+        'description' => 'Hittade %d album utan storleksstatistik.<br/>Motsvarar att köra: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Beräknar om storleksstatistiken för alla album i bakgrunden.<br/>Motsvarar att köra: php artisan lychee:recompute-album-sizes',
         'button' => 'Beräkna storlekar',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Tidslinjegrupper',
+        'description' => 'Beräknar om tidslinjegruppen för varje album och varje foto och uppdaterar sedan album- och fotolistorna.<br/>Motsvarar kommandot: php artisan lychee:recompute-buckets',
+        'button' => 'Beräkna om',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count markerade',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Hittade %d foton som ännu inte har skannats för ansiktsigenkänning.<br/><br/>Kräver att AI Vision-tjänsten körs.',
+        'description' => 'Hittade %d foton som ännu inte har skannats för ansiktsigenkänning.<br/>Kräver att AI Vision-tjänsten körs.',
     ],
     'run-clustering' => [
         'description' => 'Starta ansiktsklustring i AI Vision-tjänsten. Grupperar upptäckta ansikten efter likhet så att du kan tilldela dem till personer.',

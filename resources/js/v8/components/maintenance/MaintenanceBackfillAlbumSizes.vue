@@ -25,8 +25,9 @@ const loading = ref(false);
 const toast = useAppToast();
 
 const description = computed(() => {
+	// -1: queued mode, every album is recomputed, there is no count to show.
 	if (data.value === -1) {
-		return "";
+		return trans("maintenance.backfill-album-sizes.description_queue");
 	}
 	return sprintf(trans("maintenance.backfill-album-sizes.description"), data.value);
 });

@@ -228,6 +228,19 @@ class BucketSchemeTest extends AbstractTestCase
 		self::assertSame(['4'], $this->photos(ColumnSortingType::RATING_AVG)->labels(['4']));
 	}
 
+	/**
+	 * S-092-23: keys written for another scheme, read before the recompute
+	 * job has run.
+	 */
+	public function testDateSchemeIdsThatAreNotDateShapedAreTheirOwnLabels(): void
+	{
+		$albums = $this->albums(ColumnSortingType::TITLE, TimelineAlbumGranularity::DAY);
+		self::assertSame(['2019', 'alph', '2020-03 tr', '2', '1 Jul'], $albums->labels(['2019', 'alph', '2020-03 tr', '2', '2026-07-01']));
+
+		$photos = $this->photos(ColumnSortingType::TAKEN_AT, TimelinePhotoGranularity::HOUR);
+		self::assertSame(['4:00', 'ab-cd-ef-gh'], $photos->labels(['2026-07-01-16', 'ab-cd-ef-gh']));
+	}
+
 	// ── Id normalisation ────────────────────────────────────────────
 
 	public function testNormalizeId(): void

@@ -162,8 +162,21 @@ _Last updated: 2026-10-15_
   - `php artisan test --filter=UpdateSettingsTest`  
   - `make phpstan`
 
+- [x] T-092-26 – Ids written for another scheme are their own labels (F-092-08, F-092-13, S-092-23).  
+  _Intent:_ test first in `BucketSchemeTest` (a date scheme labels `alph`, `2020-03 Tr` and `2` as is, date-shaped ids keep their formats) and `AlbumRootV3Test` (root sorted by title, alphabetical keys, `title_bucket_mode` switched to `date_prefix` without the job → ids and labels `2019`, `alph`; after the job → `2019`, `unknown`); then `BucketScheme::label()` formats only date-shaped ids (Q-092-09).  
+  _Verification commands:_  
+  - `php artisan test --filter=BucketSchemeTest`  
+  - `php artisan test --filter=AlbumRootV3Test`  
+  - `make phpstan`
+
+- [x] T-092-27 – `lychee:recompute-buckets` flushes listings (F-092-15, S-092-17).  
+  _Intent:_ test first in `RecomputeBucketsCommandTest` (the command dispatches `AlbumListingCacheFlushRequested` and `PhotoListingCacheFlushRequested`); then `RecomputeBuckets::handle()` dispatches both after the album and `photo_album` writes.  
+  _Verification commands:_  
+  - `php artisan test --filter=RecomputeBucketsCommandTest`  
+  - `make phpstan`
+
 ## Notes / TODOs
 
-- FR coverage: FR-01/02 → T-02…04, T-24; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23, T-25; FR-14 → T-06…08; FR-15 → T-08; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
+- FR coverage: FR-01/02 → T-02…04, T-24; FR-03 → T-05, T-06; FR-04 → T-07; FR-05 → T-09…11, T-15; FR-06 → T-13, T-14; FR-07 → T-09, T-10, T-12, T-14; FR-08 → T-09…11, T-15, T-26; FR-09 → T-11; FR-10 → T-04, T-06; FR-11/12 → T-16, T-22; FR-13 → T-08, T-17, T-23, T-25, T-26; FR-14 → T-06…08; FR-15 → T-08, T-27; FR-16 → T-01; FR-17 → T-18; FR-18 → T-19.
 - Test classes in `tests/Feature_v2` are updated where they encode the old triggers; no new class is added there.
 - Drift gate, benchmark and adjustments: plan.md § Implementation Drift Gate.

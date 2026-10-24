@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Anciennes commandes',
-        'description' => '%d anciennes commandes trouvées.<br/><br/>Une commande est considérée comme ancienne si elle date de plus de 14 jours, n’est associée à aucun utilisateur, et est soit toujours en attente de paiement, soit sans aucun article.',
+        'description' => '%d anciennes commandes trouvées.<br/>Une commande est considérée comme ancienne si elle date de plus de 14 jours, n’est associée à aucun utilisateur, et est soit toujours en attente de paiement, soit sans aucun article.',
         'button' => 'Supprimer les anciennes commandes',
     ],
     'fulfill-orders' => [
         'title' => 'Commandes à traiter',
-        'description' => '%d commandes dont le contenu n’a pas encore été mis à disposition ont été trouvées.<br/><br/>Cliquez sur le bouton pour attribuer le contenu lorsque cela est possible.',
+        'description' => '%d commandes dont le contenu n’a pas encore été mis à disposition ont été trouvées.<br/>Cliquez sur le bouton pour attribuer le contenu lorsque cela est possible.',
         'button' => 'Traiter les commandes',
     ],
     'fulfill-precompute' => [
         'title' => 'Champs précalculés des albums',
-        'description' => '%d albums avec des champs précalculés manquants ont été trouvés.<br/><br/>Équivaut à exécuter : php artisan lychee:recompute-album-fields',
+        'description' => '%d albums avec des champs précalculés manquants ont été trouvés.<br/>Équivaut à exécuter : php artisan lychee:recompute-album-stats',
         'button' => 'Calculer les champs',
     ],
     'flush-queue' => [
         'title' => 'Vider la file d’attente',
-        'description' => '%d tâches en attente ont été trouvées dans la file.<br/><br/>ATTENTION : vider la file supprimera définitivement toutes les tâches en attente. Cette action est irréversible.',
+        'description' => '%d tâches en attente ont été trouvées dans la file.<br/>ATTENTION : vider la file supprimera définitivement toutes les tâches en attente. Cette action est irréversible.',
         'button' => 'Vider la file',
     ],
     'backfill-album-sizes' => [
         'title' => 'Statistiques de taille des albums',
-        'description' => '%d albums sans statistiques de taille ont été trouvés.<br/><br/>Équivaut à exécuter : php artisan lychee:recompute-album-sizes',
+        'description' => '%d albums sans statistiques de taille ont été trouvés.<br/>Équivaut à exécuter : php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Recalcule en arrière-plan les statistiques de taille de tous les albums.<br/>Équivaut à exécuter : php artisan lychee:recompute-album-sizes',
         'button' => 'Calculer les tailles',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Groupes de la chronologie',
+        'description' => 'Recalcule le groupe chronologique de chaque album et de chaque photo, puis rafraîchit les listes des albums et des photos.<br/>Équivaut à exécuter : php artisan lychee:recompute-buckets',
+        'button' => 'Recalculer',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count sélectionné(s)',
     ],
     'bulk-scan-faces' => [
-        'description' => '%d photos n’ayant pas encore été analysées pour la reconnaissance faciale ont été trouvées.<br/><br/>Nécessite que le service AI Vision soit en cours d’exécution.',
+        'description' => '%d photos n’ayant pas encore été analysées pour la reconnaissance faciale ont été trouvées.<br/>Nécessite que le service AI Vision soit en cours d’exécution.',
     ],
     'run-clustering' => [
         'description' => 'Déclenche le regroupement des visages dans le service AI Vision. Regroupe les visages détectés par similarité afin de pouvoir les attribuer à des personnes.',

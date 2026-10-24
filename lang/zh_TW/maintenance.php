@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => '舊訂單',
-        'description' => '找到 %d 筆舊訂單。<br/><br/>舊訂單是指超過 14 天、沒有關聯使用者，且仍在等待付款或不含任何項目的訂單。',
+        'description' => '找到 %d 筆舊訂單。<br/>舊訂單是指超過 14 天、沒有關聯使用者，且仍在等待付款或不含任何項目的訂單。',
         'button' => '刪除舊訂單',
     ],
     'fulfill-orders' => [
         'title' => '待履行訂單',
-        'description' => '找到 %d 筆內容尚未提供的訂單。<br/><br/>點擊按鈕即可在可行時指派內容。',
+        'description' => '找到 %d 筆內容尚未提供的訂單。<br/>點擊按鈕即可在可行時指派內容。',
         'button' => '履行訂單',
     ],
     'fulfill-precompute' => [
         'title' => '相簿預先計算欄位',
-        'description' => '找到 %d 個缺少預先計算欄位的相簿。<br/><br/>等同於執行：php artisan lychee:recompute-album-fields',
+        'description' => '找到 %d 個缺少預先計算欄位的相簿。<br/>等同於執行：php artisan lychee:recompute-album-stats',
         'button' => '計算欄位',
     ],
     'flush-queue' => [
         'title' => '清空佇列',
-        'description' => '佇列中有 %d 個待處理工作。<br/><br/>注意：清空佇列將永久刪除所有待處理工作，且無法復原。',
+        'description' => '佇列中有 %d 個待處理工作。<br/>注意：清空佇列將永久刪除所有待處理工作，且無法復原。',
         'button' => '清空佇列',
     ],
     'backfill-album-sizes' => [
         'title' => '相簿大小統計',
-        'description' => '找到 %d 個沒有大小統計的相簿。<br/><br/>等同於執行：php artisan lychee:recompute-album-sizes',
+        'description' => '找到 %d 個沒有大小統計的相簿。<br/>等同於執行：php artisan lychee:recompute-album-sizes',
+        'description_queue' => '在背景重新計算所有相簿的大小統計。<br/>等同於執行：php artisan lychee:recompute-album-sizes',
         'button' => '計算大小',
+    ],
+    'recompute-buckets' => [
+        'title' => '時間軸分組',
+        'description' => '重新計算每個相簿和每張相片的時間軸分組，然後重新整理相簿和相片清單。<br/>等同於執行：php artisan lychee:recompute-buckets',
+        'button' => '重新計算',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => '已選取 :count 個',
     ],
     'bulk-scan-faces' => [
-        'description' => '找到 %d 張尚未進行臉部辨識掃描的照片。<br/><br/>需要 AI Vision 服務正在執行。',
+        'description' => '找到 %d 張尚未進行臉部辨識掃描的照片。<br/>需要 AI Vision 服務正在執行。',
     ],
     'run-clustering' => [
         'description' => '在 AI Vision 服務中啟動臉孔分群。依相似度將偵測到的臉孔分組，方便您將其指派給人物。',

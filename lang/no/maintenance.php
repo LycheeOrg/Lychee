@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Gamle Ordre',
-        'description' => 'Fant %d gamle bestillinger.<br/><br/>En gammel bestilling er eldre enn 14 dager, har ingen tilknyttet bruker, og venter enten fortsatt på betaling eller har ingen varer i seg.',
+        'description' => 'Fant %d gamle bestillinger.<br/>En gammel bestilling er eldre enn 14 dager, har ingen tilknyttet bruker, og venter enten fortsatt på betaling eller har ingen varer i seg.',
         'button' => 'Slett gamle bestillinger',
     ],
     'fulfill-orders' => [
         'title' => 'Bestillinger å fullføre',
-        'description' => 'Fant %d bestillinger med innhold som ikke er gjort tilgjengelig.<br/><br/>Klikk på knappen for å tilordne innhold der det er mulig.',
+        'description' => 'Fant %d bestillinger med innhold som ikke er gjort tilgjengelig.<br/>Klikk på knappen for å tilordne innhold der det er mulig.',
         'button' => 'Fullfør bestillinger',
     ],
     'fulfill-precompute' => [
         'title' => 'Forhåndsberegnede albumfelt',
-        'description' => 'Fant %d album med manglende forhåndsberegnede felt.<br/><br/>Tilsvarer å kjøre: php artisan lychee:recompute-album-fields',
+        'description' => 'Fant %d album med manglende forhåndsberegnede felt.<br/>Tilsvarer å kjøre: php artisan lychee:recompute-album-stats',
         'button' => 'Beregn felt',
     ],
     'flush-queue' => [
         'title' => 'Tøm kø',
-        'description' => 'Fant %d ventende jobber i køen.<br/><br/>ADVARSEL: Tømming av køen vil permanent slette alle ventende jobber. Dette kan ikke angres.',
+        'description' => 'Fant %d ventende jobber i køen.<br/>ADVARSEL: Tømming av køen vil permanent slette alle ventende jobber. Dette kan ikke angres.',
         'button' => 'Tøm kø',
     ],
     'backfill-album-sizes' => [
         'title' => 'Albumstørrelsesstatistikk',
-        'description' => 'Fant %d album uten størrelsesstatistikk.<br/><br/>Tilsvarer å kjøre: php artisan lychee:recompute-album-sizes',
+        'description' => 'Fant %d album uten størrelsesstatistikk.<br/>Tilsvarer å kjøre: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Beregner størrelsesstatistikken for alle album på nytt i bakgrunnen.<br/>Tilsvarer å kjøre: php artisan lychee:recompute-album-sizes',
         'button' => 'Beregn størrelser',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Tidslinjegrupper',
+        'description' => 'Beregner tidslinjegruppen for hvert album og hvert bilde på nytt, og oppdaterer deretter album- og bildelistene.<br/>Tilsvarer kommandoen: php artisan lychee:recompute-buckets',
+        'button' => 'Beregn på nytt',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count valgt',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Fant %d bilder som ennå ikke er skannet for ansiktsgjenkjenning.<br/><br/>Krever at AI Vision-tjenesten kjører.',
+        'description' => 'Fant %d bilder som ennå ikke er skannet for ansiktsgjenkjenning.<br/>Krever at AI Vision-tjenesten kjører.',
     ],
     'run-clustering' => [
         'description' => 'Utløs ansiktsklynging i AI Vision-tjenesten. Grupperer oppdagede ansikter etter likhet, slik at du kan tilordne dem til personer.',

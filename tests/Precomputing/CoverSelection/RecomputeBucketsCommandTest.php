@@ -8,12 +8,15 @@
 
 namespace Tests\Precomputing\CoverSelection;
 
+use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use App\Services\TitleSplitter;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -95,6 +98,19 @@ class RecomputeBucketsCommandTest extends BasePrecomputingTest
 	{
 		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
 		$this->assertTrue(true);
+	}
+
+	/**
+	 * Cached listings hold ids read from the rewritten keys (FR-092-15).
+	 */
+	public function testCommandFlushesAlbumAndPhotoListings(): void
+	{
+		Event::fake([AlbumListingCacheFlushRequested::class, PhotoListingCacheFlushRequested::class]);
+
+		$this->artisan('lychee:recompute-buckets')->assertExitCode(0);
+
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+		Event::assertDispatched(PhotoListingCacheFlushRequested::class);
 	}
 
 	public function testRerunAfterAlbumTitleBucketModeConfigChangeUpdatesExistingRows(): void

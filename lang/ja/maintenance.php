@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => '古い注文',
-        'description' => '古い注文が %d 件見つかりました。<br/><br/>古い注文とは、14日以上経過し、関連付けられたユーザーがおらず、支払い待ちのままか商品が含まれていない注文です。',
+        'description' => '古い注文が %d 件見つかりました。<br/>古い注文とは、14日以上経過し、関連付けられたユーザーがおらず、支払い待ちのままか商品が含まれていない注文です。',
         'button' => '古い注文を削除',
     ],
     'fulfill-orders' => [
         'title' => '処理待ちの注文',
-        'description' => 'コンテンツがまだ提供されていない注文が %d 件見つかりました。<br/><br/>ボタンをクリックすると、可能な場合にコンテンツを割り当てます。',
+        'description' => 'コンテンツがまだ提供されていない注文が %d 件見つかりました。<br/>ボタンをクリックすると、可能な場合にコンテンツを割り当てます。',
         'button' => '注文を処理',
     ],
     'fulfill-precompute' => [
         'title' => 'アルバムの事前計算フィールド',
-        'description' => '事前計算フィールドが欠落しているアルバムが %d 件見つかりました。<br/><br/>次のコマンドの実行と同等です：php artisan lychee:recompute-album-fields',
+        'description' => '事前計算フィールドが欠落しているアルバムが %d 件見つかりました。<br/>次のコマンドの実行と同等です：php artisan lychee:recompute-album-stats',
         'button' => 'フィールドを計算',
     ],
     'flush-queue' => [
         'title' => 'キューをクリア',
-        'description' => 'キューに保留中のジョブが %d 件見つかりました。<br/><br/>注意：キューをクリアすると、保留中のすべてのジョブが完全に削除されます。この操作は元に戻せません。',
+        'description' => 'キューに保留中のジョブが %d 件見つかりました。<br/>注意：キューをクリアすると、保留中のすべてのジョブが完全に削除されます。この操作は元に戻せません。',
         'button' => 'キューをクリア',
     ],
     'backfill-album-sizes' => [
         'title' => 'アルバムサイズ統計',
-        'description' => 'サイズ統計のないアルバムが %d 件見つかりました。<br/><br/>次のコマンドの実行と同等です：php artisan lychee:recompute-album-sizes',
+        'description' => 'サイズ統計のないアルバムが %d 件見つかりました。<br/>次のコマンドの実行と同等です：php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'すべてのアルバムのサイズ統計をバックグラウンドで再計算します。<br/>次のコマンドの実行と同等です：php artisan lychee:recompute-album-sizes',
         'button' => 'サイズを計算',
+    ],
+    'recompute-buckets' => [
+        'title' => 'タイムラインのグループ',
+        'description' => 'すべてのアルバムと写真のタイムライングループを再計算し、アルバムと写真の一覧を更新します。<br/>次のコマンドと同等です: php artisan lychee:recompute-buckets',
+        'button' => '再計算',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count 件選択中',
     ],
     'bulk-scan-faces' => [
-        'description' => '顔認識のスキャンがまだ行われていない写真が %d 枚見つかりました。<br/><br/>AI Vision サービスが稼働している必要があります。',
+        'description' => '顔認識のスキャンがまだ行われていない写真が %d 枚見つかりました。<br/>AI Vision サービスが稼働している必要があります。',
     ],
     'run-clustering' => [
         'description' => 'AI Vision サービスで顔のクラスタリングを実行します。検出された顔を類似度でグループ化し、人物に割り当てられるようにします。',

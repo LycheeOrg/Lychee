@@ -128,6 +128,9 @@ const MaintenanceService = {
 	backfillAlbumSizesDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
 	},
+	recomputeBucketsDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::recomputeBuckets`, {});
+	},
 	bulkScanFacesCheck(): Promise<AxiosResponse<number>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, { data: {} });
 	},

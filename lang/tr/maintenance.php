@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Eski Siparişler',
-        'description' => '%d eski sipariş bulundu.<br/><br/>Eski sipariş; 14 günden eski olan, ilişkili bir kullanıcısı bulunmayan ve hâlâ ödeme bekleyen ya da hiç ürün içermeyen sipariştir.',
+        'description' => '%d eski sipariş bulundu.<br/>Eski sipariş; 14 günden eski olan, ilişkili bir kullanıcısı bulunmayan ve hâlâ ödeme bekleyen ya da hiç ürün içermeyen sipariştir.',
         'button' => 'Eski siparişleri sil',
     ],
     'fulfill-orders' => [
         'title' => 'Tamamlanacak siparişler',
-        'description' => 'İçeriği henüz kullanıma sunulmamış %d sipariş bulundu.<br/><br/>Mümkün olduğunda içerik atamak için düğmeye tıklayın.',
+        'description' => 'İçeriği henüz kullanıma sunulmamış %d sipariş bulundu.<br/>Mümkün olduğunda içerik atamak için düğmeye tıklayın.',
         'button' => 'Siparişleri tamamla',
     ],
     'fulfill-precompute' => [
         'title' => 'Albümün Önceden Hesaplanan Alanları',
-        'description' => 'Önceden hesaplanan alanları eksik %d albüm bulundu.<br/><br/>Şunu çalıştırmaya eşdeğerdir: php artisan lychee:recompute-album-fields',
+        'description' => 'Önceden hesaplanan alanları eksik %d albüm bulundu.<br/>Şunu çalıştırmaya eşdeğerdir: php artisan lychee:recompute-album-stats',
         'button' => 'Alanları hesapla',
     ],
     'flush-queue' => [
         'title' => 'Kuyruğu Temizle',
-        'description' => 'Kuyrukta bekleyen %d iş bulundu.<br/><br/>DİKKAT: Kuyruğu temizlemek bekleyen tüm işleri kalıcı olarak siler. Bu işlem geri alınamaz.',
+        'description' => 'Kuyrukta bekleyen %d iş bulundu.<br/>DİKKAT: Kuyruğu temizlemek bekleyen tüm işleri kalıcı olarak siler. Bu işlem geri alınamaz.',
         'button' => 'Kuyruğu temizle',
     ],
     'backfill-album-sizes' => [
         'title' => 'Albüm Boyutu İstatistikleri',
-        'description' => 'Boyut istatistikleri olmayan %d albüm bulundu.<br/><br/>Şunu çalıştırmaya eşdeğerdir: php artisan lychee:recompute-album-sizes',
+        'description' => 'Boyut istatistikleri olmayan %d albüm bulundu.<br/>Şunu çalıştırmaya eşdeğerdir: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Tüm albümlerin boyut istatistiklerini arka planda yeniden hesaplar.<br/>Şunu çalıştırmaya eşdeğerdir: php artisan lychee:recompute-album-sizes',
         'button' => 'Boyutları hesapla',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Zaman çizelgesi grupları',
+        'description' => 'Her albümün ve her fotoğrafın zaman çizelgesi grubunu yeniden hesaplar, ardından albüm ve fotoğraf listelerini yeniler.<br/>Şu komuta eşdeğerdir: php artisan lychee:recompute-buckets',
+        'button' => 'Yeniden hesapla',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count seçildi',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Henüz yüz tanıma için taranmamış %d fotoğraf bulundu.<br/><br/>AI Vision hizmetinin çalışıyor olması gerekir.',
+        'description' => 'Henüz yüz tanıma için taranmamış %d fotoğraf bulundu.<br/>AI Vision hizmetinin çalışıyor olması gerekir.',
     ],
     'run-clustering' => [
         'description' => 'AI Vision hizmetinde yüz kümelemeyi başlatın. Algılanan yüzleri benzerliğe göre gruplar, böylece onları kişilere atayabilirsiniz.',

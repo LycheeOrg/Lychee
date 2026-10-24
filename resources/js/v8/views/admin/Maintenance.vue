@@ -23,6 +23,7 @@
 		<MaintenanceFulfillOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceBackfillAlbumSizes />
+		<MaintenanceRecomputeBuckets v-if="is_struct_of_array_enabled" />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
@@ -55,6 +56,7 @@ import MaintenanceOldOrders from "@/v8/components/maintenance/MaintenanceOldOrde
 import MaintenanceFulfillOrders from "@/v8/components/maintenance/MaintenanceFulfillOrders.vue";
 import MaintenanceFulfillPrecompute from "@/v8/components/maintenance/MaintenanceFulfillPrecompute.vue";
 import MaintenanceBackfillAlbumSizes from "@/v8/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
+import MaintenanceRecomputeBuckets from "@/v8/components/maintenance/MaintenanceRecomputeBuckets.vue";
 import MaintenanceFlushQueue from "@/v8/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/v8/components/maintenance/MaintenanceBulkScanFaces.vue";
 import MaintenanceBulkScanNsfw from "@/v8/components/maintenance/MaintenanceBulkScanNsfw.vue";
@@ -70,6 +72,6 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const lycheeStore = useLycheeStateStore();
 const { rights } = useGlobalRights();
-const { is_face_recognition_enabled } = storeToRefs(lycheeStore);
+const { is_face_recognition_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
 const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

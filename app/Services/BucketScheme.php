@@ -19,6 +19,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 use function Safe\gmmktime;
+use function Safe\preg_match;
 
 /**
  * Read-time bucket ids (ADR-092-01): one scheme per listing request,
@@ -57,6 +58,8 @@ final class BucketScheme
 
 	private const DATE_LENGTHS = [4, 7, 10, 13];
 	private const TITLE_DATE_LENGTH = 10;
+	/** Shape of a date id: `Y`, `Y-m`, `Y-m-d` or `Y-m-d-H`. */
+	private const DATE_ID_PATTERN = '/^\d{4}(?:-\d{2}){0,3}$/';
 
 	/**
 	 * @param string   $kind          one of the private kind constants
@@ -284,7 +287,7 @@ final class BucketScheme
 	{
 		$days = [];
 		foreach ($bucket_ids as $bucket_id) {
-			if ($bucket_id !== self::UNKNOWN && substr_count($bucket_id, '-') === 3) {
+			if (self::isDateId($bucket_id) && substr_count($bucket_id, '-') === 3) {
 				$days[substr($bucket_id, 0, 10)] = true;
 			}
 		}
@@ -294,12 +297,14 @@ final class BucketScheme
 
 	/**
 	 * Label of one id: date ids are formatted by their own precision (year,
-	 * month, day, hour); other ids and `unknown` are returned as is. Hour ids
-	 * use `$hour_format` when given (the multi-day format, FR-095-08).
+	 * month, day, hour); other ids, `unknown` and ids of a date scheme that
+	 * are not date-shaped (keys written for another scheme, FR-092-13) are
+	 * returned as is. Hour ids use `$hour_format` when given (the multi-day
+	 * format, FR-095-08).
 	 */
 	public function label(string $bucket_id, ?string $hour_format = null): string
 	{
-		if ($bucket_id === self::UNKNOWN || ($this->kind !== self::DATE && $this->kind !== self::CREATED)) {
+		if (($this->kind !== self::DATE && $this->kind !== self::CREATED) || !self::isDateId($bucket_id)) {
 			return $bucket_id;
 		}
 
@@ -362,6 +367,11 @@ final class BucketScheme
 			self::RATING => $query->where($column, '>=', (int) $bucket_id - 0.5)->where($column, '<', (int) $bucket_id + 0.5),
 			default => $this->whereStoredId($query, $column, $bucket_id),
 		};
+	}
+
+	private static function isDateId(string $bucket_id): bool
+	{
+		return preg_match(self::DATE_ID_PATTERN, $bucket_id) === 1;
 	}
 
 	/**

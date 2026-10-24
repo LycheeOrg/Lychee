@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Đơn hàng cũ',
-        'description' => 'Tìm thấy %d đơn hàng cũ.<br/><br/>Đơn hàng cũ là đơn hàng đã quá 14 ngày, không gắn với người dùng nào và vẫn đang chờ thanh toán hoặc không có mặt hàng nào.',
+        'description' => 'Tìm thấy %d đơn hàng cũ.<br/>Đơn hàng cũ là đơn hàng đã quá 14 ngày, không gắn với người dùng nào và vẫn đang chờ thanh toán hoặc không có mặt hàng nào.',
         'button' => 'Xóa đơn hàng cũ',
     ],
     'fulfill-orders' => [
         'title' => 'Đơn hàng cần hoàn tất',
-        'description' => 'Tìm thấy %d đơn hàng có nội dung chưa được cung cấp.<br/><br/>Nhấn nút để gán nội dung khi có thể.',
+        'description' => 'Tìm thấy %d đơn hàng có nội dung chưa được cung cấp.<br/>Nhấn nút để gán nội dung khi có thể.',
         'button' => 'Hoàn tất đơn hàng',
     ],
     'fulfill-precompute' => [
         'title' => 'Trường tính trước của album',
-        'description' => 'Tìm thấy %d album thiếu trường tính trước.<br/><br/>Tương đương với việc chạy: php artisan lychee:recompute-album-fields',
+        'description' => 'Tìm thấy %d album thiếu trường tính trước.<br/>Tương đương với việc chạy: php artisan lychee:recompute-album-stats',
         'button' => 'Tính các trường',
     ],
     'flush-queue' => [
         'title' => 'Xóa hàng đợi',
-        'description' => 'Tìm thấy %d tác vụ đang chờ trong hàng đợi.<br/><br/>CẢNH BÁO: Xóa hàng đợi sẽ xóa vĩnh viễn tất cả tác vụ đang chờ. Không thể hoàn tác thao tác này.',
+        'description' => 'Tìm thấy %d tác vụ đang chờ trong hàng đợi.<br/>CẢNH BÁO: Xóa hàng đợi sẽ xóa vĩnh viễn tất cả tác vụ đang chờ. Không thể hoàn tác thao tác này.',
         'button' => 'Xóa hàng đợi',
     ],
     'backfill-album-sizes' => [
         'title' => 'Thống kê dung lượng album',
-        'description' => 'Tìm thấy %d album chưa có thống kê dung lượng.<br/><br/>Tương đương với việc chạy: php artisan lychee:recompute-album-sizes',
+        'description' => 'Tìm thấy %d album chưa có thống kê dung lượng.<br/>Tương đương với việc chạy: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Tính lại thống kê dung lượng của mọi album ở chế độ nền.<br/>Tương đương với việc chạy: php artisan lychee:recompute-album-sizes',
         'button' => 'Tính dung lượng',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Nhóm dòng thời gian',
+        'description' => 'Tính lại nhóm dòng thời gian của mọi album và mọi ảnh, sau đó làm mới danh sách album và ảnh.<br/>Tương đương với lệnh: php artisan lychee:recompute-buckets',
+        'button' => 'Tính lại',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => 'Đã chọn :count',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Tìm thấy %d ảnh chưa được quét nhận diện khuôn mặt.<br/><br/>Yêu cầu dịch vụ AI Vision đang chạy.',
+        'description' => 'Tìm thấy %d ảnh chưa được quét nhận diện khuôn mặt.<br/>Yêu cầu dịch vụ AI Vision đang chạy.',
     ],
     'run-clustering' => [
         'description' => 'Kích hoạt phân cụm khuôn mặt trong dịch vụ AI Vision. Nhóm các khuôn mặt được phát hiện theo độ tương đồng để bạn có thể gán chúng cho từng người.',

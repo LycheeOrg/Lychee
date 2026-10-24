@@ -14,6 +14,7 @@ Open questions for [Feature 092](spec.md). Log every high- and medium-impact que
 | ~~Q-092-06~~ | 092 – Bucketing refactor | Medium | Tag, person and search album listings now return `unknown` as every per-row album `bucket_id`, which no FR describes (A record it in FR-092-05 · B keep a computed id) | Resolved (Option A; owner, 2026-10-14; spec FR-092-05) | 2026-10-14 | 2026-10-14 |
 | ~~Q-092-07~~ | 092 – Bucketing refactor | Medium | FR-092-13 is silent on `sorting_photos_order`; no settings list flushes cached photo listings when it changes (A add it to the photo-listing flush · B leave out of scope) | Resolved (Option A; owner, 2026-10-14; spec FR-092-13, S-092-20) | 2026-10-14 | 2026-10-14 |
 | ~~Q-092-08~~ | 092 – Bucketing refactor | Low | How does the title date read `YYYYMMDD`? (A optional dashes `-?` · B a separate eight-digit branch) | Resolved (Option B; owner, 2026-10-14; spec FR-092-02, S-092-21) | 2026-10-14 | 2026-10-14 |
+| ~~Q-092-09~~ | 092 – Bucketing refactor | Medium | Album listings read the stored keys with the new scheme as soon as `title_bucket_mode` or `sorting_albums_col` is saved, but the keys are rewritten only when the queued `RecomputeAllAlbumBucketsJob` runs (A rewrite album keys in the settings request · B queued job, listings unbucketed while it is pending · C accept the window, stop date-formatting non-date ids) | Resolved (Option C; owner, 2026-10-23; spec FR-092-08, FR-092-13, S-092-23) | 2026-10-23 | 2026-10-23 |
 
 ## Question Details
 
@@ -156,3 +157,31 @@ Measured on SQLite 3.46 (scratchpad, synthetic data: 300,000 photos, one album w
   - ❌ Harder to read, branch reset is PCRE-only so JS reads different groups.
 
 **Resolution:** Option B (the owner first chose A, then switched to B). The owner also asked that every parser reject dates that are not on the calendar: `TimelineData::parseDateFromTitle()` no longer rolls `2023-13-01` over to January 2024 and `dateScrubber.ts` now checks the date, matching the `checkdate()` already in `BucketKeys` and `BucketKeyBackfill`. Recorded in FR-092-02 and S-092-21.
+
+### ~~Q-092-09~~ – Album listings between a settings change and the key rewrite
+
+**Context:** FR-092-13: saving `title_bucket_mode` or `sorting_albums_col` queues `RecomputeAllAlbumBucketsJob` on `low`. The read scheme (`BucketScheme::forAlbums()`) follows the new values on the next request, while `albums.bucket_key` still holds keys written for the old ones until a worker runs the job. Reproduced on a scratch instance (v8, struct-of-arrays, database queue, root sorted by title ascending, root timeline on, albums `2019-05 Paris`, `2020 Christmas`, `2021-07-14 Bastille`, `Alpha`, `alpha two`, `Bravo`, `Mountains`, `Zulu`):
+
+| Step | Root buckets (ids = labels unless noted) |
+|------|------------------------------------------|
+| `date_prefix`, job done | `2019`, `2020`, `2021`, `unknown` |
+| `alphabetical` saved, job pending | `2`, `unknown` (first character of the date keys, titles without a date stay `unknown`) |
+| job done | `2`, `a`, `b`, `m`, `z` |
+| `date_prefix` saved, job pending | ids `2019`, `2020`, `2021`, `alph`, `brav`, `moun`, `zulu`; labels `2019`, `2020`, `2021`, `2000`, `2000`, `2000`, `2000` |
+
+The listing keeps the previous grouping (or shows `2000` labels: `BucketScheme::label()` formats any id of a date scheme as a date) until the worker reaches the job, which waits behind every job queued before it on `low`. The photo side has the same gap for `photo_title_bucket_mode` and `sorting_photos_col` (`RecomputeAllPhotoBucketsJob`). Album counts are small next to `photo_album` rows: on the owner's instance `lychee:recompute-buckets` logged 869 albums and 70,657 `photo_album` rows, the photo rows taking about 5 s.
+
+- **Option A (recommended):** Run `RecomputeAllAlbumBucketsJob` inside the settings request (`dispatchSync`) instead of queueing it; the photo side keeps its queued job.
+  - ✅ No gap for album listings: the response that confirms the save comes after the keys are written and the listings flushed.
+  - ✅ One-line change in `SettingsController`; the job and its tests stay.
+  - ❌ The settings request pays one upsert per 1,000 albums.
+  - ❌ The photo side keeps the gap.
+- **Option B:** Keep the queued jobs; record a pending recompute when one is dispatched and clear it when the job finishes; while it is pending, album (and photo) listings answer `bucketable: false`.
+  - ✅ Covers albums and photos, no request-time cost.
+  - ❌ Headers disappear until a worker reaches the job (indefinitely on a worker that does not listen on `low`).
+  - ❌ New shared state between the settings request, the job and the cached listings.
+- **Option C:** Accept the gap: FR-092-13 states that listings follow the previous grouping until the recompute job has run, and `BucketScheme::label()` returns ids that are not date-shaped as they are.
+  - ✅ Smallest change.
+  - ❌ The reported symptom stays until the worker runs the job.
+
+**Resolution:** Option C. FR-092-13 states that listings read the keys written for the previous values with the new scheme until the recompute job has run; FR-092-08 returns ids of a date scheme that are not date-shaped as they are. Scenario S-092-23.

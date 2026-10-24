@@ -71,28 +71,34 @@ return [
     ],
     'old-orders' => [
         'title' => 'Ordini vecchi',
-        'description' => 'Trovati %d ordini vecchi.<br/><br/>Un ordine è considerato vecchio se ha più di 14 giorni, non ha alcun utente associato ed è ancora in attesa di pagamento oppure non contiene articoli.',
+        'description' => 'Trovati %d ordini vecchi.<br/>Un ordine è considerato vecchio se ha più di 14 giorni, non ha alcun utente associato ed è ancora in attesa di pagamento oppure non contiene articoli.',
         'button' => 'Elimina ordini vecchi',
     ],
     'fulfill-orders' => [
         'title' => 'Ordini da evadere',
-        'description' => 'Trovati %d ordini con contenuti non ancora resi disponibili.<br/><br/>Fai clic sul pulsante per assegnare i contenuti quando possibile.',
+        'description' => 'Trovati %d ordini con contenuti non ancora resi disponibili.<br/>Fai clic sul pulsante per assegnare i contenuti quando possibile.',
         'button' => 'Evadi ordini',
     ],
     'fulfill-precompute' => [
         'title' => 'Campi precalcolati degli album',
-        'description' => 'Trovati %d album con campi precalcolati mancanti.<br/><br/>Equivale a eseguire: php artisan lychee:recompute-album-fields',
+        'description' => 'Trovati %d album con campi precalcolati mancanti.<br/>Equivale a eseguire: php artisan lychee:recompute-album-stats',
         'button' => 'Calcola campi',
     ],
     'flush-queue' => [
         'title' => 'Svuota coda',
-        'description' => 'Trovati %d job in attesa nella coda.<br/><br/>ATTENZIONE: svuotare la coda eliminerà definitivamente tutti i job in attesa. L\'operazione non può essere annullata.',
+        'description' => 'Trovati %d job in attesa nella coda.<br/>ATTENZIONE: svuotare la coda eliminerà definitivamente tutti i job in attesa. L\'operazione non può essere annullata.',
         'button' => 'Svuota coda',
     ],
     'backfill-album-sizes' => [
         'title' => 'Statistiche dimensioni album',
-        'description' => 'Trovati %d album senza statistiche sulle dimensioni.<br/><br/>Equivale a eseguire: php artisan lychee:recompute-album-sizes',
+        'description' => 'Trovati %d album senza statistiche sulle dimensioni.<br/>Equivale a eseguire: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Ricalcola in background le statistiche di dimensione di tutti gli album.<br/>Equivale a eseguire: php artisan lychee:recompute-album-sizes',
         'button' => 'Calcola dimensioni',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Gruppi della cronologia',
+        'description' => 'Ricalcola il gruppo della cronologia di ogni album e di ogni foto, poi aggiorna gli elenchi di album e foto.<br/>Equivale a eseguire: php artisan lychee:recompute-buckets',
+        'button' => 'Ricalcola',
     ],
 
     'face_quality' => [
@@ -130,7 +136,7 @@ return [
         'selected_count' => ':count selezionati',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Trovate %d foto non ancora analizzate per il riconoscimento facciale.<br/><br/>Richiede che il servizio AI Vision sia in esecuzione.',
+        'description' => 'Trovate %d foto non ancora analizzate per il riconoscimento facciale.<br/>Richiede che il servizio AI Vision sia in esecuzione.',
     ],
     'run-clustering' => [
         'description' => 'Avvia il clustering dei volti nel servizio AI Vision. Raggruppa i volti rilevati per somiglianza, così puoi assegnarli alle persone.',
