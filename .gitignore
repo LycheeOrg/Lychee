@@ -95,3 +95,4 @@ example.spec.ts
 
 # Spec Driven Development.
 _current-session.md
+.vitest/
