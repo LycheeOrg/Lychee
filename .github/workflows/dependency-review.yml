@@ -53,4 +53,9 @@ jobs:
             GHSA-4w7w-66w2-5vf9,
             GHSA-v6wh-96g9-6wx3,
             GHSA-jqfw-vq24-v9c3,
-            GHSA-g4jq-h2w9-997c
+            GHSA-g4jq-h2w9-997c,
+            GHSA-587h-7wmj-h5pm,
+            GHSA-r825-w8mm-5pxw,
+            GHSA-698v-4r3x-3vcv,
+            GHSA-rq7h-c2jc-7f22,
+            GHSA-9jrq-w75r-8gcw
