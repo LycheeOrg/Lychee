@@ -498,11 +498,11 @@ export function useDragAndSelect(
 
 		const gridBox = getBounding(gridRootEl, "root");
 
-		return positioned.map(({ photo, box }) => {
+		return positioned.map(({ index, box }) => {
 			const top = gridBox.top + box.top;
 			const left = gridBox.left + box.left;
 			return {
-				id: photo.id,
+				id: photosStore.photos[index].id,
 				top: top,
 				left: left,
 				right: left + box.width,

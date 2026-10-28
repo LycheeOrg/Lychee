@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => '写真の並び順',
     'col_album_sorting' => 'アルバムの並び順',
     'col_created_at' => '作成日',
+    'taken_range' => '撮影日: :range',
+    'taken_none' => 'データなし',
 
     // Filter
     'filter_placeholder' => 'タイトルで検索...',

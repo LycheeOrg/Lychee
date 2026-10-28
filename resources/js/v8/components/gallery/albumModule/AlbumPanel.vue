@@ -240,7 +240,7 @@ const props = defineProps<{
 const userStore = useUserStore();
 const albumStore = useAlbumStore();
 // Feature 100: thumbnails fetch their live photo video URL on hover.
-provide(MOTION_URL_LOADER, (ids) => albumStore.loadPhotoDetails(ids));
+provide(MOTION_URL_LOADER, (ids) => albumStore.loadPhotoDetails(ids).then(() => undefined));
 const photosStore = usePhotosStore();
 const catalogStore = useCatalogStore();
 const albumsStore = useAlbumsStore();

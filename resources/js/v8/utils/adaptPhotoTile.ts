@@ -1,4 +1,5 @@
 import type { PhotoDetailResource, PhotoRatioResource } from "@/services/photo-children-v3-service";
+import { toRaw } from "vue";
 import { formatServerDateTime } from "@/v8/utils/phpDateFormat";
 
 /**
@@ -63,24 +64,66 @@ export type PhotoTileDateFormats = Pick<
 export type AdaptablePhotoTierTwo = Omit<PhotoRatioResource, "bucket_ids">;
 
 /**
+ * Defines `key` on `target` as an own, enumerable accessor that runs `format`
+ * on its first read and keeps the result; an assignment replaces it. Vue's
+ * reactive proxies read and write it like a plain property, and spreading or
+ * serializing the object yields the formatted value (FR-103-04).
+ */
+function defineLazy<T extends object, K extends keyof T>(target: T, key: K, format: () => T[K]): void {
+	let value: T[K] | undefined;
+	let resolved = false;
+	Object.defineProperty(target, key, {
+		enumerable: true,
+		configurable: true,
+		get: () => {
+			if (!resolved) {
+				value = format();
+				resolved = true;
+			}
+			return value as T[K];
+		},
+		set: (next: T[K]) => {
+			value = next;
+			resolved = true;
+		},
+	});
+}
+
+/** Position of each tile by photo id, read without reactive tracking. */
+export function tileIndexById(tiles: AdaptedPhotoTile[]): Map<string, number> {
+	return new Map(toRaw(tiles).map((tile, i) => [tile.id, i]));
+}
+
+/**
+ * Sets `previous_photo_id`/`next_photo_id` from array order (FR-065-15) on
+ * tiles not handed to a store yet, so no reactive write is needed (FR-103-03).
+ */
+export function linkNeighbours(tiles: AdaptedPhotoTile[]): void {
+	for (let i = 0; i < tiles.length; i++) {
+		tiles[i].previous_photo_id = i > 0 ? tiles[i - 1].id : null;
+		tiles[i].next_photo_id = i < tiles.length - 1 ? tiles[i + 1].id : null;
+	}
+}
+
+/**
  * Adapts row `i` of a `ratios` response into a full, `PhotoResource`-shaped
  * tile. `album_id` is the browsed album's id (the only album a v3-sourced
  * tile is ever linked from in this feature — matching- albums/multi-album
  * membership display is out of scope, NG5). The `preformatted` dates are
  * formatted client-side exactly as `PreformattedPhotoData` does: `taken_at`
- * in the zone the photo was taken in, `created_at` in the viewer's.
+ * in the zone the photo was taken in, `created_at` in the viewer's; each on
+ * its first read, so tiles never shown format none (FR-103-04).
  */
 export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_id: string, dateFormats: PhotoTileDateFormats): AdaptedPhotoTile {
 	const takenAt = ratios.taken_ats[i];
 	const createdAt = ratios.created_ats[i];
 	const takenAtTz = ratios.taken_at_orig_tzs[i];
-	const formattedTakenAt = formatServerDateTime(takenAt, dateFormats.date_format_sidebar_taken_at, takenAtTz);
 	const ratingAvg = ratios.rating_avgs?.[i] ?? null;
 	const ratingUser = ratios.rating_users?.[i] ?? null;
 	const description = ratios.thumb_infos?.[i] ?? null;
 	const tagNames = ratios.tags?.[i] ?? [];
 
-	return {
+	const tile: AdaptedPhotoTile = {
 		id: ratios.ids[i],
 		album_id: album_id,
 		checksum: "",
@@ -106,12 +149,9 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		next_photo_id: null,
 		previous_photo_id: null,
 		preformatted: {
-			created_at: formatServerDateTime(createdAt, dateFormats.date_format_sidebar_uploaded),
-			taken_at: formattedTakenAt === "" ? null : formattedTakenAt,
-			date_overlay:
-				takenAt === null
-					? formatServerDateTime(createdAt, dateFormats.date_format_photo_overlay)
-					: formatServerDateTime(takenAt, dateFormats.date_format_photo_overlay, takenAtTz),
+			created_at: "",
+			taken_at: null,
+			date_overlay: "",
 			make: null,
 			model: null,
 			shutter: "",
@@ -159,6 +199,20 @@ export function adaptPhotoTile(i: number, ratios: AdaptablePhotoTierTwo, album_i
 		is_validated: ratios.is_validateds[i],
 		owner_id: ratios.owner_ids[i],
 	};
+
+	const preformatted = tile.preformatted;
+	defineLazy(preformatted, "created_at", () => formatServerDateTime(createdAt, dateFormats.date_format_sidebar_uploaded));
+	defineLazy(preformatted, "taken_at", () => {
+		const formatted = formatServerDateTime(takenAt, dateFormats.date_format_sidebar_taken_at, takenAtTz);
+		return formatted === "" ? null : formatted;
+	});
+	defineLazy(preformatted, "date_overlay", () =>
+		takenAt === null
+			? formatServerDateTime(createdAt, dateFormats.date_format_photo_overlay)
+			: formatServerDateTime(takenAt, dateFormats.date_format_photo_overlay, takenAtTz),
+	);
+
+	return tile;
 }
 
 /**

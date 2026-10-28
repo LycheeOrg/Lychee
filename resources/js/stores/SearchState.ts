@@ -1,6 +1,7 @@
 import SearchService from "@/services/search-service";
 import SearchV3Service, { type SearchV3Query } from "@/services/search-v3-service";
 import { adaptPhotoTile, mergePhotoDetail, type AdaptedPhotoTile } from "@/v8/utils/adaptPhotoTile";
+import { createDetailRequests } from "@/utils/detailRequests";
 import { adaptAlbumChildTile, combineAlbumChildRights, DEFAULT_ALBUM_CHILD_RIGHTS, type AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 import { defineStore } from "pinia";
 import { useAlbumStore } from "./AlbumState";
@@ -14,6 +15,9 @@ export type SearchStore = ReturnType<typeof useSearchStore>;
 
 /** Matches the backend's own `photo_ids[]` input cap (422 above). */
 const DETAILS_CHUNK_SIZE = 300;
+
+/** In-flight tier-3 requests of search photos (FR-103-08). */
+const searchDetailRequests = createDetailRequests();
 
 export const useSearchStore = defineStore("search-store", {
 	state: () => ({
@@ -294,38 +298,42 @@ export const useSearchStore = defineStore("search-store", {
 		 * Already-resolved ids are filtered out before the request, and what
 		 * remains is chunked at the backend's own 300-id input cap.
 		 */
-		async loadPhotoDetailsV3(ids: string[]): Promise<void> {
+		async loadPhotoDetailsV3(ids: string[]): Promise<boolean> {
 			if (this.searchTerm === undefined) {
-				return;
-			}
-			const pending = ids.filter((id) => !this.photoDetailsResolvedIdsV3.has(id));
-			if (pending.length === 0) {
-				return;
+				return true;
 			}
 
 			const query = this.queryV3(this.searchTerm);
 			const token = this.requestToken;
 
-			for (let offset = 0; offset < pending.length; offset += DETAILS_CHUNK_SIZE) {
-				const chunk = pending.slice(offset, offset + DETAILS_CHUNK_SIZE);
-				const response = await SearchV3Service.getPhotoDetails(query, chunk);
-				if (token !== this.requestToken) {
-					// The search changed under us; the merged tiles are gone.
-					return;
-				}
+			// Ids already merged or in flight are not requested again; resolves
+			// false when a request carrying one of `ids` failed (FR-103-07/08).
+			return searchDetailRequests.load(
+				ids,
+				(id) => this.photoDetailsResolvedIdsV3.has(id),
+				async (pending) => {
+					for (let offset = 0; offset < pending.length; offset += DETAILS_CHUNK_SIZE) {
+						const chunk = pending.slice(offset, offset + DETAILS_CHUNK_SIZE);
+						const response = await SearchV3Service.getPhotoDetails(query, chunk);
+						if (token !== this.requestToken) {
+							// The search changed under us; the merged tiles are gone.
+							return;
+						}
 
-				const detail = response.data;
-				const indexById = new Map<string, number>();
-				this.photoTilesV3.forEach((tile, i) => indexById.set(tile.id, i));
+						const detail = response.data;
+						const indexById = new Map<string, number>();
+						this.photoTilesV3.forEach((tile, i) => indexById.set(tile.id, i));
 
-				detail.ids.forEach((id, i) => {
-					const tileIndex = indexById.get(id);
-					if (tileIndex !== undefined) {
-						mergePhotoDetail(this.photoTilesV3[tileIndex], detail, i);
+						detail.ids.forEach((id, i) => {
+							const tileIndex = indexById.get(id);
+							if (tileIndex !== undefined) {
+								mergePhotoDetail(this.photoTilesV3[tileIndex], detail, i);
+							}
+							this.photoDetailsResolvedIdsV3.add(id);
+						});
 					}
-					this.photoDetailsResolvedIdsV3.add(id);
-				});
-			}
+				},
+			);
 		},
 
 		clear() {

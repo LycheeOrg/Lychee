@@ -162,7 +162,8 @@ class AlbumConfig extends Data
 
 	/**
 	 * Whether the album's frame has a photo to show: the whole album tree in
-	 * sub-album mode (FR-088-17), the album's own photos otherwise.
+	 * sub-album mode (FR-088-17), the album's own visible photos otherwise,
+	 * without loading them (FR-103-01).
 	 */
 	private function hasFramePhotos(AbstractAlbum $album, ConfigManager $config_manager): bool
 	{
@@ -170,6 +171,6 @@ class AlbumConfig extends Data
 			return $album->all_photos(!$config_manager->getValueAsBool('hide_nsfw_in_frame'))->getQuery()->exists();
 		}
 
-		return $album->get_photos()->count() > 0;
+		return $album->photos()->exists();
 	}
 }

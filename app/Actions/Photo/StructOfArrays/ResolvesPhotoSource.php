@@ -51,9 +51,16 @@ trait ResolvesPhotoSource
 	use FiltersUploadValidation;
 
 	/**
+	 * `$scope` (a bucket window or an id list on `photos.*` columns) restricts
+	 * the returned query; for a smart album it also restricts the visible-photo
+	 * id subquery, which would otherwise list every visible photo of the
+	 * library on each request (FR-103-09).
+	 *
+	 * @param (\Closure(FixedQueryBuilder<Photo>): void)|null $scope
+	 *
 	 * @return FixedQueryBuilder<Photo>
 	 */
-	private function resolvePhotoQuery(AbstractAlbum $album, ?User $user): FixedQueryBuilder
+	private function resolvePhotoQuery(AbstractAlbum $album, ?User $user, ?\Closure $scope = null): FixedQueryBuilder
 	{
 		if ($album instanceof Album) {
 			$query = Photo::query()
@@ -73,6 +80,9 @@ trait ResolvesPhotoSource
 			// `photos.id`, regardless of how many regular albums a photo
 			// belongs to.
 			$matching_ids = $album->photos()->select('photos.id');
+			if ($scope !== null) {
+				$scope($matching_ids);
+			}
 			$query = Photo::query()->whereIn('photos.id', $matching_ids);
 		} else {
 			// TagAlbum | PersonAlbum - `photos()` returns a `Relation`
@@ -87,6 +97,10 @@ trait ResolvesPhotoSource
 
 		if ($user?->may_administrate !== true) {
 			$this->applyUploadValidationFilter($query, $user?->id);
+		}
+
+		if ($scope !== null) {
+			$scope($query);
 		}
 
 		return $query;

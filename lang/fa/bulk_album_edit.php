@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'ترتیب عکس',
     'col_album_sorting' => 'ترتیب آلبوم',
     'col_created_at' => 'تاریخ ایجاد',
+    'taken_range' => 'تاریخ عکاسی: :range',
+    'taken_none' => 'بدون داده',
 
     // Filter
     'filter_placeholder' => 'جستجو بر اساس عنوان...',

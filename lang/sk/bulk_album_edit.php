@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Triedenie fotografií',
     'col_album_sorting' => 'Triedenie albumov',
     'col_created_at' => 'Vytvorené',
+    'taken_range' => 'Odfotené: :range',
+    'taken_none' => 'Žiadne údaje',
 
     // Filter
     'filter_placeholder' => 'Hľadať podľa názvu...',

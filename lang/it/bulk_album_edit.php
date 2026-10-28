@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Ordine foto',
     'col_album_sorting' => 'Ordine album',
     'col_created_at' => 'Creato',
+    'taken_range' => 'Scattate: :range',
+    'taken_none' => 'Nessun dato',
 
     // Filter
     'filter_placeholder' => 'Cerca per titolo...',

@@ -71,9 +71,8 @@ class QueryPhotoRatios
 		$tags_on = $overlay !== VisibilityType::NEVER && $thumb_info_mode === PhotoThumbInfoType::TITLE && $this->config_manager->getValueAsBool('photo_thumb_tags_enabled');
 		$blank_titles = $this->config_manager->getValueAsBool('file_name_hidden') && $user === null;
 
-		$query = $this->resolvePhotoQuery($album, $user);
+		$query = $this->resolvePhotoQuery($album, $user, fn (FixedQueryBuilder $q) => $this->applyScopeFilter($q, $album, $scheme, $bucket_ids, $photo_ids));
 		$this->joinRatioSizeVariants($query);
-		$this->applyScopeFilter($query, $album, $scheme, $bucket_ids, $photo_ids);
 
 		$select = [
 			'photos.id',

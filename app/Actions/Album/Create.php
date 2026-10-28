@@ -80,11 +80,24 @@ class Create
 			Cache::lock(self::TREE_LOCK_KEY, self::TREE_LOCK_TTL_SECONDS)->block(self::TREE_LOCK_WAIT_SECONDS, function () use ($album, $parent_album): void {
 				$this->reloadTreeBounds($parent_album);
 				$this->set_parent($album, $parent_album);
+				$album->is_recursive_nsfw = $this->isBelowNsfw($parent_album);
 				$album->save();
 			});
 		} catch (LockTimeoutException $e) {
 			throw new ConflictingPropertyException('Another album is being created, please retry.', $e);
 		}
+	}
+
+	/**
+	 * A new album is not NSFW itself, so it is recursively NSFW exactly when
+	 * its parent or one of the parent's ancestors is (FR-103-11). Decided from
+	 * the tree with the parent's bounds reloaded under the lock, so a stale
+	 * flag of the parent is not passed on.
+	 */
+	private function isBelowNsfw(?Album $parent_album): bool
+	{
+		return $parent_album !== null &&
+			(new SyncRecursiveNsfw())->isRecursiveNsfw($parent_album->_lft, $parent_album->_rgt);
 	}
 
 	/**

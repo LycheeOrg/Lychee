@@ -13,6 +13,7 @@
 
 namespace Tests\Feature_v3\Search;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Actions\Search\PhotoSearch;
 use App\Actions\Search\SearchTokenParser;
 use App\Actions\Search\StructOfArrays\SearchPhotoSource;
@@ -178,6 +179,7 @@ class SearchPhotoSourceTest extends BaseApiWithDataTest
 	{
 		$this->album1->is_nsfw = true;
 		$this->album1->save();
+		(new SyncRecursiveNsfw())->do();
 		Configs::set('hide_nsfw_in_search', '1');
 		Auth::login($this->userMayUpload1);
 
@@ -193,6 +195,7 @@ class SearchPhotoSourceTest extends BaseApiWithDataTest
 	{
 		$this->album1->is_nsfw = true;
 		$this->album1->save();
+		(new SyncRecursiveNsfw())->do();
 		Configs::set('hide_nsfw_in_search', '0');
 		Auth::login($this->userMayUpload1);
 

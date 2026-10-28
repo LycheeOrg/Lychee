@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'ترتيب الصور',
     'col_album_sorting' => 'ترتيب الألبومات',
     'col_created_at' => 'تاريخ الإنشاء',
+    'taken_range' => 'تاريخ الالتقاط: :range',
+    'taken_none' => 'لا توجد بيانات',
 
     // Filter
     'filter_placeholder' => 'البحث حسب العنوان...',

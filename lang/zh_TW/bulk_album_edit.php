@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => '照片排序',
     'col_album_sorting' => '相簿排序',
     'col_created_at' => '建立時間',
+    'taken_range' => '拍攝時間：:range',
+    'taken_none' => '無資料',
 
     // Filter
     'filter_placeholder' => '依標題搜尋…',

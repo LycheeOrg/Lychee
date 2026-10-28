@@ -136,6 +136,11 @@
 						<span v-else class="cursor-text hover:text-primary" @click="startEditTitle(row.original)">{{ row.original.title }}</span>
 					</span>
 				</template>
+				<template v-for="hint in switchHeaders" :key="hint.id" #[`${hint.id}-header`]>
+					<UTooltip :text="$t(hint.label)">
+						<UIcon :name="hint.icon" class="size-4" role="img" :aria-label="$t(hint.label)" />
+					</UTooltip>
+				</template>
 				<template #is_nsfw-cell="{ row }">
 					<USwitch
 						size="xs"
@@ -272,6 +277,11 @@
 						/>
 					</div>
 				</template>
+				<template #created_at-cell="{ row }">
+					<UTooltip :text="takenTooltipOf(row.original)">
+						<span>{{ formatDate(row.original.created_at) }}</span>
+					</UTooltip>
+				</template>
 				<template #actions-cell="{ row }">
 					<UButton size="sm" variant="ghost" color="neutral" icon="lucide:pencil" @click="quickEditAlbum(row.original.id)" />
 				</template>
@@ -297,7 +307,11 @@ import { useAlbumListStore } from "@/stores/AlbumListState";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { takenRangeLabel } from "@/v8/utils/takenRange";
 import type { TableColumn } from "@nuxt/ui";
+
+/** A bulk edit row of this page: the shared row plus the capture range of the v3 fields (FR-103-14). */
+type BulkAlbumRow = BulkAlbumResource & { min_taken_at: string | null; max_taken_at: string | null };
 
 const toast = useAppToast();
 const albumListStore = useAlbumListStore();
@@ -311,7 +325,7 @@ UsersService.count().then((data) => {
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-const albums = ref<BulkAlbumResource[]>([]);
+const albums = ref<BulkAlbumRow[]>([]);
 const loading = ref(false);
 const search = ref("");
 
@@ -367,8 +381,8 @@ function widthCol(widthClasses: string): { class: { th: string; td: string } } {
 	return { class: { th: widthClasses, td: `${widthClasses} truncate` } };
 }
 
-const columns = computed<TableColumn<BulkAlbumResource>[]>(() => {
-	const cols: TableColumn<BulkAlbumResource>[] = [
+const columns = computed<TableColumn<BulkAlbumRow>[]>(() => {
+	const cols: TableColumn<BulkAlbumRow>[] = [
 		{ id: "select", meta: centeredCol("w-16 min-w-16 max-w-16") },
 		{ id: "title", header: trans("bulk_album_edit.col_title"), meta: widthCol("w-96 min-w-96 max-w-96") },
 		{
@@ -413,12 +427,7 @@ const columns = computed<TableColumn<BulkAlbumResource>[]>(() => {
 	cols.push(
 		{ id: "photo_sorting", header: trans("bulk_album_edit.col_photo_sorting"), meta: centeredCol("w-48 min-w-48 max-w-48") },
 		{ id: "album_sorting", header: trans("bulk_album_edit.col_album_sorting"), meta: centeredCol("w-48 min-w-48 max-w-48") },
-		{
-			id: "created_at",
-			header: trans("bulk_album_edit.col_created_at"),
-			cell: ({ row }) => formatDate(row.original.created_at),
-			meta: widthCol("w-28 min-w-28 max-w-28"),
-		},
+		{ id: "created_at", header: trans("bulk_album_edit.col_created_at"), meta: widthCol("w-28 min-w-28 max-w-28") },
 		{ id: "actions", meta: centeredCol("w-20 min-w-20 max-w-20") },
 	);
 
@@ -439,6 +448,22 @@ function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
+// Switch column headers: an icon, the column label as tooltip (FR-103-13).
+const switchHeaders = [
+	{ id: "is_nsfw", icon: "lucide:triangle-alert", label: "bulk_album_edit.col_is_nsfw" },
+	{ id: "is_public", icon: "lucide:eye", label: "bulk_album_edit.col_is_public" },
+	{ id: "is_link_required", icon: "lucide:link", label: "bulk_album_edit.col_is_link_required" },
+	{ id: "grants_download", icon: "lucide:cloud-download", label: "bulk_album_edit.col_grants_download" },
+	{ id: "grants_full_photo_access", icon: "lucide:app-window", label: "bulk_album_edit.col_grants_full_photo_access" },
+	{ id: "grants_upload", icon: "lucide:upload", label: "bulk_album_edit.col_grants_upload" },
+];
+
+// Capture range on the creation date, "No data" without capture date (FR-103-15).
+function takenTooltipOf(album: BulkAlbumRow): string {
+	const range = takenRangeLabel(album.min_taken_at, album.max_taken_at, formatDate);
+	return range === null ? trans("bulk_album_edit.taken_none") : trans("bulk_album_edit.taken_range", { range });
+}
+
 // ── Data Loading (single unpaginated fetch, client-side search, rendering left
 // to the table's own virtualization) ─────────────────────────────────────────
 // `fullAlbums` holds the complete curated set once fetched; `albums.value` for a
@@ -446,13 +471,13 @@ function formatDate(iso: string): string {
 // inline-edit handlers below, which mutate a displayed row in place,
 // automatically keep `fullAlbums` in sync without any extra bookkeeping.
 
-const fullAlbums = ref<BulkAlbumResource[] | undefined>(undefined);
+const fullAlbums = ref<BulkAlbumRow[] | undefined>(undefined);
 
 function adaptBulkEditRow(
 	data: App.Http.Resources.V3.AlbumListResource,
 	bulk: App.Http.Resources.V3.AlbumListBulkEditFieldsResource,
 	i: number,
-): BulkAlbumResource {
+): BulkAlbumRow {
 	return {
 		id: data.ids[i],
 		title: data.titles[i],
@@ -478,10 +503,12 @@ function adaptBulkEditRow(
 		grants_download: bulk.grants_downloads[i],
 		grants_upload: bulk.grants_uploads[i],
 		created_at: bulk.created_ats[i],
+		min_taken_at: bulk.min_taken_ats[i],
+		max_taken_at: bulk.max_taken_ats[i],
 	};
 }
 
-function ensureFullAlbumsLoaded(): Promise<BulkAlbumResource[]> {
+function ensureFullAlbumsLoaded(): Promise<BulkAlbumRow[]> {
 	if (fullAlbums.value !== undefined) {
 		return Promise.resolve(fullAlbums.value);
 	}
@@ -494,7 +521,7 @@ function ensureFullAlbumsLoaded(): Promise<BulkAlbumResource[]> {
 	});
 }
 
-function filterFullAlbums(rows: BulkAlbumResource[]): BulkAlbumResource[] {
+function filterFullAlbums(rows: BulkAlbumRow[]): BulkAlbumRow[] {
 	const term = search.value.trim().toLowerCase();
 	if (term === "") {
 		return rows;
@@ -558,12 +585,12 @@ function selectAllMatching(): void {
 
 // ── Inline title editing ─────────────────────────────────────────────────────
 
-function startEditTitle(album: BulkAlbumResource): void {
+function startEditTitle(album: BulkAlbumRow): void {
 	editingTitleId.value = album.id;
 	editingTitleValue.value = album.title;
 }
 
-function saveTitle(album: BulkAlbumResource): void {
+function saveTitle(album: BulkAlbumRow): void {
 	if (editingTitleId.value !== album.id) {
 		return;
 	}

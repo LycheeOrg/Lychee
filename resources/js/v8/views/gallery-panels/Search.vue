@@ -204,7 +204,7 @@ const photosStore = usePhotosStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
 // Feature 100: thumbnails fetch their live photo video URL on hover.
-provide(MOTION_URL_LOADER, (ids) => searchStore.loadPhotoDetailsV3(ids));
+provide(MOTION_URL_LOADER, (ids) => searchStore.loadPhotoDetailsV3(ids).then(() => undefined));
 const layoutStore = useLayoutStore();
 
 // Pre-fill the store from a bookmarked/shared URL before children (e.g. SearchBox)

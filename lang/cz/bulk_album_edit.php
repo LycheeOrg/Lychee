@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Seřadit podle fotek',
     'col_album_sorting' => 'Seřadit podle alb',
     'col_created_at' => 'Vytvořeno',
+    'taken_range' => 'Pořízeno: :range',
+    'taken_none' => 'Žádná data',
 
     // Filter
     'filter_placeholder' => 'Hledat podle názvu...',

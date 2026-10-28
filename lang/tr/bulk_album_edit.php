@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Fotoğraf Sıralama',
     'col_album_sorting' => 'Albüm Sıralama',
     'col_created_at' => 'Oluşturulma',
+    'taken_range' => 'Çekim: :range',
+    'taken_none' => 'Veri yok',
 
     // Filter
     'filter_placeholder' => 'Başlığa göre ara...',

@@ -84,7 +84,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $_rgt
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
- * @property bool                     $is_recursive_nsfw             /!\ This attribute is not loaded by default.
+ * @property bool                     $is_recursive_nsfw             The album or one of its ancestors is NSFW; kept by {@see \App\Actions\Album\SyncRecursiveNsfw}.
  * @property Collection<int,Tag>      $tags
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
@@ -197,6 +197,7 @@ class Album extends BaseAlbum implements Node
 		'header_photo_focus' => null,
 		'auto_cover_id_max_privilege' => null,
 		'auto_cover_id_least_privilege' => null,
+		'is_recursive_nsfw' => false,
 	];
 
 	/**

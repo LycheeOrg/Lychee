@@ -51,22 +51,24 @@
 					</UFormField>
 				</div>
 				<template v-if="is_expert_mode">
-					<UFormField :label="$t('gallery.album.properties.header')">
-						<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
-							<template #item-leading="{ item }">
-								<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
-								<UIcon v-else-if="item.id === 'map'" name="lucide:map" />
-								<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
-							</template>
-						</USelectMenu>
-					</UFormField>
-					<UFormField :label="$t('gallery.album.properties.cover')">
-						<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72" clear>
-							<template #item-leading="{ item }">
-								<img :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
-							</template>
-						</USelectMenu>
-					</UFormField>
+					<div class="flex gap-4">
+						<UFormField :label="$t('gallery.album.properties.header')">
+							<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
+								<template #item-leading="{ item }">
+									<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
+									<UIcon v-else-if="item.id === 'map'" name="lucide:map" />
+									<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+								</template>
+							</USelectMenu>
+						</UFormField>
+						<UFormField :label="$t('gallery.album.properties.cover')">
+							<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72" clear>
+								<template #item-leading="{ item }">
+									<img :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+								</template>
+							</USelectMenu>
+						</UFormField>
+					</div>
 					<UFormField :label="$t('gallery.album.properties.license')">
 						<USelectMenu v-model="license" :items="licenseOptions" label-key="label" class="w-72">
 							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>

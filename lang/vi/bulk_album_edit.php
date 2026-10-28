@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Sắp xếp ảnh',
     'col_album_sorting' => 'Sắp xếp album',
     'col_created_at' => 'Ngày tạo',
+    'taken_range' => 'Ngày chụp: :range',
+    'taken_none' => 'Không có dữ liệu',
 
     // Filter
     'filter_placeholder' => 'Tìm theo tiêu đề...',
