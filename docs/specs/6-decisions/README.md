@@ -28,6 +28,7 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-096-01](ADR-096-01-vite-plus-single-frontend-toolchain.md) | Accepted | Vite+ (`vp`: Vite 8, Oxlint, Oxfmt, `vp staged`) as the single frontend toolchain; `vue-tsc` and the npm bootstrap kept |
 | [ADR-100-01](ADR-100-01-motion-photo-reader-in-php-exif.md) | Accepted | The Google Motion Photo reader (legacy `MicroVideoOffset` and Motion Photo 1.0 `Container:Directory`) lives in `lychee-org/php-exif` (`PHPExif\MotionPhoto`, run by `Reader::read()` for every adapter, result in `MicroVideoOffset`) |
 | [ADR-101-01](ADR-101-01-docker-imagemagick-jxl.md) | Accepted | Docker image ships ImageMagick 7 built against libjxl (pinned, source-built unless a trixie package with JXL exists); JXL smoke test in the Docker workflow |
+| [ADR-103-01](ADR-103-01-stored-recursive-nsfw-flag.md) | Accepted | Stored recursive NSFW flag on albums (`albums.is_recursive_nsfw`), written explicitly; no-origin sensitivity checks read it |
 
 ## Templates
 

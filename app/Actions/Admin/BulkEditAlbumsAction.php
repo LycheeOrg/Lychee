@@ -9,6 +9,7 @@
 namespace App\Actions\Admin;
 
 use App\Actions\Album\SetProtectionPolicy;
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\DTO\BulkAlbumPatchData;
 use App\Events\AlbumSaved;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
@@ -88,6 +89,9 @@ class BulkEditAlbumsAction
 			BaseAlbumImpl::query()
 				->whereIn('id', $album_ids)
 				->update($base_data);
+		}
+		if ($data->has('is_nsfw')) {
+			(new SyncRecursiveNsfw())->do();
 		}
 
 		// ── Group 2: albums columns ───────────────────────────────────────────

@@ -8,8 +8,10 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Events\AlbumListingCacheFlushRequested;
 use App\Models\Album;
+use App\Models\Builders\AlbumBuilder;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 
@@ -51,10 +53,19 @@ class FixTree extends Command
 		$total_errors = $stat['oddness'] + $stat['duplicates'] + $stat['wrong_parent'] + $stat['missing_parent'];
 		if ($total_errors === 0) {
 			$this->line('Everything OK, nothing to fix.');
-
-			return 0;
+		} else {
+			$this->fix($query, $total_errors);
 		}
 
+		// Derived from the tree, so recomputed once the tree is sound.
+		(new SyncRecursiveNsfw())->do();
+		$this->line('Recursive NSFW flags recomputed.');
+
+		return 0;
+	}
+
+	private function fix(AlbumBuilder $query, int $total_errors): void
+	{
 		$this->line('Found ' . $total_errors . ' errors.');
 		// Normally we would not want that.
 		// But here we need to disable strict mode to be able to fix the tree.
@@ -64,7 +75,5 @@ class FixTree extends Command
 		$this->line('Fixed ' . $fixed_nodes . ' nodes.');
 
 		AlbumListingCacheFlushRequested::dispatchIf($fixed_nodes > 0);
-
-		return 0;
 	}
 }

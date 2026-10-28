@@ -5,18 +5,9 @@ import { useTimelineStore } from "./TimelineState";
 import { useLycheeStateStore } from "./LycheeState";
 import { useSearchStore } from "./SearchState";
 import { isWebGL2Supported } from "@/v8/utils/webgl";
+import { detailWindowIds, ImageViewMode, imageViewModeOf, isDetailPending, preloadSourceOf, sizesMediumOf, srcSetMediumOf } from "@/utils/photoView";
 
-export enum ImageViewMode {
-	Original = "original",
-	Medium = "medium",
-	Raw = "raw",
-	Video = "video",
-	LivePhotoMedium = "livephoto-medium",
-	LivePhotoOriginal = "livephoto-original",
-	Pdf = "pdf",
-	/** Feature 082: chosen by the v8 `PhotoBox` only, never returned by `imageViewMode`. */
-	Sphere = "sphere",
-}
+export { ImageViewMode };
 
 export type PhotoStore = ReturnType<typeof usePhotoStore>;
 
@@ -44,6 +35,38 @@ function neighbourStyle(photo: App.Http.Resources.Models.PhotoResource): string 
 	return "background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('" + thumbUrl + "')";
 }
 
+/** Neighbours whose image is preloaded once their details are merged (FR-103-08). */
+const PRELOAD_AHEAD = 3;
+const PRELOAD_BEHIND = 1;
+
+/** Sources already handed to the browser, so a photo is not preloaded twice. */
+const preloaded = new Set<string>();
+
+/**
+ * Asks the browser for the image the photo view would show for each neighbour of `index`
+ * (FR-103-08). A detached `Image` with the same `srcset`/`sizes` makes the browser pick, fetch and
+ * cache exactly what `PhotoBox` will request.
+ */
+function preloadAround(photos: App.Http.Resources.Models.PhotoResource[], index: number, prefersHighestQuality: boolean): void {
+	const neighbours = [...photos.slice(index + 1, index + 1 + PRELOAD_AHEAD), ...photos.slice(Math.max(0, index - PRELOAD_BEHIND), index)];
+	for (const photo of neighbours) {
+		const source = preloadSourceOf(photo, prefersHighestQuality);
+		if (source === null || preloaded.has(source.src)) {
+			continue;
+		}
+		if (preloaded.size > 500) {
+			preloaded.clear();
+		}
+		preloaded.add(source.src);
+		const image = new Image();
+		if (source.srcset !== "") {
+			image.sizes = source.sizes;
+			image.srcset = source.srcset;
+		}
+		image.src = source.src;
+	}
+}
+
 export const usePhotoStore = defineStore("photo-store", {
 	state: () => ({
 		photoId: undefined as string | undefined,
@@ -55,6 +78,8 @@ export const usePhotoStore = defineStore("photo-store", {
 		// Feature 082: photo switched to its flat view (FR-082-09), photo whose sphere failed (FR-082-15).
 		sphere_flat_photo_id: undefined as string | undefined,
 		sphere_failed_photo_id: undefined as string | undefined,
+		/** FR-103-07: the shown photo's details request failed; showing it again retries. */
+		details_failed_photo_id: undefined as string | undefined,
 	}),
 	actions: {
 		reset() {
@@ -65,6 +90,7 @@ export const usePhotoStore = defineStore("photo-store", {
 			this.zoom_controls = undefined;
 			this.sphere_flat_photo_id = undefined;
 			this.sphere_failed_photo_id = undefined;
+			this.details_failed_photo_id = undefined;
 		},
 		/** FR-082-09: between the sphere and the flat image; the next photo opens as a sphere again. */
 		toggleSphereFlat() {
@@ -104,6 +130,7 @@ export const usePhotoStore = defineStore("photo-store", {
 				return;
 			}
 			this.photo = photosState.photos.find((p) => p.id === this.photoId);
+			this.details_failed_photo_id = undefined;
 
 			// On-demand tier-3 (`details`) fetch (G5), gated on `isPhotoSoaActive`
 			// (Q-065-05, Option A): only fires on the SoA path, where the tile
@@ -113,12 +140,10 @@ export const usePhotoStore = defineStore("photo-store", {
 			// a full `PhotoResource` — calling `loadPhotoDetails()` there would
 			// either 404 (Feature 064's endpoints reject non-Album parents) or
 			// be a wasted round trip against already-complete data, so it is
-			// never called at all in that case. Neighbor ids improve
-			// swipe-transition preview quality, mirroring how v2's own
-			// already-fully-loaded page gives adjacent photos' full data for
-			// free — `previous_photo_id`/`next_photo_id` are already correct at
-			// this point (`loadPhotosV3()` runs `rebuildNavigationLinks()`
-			// immediately after populating the array).
+			// never called at all in that case. The request also carries the
+			// 10 next and 5 previous photos in grid order, and the images of
+			// the nearest ones are preloaded once merged, so fast navigation
+			// finds them ready (FR-103-08).
 			//
 			// Feature 066: a Timeline-sourced tile is exactly as
 			// `ratios`-lightweight (`adaptPhotoTile()` is reused unmodified,
@@ -151,17 +176,33 @@ export const usePhotoStore = defineStore("photo-store", {
 				const albumStore = useAlbumStore();
 				const timelineStore = useTimelineStore();
 				const searchStore = useSearchStore();
-				const ids = [this.photo.id, this.photo.previous_photo_id, this.photo.next_photo_id].filter(
-					(id): id is string => id !== null && id !== undefined,
-				);
+				const ids = detailWindowIds(photosState.photos, this.photo.id);
+				let request: Promise<boolean> | undefined;
 				if (searchStore.isSearchSoaActive && photosState.sourceV3 === "search") {
-					void searchStore.loadPhotoDetailsV3(ids);
+					request = searchStore.loadPhotoDetailsV3(ids);
 				} else if (albumStore.isPhotoSoaActive) {
-					void albumStore.loadPhotoDetails(ids);
+					request = albumStore.loadPhotoDetails(ids);
 				} else if (timelineStore.isTimelineSoaActive && this.photo.album_id === "timeline") {
-					void timelineStore.loadPhotoDetailsV3(ids);
+					request = timelineStore.loadPhotoDetailsV3(ids);
 				}
+				void request?.then((succeeded) => this.afterDetails(ids[0], succeeded));
 			}
+		},
+		/**
+		 * FR-103-07/08: a failed request leaves the shown photo without details, so the view shows
+		 * its error state; otherwise the nearest neighbours' images are preloaded.
+		 */
+		afterDetails(photoId: string, succeeded: boolean) {
+			if (this.photo?.id !== photoId) {
+				return;
+			}
+			if (!succeeded && isDetailPending(this.photo)) {
+				this.details_failed_photo_id = photoId;
+				return;
+			}
+			const photosState = usePhotosStore();
+			const index = photosState.photos.findIndex((p) => p.id === photoId);
+			preloadAround(photosState.photos, index, useLycheeStateStore().is_photo_viewer_highest_quality_enabled);
 		},
 	},
 	getters: {
@@ -204,60 +245,21 @@ export const usePhotoStore = defineStore("photo-store", {
 		isSphereView(): boolean {
 			return this.isSphereCapable && !this.isSphereFlat;
 		},
+		/** FR-103-07: the shown photo has no size variants yet (its details are on their way). */
+		isDetailPending(): boolean {
+			return this.photo !== undefined && isDetailPending(this.photo);
+		},
 		imageViewMode(): ImageViewMode {
-			if (this.photo?.precomputed.is_video) {
-				return ImageViewMode.Video;
+			if (this.photo === undefined) {
+				return ImageViewMode.Original;
 			}
-
-			if (this.photo?.precomputed.is_raw) {
-				if (this.photo?.size_variants.medium !== null) {
-					return ImageViewMode.Medium;
-				}
-				if (this.photo?.size_variants.original?.url?.endsWith(".pdf")) {
-					return ImageViewMode.Pdf;
-				}
-				return ImageViewMode.Raw;
-			}
-
-			// When enabled, prefer the highest-quality variant that exists for
-			// this photo (Original, falling back to Medium) instead of always
-			// preferring Medium - e.g. so a mobile long-press-save captures
-			// Original rather than whatever the viewer would otherwise render.
-			const prefersHighestQuality = useLycheeStateStore().is_photo_viewer_highest_quality_enabled;
-			const hasMedium = this.photo?.size_variants.medium !== null;
-			const hasOriginal = !!this.photo?.size_variants.original?.url;
-
-			if (this.photo?.precomputed.is_livephoto === true) {
-				if (prefersHighestQuality) {
-					return hasOriginal ? ImageViewMode.LivePhotoOriginal : ImageViewMode.LivePhotoMedium;
-				}
-				return hasMedium ? ImageViewMode.LivePhotoMedium : ImageViewMode.LivePhotoOriginal;
-			}
-
-			if (prefersHighestQuality) {
-				return hasOriginal ? ImageViewMode.Original : ImageViewMode.Medium;
-			}
-			return hasMedium ? ImageViewMode.Medium : ImageViewMode.Original;
+			return imageViewModeOf(this.photo, useLycheeStateStore().is_photo_viewer_highest_quality_enabled);
 		},
 		srcSetMedium(): string {
-			const medium = this.photo?.size_variants.medium ?? null;
-			const medium2x = this.photo?.size_variants.medium2x ?? null;
-			if (medium === null || medium2x === null) {
-				return "";
-			}
-
-			return `${medium.url} ${medium.width}w, ${medium2x.url} ${medium2x.width}w`;
+			return this.photo === undefined ? "" : srcSetMediumOf(this.photo);
 		},
 		sizesMedium(): string {
-			const medium = this.photo?.size_variants.medium ?? null;
-			if (this.srcSetMedium === "" || medium === null || medium.height === 0) {
-				return "";
-			}
-
-			// The image is fitted into the viewport, so its rendered width is capped by
-			// the viewport height times its aspect ratio. Ignoring the surrounding chrome
-			// only overestimates, i.e. errs towards medium2x, never towards a blurry medium.
-			return `min(100vw, ${(medium.width / medium.height).toFixed(4)} * 100vh)`;
+			return this.photo === undefined ? "" : sizesMediumOf(this.photo);
 		},
 		previousStyle(): string {
 			const photosState = usePhotosStore();

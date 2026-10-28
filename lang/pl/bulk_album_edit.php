@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Sortowanie zdjęć',
     'col_album_sorting' => 'Sortowanie albumów',
     'col_created_at' => 'Utworzono',
+    'taken_range' => 'Wykonano: :range',
+    'taken_none' => 'Brak danych',
 
     // Filter
     'filter_placeholder' => 'Szukaj po tytule...',

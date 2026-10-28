@@ -128,15 +128,17 @@ import {
 	type PhotoLayoutMode,
 	type PhotoBox,
 	type PhotoChunk,
+	type PositionedPhoto,
 	type TimelineChunk,
 	type TimelineLayoutCacheEntry,
 } from "@/v8/composables/photo/analyticPhotoLayout";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
-import { deriveDayScrubEntries, formatDayLabel, tileKey, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
+import { deriveDayScrubEntries, formatDayLabel, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 import { useKenBurnsHover } from "@/v8/composables/photo/kenBurnsHover";
 import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
+import { useTileKeys } from "@/v8/composables/photo/useTileKeys";
 
 const props = defineProps<{
 	selectedPhotos: string[];
@@ -304,7 +306,7 @@ const layoutResult = computed(() => {
 	// incremental, hole-tolerant layout is different.
 	if (source.value === "timeline" || !ready.value || containerWidth.value <= 0) {
 		return {
-			positioned: [] as { photo: App.Http.Resources.Models.PhotoResource; box: PhotoBox }[],
+			positioned: [] as PositionedPhoto[],
 			totalHeight: 0,
 			headerTops: [] as { top: number; label: string; bucketId: string }[],
 			boundaries: [] as import("@/v8/utils/albumBucketBoundaries").AlbumBucketBoundary[],
@@ -476,12 +478,15 @@ function tilesForChunk(chunk: PhotoChunk | TimelineChunk): PositionedTile[] {
 		}
 		return result;
 	}
+	// The layout positions tiles by their index in `photosStore.photos`; the
+	// rendered tile gets the store's reactive photo (FR-103-05).
 	const result: PositionedTile[] = [];
 	for (let i = 0; i < chunk.tileCount; i++) {
 		const index = chunk.tileStart + i;
 		const entry = layoutResult.value.positioned[index];
-		if (entry !== undefined) {
-			result.push({ photo: entry.photo, box: entry.box, index });
+		const photo = entry === undefined ? undefined : photosStore.photos[entry.index];
+		if (entry !== undefined && photo !== undefined) {
+			result.push({ photo, box: entry.box, index });
 		}
 	}
 	return result;
@@ -577,14 +582,25 @@ watch(
 /** Feature 094 (FR-094-10): hour runs when the album's photo headers are hour buckets (`Y-m-d-H`, 13 characters), day runs otherwise. */
 const isPhotoGranularityHourly = computed(() => albumStore.photoBucketsV3?.bucket_ids.find((id) => id !== "unknown")?.length === 13);
 
+const scrubberField = computed(() =>
+	source.value === "album" ? ((albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null) : null,
+);
+
+// Computed once per photo array, field and granularity; a new layout of the
+// same photos only re-pairs them with tops (FR-103-06).
+const tileKeys = useTileKeys(
+	() => photosStore.photos,
+	() => scrubberField.value,
+	() => isPhotoGranularityHourly.value,
+);
+
 const scrubberLayout = computed<DateScrubLayout | null>(() => {
-	const field = (albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null;
-	if (source.value !== "album" || field === null) {
+	if (scrubberField.value === null) {
 		return null;
 	}
 	const format = lycheeStore.date_scrubber_label_format;
-	const hourly = isPhotoGranularityHourly.value;
-	const items = layoutResult.value.positioned.map((p) => ({ day: tileKey(p.photo, field, hourly), top: p.box.top }));
+	const keys = tileKeys.value;
+	const items = layoutResult.value.positioned.map((p) => ({ day: keys[p.index] ?? null, top: p.box.top }));
 	const separatorTops = layoutResult.value.headerTops.map((h) => h.top);
 	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (key) => formatDayLabel(key.slice(0, 10), format));
 });

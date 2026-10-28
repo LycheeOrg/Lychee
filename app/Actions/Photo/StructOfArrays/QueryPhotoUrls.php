@@ -9,6 +9,7 @@
 namespace App\Actions\Photo\StructOfArrays;
 
 use App\Contracts\Models\AbstractAlbum;
+use App\Eloquent\FixedQueryBuilder;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\V3\PhotoUrlResource;
 use App\Image\Watermarker;
@@ -53,8 +54,7 @@ class QueryPhotoUrls
 	{
 		$grid_chain = self::GRID_CHAINS[$density];
 
-		$visible = array_flip($this->resolvePhotoQuery($album, $user)
-			->whereIn('photos.id', $photo_ids)
+		$visible = array_flip($this->resolvePhotoQuery($album, $user, fn (FixedQueryBuilder $q) => $q->whereIn('photos.id', $photo_ids))
 			->toBase()
 			->pluck('photos.id')
 			->all());

@@ -13,6 +13,7 @@
 
 namespace Tests\Feature_v3\Frame;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -117,6 +118,7 @@ class FrameSubAlbumsTest extends BaseApiWithDataTest
 		Configs::set('hide_nsfw_in_frame', '1');
 		$this->child->is_nsfw = true;
 		$this->child->save();
+		(new SyncRecursiveNsfw())->do();
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->parent->id]);
 		$this->assertStatus($response, 500);
@@ -133,6 +135,7 @@ class FrameSubAlbumsTest extends BaseApiWithDataTest
 		Configs::set('hide_nsfw_in_frame', '0');
 		$this->child->is_nsfw = true;
 		$this->child->save();
+		(new SyncRecursiveNsfw())->do();
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->parent->id]);
 		$this->assertOk($response);
@@ -149,6 +152,7 @@ class FrameSubAlbumsTest extends BaseApiWithDataTest
 		Configs::set('hide_nsfw_in_frame', '1');
 		$this->child->is_nsfw = true;
 		$this->child->save();
+		(new SyncRecursiveNsfw())->do();
 
 		// The viewer chose the sensitive album: only sensitive albums below it are skipped.
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => $this->child->id]);

@@ -10,9 +10,28 @@
 		}"
 		:style="{ cursor }"
 	>
-		<!--  This is a video file: put html5 player -->
+		<!-- FR-103-07: details or image on their way. -->
+		<div
+			v-if="isLoadingShown"
+			class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
+			role="status"
+			:aria-label="$t('dialogs.upload.loading')"
+		>
+			<LycheeLoadingIcon class="w-16 h-16 sm:w-20 sm:h-20" />
+		</div>
+		<!-- FR-103-07: details request or image failed. -->
+		<img
+			v-if="isFailed"
+			id="image"
+			alt="placeholder"
+			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
+			:src="getPlaceholderIcon()"
+		/>
+		<!--  This is a video file: put html5 player. Mounted with its URL, and again for another one:
+		      a <video> does not reload when its <source> changes (FR-103-07). -->
 		<video
-			v-if="viewMode == ImageViewMode.Video"
+			v-if="viewMode == ImageViewMode.Video && isMediaReady"
+			:key="photoStore.photo.size_variants.original?.url ?? ''"
 			id="image"
 			ref="videoElement"
 			width="auto"
@@ -29,7 +48,7 @@
 		</video>
 		<!-- This is a raw file: put a place holder -->
 		<embed
-			v-if="viewMode == ImageViewMode.Pdf"
+			v-if="viewMode == ImageViewMode.Pdf && isMediaReady"
 			id="image"
 			alt="pdf"
 			:title="photoStore.photo.title"
@@ -44,7 +63,7 @@
 		/>
 		<!-- This is a raw file: put a place holder -->
 		<img
-			v-if="viewMode == ImageViewMode.Raw"
+			v-if="viewMode == ImageViewMode.Raw && isMediaReady"
 			id="image"
 			alt="placeholder"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
@@ -54,7 +73,7 @@
 		<div class="absolute inset-0 flex items-center justify-center select-none" :style="layerStyle">
 			<!-- This is a normal image: medium or original -->
 			<img
-				v-if="viewMode == ImageViewMode.Medium"
+				v-if="viewMode == ImageViewMode.Medium && isMediaReady"
 				ref="imageEl"
 				id="image"
 				alt="medium"
@@ -67,10 +86,11 @@
 				:style="lockedSize"
 				:srcset="zoomSrc === null ? photoStore.srcSetMedium : undefined"
 				:sizes="zoomSrc === null ? photoStore.sizesMedium : undefined"
-				@load="updateFaceOverlay"
+				@load="onImageLoad"
+				@error="onImageError"
 			/>
 			<img
-				v-if="viewMode == ImageViewMode.Original"
+				v-if="viewMode == ImageViewMode.Original && isMediaReady"
 				ref="imageEl"
 				id="image"
 				alt="big"
@@ -81,7 +101,8 @@
 				"
 				:style="[photoStore.style, lockedSize]"
 				:src="zoomSrc ?? photoStore.photo.size_variants.original?.url ?? ''"
-				@load="updateFaceOverlay"
+				@load="onImageLoad"
+				@error="onImageError"
 			/>
 			<!-- Face overlay: positioned to exactly match the rendered image via its layout offsets -->
 			<div
@@ -102,13 +123,13 @@
 		</div>
 		<!-- This is a 360° photo: sphere view (Feature 082) -->
 		<SphereView
-			v-if="viewMode === ImageViewMode.Sphere"
+			v-if="viewMode === ImageViewMode.Sphere && isMediaReady"
 			:photo="photoStore.photo"
 			@unavailable="photoStore.markSphereFailed(photoStore.photo.id)"
 		/>
 		<!-- This is a livephoto : medium -->
 		<div
-			v-if="viewMode == ImageViewMode.LivePhotoMedium"
+			v-if="viewMode == ImageViewMode.LivePhotoMedium && isMediaReady"
 			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
@@ -121,7 +142,7 @@
 		></div>
 		<!-- This is a livephoto : full -->
 		<div
-			v-if="viewMode == ImageViewMode.LivePhotoOriginal"
+			v-if="viewMode == ImageViewMode.LivePhotoOriginal && isMediaReady"
 			ref="livePhotoEl"
 			id="livephoto"
 			data-live-photo
@@ -170,6 +191,7 @@ import FaceOverlay from "./FaceOverlay.vue";
 import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import NsfwDetectionOverlay from "./NsfwDetectionOverlay.vue";
 import ZoomMinimap from "./ZoomMinimap.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { usePanZoom } from "@/v8/composables/usePanZoom";
 import {
@@ -246,6 +268,42 @@ const emits = defineEmits<{
 const viewMode = computed(() =>
 	props.isZoomEnabled === true && !is_slideshow_active.value && photoStore.isSphereView ? ImageViewMode.Sphere : photoStore.imageViewMode,
 );
+
+// --- FR-103-07: loading and error states ---
+
+/** The shown image fired `load` / `error` (reset for every photo and source). */
+const imageLoaded = ref(false);
+const imageFailed = ref(false);
+const isImageMode = computed(() => viewMode.value === ImageViewMode.Medium || viewMode.value === ImageViewMode.Original);
+const shownImageSrc = computed(() => {
+	if (viewMode.value === ImageViewMode.Medium) {
+		return photoStore.photo?.size_variants.medium?.url ?? null;
+	}
+	return viewMode.value === ImageViewMode.Original ? (photoStore.photo?.size_variants.original?.url ?? null) : null;
+});
+watch([() => photoStore.photo?.id, shownImageSrc], () => {
+	imageLoaded.value = false;
+	imageFailed.value = false;
+});
+
+const isFailed = computed(
+	() => (photoStore.photo !== undefined && photoStore.details_failed_photo_id === photoStore.photo.id) || (isImageMode.value && imageFailed.value),
+);
+/** No media element until the photo's URLs are there (details merged) and nothing failed. */
+const isMediaReady = computed(() => !photoStore.isDetailPending && !isFailed.value);
+const isLoadingShown = computed(() => !isFailed.value && (photoStore.isDetailPending || (isImageMode.value && !imageLoaded.value)));
+
+function onImageLoad() {
+	imageLoaded.value = true;
+	updateFaceOverlay();
+}
+
+function onImageError() {
+	// A failed zoom source keeps the regular image (FR-078-12).
+	if (zoomSrc.value === null) {
+		imageFailed.value = true;
+	}
+}
 
 const isZoomable = computed(
 	() =>

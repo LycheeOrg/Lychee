@@ -2082,6 +2082,8 @@ declare namespace App {
 					grants_downloads: boolean[];
 					grants_uploads: boolean[];
 					created_ats: string[];
+					min_taken_ats: (string | null)[];
+					max_taken_ats: (string | null)[];
 				};
 				export type AlbumListResource = {
 					ids: string[];

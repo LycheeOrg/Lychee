@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Enum\SizeVariantType;
 use App\Models\Album;
 use App\Models\Configs;
@@ -295,6 +296,7 @@ class RssTest extends BaseApiWithDataTest
 			$normal_album = Album::factory()->as_root()->owned_by($this->admin)->create();
 			$nsfw_album = Album::factory()->as_root()->owned_by($this->admin)->create();
 			DB::table('base_albums')->where('id', $nsfw_album->id)->update(['is_nsfw' => true]);
+			(new SyncRecursiveNsfw())->do();
 
 			$photo = Photo::factory()->owned_by($this->admin)->in($normal_album)->create();
 			$photo->albums()->attach($nsfw_album->id);

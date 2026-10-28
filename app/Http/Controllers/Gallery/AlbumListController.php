@@ -113,6 +113,8 @@ class AlbumListController extends Controller
 				'albums.album_sorting_order',
 				'albums.album_thumb_aspect_ratio',
 				'albums.album_timeline',
+				'albums.min_taken_at',
+				'albums.max_taken_at',
 				'public_computed_access_permissions.base_album_id as public_base_album_id',
 				'public_computed_access_permissions.is_link_required as public_is_link_required',
 				'public_computed_access_permissions.grants_full_photo_access as public_grants_full_photo_access',
@@ -211,7 +213,7 @@ class AlbumListController extends Controller
 	/**
 	 * Map to the Bulk edit resources.
 	 *
-	 * @param Collection<object{owner_id:string,owner_name:string,description:string,copyright:string,license:string,photo_layout:string,photo_sorting_col:string,photo_sorting_order:string,album_sorting_col:string,album_sorting_order:string,album_thumb_aspect_ratio:string,album_timeline:string,photo_timeline:string,is_nsfw:string,public_base_album_id:string,public_is_link_required:string,public_grants_full_photo_access:string,public_grants_download:string,public_grants_upload:string,created_at:string}> &$rows
+	 * @param Collection<object{owner_id:string,owner_name:string,description:string,copyright:string,license:string,photo_layout:string,photo_sorting_col:string,photo_sorting_order:string,album_sorting_col:string,album_sorting_order:string,album_thumb_aspect_ratio:string,album_timeline:string,photo_timeline:string,is_nsfw:string,public_base_album_id:string,public_is_link_required:string,public_grants_full_photo_access:string,public_grants_download:string,public_grants_upload:string,created_at:string,min_taken_at:string|null,max_taken_at:string|null}> &$rows
 	 *
 	 * @return AlbumListBulkEditFieldsResource
 	 */
@@ -237,6 +239,8 @@ class AlbumListController extends Controller
 		$grants_downloads = [];
 		$grants_uploads = [];
 		$created_ats = [];
+		$min_taken_ats = [];
+		$max_taken_ats = [];
 
 		foreach ($rows as $row) {
 			$owner_ids[] = (int) $row->owner_id;
@@ -261,6 +265,8 @@ class AlbumListController extends Controller
 			$created_ats[] = $row->created_at; // Let's see if carbon is necessary
 			// If not then that is way better for performance. If it is necessary, then we can use Carbon to convert the UTC time to ISO 8601 format.
 			// $created_ats[] = Carbon::parse($row->created_at, 'UTC')->toIso8601String();
+			$min_taken_ats[] = $row->min_taken_at;
+			$max_taken_ats[] = $row->max_taken_at;
 		}
 
 		return new AlbumListBulkEditFieldsResource(
@@ -284,6 +290,8 @@ class AlbumListController extends Controller
 			grants_downloads: $grants_downloads,
 			grants_uploads: $grants_uploads,
 			created_ats: $created_ats,
+			min_taken_ats: $min_taken_ats,
+			max_taken_ats: $max_taken_ats,
 		);
 	}
 

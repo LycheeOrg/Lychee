@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Photo Sort',
     'col_album_sorting' => 'Album Sort',
     'col_created_at' => 'Created',
+    'taken_range' => 'Taken: :range',
+    'taken_none' => 'No data',
 
     // Filter
     'filter_placeholder' => 'Search by title...',

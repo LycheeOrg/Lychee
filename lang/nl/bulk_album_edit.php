@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Fotosortering',
     'col_album_sorting' => 'Albumsortering',
     'col_created_at' => 'Aangemaakt',
+    'taken_range' => 'Genomen: :range',
+    'taken_none' => 'Geen gegevens',
 
     // Filter
     'filter_placeholder' => 'Zoeken op titel...',

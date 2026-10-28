@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Сорт. фото',
     'col_album_sorting' => 'Сорт. альбомов',
     'col_created_at' => 'Создан',
+    'taken_range' => 'Снято: :range',
+    'taken_none' => 'Нет данных',
 
     // Filter
     'filter_placeholder' => 'Поиск по названию...',

@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Fotosortering',
     'col_album_sorting' => 'Albumsortering',
     'col_created_at' => 'Skapat',
+    'taken_range' => 'Tagna: :range',
+    'taken_none' => 'Inga data',
 
     // Filter
     'filter_placeholder' => 'Sök efter titel...',

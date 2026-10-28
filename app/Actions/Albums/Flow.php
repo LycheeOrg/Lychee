@@ -54,14 +54,13 @@ final class Flow
 		$base = $this->getBase($flow_base);
 		$base_query = $this->getQuery($base, $with_relations);
 
+		// Without a base every NSFW ancestor counts, which the stored flag
+		// answers; below a base, NSFW albums at or above it do not count
+		// (FR-103-12). When shown, items are blurred by the same stored flag.
 		$hide_nsfw = $this->config_manager->getValueAsBool('hide_nsfw_in_flow');
-		if ($hide_nsfw) {
-			$base_query->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base?->_lft, $base?->_rgt));
-		} else {
-			// In this specific case we want to know if an album is recursive NSFW.
-			// This will be used to determine if the album should be blurred.
-			$base_query->addVirtualIsRecursiveNSFW();
-		}
+		$base_query
+			->when($hide_nsfw && $base === null, fn ($q) => $q->where('albums.is_recursive_nsfw', '=', false))
+			->when($hide_nsfw && $base !== null, fn ($q) => $q->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base->_lft, $base->_rgt)));
 
 		// Apply the security policy to the query.
 		$include_sub_albums = $this->config_manager->getValueAsBool('flow_include_sub_albums');

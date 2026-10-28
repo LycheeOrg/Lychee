@@ -14,6 +14,7 @@ use App\Http\Resources\V3\PhotoBucketResource;
 use App\Models\Album;
 use App\Models\User;
 use App\Services\BucketScheme;
+use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
@@ -38,11 +39,13 @@ class QueryPhotoBuckets
 		}
 
 		$id_sql = $this->bucketIdSql($album, $scheme);
-		$query = $album instanceof Album
-			? $this->storedKeyQuery($album, $user)
+		$query = match (true) {
+			$album instanceof Album => $this->storedKeyQuery($album, $user),
+			$album instanceof BaseSmartAlbum => $this->smartAlbumQuery($album, $user),
 			// A tag/person relation query arrives ordered by the album sort,
 			// which a grouped query must not keep.
-			: $this->resolvePhotoQuery($album, $user)->toBase()->reorder();
+			default => $this->resolvePhotoQuery($album, $user)->toBase()->reorder(),
+		};
 
 		if ($album instanceof TimelineAlbum) {
 			// The Timeline is date-first: a photo without a value in its sort
@@ -51,7 +54,7 @@ class QueryPhotoBuckets
 		}
 
 		$query->select(DB::raw($id_sql . ' as bucket_id'))
-			->selectRaw('COUNT(*) as bucket_count')
+			->selectRaw(($album instanceof Album ? 'COUNT(*)' : 'COUNT(DISTINCT photos.id)') . ' as bucket_count')
 			->groupByRaw($id_sql);
 		$scheme->orderRows($query, $id_sql, $sorting->order);
 
@@ -66,6 +69,22 @@ class QueryPhotoBuckets
 	 * to unvalidated photos of other owners (every owner, for a guest)
 	 * through a subquery on the few unvalidated photos.
 	 */
+	/**
+	 * The smart album's own visible-photo query, grouped directly: its
+	 * un-scoped `photo_album` join repeats a photo once per album, which
+	 * `COUNT(DISTINCT photos.id)` absorbs without listing every visible
+	 * photo of the library in an id subquery first (FR-103-09).
+	 */
+	private function smartAlbumQuery(BaseSmartAlbum $album, ?User $user): Builder
+	{
+		$query = $album->photos();
+		if ($user?->may_administrate !== true) {
+			$this->applyUploadValidationFilter($query, $user?->id);
+		}
+
+		return $query->toBase()->reorder();
+	}
+
 	private function storedKeyQuery(Album $album, ?User $user): Builder
 	{
 		$query = DB::table(PA::PHOTO_ALBUM)->where(PA::ALBUM_ID, '=', $album->id);

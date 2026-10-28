@@ -13,11 +13,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
-use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Policies\AlbumPolicy;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Gate;
 
 trait HasHeaderUrl
@@ -53,11 +51,10 @@ trait HasHeaderUrl
 			return null;
 		}
 
-		if ($album->get_photos()->isEmpty()) {
+		if (!$album->photos()->exists()) {
 			return null;
 		}
 
-		// TODO : already use the prefetched data for photos instead of 2 extra queries?
 		return $this->getByQuery($album);
 	}
 
@@ -77,39 +74,31 @@ trait HasHeaderUrl
 			return $header_size_variant;
 		}
 
-		/** @var Collection<int,Photo>|LengthAwarePaginator<int,Photo> $photos */
-		$photos = $album->get_photos();
-		$query_ratio = SizeVariant::query()->select('photo_id')
-			->when($photos instanceof LengthAwarePaginator, function ($query) use ($photos): void {
-				$photo_ids = collect($photos->items())->pluck('id')->all();
-				$query->whereIn('photo_id', $photo_ids);
-			})
-			->when($photos instanceof Collection, function ($query) use ($photos): void {
-				$query->whereBelongsTo($photos);
-			})
-			->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
-		$num = $query_ratio->count() - 1;
-		$photo = $num >= 0 ? $query_ratio->skip(rand(0, $num))->first() : null;
+		$photo_id = self::randomPhotoIdWithVariant($album, true) ?? self::randomPhotoIdWithVariant($album, false);
 
-		if ($photo === null) {
-			$query = SizeVariant::query()
-				->select('photo_id')
-				->when($photos instanceof LengthAwarePaginator, function ($query) use ($photos): void {
-					$photo_ids = collect($photos->items())->pluck('id')->all();
-					$query->whereIn('photo_id', $photo_ids);
-				})
-				->when($photos instanceof Collection, function ($query) use ($photos): void {
-					$query->whereBelongsTo($photos);
-				})
-				->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
-			$num = $query->count() - 1;
-			$photo = $query->skip(rand(0, $num))->first();
-		}
-
-		return $photo === null ? null : SizeVariant::query()
-			->where('photo_id', '=', $photo->photo_id)
+		return $photo_id === null ? null : SizeVariant::query()
+			->where('photo_id', '=', $photo_id)
 			->where('type', '>', SizeVariantType::ORIGINAL->value)
 			->orderBy('type', 'asc')
 			->first();
+	}
+
+	/**
+	 * A random photo of the album visible to the caller with a medium or small
+	 * variant (landscape only if `$landscape`), picked in SQL without loading
+	 * the album's photos (FR-103-02). Count + random offset rather than
+	 * `inRandomOrder()`, which sorts every candidate on MySQL.
+	 */
+	private static function randomPhotoIdWithVariant(AbstractAlbum $album, bool $landscape): ?string
+	{
+		$query = $album->photos()->toBase()
+			->whereExists(fn (BaseBuilder $query) => $query
+				->from('size_variants')
+				->whereColumn('size_variants.photo_id', '=', 'photos.id')
+				->whereIn('size_variants.type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+				->when($landscape, fn (BaseBuilder $q) => $q->where('size_variants.ratio', '>', 1)));
+		$count = $query->count();
+
+		return $count === 0 ? null : $query->offset(rand(0, $count - 1))->limit(1)->value('photos.id');
 	}
 }

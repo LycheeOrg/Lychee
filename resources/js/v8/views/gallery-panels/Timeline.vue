@@ -278,7 +278,7 @@ const layoutStore = useLayoutStore();
 const userStore = useUserStore();
 const timelineStore = useTimelineStore();
 // Feature 100: thumbnails fetch their live photo video URL on hover.
-provide(MOTION_URL_LOADER, (ids) => timelineStore.loadPhotoDetailsV3(ids));
+provide(MOTION_URL_LOADER, (ids) => timelineStore.loadPhotoDetailsV3(ids).then(() => undefined));
 
 // oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);

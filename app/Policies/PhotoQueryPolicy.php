@@ -264,6 +264,15 @@ class PhotoQueryPolicy
 	 */
 	private function appendSensitivityConditions(BaseBuilder $query, ?User $user, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
 	{
+		if ($origin_left === null) {
+			// Without an origin every NSFW ancestor counts, which the stored
+			// flag of the joined album answers (FR-103-12). A photo without
+			// album has no such ancestor.
+			return $query
+				->where('albums.is_recursive_nsfw', '=', false)
+				->orWhereNull(PA::ALBUM_ID);
+		}
+
 		$user_id = $user?->id;
 
 		try {

@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Fényképrendezés',
     'col_album_sorting' => 'Albumrendezés',
     'col_created_at' => 'Létrehozva',
+    'taken_range' => 'Készült: :range',
+    'taken_none' => 'Nincs adat',
 
     // Filter
     'filter_placeholder' => 'Keresés cím alapján...',

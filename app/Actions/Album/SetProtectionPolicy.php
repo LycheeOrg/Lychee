@@ -36,8 +36,12 @@ class SetProtectionPolicy
 	 */
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, #[\SensitiveParameter] ?string $password): void
 	{
+		$is_nsfw_changed = $album->is_nsfw !== $protection_policy->is_nsfw;
 		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
+		if ($album instanceof Album && $is_nsfw_changed) {
+			(new SyncRecursiveNsfw())->do();
+		}
 
 		$active_permissions = $album->public_permissions();
 		if (!$protection_policy->is_public) {

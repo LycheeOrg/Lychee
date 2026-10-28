@@ -55,17 +55,17 @@ class QueryPhotoDetails
 	 */
 	public function do(AbstractAlbum $album, ?User $user, ?string $bucket_id, ?array $photo_ids): PhotoDetailResource
 	{
-		$query = $this->resolvePhotoQuery($album, $user)->select('photos.*');
-
-		if ($bucket_id !== null) {
-			// One bucket window in SQL for every source (FR-092-07).
-			$scheme = $this->resolveScheme($album, $this->resolveEffectiveSorting($album));
-			$this->applyBucketWindow($query, $album, $scheme, [$bucket_id]);
-		} else {
-			// Ids not actually in this album or not visible to the caller
-			// are silently curated away, never a 4xx.
-			$query->whereIn('photos.id', $photo_ids ?? []);
-		}
+		$scheme = $this->resolveScheme($album, $this->resolveEffectiveSorting($album));
+		$query = $this->resolvePhotoQuery($album, $user, function (FixedQueryBuilder $q) use ($album, $scheme, $bucket_id, $photo_ids): void {
+			if ($bucket_id !== null) {
+				// One bucket window in SQL for every source (FR-092-07).
+				$this->applyBucketWindow($q, $album, $scheme, [$bucket_id]);
+			} else {
+				// Ids not actually in this album or not visible to the caller
+				// are silently curated away, never a 4xx.
+				$q->whereIn('photos.id', $photo_ids ?? []);
+			}
+		})->select('photos.*');
 
 		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags'])->get();
 

@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Tri photos',
     'col_album_sorting' => 'Tri albums',
     'col_created_at' => 'Créé le',
+    'taken_range' => 'Prises : :range',
+    'taken_none' => 'Aucune donnée',
 
     // Filter
     'filter_placeholder' => 'Rechercher par titre...',

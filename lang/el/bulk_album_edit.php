@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Ταξ. φωτογραφιών',
     'col_album_sorting' => 'Ταξ. άλμπουμ',
     'col_created_at' => 'Δημιουργία',
+    'taken_range' => 'Λήψη: :range',
+    'taken_none' => 'Δεν υπάρχουν δεδομένα',
 
     // Filter
     'filter_placeholder' => 'Αναζήτηση με τίτλο...',

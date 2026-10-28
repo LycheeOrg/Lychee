@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Bildesortering',
     'col_album_sorting' => 'Albumsortering',
     'col_created_at' => 'Opprettet',
+    'taken_range' => 'Tatt: :range',
+    'taken_none' => 'Ingen data',
 
     // Filter
     'filter_placeholder' => 'Søk etter tittel…',

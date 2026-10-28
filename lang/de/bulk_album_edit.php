@@ -26,6 +26,8 @@ return [
     'col_photo_sorting' => 'Fotosortierung',
     'col_album_sorting' => 'Album „Sort“',
     'col_created_at' => 'Erstellt',
+    'taken_range' => 'Aufgenommen: :range',
+    'taken_none' => 'Keine Daten',
     // Filter
     'filter_placeholder' => 'Nach Titel suchen...',
     // Pagination
