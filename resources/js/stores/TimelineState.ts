@@ -182,9 +182,23 @@ export const useTimelineStore = defineStore("timeline-store", {
 			});
 		},
 
+		/**
+		 * Drops what was loaded for the current viewer (Feature 102, FR-102-08): the init data
+		 * (`load()` returns early once `layout` is set), the v2 `dates` (`loadDates()` returns
+		 * early once filled) and the v3 state. The v2 pages need no reset: `initialLoad()` rewrites them.
+		 */
+		reset(): void {
+			this.isTimelineEnabled = undefined;
+			this.layout = undefined;
+			this.rootConfig = undefined;
+			this.rootRights = undefined;
+			this.dates = [];
+			this.resetV3();
+		},
+
 		// --- Feature 066 v3 actions ---
 
-		/** Fully resets the v3 (SoA) state — mirrors `AlbumState.ts.reset()`'s own discipline, called whenever the Timeline panel is torn down/remounted. Deliberately leaves v2 state (`dates`/pages/…) alone — `reset()`-ing that is unnecessary here since v2 and v3 never run concurrently. */
+		/** Fully resets the v3 (SoA) state — mirrors `AlbumState.ts.reset()`'s own discipline, part of `reset()`. Leaves v2 state (`dates`/pages/…) alone — v2 and v3 never run concurrently. */
 		resetV3(): void {
 			this.bucketsV3 = undefined;
 			this.boundariesV3 = [];

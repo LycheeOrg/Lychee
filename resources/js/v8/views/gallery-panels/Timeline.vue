@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="isInitialLoading" />
-	<LoginModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
-	<WebauthnModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
+	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
+	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
 	<!--

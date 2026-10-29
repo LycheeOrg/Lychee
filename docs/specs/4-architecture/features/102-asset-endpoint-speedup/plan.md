@@ -72,10 +72,10 @@ After the last task: walk FR-102-01 … 08 and S-102-01 … 15 against tests and
 10. **I10 – Tile URL store driven by the route (FR-102-06)** — T-102-25 … T-102-27.
    - _Steps:_ Vitest first for `tileUrlSource()` (route → album id, `timeline` or none) and for the `TileUrlsState` store (batching, per-viewer map kept across sources, missed ids per source, all-null disables per source, viewer change empties it). `useTileUrlRequests()` in `PhotoGridVirtual` sets the source from `useRoute()` and the viewer from `UserState`; `PhotoThumbVirtual` and `PhotoListItemVirtual` read the store; `AlbumPanel.vue` and `Timeline.vue` no longer build a loader.
    - _Notes:_ No `provide`/`inject` for tile URLs (Q-102-10). URLs are keyed by photo id because a photo's file URL is the same in every album for one viewer; a URL gone stale (rotation, regenerated variant, expired S3 link) fails to load and `Thumb` falls back to `/Asset`. `MOTION_URL_LOADER` (Feature 100) keeps its injection.
-11. **I11 – Front-end store reset on login and logout (FR-102-08)** — T-102-29 … T-102-31.
-   - _Steps:_ Vitest first for `ThumbAssetService.clear()` (fetches again, revokes the object URLs nothing renders, revokes a rendered one at its last release) and `useClearViewerState()` (stores, user, album list, axios cache, `ThumbAssetService`). Then the shared composable `resources/js/composables/useClearViewerState.ts`, called by `useLogout()` (v8), the v7 left-menu logout and the v7/v8 `LoginForm` and `WebauthnModal`. Remove `ClearBrowserCache`, `ClearBrowserCacheOnAuthChange` and their `AuthTest` cases (Q-102-11).
+11. **I11 – Front-end store reset on login and logout (FR-102-08)** — T-102-29 … T-102-32.
+   - _Steps:_ Vitest first for `ThumbAssetService.clear()` (fetches again, revokes the object URLs nothing renders, revokes a rendered one at its last release) and `useClearViewerState()` (stores, timeline init data, dates and struct-of-arrays state, user, album list, axios cache, `ThumbAssetService`). Then the shared composable `resources/js/composables/useClearViewerState.ts`, called by `useLogout()` (v8), the v7 left-menu logout and the v7/v8 `LoginForm` and `WebauthnModal`. Remove `ClearBrowserCache`, `ClearBrowserCacheOnAuthChange` and their `AuthTest` cases (Q-102-11).
    - _Commands:_ `vp test resources/js/services resources/js/composables`, `vp check` (changed files), `vp run typecheck`, `php artisan test --filter='Tests\\Feature_v2\\AuthTest'`, `vendor/bin/php-cs-fixer fix`, `make phpstan`.
-   - _Notes:_ Login opens only while no photo is shown, and every `logged-in` handler reloads its view's data (`refresh()`, `onLoggedIn()`, `handleLoggedIn()`, `goBack()`), so the stores are cleared before it. Emptying the album and albums stores also unmounts the rendered tiles, so the reloaded view asks `ThumbAssetService` again.
+   - _Notes:_ Login opens only while no photo is shown, and every `logged-in` handler reloads its view's data (`refresh()`, `onLoggedIn()`, `handleLoggedIn()`, `goBack()`), so the stores are cleared before it. Emptying the album and albums stores also unmounts the rendered tiles, so the reloaded view asks `ThumbAssetService` again. `TimelineState.reset()` clears the init data (`load()` returns early once `layout` is set, so the rights and config would outlive the viewer), the v2 `dates` (`loadDates()` returns early once filled) and calls `resetV3()` (`ensureBucketsV3()` returns early once `bucketsV3` is set, so would the tiles); `initialLoad()` rewrites the v2 pages. The Timeline and Tag views mount their login modals while the user is not logged in (`!userStore.isLoggedIn`, as Album and Albums do): `clearViewerState()` empties the user, so a guard on `isGuest` would unmount the modal before it emits `logged-in` and the view would never refresh.
 
 ## Scenario Tracking
 
@@ -88,7 +88,7 @@ After the last task: walk FR-102-01 … 08 and S-102-01 … 15 against tests and
 | S-102-13 | I5, I10 / T-102-13, T-102-14, T-102-25 … T-102-27 | tile URL store Vitest |
 | S-102-14 | I6 / T-102-15 … T-102-18, I7 / T-102-19 | composable + `Thumb` Vitest, browser check |
 | S-102-06, S-102-07 | I8 / T-102-20, T-102-21 | `PhotoAssetV3Test` |
-| S-102-15 | I11 / T-102-29 … T-102-31 | `thumb-asset-service.test.ts`, `useClearViewerState.test.ts` |
+| S-102-15 | I11 / T-102-29 … T-102-32 | `thumb-asset-service.test.ts`, `useClearViewerState.test.ts` |
 
 ## Analysis Gate
 2026-10-21, agent self-review requested by the owner ("check for consistencies, ambiguities").

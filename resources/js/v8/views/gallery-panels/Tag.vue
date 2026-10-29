@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="tagStore.isLoading" />
-	<LoginModal v-if="userStore.isGuest" @logged-in="refresh" />
-	<WebauthnModal v-if="userStore.isGuest" @logged-in="refresh" />
+	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
+	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
 
 	<TagPanel v-if="tagStore.tag !== undefined" @refresh="refresh" @go-back="goBack" />
 

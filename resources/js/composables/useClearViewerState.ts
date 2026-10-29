@@ -13,6 +13,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useTimelineStore } from "@/stores/TimelineState";
 
 /**
  * Wipes every store and cache holding data loaded for the current viewer, so
@@ -27,6 +28,7 @@ export function useClearViewerState() {
 	const albumStore = useAlbumStore();
 	const photoStore = usePhotoStore();
 	const albumListStore = useAlbumListStore();
+	const timelineStore = useTimelineStore();
 
 	function clearViewerState(): void {
 		globalRightsStore.reset();
@@ -34,6 +36,7 @@ export function useClearViewerState() {
 		photosStore.reset();
 		albumsStore.reset();
 		albumStore.reset();
+		timelineStore.reset();
 		userStore.setUser(undefined);
 		albumListStore.invalidate();
 		AlbumService.clearCache();

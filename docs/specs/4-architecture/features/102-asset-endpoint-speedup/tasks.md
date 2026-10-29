@@ -190,5 +190,12 @@ _Last updated: 2026-10-29_
   - `vendor/bin/php-cs-fixer fix`  
   - `make phpstan`
 
+- [x] T-102-32 – `TimelineState.reset()` in `clearViewerState()`, login modals of Timeline and Tag kept mounted until login (F-102-08, S-102-15).  
+  _Intent:_ Failing test first: `clearViewerState()` clears the timeline's init data (`isTimelineEnabled`, `layout`, `rootConfig`, `rootRights`), `dates` and struct-of-arrays state (`bucketsV3`, `tilesV3`, `loadedBucketsV3`, …). Then `reset()` = init data + `dates` + `resetV3()`, and the v7/v8 Timeline and Tag views guard their login modals with `!userStore.isLoggedIn`. Browser check: a guest logging in on the Timeline sees the photos the guest could not.  
+  _Verification commands:_  
+  - `vp test resources/js/services resources/js/composables`  
+  - `vp check`  
+  - `vp run typecheck`
+
 ## Notes / TODOs
 - None.

@@ -17,6 +17,7 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import { useUserStore } from "@/stores/UserState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useTimelineStore } from "@/stores/TimelineState";
 
 vi.mock("@/services/album-service", () => ({
 	default: { clearCache: vi.fn() },
@@ -41,6 +42,7 @@ describe("useClearViewerState (S-102-15)", () => {
 		const globalRightsStore = useGlobalRightsStore();
 		const userStore = useUserStore();
 		const albumListStore = useAlbumListStore();
+		const timelineStore = useTimelineStore();
 		albumStore.modelAlbum = { id: "album" } as App.Http.Resources.Models.HeadAlbumResource;
 		albumsStore.albums = [{ id: "album" } as App.Http.Resources.Models.ThumbAlbumResource];
 		photoStore.photoId = "p1";
@@ -48,6 +50,14 @@ describe("useClearViewerState (S-102-15)", () => {
 		globalRightsStore.rights = {} as App.Http.Resources.Rights.GlobalRightsResource;
 		userStore.setUser({ id: 1 } as App.Http.Resources.Models.UserResource);
 		albumListStore.isLoaded = true;
+		timelineStore.isTimelineEnabled = true;
+		timelineStore.layout = "justified";
+		timelineStore.rootConfig = {} as App.Http.Resources.GalleryConfigs.RootConfig;
+		timelineStore.rootRights = { can_upload: false } as App.Http.Resources.Rights.RootAlbumRightsResource;
+		timelineStore.dates = [{} as App.Http.Resources.Models.Utils.TimelineData];
+		timelineStore.bucketsV3 = { bucket_ids: ["2026-10"] } as unknown as typeof timelineStore.bucketsV3;
+		timelineStore.tilesV3 = [{ id: "p1" } as App.Http.Resources.Models.PhotoResource];
+		timelineStore.loadedBucketsV3 = { "2026-10": true };
 
 		useClearViewerState().clearViewerState();
 
@@ -58,6 +68,14 @@ describe("useClearViewerState (S-102-15)", () => {
 		expect(globalRightsStore.rights).toBeUndefined();
 		expect(userStore.user).toBeUndefined();
 		expect(albumListStore.isLoaded).toBe(false);
+		expect(timelineStore.isTimelineEnabled).toBeUndefined();
+		expect(timelineStore.layout).toBeUndefined();
+		expect(timelineStore.rootConfig).toBeUndefined();
+		expect(timelineStore.rootRights).toBeUndefined();
+		expect(timelineStore.dates).toEqual([]);
+		expect(timelineStore.bucketsV3).toBeUndefined();
+		expect(timelineStore.tilesV3).toEqual([]);
+		expect(timelineStore.loadedBucketsV3).toEqual({});
 		expect(AlbumService.clearCache).toHaveBeenCalledWith();
 		expect(ThumbAssetService.clear).toHaveBeenCalledOnce();
 	});
