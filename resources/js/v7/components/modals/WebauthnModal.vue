@@ -44,9 +44,8 @@ import InputText from "@/v7/components/forms/basic/InputText.vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import AlbumService from "@/services/album-service";
+import { useClearViewerState } from "@/composables/useClearViewerState";
 import { storeToRefs } from "pinia";
-import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useToast();
@@ -55,7 +54,7 @@ const emits = defineEmits<{
 }>();
 
 const togglableStore = useTogglablesStateStore();
-const userStore = useUserStore();
+const { clearViewerState } = useClearViewerState();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
@@ -76,8 +75,7 @@ function login() {
 				life: 3000,
 			});
 			is_webauthn_open.value = false;
-			userStore.setUser(undefined);
-			AlbumService.clearCache();
+			clearViewerState();
 			emits("logged-in");
 		})
 		.catch((e) =>

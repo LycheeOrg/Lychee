@@ -12,12 +12,31 @@ Open questions for [Feature 102](spec.md). Log every high- and medium-impact que
 | ~~Q-102-04~~ | 102 – Asset Endpoint Speedup | High | Should tiles get direct thumbnail URLs so they skip `/Asset`, and through which tier? | Resolved (Option A — viewport-scoped URL tier; FR-102-05, FR-102-06, ADR-102-01) | 2026-10-20 | 2026-10-21 |
 | ~~Q-102-05~~ | 102 – Asset Endpoint Speedup | Medium | How does `/Asset` drop global middleware (SE verification)? | Resolved (Option A — route-group middleware; FR-102-07, ADR-102-02) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-06~~ | 102 – Asset Endpoint Speedup | Medium | For an admin, does `/Asset` still answer 404 for an unknown album and 403 for a photo outside the album? | Resolved (Option A — admins skip both; FR-102-02) | 2026-10-21 | 2026-10-21 |
-| ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (Option A — `Clear-Site-Data: "cache"` on login/logout; FR-102-08) | 2026-10-21 | 2026-10-21 |
+| ~~Q-102-08~~ | 102 – Asset Endpoint Speedup | High | How does a browser shared by several viewers avoid reusing assets privately cached for the previous one? | Resolved (front-end stores cleared on login/logout, Q-102-11 Option B; FR-102-08) | 2026-10-21 | 2026-10-29 |
 | Q-102-07 | 102 – Asset Endpoint Speedup | Medium | Which temporary-link rule decides whether `/Photos/urls` gives an admin direct URLs? | Open | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-09~~ | 102 – Asset Endpoint Speedup | Medium | Should grid tiles get `small` instead of `small2x` on 1x screens? | Resolved (Option A — client sends its density; FR-102-05, FR-102-06) | 2026-10-21 | 2026-10-21 |
 | ~~Q-102-10~~ | 102 – Asset Endpoint Speedup | Medium | How does the tile URL loader reach the grid and its tiles without `provide`/`inject`? | Resolved (Option C with the route detection of Option A; FR-102-06) | 2026-10-22 | 2026-10-22 |
+| ~~Q-102-11~~ | 102 – Asset Endpoint Speedup | High | Without `Clear-Site-Data` (Chromium stalls login/logout), what keeps the next viewer of a browser from reusing `/Asset` files cached for the previous one? | Resolved (Option B — front-end stores cleared on login/logout; FR-102-08) | 2026-10-29 | 2026-10-29 |
 
 ## Question Details
+
+### ~~Q-102-11~~ · Cached assets after login/logout without `Clear-Site-Data` ✅ RESOLVED
+
+**Status:** Resolved — Option B. Encoded in spec FR-102-08.  
+**Feature:** F-102  
+**Priority:** High
+
+`Clear-Site-Data: "cache"` makes Chromium scan its whole HTTP cache before completing the response: on a profile with a large cache, login and logout take 11–16 s ([discussion #4931](https://github.com/LycheeOrg/Lychee/discussions/4931), [Chromium issue 571157926](https://issues.chromium.org/issues/571157926)). The login and logout responses therefore do not send it; the front end clears its stores on login and logout.
+
+The front end can clear the gallery stores (album, albums, photo, photos, tile URLs, timeline, search…), the object URLs of `ThumbAssetService` and the axios response cache. Logout reloads the page, which drops all of them; login keeps the page.
+
+The front end cannot clear the browser HTTP cache. `/Asset` and `/Faces/{face_id}/photo/{variant}` answer `Cache-Control: private, max-age=3600` (FR-102-04), keyed by the URL alone. For an hour after a logout, a guest on the same browser who opens a photo they may see gets the previous viewer's file from the cache, without a request: the owner's unwatermarked thumbnail instead of the watermarked one. Private photos stay out of reach, since the guest's listings never name them.
+
+- **Option A: clear the stores and key `/Asset` requests per session.** Front end only. A random key, regenerated on every login and logout and kept in `localStorage` so it survives the logout reload, is appended to `/Asset` and `/Faces/…/photo/…` requests (`?k=…`). Each session gets its own cache entries, so the HTTP cache never hands one viewer's file to the next, and the hour without requests stays. Costs a query parameter the server ignores. A login through OAuth (a server redirect, no front-end login action) keeps the guest's key until the next logout: that user may see the guest's watermarked thumbnails, never the reverse.
+- **Option B (chosen): clear the stores only.** Exactly the front-end change, nothing more. For an hour after a logout, a guest on the same browser can get the owner's unwatermarked thumbnail of a photo the guest may see. After a login, the user sees the guest's watermarked thumbnails.
+- **Option C: clear the stores and drop the hour without requests.** `/Asset` answers `private, no-cache`: every view asks the server and gets `304` while the file is unchanged (Q-102-03 Option B). Always correct, but it is a backend change and loses the requests FR-102-04 saves.
+
+---
 
 ### ~~Q-102-10~~ · Handing the tile URL loader to the grid ✅ RESOLVED
 
@@ -65,7 +84,7 @@ Owner remark (2026-10-21): on a 1x screen a grid tile only needs `small`. Today 
 
 ### ~~Q-102-08~~ · Privately cached assets on a shared browser ✅ RESOLVED
 
-**Status:** Resolved — Option A. Encoded in spec FR-102-08.  
+**Status:** Resolved — front-end stores cleared on login and logout (Q-102-11 Option B). Encoded in spec FR-102-08.  
 **Feature:** F-102  
 **Priority:** High
 

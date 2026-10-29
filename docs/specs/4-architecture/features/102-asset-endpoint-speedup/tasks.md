@@ -1,7 +1,7 @@
 # Feature 102 Tasks – Asset Endpoint Speedup
 
 _Status: Draft_  
-_Last updated: 2026-10-21_
+_Last updated: 2026-10-29_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -126,17 +126,15 @@ _Last updated: 2026-10-21_
   - `.claude/skills/run-lychee/scratch.sh serve` + driver script  
   - harness: `loop.php`, `run.sh`, `payload.php`
 
-### I8 – Per-viewer cache safety
-- [x] T-102-20 – Tests for the `ETag` and for `Clear-Site-Data` (F-102-04, F-102-08, S-102-06, S-102-07, S-102-15).  
-  _Intent:_ Failing tests: `ETag` on 200; matching `If-None-Match` → 304; the same URL selecting the watermarked file → 200 with it; `Clear-Site-Data: "cache"` on login and logout, absent on a failed login and on other requests.  
+### I8 – `ETag` on `/Asset`
+- [x] T-102-20 – Tests for the `ETag` (F-102-04, S-102-06, S-102-07).  
+  _Intent:_ Failing tests: `ETag` on 200; matching `If-None-Match` → 304; the same URL selecting the watermarked file → 200 with it.  
   _Verification commands:_  
-  - `php artisan test --filter=PhotoAssetV3Test`  
-  - `php artisan test --filter='Tests\\Feature_v2\\AuthTest'`
+  - `php artisan test --filter=PhotoAssetV3Test`
 
-- [x] T-102-21 – `ETag` in `ServesSizeVariantAssetTrait`, `ClearBrowserCache` middleware and `ClearBrowserCacheOnAuthChange` listener (F-102-04, F-102-08).  
+- [x] T-102-21 – `ETag` in `ServesSizeVariantAssetTrait` (F-102-04).  
   _Verification commands:_  
   - `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`  
-  - `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`  
   - `make phpstan`
 
 ### I9 – Grid tile variant by density
@@ -173,6 +171,24 @@ _Last updated: 2026-10-21_
   - `npx vp test resources/js/v8`  
   - `npx vp check --fix` (changed files only)  
   - `npx vp run typecheck`
+
+### I11 – Front-end store reset on login and logout
+- [x] T-102-29 – Vitest for `ThumbAssetService.clear()` and `useClearViewerState()` (F-102-08, S-102-15).  
+  _Intent:_ Failing tests: after `clear()` the same asset is fetched again; object URLs nothing renders are revoked at once, a rendered one at its last `release()`; `clearViewerState()` empties the album, albums, photo, photos and global-rights stores and the user, invalidates the album list, and clears the axios cache and `ThumbAssetService`.  
+  _Verification commands:_  
+  - `vp test resources/js/services resources/js/composables`
+
+- [x] T-102-30 – `ThumbAssetService.clear()`, `useClearViewerState()`, called after login (v7/v8 `LoginForm`, `WebauthnModal`) and logout (v8 `useLogout()`, v7 `LeftMenu`) (F-102-08, S-102-15).  
+  _Verification commands:_  
+  - `vp test resources/js/services resources/js/composables`  
+  - `vp check` (changed files)  
+  - `vp run typecheck`
+
+- [x] T-102-31 – Remove `ClearBrowserCache`, `ClearBrowserCacheOnAuthChange` and their `AuthTest` cases; knowledge map and roadmap (F-102-08).  
+  _Verification commands:_  
+  - `php artisan test --filter='Tests\\Feature_v2\\AuthTest'`  
+  - `vendor/bin/php-cs-fixer fix`  
+  - `make phpstan`
 
 ## Notes / TODOs
 - None.
