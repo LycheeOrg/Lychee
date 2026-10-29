@@ -110,7 +110,6 @@ import Menu from "primevue/menu";
 import AboutLychee from "@/v7/components/modals/AboutLychee.vue";
 import AuthService from "@/services/auth-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import AlbumService from "@/services/album-service";
 import SETag from "@/v7/components/icons/SETag.vue";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
@@ -123,20 +122,14 @@ import { onMounted } from "vue";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useUserStore } from "@/stores/UserState";
-import { usePhotosStore } from "@/stores/PhotosState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
-import { useAlbumStore } from "@/stores/AlbumState";
-import { usePhotoStore } from "@/stores/PhotoState";
+import { useClearViewerState } from "@/composables/useClearViewerState";
 import OverlayBadge from "primevue/overlaybadge";
 
 const leftMenuState = useLeftMenuStateStore();
 const globalRightsStore = useGlobalRightsStore();
 const route = useRoute();
 const userStore = useUserStore();
-const photosStore = usePhotosStore();
-const albumsStore = useAlbumsStore();
-const albumStore = useAlbumStore();
-const photoStore = usePhotoStore();
+const { clearViewerState } = useClearViewerState();
 
 const lycheeStore = useLycheeStateStore();
 const favouritesStore = useFavouriteStore();
@@ -154,13 +147,7 @@ const { user, left_menu_open, rights, openLycheeAbout, canSeeAdmin, items, profi
 function logout() {
 	AuthService.logout().then(() => {
 		left_menu_open.value = false;
-		globalRightsStore.reset();
-		photoStore.reset();
-		photosStore.reset();
-		albumsStore.reset();
-		albumStore.reset();
-		userStore.setUser(undefined);
-		AlbumService.clearCache();
+		clearViewerState();
 		window.location.href = Constants.BASE_URL + "/home";
 	});
 }

@@ -34,10 +34,8 @@ import { computed, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import AlbumService from "@/services/album-service";
 import { storeToRefs } from "pinia";
-import { useUserStore } from "@/stores/UserState";
-import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useClearViewerState } from "@/composables/useClearViewerState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useAppToast();
@@ -46,8 +44,7 @@ const emits = defineEmits<{
 }>();
 
 const togglableStore = useTogglablesStateStore();
-const userStore = useUserStore();
-const albumListStore = useAlbumListStore();
+const { clearViewerState } = useClearViewerState();
 const lycheeStore = useLycheeStateStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
@@ -69,9 +66,7 @@ function login() {
 				life: 3000,
 			});
 			is_webauthn_open.value = false;
-			userStore.setUser(undefined);
-			AlbumService.clearCache();
-			albumListStore.invalidate();
+			clearViewerState();
 			// Init data depends on the user (e.g. face recognition availability).
 			// Kept out of this chain: its failures are not authentication errors.
 			// load() reports its own errors and leaves is_init false, in which case we must not

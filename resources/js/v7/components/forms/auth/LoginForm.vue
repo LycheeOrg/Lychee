@@ -113,7 +113,7 @@ import Message from "primevue/message";
 import AuthService from "@/services/auth-service";
 import InputText from "@/v7/components/forms/basic/InputText.vue";
 import InputPassword from "@/v7/components/forms/basic/InputPassword.vue";
-import AlbumService from "@/services/album-service";
+import { useClearViewerState } from "@/composables/useClearViewerState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -141,6 +141,7 @@ const username = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const userStore = useUserStore();
+const { clearViewerState } = useClearViewerState();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled, is_white_label_enabled, is_email_login_enabled } = storeToRefs(lycheeStore);
@@ -156,9 +157,8 @@ function login() {
 	AuthService.login(username.value, password.value, rememberMe.value)
 		.then(() => {
 			is_login_open.value = false;
-			userStore.setUser(undefined);
 			invalidPassword.value = false;
-			AlbumService.clearCache();
+			clearViewerState();
 			emits("logged-in");
 		})
 		.catch((e) => {

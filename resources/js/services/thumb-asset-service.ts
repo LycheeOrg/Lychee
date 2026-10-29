@@ -22,13 +22,18 @@ function cacheKey(albumId: string, photoId: string, type: App.Enum.SizeVariantAs
 	return `${albumId}:${photoId}:${type}`;
 }
 
-// Revokes the object URL (once resolved) and drops the entry. Only call this for entries
-// with `refCount <= 0` — revoking a URL still in use would break whatever is rendering it.
-function evict(key: string, entry: CacheEntry): void {
-	cache.delete(key);
+// Revokes the object URL once resolved. Only call this for entries with `refCount <= 0` —
+// revoking a URL still in use would break whatever is rendering it.
+function revoke(entry: CacheEntry): void {
 	if (entry.settled) {
 		void entry.promise.then((url) => URL.revokeObjectURL(url));
 	}
+}
+
+// Revokes the object URL (once resolved) and drops the entry. Same `refCount <= 0` rule as `revoke`.
+function evict(key: string, entry: CacheEntry): void {
+	cache.delete(key);
+	revoke(entry);
 }
 
 function sweepExpired(now: number): void {
@@ -117,16 +122,34 @@ const ThumbAssetService = {
 			promise: acquired.promise,
 			release: () => {
 				acquired.refCount--;
-				if (acquired.refCount <= 0 && cache.get(key) === acquired) {
-					if (!acquired.settled) {
-						acquired.controller.abort();
-						cache.delete(key);
-					} else if (acquired.expiresAt !== undefined && acquired.expiresAt <= Date.now()) {
-						evict(key, acquired);
-					}
+				if (acquired.refCount > 0) {
+					return;
+				}
+				if (cache.get(key) !== acquired) {
+					// Dropped by `clear()` (or failed): nothing else can reach it any more.
+					acquired.controller.abort();
+					revoke(acquired);
+				} else if (!acquired.settled) {
+					acquired.controller.abort();
+					cache.delete(key);
+				} else if (acquired.expiresAt !== undefined && acquired.expiresAt <= Date.now()) {
+					evict(key, acquired);
 				}
 			},
 		};
+	},
+
+	/**
+	 * Forgets every cached file so the next viewer fetches its own (Feature 102, FR-102-08).
+	 * An entry still rendered is only dropped from the cache: its last `release()` frees it.
+	 */
+	clear(): void {
+		for (const entry of cache.values()) {
+			if (entry.refCount <= 0) {
+				revoke(entry);
+			}
+		}
+		cache.clear();
 	},
 };
 

@@ -85,38 +85,4 @@ class AuthTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 	}
-
-	/**
-	 * S-102-15: a successful login and a logout clear the browser cache.
-	 */
-	public function testLoginAndLogoutClearBrowserCache(): void
-	{
-		$response = $this->postJson('Auth::login', [
-			'username' => $this->admin->username,
-			'password' => 'password',
-		]);
-		$this->assertNoContent($response);
-		self::assertSame('"cache"', $response->headers->get('Clear-Site-Data'));
-
-		$response = $this->postJson('Auth::logout', []);
-		$this->assertNoContent($response);
-		self::assertSame('"cache"', $response->headers->get('Clear-Site-Data'));
-	}
-
-	/**
-	 * S-102-15: a failed login and other requests leave the browser cache alone.
-	 */
-	public function testOtherRequestsKeepBrowserCache(): void
-	{
-		$response = $this->postJson('Auth::login', [
-			'username' => $this->admin->username,
-			'password' => 'wrong',
-		]);
-		$this->assertUnauthorized($response);
-		self::assertFalse($response->headers->has('Clear-Site-Data'));
-
-		$response = $this->actingAs($this->admin)->getJson('Auth::user');
-		$this->assertOk($response);
-		self::assertFalse($response->headers->has('Clear-Site-Data'));
-	}
 }

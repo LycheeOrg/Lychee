@@ -3,7 +3,7 @@
 _Linked specification:_ [spec.md](spec.md)  
 _Linked tasks:_ [tasks.md](tasks.md)  
 _Status:_ Draft  
-_Last updated:_ 2026-10-21
+_Last updated:_ 2026-10-29
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -16,7 +16,7 @@ A gallery page issues one image request per tile, so per-request cost multiplies
 
 ## Scope Alignment
 - **In scope:** `GetPhotoAssetRequest` authorization reads; route-group middleware (ADR-102-02); cache headers in `ServesSizeVariantAssetTrait`; `GET /api/v3/Albums/{album_id}/Photos/urls`; v8 grid batching and the `Thumb` direct-`src` path.
-- **Out of scope:** bootstrap cost; covers, Flow, map, search and face tiles (stay on `/Asset`); server-side caching of the URL tier; v2/v7.
+- **Out of scope:** bootstrap cost; covers, Flow, map, search and face tiles (stay on `/Asset`); server-side caching of the URL tier; v2/v7, apart from the store reset on login and logout (FR-102-08).
 
 ## Dependencies & Interfaces
 - `GetPhotoAssetRequest`, `ResolvesSizeVariantAssetTrait`, `ServesSizeVariantAssetTrait`, `AlbumFactory`, `AlbumPolicy` (Feature 056, ADR-0008); `FacePhotoAssetController` and its request (Feature 093, ADR-093-01).
@@ -35,7 +35,7 @@ A gallery page issues one image request per tile, so per-request cost multiplies
   - Direct URL points at a missing or expired file (S3 presign) → `Thumb` falls back to `/Asset` on the image `error` event (FR-102-06).
 
 ## Implementation Drift Gate
-After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and code, rerun the harness and record numbers below, confirm ADR-102-01/02 match the code, and append the drift report here.
+After the last task: walk FR-102-01 … 08 and S-102-01 … 15 against tests and code, rerun the harness and record numbers below, confirm ADR-102-01/02 match the code, and append the drift report here.
 
 ## Increment Map
 1. **I1 – Lean `/Asset` authorization (FR-102-02)** — T-102-01, T-102-02.
@@ -61,10 +61,10 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
    - _Notes:_ `Thumb` takes `directUrl` (string → direct `src`, `null`/absent → `/Asset`) and `pending` (placeholder only), so covers, search and other callers keep today's behaviour without passing anything. Tiles read `useTileUrlsStore().urlsOf()` themselves rather than receiving URLs through `PhotoGridVirtual`. `useTileUrlRequests` keys on the rendered ids and on the store's `generation`, which a source or viewer change bumps, so an unchanged id set is asked again.
 7. **I7 – Verification and docs (NFR-102-01)** — T-102-19.
    - _Steps:_ Browser check on the scratch instance (album, timeline, smart album; unprotected and temporary-link instance; network panel). Harness rerun. Knowledge map, roadmap, Feature 056 spec cross-references to FR-102-02/04.
-8. **I8 – Per-viewer cache safety (FR-102-04, FR-102-08)** — T-102-20, T-102-21.
-   - _Steps:_ Tests first (`ETag` on 200, matching `If-None-Match` → 304, watermark switched on under the same URL → 200 with the watermarked file; `Clear-Site-Data: "cache"` on login and logout only). `ETag` of path, mtime and size in `ServesSizeVariantAssetTrait::responseFile()`; `ClearBrowserCacheOnAuthChange` listener on `Login`/`Logout` sets a request flag; `ClearBrowserCache` middleware in `web`, `web-admin`, `api` adds the header.
-   - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `php artisan test --filter='AuthTest|LdapAuthTest|EmailLoginTest|WebAuthn'`, `make phpstan`.
-   - _Notes:_ Prompted by the PR #4912 review (cache reuse across sessions, `304` for another selected file). The v8 in-memory thumbnail cache (`thumb-asset-service.ts`) is dropped by the full page load that follows logout.
+8. **I8 – `ETag` on `/Asset` (FR-102-04)** — T-102-20, T-102-21.
+   - _Steps:_ Tests first (`ETag` on 200, matching `If-None-Match` → 304, watermark switched on under the same URL → 200 with the watermarked file). `ETag` of path, mtime and size in `ServesSizeVariantAssetTrait::responseFile()`.
+   - _Commands:_ `php artisan test --filter='PhotoAssetV3Test|AssetMiddlewareV3Test|FacePhotoAssetTest'`, `make phpstan`.
+   - _Notes:_ Prompted by the PR #4912 review (`304` for another selected file).
 9. **I9 – Grid tile variant by density (FR-102-05, FR-102-06)** — T-102-22 … T-102-24.
    - _Steps:_ Tests first (`density=1|2` chains, default 2, 422 otherwise; loader query and tile fallback type). `GetPhotoUrlsRequest` validates `density`; `QueryPhotoUrls` picks the chain; `PhotoUrlResource.grid_urls`; regenerate types; loader and `PhotoThumbVirtual`.
    - _Commands:_ `php artisan test --filter=PhotoUrlsV3Test`, `make phpstan`, `vp test`, `vp check --fix`, `vp run typecheck`.
@@ -72,6 +72,10 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 10. **I10 – Tile URL store driven by the route (FR-102-06)** — T-102-25 … T-102-27.
    - _Steps:_ Vitest first for `tileUrlSource()` (route → album id, `timeline` or none) and for the `TileUrlsState` store (batching, per-viewer map kept across sources, missed ids per source, all-null disables per source, viewer change empties it). `useTileUrlRequests()` in `PhotoGridVirtual` sets the source from `useRoute()` and the viewer from `UserState`; `PhotoThumbVirtual` and `PhotoListItemVirtual` read the store; `AlbumPanel.vue` and `Timeline.vue` no longer build a loader.
    - _Notes:_ No `provide`/`inject` for tile URLs (Q-102-10). URLs are keyed by photo id because a photo's file URL is the same in every album for one viewer; a URL gone stale (rotation, regenerated variant, expired S3 link) fails to load and `Thumb` falls back to `/Asset`. `MOTION_URL_LOADER` (Feature 100) keeps its injection.
+11. **I11 – Front-end store reset on login and logout (FR-102-08)** — T-102-29 … T-102-32.
+   - _Steps:_ Vitest first for `ThumbAssetService.clear()` (fetches again, revokes the object URLs nothing renders, revokes a rendered one at its last release) and `useClearViewerState()` (stores, timeline init data, dates and struct-of-arrays state, user, album list, axios cache, `ThumbAssetService`). Then the shared composable `resources/js/composables/useClearViewerState.ts`, called by `useLogout()` (v8), the v7 left-menu logout and the v7/v8 `LoginForm` and `WebauthnModal`. Remove `ClearBrowserCache`, `ClearBrowserCacheOnAuthChange` and their `AuthTest` cases (Q-102-11).
+   - _Commands:_ `vp test resources/js/services resources/js/composables`, `vp check` (changed files), `vp run typecheck`, `php artisan test --filter='Tests\\Feature_v2\\AuthTest'`, `vendor/bin/php-cs-fixer fix`, `make phpstan`.
+   - _Notes:_ Login opens only while no photo is shown, and every `logged-in` handler reloads its view's data (`refresh()`, `onLoggedIn()`, `handleLoggedIn()`, `goBack()`), so the stores are cleared before it. Emptying the album and albums stores also unmounts the rendered tiles, so the reloaded view asks `ThumbAssetService` again. `TimelineState.reset()` clears the init data (`load()` returns early once `layout` is set, so the rights and config would outlive the viewer), the v2 `dates` (`loadDates()` returns early once filled) and calls `resetV3()` (`ensureBucketsV3()` returns early once `bucketsV3` is set, so would the tiles); `initialLoad()` rewrites the v2 pages. The Timeline and Tag views mount their login modals while the user is not logged in (`!userStore.isLoggedIn`, as Album and Albums do): `clearViewerState()` empties the user, so a guard on `isGuest` would unmount the modal before it emits `logged-in` and the view would never refresh.
 
 ## Scenario Tracking
 
@@ -83,7 +87,8 @@ After the last task: walk FR-102-01 … 07 and S-102-01 … 14 against tests and
 | S-102-08 … 12 | I4 / T-102-09 … T-102-12 | `PhotoUrlsV3Test` |
 | S-102-13 | I5, I10 / T-102-13, T-102-14, T-102-25 … T-102-27 | tile URL store Vitest |
 | S-102-14 | I6 / T-102-15 … T-102-18, I7 / T-102-19 | composable + `Thumb` Vitest, browser check |
-| S-102-06, S-102-07, S-102-15 | I8 / T-102-20, T-102-21 | `PhotoAssetV3Test`, `AuthTest` |
+| S-102-06, S-102-07 | I8 / T-102-20, T-102-21 | `PhotoAssetV3Test` |
+| S-102-15 | I11 / T-102-29 … T-102-32 | `thumb-asset-service.test.ts`, `useClearViewerState.test.ts` |
 
 ## Analysis Gate
 2026-10-21, agent self-review requested by the owner ("check for consistencies, ambiguities").
@@ -136,6 +141,8 @@ Browser check (I7, 2026-10-21, scratch instance; uploads served same-origin-allo
 | Album → `recent` in-app navigation | loader reset, 1 new `/Photos/urls`, 30 direct | — |
 
 Found: with `when_logged_in=0` and `when_admin=1`, an admin still gets direct URLs (`shouldNotUseSignedUrl()`), while `/Asset` requires the admin's signature → Q-102-07.
+
+Browser check (I11, 2026-10-29, scratch instance, root gallery in v8 and v7): login and logout answer `204` without `Clear-Site-Data`; after login the root listings reload as the admin; logout lands on `/gallery`; no console error apart from the security advisory check, which needs the network.
 
 ## Exit Criteria
 - Full quality gate green (php-cs-fixer, `vp check --fix`, `vp run typecheck`, scoped tests, `make phpstan`); `php artisan typescript:transform` rerun.

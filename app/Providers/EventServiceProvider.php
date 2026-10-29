@@ -41,7 +41,6 @@ use App\Events\PhotoWillBeDeleted;
 use App\Events\TagAlbumSaved;
 use App\Events\UserGroupMembershipChanged;
 use App\Listeners\CacheListener;
-use App\Listeners\ClearBrowserCacheOnAuthChange;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
 use App\Listeners\ManagedCacheMapListingInvalidator;
@@ -59,7 +58,6 @@ use App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange;
 use App\Listeners\RotateLicenseKeyOnLogin;
 use App\Listeners\WebhookListener;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
@@ -158,8 +156,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoPersonsChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoPersonsChanged');
 
 		Event::listen(Login::class, RotateLicenseKeyOnLogin::class . '@handle');
-		Event::listen(Login::class, ClearBrowserCacheOnAuthChange::class . '@handle');
-		Event::listen(Logout::class, ClearBrowserCacheOnAuthChange::class . '@handle');
 
 		// Webhook dispatch for photo lifecycle events
 		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');
