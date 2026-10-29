@@ -238,7 +238,7 @@ const generatedCode = computed(() => {
 
 	return `<!-- Lychee ${modeTitle} Embed v${EMBED_VERSION} -->
 <link rel="stylesheet" href="${embedUrl}/lychee-embed.css?v=${EMBED_VERSION}">
-<script src="${embedUrl}/lychee-embed.js?v=${EMBED_VERSION}"><\/script>
+<script src="${embedUrl}/lychee-embed.js?v=${EMBED_VERSION}"></script>
 
 <div
     data-lychee-embed

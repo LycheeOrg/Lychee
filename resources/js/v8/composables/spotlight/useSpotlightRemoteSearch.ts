@@ -79,8 +79,8 @@ export function useSpotlightRemoteSearch(searchTerm: Ref<string>, router: Router
 		isRemoteSearching.value = false;
 	}
 
-	const remoteGroupItems = computed<SpotlightItem[]>(() => [
-		...remotePhotos.value.map((photo): SpotlightItem => ({
+	const remoteGroupItems = computed<SpotlightItem[]>(() =>
+		remotePhotos.value.map((photo): SpotlightItem => ({
 			label: photo.title,
 			kind: "remote-photo",
 			thumbUrl: photo.size_variants.thumb?.url ?? null,
@@ -89,7 +89,7 @@ export function useSpotlightRemoteSearch(searchTerm: Ref<string>, router: Router
 				router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
 			},
 		})),
-	]);
+	);
 
 	return { isRemoteSearching, remoteGroupItems, ensureSearchMinLength, reset };
 }
