@@ -259,6 +259,8 @@ return [
             'share_card' => 'Thẻ chia sẻ',
             'show_sphere' => 'Hiển thị dạng cầu',
             'show_flat' => 'Hiển thị phẳng',
+            'rotate_ccw' => 'Xoay ngược chiều kim đồng hồ',
+            'rotate_cw' => 'Xoay theo chiều kim đồng hồ',
             'set_album_header' => 'Đặt làm ảnh đầu trang album',
             'move' => 'Di chuyển',
             'delete' => 'Xóa',

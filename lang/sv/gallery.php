@@ -259,6 +259,8 @@ return [
             'share_card' => 'Delningskort',
             'show_sphere' => 'Visa som sfär',
             'show_flat' => 'Visa platt',
+            'rotate_ccw' => 'Rotera moturs',
+            'rotate_cw' => 'Rotera medurs',
             'set_album_header' => 'Ange som albumets sidhuvud',
             'move' => 'Flytta',
             'delete' => 'Ta bort',

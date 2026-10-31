@@ -6,6 +6,7 @@
 				<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
 					<PhotoBox
 						:key="photoStore.photo.id"
+						:is-live-dock-enabled="true"
 						@go-back="emits('goBack')"
 						@next="emits('next')"
 						@previous="emits('previous')"
@@ -28,7 +29,8 @@
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<PhotoRatingOverlay />
 			<Dock
-				v-if="canEditCurrentPhoto && !is_photo_edit_open"
+				v-if="isDockShown"
+				:can-edit="canEditCurrentPhoto"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
 				@toggle-highlight="emits('toggleHighlight')"
 				@set-album-header="emits('setAlbumHeader')"
@@ -87,6 +89,9 @@ const canEditCurrentPhoto = computed(() => {
 	}
 	return true;
 });
+
+/** Editors get the edit buttons; any viewer of a live photo gets its play button (FR-100-06). */
+const isDockShown = computed(() => (canEditCurrentPhoto.value || photoStore.live_photo_controls !== undefined) && !is_photo_edit_open.value);
 
 const props = defineProps<{
 	isMapVisible: boolean;

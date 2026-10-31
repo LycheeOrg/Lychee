@@ -259,6 +259,8 @@ return [
             'share_card' => 'بطاقة المشاركة',
             'show_sphere' => 'عرض ككرة',
             'show_flat' => 'عرض مسطح',
+            'rotate_ccw' => 'تدوير عكس عقارب الساعة',
+            'rotate_cw' => 'تدوير مع عقارب الساعة',
             'set_album_header' => 'تعيين كعنوان ألبوم',
             'move' => 'نقل',
             'delete' => 'حذف',

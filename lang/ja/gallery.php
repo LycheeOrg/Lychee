@@ -259,6 +259,8 @@ return [
             'share_card' => '共有カード',
             'show_sphere' => '球面で表示',
             'show_flat' => '平面で表示',
+            'rotate_ccw' => '反時計回りに回転',
+            'rotate_cw' => '時計回りに回転',
             'set_album_header' => 'アルバムヘッダーに設定',
             'move' => '移動',
             'delete' => '削除',
