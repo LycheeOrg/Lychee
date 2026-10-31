@@ -151,6 +151,8 @@ _Last updated: 2026-10-31_
 - [x] T-100-28 – PR #4933 review: `DockButton` (v7 and v8) renders a `<button type="button">` instead of an `<a>` without `href`, so every dock button is focusable and works with Enter/Space; the live button carries `aria-label` (`gallery.motion_photo`) and `aria-pressed` (`is_live_playing`) (F-100-06, NFR-100-04).  
   _Verification commands:_ `npx vp check` on both `Dock.vue` and `DockButton.vue`, `npx vp run typecheck`.  
   _Notes:_ Tailwind preflight (imported by `app.css` and `app-v8.css`) resets the button chrome, so the dock looks unchanged.  
+- [x] T-100-29 – PR #4933 second review: every icon-only dock button (v7 and v8) gets a translated `aria-label` (highlight/unhighlight, album header, watermark, face scan, rotate, move, delete); new `gallery.photo.actions.rotate_ccw`/`rotate_cw` keys in the 23 locales; the hard-coded "Watermark" tooltip uses `gallery.album.hero.watermark`. Docs aligned: plan scope, composable ownership in FR-100-06 and I14, UI-100-04, knowledge-map lightbox summary (F-100-06, NFR-100-04).  
+  _Verification commands:_ `php artisan test --filter=LangTest`, `npx vp check` on both `Dock.vue`, `npx vp run typecheck`.  
 
 ## Notes / TODOs
 - 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).

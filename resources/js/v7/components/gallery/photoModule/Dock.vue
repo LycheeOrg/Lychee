@@ -28,6 +28,7 @@
 				<DockButton
 					v-if="photoStore.photo.is_highlighted"
 					v-tooltip.bottom="$t('gallery.photo.actions.unhighlight')"
+					:aria-label="$t('gallery.photo.actions.unhighlight')"
 					pi="flag-fill"
 					class="text-yellow-500 lg:hover:text-yellow-100"
 					@click="emits('toggleHighlight')"
@@ -35,12 +36,14 @@
 				<DockButton
 					v-else
 					v-tooltip.bottom="$t('gallery.photo.actions.highlight')"
+					:aria-label="$t('gallery.photo.actions.highlight')"
 					pi="flag"
 					class="text-white lg:hover:text-yellow-500"
 					@click="emits('toggleHighlight')"
 				/>
 				<DockButton
 					v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
+					:aria-label="$t('gallery.photo.actions.set_album_header')"
 					v-if="!isTimeline"
 					pi="image"
 					class="lg:hover:text-primary-500 text-white"
@@ -48,7 +51,8 @@
 				/>
 				<DockButton
 					v-if="isWatermarkerEnabled"
-					v-tooltip.bottom="'Watermark'"
+					v-tooltip.bottom="$t('gallery.album.hero.watermark')"
+					:aria-label="$t('gallery.album.hero.watermark')"
 					pi="barcode"
 					class="lg:hover:text-primary-500 text-white"
 					@click="watermark"
@@ -56,22 +60,35 @@
 				<DockButton
 					v-if="isFaceRecognitionEnabled"
 					v-tooltip.bottom="$t('people.scan_faces')"
+					:aria-label="$t('people.scan_faces')"
 					pi="face-smile"
 					class="lg:hover:text-primary-500 text-white"
 					@click="scanFaces"
 				/>
 				<template v-if="lycheeStore.can_rotate">
-					<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
-					<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
+					<DockButton
+						icon="counterclockwise"
+						:aria-label="$t('gallery.photo.actions.rotate_ccw')"
+						class="fill-white lg:hover:fill-primary-500"
+						@click="emits('rotatePhotoCCW')"
+					/>
+					<DockButton
+						icon="clockwise"
+						:aria-label="$t('gallery.photo.actions.rotate_cw')"
+						class="fill-white lg:hover:fill-primary-500"
+						@click="emits('rotatePhotoCW')"
+					/>
 				</template>
 				<DockButton
 					v-tooltip.bottom="$t('gallery.photo.actions.move')"
+					:aria-label="$t('gallery.photo.actions.move')"
 					pi="folder"
 					class="lg:hover:text-primary-500 text-white"
 					@click="emits('toggleMove')"
 				/>
 				<DockButton
 					v-tooltip.bottom="$t('gallery.photo.actions.delete')"
+					:aria-label="$t('gallery.photo.actions.delete')"
 					icon="trash"
 					class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
 					@click="emits('toggleDelete')"

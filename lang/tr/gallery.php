@@ -259,6 +259,8 @@ return [
             'share_card' => 'Paylaşım Kartı',
             'show_sphere' => 'Küre olarak göster',
             'show_flat' => 'Düz göster',
+            'rotate_ccw' => 'Saat yönünün tersine döndür',
+            'rotate_cw' => 'Saat yönünde döndür',
             'set_album_header' => 'Albüm başlık görseli olarak ayarla',
             'move' => 'Taşı',
             'delete' => 'Sil',

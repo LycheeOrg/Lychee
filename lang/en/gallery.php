@@ -260,6 +260,8 @@ return [
             'share_card' => 'Share Card',
             'show_sphere' => 'Show as sphere',
             'show_flat' => 'Show flat',
+            'rotate_ccw' => 'Rotate counterclockwise',
+            'rotate_cw' => 'Rotate clockwise',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

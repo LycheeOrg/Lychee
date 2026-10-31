@@ -259,6 +259,8 @@ return [
             'share_card' => 'Zdieľacia karta',
             'show_sphere' => 'Zobraziť ako guľu',
             'show_flat' => 'Zobraziť plocho',
+            'rotate_ccw' => 'Otočiť proti smeru hodinových ručičiek',
+            'rotate_cw' => 'Otočiť v smere hodinových ručičiek',
             'set_album_header' => 'Nastaviť ako hlavičku albumu',
             'move' => 'Presunúť',
             'delete' => 'Odstrániť',

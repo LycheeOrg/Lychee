@@ -29,31 +29,72 @@
 				<UTooltip v-if="photoStore.photo.is_highlighted" :text="$t('gallery.photo.actions.unhighlight')">
 					<DockButton
 						:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
+						:aria-label="$t('gallery.photo.actions.unhighlight')"
 						class="text-yellow-500 lg:hover:text-yellow-100"
 						@click="emits('toggleHighlight')"
 					/>
 				</UTooltip>
 				<UTooltip v-else :text="$t('gallery.photo.actions.highlight')">
-					<DockButton pi="lucide:flag" class="text-white lg:hover:text-yellow-500" @click="emits('toggleHighlight')" />
+					<DockButton
+						pi="lucide:flag"
+						:aria-label="$t('gallery.photo.actions.highlight')"
+						class="text-white lg:hover:text-yellow-500"
+						@click="emits('toggleHighlight')"
+					/>
 				</UTooltip>
 				<UTooltip v-if="!isTimeline" :text="$t('gallery.photo.actions.set_album_header')">
-					<DockButton pi="lucide:image" class="lg:hover:text-primary-500 text-white" @click="emits('setAlbumHeader')" />
+					<DockButton
+						pi="lucide:image"
+						:aria-label="$t('gallery.photo.actions.set_album_header')"
+						class="lg:hover:text-primary-500 text-white"
+						@click="emits('setAlbumHeader')"
+					/>
 				</UTooltip>
-				<UTooltip v-if="isWatermarkerEnabled" text="Watermark">
-					<DockButton pi="lucide:barcode" class="lg:hover:text-primary-500 text-white" @click="watermark" />
+				<UTooltip v-if="isWatermarkerEnabled" :text="$t('gallery.album.hero.watermark')">
+					<DockButton
+						pi="lucide:barcode"
+						:aria-label="$t('gallery.album.hero.watermark')"
+						class="lg:hover:text-primary-500 text-white"
+						@click="watermark"
+					/>
 				</UTooltip>
 				<UTooltip v-if="isFaceRecognitionEnabled" :text="$t('people.scan_faces')">
-					<DockButton pi="lucide:smile" class="lg:hover:text-primary-500 text-white" @click="scanFaces" />
+					<DockButton
+						pi="lucide:smile"
+						:aria-label="$t('people.scan_faces')"
+						class="lg:hover:text-primary-500 text-white"
+						@click="scanFaces"
+					/>
 				</UTooltip>
 				<template v-if="lycheeStore.can_rotate && !photoStore.photo.precomputed.is_360">
-					<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
-					<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
+					<DockButton
+						icon="counterclockwise"
+						:aria-label="$t('gallery.photo.actions.rotate_ccw')"
+						class="fill-white lg:hover:fill-primary-500"
+						@click="emits('rotatePhotoCCW')"
+					/>
+					<DockButton
+						icon="clockwise"
+						:aria-label="$t('gallery.photo.actions.rotate_cw')"
+						class="fill-white lg:hover:fill-primary-500"
+						@click="emits('rotatePhotoCW')"
+					/>
 				</template>
 				<UTooltip v-if="albumStore.rights?.can_move_content" :text="$t('gallery.photo.actions.move')">
-					<DockButton pi="lucide:folder" class="lg:hover:text-primary-500 text-white" @click="emits('toggleMove')" />
+					<DockButton
+						pi="lucide:folder"
+						:aria-label="$t('gallery.photo.actions.move')"
+						class="lg:hover:text-primary-500 text-white"
+						@click="emits('toggleMove')"
+					/>
 				</UTooltip>
 				<UTooltip :text="$t('gallery.photo.actions.delete')">
-					<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" @click="emits('toggleDelete')" />
+					<DockButton
+						icon="trash"
+						:aria-label="$t('gallery.photo.actions.delete')"
+						class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
+						@click="emits('toggleDelete')"
+					/>
 				</UTooltip>
 			</template>
 		</span>

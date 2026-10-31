@@ -259,6 +259,8 @@ return [
             'share_card' => 'Deelkaart',
             'show_sphere' => 'Als bol tonen',
             'show_flat' => 'Plat tonen',
+            'rotate_ccw' => 'Linksom draaien',
+            'rotate_cw' => 'Rechtsom draaien',
             'set_album_header' => 'Instellen als albumkop',
             'move' => 'Verplaatsen',
             'delete' => 'Verwijderen',

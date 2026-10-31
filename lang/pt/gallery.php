@@ -259,6 +259,8 @@ return [
             'share_card' => 'Cartão de partilha',
             'show_sphere' => 'Mostrar como esfera',
             'show_flat' => 'Mostrar plana',
+            'rotate_ccw' => 'Rodar no sentido anti-horário',
+            'rotate_cw' => 'Rodar no sentido horário',
             'set_album_header' => 'Definir como cabeçalho do álbum',
             'move' => 'Mover',
             'delete' => 'Eliminar',
