@@ -130,7 +130,7 @@ GitHub Actions runs the full quality gate on every push and pull request via `.g
 - Frontend formatting and linting
 - Frontend type-check
 
-**Required status check for PHP tests:** on pull requests the `1️⃣ PHP tests` job runs only when PHP sources change (the `php` filter of the `changes` job). When it is skipped, its matrix jobs (`1️⃣ PHP tests / <php> - <db> -- <suite>`) are never created, so branch protection must not require them: it requires `1️⃣ PHP tests result` instead. That job always runs and passes when the tests passed or were skipped because no PHP changed. It fails when they failed, were cancelled, or were skipped although PHP changed (for example after a syntax error), and when change detection failed.
+**Required status check for PHP tests:** the workflow runs on every pull request (no paths filter, so required checks always report), and the `1️⃣ PHP tests` job runs only when PHP sources, tests or PHP tooling change (the `php` filter of the `changes` job). When it is skipped, its matrix jobs (`1️⃣ PHP tests / <php> - <db> -- <suite>`) are never created, so branch protection must not require them: it requires `1️⃣ PHP tests result` instead. That job always runs and passes when the tests passed or were skipped because no PHP changed. It fails when they failed, were cancelled, or were skipped although PHP changed (for example after a syntax error), and when change detection failed.
 
 **Before pushing:**
 1. Run the appropriate quality checks locally

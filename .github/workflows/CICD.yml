@@ -9,9 +9,9 @@ on:
       - '*'
     paths-ignore:
       - '**/*.md'
+  # No paths filter on pull requests: the required checks must report on every pull request,
+  # including Markdown-only ones (jobs that do not apply are skipped by the `changes` filters).
   pull_request:
-    paths-ignore:
-      - '**/*.md'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
@@ -60,11 +60,15 @@ jobs:
               - 'scripts/generate-js-types.sh'
             php:
               - 'app/**/*.php'
+              - 'bootstrap/**/*.php'
               - 'config/**/*.php'
               - 'database/**/*.php'
+              - 'public/**/*.php'
               - 'routes/**/*.php'
+              - 'tests/**/*.php'
               - 'composer.json'
               - 'composer.lock'
+              - '.github/workflows/php_tests.yml'
               - 'phpstan.neon'
               - 'phpstan-baseline.neon'
               - 'phpstan/**'
