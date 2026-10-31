@@ -16,56 +16,65 @@
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<DockButton
-				v-if="photoStore.photo.is_highlighted"
-				v-tooltip.bottom="$t('gallery.photo.actions.unhighlight')"
-				pi="flag-fill"
-				class="text-yellow-500 lg:hover:text-yellow-100"
-				@click="emits('toggleHighlight')"
+				v-if="photoStore.live_photo_controls !== undefined"
+				v-tooltip.bottom="$t('gallery.motion_photo')"
+				pi="bullseye"
+				:class="photoStore.is_live_playing ? 'text-primary-500' : 'text-white lg:hover:text-primary-500'"
+				@click="photoStore.live_photo_controls?.toggle()"
 			/>
-			<DockButton
-				v-else
-				v-tooltip.bottom="$t('gallery.photo.actions.highlight')"
-				pi="flag"
-				class="text-white lg:hover:text-yellow-500"
-				@click="emits('toggleHighlight')"
-			/>
-			<DockButton
-				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
-				v-if="!isTimeline"
-				pi="image"
-				class="lg:hover:text-primary-500 text-white"
-				@click="emits('setAlbumHeader')"
-			/>
-			<DockButton
-				v-if="isWatermarkerEnabled"
-				v-tooltip.bottom="'Watermark'"
-				pi="barcode"
-				class="lg:hover:text-primary-500 text-white"
-				@click="watermark"
-			/>
-			<DockButton
-				v-if="isFaceRecognitionEnabled"
-				v-tooltip.bottom="$t('people.scan_faces')"
-				pi="face-smile"
-				class="lg:hover:text-primary-500 text-white"
-				@click="scanFaces"
-			/>
-			<template v-if="lycheeStore.can_rotate">
-				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
-				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
+			<template v-if="props.canEdit">
+				<DockButton
+					v-if="photoStore.photo.is_highlighted"
+					v-tooltip.bottom="$t('gallery.photo.actions.unhighlight')"
+					pi="flag-fill"
+					class="text-yellow-500 lg:hover:text-yellow-100"
+					@click="emits('toggleHighlight')"
+				/>
+				<DockButton
+					v-else
+					v-tooltip.bottom="$t('gallery.photo.actions.highlight')"
+					pi="flag"
+					class="text-white lg:hover:text-yellow-500"
+					@click="emits('toggleHighlight')"
+				/>
+				<DockButton
+					v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
+					v-if="!isTimeline"
+					pi="image"
+					class="lg:hover:text-primary-500 text-white"
+					@click="emits('setAlbumHeader')"
+				/>
+				<DockButton
+					v-if="isWatermarkerEnabled"
+					v-tooltip.bottom="'Watermark'"
+					pi="barcode"
+					class="lg:hover:text-primary-500 text-white"
+					@click="watermark"
+				/>
+				<DockButton
+					v-if="isFaceRecognitionEnabled"
+					v-tooltip.bottom="$t('people.scan_faces')"
+					pi="face-smile"
+					class="lg:hover:text-primary-500 text-white"
+					@click="scanFaces"
+				/>
+				<template v-if="lycheeStore.can_rotate">
+					<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
+					<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
+				</template>
+				<DockButton
+					v-tooltip.bottom="$t('gallery.photo.actions.move')"
+					pi="folder"
+					class="lg:hover:text-primary-500 text-white"
+					@click="emits('toggleMove')"
+				/>
+				<DockButton
+					v-tooltip.bottom="$t('gallery.photo.actions.delete')"
+					icon="trash"
+					class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
+					@click="emits('toggleDelete')"
+				/>
 			</template>
-			<DockButton
-				v-tooltip.bottom="$t('gallery.photo.actions.move')"
-				pi="folder"
-				class="lg:hover:text-primary-500 text-white"
-				@click="emits('toggleMove')"
-			/>
-			<DockButton
-				v-tooltip.bottom="$t('gallery.photo.actions.delete')"
-				icon="trash"
-				class="fill-red-600 lg:fill-white lg:hover:fill-red-600"
-				@click="emits('toggleDelete')"
-			/>
 		</span>
 	</div>
 </template>
@@ -96,6 +105,8 @@ const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
 	isNarrowMenu: boolean;
+	/** Edit buttons; without them the dock holds only the live button (FR-100-06). */
+	canEdit: boolean;
 }>();
 
 const isWatermarkerEnabled = computed(

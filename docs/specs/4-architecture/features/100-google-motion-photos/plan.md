@@ -75,6 +75,9 @@ After T-100-15, during T-100-16, compare every FR/NFR/S-ID against the tests nam
    - _Commands:_ `php artisan test --filter=PhotosAddHandlerImagickTest`.
 10. **I10 – Docs + drift gate**
     - _Steps:_ knowledge map, `1-concepts/photos.md`, `request-lifecycle-photo-upload.md`, roadmap; drift gate report.
+11. **I14 – Lightbox live button in the dock, v8 then v7** (FR-100-06, S-100-25, S-100-26, UI-100-04)
+    - _Steps:_ failing Vitest `useLivePhotoToggle.test.ts` (play, stop, restart on `ended` while playing, no restart after stop, detach resets) → composable; `PhotoBox` augments with `showsNativeControls: false` in the main lightbox and registers `LivePhotoControls` in `PhotoState`; `Dock` live button; `PhotoPanel` shows the dock to non-editors when controls are registered.
+    - _Commands:_ `npx vp test useLivePhotoToggle`, `npx vp check` (no `--fix`), `npx vp run typecheck`; manual check in the lightbox on an Apple and a Google live photo.
 
 ## Scenario Tracking
 
@@ -93,6 +96,7 @@ After T-100-15, during T-100-16, compare every FR/NFR/S-ID against the tests nam
 | S-100-11 … 14 | I6 / T-100-10 | `ExtractMotionPhotosTest` |
 | S-100-15 … 18 | I8 / T-100-13, T-100-14 | `useMotionHover.test.ts` + manual |
 | S-100-19, 20 | I8 / T-100-13, T-100-17 | `useMotionHover.test.ts` + manual per view |
+| S-100-25, 26 | I14 / T-100-23 … T-100-26 | `useLivePhotoToggle.test.ts` + manual |
 
 ## Analysis Gate
 
@@ -120,6 +124,9 @@ Run 2026-10-17 by the agent (owner review pending).
 - v7 grid playback, if requested.
 
 ## Intent Log
+- 2026-10-31: owner reported the motion did not loop until the button was turned off, and that Firefox highlighted the button without playing. Agent probed LivePhotosKit in Chromium with Playwright (Firefox would not start in the sandbox; running it outside was declined), found the gap-after-`ended` and the stall on non-Apple clips, and switched the dock path to a looping `<video>` overlay, the technique the grid hover already uses in Firefox (FR-100-06, T-100-26).
+- 2026-10-31: owner asked for the same change in v7. Agent mirrored it in the v7 `PhotoBox`/`Dock`/`PhotoPanel` (new `is-live-dock-enabled` prop, as v7 `PhotoBox` has no zoom prop; PrimeIcons `pi-bullseye`, the closest glyph to the Live Photo rings) and moved `useLivePhotoToggle` to `resources/js/composables/photo/`, as v7 never imports from `@/v8`.
+- 2026-10-31: owner asked to move the lightbox "LIVE" button into the dock next to highlight/move/delete, styled like the other dock buttons, click to play and click again to stop and show the still. Agent read `PhotoBox`, `Dock`, `DockButton`, `PhotoPanel`, the LivePhotosKit typings (`showsNativeControls`, `play`/`stop`, `ended` event); chose to keep playing (restart on `ended`) until the second click so the button state always matches what is shown, to show the dock to viewers without edit rights for live photos, and to keep the native controls in Flow/Moderation where there is no dock (FR-100-06).
 - 2026-10-17: owner asked for a plan for Google motion photos (#753, #1283) with grid hover or play button. Agent surveyed the live photo pipeline (Explore agent + direct reads of `GoogleMotionPictureHandler`, `ExtractGoogleMotionPictures`, `Extractor`, php-exif 1.4.0 mapper via `gh api`), parsed the existing sample's XMP with a Python one-off (legacy format confirmed), drafted spec + Q-100-01 … 06. Owner chose Option A for all six. While planning FR-100-03 the agent found v3 tiles lack `live_photo_url` until tier-3 details load → Q-100-07; owner chose Option A (details on hover) → FR-100-05, T-100-17. Owner supplied a Pixel 11 Pro motion photo; agent stripped GPS, C2PA and the HDR+ maker note with exiftool (owner asked for GPS removal so they cannot be identified; C2PA/maker note removed as device fingerprints), verified trailer bytes identical and inspected the still and video frames for identifying content (none), placed it as FX-100-03 at full resolution; findings (Primary item without `Item:Length`, HEVC video) folded into the spec Appendix. Grep of v8 thumbnail hosts: `PhotoThumbPanel`, `PhotoThumbPanelVirtual`, `TimelineDatesV3`, `ResultPanel`, views `Timeline`, `Search`, `Flow`; Ken Burns hover is CSS-only, no conflict.
 
 ## Review Follow-up (PR #4900, 2026-10-18)

@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Implemented |
-| Last updated | 2026-10-17 |
+| Last updated | 2026-10-31 |
 | Owners | mlapaglia |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -27,7 +27,7 @@ Affected layers: metadata extraction (`app/Metadata`), one artisan command, v8 g
 - HEIC/AVIF motion photos (primary image other than JPEG).
 - Honouring `MotionPhotoPresentationTimestampUs`.
 - Transcoding Apple Live Photo videos (separate `.mov` partners); only clips embedded in Google Motion Photos are transcoded (Q-100-09).
-- Changing the lightbox player (LivePhotosKit stays).
+- Replacing LivePhotosKit in the lightbox: it still renders the still and keeps playing in Flow/Moderation; only the main lightbox's play control moves to the dock and plays a plain `<video>` (FR-100-06).
 - v7 grid playback (Q-100-05).
 - Inline playback on touch devices (Q-100-01).
 
@@ -40,6 +40,7 @@ Affected layers: metadata extraction (`app/Metadata`), one artisan command, v8 g
 | FR-100-03 | Grid motion playback (v8, every live photo). | `PhotoThumb.vue` and `PhotoThumbVirtual.vue`: a motion badge (`ThumbBadge` with `lucide:smartphone` on `bg-purple-700`, the icon and colour of the list-view "Live" label, FR-014-06; its new `label` prop sets `title` and `aria-label` to `gallery.motion_photo`) in the badge row whenever `precomputed.is_livephoto`. On devices matching `(hover: hover) and (pointer: fine)`, after 250 ms of continuous hover a muted, looping, `playsinline` `<video>` fades in over the thumbnail (`object-cover`, same box) and plays `live_photo_url`; on `mouseleave` it pauses, its `src` is removed and the still shows again. When `live_photo_url` is still `null` at `mouseenter`, the URL is fetched per FR-100-05; playback starts once both the 250 ms have passed and the URL is set, and never if the pointer left first. The overlay covers the still, so the Ken Burns hover zoom (when enabled) keeps running unseen underneath. | Only tiles with `is_livephoto === true`; nothing when `prefers-reduced-motion: reduce` (badge only); nothing on touch-only devices (badge only, tap opens the lightbox as today). | Video `error` event → overlay removed, still stays, no toast, no retry during that hover. | None (frontend only). | Owner request, Q-100-01, Q-100-03, Q-100-05 |
 | FR-100-04 | Backfill already-imported photos. | `php artisan lychee:extract_motion_photos {limit=100} {tm=600} {--after=} {--album=} {--dry-run} {--reencode}` walks photos with `type = 'image/jpeg'` and `live_photo_short_path IS NULL`, ordered by id with an `--after` cursor (as `lychee:detect_360`). For each it uses the original in place when hosted locally, or a downloaded temporary copy otherwise (as `SizeVariantDefaultFactory`), runs `PHPExif\MotionPhoto\MotionPhotoLocator::locate()` on its path, and when the length > 0 extracts via `GoogleMotionPictureHandler` and writes `GoogleMotionPictureHandler::videoPathNextTo(<original path>)` on the original's disk (the helper the upload pipe `PlaceGoogleMotionVideo` now shares), then sets `live_photo_short_path` and dispatches `PhotoSaved` for the extracted ids. Output: `Motion photo: <id> (<title>)` per hit, then `Checked N photos: X motion photos extracted, Y failed.` (`found (dry run)` with `--dry-run`), and `More photos may remain: continue with --after=<last id>` when `N = limit`; nothing to scan → `No photos require motion photo extraction.` | `--reencode` switches the candidates to Google motion photos that already have a video (`live_photo_short_path` set, `live_photo_content_id` null) and re-extracts each clip from the original into its current path, transcoding as in FR-100-02; the summary says `re-extracted`. Every clip the command writes is staged at `<target>.part` on the same disk and then moved over the target, so a failed write leaves an existing clip intact (PR #4900 review). `--dry-run` writes nothing and does not need FFmpeg. `--album` restricts to that album's direct photos; unknown id → `Album <id> not found.`, exit 1. FFmpeg disabled without `--dry-run` → `FFmpeg is required to extract motion photo videos (or use --dry-run).`, exit 1, before the scan. | Missing original or any per-photo error → `Log::warning` and `Failed: <id> (<title>): <reason>` on the console, counted as failed, loop continues; exit 1 when any failed. When the batch is full and some photos failed, the cursor line is followed by `N photos failed in this batch and would be skipped by that cursor: run it again with --after=<same value> (or without --after) to retry them first.` (PR #4900 review). Plain JPEGs stay candidates, so a re-run checks them again (no "checked" marker; the cursor bounds each run). | Command output only. | Q-100-04 |
 | FR-100-05 | Video URL for v3 grid tiles. | Each v8 view that renders photo thumbnails provides a `MotionUrlLoader` (`(photoIds: string[]) => Promise<void>`, Vue `provide`/`inject` key in `resources/js/v8/composables/photo/motionUrlLoader.ts`) wrapping its store's existing deduped details loader: `AlbumPanel.vue` → `AlbumState.loadPhotoDetails`, `Timeline.vue` → `TimelineState.loadPhotoDetailsV3`, `Search.vue` → `SearchState.loadPhotoDetailsV3`. `Flow.vue` renders its own cards, not these thumbnails, and the tag and favourites views use v2 `PhotoResource` payloads that already carry `live_photo_url`, so they provide none. The thumbnail calls it with its own id on `mouseenter` when `is_livephoto` and `live_photo_url === null`, on hover-capable devices only; the result lands in `live_photo_url` through `mergePhotoDetail()`. | No call when the URL is already set, the tile is not a live photo, or the device/motion gates of FR-100-03 fail. A view that provides no loader plays only tiles whose URL is already loaded. | Loader rejects or leaves the URL `null` → no playback for that hover, no toast; the next hover tries again (the store's dedupe makes a resolved id free). A request still in flight is reused when the pointer leaves and re-enters, because the stores mark an id resolved only once its response arrives (PR #4900 review). | None. | Q-100-07 |
+| FR-100-06 | Lightbox play/stop from the dock (v7 and v8). | In the main lightbox (v8: `PhotoPanel` → `PhotoBox` with `is-zoom-enabled`; v7: `PhotoPanel` → `PhotoBox` with `is-live-dock-enabled`) LivePhotosKit only shows the still: it is augmented with `showsNativeControls: false`, so its "LIVE" badge and hover playback are gone. `PhotoBox` registers `LivePhotoControls` (`{ toggle }`) in `PhotoState.live_photo_controls` and mirrors the playing state into `PhotoState.is_live_playing` through `resources/js/composables/photo/useLivePhotoToggle.ts`, with the same ownership rule as the zoom controls (Feature 078). `Dock.vue` shows a `DockButton` (v8 `lucide:circle-dot-dashed`, v7 PrimeIcons `pi-bullseye`; tooltip `gallery.motion_photo`) first in the button row while controls are registered: white with the primary hover colour when idle, primary colour while playing. First click shows a muted, `loop`, `autoplay`, `playsinline` `<video>` of `live_photo_url` over the still (same box and size classes as the still, `object-contain`, `pointer-events-none`; the LivePhotosKit divs carry `isolate` so its z-indexed render layers stay below the video), so the motion loops without a gap until the next click removes it and the still shows again. The dock is shown to every viewer of a live photo, not only to editors: viewers without edit rights see the live button alone. | Flow (`LigtBox.vue`), Moderation and NSFW findings (v8), Flow and Moderation (v7) mount `PhotoBox` without that prop and keep the native LivePhotosKit controls. No button for photos that are not live photos or have no `live_photo_url`. Moving to another photo or closing the lightbox drops the controls; the next live photo starts stopped. Hidden with the rest of the dock during the slideshow. | Video `error` (e.g. HEVC in Firefox) → overlay removed, button back to idle, still visible, no toast. | None (frontend only). | Owner request 2026-10-31; LivePhotosKit playback was dropped from the dock path because its "full" style always ends (a restart on `ended` leaves a ~350 ms gap on the still), it played nothing in Firefox, and in Chromium it stalled at frame 0 on a Google clip without Apple timing metadata |
 
 ## Non-Functional Requirements
 
@@ -66,6 +67,21 @@ Affected layers: metadata extraction (`app/Metadata`), one artisan command, v8 g
        (purple background, tooltip and aria-label "Motion photo")
  Leave → video paused, src removed, still visible again.
  Touch / reduced motion → badge only; tap opens the lightbox (LivePhotosKit plays it).
+```
+
+Lightbox dock (FR-100-06):
+
+```
+ Live photo, stopped                               Live photo, playing (after a click on ◌)
+┌───────────────────────────────────────────┐      ┌───────────────────────────────────────────┐
+│        ◌  ⚑  🖼  ⟲  ⟳  📁  🗑              │      │        ◉  ⚑  🖼  ⟲  ⟳  📁  🗑              │
+│                                           │      │                                           │
+│              still photo                  │      │   <video loop> over the still, no gap     │
+│        (no LivePhotosKit "LIVE" badge)    │      │        click ◉ again → stops, still shown │
+└───────────────────────────────────────────┘      └───────────────────────────────────────────┘
+ ◌ = live button (v8 lucide:circle-dot-dashed, v7 pi-bullseye; white, primary on hover; tooltip "Motion photo")
+ ◉ = same button in the primary colour while playing
+ Viewer without edit rights: the dock holds only ◌.
 ```
 
 ## Branch & Scenario Matrix
@@ -96,6 +112,8 @@ Affected layers: metadata extraction (`app/Metadata`), one artisan command, v8 g
 | S-100-18 | Grid: video fails to load (e.g. HEVC in Firefox) → still stays, no toast. |
 | S-100-19 | Grid on a v3 payload, URL not loaded: `mouseenter` triggers one details request for that id; playback starts after 250 ms or when the URL arrives, whichever is later; a second hover sends no request, including one that starts before the first request has answered. |
 | S-100-20 | Details request fails or the pointer leaves before the URL arrives → no playback, no toast, no stray `<video>`. |
+| S-100-25 | Lightbox, live photo: no native "LIVE" badge; the dock shows the live button; click → motion plays and keeps playing; click again → stops, still visible. |
+| S-100-26 | Lightbox, live photo, viewer without edit rights → dock with the live button only. Non-live photo → no live button. |
 
 ## Test Strategy
 - **Unit:** in php-exif since 1.5.0 (`tests/PHPExif/MotionPhoto/`: `JpegXmpReaderTest`, `MotionPhotoXmpTest`, `MotionPhotoLocatorTest`, `ReaderMotionPhotoTest`), over synthetic byte layouts and the v1/Ultra HDR samples (S-100-01, 03, 04, 05, 08, 09, 10; NFR-100-02). Lychee covers the integration through the upload and command tests below.
@@ -141,6 +159,7 @@ Provided by `lychee-org/php-exif` 1.5.0 (LycheeOrg/php-exif#83, ADR-100-01); Lyc
 | UI-100-01 | Motion badge | `precomputed.is_livephoto` → badge in the thumbnail badge row. |
 | UI-100-02 | Hover playback | FR-100-03 success path. |
 | UI-100-03 | Playback failed | Video error → back to UI-100-01. |
+| UI-100-04 | Lightbox live button | FR-100-06: idle (white) ↔ playing (primary colour). |
 
 ## Telemetry & Observability
 No new events. Extraction keeps the `photo.extract_google_motion_pictures` span. Locator failures log `Log::warning` with the file basename (no path); FFmpeg failures go through `Handler::reportSafely` as today.
@@ -172,6 +191,7 @@ ui_states:
   - { id: UI-100-01, description: Motion badge on live photo thumbnails }
   - { id: UI-100-02, description: Muted looping hover playback }
   - { id: UI-100-03, description: Playback failure falls back to the still }
+  - { id: UI-100-04, description: Lightbox dock live button toggles LivePhotosKit playback }
 ```
 
 ## Appendix – Motion Photo 1.0 layout

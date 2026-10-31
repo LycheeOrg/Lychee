@@ -1,7 +1,7 @@
 # Feature 100 Tasks – Google Motion Photos
 
 _Status: Complete_  
-_Last updated: 2026-10-17_
+_Last updated: 2026-10-31_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -133,6 +133,21 @@ _Last updated: 2026-10-17_
 ### I13 – Review follow-up: staged clip write
 - [x] T-100-22 – Failing test `testReencodeKeepsTheStoredClipWhenTheWriteFails` (a directory blocks the staging path), then stage the clip at `<target>.part` and move it over the target in `ExtractMotionPhotos::extract()` (F-100-04, S-100-24).  
   _Verification commands:_ `php artisan test --filter=ExtractMotionPhotosTest` (red, then 13/13), `vendor/bin/php-cs-fixer fix`, `make phpstan`.  
+
+### I14 – Lightbox live button in the dock (FR-100-06)
+- [x] T-100-23 – Failing Vitest `useLivePhotoToggle.test.ts`, then `resources/js/composables/photo/useLivePhotoToggle.ts` (shared by v7 and v8) (F-100-06, S-100-25).  
+  _Verification commands:_ `npx vp test useLivePhotoToggle` (red, then green)  
+- [x] T-100-24 – `PhotoState.live_photo_controls` / `is_live_playing`, `PhotoBox` without native controls in the main lightbox, `Dock` live button, `PhotoPanel` dock gate for viewers (F-100-06, S-100-25, S-100-26, UI-100-04).  
+  _Verification commands:_ `npx vp check` (no `--fix`), `npx vp run typecheck`, manual lightbox check.  
+  _Notes:_ 2026-10-31: `npx vp test useLivePhotoToggle` 5/5, `npx vp check` on the six files clean, `npx vp run typecheck` green. Manual lightbox check (Apple + Google live photo, viewer without edit rights) still to be done by the owner.  
+- [x] T-100-25 – Same change in v7: `PhotoBox` `is-live-dock-enabled` prop, `Dock` live button (`pi-bullseye`) and `can-edit` gate, `PhotoPanel` dock gate for viewers; composable moved to `resources/js/composables/photo/` (F-100-06, S-100-25, S-100-26, UI-100-04).  
+  _Verification commands:_ `npx vp test useLivePhotoToggle`, `npx vp check` (no `--fix`), `npx vp run typecheck`, manual v7 lightbox check.  
+  _Notes:_ 2026-10-31: `npx vp test useLivePhotoToggle` 5/5, `npx vp check` on the seven touched files clean, `npx vp run typecheck` green. Manual v7 lightbox check still to be done by the owner.  
+- [x] T-100-26 – Owner feedback: the motion must loop until the button is turned off, and nothing played in Firefox. Rewrote `useLivePhotoToggle` (failing tests first: registration, toggle, `stop()`, release, slide-transition ownership) to own the store registration; both `PhotoBox` versions show a looping `<video>` over the still instead of driving LivePhotosKit (F-100-06, S-100-25, S-100-26).  
+  _Verification commands:_ `npx vp test useLivePhotoToggle` (4 red, then 5/5), `npx vp test` (108), `npx vp check` on the nine touched files, `npx vp run typecheck`.  
+  _Notes:_ Diagnosis with a scratch Playwright page over `train.jpg`/`train.mov` and a Google clip extracted from `google_motion_photo.jpg`: in Chromium LivePhotosKit `play()` returns `false` right after `ended` and only restarts on the next `canplay` (~350 ms on the still); on the Google clip it threw `Offset is outside the bounds of the DataView` and stayed at `currentTime` 0.004 while `isPlaying` was true. A plain looping `<video>` wrapped continuously on both clips. Firefox could not be launched in the agent sandbox; manual Firefox check by the owner pending.  
+- [x] T-100-27 – Owner feedback: the `<video>` was hidden under `.lpk-live-photo-renderer` (its layers carry z-index 1–4 and `#livephoto` formed no stacking context). Added `isolate` to the live photo divs in both `PhotoBox` versions (F-100-06, S-100-25).  
+  _Verification commands:_ scratch Playwright page in Chromium: `elementFromPoint` at the centre is `CANVAS.lpk-photo` without `isolate`, `VIDEO` with it; `npx vp check` on both `PhotoBox` files, `npx vp run typecheck`.  
 
 ## Notes / TODOs
 - 2026-10-17: local toolchain installed (PHP 8.4 + imagick, Composer, exiftool, FFmpeg, `vendor/`, `node_modules/`); `vp` is not global, run it as `npx vp …` (e.g. `npx vp check` (never `--fix`: it rewrites unrelated files), `npx vp run typecheck`, `npx vp test`).
