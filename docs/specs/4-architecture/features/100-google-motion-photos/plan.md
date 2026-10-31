@@ -96,7 +96,7 @@ After T-100-15, during T-100-16, compare every FR/NFR/S-ID against the tests nam
 | S-100-11 … 14 | I6 / T-100-10 | `ExtractMotionPhotosTest` |
 | S-100-15 … 18 | I8 / T-100-13, T-100-14 | `useMotionHover.test.ts` + manual |
 | S-100-19, 20 | I8 / T-100-13, T-100-17 | `useMotionHover.test.ts` + manual per view |
-| S-100-25, 26 | I14 / T-100-23 … T-100-26 | `useLivePhotoToggle.test.ts` + manual |
+| S-100-25, 26 | I14 / T-100-23 … T-100-28 | `useLivePhotoToggle.test.ts` + manual |
 
 ## Analysis Gate
 
@@ -124,6 +124,7 @@ Run 2026-10-17 by the agent (owner review pending).
 - v7 grid playback, if requested.
 
 ## Intent Log
+- 2026-10-31: owner tested the dock button in Firefox and Chrome (working) and asked to address the PR #4933 review. CodeRabbit asked to keep T-100-24/25 open until the manual checks passed (now recorded as passed) and to make the live control keyboard-operable: `DockButton` became a `<button type="button">` in v7 and v8, the live button got `aria-label`/`aria-pressed` (T-100-28).
 - 2026-10-31: owner reported the motion did not loop until the button was turned off, and that Firefox highlighted the button without playing. Agent probed LivePhotosKit in Chromium with Playwright (Firefox would not start in the sandbox; running it outside was declined), found the gap-after-`ended` and the stall on non-Apple clips, and switched the dock path to a looping `<video>` overlay, the technique the grid hover already uses in Firefox (FR-100-06, T-100-26).
 - 2026-10-31: owner asked for the same change in v7. Agent mirrored it in the v7 `PhotoBox`/`Dock`/`PhotoPanel` (new `is-live-dock-enabled` prop, as v7 `PhotoBox` has no zoom prop; PrimeIcons `pi-bullseye`, the closest glyph to the Live Photo rings) and moved `useLivePhotoToggle` to `resources/js/composables/photo/`, as v7 never imports from `@/v8`.
 - 2026-10-31: owner asked to move the lightbox "LIVE" button into the dock next to highlight/move/delete, styled like the other dock buttons, click to play and click again to stop and show the still. Agent read `PhotoBox`, `Dock`, `DockButton`, `PhotoPanel`, the LivePhotosKit typings (`showsNativeControls`, `play`/`stop`, `ended` event); chose to keep playing (restart on `ended`) until the second click so the button state always matches what is shown, to show the dock to viewers without edit rights for live photos, and to keep the native controls in Flow/Moderation where there is no dock (FR-100-06).

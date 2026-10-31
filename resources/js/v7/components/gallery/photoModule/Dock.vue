@@ -19,6 +19,8 @@
 				v-if="photoStore.live_photo_controls !== undefined"
 				v-tooltip.bottom="$t('gallery.motion_photo')"
 				pi="bullseye"
+				:aria-label="$t('gallery.motion_photo')"
+				:aria-pressed="photoStore.is_live_playing"
 				:class="photoStore.is_live_playing ? 'text-primary-500' : 'text-white lg:hover:text-primary-500'"
 				@click="photoStore.live_photo_controls?.toggle()"
 			/>
