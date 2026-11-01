@@ -77,7 +77,6 @@ app.use(i18nVue, {
 	},
 });
 
-
 AxiosConfig.axiosSetUp();
 
 /**
