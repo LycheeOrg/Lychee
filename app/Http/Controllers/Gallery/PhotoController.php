@@ -58,6 +58,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\BucketKeys;
+use App\Services\MonthDayKey;
 use App\Services\Telemetry\TraceService;
 use App\Services\TitleSplitter;
 use Illuminate\Routing\Controller;
@@ -232,6 +233,8 @@ class PhotoController extends Controller
 		// if the request takenAt is null, then we set the initial value back.
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
 		$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
+		// FR-106-03: follows the taken date, else the upload date set above.
+		$photo->month_day_key = MonthDayKey::of($photo->taken_at, $photo->created_at);
 
 		// Feature 082: the manual 360° flag, left untouched when not sent (v7).
 		$photo->is_360 = $request->is360() ?? $photo->is_360;

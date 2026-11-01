@@ -22,7 +22,9 @@ use App\Enum\RenamerModeType;
 use App\Jobs\RecomputePhotoBucketsJob;
 use App\Models\Photo;
 use App\Models\RenamerRule;
+use App\Repositories\ConfigManager;
 use App\Services\BucketKeys;
+use App\Services\MonthDayKey;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Tests\Constants\TestConstants;
@@ -31,7 +33,9 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 /**
  * Feature 092 (FR-092-01, FR-092-02, FR-092-10, S-092-04, S-092-13): every
  * write of `taken_at` assigns `photos.taken_key` and every write of `title`
- * assigns `photos.title_date_key`, through the real write path.
+ * assigns `photos.title_date_key`, through the real write path. Feature 106
+ * (FR-106-03, S-106-06 … 08): every write of `taken_at` or `created_at`
+ * assigns `photos.month_day_key`.
  */
 class PhotoKeysWriteTest extends BaseApiWithDataTest
 {
@@ -43,11 +47,16 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 
 	private function uploadNightImage(string $title): Photo
 	{
+		return $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, $title);
+	}
+
+	private function uploadImage(string $file, string $title): Photo
+	{
 		$response = $this->actingAs($this->admin)->upload('Photo', data: [
 			'album_id' => $this->album5->id,
-			'file' => static::createUploadedFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE),
+			'file' => static::createUploadedFile($file),
 			'file_last_modified_time' => 1678824303000,
-			'file_name' => TestConstants::SAMPLE_FILE_NIGHT_IMAGE,
+			'file_name' => $file,
 			'uuid_name' => '',
 			'extension' => '',
 			'chunk_number' => 1,
@@ -59,7 +68,7 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 		return Photo::query()->findOrFail($response->json('expected_id'));
 	}
 
-	private function patchPhoto(?string $taken_at, string $title = 'Holiday'): void
+	private function patchPhoto(?string $taken_at, string $title = 'Holiday', string $upload_date = '2021-01-01'): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
 			'photo_id' => $this->photo1->id,
@@ -68,7 +77,7 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 			'tags' => [],
 			'license' => 'none',
 			'taken_at' => $taken_at,
-			'upload_date' => '2021-01-01',
+			'upload_date' => $upload_date,
 			'from_id' => $this->album1->id,
 		]);
 		$this->assertOk($response);
@@ -82,6 +91,56 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 		$this->assertNotNull($photo->taken_at);
 		$this->assertSame(BucketKeys::takenKey($photo->taken_at), $photo->taken_key);
 		$this->assertSame('2024-03-01', $photo->title_date_key);
+	}
+
+	public function testUploadAssignsMonthDayKeyOfTheTakenDate(): void
+	{
+		$photo = $this->uploadNightImage('Night');
+
+		$this->assertNotNull($photo->taken_at);
+		$this->assertSame(MonthDayKey::ofDate($photo->taken_at), $photo->month_day_key);
+	}
+
+	public function testUploadWithoutTakenDateAssignsMonthDayKeyOfTheUploadDate(): void
+	{
+		$this->travelTo(new \DateTimeImmutable('2026-03-07 12:00:00'));
+		$previous = resolve(ConfigManager::class)->getValueAsString('use_last_modified_date_when_no_exif_date');
+		\Configs::set('use_last_modified_date_when_no_exif_date', false);
+		try {
+			$photo = $this->uploadImage(TestConstants::SAMPLE_FILE_PNG, 'Drawing');
+		} finally {
+			\Configs::set('use_last_modified_date_when_no_exif_date', $previous);
+		}
+
+		$this->assertNull($photo->taken_at);
+		$this->assertSame(307, $photo->month_day_key);
+	}
+
+	public function testUpdateAssignsMonthDayKeyOfTheLocalDay(): void
+	{
+		// 22:30 UTC on 30 June, taken at UTC+02:00 → 1 July where it was taken.
+		$this->patchPhoto('2026-07-01T00:30:00+02:00');
+
+		$this->assertSame(701, $this->photo1->month_day_key);
+	}
+
+	public function testUpdateResetToInitialTakenAtAssignsMonthDayKey(): void
+	{
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['initial_taken_at' => '2019-05-05 12:00:00', 'initial_taken_at_orig_tz' => 'UTC']);
+
+		$this->patchPhoto(null);
+
+		$this->assertSame(505, $this->photo1->month_day_key);
+	}
+
+	public function testUpdateUploadDateWithoutTakenDateAssignsMonthDayKey(): void
+	{
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => null, 'initial_taken_at' => null, 'taken_key' => null]);
+
+		$this->patchPhoto(null, upload_date: '2021-03-07');
+
+		$this->assertNull($this->photo1->taken_at);
+		$this->assertSame(307, $this->photo1->month_day_key);
 	}
 
 	public function testUpdateAssignsTakenKeyInCaptureZone(): void
@@ -167,12 +226,14 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 		$photo = $this->uploadNightImage('Night');
 		$expected_key = $photo->taken_key;
 		$this->assertNotNull($expected_key);
+		$expected_month_day_key = MonthDayKey::ofDate($photo->taken_at);
 
 		// Without --force the command only visits photos without `taken_at`:
 		// every fixture photo has one, so only this photo is processed.
 		DB::table('photos')->where('id', '=', $photo->id)->update([
 			'taken_at' => null,
 			'taken_key' => null,
+			'month_day_key' => null,
 		]);
 
 		Bus::fake([RecomputePhotoBucketsJob::class]);
@@ -180,6 +241,7 @@ class PhotoKeysWriteTest extends BaseApiWithDataTest
 
 		$photo->refresh();
 		$this->assertSame($expected_key, $photo->taken_key);
+		$this->assertSame($expected_month_day_key, $photo->month_day_key);
 		Bus::assertDispatched(RecomputePhotoBucketsJob::class, fn (RecomputePhotoBucketsJob $job) => $job->photo_id === $photo->id);
 	}
 }
