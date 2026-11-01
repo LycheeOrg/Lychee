@@ -39,6 +39,6 @@ app.use(i18nVue, { resolve: resolveLocale });
 registerIconCollections();
 applyStoredDarkModePreference();
 
-app.mount("#app");
-
 AxiosConfig.axiosSetUp();
+
+app.mount("#app");

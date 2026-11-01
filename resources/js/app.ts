@@ -77,10 +77,11 @@ app.use(i18nVue, {
 	},
 });
 
+
+AxiosConfig.axiosSetUp();
+
 /**
  * Finally, we will attach the application instance to a HTML element with
  * an "id" attribute of "app".
  */
 app.mount("#app");
-
-AxiosConfig.axiosSetUp();
