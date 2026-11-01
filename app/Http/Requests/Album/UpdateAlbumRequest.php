@@ -222,7 +222,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			null :
 			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
-		$album_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
+		$album_column = ColumnSortingAlbumType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
 		$album_order = OrderSortingType::tryFrom($values[RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE]);
 
 		$this->album_sorting_criterion = $album_column === null ?
