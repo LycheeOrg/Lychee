@@ -259,6 +259,8 @@ return [
             'share_card' => 'Scheda di condivisione',
             'show_sphere' => 'Mostra come sfera',
             'show_flat' => 'Mostra piatta',
+            'rotate_ccw' => 'Ruota in senso antiorario',
+            'rotate_cw' => 'Ruota in senso orario',
             'set_album_header' => 'Imposta come intestazione dell\'album',
             'move' => 'Sposta',
             'delete' => 'Elimina',

@@ -259,6 +259,8 @@ return [
             'share_card' => 'Fotokarte teilen',
             'show_sphere' => 'Als Kugel anzeigen',
             'show_flat' => 'Flach anzeigen',
+            'rotate_ccw' => 'Gegen den Uhrzeigersinn drehen',
+            'rotate_cw' => 'Im Uhrzeigersinn drehen',
             'set_album_header' => 'Als Album-Header festlegen',
             'move' => 'Verschieben',
             'delete' => 'Löschen',

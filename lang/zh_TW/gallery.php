@@ -259,6 +259,8 @@ return [
             'share_card' => '分享卡片',
             'show_sphere' => '以球形顯示',
             'show_flat' => '以平面顯示',
+            'rotate_ccw' => '逆時針旋轉',
+            'rotate_cw' => '順時針旋轉',
             'set_album_header' => '設為相簿頁首',
             'move' => '移動',
             'delete' => '刪除',

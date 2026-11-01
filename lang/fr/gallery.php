@@ -259,6 +259,8 @@ return [
             'share_card' => 'Carte de partage',
             'show_sphere' => 'Afficher en sphère',
             'show_flat' => 'Afficher à plat',
+            'rotate_ccw' => 'Pivoter dans le sens antihoraire',
+            'rotate_cw' => 'Pivoter dans le sens horaire',
             'set_album_header' => 'Définir comme en-tête d’album',
             'move' => 'Déplacer',
             'delete' => 'Supprimer',

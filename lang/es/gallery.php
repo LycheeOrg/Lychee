@@ -259,6 +259,8 @@ return [
             'share_card' => 'Tarjeta para compartir',
             'show_sphere' => 'Mostrar como esfera',
             'show_flat' => 'Mostrar plana',
+            'rotate_ccw' => 'Girar en sentido antihorario',
+            'rotate_cw' => 'Girar en sentido horario',
             'set_album_header' => 'Establecer como encabezado de álbum',
             'move' => 'Mover',
             'delete' => 'Borrar',

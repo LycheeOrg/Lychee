@@ -259,6 +259,8 @@ return [
             'share_card' => 'Delekort',
             'show_sphere' => 'Vis som sfære',
             'show_flat' => 'Vis flatt',
+            'rotate_ccw' => 'Roter mot klokken',
+            'rotate_cw' => 'Roter med klokken',
             'set_album_header' => 'Angi som albumoverskrift',
             'move' => 'Flytt',
             'delete' => 'Slett',

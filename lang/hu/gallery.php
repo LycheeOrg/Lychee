@@ -259,6 +259,8 @@ return [
             'share_card' => 'Megosztókártya',
             'show_sphere' => 'Megjelenítés gömbként',
             'show_flat' => 'Sík megjelenítés',
+            'rotate_ccw' => 'Forgatás az óramutató járásával ellentétesen',
+            'rotate_cw' => 'Forgatás az óramutató járásával megegyezően',
             'set_album_header' => 'Beállítás album fejléceként',
             'move' => 'Áthelyezés',
             'delete' => 'Törlés',

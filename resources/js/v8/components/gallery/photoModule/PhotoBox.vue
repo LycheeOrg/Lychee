@@ -136,7 +136,7 @@
 			data-proactively-loads-video="true"
 			:data-photo-src="photoStore.photo.size_variants.medium?.url"
 			:data-video-src="photoStore.photo.live_photo_url"
-			class="absolute m-auto w-auto h-auto"
+			class="absolute m-auto w-auto h-auto isolate"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="photoStore.style"
 		></div>
@@ -149,10 +149,26 @@
 			data-proactively-loads-video="true"
 			:data-photo-src="photoStore.photo.size_variants.original?.url"
 			:data-video-src="photoStore.photo.live_photo_url"
-			class="absolute m-auto w-auto h-auto"
+			class="absolute m-auto w-auto h-auto isolate"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="photoStore.style"
 		></div>
+		<!-- FR-100-06: the dock plays the live photo's motion over the still, looping until stopped.
+		     The live photo divs are `isolate`: LivePhotosKit's z-indexed layers stay below this video. -->
+		<video
+			v-if="isLivePlaying && liveVideoUrl !== null"
+			:src="liveVideoUrl"
+			class="absolute m-auto w-auto h-auto object-contain pointer-events-none"
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
+			:style="photoStore.style"
+			muted
+			loop
+			autoplay
+			playsinline
+			disablepictureinpicture
+			aria-hidden="true"
+			@error="stopLivePhoto"
+		></video>
 		<ZoomMinimap
 			v-if="isMinimapVisible && panZoom.fit.value !== undefined"
 			:src="minimapSrc"
@@ -187,6 +203,7 @@ import { storeToRefs } from "pinia";
 import { computed, defineAsyncComponent, markRaw, nextTick, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore, type ZoomControls } from "@/stores/PhotoState";
+import { useLivePhotoToggle } from "@/composables/photo/useLivePhotoToggle";
 import FaceOverlay from "./FaceOverlay.vue";
 import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import NsfwDetectionOverlay from "./NsfwDetectionOverlay.vue";
@@ -596,6 +613,13 @@ watchEffect(
 
 onUnmounted(() => imageResizeObserver?.disconnect());
 
+// In the main lightbox the dock plays the Live Photo (FR-100-06): a looping `<video>` over the
+// still, so LivePhotosKit only shows the still there, without its native "LIVE" badge.
+const isLiveDockControlled = computed(() => props.isZoomEnabled === true);
+const isLivePhotoMode = computed(() => viewMode.value === ImageViewMode.LivePhotoMedium || viewMode.value === ImageViewMode.LivePhotoOriginal);
+const liveVideoUrl = computed(() => (isLivePhotoMode.value && isMediaReady.value ? (photoStore.photo?.live_photo_url ?? null) : null));
+const { isPlaying: isLivePlaying, stop: stopLivePhoto } = useLivePhotoToggle(() => isLiveDockControlled.value && liveVideoUrl.value !== null);
+
 // Live Photos aren't scanned for automatically past initial page load (LivePhotosKit only
 // auto-augments `[data-live-photo]` elements present at DOMContentLoaded), and the div here
 // is destroyed/recreated by v-if on every mode switch, so it must be augmented explicitly
@@ -607,7 +631,7 @@ watchEffect(
 		if (!el) {
 			return;
 		}
-		LivePhotosKit.augmentElementAsPlayer(el);
+		LivePhotosKit.augmentElementAsPlayer(el, { showsNativeControls: !isLiveDockControlled.value });
 	},
 	{ flush: "post" },
 );

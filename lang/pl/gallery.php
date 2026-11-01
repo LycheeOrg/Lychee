@@ -259,6 +259,8 @@ return [
             'share_card' => 'Karta udostępniania',
             'show_sphere' => 'Pokaż jako sferę',
             'show_flat' => 'Pokaż płasko',
+            'rotate_ccw' => 'Obróć w lewo',
+            'rotate_cw' => 'Obróć w prawo',
             'set_album_header' => 'Ustaw jako nagłówek albumu',
             'move' => 'Przenieś',
             'delete' => 'Usuń',

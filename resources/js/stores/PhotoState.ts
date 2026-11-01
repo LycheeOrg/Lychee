@@ -23,6 +23,14 @@ export type ZoomControls = {
 };
 
 /**
+ * Play/stop of the Live Photo shown by the main lightbox `PhotoBox`, v7 and v8 (Feature 100,
+ * FR-100-06), used by the dock. The playing state stays in `PhotoBox`.
+ */
+export type LivePhotoControls = {
+	toggle: () => void;
+};
+
+/**
  * Darkened thumb background for the previous/next buttons. A neighbour synthesised from a
  * Struct-of-Arrays listing has no size variants until its details are merged: no background
  * then, otherwise `url('undefined')` requests `/undefined`.
@@ -75,6 +83,9 @@ export const usePhotoStore = defineStore("photo-store", {
 		// Feature 078: written by the v8 `PhotoBox` only (mounted, zoomable photo).
 		is_zoomed: false,
 		zoom_controls: undefined as ZoomControls | undefined,
+		// Feature 100 (FR-100-06): written by the main lightbox `PhotoBox` (v7 or v8) only (mounted live photo).
+		is_live_playing: false,
+		live_photo_controls: undefined as LivePhotoControls | undefined,
 		// Feature 082: photo switched to its flat view (FR-082-09), photo whose sphere failed (FR-082-15).
 		sphere_flat_photo_id: undefined as string | undefined,
 		sphere_failed_photo_id: undefined as string | undefined,
@@ -88,6 +99,8 @@ export const usePhotoStore = defineStore("photo-store", {
 			this.transition = "slide-next";
 			this.is_zoomed = false;
 			this.zoom_controls = undefined;
+			this.is_live_playing = false;
+			this.live_photo_controls = undefined;
 			this.sphere_flat_photo_id = undefined;
 			this.sphere_failed_photo_id = undefined;
 			this.details_failed_photo_id = undefined;
