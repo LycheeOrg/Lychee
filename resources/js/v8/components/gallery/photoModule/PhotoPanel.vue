@@ -39,9 +39,8 @@
 						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 						<PhotoRatingOverlay />
 						<Dock
-							v-if="
-								canEditCurrentPhoto && !is_photo_edit_open && !photoStore.is_zoomed && photoStore.imageViewMode !== ImageViewMode.Pdf
-							"
+							v-if="isDockShown"
+							:can-edit="canEditCurrentPhoto"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"
 							@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
@@ -108,6 +107,15 @@ const canEditCurrentPhoto = computed(() => {
 	}
 	return true;
 });
+
+/** Editors get the edit buttons; any viewer of a live photo gets its play button (FR-100-06). */
+const isDockShown = computed(
+	() =>
+		(canEditCurrentPhoto.value || photoStore.live_photo_controls !== undefined) &&
+		!is_photo_edit_open.value &&
+		!photoStore.is_zoomed &&
+		photoStore.imageViewMode !== ImageViewMode.Pdf,
+);
 
 const props = defineProps<{
 	isMapVisible: boolean;

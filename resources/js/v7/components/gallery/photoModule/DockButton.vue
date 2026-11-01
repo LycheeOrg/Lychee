@@ -1,8 +1,8 @@
 <template>
-	<a class="px-3 py-2.5 cursor-pointer transition-all duration-300 ease-in h-full inline-flex" :class="props.class">
+	<button type="button" class="px-3 py-2.5 cursor-pointer transition-all duration-300 ease-in h-full inline-flex" :class="props.class">
 		<MiniIcon v-if="props.icon" :icon="props.icon" fill="" class="my-0 w-4 h-4 mr-0 ml-0" />
 		<i :class="piClass" class="m-0" />
-	</a>
+	</button>
 </template>
 <script setup lang="ts">
 import MiniIcon from "@/v7/components/icons/MiniIcon.vue";

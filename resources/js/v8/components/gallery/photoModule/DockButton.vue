@@ -1,8 +1,12 @@
 <template>
-	<a class="pointer-events-auto px-3 py-2.5 cursor-pointer transition-all duration-300 ease-in h-full inline-flex" :class="props.class">
+	<button
+		type="button"
+		class="pointer-events-auto px-3 py-2.5 cursor-pointer transition-all duration-300 ease-in h-full inline-flex"
+		:class="props.class"
+	>
 		<MiniIcon v-if="props.icon" :icon="props.icon" fill="" class="my-0 w-4 h-4 mr-0 ml-0" />
 		<UIcon v-if="props.pi" :name="piIconName" class="m-0" :class="piExtraClasses" />
-	</a>
+	</button>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";

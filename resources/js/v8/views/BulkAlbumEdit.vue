@@ -193,13 +193,13 @@
 					<div class="flex items-center justify-center gap-1">
 						<USelectMenu
 							v-if="editingSortingId === row.original.id + '_photo'"
-							:model-value="findOption(photoSortingColumnsOptions, row.original.photo_sorting_col)"
-							:items="photoSortingColumnsOptions"
+							:model-value="optionFor(photoSortingColumnItems, row.original.photo_sorting_col)"
+							:items="photoSortingColumnItems"
 							label-key="label"
 							size="sm"
 							class="text-xs w-32"
 							@update:model-value="
-								(v: SelectOption<App.Enum.ColumnSortingPhotoType> | undefined) =>
+								(v: SelectOption<App.Enum.ColumnSortingPhotoType | null> | undefined) =>
 									savePhotoSortingCol(row.original.id, v?.value ?? null)
 							"
 							@update:open="(o: boolean) => !o && closeEditSorting()"
@@ -211,11 +211,7 @@
 							v-else
 							class="cursor-text text-xs hover:text-primary w-32 text-center"
 							@click="startEditPhotoSorting(row.original.id)"
-							>{{
-								photoSortingColumnsOptions.find((o) => o.value === row.original.photo_sorting_col)?.label !== undefined
-									? $t(photoSortingColumnsOptions.find((o) => o.value === row.original.photo_sorting_col)!.label)
-									: "—"
-							}}</span
+							>{{ sortingColumnLabel(photoSortingColumnItems, row.original.photo_sorting_col) }}</span
 						>
 						<UButton
 							size="sm"
@@ -237,13 +233,13 @@
 					<div class="flex items-center justify-center gap-1">
 						<USelectMenu
 							v-if="editingSortingId === row.original.id + '_album'"
-							:model-value="findOption(albumSortingColumnsOptions, row.original.album_sorting_col)"
-							:items="albumSortingColumnsOptions"
+							:model-value="optionFor(albumSortingColumnItems, row.original.album_sorting_col)"
+							:items="albumSortingColumnItems"
 							label-key="label"
 							size="sm"
 							class="text-xs w-32"
 							@update:model-value="
-								(v: SelectOption<App.Enum.ColumnSortingAlbumType> | undefined) =>
+								(v: SelectOption<App.Enum.ColumnSortingAlbumType | null> | undefined) =>
 									saveAlbumSortingCol(row.original.id, v?.value ?? null)
 							"
 							@update:open="(o: boolean) => !o && closeEditSorting()"
@@ -255,11 +251,7 @@
 							v-else
 							class="cursor-text text-xs hover:text-primary w-32 text-center"
 							@click="startEditAlbumSorting(row.original.id)"
-							>{{
-								albumSortingColumnsOptions.find((o) => o.value === row.original.album_sorting_col)?.label !== undefined
-									? $t(albumSortingColumnsOptions.find((o) => o.value === row.original.album_sorting_col)!.label)
-									: "—"
-							}}</span
+							>{{ sortingColumnLabel(albumSortingColumnItems, row.original.album_sorting_col) }}</span
 						>
 						<UButton
 							size="sm"
@@ -308,6 +300,7 @@ import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { takenRangeLabel } from "@/v8/utils/takenRange";
+import { optionFor, sortingOrderValueFor, withDefaultOption } from "@/v8/utils/albumSelectOptions";
 import type { TableColumn } from "@nuxt/ui";
 
 /** A bulk edit row of this page: the shared row plus the capture range of the v3 fields (FR-103-14). */
@@ -434,8 +427,13 @@ const columns = computed<TableColumn<BulkAlbumRow>[]>(() => {
 	return cols;
 });
 
-function findOption<T extends string>(options: SelectOption<T>[], value: string | null): SelectOption<T> | undefined {
-	return options.find((o) => o.value === value);
+// Feature 105 (FR-105-10): a column following the gallery setting is the "Default" entry.
+const photoSortingColumnItems = withDefaultOption(photoSortingColumnsOptions);
+const albumSortingColumnItems = withDefaultOption(albumSortingColumnsOptions);
+
+function sortingColumnLabel<T>(options: SelectOption<T>[], value: string | null): string {
+	const option = optionFor(options, value);
+	return option === undefined ? "—" : trans(option.label);
 }
 
 function selectedLabel<T>(option: SelectOption<T> | undefined): string {
@@ -630,12 +628,12 @@ function closeEditSorting(): void {
 }
 
 function savePhotoSortingCol(albumId: string, val: string | null): void {
-	onInlineSortingChange(albumId, "photo_sorting_col", val);
+	onInlineSortingColumnChange(albumId, "photo_sorting_col", "photo_sorting_order", val);
 	editingSortingId.value = null;
 }
 
 function saveAlbumSortingCol(albumId: string, val: string | null): void {
-	onInlineSortingChange(albumId, "album_sorting_col", val);
+	onInlineSortingColumnChange(albumId, "album_sorting_col", "album_sorting_order", val);
 	editingSortingId.value = null;
 }
 
@@ -678,6 +676,29 @@ function onInlineSortingChange(
 	album[field] = value;
 	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [field]: value }).catch(() => {
 		album[field] = originalValue;
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
+	});
+}
+
+// A column is always stored with its order (FR-105-10): the album ignores one without the other.
+function onInlineSortingColumnChange(
+	albumId: string,
+	columnField: "photo_sorting_col" | "album_sorting_col",
+	orderField: "photo_sorting_order" | "album_sorting_order",
+	column: string | null,
+): void {
+	const album = albums.value.find((a) => a.id === albumId);
+	if (album === undefined) {
+		return;
+	}
+	const originalColumn = album[columnField];
+	const originalOrder = album[orderField];
+	const order = sortingOrderValueFor(column, originalOrder);
+	album[columnField] = column;
+	album[orderField] = order;
+	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [columnField]: column, [orderField]: order }).catch(() => {
+		album[columnField] = originalColumn;
+		album[orderField] = originalOrder;
 		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
 	});
 }
