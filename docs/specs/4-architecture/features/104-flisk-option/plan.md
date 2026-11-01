@@ -14,7 +14,7 @@ Users who already use Flisk can start Lychee with `flisk up lychee`, and anyone 
 - **Out of scope:** N-104-01 … 03.
 
 ## Dependencies & Interfaces
-Flisk CLI 1.4.27 or later, flisk-import 0.16.0, @flisk-sh/flisk-export 0.9.0 (see the spec's *Pinned versions*).
+Flisk CLI 1.4.30 or later (1.4.27 has the fields; 1.4.30 is the first that needs none of the FR-104-06 … 08 workarounds), flisk-import 0.16.0, @flisk-sh/flisk-export 0.9.0 (see the spec's *Pinned versions*).
 
 ## Assumptions & Risks
 - **Assumptions:** maintainers accept an optional second start path (Q-104-01).
