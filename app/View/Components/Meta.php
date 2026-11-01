@@ -45,6 +45,7 @@ class Meta extends Component
 	public string $user_js_url;
 	public string $loading_indicator_mode;
 	public string $loading_indicator_url;
+	public bool $client_cache_enabled;
 	public int $width = 0;
 	public int $height = 0;
 
@@ -66,6 +67,8 @@ class Meta extends Component
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
 		$this->setLoadingIndicator();
+		// Rendered into the page so the front end knows it before its first request.
+		$this->client_cache_enabled = config('features.client-cache') === true;
 
 		$base_url = url('/');
 		// Work around to try to satisfy everyone...

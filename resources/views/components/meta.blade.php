@@ -5,6 +5,7 @@
 <meta name="mobile-web-app-status-bar-style" content="black">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="lychee-loading-indicator" content="{{ $loading_indicator_mode }}" data-url="{{ $loading_indicator_url }}">
+<meta name="lychee-client-cache" content="{{ $client_cache_enabled ? '1' : '0' }}">
 @if(Features::inactive('white_label_enabled'))
 <meta name="generator" content="Lychee v7">
 @endif

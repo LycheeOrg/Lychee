@@ -78,3 +78,10 @@ describe("ThumbAssetService.clear() (S-102-15)", () => {
 		expect(signal.aborted).toBe(true);
 	});
 });
+
+describe("ThumbAssetService.acquire()", () => {
+	it("keeps the axios response cache whatever CLIENT_CACHE_ENABLED says", () => {
+		ThumbAssetService.acquire("album", "p5", "small").release();
+		expect(get.mock.calls[0][1]).toMatchObject({ cache: { enabled: true } });
+	});
+});

@@ -291,6 +291,19 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Client-side cache
+	 |--------------------------------------------------------------------------
+	 |
+	 | When disabled, the front end (v7 and v8) reuses no stored API
+	 | response: the axios response cache is skipped and requests keep asking
+	 | the browser not to answer from its HTTP cache. Thumbnails stay cached.
+	 | Enabled by default — set CLIENT_CACHE_ENABLED=false to always fetch
+	 | from the server.
+	 */
+	'client-cache' => (bool) env('CLIENT_CACHE_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Enable Nuxt UI front-end (v8)
 	 |--------------------------------------------------------------------------
 	 |

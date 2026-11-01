@@ -1,8 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, type AxiosResponse } from "axios";
 import CSRF from "./csrf-getter";
-// import { setupCache } from "axios-cache-interceptor/dev";
-import { setupCache } from "axios-cache-interceptor";
 import InitService from "../services/init-service";
+import { isClientCacheEnabled, setUpClientCache } from "./client-cache";
 
 // Cached for the life of the session (unlike InitService.fetchMac()'s in-flight dedup, which only
 // coalesces concurrent callers of one fetch): once resolved, later Asset requests reuse this value
@@ -67,7 +66,7 @@ function needsMac(url: string | undefined): boolean {
 
 const AxiosConfig = {
 	axiosSetUp() {
-		setupCache(axios);
+		setUpClientCache(axios, isClientCacheEnabled());
 		axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 		axios.interceptors.request.use(
 			async function (config: InternalAxiosRequestConfig) {

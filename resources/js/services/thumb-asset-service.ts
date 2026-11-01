@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import Constants from "./constants";
 
 type CacheEntry = {
@@ -95,7 +95,9 @@ const ThumbAssetService = {
 					responseType: "blob",
 					signal: controller.signal,
 					data: {},
-				})
+					// Thumbnails stay cached even with CLIENT_CACHE_ENABLED=false.
+					cache: { enabled: true },
+				} as AxiosRequestConfig)
 				.then((response) => {
 					if (entry !== undefined) {
 						entry.settled = true;
