@@ -23,13 +23,19 @@
 			</UFormField>
 			<div class="flex gap-4 flex-wrap">
 				<UFormField :label="$t('gallery.album.properties.photo_ordering')">
-					<USelectMenu v-model="photoSortingColumn" :items="photoSortingColumnsOptions" label-key="label" class="w-62">
+					<USelectMenu v-model="photoSortingColumnModel" :items="photoSortingColumnItems" label-key="label" class="w-62">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
 				<UFormField :label="$t('gallery.album.properties.asc/desc')">
-					<USelectMenu v-model="photoSortingOrder" :items="sortingOrdersOptions" label-key="label" class="w-62">
+					<USelectMenu
+						v-model="photoSortingOrder"
+						:items="sortingOrderItems"
+						label-key="label"
+						:disabled="isDefaultOption(photoSortingColumn)"
+						class="w-62"
+					>
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
@@ -38,13 +44,19 @@
 			<template v-if="is_model_album">
 				<div class="flex gap-4 flex-wrap">
 					<UFormField :label="$t('gallery.album.properties.children_ordering')">
-						<USelectMenu v-model="albumSortingColumn" :items="albumSortingColumnsOptions" label-key="label" class="w-62">
+						<USelectMenu v-model="albumSortingColumnModel" :items="albumSortingColumnItems" label-key="label" class="w-62">
 							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
 					</UFormField>
 					<UFormField :label="$t('gallery.album.properties.asc/desc')">
-						<USelectMenu v-model="albumSortingOrder" :items="sortingOrdersOptions" label-key="label" class="w-62">
+						<USelectMenu
+							v-model="albumSortingOrder"
+							:items="sortingOrderItems"
+							label-key="label"
+							:disabled="isDefaultOption(albumSortingColumn)"
+							class="w-62"
+						>
 							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
@@ -53,18 +65,46 @@
 				<template v-if="is_expert_mode">
 					<div class="flex gap-4">
 						<UFormField :label="$t('gallery.album.properties.header')">
-							<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
+							<USelectMenu
+								v-model="header_id"
+								:items="headersOptions"
+								label-key="title"
+								:placeholder="$t('gallery.album.properties.automatic')"
+								class="w-72"
+								@update:open="requestThumbUrls"
+							>
 								<template #item-leading="{ item }">
 									<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
 									<UIcon v-else-if="item.id === 'map'" name="lucide:map" />
-									<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+									<Thumb
+										v-else
+										class="w-4 rounded-sm"
+										:album-id="albumId"
+										:photo-id="item.id"
+										type="thumb"
+										v-bind="optionThumbProps(item.thumb, tileUrlsStore.urlsOf(item.id))"
+									/>
 								</template>
 							</USelectMenu>
 						</UFormField>
 						<UFormField :label="$t('gallery.album.properties.cover')">
-							<USelectMenu v-model="cover_id" :items="coverOptions" label-key="title" class="w-72" clear>
+							<USelectMenu
+								v-model="cover_id"
+								:items="coverOptions"
+								label-key="title"
+								:placeholder="$t('gallery.album.properties.automatic')"
+								class="w-72"
+								clear
+								@update:open="requestThumbUrls"
+							>
 								<template #item-leading="{ item }">
-									<img :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+									<Thumb
+										class="w-4 rounded-sm"
+										:album-id="albumId"
+										:photo-id="item.id"
+										type="thumb"
+										v-bind="optionThumbProps(item.thumb, tileUrlsStore.urlsOf(item.id))"
+									/>
 								</template>
 							</USelectMenu>
 						</UFormField>
@@ -82,13 +122,13 @@
 			</template>
 			<div class="flex flex-wrap gap-4">
 				<UFormField v-if="is_model_album" :label="$t('gallery.album.properties.aspect_ratio')">
-					<USelectMenu v-model="aspectRatio" :items="aspectRatioOptions" label-key="label" class="w-72">
+					<USelectMenu v-model="aspectRatio" :items="aspectRatioItems" label-key="label" class="w-72">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
 				<UFormField :label="$t('gallery.album.properties.layout')">
-					<USelectMenu v-model="photoLayout" :items="photoLayoutOptions" label-key="label" class="w-72">
+					<USelectMenu v-model="photoLayout" :items="photoLayoutItems" label-key="label" class="w-72">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
@@ -189,6 +229,16 @@ import {
 	timelineAlbumGranularityOptions,
 	timeZoneOptions,
 } from "@/config/constants";
+import {
+	isDefaultOption,
+	optionFor,
+	optionThumbProps,
+	sortingOrderFor,
+	timelineSelectOptions,
+	withDefaultOption,
+} from "@/v8/utils/albumSelectOptions";
+import Thumb from "@/v8/components/thumbs/Thumb.vue";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -215,6 +265,7 @@ const albumListStore = useAlbumListStore();
 const { is_se_enabled, is_se_preview_enabled, is_flow_opt_in_strategy } = storeToRefs(LycheeState);
 
 const photosStore = usePhotosStore();
+const tileUrlsStore = useTileUrlsStore();
 
 const toast = useAppToast();
 const isLoading = ref(true);
@@ -270,13 +321,37 @@ function selectedLabel<T>(option: SelectOption<T> | undefined): string {
 	return option ? trans(option.label) : " ";
 }
 
-const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType> | undefined>(undefined);
-const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
-const albumSortingColumn = ref<SelectOption<App.Enum.ColumnSortingAlbumType> | undefined>(undefined);
-const albumSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
-const photoLayout = ref<SelectOption<App.Enum.PhotoLayoutType> | undefined>(undefined);
-const photoTimeline = ref<SelectOption<App.Enum.TimelinePhotoGranularity> | undefined>(undefined);
-const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity> | undefined>(undefined);
+// Feature 105 (FR-105-02): a stored `null` (gallery setting) is the "Default" entry.
+const photoSortingColumnItems = withDefaultOption(photoSortingColumnsOptions);
+const albumSortingColumnItems = withDefaultOption(albumSortingColumnsOptions);
+// An order follows its column (FR-105-03), so its list has no "Default" entry.
+const sortingOrderItems: SelectOption<App.Enum.OrderSortingType | null>[] = sortingOrdersOptions;
+const aspectRatioItems = withDefaultOption(aspectRatioOptions);
+const photoLayoutItems = withDefaultOption(photoLayoutOptions);
+
+const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType | null> | undefined>(undefined);
+const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType | null> | undefined>(undefined);
+const albumSortingColumn = ref<SelectOption<App.Enum.ColumnSortingAlbumType | null> | undefined>(undefined);
+const albumSortingOrder = ref<SelectOption<App.Enum.OrderSortingType | null> | undefined>(undefined);
+const photoLayout = ref<SelectOption<App.Enum.PhotoLayoutType | null> | undefined>(undefined);
+const photoTimeline = ref<SelectOption<App.Enum.TimelinePhotoGranularity | null> | undefined>(undefined);
+const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity | null> | undefined>(undefined);
+
+// The API takes a sort column only with its order (FR-105-03).
+const photoSortingColumnModel = computed<SelectOption<App.Enum.ColumnSortingPhotoType | null> | undefined>({
+	get: () => photoSortingColumn.value,
+	set: (column) => {
+		photoSortingColumn.value = column;
+		photoSortingOrder.value = sortingOrderFor(column, photoSortingOrder.value);
+	},
+});
+const albumSortingColumnModel = computed<SelectOption<App.Enum.ColumnSortingAlbumType | null> | undefined>({
+	get: () => albumSortingColumn.value,
+	set: (column) => {
+		albumSortingColumn.value = column;
+		albumSortingOrder.value = sortingOrderFor(column, albumSortingOrder.value);
+	},
+});
 
 // Feature 071 (FR-071-02): per-album date scrubber override — Default follows the gallery setting.
 type DateScrubberChoice = "default" | "enabled" | "disabled";
@@ -303,7 +378,7 @@ const copyright = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
 const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_person_album = ref<boolean>(false);
-const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
+const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType | null> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
 const cover_id = ref<HeaderOption | null | undefined>(undefined);
 const is_and = ref<boolean>(false);
@@ -350,18 +425,18 @@ watch(is_published_at_enabled, (enabled) => {
 
 const photoTimelineOptions = computed(() => {
 	if (is_se_enabled.value) {
-		return timelinePhotoGranularityOptions;
+		return timelineSelectOptions(timelinePhotoGranularityOptions);
 	}
 
-	return timelinePhotoGranularityOptions.slice(0, 2);
+	return timelineSelectOptions(timelinePhotoGranularityOptions.slice(0, 2));
 });
 
 const albumTimelineOptions = computed(() => {
 	if (is_se_enabled.value) {
-		return timelineAlbumGranularityOptions;
+		return timelineSelectOptions(timelineAlbumGranularityOptions);
 	}
 
-	return timelineAlbumGranularityOptions.slice(0, 2);
+	return timelineSelectOptions(timelineAlbumGranularityOptions.slice(0, 2));
 });
 
 const headersOptions = computed(() => {
@@ -405,6 +480,13 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 	};
 }
 
+// FR-105-08: tile URLs of the photos the header and cover lists show, asked when either opens.
+function requestThumbUrls(open: boolean) {
+	if (open) {
+		tileUrlsStore.request(photosStore.photos.map((photo) => photo.id));
+	}
+}
+
 const coverOptions = computed<HeaderOption[]>(() =>
 	photosStore.photos.map((photo) => ({
 		id: photo.id,
@@ -437,15 +519,16 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	title.value = editable.title;
 	slug.value = editable.slug;
 	description.value = editable.description;
-	photoSortingColumn.value = SelectBuilders.buildPhotoSorting(editable.photo_sorting?.column);
-	photoSortingOrder.value = SelectBuilders.buildSortingOrder(editable.photo_sorting?.order);
-	albumSortingColumn.value = SelectBuilders.buildAlbumSorting(editable.album_sorting?.column);
-	albumSortingOrder.value = SelectBuilders.buildSortingOrder(editable.album_sorting?.order);
-	photoLayout.value = SelectBuilders.buildPhotoLayout(editable.photo_layout ?? undefined);
+	photoSortingColumn.value = optionFor(photoSortingColumnItems, editable.photo_sorting?.column);
+	photoSortingOrder.value = optionFor(withDefaultOption(sortingOrdersOptions), editable.photo_sorting?.order);
+	albumSortingColumn.value = optionFor(albumSortingColumnItems, editable.album_sorting?.column);
+	albumSortingOrder.value = optionFor(withDefaultOption(sortingOrdersOptions), editable.album_sorting?.order);
+	photoLayout.value = optionFor(photoLayoutItems, editable.photo_layout);
 	license.value = SelectBuilders.buildLicense(editable.license ?? undefined);
-	aspectRatio.value = SelectBuilders.buildAspectRatio(editable.aspect_ratio ?? undefined);
-	albumTimeline.value = SelectBuilders.buildTimelineAlbumGranularity(editable.album_timeline ?? undefined);
-	photoTimeline.value = SelectBuilders.buildTimelinePhotoGranularity(editable.photo_timeline ?? undefined);
+	aspectRatio.value = optionFor(aspectRatioItems, editable.aspect_ratio);
+	// Looked up in the full lists: a granularity the visible list lacks (SE off) stays shown and is sent unchanged (FR-105-06).
+	albumTimeline.value = optionFor(timelineSelectOptions(timelineAlbumGranularityOptions), editable.album_timeline);
+	photoTimeline.value = optionFor(timelineSelectOptions(timelinePhotoGranularityOptions), editable.photo_timeline);
 	dateScrubber.value = dateScrubberOptions.find((o) => o.value === toDateScrubberChoice(editable.is_date_scrubber_enabled));
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	cover_id.value = buildCoverId(editable.cover_id, photos);

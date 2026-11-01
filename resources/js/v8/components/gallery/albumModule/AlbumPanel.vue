@@ -228,6 +228,7 @@ import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import Pagination from "@/v8/components/pagination/Pagination.vue";
 import { trans } from "laravel-vue-i18n";
+import { isDetailPending } from "@/utils/photoView";
 import type { ContextMenuItem } from "@nuxt/ui";
 
 const router = useRouter();
@@ -460,13 +461,18 @@ const photoCallbacks = {
 		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
-	setAsHeader: () => {
+	setAsHeader: async () => {
+		const photo = selectedPhoto.value!;
+		// A struct-of-arrays tile has no size variants until its details load (Feature 105, FR-105-09).
+		if (isDetailPending(photo)) {
+			await albumStore.loadPhotoDetails([photo.id]);
+		}
 		if (albumStore.album === undefined) return;
-		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
+		PhotoService.setAsHeader(photo.id, albumStore.album.id, false);
 		// Update the album's header_id immediately to reflect the change (toggle behavior)
-		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
+		const isToggleOff = albumStore.modelAlbum?.header_id === photo.id;
 		if (albumStore.modelAlbum !== undefined) {
-			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			albumStore.modelAlbum.header_id = isToggleOff ? null : photo.id;
 			if (albumStore.modelAlbum.preFormattedData) {
 				albumStore.modelAlbum.preFormattedData.header_photo_focus = null;
 			}
@@ -477,7 +483,7 @@ const photoCallbacks = {
 			albumStore.album.editable !== undefined &&
 			albumStore.album.editable !== null
 		) {
-			albumStore.album.editable.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			albumStore.album.editable.header_id = isToggleOff ? null : photo.id;
 			albumStore.album.preFormattedData.header_photo_focus = null;
 		}
 		// Update the header image URL in the album's preFormattedData
@@ -488,7 +494,7 @@ const photoCallbacks = {
 				albumStore.album.preFormattedData.url = null;
 			} else {
 				// Use medium or small variant for the header image
-				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
+				const headerUrl = photo.size_variants.medium?.url ?? photo.size_variants.small?.url ?? null;
 				albumStore.album.preFormattedData.url = headerUrl;
 				albumStore.album.preFormattedData.header_photo_focus = null;
 			}
