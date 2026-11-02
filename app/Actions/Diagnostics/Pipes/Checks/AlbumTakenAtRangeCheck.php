@@ -26,8 +26,6 @@ use Illuminate\Support\Facades\Schema;
  */
 class AlbumTakenAtRangeCheck implements DiagnosticPipe
 {
-	private const SHOWN_IDS = 10;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -37,13 +35,10 @@ class AlbumTakenAtRangeCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$album_ids = $this->getAlbumIdsWithStaleRange();
-		$count = count($album_ids);
+		$count = count($this->getAlbumIdsWithStaleRange());
 		if ($count > 0) {
-			$data[] = DiagnosticData::warn(sprintf('There are %d albums whose taken date range does not match their photos.', $count), self::class, [
-				'Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats',
-				'Albums: ' . implode(', ', array_slice($album_ids, 0, self::SHOWN_IDS)) . ($count > self::SHOWN_IDS ? ', ...' : ''),
-			]);
+			$data[] = DiagnosticData::warn(sprintf('There are %d albums whose taken date range does not match their photos.', $count), self::class,
+				['Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats']);
 		}
 
 		return $next($data);

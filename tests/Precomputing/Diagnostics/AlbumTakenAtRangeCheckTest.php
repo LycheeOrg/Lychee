@@ -96,10 +96,8 @@ class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
 		self::assertEquals(MessageType::WARNING, $result[0]->type);
 		self::assertEquals(AlbumTakenAtRangeCheck::class, $result[0]->from);
 		self::assertEquals('There are 1 albums whose taken date range does not match their photos.', $result[0]->message);
-		self::assertEquals([
-			'Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats',
-			'Albums: ' . $album->id,
-		], $result[0]->details);
+		self::assertEquals(['Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats'], $result[0]->details);
+		self::assertStringNotContainsString($album->id, $result[0]->message);
 	}
 
 	public function testParentMissingANewerChildPhotoIsStale(): void
@@ -124,21 +122,5 @@ class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
 		DB::table('albums')->where('id', '=', $album->id)->update(['min_taken_at' => '2023-01-15 10:00:01']);
 
 		self::assertSame([$album->id], (new AlbumTakenAtRangeCheck())->getAlbumIdsWithStaleRange());
-	}
-
-	public function testOnlyTheFirstTenAlbumsAreListed(): void
-	{
-		$album_ids = [];
-		for ($i = 0; $i < 11; $i++) {
-			$album = Album::factory()->as_root()->owned_by($this->user)->create();
-			$this->addPhoto($album, '2023-01-15 10:00:00');
-			$album_ids[] = $album->id;
-		}
-
-		$result = $this->runCheck();
-
-		self::assertCount(1, $result);
-		self::assertEquals('There are 11 albums whose taken date range does not match their photos.', $result[0]->message);
-		self::assertEquals('Albums: ' . implode(', ', array_slice($album_ids, 0, 10)) . ', ...', $result[0]->details[1]);
 	}
 }
