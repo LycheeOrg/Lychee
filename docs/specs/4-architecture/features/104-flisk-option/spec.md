@@ -82,7 +82,7 @@ The fields this relies on (`container.networkAliases`, `healthCheck.startPeriod`
 | Import | `FLISK_IMPORT_PACKAGE=flisk-import@0.16.0 flisk import . --yes` |
 | Export | `npx @flisk-sh/flisk-export@0.9.0 compose . --force` |
 | CI drift check | re-import + export in a scratch copy, then `git diff --exit-code`; plus the normalised `docker compose config` comparison (FR-104-04) |
-| Start | `flisk up lychee` (Flisk ≥ 1.4.30; 1.4.27 … 1.4.29 need the FR-104-06 … 08 workarounds) |
+| Start | `flisk up lychee` (Flisk ≥ 1.4.31, checked on Linux amd64 with `--wait`; 1.4.27 … 1.4.29 need the FR-104-06 … 08 workarounds) |
 
 `flisk export compose` is the same exporter run through the Flisk CLI; the spec uses the pinned `npx` form everywhere so CI does not depend on the installed CLI.
 
