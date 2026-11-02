@@ -100,6 +100,11 @@ return [
         'description' => 'Přepočítá skupinu časové osy každého alba a každé fotografie a poté obnoví seznamy alb a fotografií.<br/>Odpovídá příkazu: php artisan lychee:recompute-buckets',
         'button' => 'Přepočítat',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Rozsahy dat pořízení alb',
+        'description' => 'Nalezeno %d alb, jejichž rozsah dat pořízení neodpovídá jejich fotkám.<br/>Alba řazená podle data pořízení jsou na špatném místě, dokud nejsou přepočítána.',
+        'button' => 'Přepočítat rozsahy',
+    ],
 
     'face_quality' => [
         'title' => 'Kontrola kvality obličejů',

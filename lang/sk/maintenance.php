@@ -100,6 +100,11 @@ return [
         'description' => 'Prepočíta skupinu časovej osi každého albumu a každej fotografie a potom obnoví zoznamy albumov a fotografií.<br/>Zodpovedá príkazu: php artisan lychee:recompute-buckets',
         'button' => 'Prepočítať',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Rozsahy dátumov zhotovenia albumov',
+        'description' => 'Nájdených %d albumov, ktorých rozsah dátumov zhotovenia nezodpovedá ich fotkám.<br/>Albumy zoradené podľa dátumu zhotovenia sú na nesprávnom mieste, kým sa neprepočítajú.',
+        'button' => 'Prepočítať rozsahy',
+    ],
 
     'face_quality' => [
         'title' => 'Kontrola kvality tvárí',

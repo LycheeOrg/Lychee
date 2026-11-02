@@ -99,6 +99,11 @@ return [
         'description' => 'Berechnet die Zeitstrahl-Gruppe jedes Albums und jedes Fotos neu und aktualisiert danach die Album- und Fotolisten.<br/>Entspricht dem Befehl: php artisan lychee:recompute-buckets',
         'button' => 'Neu berechnen',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Aufnahmezeiträume der Alben',
+        'description' => 'Es wurden %d Alben gefunden, deren Aufnahmezeitraum nicht zu ihren Fotos passt.<br/>Nach Aufnahmedatum sortierte Alben stehen an der falschen Stelle, bis sie neu berechnet werden.',
+        'button' => 'Zeiträume neu berechnen',
+    ],
     'face_quality' => [
         'title' => 'Überprüfung der Bildqualität',
         'description' => 'Überprüfen Sie die Gesichtserkennungen anhand des Qualitätswerts und verwerfen Sie Gesichter von geringer Qualität oder fehlerhafte Gesichter.',

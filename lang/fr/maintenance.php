@@ -100,6 +100,11 @@ return [
         'description' => 'Recalcule le groupe chronologique de chaque album et de chaque photo, puis rafraîchit les listes des albums et des photos.<br/>Équivaut à exécuter : php artisan lychee:recompute-buckets',
         'button' => 'Recalculer',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Plages de dates de prise des albums',
+        'description' => '%d albums dont la plage de dates de prise ne correspond pas à leurs photos ont été trouvés.<br/>Les albums triés par date de prise sont mal placés tant qu’ils ne sont pas recalculés.',
+        'button' => 'Recalculer les plages',
+    ],
 
     'face_quality' => [
         'title' => 'Contrôle qualité des visages',

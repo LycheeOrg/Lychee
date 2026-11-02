@@ -100,6 +100,11 @@ return [
         'description' => 'Tính lại nhóm dòng thời gian của mọi album và mọi ảnh, sau đó làm mới danh sách album và ảnh.<br/>Tương đương với lệnh: php artisan lychee:recompute-buckets',
         'button' => 'Tính lại',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Khoảng ngày chụp của album',
+        'description' => 'Tìm thấy %d album có khoảng ngày chụp không khớp với ảnh của chúng.<br/>Các album sắp xếp theo ngày chụp sẽ bị đặt sai vị trí cho đến khi được tính lại.',
+        'button' => 'Tính lại khoảng ngày',
+    ],
 
     'face_quality' => [
         'title' => 'Đánh giá chất lượng khuôn mặt',

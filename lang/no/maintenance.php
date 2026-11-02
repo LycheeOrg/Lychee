@@ -100,6 +100,11 @@ return [
         'description' => 'Beregner tidslinjegruppen for hvert album og hvert bilde på nytt, og oppdaterer deretter album- og bildelistene.<br/>Tilsvarer kommandoen: php artisan lychee:recompute-buckets',
         'button' => 'Beregn på nytt',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Albumenes datointervall for opptak',
+        'description' => 'Fant %d album der datointervallet for opptak ikke stemmer med bildene.<br/>Album sortert etter opptaksdato havner på feil plass til de beregnes på nytt.',
+        'button' => 'Beregn intervaller på nytt',
+    ],
 
     'face_quality' => [
         'title' => 'Gjennomgang av ansiktskvalitet',

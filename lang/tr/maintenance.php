@@ -100,6 +100,11 @@ return [
         'description' => 'Her albümün ve her fotoğrafın zaman çizelgesi grubunu yeniden hesaplar, ardından albüm ve fotoğraf listelerini yeniler.<br/>Şu komuta eşdeğerdir: php artisan lychee:recompute-buckets',
         'button' => 'Yeniden hesapla',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Albüm çekim tarihi aralıkları',
+        'description' => 'Çekim tarihi aralığı fotoğraflarıyla eşleşmeyen %d albüm bulundu.<br/>Çekim tarihine göre sıralanan albümler yeniden hesaplanana kadar yanlış yerde görünür.',
+        'button' => 'Aralıkları yeniden hesapla',
+    ],
 
     'face_quality' => [
         'title' => 'Yüz Kalitesi İncelemesi',

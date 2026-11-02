@@ -100,6 +100,11 @@ return [
         'description' => 'Rewrite the timeline bucket of every album and photo, then refresh the album and photo listings.<br/>Equivalent to running: php artisan lychee:recompute-buckets',
         'button' => 'Recompute',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Album Taken Date Ranges',
+        'description' => 'Found %d albums whose taken date range does not match their photos.<br/>Albums sorted by taken date are misplaced until they are recomputed.',
+        'button' => 'Recompute ranges',
+    ],
     'face_quality' => [
         'title' => 'Face Quality Review',
         'description' => 'Review face detections by quality score and dismiss low-quality or erroneous faces.',

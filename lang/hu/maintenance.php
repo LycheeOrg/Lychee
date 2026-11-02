@@ -100,6 +100,11 @@ return [
         'description' => 'Újraszámolja minden album és minden fénykép idővonal-csoportját, majd frissíti az album- és fényképlistákat.<br/>Megfelel a következő parancsnak: php artisan lychee:recompute-buckets',
         'button' => 'Újraszámolás',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Albumok készítési dátumtartományai',
+        'description' => '%d album készítési dátumtartománya nem egyezik a fényképeivel.<br/>A készítési dátum szerint rendezett albumok rossz helyen jelennek meg, amíg újra nem számolják őket.',
+        'button' => 'Tartományok újraszámolása',
+    ],
 
     'face_quality' => [
         'title' => 'Arcminőség áttekintése',
