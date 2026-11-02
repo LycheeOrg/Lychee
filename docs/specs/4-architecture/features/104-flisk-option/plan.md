@@ -39,7 +39,7 @@ Re-run the per-service `docker compose config --no-interpolate` comparison and S
 
 | Scenario ID | Increment / Task reference | Notes |
 |-------------|---------------------------|-------|
-| S-104-01 | I3 / T-104-05 | `flisk up lychee` |
+| S-104-01 | I3 / T-104-05 | `flisk up lychee --wait` |
 | S-104-02 | I1 / T-104-02 | verified on scratch machine |
 | S-104-03 | I1 / T-104-02 | verified on scratch machine |
 | S-104-04 | I2 / T-104-04 | CI |
