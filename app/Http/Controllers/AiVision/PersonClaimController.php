@@ -81,7 +81,7 @@ class PersonClaimController extends Controller
 	public function merge(MergePersonRequest $request, string $id): PersonResource
 	{
 		$target = Person::findOrFail($id);
-		$source = Person::findOrFail($request->sourcePersonId());
+		$source = $request->sourcePerson();
 
 		// Reassign all faces from source to target
 		Face::where('person_id', '=', $source->id)->update(['person_id' => $target->id]);

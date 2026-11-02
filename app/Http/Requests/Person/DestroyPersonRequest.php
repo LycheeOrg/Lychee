@@ -8,18 +8,20 @@
 
 namespace App\Http\Requests\Person;
 
+use App\Contracts\Http\Requests\HasPerson;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasPersonTrait;
 use App\Models\Person;
 use App\Policies\AiVisionPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class DestroyPersonRequest extends BaseApiRequest
+class DestroyPersonRequest extends BaseApiRequest implements HasPerson
 {
-	private string $person_id;
+	use HasPersonTrait;
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_EDIT_PERSON, Person::class);
+		return Gate::check(AiVisionPolicy::CAN_MANAGE_PERSON, [Person::class, $this->person]);
 	}
 
 	protected function prepareForValidation(): void
@@ -37,11 +39,6 @@ class DestroyPersonRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->person_id = $values['person_id'];
-	}
-
-	public function personId(): string
-	{
-		return $this->person_id;
+		$this->person = Person::findOrFail($values['person_id']);
 	}
 }
