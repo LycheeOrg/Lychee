@@ -54,7 +54,7 @@ Then open http://localhost:8000 in your browser. This setup includes a separate 
 
 ### Docker (Recommended)
 
-The easiest way to deploy Lychee with all dependencies configured:
+The easiest way to deploy Lychee with all dependencies configured. Alternatively, if you use [Flisk](https://flisk.sh), see [docs/FLISK.md](docs/FLISK.md) for a Flisk-based setup with the same services and volumes.
 
 ```yaml
 services:
