@@ -12,6 +12,8 @@ use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceConfigCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AlbumSizeStatisticsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AlbumTakenAtRangeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
@@ -85,6 +87,8 @@ class Errors
 		AiVisionNsfwServiceCheck::class,
 		LocalGeoDecodingServiceCheck::class,
 		StatisticsIntegrityCheck::class,
+		AlbumSizeStatisticsCheck::class,
+		AlbumTakenAtRangeCheck::class,
 		RecomputeQueueCheck::class,
 		WorkerCacheCheck::class,
 		WebshopCheck::class,
