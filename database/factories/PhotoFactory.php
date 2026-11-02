@@ -15,6 +15,7 @@ use App\Models\SizeVariant;
 use App\Models\Statistics;
 use App\Models\Tag;
 use App\Services\BucketKeys;
+use App\Services\MonthDayKey;
 use Database\Factories\Traits\OwnedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -195,10 +196,11 @@ class PhotoFactory extends Factory
 	public function configure(): self
 	{
 		return $this->afterMaking(function (Photo $photo) {
-			// Row-intrinsic bucket keys (FR-092-01, FR-092-02), as every
-			// write path assigns them.
+			// Row-intrinsic bucket keys (FR-092-01, FR-092-02) and the On
+			// This Day key (FR-106-01), as every write path assigns them.
 			$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
 			$photo->title_date_key = BucketKeys::titleDateKey($photo->title);
+			$photo->month_day_key = MonthDayKey::of($photo->taken_at, $photo->created_at ?? now());
 		})->afterCreating(function (Photo $photo) {
 			Statistics::factory()->with_photo($photo->id)->create();
 			$photo->fresh();

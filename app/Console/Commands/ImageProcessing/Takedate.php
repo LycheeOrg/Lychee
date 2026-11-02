@@ -16,6 +16,7 @@ use App\Jobs\RecomputePhotoBucketsJob;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use App\Services\BucketKeys;
+use App\Services\MonthDayKey;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -230,6 +231,8 @@ class Takedate extends Command
 				// FR-092-01, FR-092-10: assigned at every write of `taken_at`,
 				// then every `photo_album` key of the photo is recomputed.
 				$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
+				// FR-106-03: follows `taken_at` and `created_at` alike.
+				$photo->month_day_key = MonthDayKey::of($photo->taken_at, $photo->created_at);
 				$photo->save();
 				RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['taken_at', 'taken_key', 'created_at']), $photo->id);
 			}

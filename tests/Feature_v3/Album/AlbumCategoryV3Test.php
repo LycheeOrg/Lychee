@@ -72,7 +72,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartWithEveryCoverCachedRunsOnlyDateDependentValidityQueries(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->where('id', '=', $this->photoUnsorted->id)->update(['taken_at' => '2020-10-03 12:00:00', 'created_at' => '2026-10-03 11:00:00']);
+		DB::table('photos')->where('id', '=', $this->photoUnsorted->id)->update(['taken_at' => '2020-10-03 12:00:00', 'taken_key' => '2020-10-03-12', 'month_day_key' => 1003, 'created_at' => '2026-10-03 11:00:00']);
 
 		$ids = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json('ids');
 		self::assertContains(SmartAlbumType::ON_THIS_DAY->value, $ids);
@@ -131,8 +131,8 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartOnThisDayStaleCoverIsReplacedByTodaysPhoto(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
-		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => '2020-10-03 12:00:00']);
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00', 'taken_key' => '2020-05-01-12', 'month_day_key' => 501]);
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => '2020-10-03 12:00:00', 'taken_key' => '2020-10-03-12', 'month_day_key' => 1003]);
 		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
 
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
@@ -148,7 +148,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartOnThisDayStaleCoverWithoutPhotoTodayIsDropped(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00', 'taken_key' => '2020-05-01-12', 'month_day_key' => 501]);
 		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
 
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
