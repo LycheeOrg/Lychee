@@ -101,6 +101,11 @@ return [
         'description' => 'Przelicza grupę osi czasu każdego albumu i każdego zdjęcia, a następnie odświeża listy albumów i zdjęć.<br/>Odpowiada poleceniu: php artisan lychee:recompute-buckets',
         'button' => 'Przelicz',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Zakresy dat wykonania albumów',
+        'description' => 'Znaleziono %d albumów, których zakres dat wykonania nie zgadza się z ich zdjęciami.<br/>Albumy sortowane według daty wykonania są źle umieszczone, dopóki nie zostaną przeliczone.',
+        'button' => 'Przelicz zakresy',
+    ],
 
     'face_quality' => [
         'title' => 'Przegląd jakości twarzy',

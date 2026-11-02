@@ -26,7 +26,6 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
@@ -49,11 +48,6 @@ class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
 		return (new AlbumTakenAtRangeCheck())->handle($data, fn (array $data) => $data);
 	}
 
-	private function recompute(Album $album): void
-	{
-		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
-	}
-
 	private function addPhoto(Album $album, ?string $taken_at): void
 	{
 		Photo::factory()->without_size_variants()->owned_by($this->user)->in($album)->create([
@@ -61,31 +55,7 @@ class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
 		]);
 	}
 
-	/**
-	 * `photos.taken_at` keeps the microseconds the album columns drop.
-	 */
-	public function testRangeWrittenByTheJobAddsNothing(): void
-	{
-		$parent = Album::factory()->as_root()->owned_by($this->user)->create();
-		$child = Album::factory()->children_of($parent)->owned_by($this->user)->create();
-		$this->addPhoto($parent, '2023-01-15 10:00:00.250000');
-		$this->addPhoto($child, '2024-06-20 14:30:00.750000');
-		$this->recompute($child);
-		$this->recompute($parent);
-
-		self::assertEmpty($this->runCheck());
-	}
-
-	public function testAlbumsWithoutTakenDatesAddNothing(): void
-	{
-		Album::factory()->as_root()->owned_by($this->user)->create();
-		$album = Album::factory()->as_root()->owned_by($this->user)->create();
-		$this->addPhoto($album, null);
-
-		self::assertEmpty($this->runCheck());
-	}
-
-	public function testMissingRangeWarns(): void
+	public function testAlbumWithDatedPhotoAndNoRangeWarns(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->user)->create();
 		$this->addPhoto($album, '2023-01-15 10:00:00');
@@ -95,32 +65,25 @@ class AlbumTakenAtRangeCheckTest extends BasePrecomputingTest
 		self::assertCount(1, $result);
 		self::assertEquals(MessageType::WARNING, $result[0]->type);
 		self::assertEquals(AlbumTakenAtRangeCheck::class, $result[0]->from);
-		self::assertEquals('There are 1 albums whose taken date range does not match their photos.', $result[0]->message);
-		self::assertEquals(['Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats'], $result[0]->details);
-		self::assertStringNotContainsString($album->id, $result[0]->message);
+		self::assertEquals('There are 1 albums with dated photos but no taken date range.', $result[0]->message);
+		self::assertEquals(['Go to the maintenance page to recompute them, or run: php artisan lychee:recompute-album-stats'], $result[0]->details);
 	}
 
-	public function testParentMissingANewerChildPhotoIsStale(): void
-	{
-		$parent = Album::factory()->as_root()->owned_by($this->user)->create();
-		$child = Album::factory()->children_of($parent)->owned_by($this->user)->create();
-		$this->addPhoto($child, '2023-01-15 10:00:00');
-		$this->recompute($child);
-		$this->recompute($parent);
-		$this->addPhoto($child, '2025-03-01 08:00:00');
-		$this->recompute($child);
-
-		self::assertSame([$parent->id], (new AlbumTakenAtRangeCheck())->getAlbumIdsWithStaleRange());
-	}
-
-	public function testWrongMinimumIsStale(): void
+	public function testRecomputedAlbumAddsNothing(): void
 	{
 		$album = Album::factory()->as_root()->owned_by($this->user)->create();
 		$this->addPhoto($album, '2023-01-15 10:00:00');
-		$this->addPhoto($album, '2024-06-20 14:30:00');
-		$this->recompute($album);
-		DB::table('albums')->where('id', '=', $album->id)->update(['min_taken_at' => '2023-01-15 10:00:01']);
+		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
 
-		self::assertSame([$album->id], (new AlbumTakenAtRangeCheck())->getAlbumIdsWithStaleRange());
+		self::assertEmpty($this->runCheck());
+	}
+
+	public function testAlbumsWithoutDatedPhotosAddNothing(): void
+	{
+		Album::factory()->as_root()->owned_by($this->user)->create();
+		$album = Album::factory()->as_root()->owned_by($this->user)->create();
+		$this->addPhoto($album, null);
+
+		self::assertEmpty($this->runCheck());
 	}
 }

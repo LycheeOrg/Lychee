@@ -100,6 +100,11 @@ return [
         'description' => 'すべてのアルバムと写真のタイムライングループを再計算し、アルバムと写真の一覧を更新します。<br/>次のコマンドと同等です: php artisan lychee:recompute-buckets',
         'button' => '再計算',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'アルバムの撮影日範囲',
+        'description' => '撮影日範囲が写真と一致しないアルバムが %d 件見つかりました。<br/>撮影日で並べ替えたアルバムは、再計算されるまで誤った位置に表示されます。',
+        'button' => '範囲を再計算',
+    ],
 
     'face_quality' => [
         'title' => '顔の品質レビュー',

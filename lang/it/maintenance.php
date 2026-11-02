@@ -100,6 +100,11 @@ return [
         'description' => 'Ricalcola il gruppo della cronologia di ogni album e di ogni foto, poi aggiorna gli elenchi di album e foto.<br/>Equivale a eseguire: php artisan lychee:recompute-buckets',
         'button' => 'Ricalcola',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Intervalli di date di scatto degli album',
+        'description' => 'Trovati %d album il cui intervallo di date di scatto non corrisponde alle loro foto.<br/>Gli album ordinati per data di scatto risultano fuori posto finché non vengono ricalcolati.',
+        'button' => 'Ricalcola intervalli',
+    ],
 
     'face_quality' => [
         'title' => 'Revisione qualità volti',

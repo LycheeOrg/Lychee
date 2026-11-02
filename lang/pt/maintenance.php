@@ -100,6 +100,11 @@ return [
         'description' => 'Recalcula o grupo da linha do tempo de cada álbum e de cada foto e depois atualiza as listagens de álbuns e fotos.<br/>Equivale a executar: php artisan lychee:recompute-buckets',
         'button' => 'Recalcular',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Intervalos de datas de captura dos álbuns',
+        'description' => 'Foram encontrados %d álbuns cujo intervalo de datas de captura não corresponde às suas fotos.<br/>Os álbuns ordenados por data de captura ficam fora do lugar até serem recalculados.',
+        'button' => 'Recalcular intervalos',
+    ],
 
     'face_quality' => [
         'title' => 'Revisão da qualidade dos rostos',

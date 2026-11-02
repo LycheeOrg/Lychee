@@ -100,6 +100,11 @@ return [
         'description' => 'Beräknar om tidslinjegruppen för varje album och varje foto och uppdaterar sedan album- och fotolistorna.<br/>Motsvarar kommandot: php artisan lychee:recompute-buckets',
         'button' => 'Beräkna om',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Albumens fotodatumintervall',
+        'description' => 'Hittade %d album vars fotodatumintervall inte stämmer med deras foton.<br/>Album sorterade efter fotodatum hamnar på fel plats tills de räknas om.',
+        'button' => 'Räkna om intervall',
+    ],
 
     'face_quality' => [
         'title' => 'Granskning av ansiktskvalitet',

@@ -100,6 +100,11 @@ return [
         'description' => 'Berekent de tijdlijngroep van elk album en elke foto opnieuw en vernieuwt daarna de album- en fotolijsten.<br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-buckets',
         'button' => 'Herberekenen',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Opnamedatumbereiken van albums',
+        'description' => '%d albums gevonden waarvan het opnamedatumbereik niet overeenkomt met hun foto’s.<br/>Albums gesorteerd op opnamedatum staan op de verkeerde plek tot ze opnieuw berekend zijn.',
+        'button' => 'Bereiken herberekenen',
+    ],
 
     'face_quality' => [
         'title' => 'Beoordeling gezichtskwaliteit',

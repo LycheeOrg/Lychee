@@ -352,6 +352,8 @@ Route::post('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'd
 Route::get('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'check']);
 Route::post('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'do']);
 Route::post('/Maintenance::recomputeBuckets', [Admin\Maintenance\RecomputeBuckets::class, 'do']);
+Route::get('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'check']);
+Route::post('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'do']);
 
 /**
  * STATISTICS.

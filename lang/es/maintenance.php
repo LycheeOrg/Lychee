@@ -99,6 +99,11 @@ return [
         'description' => 'Recalcula el grupo de la línea de tiempo de cada álbum y cada foto, y luego actualiza los listados de álbumes y fotos.<br/>Equivale a ejecutar: php artisan lychee:recompute-buckets',
         'button' => 'Recalcular',
     ],
+    'recompute-taken-at-range' => [
+        'title' => 'Rangos de fechas de captura de los álbumes',
+        'description' => 'Se encontraron %d álbumes cuyo rango de fechas de captura no coincide con sus fotos.<br/>Los álbumes ordenados por fecha de captura quedan mal colocados hasta que se recalculen.',
+        'button' => 'Recalcular rangos',
+    ],
     'face_quality' => [
         'title' => 'Revisión de la calidad de las caras',
         'description' => 'Revisa las detecciones de rostros según la puntuación de calidad y descarta los rostros de baja calidad o erróneos.',

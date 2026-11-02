@@ -100,6 +100,11 @@ return [
         'description' => '重新計算每個相簿和每張相片的時間軸分組，然後重新整理相簿和相片清單。<br/>等同於執行：php artisan lychee:recompute-buckets',
         'button' => '重新計算',
     ],
+    'recompute-taken-at-range' => [
+        'title' => '相簿拍攝日期範圍',
+        'description' => '發現 %d 個相簿的拍攝日期範圍與其照片不符。<br/>在重新計算之前，依拍攝日期排序的相簿會顯示在錯誤的位置。',
+        'button' => '重新計算範圍',
+    ],
 
     'face_quality' => [
         'title' => '臉孔品質審查',

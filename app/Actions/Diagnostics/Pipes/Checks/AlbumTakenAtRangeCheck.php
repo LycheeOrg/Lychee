@@ -11,18 +11,18 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use Illuminate\Database\Query\JoinClause;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * `albums.min_taken_at`/`max_taken_at` hold the range of `photos.taken_at`
- * over the album and its descendants, written by RecomputeAlbumStatsJob.
- * A stale range misplaces the album when its parent sorts its children by
- * taken date.
+ * `albums.min_taken_at`/`max_taken_at` are written by RecomputeAlbumStatsJob.
+ * An album holding a photo with a taken date gets a range: a NULL there means
+ * the job never ran for it, and its parent misplaces it when sorting its
+ * children by taken date.
  *
- * The range is recomputed the way the job does and compared to the second:
- * `photos.taken_at` keeps microseconds, the album columns do not.
+ * Ranges that are set but out of date are counted on the maintenance page
+ * (RecomputeTakenAtRange).
  */
 class AlbumTakenAtRangeCheck implements DiagnosticPipe
 {
@@ -35,62 +35,25 @@ class AlbumTakenAtRangeCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$count = count($this->getAlbumIdsWithStaleRange());
+		$count = $this->count();
 		if ($count > 0) {
-			$data[] = DiagnosticData::warn(sprintf('There are %d albums whose taken date range does not match their photos.', $count), self::class,
-				['Albums sorted by taken date are misplaced. Run: php artisan lychee:recompute-album-stats']);
+			$data[] = DiagnosticData::warn(sprintf('There are %d albums with dated photos but no taken date range.', $count), self::class,
+				['Go to the maintenance page to recompute them, or run: php artisan lychee:recompute-album-stats']);
 		}
 
 		return $next($data);
 	}
 
-	/**
-	 * @return string[] ids of the albums in tree order
-	 */
-	public function getAlbumIdsWithStaleRange(): array
+	public function count(): int
 	{
-		$ranges = DB::table('albums', 'a')
-			->join('albums as d', fn (JoinClause $join) => $join
-				->on('d._lft', '>=', 'a._lft')
-				->on('d._lft', '<=', 'a._rgt')
-				->on('d._rgt', '<=', 'a._rgt'))
-			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'd.id')
-			->join('photos', 'photos.id', '=', PA::PHOTO_ID)
-			->whereNotNull('photos.taken_at')
-			->groupBy('a.id')
-			->select('a.id')
-			->selectRaw('MIN(photos.taken_at) as min_taken_at, MAX(photos.taken_at) as max_taken_at');
-
-		$rows = DB::table('albums')
-			->leftJoinSub($ranges, 'ranges', 'ranges.id', '=', 'albums.id')
-			->select([
-				'albums.id',
-				'albums.min_taken_at',
-				'albums.max_taken_at',
-				'ranges.min_taken_at as photos_min_taken_at',
-				'ranges.max_taken_at as photos_max_taken_at',
-			])
-			->orderBy('albums._lft')
-			->cursor();
-
-		$album_ids = [];
-		foreach ($rows as $row) {
-			if (self::isStale($row)) {
-				$album_ids[] = $row->id;
-			}
-		}
-
-		return $album_ids;
-	}
-
-	private static function isStale(object $row): bool
-	{
-		return self::toSecond($row->min_taken_at) !== self::toSecond($row->photos_min_taken_at) ||
-			self::toSecond($row->max_taken_at) !== self::toSecond($row->photos_max_taken_at);
-	}
-
-	private static function toSecond(?string $datetime): ?string
-	{
-		return $datetime === null ? null : substr($datetime, 0, 19);
+		return DB::table('albums')
+			->where(fn (Builder $query) => $query->whereNull('albums.min_taken_at')->orWhereNull('albums.max_taken_at'))
+			->whereExists(fn (Builder $query) => $query
+				->selectRaw('1')
+				->from(PA::PHOTO_ALBUM)
+				->join('photos', 'photos.id', '=', PA::PHOTO_ID)
+				->whereColumn(PA::ALBUM_ID, '=', 'albums.id')
+				->whereNotNull('photos.taken_at'))
+			->count();
 	}
 }
