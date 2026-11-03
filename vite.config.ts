@@ -283,6 +283,10 @@ const baseConfig = {
 				// picks for dark mode) - Lychee always wants white text on the primary
 				// solid button regardless of color scheme.
 				button: { compoundVariants: [{ color: "primary", variant: "solid", class: "text-white" }] },
+				// Nuxt UI's default `min-h-[calc(100vh-…)]` uses the large viewport on mobile, so
+				// a `UMain` overflowed below the browser toolbar (e.g. the photo viewer was
+				// off-centre with its bottom overlay hidden). `dvh` tracks the visible viewport.
+				main: { base: "min-h-[calc(100dvh-var(--ui-header-height))]" },
 			},
 		}),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
