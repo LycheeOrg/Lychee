@@ -131,6 +131,16 @@ _Last updated: 2026-10-03_
   - `php artisan test --filter=LangTest`  
   - `make phpstan`
 
+### I9 – Follow-up: tap swallowed after a swipe (discussion #4954)
+
+- [x] T-078-18 – Cancel `touchmove` on zoomable photos (FR-078-15, S-078-26).  
+  _Intent:_ `usePanZoom` adds a non-passive `touchmove` listener on `#imageview` that calls `preventDefault()` when the event is cancelable and the photo is zoomable, so Chromium on Android starts no invisible fling that eats the next tap. Non-zoomable photos keep native page pinch and pan. Sphere counterpart: T-082-23. Test first: `usePanZoom.test.ts` failed 3/5 before the listener existed.  
+  _Verification commands:_  
+  - `vp test run resources/js/v8/composables/usePanZoom.test.ts`  
+  - `vp check resources/js/v8/composables/usePanZoom.ts resources/js/v8/composables/usePanZoom.test.ts resources/js/v8/composables/useSphereViewer.ts` (not a repo-wide `vp check --fix`: its oxlint autofix rewrites `<\/script>` in both `EmbedCodeDialog.vue` and breaks the SFCs)  
+  - `vp run typecheck`  
+  - Real-device check of S-078-26 on Android Chrome: open, folded into T-078-17.
+
 ## Notes / TODOs
-- No frontend unit-test runner exists in the repository; frontend branches are covered by T-078-17's manual checklist (plan Follow-ups).
+- Frontend branches are covered by T-078-17's manual checklist (plan Follow-ups); since Feature 097, Vitest (`vp test`) covers the `touchmove` cancelling of FR-078-15 in `usePanZoom.test.ts`.
 - 2026-10-03: S-078-02..12, S-078-15..22, S-078-25 verified with Playwright against a scratch instance (desktop LTR + RTL, emulated touch phone, reduced motion); results in plan.md › Drift Gate Report. Still open for T-078-17: real devices, videos (S-078-13, S-078-24), faces (S-078-14, S-078-23), Flow/Moderation unchanged.

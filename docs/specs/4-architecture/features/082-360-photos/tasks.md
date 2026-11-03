@@ -170,6 +170,12 @@ _Last updated: 2026-10-03_
 - [ ] T-082-22 – Owner real-device check (S-082-10 to S-082-16, NFR-082-04, NFR-082-05, NFR-082-08).  
   _Intent:_ phone and desktop: drag smoothness and performance trace, pinch, partial sphere, reduced motion, RTL, context loss after tab switch.
 
+- [x] T-082-23 – Cancel `touchmove` on the sphere canvas (FR-082-10, S-082-19; discussion #4954, same cause as T-078-18).  
+  _Intent:_ `useSphereViewer` registers a non-passive `touchmove` listener on the canvas that calls `preventDefault()` when the event is cancelable, so a fast look-around drag leaves no invisible native fling eating the next tap. No unit test: the listeners are only attached once WebGL2 is set up, which jsdom cannot do. Covered by code review and the S-082-19 real-device check (folded into T-082-22).  
+  _Verification commands:_  
+  - `vp check resources/js/v8/composables/useSphereViewer.ts`  
+  - `vp run typecheck`
+
 ## Notes / TODOs
 - FR coverage: FR-082-01 (T-082-04/05 via both readers), FR-082-02 (T-082-02/03), FR-082-03 (T-082-04/05), FR-082-04 (T-082-08/09/13), FR-082-05 (T-082-10/11), FR-082-06 (T-082-06/07/12), FR-082-07 (T-082-08/09/13), FR-082-08 (T-082-17), FR-082-09 (T-082-18), FR-082-10/11 (T-082-14/16/17), FR-082-12/13 (T-082-14/15), FR-082-14 (T-082-14/15/19), FR-082-15/16 (T-082-16/17), FR-082-17 (T-082-12).
 - `composer.json` / `composer.lock` (php-exif `^1.4.0`, NFR-082-06) are already changed in the working tree and go into the first commit.

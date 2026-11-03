@@ -492,6 +492,13 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		}
 	}
 
+	/** FR-082-10: no invisible native fling after a fast drag, which would swallow the next tap (same cause as FR-078-15). */
+	function onTouchMove(event: TouchEvent) {
+		if (event.cancelable) {
+			event.preventDefault();
+		}
+	}
+
 	function onWheel(event: WheelEvent) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -537,6 +544,7 @@ export function useSphereViewer(options: SphereViewerOptions) {
 		["pointercancel", onPointerUp as EventListener, false],
 		["click", onClickCapture as EventListener, { capture: true }],
 		["wheel", onWheel as EventListener, { passive: false }],
+		["touchmove", onTouchMove as EventListener, { passive: false }],
 		["webglcontextlost", onContextLost, false],
 		["webglcontextrestored", onContextRestored, false],
 	];
