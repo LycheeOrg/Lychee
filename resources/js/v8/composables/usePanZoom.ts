@@ -373,6 +373,18 @@ export function usePanZoom(options: PanZoomOptions) {
 		options.onTap(toContainer(event, options.container.value?.getBoundingClientRect()));
 	}
 
+	/**
+	 * FR-078-15: `touch-action: none` drops the scroll of a fast swipe, but Chromium on Android still
+	 * runs its fling, invisibly, and the first tap during it only stops the fling (no `click`).
+	 * Cancelling `touchmove` stops the scroll gesture from starting; touch and pointer events still
+	 * reach `useSwipe` and this state machine.
+	 */
+	function onTouchMove(event: TouchEvent) {
+		if (event.cancelable && options.zoomable()) {
+			event.preventDefault();
+		}
+	}
+
 	function onWheel(event: WheelEvent) {
 		if (!canZoom()) {
 			return;
@@ -404,6 +416,7 @@ export function usePanZoom(options: PanZoomOptions) {
 		container.addEventListener("click", onClickCapture, { capture: true });
 		container.addEventListener("click", onClick);
 		container.addEventListener("wheel", onWheel, { passive: false });
+		container.addEventListener("touchmove", onTouchMove, { passive: false });
 		container.addEventListener("pointerenter", () => (containerRect = container.getBoundingClientRect()));
 		container.addEventListener("pointerleave", () => (hoverPoint.value = undefined));
 	});

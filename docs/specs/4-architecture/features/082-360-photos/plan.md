@@ -157,6 +157,7 @@ Completed 2026-10-03 (agent self-review; owner acknowledged by asking to impleme
 - Owner real-device check done (T-082-22).
 
 ## Follow-ups / Backlog
+- 2026-11-03, discussion #4954 (T-082-23): the canvas is `touch-action: none`, so a fast look-around drag on Android Chromium left an invisible native fling that swallowed the next tap. The canvas now cancels cancelable `touchmove` (FR-082-10). Root-cause analysis is in Feature 078's plan (T-078-18).
 - 360° video (spherical video metadata via ffprobe, video texture).
 - Texture splitting for panoramas wider than `MAX_TEXTURE_SIZE`.
 - Face/NSFW boxes projected on the sphere.

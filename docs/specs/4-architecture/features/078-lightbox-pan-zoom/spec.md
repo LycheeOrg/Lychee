@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Implemented (manual check pending) |
-| Last updated | 2026-10-03 |
+| Last updated | 2026-11-03 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -55,7 +55,7 @@ Layers: one config migration (6 configs), `InitConfig` + `LycheeState`, v8 front
 | FR-078-12 | When `s × fit width × devicePixelRatio` exceeds the `naturalWidth` of the image currently displayed (whichever `srcset` candidate the browser picked) and the zoom source of FR-078-03 is wider, the zoom source is loaded in the background and swapped in once decoded; the image keeps its fitted size (explicit width/height), so nothing moves. The original is never requested when its URL is `null` or the photo is RAW. While loading, the current image stays displayed. A decode that completes after a container resize has reset the zoom (FR-078-03) is discarded, so the image returns to its regular variant at fit; the next zoom starts a new load. | Sharpest image the viewer may see. | — | Load fails: the current variant stays, zoom continues. | None. | Owner directive 2026-10-03. |
 | FR-078-13 | Face and NSFW detection overlays sit in the same transformed layer as the image, so their boxes follow pan and zoom. The EXIF `Overlay`, `Dock` and `PhotoRatingOverlay` (both hidden while zoomed, FR-078-21), `NextPrevious`, minimap and header stay in screen space. | Boxes stay on the faces at any scale. | — | — | None. | — |
 | FR-078-14 | Zoom state belongs to the `PhotoBox` instance (keyed by `photo.id`): changing photo, opening the slideshow or closing the lightbox resets to fit. | — | — | — | None. | — |
-| FR-078-15 | On zoomable photos, native page pinch is disabled on `#imageview` (`touch-action: none`) so the lightbox receives pinch gestures. On non-zoomable photos `#imageview` keeps native page pinch and the existing `isPageZoomed()` guard that suppresses swipes while the page is pinch-zoomed. The viewport meta tag is unchanged. | — | — | — | None. | — |
+| FR-078-15 | On zoomable photos, native page pinch is disabled on `#imageview` (`touch-action: none`) so the lightbox receives pinch gestures, and `usePanZoom` cancels every cancelable `touchmove` inside `#imageview` (non-passive listener). With `touch-action: none` alone, Chromium on Android drops the scroll of a fast swipe but still runs its fling, invisibly, for 1–2 s, and the first tap anywhere on the page during that fling only stops it: no `click` is dispatched (discussion #4954). Touch and pointer events still reach `useSwipe` and the pan/zoom state machine. On non-zoomable photos `#imageview` keeps native page pinch and the existing `isPageZoomed()` guard that suppresses swipes while the page is pinch-zoomed. The viewport meta tag is unchanged. | — | — | — | None. | — |
 | FR-078-16 | **Device class:** touch when `isTouchDevice()` (`utils/keybindings-utils.ts`) is true, otherwise desktop — the same split `Dock.vue` uses. Every per-device minimap setting reads the value for the current class. | — | — | — | None. | Owner directive 2026-10-03 (Q-078-04). |
 | FR-078-17 | While `s > 1` and the minimap is enabled for the device class (FR-078-20), a minimap is shown in the top-start corner of `#imageview` (`top-7`, `ltr:left-7 rtl:right-7`: top-left in LTR, top-right in RTL): the whole photo scaled so its longest side is 160 px (112 px below the `sm` breakpoint), a rectangle marking the part of the photo visible in the viewport (clipped to the minimap during rubber-band overscroll), and the zoom level as a label under it (`2.0×`, one decimal). Hidden at `s = 1` and on non-zoomable photos. Its image is the `small` variant (`srcset` with `small2x`) when it exists, otherwise the variant currently displayed; it never triggers a load of the original. | Minimap appears on zoom, disappears on reset. | — | — | None. | Owner directive 2026-10-03. |
 | FR-078-18 | Pointer down inside the rectangle grabs it: dragging moves it with the pointer, without a jump. Pointer down elsewhere on the minimap centres the viewport on the matching point of the photo, and dragging continues from there; the result is clamped like FR-078-09. This works whether the minimap is opaque or faded. Minimap pointer events never reach `#imageview` (no zoom toggle, overlay rotation or swipe). | Jump and drag around a zoomed photo from the minimap. | — | — | None. | Owner directive 2026-10-03. |
@@ -132,12 +132,13 @@ Layers: one config migration (6 configs), `InitConfig` + `LycheeState`, v8 front
 | S-078-23 | Zoomed, drag that starts on a face box → pan; face assignment does not open. Click without drag on a face box → face assignment opens; zoom and overlay unchanged. |
 | S-078-24 | Video at fit: native page pinch still works and suppresses swipes while the page is zoomed, as today. |
 | S-078-25 | Zoom in → the rating actions at the bottom and the editor dock disappear; reset → they reappear. |
+| S-078-26 | Android Chrome, zoomable photo at fit: fast swipe to the next photo, then within 1 s tap a header button or the photo → the first tap acts (no native fling, FR-078-15). Non-zoomable photo: `touchmove` is not cancelled, so native page pinch and pan still work. |
 
 ## Test Strategy
 - **Models / Actions:** none.
 - **REST API (v2/v3):** `tests/Feature_v3/PanZoom/PanZoomConfigTest` asserts `InitConfig` returns the six configs with their defaults and after changing them, that invalid values are rejected, and that `GET /api/v2/Settings` lists them only with `features.v8` on — S-078-01.
 - **Artisan commands:** none.
-- **Frontend (v8):** the repository has no frontend unit-test runner and adding one needs approval (NFR-078-03), so the pure helpers in `panZoom.ts` are kept small and typed; `npm run check` + eslint must pass. S-078-02..25 are verified manually in a browser on desktop (mouse + trackpad) and on a touch device.
+- **Frontend (v8):** the pure helpers in `panZoom.ts` are kept small and typed; `npm run check` + eslint must pass. S-078-02..25 are verified manually in a browser on desktop (mouse + trackpad) and on a touch device. `resources/js/v8/composables/usePanZoom.test.ts` (Vitest, `vp test`, available since Feature 097) covers the `touchmove` cancelling of FR-078-15 / S-078-26; the fling itself only shows on a real Android device.
 - **Docs/Contracts:** regenerated TypeScript types (`php artisan typescript:transform`) for `InitConfig` and `PhotoClickAction`.
 
 ## Interface & Contract Catalogue
