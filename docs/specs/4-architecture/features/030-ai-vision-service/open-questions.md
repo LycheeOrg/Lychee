@@ -6,6 +6,7 @@ Open questions for [Feature 030](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-030-80~~ | 030 | High | Who may rename, delete, or merge away a Person that is linked to a user? | Resolved (Option A) | 2026-11-02 | 2026-11-02 |
 
 ## Question Details
 
@@ -1151,3 +1152,21 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
 
 **Resolved:** 2026-04-11
+
+---
+
+### ~~Q-030-80: Edit Rights on a Person Linked to a User~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-11-02
+**Affects:** T-030-107 … T-030-110, FR-030-49, FR-030-11, NFR-030-07 permission matrix, API-030-04, API-030-05, API-030-06
+
+**Resolution:** **Option A** — a Person whose `user_id` is set can only be renamed, deleted, or merged away (as the merge source) by its linked User or an admin, on top of the mode's edit/merge permission. Unlinked Persons stay collaborative per the permission matrix. Merging into a linked target follows the "Merge persons" row. `AiVisionPolicy::canManagePerson` is the gate for `UpdatePersonRequest`, `DestroyPersonRequest`, and the merge source in `MergePersonRequest`.
+
+**Rationale:** A user's claimed identity cannot be renamed or destroyed by others, while collaborative tagging of unclaimed Persons in `public`/`private` modes keeps working.
+
+**Spec Impact:** Added FR-030-49 and S-030-70 … S-030-73; "Linked Persons" rule under the NFR-030-07 permission matrix; FR-030-11 validation and API-030-04/05/06 auth notes reference FR-030-49.
+
+**Resolved:** 2026-11-02
