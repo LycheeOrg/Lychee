@@ -72,7 +72,7 @@ final class VerifyLogin
 			->first() ?? throw new WebAuthnVerificationException('Unknown security key.');
 
 		if (!$stored->hasReadablePublicKey()) {
-			throw new WebAuthnVerificationException('This security key has to be registered again.');
+			throw new WebAuthnVerificationException('This security key has to be removed and registered again.');
 		}
 
 		return $stored;

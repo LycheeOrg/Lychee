@@ -48,7 +48,7 @@ _Last updated: 2026-11-04_
 
 ### I3 – Registration
 - [x] T-107-06 – Rewrite the registration tests (FR-107-01, FR-107-02, FR-107-03, FR-107-06, S-107-01 … S-107-06).
-  _Intent:_ `WebAuthTest`: options JSON (`authenticatorSelection` discouraged/preferred, `pubKeyCredParams`, `excludeCredentials`, `user`), guest `403`, recorded attestation as base64url → `204` and listed, expired / missing / reused options `422`, duplicate id `422`, second key reuses the handle. Red first.
+  _Intent:_ `WebAuthTest`: options JSON (`authenticatorSelection` discouraged/preferred, `pubKeyCredParams`, `excludeCredentials`, `user`), guest `401`, recorded attestation as base64url → `204` and listed, expired / missing / reused options `422`, duplicate id `422`, second key reuses the handle. Red first.
   _Verification commands:_
   - `php artisan test --filter=WebAuthTest`
 
@@ -115,6 +115,40 @@ _Last updated: 2026-11-04_
   _Intent:_ Roadmap row 107 status; knowledge-map entry for the WebAuthn module; drift gate in the plan; `_current-session.md`.
   _Verification commands:_
   - Review of the plan's drift gate table.
+
+### I9 – PR #4957 review
+- [x] T-107-16 – Registration options belong to the requesting user (FR-107-03, NFR-107-04, S-107-28).
+  _Intent:_ `CeremonyStore::putCreationOptions()` / `pullCreationOptions()` take the user id; a different id → "No pending WebAuthn challenge". `CeremonyStoreTest` + `WebAuthTest` case red first.
+  _Verification commands:_
+  - `php artisan test --filter=CeremonyStoreTest`
+  - `php artisan test --filter=WebAuthTest`
+- [x] T-107-17 – Challenge expiry to the microsecond (NFR-107-04, S-107-04, S-107-14).
+  _Intent:_ expiry stored as integer microseconds from the Carbon clock (`travel()` still works). `CeremonyStoreTest`: valid just before the deadline, expired just after.
+  _Verification commands:_
+  - `php artisan test --filter=CeremonyStoreTest`
+- [x] T-107-18 – Length limits on the login request (FR-107-05, S-107-29).
+  _Intent:_ `LoginCredentialRequest` `max` rules; `WebAuthTest` oversize cases red first.
+  _Verification commands:_
+  - `php artisan test --filter=WebAuthTest`
+- [x] T-107-19 – "Delete, then register again" wording (FR-107-05, FR-107-12).
+  _Intent:_ `VerifyLogin` and `WebAuthnCredentialsCheck` messages; diagnostics reads rows with `lazyById`.
+  _Verification commands:_
+  - `php artisan test --filter=WebAuthnCredentialsCheckTest`
+  - `php artisan test --filter=WebAuthTest`
+- [x] T-107-20 – Rerunnable schema migration, batched reads in both migrations (FR-107-09, S-107-23).
+  _Intent:_ `2026_11_04_000001` skips steps already done (`up()` and `down()`); both migrations read with `lazyById`. `WebAuthnCredentialMigrationTest` runs `down()`/`up()` on a Laragear-shaped table and resumes a run cut short, red first.
+  _Verification commands:_
+  - `php artisan test --filter=WebAuthnCredentialMigrationTest`
+  - `php artisan test --filter=WebAuthnKeyConversionTest`
+- [x] T-107-21 – Encoder test compares the full output (S-107-24).
+  _Intent:_ `base64url.test.ts` large buffer with varied bytes against a byte-by-byte `btoa` reference.
+  _Verification commands:_
+  - `vp test run resources/js/vendor/webauthn/base64url.test.ts`
+- [x] T-107-22 – ADR-107-02 wording, plan intent log, quality gate.
+  _Verification commands:_
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+  - `vp check --fix <changed files>`, `vp run typecheck`
 
 ## Notes / TODOs
 - I2 … I5 form one commit slice: after the schema migration exists, the Laragear code cannot run, so `WebAuthTest` is red until T-107-09.

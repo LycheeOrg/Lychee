@@ -72,7 +72,7 @@ class WebAuthnCredentialsCheckTest extends BaseApiWithDataTest
 		self::assertEquals(MessageType::WARNING, $result[0]->type);
 		self::assertEquals(WebAuthnCredentialsCheck::class, $result[0]->from);
 		self::assertEquals('2 WebAuthn credential(s) could not be read (was APP_KEY changed?).', $result[0]->message);
-		self::assertEquals(['Their owners have to register them again.'], $result[0]->details);
+		self::assertEquals(['Their owners have to delete them in their profile, then register them again.'], $result[0]->details);
 		self::assertStringNotContainsString('other-app-key', implode(' ', [$result[0]->message, ...$result[0]->details]));
 	}
 

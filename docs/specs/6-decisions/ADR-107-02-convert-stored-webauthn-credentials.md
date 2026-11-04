@@ -19,13 +19,13 @@ Keep the table and convert rows with two migrations:
 1. Schema: add `user_handle` (string), `backup_eligible`, `backup_status`, `uv_initialized` (nullable booleans). Fill `user_handle` with `user_id` lower-cased and without dashes, then make it not null and drop `user_id`.
 2. Data: decrypt each `public_key`, convert the PEM key to a COSE key (EC2/ES256/P-256, RSA/RS256, OKP/EdDSA/Ed25519) and encrypt it again. Rows already in COSE form are skipped, so a second run is a no-op. Rows that cannot be decrypted or parsed are left as they are and listed (ids only) in one `Log::warning`. `down()` converts COSE back to PEM.
 
-The conversion code lives inside the migration file, so later changes to app classes cannot break it. Diagnostics (`WebAuthnCredentialsCheck`) report rows that are still unusable, and logging in with one returns a "register again" error.
+The conversion code lives inside the migration file, so later changes to app classes cannot break it. Diagnostics (`WebAuthnCredentialsCheck`) report rows that are still unusable, and logging in with one returns a "removed and registered again" error. Each step of the schema migration (and of its `down()`) is skipped when it is already done, so a run cut short on MySQL, where every DDL statement commits on its own, can be started again.
 
 ## Consequences
 
 ### Positive
 - Nobody has to register a key again, and WebAuthn-only administrators keep access.
-- No compatibility code remains at runtime: after the migration every row has the new format.
+- No compatibility code remains at runtime: after the migration every convertible row has the new format. Rows the migration cannot read stay unusable, and their owners delete them and register again.
 - Rollback with `migrate:rollback` restores the Laragear format.
 
 ### Negative

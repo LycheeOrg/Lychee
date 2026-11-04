@@ -111,6 +111,12 @@ Seen, not changed: v8 calls `GET /api/v3/Albums/root/rights?scope=own` as a gues
 8. **I8 – Documentation and drift gate** (commit slice 4)
    - _Goal:_ Knowledge map, roadmap, drift gate report, `_current-session.md`.
 
+9. **I9 – PR #4957 review** (commit slice 5)
+   - _Goal:_ Fixes for the accepted CodeRabbit findings (see "PR #4957 review" below): registration options tied to the requesting user, expiry to the microsecond, login field length limits, "delete, then register again" wording, resumable schema migration with batched reads, full-output encoder test, ADR-107-02 wording.
+   - _Steps:_ Tests first per task (T-107-16 … 21), then code; spec FR-107-01/03/05/09/12, NFR-107-04, S-107-23/28/29 updated before the code.
+   - _Commands:_ `php artisan test --filter=` for `CeremonyStoreTest`, `WebAuthTest`, `WebAuthnCredentialsCheckTest`, `WebAuthnCredentialMigrationTest`, `WebAuthnKeyConversionTest`; `vp test run resources/js/vendor/webauthn/base64url.test.ts`; `make phpstan`; `vendor/bin/php-cs-fixer fix`; scoped `vp check --fix`; `vp run typecheck`.
+   - _Exit:_ Tests green, phpstan clean.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -124,6 +130,9 @@ Seen, not changed: v8 calls `GET /api/v3/Albums/root/rights?scope=own` as a gues
 | S-107-22 | I2 / T-107-04, I4 / T-107-08 | migration + login |
 | S-107-24 | I5 / T-107-10 | Vitest |
 | S-107-25 … 27 | I7 / T-107-14 | Playwright, scratchpad |
+| S-107-23 (migration run) | I9 / T-107-20 | `WebAuthnCredentialMigrationTest` (`down()`/`up()` on the table, resumed run) |
+| S-107-28 | I9 / T-107-16 | `CeremonyStoreTest`, `WebAuthTest` |
+| S-107-29 | I9 / T-107-18 | `WebAuthTest` |
 
 ## Analysis Gate
 2026-11-04, agent self-review against [analysis-gate-checklist.md](../../../5-operations/analysis-gate-checklist.md):
@@ -138,7 +147,7 @@ Seen, not changed: v8 calls `GET /api/v3/Albums/root/rights?scope=own` as a gues
 Follow-ups from the gate: none.
 
 ## Exit Criteria
-- T-107-01 … T-107-15 checked.
+- T-107-01 … T-107-22 checked.
 - Quality gate: `vendor/bin/php-cs-fixer fix`, scoped `vp check --fix`, `vp run typecheck`, `php artisan test --filter=` for `WebAuthTest`, `WebAuthnKeyConversionTest`, `WebAuthnCredentialMigrationTest`, `CeremonyStoreTest`, `WebAuthnFactoryTest`, `WebAuthnCredentialsCheckTest`, `UserTest`, `AuthDisabledCheckTest`, `EmailLoginTest`, `DiagnosticsTest`; `make phpstan`; `composer audit`.
 - `php artisan typescript:transform` leaves `resources/js/lychee.d.ts` unchanged.
 - Roadmap and knowledge map updated; drift gate report filled in.
@@ -152,6 +161,28 @@ Follow-ups from the gate: none.
 - PostgreSQL/MySQL run of `2026_11_04_000001` (`uuid` → string `change()`, `dropColumn`) through CI.
 - Owner check on a real security key and a platform passkey (Touch ID / Windows Hello / Android) after deploy.
 
+## PR #4957 review
+
+CodeRabbit review of 2026-11-04 (one review, 9 inline comments, 4 follow-ups, 2 nitpicks).
+
+| Finding | Outcome | Where |
+|---------|---------|-------|
+| Bind pending registration options to the requesting account | Fixed | `CeremonyStore` stores the user id; T-107-16, S-107-28 |
+| Whole-second challenge deadline | Fixed: integer microseconds from Carbon's clock | T-107-17 |
+| Migration `2026_11_04_000001` not safe to rerun on MySQL | Fixed for `up()` and `down()` | T-107-20 |
+| Both migrations load every row with `get()` | Fixed: `lazyById()` | T-107-20 |
+| Diagnostics load every credential | Fixed: `lazyById()` | T-107-19 |
+| No length limits on the guest login request | Fixed: 1364 / 86 / 16384 characters | T-107-18, S-107-29 |
+| "Register again" omits the required deletion (registration excludes the stored id) | Fixed: login and diagnostics messages | T-107-19 |
+| `tasks.md` T-107-06 said guest `403` | Fixed: `401` | – |
+| ADR-107-02 "every row has the new format" | Fixed: only convertible rows | T-107-22 |
+| Encoder test only checks length and alphabet | Fixed: full output against a `btoa` reference | T-107-21 |
+| No test runs `2026_11_04_000001` `up()`/`down()` | Fixed | T-107-20, S-107-23 |
+| Atomic challenge consumption (concurrent requests on one session) | Declined | Both racing requests must carry the same session cookie and the same signed assertion, and they only sign in that same session again. Whoever holds the cookie already holds the session, so the race grants nothing. Laragear used the same `Session::pull()` design. |
+| Relying party id pinned to the `APP_URL` host when `WEBAUTHN_ID` is unset | Declined | Laragear left `rp.id` out of the options but checked the authenticator's RP id hash and the origin against the `APP_URL` host (`CheckRelyingPartyHashSame`, `CheckRelyingPartyIdContained`), so only that host ever worked. The new code fails the same requests earlier, in the browser instead of with a `422`. |
+| `hasReadablePublicKey()` accepts a decryptable empty CBOR map | Declined | Only someone holding `APP_KEY` and write access to the table can store such a row, and its login still fails in `validate()`. A full COSE parse per row is not worth it for the diagnostics count. |
+
 ## Intent Log
 - 2026-11-04: owner reported that `Laragear/WebAuthn` is deprecated and read-only. Findings: `composer audit` (abandoned, no advisory), `composer show laravel/passkeys` (v0.2.1, `web-auth/webauthn-lib` 5.3.x), sources of `laravel/passkeys-server`, `web-auth/webauthn-lib` 5.3.12 and `web-auth/cose-lib` cloned to the scratchpad for reading. Q-107-01 … 03 logged and answered "A A A" by the owner, which also approves the packages in NFR-107-02.
 - 2026-11-04: implementation I1 … I8 in one session. `composer require web-auth/webauthn-lib:^5.3`, `composer remove laragear/webauthn`; tests written red first per task. Browser check against a `git worktree add --detach` of `master` in the scratchpad (`composer install --no-scripts`, `node_modules` symlinked, `vp build`), served with `php -S` on :8124 and this branch on :8123 (v8) / :8125 (v7).
+- 2026-11-04: owner asked to check the CodeRabbit comments on PR #4957 (`gh pr view 4957`, `gh api repos/LycheeOrg/Lychee/pulls/4957/comments`). Laragear's relying-party handling read from a `master` worktree (`vendor/laragear/webauthn/src`). Outcomes in "PR #4957 review"; T-107-16 … 22 test-first.

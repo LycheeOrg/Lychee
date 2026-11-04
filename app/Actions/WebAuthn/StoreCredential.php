@@ -38,7 +38,7 @@ final class StoreCredential
 	 */
 	public function do(User $user, array $payload): WebAuthnCredential
 	{
-		$options = $this->store->pullCreationOptions();
+		$options = $this->store->pullCreationOptions($user->id);
 		$response = $this->factory->parseCredential($payload)->response;
 		if (!$response instanceof AuthenticatorAttestationResponse) {
 			throw new WebAuthnVerificationException('Expected a WebAuthn registration response.');

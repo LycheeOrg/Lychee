@@ -63,8 +63,8 @@ class CeremonyStoreTest extends AbstractTestCase
 	{
 		$store = resolve(CeremonyStore::class);
 
-		$store->putCreationOptions($this->creationOptions('challenge-create-0001'));
-		$pulled = $store->pullCreationOptions();
+		$store->putCreationOptions($this->creationOptions('challenge-create-0001'), 7);
+		$pulled = $store->pullCreationOptions(7);
 
 		self::assertSame('challenge-create-0001', $pulled->challenge);
 		self::assertSame('user-handle-bytes', $pulled->user->id);
@@ -85,7 +85,51 @@ class CeremonyStoreTest extends AbstractTestCase
 	{
 		$this->expectException(WebAuthnVerificationException::class);
 		$this->expectExceptionMessage('No pending WebAuthn challenge');
-		resolve(CeremonyStore::class)->pullCreationOptions();
+		resolve(CeremonyStore::class)->pullCreationOptions(7);
+	}
+
+	/**
+	 * S-107-28: options asked for by one account cannot be answered by another one.
+	 */
+	public function testCreationOptionsOfAnotherUserAreRejectedAndConsumed(): void
+	{
+		$store = resolve(CeremonyStore::class);
+		$store->putCreationOptions($this->creationOptions('challenge-create-0003'), 7);
+
+		try {
+			$store->pullCreationOptions(8);
+			self::fail('Options of another user must be rejected.');
+		} catch (WebAuthnVerificationException $e) {
+			self::assertStringContainsString('No pending WebAuthn challenge', $e->getMessage());
+		}
+
+		$this->expectException(WebAuthnVerificationException::class);
+		$this->expectExceptionMessage('No pending WebAuthn challenge');
+		$store->pullCreationOptions(7);
+	}
+
+	public function testOptionsAreValidUntilTheDeadline(): void
+	{
+		$store = resolve(CeremonyStore::class);
+		$this->freezeTime();
+		$store->putRequestOptions($this->requestOptions('challenge-request-0005'));
+
+		$this->travel(59_999_999)->microseconds();
+
+		self::assertSame('challenge-request-0005', $store->pullRequestOptions()->challenge);
+	}
+
+	public function testOptionsExpireRightAfterTheDeadline(): void
+	{
+		$store = resolve(CeremonyStore::class);
+		$this->freezeTime();
+		$store->putRequestOptions($this->requestOptions('challenge-request-0006'));
+
+		$this->travel(60_000_001)->microseconds();
+
+		$this->expectException(WebAuthnVerificationException::class);
+		$this->expectExceptionMessage('expired');
+		$store->pullRequestOptions();
 	}
 
 	public function testExpiredOptionsAreRejectedAndConsumed(): void
@@ -110,11 +154,11 @@ class CeremonyStoreTest extends AbstractTestCase
 	public function testCreationAndRequestSlotsAreSeparate(): void
 	{
 		$store = resolve(CeremonyStore::class);
-		$store->putCreationOptions($this->creationOptions('challenge-create-0002'));
+		$store->putCreationOptions($this->creationOptions('challenge-create-0002'), 7);
 		$store->putRequestOptions($this->requestOptions('challenge-request-0004'));
 
 		self::assertSame('challenge-request-0004', $store->pullRequestOptions()->challenge);
-		self::assertSame('challenge-create-0002', $store->pullCreationOptions()->challenge);
+		self::assertSame('challenge-create-0002', $store->pullCreationOptions(7)->challenge);
 	}
 
 	private function requestOptions(string $challenge): PublicKeyCredentialRequestOptions

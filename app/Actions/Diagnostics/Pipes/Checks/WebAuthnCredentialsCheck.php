@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * The upgrade migration leaves a key untouched when it cannot decrypt it
  * (rows written under another `APP_KEY`), and such a key fails every login.
+ * Registration excludes it, so its owner deletes it before registering again.
  * Only the count is shown: diagnostics can be read by guests.
  */
 class WebAuthnCredentialsCheck implements DiagnosticPipe
@@ -32,10 +33,10 @@ class WebAuthnCredentialsCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$count = WebAuthnCredential::query()->get()->reject(fn (WebAuthnCredential $credential) => $credential->hasReadablePublicKey())->count();
+		$count = WebAuthnCredential::query()->lazyById()->reject(fn (WebAuthnCredential $credential) => $credential->hasReadablePublicKey())->count();
 		if ($count > 0) {
 			$data[] = DiagnosticData::warn(sprintf('%d WebAuthn credential(s) could not be read (was APP_KEY changed?).', $count), self::class,
-				['Their owners have to register them again.']);
+				['Their owners have to delete them in their profile, then register them again.']);
 		}
 
 		return $next($data);

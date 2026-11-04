@@ -59,7 +59,7 @@ final class GenerateRegistrationOptions
 			timeout: $this->factory->timeoutMilliseconds(),
 		);
 
-		$this->store->putCreationOptions($options);
+		$this->store->putCreationOptions($options, $user->id);
 
 		return $this->factory->toBrowserArray($options);
 	}

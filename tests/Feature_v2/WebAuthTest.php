@@ -91,7 +91,7 @@ class WebAuthTest extends BaseApiWithDataTest
 		$response = $this->postJson('WebAuthn::register/options');
 		$this->assertOk($response);
 
-		$stored = resolve(CeremonyStore::class)->pullCreationOptions();
+		$stored = resolve(CeremonyStore::class)->pullCreationOptions($this->admin->id);
 		$response->assertJson([
 			'rp' => ['name' => 'Lychee', 'id' => 'localhost'],
 			'authenticatorSelection' => ['userVerification' => 'discouraged', 'residentKey' => 'preferred'],
@@ -275,6 +275,23 @@ class WebAuthTest extends BaseApiWithDataTest
 		$response = $this->postJson('WebAuthn::register', $this->recordedAttestation());
 		$this->assertUnauthorized($response);
 		$this->assertDatabaseMissing('webauthn_credentials', ['id' => self::REGISTER_CREDENTIAL_ID]);
+	}
+
+	/**
+	 * S-107-28: the admin asked for the options, then the session signed in as another account.
+	 */
+	public function testWebAuthnRegisterOptionsOfAnotherAccount(): void
+	{
+		Auth::loginUsingId($this->admin->id);
+		$this->putCreationOptions();
+		Auth::loginUsingId($this->userMayUpload1->id);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('WebAuthn::register', $this->recordedAttestation());
+		$this->assertUnprocessable($response);
+		$response->assertSee('No pending WebAuthn challenge');
+		$this->assertDatabaseMissing('webauthn_credentials', ['id' => self::REGISTER_CREDENTIAL_ID]);
+
+		Auth::logout();
 	}
 
 	// ------------------------------------------------------------------
@@ -648,6 +665,34 @@ class WebAuthTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * S-107-29: every field has a length limit (FR-107-05).
+	 */
+	public function testWebAuthLoginFieldLengthLimits(): void
+	{
+		$assertion = $this->recordedAssertion();
+		$oversized = [
+			'id' => str_repeat('A', 1365),
+			'rawId' => str_repeat('A', 1365),
+			'response.authenticatorData' => str_repeat('A', 16385),
+			'response.clientDataJSON' => str_repeat('A', 16385),
+			'response.signature' => str_repeat('A', 16385),
+			'response.userHandle' => str_repeat('A', 87),
+		];
+
+		foreach ($oversized as $field => $value) {
+			$this->putRequestOptions();
+			$payload = $assertion;
+			data_set($payload, $field, $value);
+
+			$response = $this->postJson('WebAuthn::login', $payload);
+			$this->assertUnprocessable($response);
+			$response->assertJsonPath('message', fn (string $message): bool => str_contains($message, 'must not be greater than'));
+		}
+
+		$this->assertGuest();
+	}
+
+	/**
 	 * S-107-22: the recorded key as Laragear stored it, converted by the migration.
 	 */
 	public function testWebAuthLoginAfterMigration(): void
@@ -664,7 +709,7 @@ class WebAuthTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * FR-107-09: a key the migration could not convert has to be registered again.
+	 * FR-107-09: a key the migration could not convert has to be removed and registered again.
 	 */
 	public function testWebAuthLoginUnconvertedCredential(): void
 	{
@@ -673,7 +718,7 @@ class WebAuthTest extends BaseApiWithDataTest
 
 		$response = $this->postJson('WebAuthn::login', $this->recordedAssertion());
 		$this->assertUnprocessable($response);
-		$response->assertSee('registered again');
+		$response->assertSee('This security key has to be removed and registered again.');
 
 		$this->assertGuest();
 	}
@@ -900,7 +945,7 @@ class WebAuthTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Registration options the recorded attestation answers.
+	 * Registration options the recorded attestation answers, asked for by the admin.
 	 */
 	private function putCreationOptions(string $challenge = self::REGISTER_CHALLENGE): void
 	{
@@ -918,7 +963,7 @@ class WebAuthTest extends BaseApiWithDataTest
 			),
 			attestation: PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
 			timeout: 60000,
-		));
+		), $this->admin->id);
 	}
 
 	/**

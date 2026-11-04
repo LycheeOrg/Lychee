@@ -28,17 +28,21 @@ return new class() extends Migration {
 
 	/**
 	 * Run the migrations.
+	 *
+	 * Every step is skipped when it is already done: MySQL commits each DDL
+	 * statement on its own, so a run cut short can be started again.
 	 */
 	public function up(): void
 	{
-		Schema::table(self::TABLE, function (Blueprint $table) {
-			$table->string('user_handle', 128)->nullable()->after('authenticatable_id');
-			$table->boolean('backup_eligible')->nullable()->after('counter');
-			$table->boolean('backup_status')->nullable()->after('backup_eligible');
-			$table->boolean('uv_initialized')->nullable()->after('backup_status');
-		});
+		$this->addMissingColumn('user_handle', fn (Blueprint $table) => $table->string('user_handle', 128)->nullable()->after('authenticatable_id'));
+		$this->addMissingColumn('backup_eligible', fn (Blueprint $table) => $table->boolean('backup_eligible')->nullable()->after('counter'));
+		$this->addMissingColumn('backup_status', fn (Blueprint $table) => $table->boolean('backup_status')->nullable()->after('backup_eligible'));
+		$this->addMissingColumn('uv_initialized', fn (Blueprint $table) => $table->boolean('uv_initialized')->nullable()->after('backup_status'));
+		if (!Schema::hasColumn(self::TABLE, 'user_id')) {
+			return;
+		}
 
-		foreach (DB::table(self::TABLE)->select(['id', 'user_id'])->get() as $row) {
+		foreach (DB::table(self::TABLE)->select(['id', 'user_id'])->lazyById() as $row) {
 			DB::table(self::TABLE)->where('id', '=', $row->id)->update(['user_handle' => $this->toUserHandle(strval($row->user_id))]);
 		}
 
@@ -49,18 +53,19 @@ return new class() extends Migration {
 	}
 
 	/**
-	 * Reverse the migrations.
+	 * Reverse the migrations, with the same resumable steps as `up()`.
 	 *
 	 * A handle created after the upgrade (32 random bytes) has no UUID form: such a
 	 * credential gets a new UUID and loses usernameless login under Laragear.
 	 */
 	public function down(): void
 	{
-		Schema::table(self::TABLE, function (Blueprint $table) {
-			$table->uuid('user_id')->nullable()->after('authenticatable_id');
-		});
+		$this->addMissingColumn('user_id', fn (Blueprint $table) => $table->uuid('user_id')->nullable()->after('authenticatable_id'));
+		if (!Schema::hasColumn(self::TABLE, 'user_handle')) {
+			return;
+		}
 
-		foreach (DB::table(self::TABLE)->select(['id', 'user_handle'])->get() as $row) {
+		foreach (DB::table(self::TABLE)->select(['id', 'user_handle'])->lazyById() as $row) {
 			DB::table(self::TABLE)->where('id', '=', $row->id)->update(['user_id' => $this->toUserId(strval($row->user_handle))]);
 		}
 
@@ -68,6 +73,16 @@ return new class() extends Migration {
 			$table->uuid('user_id')->nullable(false)->change();
 			$table->dropColumn(['user_handle', 'backup_eligible', 'backup_status', 'uv_initialized']);
 		});
+	}
+
+	/**
+	 * @param Closure(Blueprint):mixed $definition
+	 */
+	private function addMissingColumn(string $column, Closure $definition): void
+	{
+		if (!Schema::hasColumn(self::TABLE, $column)) {
+			Schema::table(self::TABLE, $definition);
+		}
 	}
 
 	/**

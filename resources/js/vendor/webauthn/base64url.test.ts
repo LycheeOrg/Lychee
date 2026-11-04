@@ -32,10 +32,16 @@ describe("bufferToBase64Url", () => {
 	});
 
 	it("handles buffers larger than the argument limit of String.fromCharCode", () => {
-		const bytes = new Uint8Array(200_000).fill(0xff);
-		const encoded = bufferToBase64Url(bytes);
+		const bytes = new Uint8Array(200_000);
+		for (let i = 0; i < bytes.length; i++) {
+			bytes[i] = (i * 31) & 0xff;
+		}
+		let binary = "";
+		for (const byte of bytes) {
+			binary += String.fromCharCode(byte);
+		}
+		const expected = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
-		expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/);
-		expect(encoded.length).toBe(Math.ceil((bytes.length * 4) / 3));
+		expect(bufferToBase64Url(bytes)).toBe(expected);
 	});
 });

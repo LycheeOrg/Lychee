@@ -118,7 +118,7 @@ return new class() extends Migration {
 	}
 
 	/**
-	 * Re-encrypt every key `$is_source` accepts with `$transform` applied.
+	 * Re-encrypt every key `$is_source` accepts with `$transform` applied, reading the rows in batches.
 	 *
 	 * @param Closure(string):bool   $is_source
 	 * @param Closure(string):string $transform
@@ -126,7 +126,7 @@ return new class() extends Migration {
 	private function convertAll(Closure $is_source, Closure $transform): void
 	{
 		$failed = [];
-		foreach (DB::table(self::TABLE)->select(['id', 'public_key'])->get() as $row) {
+		foreach (DB::table(self::TABLE)->select(['id', 'public_key'])->lazyById() as $row) {
 			try {
 				$key = Crypt::decryptString(strval($row->public_key));
 				$converted = $is_source($key) ? Crypt::encryptString($transform($key)) : null;
