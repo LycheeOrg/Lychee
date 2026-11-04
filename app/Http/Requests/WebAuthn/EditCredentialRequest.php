@@ -11,10 +11,10 @@ namespace App\Http\Requests\WebAuthn;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
+use App\Models\WebAuthnCredential;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Laragear\WebAuthn\Models\WebAuthnCredential;
 
 class EditCredentialRequest extends BaseApiRequest
 {
@@ -66,7 +66,7 @@ class EditCredentialRequest extends BaseApiRequest
 	{
 		/** @var string $id */
 		$id = $values[RequestAttribute::ID_ATTRIBUTE];
-		$this->credential = WebAuthnCredential::findOrFail($id);
+		$this->credential = WebAuthnCredential::query()->findOrFail($id);
 		$this->alias = $values[RequestAttribute::ALIAS_ATTRIBUTE];
 	}
 

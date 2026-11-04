@@ -43,6 +43,7 @@ use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WebAuthnCredentialsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WorkerCacheCheck;
 use App\DTO\DiagnosticData;
@@ -59,6 +60,7 @@ class Errors
 		HashCheck::class,
 		AdminUserExistsCheck::class,
 		AuthDisabledCheck::class,
+		WebAuthnCredentialsCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
 		OldLicenseCheck::class,

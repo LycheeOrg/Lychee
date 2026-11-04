@@ -60,7 +60,6 @@
         "geocoder-php/nominatim-provider": "^5.7",
         "graham-campbell/markdown": "^16.0",
         "itsgoingd/clockwork": "^5.1",
-        "laragear/webauthn": "^5.0",
         "laravel/framework": "^13.0",
         "laravel/octane": "^2.13",
         "laravel/socialite": "^5.18",
@@ -102,7 +101,8 @@
         "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-typescript-transformer": "^3.3",
         "symfony/cache": "^v8.0.10",
-        "thecodingmachine/safe": "^3.3"
+        "thecodingmachine/safe": "^3.3",
+        "web-auth/webauthn-lib": "^5.3"
     },
     "require-dev": {
         "ext-imagick": "*",
