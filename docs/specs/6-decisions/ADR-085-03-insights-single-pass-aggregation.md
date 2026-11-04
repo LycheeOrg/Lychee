@@ -2,8 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Related features/specs:** Feature 085 (docs/specs/4-architecture/features/085-library-insights/spec.md)
-- **Related open questions:** Q-085-07, Q-085-08
+- **Related features/specs:** Feature 085 (docs/specs/4-architecture/features/085-library-insights/spec.md), Feature 108 (docs/specs/4-architecture/features/108-insights-speedup/spec.md)
+- **Related open questions:** Q-085-07, Q-085-08, Q-108-01, Q-108-02
 
 ## Context
 
@@ -17,11 +17,21 @@ Phase 1 of Insights needs counts by local day, week, month, weekday and hour, st
 - The result is stored in the Laravel cache under (scope, period, revision). The revision is the photo count and latest `updated_at` of the scope's photos and albums, so any upload, edit or deletion produces a new key. Entries expire after one hour, which bounds staleness for changes that touch neither (album membership, face assignment).
 - The action returns one resource served by `GET /api/v3/Insights`.
 
+## Amendment 2026-11-04 (Feature 108, Q-108-02 A)
+
+On about 70,000 photos two parts of the decision grew with the square of the photos involved and crossed the 30 s Octane request limit: the album scope (`EXISTS` semi-join materialised and sorted again on every `lazyById` page) and the album and people counts of a Year or Range (keyset pages over `photo_album ⋈ photos` sorted again on every page). Without schema change:
+
+- An album scope reads its tree's album IDs once and pages its photo IDs by keyset on `photo_album.photo_id` filtered by that list, then loads each page by ID (NFR-108-01). Owner and whole-instance scopes keep `lazyById`.
+- Albums with a photo in the period and distinct people take two queries each: one `DISTINCT` over the core UTC window — the period narrowed by 14 hours on each side, inside the period in every timezone — and one over the rest of the widened window, whose rows are checked in PHP (NFR-108-02). They are no longer collected as streamed ID sets.
+- The scope's years list is cached under (scope, revision) beside the aggregates, so Year and Range reuse it instead of streaming the scope again (FR-108-03).
+
+The aggregates, the cache key and the revision are unchanged. Measured on the dev copy (MariaDB 11.8, 67,790 photos): album scope 12.3 s → 1.7 s, Range 2005–2026 9.4 s → 1.9 s, Library 1.8 s → 1.3 s.
+
 ## Consequences
 
 ### Positive
 - Same SQL on all three drivers; local time is exact.
-- One query per request; accumulators keep memory flat in the library size.
+- One streamed pass per request (plus the side counts); accumulators keep memory flat in the library size.
 - No new table, listener or integrity check.
 
 ### Negative

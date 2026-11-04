@@ -69,6 +69,31 @@ final readonly class InsightsPeriod
 	 */
 	public function utcWindow(): ?array
 	{
+		return $this->utcBounds('-', '+');
+	}
+
+	/**
+	 * UTC bounds of the capture times whose local date is in the period
+	 * whatever the timezone: the period narrowed by 14 hours on each side
+	 * (Feature 108, NFR-108-02), or null for the whole library. For a period
+	 * shorter than 28 hours the start is after the end, so `BETWEEN` matches
+	 * nothing and `NOT BETWEEN` everything.
+	 *
+	 * @return array{0:string,1:string}|null
+	 */
+	public function utcCore(): ?array
+	{
+		return $this->utcBounds('+', '-');
+	}
+
+	/**
+	 * @param '+'|'-' $start_shift
+	 * @param '+'|'-' $end_shift
+	 *
+	 * @return array{0:string,1:string}|null
+	 */
+	private function utcBounds(string $start_shift, string $end_shift): ?array
+	{
 		if ($this->from === null || $this->to === null) {
 			return null;
 		}
@@ -77,8 +102,8 @@ final readonly class InsightsPeriod
 		$margin = self::MAX_OFFSET_HOURS . ' hours';
 
 		return [
-			(new DateTimeImmutable($this->from . ' 00:00:00', $utc))->modify('-' . $margin)->format('Y-m-d H:i:s'),
-			(new DateTimeImmutable($this->to . ' 23:59:59', $utc))->modify('+' . $margin)->format('Y-m-d H:i:s'),
+			(new DateTimeImmutable($this->from . ' 00:00:00', $utc))->modify($start_shift . $margin)->format('Y-m-d H:i:s'),
+			(new DateTimeImmutable($this->to . ' 23:59:59', $utc))->modify($end_shift . $margin)->format('Y-m-d H:i:s'),
 		];
 	}
 

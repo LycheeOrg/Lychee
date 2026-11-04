@@ -36,7 +36,9 @@ use Illuminate\Support\Facades\DB;
  * of the original size variant) feeds every
  * accumulator. Capture times are read in local time; a Year or Range period
  * is narrowed in SQL to a widened UTC window and filtered exactly in PHP.
- * Album and people counts come from small side queries filtered the same way.
+ * Album and people counts come from two queries each (Feature 108,
+ * NFR-108-02); an album scope is streamed by pages of photo IDs
+ * (NFR-108-01).
  */
 class ComputeInsights
 {
@@ -44,12 +46,20 @@ class ComputeInsights
 
 	private LocalCaptureTime $clock;
 
-	public function __construct()
+	/**
+	 * @param int $chunk rows per page of every stream (Feature 108, FR-108-02)
+	 */
+	public function __construct(private int $chunk = self::CHUNK)
 	{
 		$this->clock = new LocalCaptureTime();
 	}
 
-	public function do(InsightsScope $scope, InsightsPeriod $period): InsightsResource
+	/**
+	 * @param int[]|null $known_years local years of the scope at the current
+	 *                                revision, when already known (Feature 108,
+	 *                                FR-108-03); ignored for the Library period
+	 */
+	public function do(InsightsScope $scope, InsightsPeriod $period, ?array $known_years = null): InsightsResource
 	{
 		$overview = new OverviewAccumulator();
 		$time = new TimeAccumulator();
@@ -59,7 +69,7 @@ class ComputeInsights
 		$formats = new FormatAccumulator();
 		$timeline = new TimelineAccumulator();
 
-		foreach ($this->photos($scope, $period)->lazyById(self::CHUNK, 'photos.id', 'id') as $raw) {
+		foreach ($this->stream($scope, fn () => $this->window($this->projection(), $period)) as $raw) {
 			$row = PhotoRow::fromDatabase($raw);
 			$moment = $this->moment($row->taken_at, $row->taken_at_orig_tz);
 			if (!$this->belongs($period, $moment)) {
@@ -78,7 +88,7 @@ class ComputeInsights
 		$time_span = $time->toTimeSpan();
 
 		return new InsightsResource(
-			years: $period->isLibrary() ? $time->years() : $this->years($scope),
+			years: $period->isLibrary() ? $time->years() : ($known_years ?? $this->years($scope)),
 			overview: $overview->toOverview($this->albums($scope, $period)),
 			storage: $overview->toStorage(),
 			people: $overview->toPeople($this->hasFaces($scope), $this->people($scope, $period)),
@@ -126,9 +136,12 @@ class ComputeInsights
 		return $events;
 	}
 
-	private function photos(InsightsScope $scope, InsightsPeriod $period): Builder
+	/**
+	 * The projection of NFR-085-06 over `photos`, without scope or period.
+	 */
+	private function projection(): Builder
 	{
-		$query = DB::table('photos')
+		return DB::table('photos')
 			->select([
 				'photos.id', 'photos.taken_at', 'photos.taken_at_orig_tz', 'photos.type',
 				'photos.make', 'photos.model', 'photos.lens', 'photos.iso', 'photos.aperture',
@@ -139,8 +152,35 @@ class ComputeInsights
 			->leftJoin('size_variants as originals', fn (JoinClause $join) => $join
 				->on('originals.photo_id', '=', 'photos.id')
 				->where('originals.type', '=', SizeVariantType::ORIGINAL->value));
+	}
 
-		return $this->window(InsightsScopeQuery::photos($query, $scope), $period);
+	/**
+	 * Rows of a query over `photos` restricted to the scope, by ascending
+	 * photo ID (Feature 108, NFR-108-01). Owner and whole-instance scopes page
+	 * with `lazyById`; an album scope pages the tree's photo IDs and loads
+	 * each page by ID.
+	 *
+	 * @param \Closure(): Builder $query a fresh query over `photos`, without the scope
+	 *
+	 * @return iterable<int,object>
+	 */
+	private function stream(InsightsScope $scope, \Closure $query): iterable
+	{
+		return $scope->isAlbum()
+			? $this->albumStream($scope, $query)
+			: InsightsScopeQuery::photos($query(), $scope)->lazyById($this->chunk, 'photos.id', 'id');
+	}
+
+	/**
+	 * @param \Closure(): Builder $query a fresh query over `photos`, without the scope
+	 *
+	 * @return \Generator<int,object>
+	 */
+	private function albumStream(InsightsScope $scope, \Closure $query): \Generator
+	{
+		foreach (InsightsScopeQuery::photoIdPages($scope, $this->chunk) as $ids) {
+			yield from $query()->whereIn('photos.id', $ids)->orderBy('photos.id')->get();
+		}
 	}
 
 	private function moment(?string $taken_at, ?string $timezone): ?LocalMoment
@@ -160,12 +200,12 @@ class ComputeInsights
 	 */
 	private function years(InsightsScope $scope): array
 	{
-		$query = InsightsScopeQuery::photos(DB::table('photos'), $scope)
+		$rows = $this->stream($scope, fn () => DB::table('photos')
 			->select(['photos.id', 'photos.taken_at', 'photos.taken_at_orig_tz'])
-			->whereNotNull('photos.taken_at');
+			->whereNotNull('photos.taken_at'));
 
 		$years = [];
-		foreach ($query->lazyById(self::CHUNK, 'photos.id', 'id') as $row) {
+		foreach ($rows as $row) {
 			$years[$this->clock->convert($row->taken_at, $row->taken_at_orig_tz)->year] = true;
 		}
 		$years = array_keys($years);
@@ -184,28 +224,7 @@ class ComputeInsights
 			return InsightsScopeQuery::albums(DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id'), $scope)->count();
 		}
 
-		$album_ids = [];
-		$last_album = '';
-		$last_photo = '';
-		do {
-			$rows = $this->window($this->albumLinks($scope), $period)
-				->select(['photo_album.album_id', 'photo_album.photo_id', 'photos.taken_at', 'photos.taken_at_orig_tz'])
-				->where(fn (Builder $q) => $q
-					->where('photo_album.album_id', '>', $last_album)
-					->orWhere(fn (Builder $q) => $q->where('photo_album.album_id', '=', $last_album)->where('photo_album.photo_id', '>', $last_photo)))
-				->orderBy('photo_album.album_id')
-				->orderBy('photo_album.photo_id')
-				->limit(self::CHUNK)
-				->get();
-
-			foreach ($rows as $row) {
-				$album_ids[$row->album_id] ??= $this->belongs($period, $this->moment($row->taken_at, $row->taken_at_orig_tz)) ? true : null;
-				$last_album = $row->album_id;
-				$last_photo = $row->photo_id;
-			}
-		} while ($rows->count() === self::CHUNK);
-
-		return count(array_filter($album_ids));
+		return $this->distinctInPeriod(fn () => $this->albumLinks($scope), 'photo_album.album_id', $period);
 	}
 
 	/**
@@ -221,21 +240,43 @@ class ComputeInsights
 	 */
 	private function people(InsightsScope $scope, InsightsPeriod $period): int
 	{
-		$query = InsightsScopeQuery::photos(DB::table('faces')->join('photos', 'photos.id', '=', 'faces.photo_id'), $scope)
+		return $this->distinctInPeriod(fn () => InsightsScopeQuery::photos(DB::table('faces')->join('photos', 'photos.id', '=', 'faces.photo_id'), $scope)
 			->where('faces.is_dismissed', '=', false)
-			->whereNotNull('faces.person_id');
+			->whereNotNull('faces.person_id'), 'faces.person_id', $period);
+	}
 
-		if ($period->isLibrary()) {
-			return $query->distinct()->count('faces.person_id');
+	/**
+	 * Distinct values of `$column` over the rows whose photo was taken, in
+	 * local time, within the period (Feature 108, NFR-108-02).
+	 *
+	 * The Library period is a plain distinct count. Otherwise one `DISTINCT`
+	 * reads the core window, inside the period in every timezone, and one
+	 * query reads the rest of the widened window, whose rows are kept when
+	 * their local date is in the period. Two queries whatever the number of
+	 * rows; memory grows with the distinct values only.
+	 *
+	 * @param \Closure(): Builder $query a fresh query joined to `photos`, scope applied
+	 */
+	private function distinctInPeriod(\Closure $query, string $column, InsightsPeriod $period): int
+	{
+		$window = $period->utcWindow();
+		$core = $period->utcCore();
+		if ($window === null || $core === null) {
+			return $query()->distinct()->count($column);
 		}
 
-		$people = [];
-		$rows = $this->window($query, $period)->select(['faces.id', 'faces.person_id', 'photos.taken_at', 'photos.taken_at_orig_tz']);
-		foreach ($rows->lazyById(self::CHUNK, 'faces.id', 'id') as $row) {
-			$people[$row->person_id] ??= $this->belongs($period, $this->moment($row->taken_at, $row->taken_at_orig_tz)) ? true : null;
+		$values = array_fill_keys($query()->whereBetween('photos.taken_at', $core)->distinct()->pluck($column)->all(), true);
+		$edges = $query()
+			->whereBetween('photos.taken_at', $window)
+			->whereNotBetween('photos.taken_at', $core)
+			->select([$column . ' as value', 'photos.taken_at', 'photos.taken_at_orig_tz'])
+			->distinct()
+			->cursor();
+		foreach ($edges as $row) {
+			$values[$row->value] ??= $this->belongs($period, $this->moment($row->taken_at, $row->taken_at_orig_tz)) ? true : null;
 		}
 
-		return count(array_filter($people));
+		return count(array_filter($values));
 	}
 
 	/**

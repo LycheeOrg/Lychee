@@ -23,19 +23,24 @@ use App\DTO\Insights\InsightsPeriod;
 use App\DTO\Insights\InsightsScope;
 use App\Http\Resources\Insights\InsightsResource;
 use App\Models\Photo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
  * Covers the Insights cache keyed on scope, period and library revision
- * (Feature 085, NFR-085-06, S-085-17).
+ * (Feature 085, NFR-085-06, S-085-17) and the years list kept per revision
+ * (Feature 108, FR-108-03, S-108-06).
  */
 class InsightsCacheTest extends BaseApiWithDataTest
 {
 	use InsightsDataset;
 
 	private int $computations = 0;
+
+	/** @var array<int,int[]|null> */
+	private array $known_years = [];
 
 	public function setUp(): void
 	{
@@ -51,11 +56,11 @@ class InsightsCacheTest extends BaseApiWithDataTest
 				parent::__construct();
 			}
 
-			public function do(InsightsScope $scope, InsightsPeriod $period): InsightsResource
+			public function do(InsightsScope $scope, InsightsPeriod $period, ?array $known_years = null): InsightsResource
 			{
-				$this->test->countComputation();
+				$this->test->countComputation($known_years);
 
-				return parent::do($scope, $period);
+				return parent::do($scope, $period, $known_years);
 			}
 		});
 	}
@@ -66,9 +71,13 @@ class InsightsCacheTest extends BaseApiWithDataTest
 		parent::tearDown();
 	}
 
-	public function countComputation(): void
+	/**
+	 * @param int[]|null $known_years years handed to the computation (Feature 108, FR-108-03)
+	 */
+	public function countComputation(?array $known_years): void
 	{
 		$this->computations++;
+		$this->known_years[] = $known_years;
 	}
 
 	public function testUnchangedLibraryIsServedFromCache(): void
@@ -149,6 +158,35 @@ class InsightsCacheTest extends BaseApiWithDataTest
 		// The owner scope is the same whoever asks for it.
 		$this->assertOk($this->actingAs($this->admin)->getJsonV3('Insights', ['period' => 'library', 'owner_id' => $this->photographer->id]));
 		self::assertSame(3, $this->computations);
+	}
+
+	public function testYearReusesTheYearsOfTheLibrary(): void
+	{
+		$this->insights(['period' => 'library']);
+		$response = $this->insights(['period' => 'year', 'year' => 2025]);
+
+		self::assertSame([null, [2024, 2025]], $this->known_years);
+		$response->assertJsonPath('years', [2024, 2025]);
+	}
+
+	public function testYearStoresTheYearsForTheNextYear(): void
+	{
+		$this->insights(['period' => 'year', 'year' => 2025]);
+		$response = $this->insights(['period' => 'year', 'year' => 2024]);
+
+		self::assertSame([null, [2024, 2025]], $this->known_years);
+		$response->assertJsonPath('years', [2024, 2025]);
+	}
+
+	public function testYearsFollowTheRevision(): void
+	{
+		$this->insights(['period' => 'library']);
+		Photo::factory()->owned_by($this->photographer)->create(['taken_at' => new Carbon('2023-04-04 12:00:00', 'UTC')]);
+
+		$response = $this->insights(['period' => 'year', 'year' => 2025]);
+
+		self::assertSame([null, null], $this->known_years);
+		$response->assertJsonPath('years', [2023, 2024, 2025]);
 	}
 
 	/**

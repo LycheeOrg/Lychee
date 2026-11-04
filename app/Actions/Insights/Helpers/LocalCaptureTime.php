@@ -19,6 +19,8 @@ use Safe\DateTimeImmutable;
  */
 final class LocalCaptureTime
 {
+	private const SECONDS_PER_DAY = 86400;
+
 	private \DateTimeZone $utc;
 
 	/** @var array<string,\DateTimeZone> */
@@ -35,18 +37,32 @@ final class LocalCaptureTime
 	 */
 	public function convert(string $utc_datetime, ?string $timezone): LocalMoment
 	{
-		$local = (new DateTimeImmutable($utc_datetime, $this->utc))->setTimezone($this->zone($timezone));
-		$weekday = intval($local->format('N')) - 1;
+		// Parsed once by Safe, shifted and read on the native object: Safe's
+		// own setTimezone() parses the value twice more (Feature 108, NFR-108-03).
+		$local = (new DateTimeImmutable($utc_datetime, $this->utc))->getInnerDateTime()->setTimezone($this->zone($timezone));
+		[$date, $year, $month, $iso_weekday, $hour, $time] = explode('|', $local->format('Y-m-d|Y|n|N|G|H:i'));
+		$weekday = intval($iso_weekday) - 1;
 
 		return new LocalMoment(
-			date: $local->format('Y-m-d'),
-			year: intval($local->format('Y')),
-			month: intval($local->format('n')),
-			week_start: $local->modify('-' . $weekday . ' days')->format('Y-m-d'),
+			date: $date,
+			year: intval($year),
+			month: intval($month),
+			week_start: self::weekStart($local, $weekday),
 			weekday: $weekday,
-			hour: intval($local->format('G')),
-			time: $local->format('H:i'),
+			hour: intval($hour),
+			time: $time,
 		);
+	}
+
+	/**
+	 * Monday of the local week, counted in whole local days since 1970-01-01
+	 * (floored, so a day before 1970 is not rounded towards the next one).
+	 */
+	private static function weekStart(\DateTimeImmutable $local, int $weekday): string
+	{
+		$day = intval(floor(($local->getTimestamp() + $local->getOffset()) / self::SECONDS_PER_DAY));
+
+		return gmdate('Y-m-d', ($day - $weekday) * self::SECONDS_PER_DAY);
 	}
 
 	private function zone(?string $timezone): \DateTimeZone

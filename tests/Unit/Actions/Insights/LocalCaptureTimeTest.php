@@ -79,4 +79,48 @@ class LocalCaptureTimeTest extends AbstractTestCase
 		self::assertSame('2026-12-28', $moment->week_start);
 		self::assertSame(6, $moment->weekday);
 	}
+
+	public function testWeekBefore1970(): void
+	{
+		// Wednesday 1969-12-31: negative timestamps must round towards the earlier day.
+		$moment = (new LocalCaptureTime())->convert('1969-12-31 12:00:00', 'UTC');
+
+		self::assertSame('1969-12-31', $moment->date);
+		self::assertSame(2, $moment->weekday);
+		self::assertSame('1969-12-29', $moment->week_start);
+	}
+
+	public function testPositiveOffsetStartsTheNextWeek(): void
+	{
+		// Sunday 2025-03-09 20:00 UTC is Monday 10:00 at +14:00.
+		$moment = (new LocalCaptureTime())->convert('2025-03-09 20:00:00', '+14:00');
+
+		self::assertSame('2025-03-10', $moment->date);
+		self::assertSame(0, $moment->weekday);
+		self::assertSame('2025-03-10', $moment->week_start);
+		self::assertSame(10, $moment->hour);
+	}
+
+	public function testNegativeOffsetStaysInThePreviousWeek(): void
+	{
+		// Monday 2025-03-10 05:00 UTC is Sunday 17:00 at -12:00.
+		$moment = (new LocalCaptureTime())->convert('2025-03-10 05:00:00', '-12:00');
+
+		self::assertSame('2025-03-09', $moment->date);
+		self::assertSame(6, $moment->weekday);
+		self::assertSame('2025-03-03', $moment->week_start);
+		self::assertSame(17, $moment->hour);
+	}
+
+	public function testHalfHourZoneMovesMinutesAndDate(): void
+	{
+		// India is +05:30: 18:45 UTC is 00:15 the next day.
+		$moment = (new LocalCaptureTime())->convert('2025-03-10 18:45:00', 'Asia/Kolkata');
+
+		self::assertSame('2025-03-11', $moment->date);
+		self::assertSame(2025, $moment->year);
+		self::assertSame(3, $moment->month);
+		self::assertSame(0, $moment->hour);
+		self::assertSame('00:15', $moment->time);
+	}
 }

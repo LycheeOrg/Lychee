@@ -8,7 +8,6 @@
 
 namespace App\Actions\Insights\Accumulators;
 
-use App\Actions\Insights\Helpers\ExposureParser;
 use App\Actions\Insights\Helpers\LocalMoment;
 use App\Actions\Insights\PhotoRow;
 use App\Enum\TimelineEventKind;
@@ -46,15 +45,15 @@ final class TimelineAccumulator
 
 		$this->record(TimelineEventKind::LARGEST_FILE, $row->filesize > 0 ? floatval($row->filesize) : null, $row, $moment);
 		if ($row->is_video) {
-			$this->record(TimelineEventKind::LONGEST_VIDEO, ExposureParser::duration($row->duration), $row, $moment);
+			$this->record(TimelineEventKind::LONGEST_VIDEO, $row->duration, $row, $moment);
 
 			return;
 		}
 
-		$this->record(TimelineEventKind::HIGHEST_ISO, ExposureParser::iso($row->iso), $row, $moment);
-		$this->record(TimelineEventKind::LONGEST_EXPOSURE, ExposureParser::shutter($row->shutter), $row, $moment);
-		$this->record(TimelineEventKind::LONGEST_FOCAL, ExposureParser::focal($row->focal), $row, $moment);
-		$aperture = ExposureParser::aperture($row->aperture);
+		$this->record(TimelineEventKind::HIGHEST_ISO, $row->iso, $row, $moment);
+		$this->record(TimelineEventKind::LONGEST_EXPOSURE, $row->shutter, $row, $moment);
+		$this->record(TimelineEventKind::LONGEST_FOCAL, $row->focal, $row, $moment);
+		$aperture = $row->aperture;
 		// Widest aperture is the smallest f-number: compare negated values.
 		$this->record(TimelineEventKind::WIDEST_APERTURE, $aperture === null ? null : -$aperture, $row, $moment);
 	}
