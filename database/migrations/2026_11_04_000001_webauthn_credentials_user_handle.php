@@ -95,6 +95,8 @@ return new class() extends Migration {
 
 	/**
 	 * Stored user handle back to a Laragear `user_id`, as the plain hex Laragear wrote.
+	 * PostgreSQL keeps it in its native `uuid` form (dashed), which Laragear reads
+	 * the same way (`Uuid::fromString()`).
 	 */
 	public function toUserId(string $user_handle): string
 	{

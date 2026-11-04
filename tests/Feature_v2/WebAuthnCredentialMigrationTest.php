@@ -44,9 +44,16 @@ class WebAuthnCredentialMigrationTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
-		$this->tearDownRequiresEmptyWebAuthnCredentials();
-		// SQLite rolls schema changes back with the test transaction.
-		parent::tearDown();
+		try {
+			$this->tearDownRequiresEmptyWebAuthnCredentials();
+			// SQLite and PostgreSQL roll schema changes back with the test transaction, MySQL and
+			// MariaDB commit them at once: put the table back when a test stopped after `down()`.
+			if (Schema::hasColumn('webauthn_credentials', 'user_id')) {
+				$this->handleMigration()->up();
+			}
+		} finally {
+			parent::tearDown();
+		}
 	}
 
 	/**
@@ -77,8 +84,8 @@ class WebAuthnCredentialMigrationTest extends BaseApiWithDataTest
 		$this->handleMigration()->down();
 
 		self::assertFalse(Schema::hasColumn('webauthn_credentials', 'user_handle'));
-		self::assertSame('27117450ff81461d80331fb79c655f39', $this->storedValue('hex-handle', 'user_id'));
-		self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $this->storedValue('random-handle', 'user_id'));
+		self::assertSame('27117450ff81461d80331fb79c655f39', $this->uuidHex($this->storedValue('hex-handle', 'user_id')));
+		self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $this->uuidHex($this->storedValue('random-handle', 'user_id')));
 
 		$this->handleMigration()->up();
 
@@ -218,5 +225,13 @@ class WebAuthnCredentialMigrationTest extends BaseApiWithDataTest
 	private function storedValue(string $id, string $column): string
 	{
 		return strval(DB::table('webauthn_credentials')->where('id', '=', $id)->value($column));
+	}
+
+	/**
+	 * PostgreSQL returns its native `uuid` type with dashes, SQLite and MySQL/MariaDB (`char(36)`) as written.
+	 */
+	private function uuidHex(string $uuid): string
+	{
+		return strtolower(str_replace('-', '', $uuid));
 	}
 }

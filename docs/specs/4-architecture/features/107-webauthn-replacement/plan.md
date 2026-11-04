@@ -158,7 +158,8 @@ Follow-ups from the gate: none.
 - Native `PublicKeyCredential.parseCreationOptionsFromJSON()` / `toJSON()` instead of the vendored helper once Safari support is broad enough (N-107-06).
 
 ## Follow-ups from implementation
-- PostgreSQL/MySQL run of `2026_11_04_000001` (`uuid` → string `change()`, `dropColumn`) through CI.
+- PostgreSQL/MySQL run of `2026_11_04_000001` (`uuid` → string `change()`, `dropColumn`) through CI. First CI run (1a00d4601): PostgreSQL failed only in `testUserHandleBecomesUserIdOnRollback`, which compared the raw `user_id`. PostgreSQL returns its native `uuid` dashed, so the test now compares without dashes. MariaDB was cancelled by fail-fast at 1159/1288 with no failure.
+- Checked locally against throwaway containers (`postgres:18` on :55432, `mariadb:11` with the `mysql` driver on :53306, `vendor/bin/phpunit --configuration phpunit.ci.xml --no-coverage`): `WebAuthnCredentialMigrationTest` green on PostgreSQL, and `WebAuthnCredentialMigrationTest`, `WebAuthTest`, `WebAuthnCredentialsCheckTest` (54 tests) green on MariaDB. On MySQL/MariaDB the schema steps commit the test transaction early. The base class empties its fixture tables in `tearDown`, and `tearDown` re-runs `up()` if a test stopped after `down()`. The `mariadb` driver is not supported by Lychee (`2021_06_01_181900` throws), so MariaDB keeps `uuid` as `char(36)`.
 - Owner check on a real security key and a platform passkey (Touch ID / Windows Hello / Android) after deploy.
 
 ## PR #4957 review
