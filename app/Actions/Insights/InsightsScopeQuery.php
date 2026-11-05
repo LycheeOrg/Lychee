@@ -39,6 +39,41 @@ final class InsightsScopeQuery
 	}
 
 	/**
+	 * IDs of the photos of an album scope, ascending, in pages of at most
+	 * `$chunk` (Feature 108, NFR-108-01).
+	 *
+	 * Each page is an ordered range over `photo_album.photo_id`; the link's
+	 * album is tested by a correlated scalar subquery on its primary key,
+	 * which the planner runs per link instead of turning it into a semi-join
+	 * that it materialises and sorts again for every page. Every query binds
+	 * three values whatever the size of the tree. A photo linked to several
+	 * albums of the tree appears once: duplicates inside a page are dropped
+	 * and the next page starts after the page's last ID.
+	 *
+	 * @return \Generator<int,string[]>
+	 */
+	public static function photoIdPages(InsightsScope $scope, int $chunk): \Generator
+	{
+		$album_left = DB::table('albums as scope_albums')
+			->select('scope_albums._lft')
+			->whereColumn('scope_albums.id', '=', 'photo_album.album_id');
+		$album_left = DB::raw('(' . $album_left->toSql() . ')');
+		$last = '';
+		do {
+			$page = DB::table('photo_album')
+				->where('photo_album.photo_id', '>', $last)
+				->whereBetween($album_left, [$scope->album_left, $scope->album_right])
+				->orderBy('photo_album.photo_id')
+				->limit($chunk)
+				->pluck('photo_album.photo_id')
+				->all();
+			$last = $page[count($page) - 1] ?? $last;
+
+			yield array_values(array_unique($page));
+		} while (count($page) === $chunk);
+	}
+
+	/**
 	 * @param Builder $query a query over `albums` joined to `base_albums`
 	 */
 	public static function albums(Builder $query, InsightsScope $scope): Builder

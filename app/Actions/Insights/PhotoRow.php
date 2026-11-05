@@ -8,12 +8,15 @@
 
 namespace App\Actions\Insights;
 
+use App\Actions\Insights\Helpers\ExposureParser;
 use App\Services\Image\FileExtensionService;
 
 /**
  * One row of the Insights projection (Feature 085, NFR-085-06), with the
  * driver-specific values (booleans as 0/1 or true/false, numbers as strings)
- * normalised.
+ * normalised and the EXIF strings parsed once (Feature 108, NFR-108-03):
+ * ISO, aperture (f-number), shutter (seconds), focal length (mm) and
+ * duration (seconds) are positive numbers, `null` when unreadable.
  */
 final readonly class PhotoRow
 {
@@ -26,11 +29,11 @@ final readonly class PhotoRow
 		public ?string $make,
 		public ?string $model,
 		public ?string $lens,
-		public ?string $iso,
-		public ?string $aperture,
-		public ?string $shutter,
-		public ?string $focal,
-		public ?string $duration,
+		public ?float $iso,
+		public ?float $aperture,
+		public ?float $shutter,
+		public ?float $focal,
+		public ?float $duration,
 		public int $filesize,
 		public int $width,
 		public int $height,
@@ -52,11 +55,11 @@ final readonly class PhotoRow
 			make: $row->make,
 			model: $row->model,
 			lens: $row->lens,
-			iso: $row->iso,
-			aperture: $row->aperture,
-			shutter: $row->shutter,
-			focal: $row->focal,
-			duration: $row->duration,
+			iso: ExposureParser::iso($row->iso),
+			aperture: ExposureParser::aperture($row->aperture),
+			shutter: ExposureParser::shutter($row->shutter),
+			focal: ExposureParser::focal($row->focal),
+			duration: ExposureParser::duration($row->duration),
 			filesize: intval($row->filesize ?? 0),
 			width: intval($row->width ?? 0),
 			height: intval($row->height ?? 0),

@@ -175,6 +175,7 @@ RUN \
 	apt-get update && \
 	apt-get upgrade -qy && \
 	apt-get install -qy --no-install-recommends \
+    apt \
 	ca-certificates \
 	curl \
 	adduser \

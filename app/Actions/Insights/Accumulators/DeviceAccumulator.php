@@ -10,7 +10,6 @@ namespace App\Actions\Insights\Accumulators;
 
 use App\Actions\Insights\Helpers\Device;
 use App\Actions\Insights\Helpers\Distribution;
-use App\Actions\Insights\Helpers\ExposureParser;
 use App\Actions\Insights\PhotoRow;
 use App\Enum\DeviceCategory;
 use App\Http\Resources\Insights\DeviceEntryData;
@@ -75,7 +74,7 @@ final class DeviceAccumulator
 
 	private function addFocal(PhotoRow $row, Device $device): void
 	{
-		$focal = $row->is_video ? null : ExposureParser::focal($row->focal);
+		$focal = $row->is_video ? null : $row->focal;
 		if ($focal === null) {
 			return;
 		}

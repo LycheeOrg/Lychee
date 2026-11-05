@@ -9,7 +9,6 @@
 namespace App\Actions\Insights\Accumulators;
 
 use App\Actions\Insights\Helpers\Distribution;
-use App\Actions\Insights\Helpers\ExposureParser;
 use App\Actions\Insights\PhotoRow;
 use App\Http\Resources\Insights\DistributionData;
 use App\Http\Resources\Insights\ExposureData;
@@ -46,10 +45,10 @@ final class ExposureAccumulator
 			return;
 		}
 
-		$this->iso->add(ExposureParser::iso($row->iso));
-		$this->focal->add(ExposureParser::focal($row->focal));
-		$this->shutter->add(ExposureParser::shutter($row->shutter));
-		$this->aperture->add(ExposureParser::aperture($row->aperture));
+		$this->iso->add($row->iso);
+		$this->focal->add($row->focal);
+		$this->shutter->add($row->shutter);
+		$this->aperture->add($row->aperture);
 	}
 
 	public function toExposure(): ExposureData
@@ -66,7 +65,7 @@ final class ExposureAccumulator
 
 	private function addVideo(PhotoRow $row): void
 	{
-		$duration = ExposureParser::duration($row->duration);
+		$duration = $row->duration;
 		$this->video_length->add($duration === null ? null : round($duration));
 		$this->total_video_duration += $duration ?? 0.0;
 	}

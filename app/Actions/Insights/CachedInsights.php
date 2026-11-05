@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Cache;
  * Insights cached per (scope, period, library revision) for one hour
  * (Feature 085, NFR-085-06, ADR-085-03). Callers check the scope rights
  * before asking.
+ *
+ * The scope's years list does not depend on the period: it is kept apart
+ * under (scope, revision), stored by every computation and handed to the
+ * next one, so a Year or Range computation skips its years pass when the
+ * list is known (Feature 108, FR-108-03).
  */
 class CachedInsights
 {
@@ -30,8 +35,15 @@ class CachedInsights
 
 	public function get(InsightsScope $scope, InsightsPeriod $period): InsightsResource
 	{
-		$key = implode(':', ['insights', $scope->cacheKey(), $period->cacheKey(), sha1($this->revision->of($scope))]);
+		$revision = sha1($this->revision->of($scope));
+		$key = implode(':', ['insights', $scope->cacheKey(), $period->cacheKey(), $revision]);
+		$years_key = implode(':', ['insights-years', $scope->cacheKey(), $revision]);
 
-		return Cache::remember($key, self::TTL_SECONDS, fn () => $this->compute->do($scope, $period));
+		return Cache::remember($key, self::TTL_SECONDS, function () use ($scope, $period, $years_key): InsightsResource {
+			$insights = $this->compute->do($scope, $period, Cache::get($years_key));
+			Cache::put($years_key, $insights->years, self::TTL_SECONDS);
+
+			return $insights;
+		});
 	}
 }
