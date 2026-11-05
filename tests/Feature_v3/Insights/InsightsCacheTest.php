@@ -25,6 +25,7 @@ use App\Http\Resources\Insights\InsightsResource;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
@@ -178,6 +179,18 @@ class InsightsCacheTest extends BaseApiWithDataTest
 		$response->assertJsonPath('years', [2024, 2025]);
 	}
 
+	public function testKnownYearsSkipTheYearsPass(): void
+	{
+		$scope = InsightsScope::owner($this->photographer->id);
+		[$computed, $queries] = $this->countQueries(fn () => (new ComputeInsights())->do($scope, InsightsPeriod::year(2025)));
+		[$known, $queries_known] = $this->countQueries(fn () => (new ComputeInsights())->do($scope, InsightsPeriod::year(2025), [1999]));
+
+		self::assertSame([2024, 2025], $computed->years);
+		// Returned as given, and the one page of the years pass is not read.
+		self::assertSame([1999], $known->years);
+		self::assertSame($queries - 1, $queries_known);
+	}
+
 	public function testYearsFollowTheRevision(): void
 	{
 		$this->insights(['period' => 'library']);
@@ -187,6 +200,22 @@ class InsightsCacheTest extends BaseApiWithDataTest
 
 		self::assertSame([null, null], $this->known_years);
 		$response->assertJsonPath('years', [2023, 2024, 2025]);
+	}
+
+	/**
+	 * @param \Closure(): InsightsResource $compute
+	 *
+	 * @return array{0:InsightsResource,1:int}
+	 */
+	private function countQueries(\Closure $compute): array
+	{
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$insights = $compute();
+		$queries = count(DB::getQueryLog());
+		DB::disableQueryLog();
+
+		return [$insights, $queries];
 	}
 
 	/**

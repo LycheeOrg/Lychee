@@ -8,6 +8,7 @@ Open questions for [Feature 108](spec.md). Log every high- and medium-impact que
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-108-01~~ | 108 | High | What fails on the server: (A) owner shares error + scope/period + image/DB, (B) assume the 30 s Octane limit, (C) raise the limit first | Resolved (B, owner, 2026-11-04: spec Overview) | 2026-11-04 | 2026-11-04 |
 | ~~Q-108-02~~ | 108 | High | Fix: (A) linear streams, no schema change, (B) + index on `photos.taken_at`, (C) compute in a queued job | Resolved (A, owner, 2026-11-04: FR-108-01 … 03, NFR-108-01 … 04, ADR-085-03 amendment) | 2026-11-04 | 2026-11-04 |
+| ~~Q-108-03~~ | 108 | Medium | Edge rows of the album/people counts are buffered on MySQL: (A) keep one query and state the bound, (B) page by photo-ID ranges, (C) unbuffered read on MySQL | Resolved (B, owner, 2026-11-05: NFR-108-02, NFR-108-04, S-108-11, ADR-085-03 amendment) | 2026-11-05 | 2026-11-05 |
 
 ## Question Details
 
@@ -59,3 +60,29 @@ Measured causes (MariaDB `EXPLAIN`): (1) album scope: the `EXISTS` scope becomes
 - Spec impact: new API state, job, front-end polling; ADR-085-03 replaced.
 - Pros: no request ever runs the computation; immune to the time limit.
 - Cons: first view waits for the queue (sync queue on many installs gives no gain); more moving parts; the quadratic queries still cost the worker.
+
+### ~~Q-108-03~~ · Memory of the edge rows on MySQL
+
+**Status:** Resolved (B, owner, 2026-11-05): edge rows read by photo-ID ranges of at most one page of edge photos (NFR-108-02, NFR-108-04, S-108-11; ADR-085-03 amendment). Raised in the PR #4959 review (CodeRabbit).
+**Preferred option:** A – keep one query and state the bound
+
+**Question**
+`ComputeInsights::distinctInPeriod()` reads the edge rows of a Year or Range (album and people counts, NFR-108-02) with one `DISTINCT` query through `cursor()`. On MySQL/MariaDB PDO buffers the whole result when the statement runs, so these rows are held in memory at once; the docblock's "memory grows with the distinct values only" is wrong. The rows are the distinct (value, capture time, timezone) triples in the two 28-hour strips around the period's bounds (one 52-hour strip for a one-day range), not the library. Measured on the dev copy (scratchpad `edges.php`): at most 12 rows for any Year 2000–2026; 2,186 rows (≈ 0.15 MB) for a one-day range on the busiest day; for comparison the whole library as one buffered cursor is 65,083 rows, 4.2 MB. Should the edge read be bounded by a constant?
+
+**Option A (recommended) – keep one query, state the bound**
+- Idea: fix the docblock and NFR-108-04: the edge rows are held at once and grow with the capture times in the edge strips; the core values grow with albums and people.
+- Spec impact: NFR-108-04 wording.
+- Pros: two queries per count, plan unchanged, no new code; the bound depends on how many distinct capture times fall within 52 hours, which stays small in real libraries.
+- Cons: not constant: a library with hundreds of thousands of distinct capture times within one 52-hour span would hold them (≈ 70 bytes each).
+
+**Option B – page the edge rows by photo-ID ranges**
+- Idea: a pager over `photos` (keyset on `id`, edge filter, fixed bindings) yields ID ranges holding at most 1,000 edge photos; the edge query runs once per range with `photos.id BETWEEN`.
+- Spec impact: NFR-108-02 (query count) and NFR-108-04.
+- Pros: memory bounded by the page size times the links or faces per photo.
+- Cons: two more queries per 1,000 edge photos and per count; on the album scope the planner may drive each range query from the tree instead of the ID range and rescan the tree per page (needs `EXPLAIN`); more code.
+
+**Option C – unbuffered read on MySQL**
+- Idea: turn `PDO::MYSQL_ATTR_USE_BUFFERED_QUERY` off for the edge cursor only.
+- Spec impact: NFR-108-04.
+- Pros: constant memory, no extra query.
+- Cons: driver-specific branch; connection state to restore on error; no other query may run on the connection while the cursor is open.

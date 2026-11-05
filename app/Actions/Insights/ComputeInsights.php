@@ -36,9 +36,9 @@ use Illuminate\Support\Facades\DB;
  * of the original size variant) feeds every
  * accumulator. Capture times are read in local time; a Year or Range period
  * is narrowed in SQL to a widened UTC window and filtered exactly in PHP.
- * Album and people counts come from two queries each (Feature 108,
- * NFR-108-02); an album scope is streamed by pages of photo IDs
- * (NFR-108-01).
+ * Album and people counts read the core window in one query and the edge
+ * strips by pages of photo IDs (Feature 108, NFR-108-02); an album scope is
+ * streamed by pages of photo IDs (NFR-108-01).
  */
 class ComputeInsights
 {
@@ -250,30 +250,33 @@ class ComputeInsights
 	 * local time, within the period (Feature 108, NFR-108-02).
 	 *
 	 * The Library period is a plain distinct count. Otherwise one `DISTINCT`
-	 * reads the core window, inside the period in every timezone, and one
-	 * query reads the rest of the widened window, whose rows are kept when
-	 * their local date is in the period. Two queries whatever the number of
-	 * rows; memory grows with the distinct values only.
+	 * reads the core window, inside the period in every timezone; the photos
+	 * of the edge strips are read one page of IDs at a time (`PeriodEdges`),
+	 * each page bound by ID so the planner looks its photos up by primary key,
+	 * and their rows are kept when their local date is in the period. The
+	 * number of queries grows with the edge photos, not with links or faces;
+	 * memory grows with the distinct values plus the rows of one page
+	 * (NFR-108-04).
 	 *
 	 * @param \Closure(): Builder $query a fresh query joined to `photos`, scope applied
 	 */
 	private function distinctInPeriod(\Closure $query, string $column, InsightsPeriod $period): int
 	{
-		$window = $period->utcWindow();
 		$core = $period->utcCore();
-		if ($window === null || $core === null) {
+		if ($core === null) {
 			return $query()->distinct()->count($column);
 		}
 
 		$values = array_fill_keys($query()->whereBetween('photos.taken_at', $core)->distinct()->pluck($column)->all(), true);
-		$edges = $query()
-			->whereBetween('photos.taken_at', $window)
-			->whereNotBetween('photos.taken_at', $core)
-			->select([$column . ' as value', 'photos.taken_at', 'photos.taken_at_orig_tz'])
-			->distinct()
-			->cursor();
-		foreach ($edges as $row) {
-			$values[$row->value] ??= $this->belongs($period, $this->moment($row->taken_at, $row->taken_at_orig_tz)) ? true : null;
+		foreach (PeriodEdges::photoIdPages($period, $this->chunk) as $ids) {
+			$edges = $query()
+				->whereIn('photos.id', $ids)
+				->select([$column . ' as value', 'photos.taken_at', 'photos.taken_at_orig_tz'])
+				->distinct()
+				->get();
+			foreach ($edges as $row) {
+				$values[$row->value] ??= $this->belongs($period, $this->moment($row->taken_at, $row->taken_at_orig_tz)) ? true : null;
+			}
 		}
 
 		return count(array_filter($values));

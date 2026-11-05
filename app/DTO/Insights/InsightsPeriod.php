@@ -21,7 +21,8 @@ use Safe\DateTimeImmutable;
  */
 final readonly class InsightsPeriod
 {
-	private const MAX_OFFSET_HOURS = 14;
+	/** Widest offset from UTC the windows allow for; the clock reads any wider one as UTC (Feature 108, FR-108-04). */
+	public const MAX_OFFSET_HOURS = 14;
 
 	private function __construct(
 		public InsightsPeriodType $type,

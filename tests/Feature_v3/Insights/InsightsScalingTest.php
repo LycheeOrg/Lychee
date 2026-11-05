@@ -19,6 +19,7 @@
 namespace Tests\Feature_v3\Insights;
 
 use App\Actions\Insights\ComputeInsights;
+use App\Actions\Insights\PeriodEdges;
 use App\DTO\Insights\InsightsPeriod;
 use App\DTO\Insights\InsightsScope;
 use App\Http\Resources\Insights\InsightsResource;
@@ -26,6 +27,7 @@ use App\Models\Album;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\Photo;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -126,6 +128,60 @@ class InsightsScalingTest extends BaseApiWithDataTest
 		self::assertSame($before, $after);
 	}
 
+	public function testOffsetBeyondFourteenHoursCountsInItsUtcYear(): void
+	{
+		$scope = InsightsScope::owner($this->photographer->id);
+		$before = (new ComputeInsights())->do($scope, InsightsPeriod::year(2025));
+
+		// Stored as 2025-12-31 09:30 UTC: inside the core window of 2025, outside the window of 2026.
+		$album = Album::factory()->as_root()->owned_by($this->photographer)->create();
+		Photo::factory()->owned_by($this->photographer)->in($album)->create(['taken_at' => new Carbon('2026-01-01 00:30:00', '+15:00')]);
+		$after = (new ComputeInsights())->do($scope, InsightsPeriod::year(2025));
+
+		self::assertSame($before->overview->total + 1, $after->overview->total);
+		self::assertSame($before->overview->albums + 1, $after->overview->albums);
+	}
+
+	public function testEdgePagesHoldEachEdgePhotoOnce(): void
+	{
+		$period = InsightsPeriod::range('2025-01-01', '2025-01-01');
+		$expected = $this->edgePhotos($period)->pluck('photos.id')->sort()->values()->all();
+		// p1 and p2 at least (the base data may add more).
+		self::assertGreaterThanOrEqual(2, count($expected));
+
+		foreach ([1, 2] as $chunk) {
+			$ids = [];
+			foreach (PeriodEdges::photoIdPages($period, $chunk) as $page) {
+				self::assertGreaterThanOrEqual(1, count($page));
+				self::assertLessThanOrEqual($chunk, count($page));
+				$ids = [...$ids, ...$page];
+			}
+			sort($ids);
+
+			self::assertSame($expected, $ids);
+		}
+	}
+
+	public function testLibraryHasNoEdgePages(): void
+	{
+		self::assertSame([], iterator_to_array(PeriodEdges::photoIdPages(InsightsPeriod::library(), 1)));
+	}
+
+	public function testEdgeRowsAreReadOnePageOfPhotosAtATime(): void
+	{
+		$period = InsightsPeriod::range('2025-01-01', '2025-01-01');
+		$edge_photos = $this->edgePhotos($period)->count();
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		(new ComputeInsights(chunk: 1))->do(InsightsScope::wholeInstance(), $period, [2025]);
+		$edge_reads = array_filter(DB::getQueryLog(), fn (array $query) => str_contains(str_replace(['`', '"'], '', $query['query']), ' as value'));
+		DB::disableQueryLog();
+
+		// Albums and people: one edge read per photo of the edge strips each.
+		self::assertCount(2 * $edge_photos, $edge_reads);
+	}
+
 	public function testOneDayRangeCountsFromTheEdges(): void
 	{
 		$response = $this->actingAs($this->photographer)->getJsonV3('Insights', ['period' => 'range', 'from' => '2025-01-01', 'to' => '2025-01-01']);
@@ -163,6 +219,19 @@ class InsightsScalingTest extends BaseApiWithDataTest
 		DB::disableQueryLog();
 
 		return max($bindings);
+	}
+
+	/**
+	 * Photos of every owner in the edge strips of a Year or Range (NFR-108-02).
+	 */
+	private function edgePhotos(InsightsPeriod $period): Builder
+	{
+		$window = $period->utcWindow();
+		$core = $period->utcCore();
+		self::assertNotNull($window);
+		self::assertNotNull($core);
+
+		return DB::table('photos')->whereBetween('photos.taken_at', $window)->whereNotBetween('photos.taken_at', $core);
 	}
 
 	private function scope(string $name): InsightsScope

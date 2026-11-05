@@ -162,6 +162,7 @@ ENV PATH="/opt/imagemagick/bin:${PATH}"
 # hadolint ignore=DL3008,DL3009
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+    apt \
     linux-libc-dev \
     libimage-exiftool-perl \
     ffmpeg \

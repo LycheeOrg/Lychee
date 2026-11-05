@@ -75,5 +75,45 @@ _Last updated: 2026-11-05_
   - `php artisan test --filter=InsightsScalingTest`  
   - Insights feature classes, `make phpstan`, `vendor/bin/php-cs-fixer fix`
 
+- [x] T-108-13 – Tests for offsets beyond 14 h (FR-108-04, S-108-10).  
+  _Intent:_ `LocalCaptureTimeTest`: `+15:00` and `Asia/Manila` in 1800 keep the stored time (red), `Pacific/Kiritimati` (+14:00) is shifted (green); `InsightsScalingTest::testOffsetBeyondFourteenHoursCountsInItsUtcYear`: a `+15:00` photo at local 2026-01-01 00:30 adds one to the 2025 total and album count (red: total +0, albums +1).  
+  _Verification commands:_  
+  - `php artisan test --filter=LocalCaptureTimeTest`  
+  - `php artisan test --filter=InsightsScalingTest`
+
+- [x] T-108-14 – Clock reads offsets beyond 14 h as UTC (FR-108-04, S-108-10).  
+  _Intent:_ `LocalCaptureTime::shift()` keeps the UTC time when the zone's offset at that instant exceeds `InsightsPeriod::MAX_OFFSET_HOURS` (now public, shared with the windows).  
+  _Verification commands:_  
+  - `php artisan test --filter=LocalCaptureTimeTest`  
+  - `php artisan test --filter=InsightsScalingTest`, every Insights class, `make phpstan`
+
+- [x] T-108-15 – Known years skip the years pass (FR-108-03, S-108-06).  
+  _Intent:_ `InsightsCacheTest::testKnownYearsSkipTheYearsPass`: `do()` with known years returns them as given and runs one query fewer. Green on the current code; red against a mutant that ignores `$known_years` (restored).  
+  _Verification commands:_  
+  - `php artisan test --filter=InsightsCacheTest`
+
+- [x] T-108-16 – PR #4959 review docs.  
+  _Intent:_ plan (I7, gate claims of NFR-108-01 limited to MariaDB, declined review items), Q-108-03 logged, Feature 085 FR-085-15, ADR-085-03 amendment, knowledge map, roadmap; `distinctInPeriod()` docblock no longer claims memory grows with the distinct values only.  
+  _Verification commands:_  
+  - `vendor/bin/php-cs-fixer fix`  
+  - `make phpstan`
+
+- [x] T-108-17 – Tests for paged edge reads (NFR-108-02, NFR-108-04, S-108-11).  
+  _Intent:_ `InsightsScalingTest::testEdgePagesHoldEachEdgePhotoOnce` (page sizes 1 and 2), `testLibraryHasNoEdgePages`, `testEdgeRowsAreReadOnePageOfPhotosAtATime` (page size 1: one edge read per edge photo and count). Red: class missing, 2 edge reads instead of 4.  
+  _Verification commands:_  
+  - `php artisan test --filter=InsightsScalingTest`
+
+- [x] T-108-18 – Edge photos by pages of IDs (NFR-108-02, NFR-108-04, S-108-11; Q-108-03 B).  
+  _Intent:_ `PeriodEdges::photoIdPages()` (keyset over `photos.id` with the edge filter, five bindings); `ComputeInsights::distinctInPeriod()` reads each page with `photos.id IN` the page instead of one `cursor()` over the edge strips. A first cut with `[first, last]` ranges was dropped after `EXPLAIN` (MariaDB walked every link of the tree per range).  
+  _Verification commands:_  
+  - `php artisan test --filter=InsightsScalingTest`, every Insights class, `make phpstan`, `vendor/bin/php-cs-fixer fix`  
+  - scratchpad `explain6.php 2019-06-08`, `bench.php`/`bench_base.php` (8 cases)
+
+- [x] T-108-19 – Q-108-03 docs and measurements.  
+  _Intent:_ Q-108-03 resolved, spec NFR-108-02/04 and S-108-11, ADR-085-03 amendment, knowledge map, roadmap, plan (I8, drift gate, measurements, intent log).  
+  _Verification commands:_  
+  - `vendor/bin/php-cs-fixer fix`  
+  - `make phpstan`
+
 ## Notes / TODOs
 - Insights test classes: `InsightsAggregateChartsTest`, `InsightsAggregateOverviewTest`, `InsightsAlbumScopeTest`, `InsightsCacheTest`, `InsightsFormatsTest`, `InsightsRightsTest`, `InsightsTimelineTest`, `StatisticsRemovedTest`, `InsightsScalingTest`; unit: `DeviceNormaliserTest`, `LocalCaptureTimeTest`, `DistributionTest`, `StreakCalculatorTest`, `ExposureParserTest`, `AspectRatioClassifierTest`, `MilestoneFinderTest`, `InsightsPeriodTest`.

@@ -123,4 +123,31 @@ class LocalCaptureTimeTest extends AbstractTestCase
 		self::assertSame(0, $moment->hour);
 		self::assertSame('00:15', $moment->time);
 	}
+
+	public function testOffsetBeyondFourteenHoursKeepsTheStoredTime(): void
+	{
+		// +15:00 would give 2026-01-01 00:30, outside the window of either year (Feature 108, FR-108-04).
+		$moment = (new LocalCaptureTime())->convert('2025-12-31 09:30:00', '+15:00');
+
+		self::assertSame('2025-12-31', $moment->date);
+		self::assertSame(2025, $moment->year);
+		self::assertSame(9, $moment->hour);
+	}
+
+	public function testLocalMeanTimeBeyondFourteenHoursKeepsTheStoredTime(): void
+	{
+		// Manila kept American dates (-15:56) until 1845.
+		$moment = (new LocalCaptureTime())->convert('1800-06-01 12:00:00', 'Asia/Manila');
+
+		self::assertSame('1800-06-01', $moment->date);
+		self::assertSame(12, $moment->hour);
+	}
+
+	public function testFourteenHoursIsAValidOffset(): void
+	{
+		$moment = (new LocalCaptureTime())->convert('2025-06-01 12:00:00', 'Pacific/Kiritimati');
+
+		self::assertSame('2025-06-02', $moment->date);
+		self::assertSame(2, $moment->hour);
+	}
 }
