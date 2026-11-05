@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Implemented |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -38,10 +38,10 @@
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-108-01 | Album scope streams: the IDs of the tree's albums are read once (`albums` by nested-set bounds); photo IDs are paged by keyset on `photo_album.photo_id` filtered by that ID list (`ORDER BY photo_id LIMIT n`, no sort on MariaDB), deduplicated per page; each page loads its photos by ID in ascending ID order. No paged query carries the `EXISTS` scope of `InsightsScopeQuery::photos()`. Owner and whole-instance scopes keep `lazyById` on `photos.id`. | The `EXISTS` scope becomes a semi-join that MariaDB materialises and sorts (`Start temporary … Using filesort`) on every page. | `EXPLAIN` on the dev copy; album scope of the largest tree 12.7 s → ≤ 3 s (Xdebug off). | `InsightsScopeQuery`, `ComputeInsights` | Q-108-02 A |
+| NFR-108-01 | Album scope streams: photo IDs are paged by keyset on `photo_album.photo_id` (`ORDER BY photo_id LIMIT n`, no sort on MariaDB); each link's album is tested by a correlated scalar subquery on `albums` by primary key (`_lft` between the tree's bounds), which the planner runs per link instead of a semi-join; IDs are deduplicated per page; each page loads its photos by ID in ascending ID order. Every query binds a fixed number of values whatever the size of the tree: no list of album IDs is bound. No paged query carries the `EXISTS` scope of `InsightsScopeQuery::photos()`. Owner and whole-instance scopes keep `lazyById` on `photos.id`. | The `EXISTS` scope becomes a semi-join that MariaDB materialises and sorts (`Start temporary … Using filesort`) on every page. | `EXPLAIN` on the dev copy; album scope of the largest tree 12.7 s → ≤ 3 s (Xdebug off). | `InsightsScopeQuery`, `ComputeInsights` | Q-108-02 A |
 | NFR-108-02 | Albums with a photo in a Year or Range period and distinct people of the period each take two queries whatever the number of links or faces: one `DISTINCT` over the core window — UTC from `from` 00:00:00 + 14 h to `to` 23:59:59 − 14 h, inside the period in every timezone — and one over the rest of the widened window (`NOT BETWEEN` the core), whose rows are kept when their local date is in the period. For a period shorter than 28 h the core is inverted: `BETWEEN` matches nothing and `NOT BETWEEN` everything, so no branch is needed. The Library period keeps its plain `COUNT` queries. | Keyset pages over `photo_album ⋈ photos` with an `OR` cursor and an unindexed `taken_at` filter rebuild and sort the whole join on every page. | Query count independent of link and face count (S-108-03); Range 2005–2026 9.0 s → ≤ 3 s on the dev copy. | `InsightsPeriod::utcCore()` | Q-108-02 A |
 | NFR-108-03 | Per-photo PHP: a capture time is parsed once with `Safe\DateTimeImmutable`, shifted on its native inner object and read with one `format()`; the Monday of its week comes from integer day arithmetic. `PhotoRow` holds the parsed ISO, aperture, shutter, focal length and duration, so each EXIF string is parsed once per photo. | Local time costs 7 µs per photo (four date parses per row inside `Safe\DateTimeImmutable`); three accumulators re-parse the same strings. | PHP share of the Library pass on the dev copy ≤ 0.8 s and Library ≤ 1.5 s (Xdebug off); the remaining cost is fetching the rows (≈ 0.6 s), which the single-pass design keeps. `LocalCaptureTimeTest`, `ExposureParserTest` green. | `LocalCaptureTime`, `PhotoRow`, accumulators | Q-108-02 A |
-| NFR-108-04 | No migration and no new dependency. Memory stays flat in the library size: the album ID list grows with the albums of the tree, the ID sets of NFR-108-02 with albums and people, not with photos. On SQLite the album ID list is bound as parameters, which limits an album scope to trees of fewer than 32,000 albums. | Q-108-02 A. | Peak memory on the dev copy ≤ 30 MB per computation. | – | Q-108-02 A |
+| NFR-108-04 | No migration and no new dependency. Memory stays flat in the library size: the ID sets of NFR-108-02 grow with albums and people, not with photos. No query binds more values than the page size (1,000) plus a fixed number, so no driver's parameter limit (SQLite 32,766, PostgreSQL and MySQL 65,535) can be reached. | Q-108-02 A; owner review 2026-11-05 (unbounded `whereIn`). | Peak memory on the dev copy ≤ 30 MB per computation; S-108-09. | – | Q-108-02 A |
 | NFR-108-05 | MySQL/MariaDB, PostgreSQL and SQLite return identical aggregates (NFR-085-05). | Supported drivers. | Feature tests on SQLite locally, CI on the others. | – | Coding conventions |
 
 ## Branch & Scenario Matrix
@@ -56,10 +56,11 @@
 | S-108-06 | A Year request after a Library request at the same revision reuses the years list; after a photo is added the list is computed again. |
 | S-108-07 | Local time conversion is unchanged, including a Monday before 1970 and a week starting in the previous year. |
 | S-108-08 | `InsightsPeriod::utcCore()`: Year 2025 → `2025-01-01 14:00:00` … `2025-12-31 09:59:59`; one-day Range → start after end; Library → null. |
+| S-108-09 | Album scope: adding albums to the tree does not change the largest number of values bound by any query of the computation. |
 
 ## Test Strategy
 - **Models / Actions:** unit tests for `InsightsPeriod::utcCore()` (S-108-08) and new `LocalCaptureTime` cases (S-108-07); `ExposureParserTest` unchanged.
-- **REST API (v3):** new `InsightsScalingTest` (S-108-01 … 03, S-108-05) on the `InsightsDataset` plus the album-scope additions; `InsightsCacheTest` gains S-108-06; all Feature 085 Insights classes stay green (S-108-04).
+- **REST API (v3):** new `InsightsScalingTest` (S-108-01 … 03, S-108-05, S-108-09) on the `InsightsDataset` plus the album-scope additions; `InsightsCacheTest` gains S-108-06; all Feature 085 Insights classes stay green (S-108-04).
 - **Artisan commands:** none.
 - **Frontend (v7/v8):** none.
 - **Docs/Contracts:** no resource change, no `typescript:transform`.

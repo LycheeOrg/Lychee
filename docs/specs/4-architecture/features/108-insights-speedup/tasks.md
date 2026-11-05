@@ -1,7 +1,7 @@
 # Feature 108 Tasks – Insights Speedup
 
 _Status: Done_  
-_Last updated: 2026-11-04_
+_Last updated: 2026-11-05_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -63,6 +63,17 @@ _Last updated: 2026-11-04_
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
   - `make phpstan`
+
+- [x] T-108-11 – Bounded-parameters test (NFR-108-04, S-108-09).  
+  _Intent:_ `InsightsScalingTest::testAlbumScopeBindsAFixedNumberOfParameters`: adding 5 albums to the tree leaves the largest binding count of every query unchanged. Red before T-108-12 (7 → 8).  
+  _Verification commands:_  
+  - `php artisan test --filter=InsightsScalingTest`
+
+- [x] T-108-12 – Album-scope pager without an album ID list (NFR-108-01, NFR-108-04, S-108-09).  
+  _Intent:_ `InsightsScopeQuery::photoIdPages()` tests the link's album with a correlated `_lft` subquery (builder-compiled, 3 bindings); docs (spec, plan, ADR-085-03 amendment, knowledge map, roadmap).  
+  _Verification commands:_  
+  - `php artisan test --filter=InsightsScalingTest`  
+  - Insights feature classes, `make phpstan`, `vendor/bin/php-cs-fixer fix`
 
 ## Notes / TODOs
 - Insights test classes: `InsightsAggregateChartsTest`, `InsightsAggregateOverviewTest`, `InsightsAlbumScopeTest`, `InsightsCacheTest`, `InsightsFormatsTest`, `InsightsRightsTest`, `InsightsTimelineTest`, `StatisticsRemovedTest`, `InsightsScalingTest`; unit: `DeviceNormaliserTest`, `LocalCaptureTimeTest`, `DistributionTest`, `StreakCalculatorTest`, `ExposureParserTest`, `AspectRatioClassifierTest`, `MilestoneFinderTest`, `InsightsPeriodTest`.

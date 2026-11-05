@@ -115,6 +115,17 @@ class InsightsScalingTest extends BaseApiWithDataTest
 		self::assertSame($queries_before, $queries_after);
 	}
 
+	public function testAlbumScopeBindsAFixedNumberOfParameters(): void
+	{
+		$before = $this->maxBindings($this->scope('album'));
+
+		Album::factory()->children_of($this->album_a1)->owned_by($this->photographer)->count(5)->create();
+		$after = $this->maxBindings($this->scope('album'));
+
+		// Every query binds as many values with 7 albums in the tree as with 2.
+		self::assertSame($before, $after);
+	}
+
 	public function testOneDayRangeCountsFromTheEdges(): void
 	{
 		$response = $this->actingAs($this->photographer)->getJsonV3('Insights', ['period' => 'range', 'from' => '2025-01-01', 'to' => '2025-01-01']);
@@ -138,6 +149,20 @@ class InsightsScalingTest extends BaseApiWithDataTest
 		DB::disableQueryLog();
 
 		return [$insights, $queries];
+	}
+
+	/**
+	 * Largest number of bound values of one query while computing the scope's Year 2025.
+	 */
+	private function maxBindings(InsightsScope $scope): int
+	{
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		(new ComputeInsights(chunk: 1))->do($scope, InsightsPeriod::year(2025));
+		$bindings = array_map(fn (array $query) => count($query['bindings']), DB::getQueryLog());
+		DB::disableQueryLog();
+
+		return max($bindings);
 	}
 
 	private function scope(string $name): InsightsScope

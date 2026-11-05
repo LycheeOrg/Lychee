@@ -21,11 +21,11 @@ Phase 1 of Insights needs counts by local day, week, month, weekday and hour, st
 
 On about 70,000 photos two parts of the decision grew with the square of the photos involved and crossed the 30 s Octane request limit: the album scope (`EXISTS` semi-join materialised and sorted again on every `lazyById` page) and the album and people counts of a Year or Range (keyset pages over `photo_album ⋈ photos` sorted again on every page). Without schema change:
 
-- An album scope reads its tree's album IDs once and pages its photo IDs by keyset on `photo_album.photo_id` filtered by that list, then loads each page by ID (NFR-108-01). Owner and whole-instance scopes keep `lazyById`.
+- An album scope pages its photo IDs by keyset on `photo_album.photo_id`, testing each link's album with a correlated scalar subquery on `albums` (primary key, `_lft` within the tree), then loads each page by ID (NFR-108-01). Every query binds a fixed number of values, never a list that grows with the tree (NFR-108-04). Owner and whole-instance scopes keep `lazyById`.
 - Albums with a photo in the period and distinct people take two queries each: one `DISTINCT` over the core UTC window — the period narrowed by 14 hours on each side, inside the period in every timezone — and one over the rest of the widened window, whose rows are checked in PHP (NFR-108-02). They are no longer collected as streamed ID sets.
 - The scope's years list is cached under (scope, revision) beside the aggregates, so Year and Range reuse it instead of streaming the scope again (FR-108-03).
 
-The aggregates, the cache key and the revision are unchanged. Measured on the dev copy (MariaDB 11.8, 67,790 photos): album scope 12.3 s → 1.7 s, Range 2005–2026 9.4 s → 1.9 s, Library 1.8 s → 1.3 s.
+The aggregates, the cache key and the revision are unchanged. Measured on the dev copy (MariaDB 11.8, 67,790 photos): album scope 12.3 s → 1.6 s, Range 2005–2026 9.4 s → 1.9 s, Library 1.8 s → 1.3 s.
 
 ## Consequences
 

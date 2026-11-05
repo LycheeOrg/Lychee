@@ -2,7 +2,7 @@
 
 _Linked specification:_ [spec.md](spec.md)  
 _Status:_ Implemented  
-_Last updated:_ 2026-11-04
+_Last updated:_ 2026-11-05
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -20,8 +20,8 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 ## Assumptions & Risks
 - **Assumptions:** the server failure is the Octane time limit (Q-108-01 B).
 - **Risks / Mitigations:**
-  - PostgreSQL may plan the `photo_album` ID-list page as a bitmap scan plus top-N sort instead of an ordered index scan: still far cheaper than the materialised semi-join; CI checks the results, not the plan. Follow-up if a PostgreSQL user reports it.
-  - SQLite bound-parameter limit (32,766) caps album trees at about 32,000 albums (NFR-108-04).
+  - PostgreSQL may plan the album-scope page differently (the correlated `_lft` subquery as a SubPlan per link is expected): CI checks the results, not the plan. Follow-up if a PostgreSQL user reports it.
+  - Bound parameters: no query may bind a list that grows with the library or the tree (NFR-108-04, S-108-09). A first version bound the tree's album IDs (`whereIn`), found in owner review on 2026-11-05 and replaced by the correlated subquery (I6).
   - Iteration order decides ties (`day_photos`, device "last" on equal capture time): pages keep ascending photo ID, as `lazyById` did (FR-108-02 test with page size 1).
 
 ## Increment Map
@@ -46,6 +46,11 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 5. **I5 – Docs, measurements, quality gate**
    - _Steps:_ NFR-085-06, ADR-085-03 amendment, knowledge map, roadmap; after-measurements; `vendor/bin/php-cs-fixer fix`, `make phpstan`; drift gate; commit command for the owner.
 
+6. **I6 – Bounded parameters (owner review 2026-11-05)**
+   - _Goal:_ NFR-108-01/04, S-108-09: no unbounded `whereIn`.
+   - _Steps:_ test first (`testAlbumScopeBindsAFixedNumberOfParameters`, red: 7 → 8 bindings after adding 5 albums), then `photoIdPages()` tests the link's album with a correlated `_lft` subquery instead of binding the tree's album IDs.
+   - _Commands:_ `php artisan test --filter=InsightsScalingTest`, Insights feature classes, `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -58,6 +63,7 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 | S-108-06 | I1, I3 / T-108-03, T-108-07 | `InsightsCacheTest` |
 | S-108-07 | I1, I4 / T-108-01, T-108-08 | `LocalCaptureTimeTest` |
 | S-108-08 | I1, I2 / T-108-01, T-108-04 | `InsightsPeriodTest` |
+| S-108-09 | I6 / T-108-11, T-108-12 | `InsightsScalingTest::testAlbumScopeBindsAFixedNumberOfParameters` |
 
 ## Analysis Gate
 2026-11-04, agent review against `analysis-gate-checklist.md`:
@@ -82,23 +88,24 @@ Dev copy (MariaDB 11.8, 67,790 photos), `php -d xdebug.mode=off -d opcache.enabl
 | Whole instance, Year 2024 | 1.79 s | 0.83 s (0.62 s with years cached) | 81 q / 0.48 s | 21 MB |
 | Whole instance, Range 2005–2026 | 9.36 s | 1.92 s | 135 q / 0.94 s | 23 MB |
 | Owner 1 (60,695 photos), Library | 1.94 s | 1.65 s | 64 q / 0.73 s | 23 MB |
-| Album scope, largest tree (47,707), Library | 12.34 s | 1.66 s | 102 q / 1.02 s | 25 MB |
-| Album scope, largest tree, Year 2024 | 3.57 s | 1.93 s (1.14 s with years cached) | 203 q / 1.57 s | 23 MB |
+| Album scope, largest tree (47,707), Library | 12.34 s | 1.64 s | 101 q / 0.94 s | 23 MB |
+| Album scope, largest tree, Year 2024 | 3.57 s | 1.44 s | 201 q / 1.08 s | 21 MB |
 
-PHP per Library pass (67,790 rows): local time 0.47 → 0.20 s, `PhotoRow` 0.07 → 0.18 s (now parses EXIF), exposure 0.16 → 0.06 s, timeline 0.15 → 0.06 s, devices 0.14 → 0.11 s; total ≈ 1.21 → 0.73 s. Fetching the rows (SQL + hydration) ≈ 0.6 s is now the largest part. NFR-108-03 first aimed at Library ≤ 1.2 s; restated at ≤ 1.5 s / ≤ 0.8 s PHP after measuring (low-impact, agent).
+PHP per Library pass (67,790 rows): local time 0.47 → 0.20 s, `PhotoRow` 0.07 → 0.18 s (now parses EXIF), exposure 0.16 → 0.06 s, timeline 0.15 → 0.06 s, devices 0.14 → 0.11 s; total ≈ 1.21 → 0.73 s. Fetching the rows (SQL + hydration) ≈ 0.6 s is now the largest part. Album-scope rows measured after I6 (correlated subquery): the page query walks `photo_album` in `photo_id` order with a `DEPENDENT SUBQUERY scope_albums eq_ref PRIMARY` and binds 3 values; all 49 pages of the largest tree take 0.12 s (ID-list version: 0.43 s). NFR-108-03 first aimed at Library ≤ 1.2 s; restated at ≤ 1.5 s / ≤ 0.8 s PHP after measuring (low-impact, agent).
 
 ## Implementation Drift Gate
 2026-11-04, agent:
-- Preconditions: T-108-01 … 09 `[x]`; quality gate green (below).
+- Preconditions: T-108-01 … 12 `[x]`; quality gate green (below).
 - FR-108-01 → Feature 085 classes unchanged and green (`InsightsAggregateOverviewTest`, `InsightsAggregateChartsTest`, `InsightsTimelineTest`, `InsightsFormatsTest`, `InsightsAlbumScopeTest`, `InsightsRightsTest`, `InsightsCacheTest`, `StatisticsRemovedTest`) + identical hashes on the dev copy. FR-108-02 → `InsightsScalingTest::testPageSizeDoesNotChangeTheResult` (16 cases), `testPhotoInTwoAlbumsOfTheTreeCountsOnce`. FR-108-03 → `InsightsCacheTest::testYearReusesTheYearsOfTheLibrary`, `testYearStoresTheYearsForTheNextYear`, `testYearsFollowTheRevision`; `CachedInsights::get()`.
-- NFR-108-01 → `InsightsScopeQuery::photoIdPages()`, `ComputeInsights::stream()`/`albumStream()`; `EXPLAIN` of the page: `photo_album range photo_album_photo_id_index Using where; Using index` (no filesort). NFR-108-02 → `InsightsPeriod::utcCore()` (`InsightsPeriodTest`), `ComputeInsights::distinctInPeriod()`, `testSideCountsDoNotGrowWithLinksOrFaces`, `testOneDayRangeCountsFromTheEdges`, Feature 085 boundary tests (S-108-04). NFR-108-03 → `LocalCaptureTime::convert()`/`weekStart()` (`LocalCaptureTimeTest` + 4 cases), `PhotoRow` parsed fields. NFR-108-04 → no migration, no dependency, peak ≤ 25 MB. NFR-108-05 → SQLite tests here, MySQL/PostgreSQL in CI.
-- Divergence: NFR-108-03 budget restated after measurement (above). No undocumented work.
+- NFR-108-01 → `InsightsScopeQuery::photoIdPages()`, `ComputeInsights::stream()`/`albumStream()`; `EXPLAIN` of the page: `photo_album range photo_album_photo_id_index Using where; Using index` + `DEPENDENT SUBQUERY scope_albums eq_ref PRIMARY` (no filesort, 3 bindings). NFR-108-02 → `InsightsPeriod::utcCore()` (`InsightsPeriodTest`), `ComputeInsights::distinctInPeriod()`, `testSideCountsDoNotGrowWithLinksOrFaces`, `testOneDayRangeCountsFromTheEdges`, Feature 085 boundary tests (S-108-04). NFR-108-03 → `LocalCaptureTime::convert()`/`weekStart()` (`LocalCaptureTimeTest` + 4 cases), `PhotoRow` parsed fields. NFR-108-04 → no migration, no dependency, peak ≤ 25 MB; bounded parameters by `testAlbumScopeBindsAFixedNumberOfParameters` (S-108-09). NFR-108-05 → SQLite tests here, MySQL/PostgreSQL in CI.
+- Divergence: NFR-108-03 budget restated after measurement (above). Owner review 2026-11-05: the album ID `whereIn` was unbounded (crash on large trees); fixed in I6 with a regression test. No undocumented work.
 - Coverage: success (equal aggregates), edge (page boundaries, one-day range, boundary photos) and cache-miss branches tested.
-- Quality gate: `vendor/bin/php-cs-fixer fix` (0 files), `make phpstan` (no errors), 15 Insights test classes (152 tests) green, run one at a time.
-- Lesson: `lazyById` over a query whose plan sorts (semi-join, `OR` keyset, unindexed filter) costs a full sort per page; check `EXPLAIN` of one page, not only of the query.
+- Quality gate (after I6): `vendor/bin/php-cs-fixer fix` (0 files), `make phpstan` (no errors), 15 Insights test classes (153 tests) green, run one at a time; dev-copy hashes of the album-scope cases still equal `HEAD`.
+- Lesson: `lazyById` over a query whose plan sorts (semi-join, `OR` keyset, unindexed filter) costs a full sort per page; check `EXPLAIN` of one page, not only of the query. Never bind a list whose length grows with the data (`whereIn` of album IDs): a correlated subquery on a primary key keeps the ordered scan and a fixed parameter count.
 
 ## Intent Log
 - 2026-11-04: owner report "insights way too slow on ~70K photos", then "not reproducible locally but crashes on the server". Profiled `ComputeInsights` on the dev copy with read-only scratchpad scripts (`profile*.php`, `explain*.php`, `split.php`, `clock.php`, `proto.php`). Owner answered "B A": Q-108-01 B, Q-108-02 A. Spec/plan/tasks, analysis gate, tests first (red on the missing `chunk`/years API), then I2 … I4; `EXPLAIN` variants of the album page in the scratchpad (`explain3.php`: ID list → ordered `photo_id` range, subquery → filesort); before/after hashes via `bench.php`/`bench_base.php`.
+- 2026-11-05: owner review "you are doing whereIn() with unbounded parameters. This can crash." → I6: regression test (red 7 → 8), correlated `_lft` subquery (`explain4.php`, `explain5.php`: ordered scan, 3 bindings, 0.12 s for the largest tree), hashes rechecked.
 
 ## Follow-ups / Backlog
 - Check the album-scope page plan on PostgreSQL with a large library.
