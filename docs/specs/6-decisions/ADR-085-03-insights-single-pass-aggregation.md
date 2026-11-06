@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-05
 - **Related features/specs:** Feature 085 (docs/specs/4-architecture/features/085-library-insights/spec.md), Feature 108 (docs/specs/4-architecture/features/108-insights-speedup/spec.md)
-- **Related open questions:** Q-085-07, Q-085-08, Q-108-01, Q-108-02, Q-108-03
+- **Related open questions:** Q-085-07, Q-085-08, Q-108-01, Q-108-02, Q-108-03, Q-108-04, Q-108-05, Q-108-06
 
 ## Context
 
@@ -27,6 +27,15 @@ On about 70,000 photos two parts of the decision grew with the square of the pho
 - A capture time whose timezone is more than 14 hours from UTC at that instant (an offset such as `+15:00`, or a local mean time before standard time) is read in UTC, so the widened and core windows hold for every stored value (FR-108-04).
 
 The aggregates, the cache key and the revision are unchanged. Measured on the dev copy (MariaDB 11.8, 67,790 photos): album scope 12.3 s → 1.6 s, Range 2005–2026 9.4 s → 1.9 s, Library 1.8 s → 1.3 s.
+
+## Amendment 2026-11-06 (Feature 108, Q-108-04, Q-108-05 A)
+
+With the 2026-11-04 amendment deployed, a server with 85,743 photos (MariaDB 11.8.9, default 128 MB buffer pool) still crossed the 30 s limit inside the owner Library stream. A dump of that server showed why: the stream reads each photo's original size variant from its clustered `size_variants` row, which photo IDs (random strings) reach in random `size_variants.id` order, and the pass no longer fits the buffer pool, so every pass reads thousands of pages from disk. Decision:
+
+- The index `size_variants (photo_id, type, ratio)` is widened to `(photo_id, type, ratio, filesize, width, height)` (NFR-108-06). The projection's left join then reads the originals from the index alone, in photo-ID order like every other read of the pass; Insights code is unchanged. The widened index replaces the old one rather than adding a fourth index on `size_variants`; queries on the `(photo_id, type, ratio)` prefix keep their plans.
+- The single pass remains linear in the photos of the scope. Libraries ten to fifty times this size need a different computation (background result, SQL aggregation over `taken_key`, or incremental aggregates): Q-108-06, deferred.
+
+Measured on the server dump (MariaDB 11.8): owner Library 2.74 s → 1.56 s with 6,447 → 0 disk page reads when repeated (21,561 → 2,314 cold), identical results.
 
 ## Consequences
 

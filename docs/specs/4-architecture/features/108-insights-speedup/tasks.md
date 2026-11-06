@@ -1,7 +1,7 @@
 # Feature 108 Tasks – Insights Speedup
 
-_Status: Done_  
-_Last updated: 2026-11-05_
+_Status: In progress_  
+_Last updated: 2026-11-06_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -111,6 +111,27 @@ _Last updated: 2026-11-05_
 
 - [x] T-108-19 – Q-108-03 docs and measurements.  
   _Intent:_ Q-108-03 resolved, spec NFR-108-02/04 and S-108-11, ADR-085-03 amendment, knowledge map, roadmap, plan (I8, drift gate, measurements, intent log).  
+  _Verification commands:_  
+  - `vendor/bin/php-cs-fixer fix`  
+  - `make phpstan`
+
+- [x] T-108-20 – Migration test for the widened index (NFR-108-06, S-108-12).  
+  _Intent:_ `tests/Feature_v3/Insights/SizeVariantsOriginalsIndexMigrationTest.php`: after the migrations `size_variants` has `(photo_id, type, ratio, filesize, width, height)` and no index on exactly `(photo_id, type, ratio)`; `down()` restores the old index, `up()` widens it again; `up()` over the wide index keeps one (added with T-108-21); schema restored in `tearDown()` (MySQL commits DDL). Red: index and migration file missing.  
+  _Verification commands:_  
+  - `php artisan test --filter=SizeVariantsOriginalsIndexMigrationTest`
+
+- [x] T-108-21 – Migration `2026_11_06_000001_widen_size_variants_ratio_index` (NFR-108-06, N-108-01, S-108-12; Q-108-05 A).  
+  _Intent:_ `OptimizeTables::dropIndexIfExists()` for both index names (owner: use the helper, as in `2026_11_01_000001_add_month_day_key_to_photos`), then add `size_variants_photo_id_type_ratio_filesize_width_height_index`; `down()` the reverse. `up()` over an existing wide index keeps one index (`testUpOverTheWideIndexKeepsOneIndex`).  
+  _Verification commands:_  
+  - `php artisan test --filter=SizeVariantsOriginalsIndexMigrationTest`  
+  - `php artisan test --filter=InsightsFormatsTest`, `--filter=InsightsAggregateOverviewTest`, `--filter=InsightsTimelineTest`, `--filter=InsightsScalingTest`, `--filter=PhotoSearchTest`, `--filter=AlbumMapHeaderTest`
+
+- [ ] T-108-22 – Server-dump validation (NFR-108-06).  
+  _Intent:_ on the dev database (server dump, hand-made wide index in place: `up()` drops and re-adds it) `php artisan migrate`, then `bench.php` (six cases, hashes equal to before), `explain.php`, `ratioq.php`; measurements in spec appendix and plan.  
+  _Verification commands:_ scratchpad `bench.php`, `explain.php`, `ratioq.php` (`php -d xdebug.mode=off`).
+
+- [ ] T-108-23 – Docs and quality gate (NFR-108-06).  
+  _Intent:_ knowledge map, roadmap, ADR-085-03 amendment, drift gate addendum; `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit command for the owner.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
   - `make phpstan`
