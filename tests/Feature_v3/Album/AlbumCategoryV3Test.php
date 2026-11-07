@@ -34,17 +34,11 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class AlbumCategoryV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Flag gate (S-062-18) ──────────────────────────────────────────
 
 	public function testFlagOffReturns403ForEveryCategoryRoute(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/smart'));
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/tags'));

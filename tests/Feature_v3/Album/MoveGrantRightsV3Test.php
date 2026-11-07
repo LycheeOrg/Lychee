@@ -31,12 +31,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class MoveGrantRightsV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	private function makeParentWithChildren(): array
 	{
 		$parent = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();

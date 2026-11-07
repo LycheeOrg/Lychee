@@ -37,7 +37,6 @@ class GalleryPasswordTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		foreach (['gallery_password', 'gallery_password_cookie_lifetime', 'login_required', 'rss_enable', 'is_embed_enabled'] as $key) {
 			$this->initial_configs[$key] = Configs::query()->where('key', '=', $key)->value('value');
 		}

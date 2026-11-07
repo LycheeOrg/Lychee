@@ -55,16 +55,15 @@ Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
 // API-068-01) - each album is its own "bucket equivalent," loaded
 // whole-scope in one request; per-card photo previews are fetched
 // separately via the existing `/Albums/{album_id}/Photos?limit=N` route
-// below, coexisting with the v2 `GET /Flow` route (routes/api_v2.php)
-// behind `is_struct_of_array_enabled`.
+// below. v8 uses it, v7 keeps the v2 `GET /Flow` route (routes/api_v2.php);
+// gated by `features.v8` (Feature 109).
 Route::get('/Flow', [Gallery\FlowListController::class, 'index']);
 
 // Flat Struct-of-Arrays listing of album access permissions for the bulk-share page.
 Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);
 
-// Album virtual-scroll backend, gated by features.struct-of-array at each
-// request's FormRequest::authorize() (exposed to the frontend as
-// modules.is_struct_of_array_enabled). Literal segments (`root`, `smart`,
+// Album virtual-scroll backend, gated by `features.v8` at each
+// request's FormRequest::authorize() (Feature 109). Literal segments (`root`, `smart`,
 // `persons`, `tags`, `pinned`) are registered ahead of this `{album_id}`
 // family so Laravel never matches the wildcard first.
 Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
@@ -92,9 +91,8 @@ Route::get('/Albums/{album_id}/Photos/details', [Gallery\AlbumListing\PhotoChild
 Route::get('/Albums/{album_id}/Photos/urls', [Gallery\AlbumListing\PhotoChildrenController::class, 'urls']);
 
 // Search's Struct-of-Arrays API (Feature 069), coexisting with the v2
-// `/Search` route (routes/api_v2.php) behind the same
-// `is_struct_of_array_enabled` flag — v7 and `SpotlightSearch.vue` keep using
-// v2. A dedicated family rather than a pseudo-album on the `/Albums/...`
+// `/Search` route (routes/api_v2.php), gated by `features.v8` — v7 and
+// `SpotlightSearch.vue` keep using v2. A dedicated family rather than a pseudo-album on the `/Albums/...`
 // routes (Q-069-01): search is not an album scope, and its result has an album
 // half as well as a photo half. Literal `/Photos/details` and `/albums/rights`
 // segments are registered before their parents, as elsewhere in this file.
@@ -106,15 +104,15 @@ Route::get('/Search/albums', [Gallery\SearchListingController::class, 'albums'])
 Route::get('/Search/albums/rights', [Gallery\SearchListingController::class, 'albumRights']);
 
 // Map's bucket-tiered API (Feature 067), coexisting with the v2 `/Map` route
-// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+// (routes/api_v2.php), gated by `features.v8`.
 Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);
 Route::get('/Map/Photos', [Gallery\MapListingController::class, 'photos']);
 Route::get('/Map/tracks', [Gallery\MapListingController::class, 'tracks']);
-// Album map header points (Feature 086), not behind the struct-of-array flag.
+// Album map header points (Feature 086), not behind the `features.v8` gate.
 Route::get('/Map/album', [Gallery\MapListingController::class, 'album']);
 
 // Live metrics feed (Feature 079), coexisting with the v2 `/Metrics` route
-// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+// (routes/api_v2.php), gated by `features.v8`.
 Route::get('/Metrics', [Gallery\LiveMetricsListController::class, 'index'])->middleware(['support:se']);
 
 // Library insights (Feature 085): aggregates over one owner or the whole

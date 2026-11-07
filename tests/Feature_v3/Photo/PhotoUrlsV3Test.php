@@ -36,12 +36,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class PhotoUrlsV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	public function tearDown(): void
 	{
 		Configs::set('temporary_image_link_enabled', '0');
@@ -269,7 +263,7 @@ class PhotoUrlsV3Test extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$this->assertForbidden($this->actingAs($this->admin)->urlsOf($this->album1->id, [$this->photo1->id]));
 	}

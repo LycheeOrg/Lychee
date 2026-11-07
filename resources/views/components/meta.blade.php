@@ -29,7 +29,7 @@
 <meta property="og:image:height" content="{{ $height }}"  data-dynamic="true">
 @endif
 
-@if(Features::active('nuxt_ui'))
+@if(Features::active('v8'))
 <link rel="icon" type="image/svg+xml" href="{{ URL::asset('img/logo4.svg') }}">
 @endif
 <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">

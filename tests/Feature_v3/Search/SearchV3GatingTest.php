@@ -34,17 +34,11 @@ class SearchV3GatingTest extends BaseApiWithDataTest
 		return base64_encode($raw);
 	}
 
-	public function setUp(): void
-	{
-		parent::setUp();
-		Config::set('features.struct-of-array', true);
-	}
-
 	// ── S-069-04 — feature flag ─────────────────────────────────────
 
 	public function testEveryRouteIsForbiddenWhenTheFeatureFlagIsOff(): void
 	{
-		Config::set('features.struct-of-array', false);
+		Config::set('features.v8', false);
 		// Authenticated on purpose: an anonymous caller would be rejected by the
 		// auth gate (401) before the flag gate is ever reached, which would not
 		// prove anything about the flag.
@@ -64,7 +58,7 @@ class SearchV3GatingTest extends BaseApiWithDataTest
 
 	public function testV2SearchStillWorksWhenTheV3FlagIsOff(): void
 	{
-		Config::set('features.struct-of-array', false);
+		Config::set('features.v8', false);
 
 		$response = $this->actingAs($this->userMayUpload1)
 			->getJsonWithData('Search', ['album_id' => null, 'terms' => $this->terms('CR_')]);

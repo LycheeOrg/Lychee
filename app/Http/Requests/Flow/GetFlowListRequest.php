@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Auth;
  *
  * Mirrors {@see \App\Http\Requests\Flow\FlowRequest}'s authorization exactly
  * (`flow_enabled`, plus `flow_public` for guests), additionally gated by the
- * `features.struct-of-array` flag, mirroring every other v3 SoA request
+ * `features.v8` flag, mirroring every other v3 SoA request
  * (e.g. {@see \App\Http\Requests\Photo\GetPhotoRatiosRequest}).
  */
 class GetFlowListRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
-		if (config('features.struct-of-array') !== true) {
+		if (config('features.v8') !== true) {
 			return false;
 		}
 

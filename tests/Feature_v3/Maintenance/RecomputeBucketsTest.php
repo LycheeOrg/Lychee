@@ -25,14 +25,13 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
  * `POST Maintenance::recomputeBuckets`: queues the rewrite of every album
- * and `photo_album` bucket key, with struct-of-arrays enabled only.
+ * and `photo_album` bucket key, with v8 enabled only.
  */
 class RecomputeBucketsTest extends BaseApiWithDataTest
 {
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeAllPhotoBucketsJob::class]);
 	}
 
@@ -58,9 +57,9 @@ class RecomputeBucketsTest extends BaseApiWithDataTest
 		Queue::assertPushed(RecomputeAllPhotoBucketsJob::class);
 	}
 
-	public function testAdminForbiddenWithStructOfArraysDisabled(): void
+	public function testAdminForbiddenWithV8Disabled(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::recomputeBuckets');
 		$this->assertForbidden($response);

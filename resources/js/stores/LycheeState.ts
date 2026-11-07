@@ -85,6 +85,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_album_header_landing_title_enabled: false,
 
 		use_admin_dashboard: true,
+		// v3 struct-of-arrays listing path of the shared stores: set to true by
+		// `app-v8.ts` at boot, never by v7, which stays on v2 (Feature 109, FR-109-05).
 		is_struct_of_array_enabled: false,
 
 		// Download settings
@@ -355,7 +357,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.default_album_protection = data.default_album_protection;
 					this.expert_album_settings = data.expert_album_settings;
 					this.use_admin_dashboard = data.use_admin_dashboard;
-					this.is_struct_of_array_enabled = data.is_struct_of_array_enabled;
 
 					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;
 					this.is_header_id_flag_enabled = data.is_header_id_flag_enabled;

@@ -11,27 +11,18 @@
 		@update:model-value="selected"
 	>
 		<template #item-leading="{ item }">
-			<Thumb
-				v-if="is_struct_of_array_enabled && item.id !== null"
-				:album-id="item.id"
-				:photo-id="item.coverId ?? null"
-				type="small"
-				class="w-4 rounded-sm"
-			/>
+			<Thumb v-if="item.id !== null" :album-id="item.id" :photo-id="item.coverId ?? null" type="small" class="w-4 rounded-sm" />
 			<img v-else :src="item.thumb" alt="poster" class="w-4 rounded-sm" />
 		</template>
-		<template v-if="is_struct_of_array_enabled" #item-label="{ item }">
+		<template #item-label="{ item }">
 			{{ item.title }}
 		</template>
 	</USelectMenu>
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { storeToRefs } from "pinia";
 import { trans } from "laravel-vue-i18n";
-import AlbumService from "@/services/album-service";
 import { useAlbumListStore } from "@/stores/AlbumListState";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import { useImageHelpers } from "@/utils/Helpers";
 
@@ -47,24 +38,13 @@ const emits = defineEmits<{
 	"no-target": [];
 }>();
 
-const { is_struct_of_array_enabled } = storeToRefs(useLycheeStateStore());
-
 const albumListStore = useAlbumListStore();
 const { getNoImageIcon } = useImageHelpers();
 
 const options = ref<TargetOption[] | undefined>(undefined);
 const selectedTarget = ref<TargetOption | undefined>(undefined);
 
-function loadV2() {
-	AlbumService.getTargetListAlbums(albumIds.value).then((response) => {
-		options.value = response.data;
-		if (options.value.length === 0) {
-			emits("no-target");
-		}
-	});
-}
-
-function loadV3() {
+function load() {
 	albumListStore.ensureLoaded().then(() => {
 		const roots = albumIds.value ?? [];
 		const excluded = albumListStore.getExcludedTargetIds(roots);
@@ -102,14 +82,6 @@ function loadV3() {
 			emits("no-target");
 		}
 	});
-}
-
-function load() {
-	if (is_struct_of_array_enabled.value) {
-		loadV3();
-	} else {
-		loadV2();
-	}
 }
 
 load();

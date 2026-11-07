@@ -24,7 +24,7 @@
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceRecomputeTakenAtRange />
 		<MaintenanceBackfillAlbumSizes />
-		<MaintenanceRecomputeBuckets v-if="is_struct_of_array_enabled" />
+		<MaintenanceRecomputeBuckets />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
@@ -74,6 +74,6 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const lycheeStore = useLycheeStateStore();
 const { rights } = useGlobalRights();
-const { is_face_recognition_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const { is_face_recognition_enabled } = storeToRefs(lycheeStore);
 const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

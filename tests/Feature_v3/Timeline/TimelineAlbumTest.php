@@ -35,12 +35,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class TimelineAlbumTest extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Access gating (F-066-03, S-066-02, S-066-03) ────────────────
 
 	public function testGuestDeniedByDefault(): void

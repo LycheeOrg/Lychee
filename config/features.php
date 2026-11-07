@@ -97,7 +97,12 @@ return [
 	 | Enable the v8
 	 |--------------------------------------------------------------------------
 	 |
-	 | This value determines whether the v8 features are enabled.
+	 | This value determines whether v8 is served: the Nuxt-UI-based front-end
+	 | bundle (app-v8.ts) instead of the PrimeVue-based one (app.ts, v7), the
+	 | v8 features, and the v3 struct-of-arrays listing endpoints
+	 | (`/api/v3/Albums/*`, `/Search/*`, `/Map/*`, `/Flow`, `/Metrics`,
+	 | `/People`, `/Faces/*`), which answer 403 without it (Feature 109,
+	 | ADR-109-01).
 	 */
 	'v8' => (bool) env('V8_ENABLED', false),
 
@@ -301,30 +306,4 @@ return [
 	 | from the server.
 	 */
 	'client-cache' => (bool) env('CLIENT_CACHE_ENABLED', true),
-
-	/*
-	 |--------------------------------------------------------------------------
-	 | Enable Nuxt UI front-end (v8)
-	 |--------------------------------------------------------------------------
-	 |
-	 | When enabled, serves the Nuxt-UI-based front-end bundle (app-v8.ts)
-	 | instead of the PrimeVue-based bundle (app.ts). See Feature 049
-	 | (Migration to Nuxt UI) for details. Disabled by default while the
-	 | v8 tree is being built out.
-	 */
-	'nuxt_ui' => (bool) env('NUXT_UI_ENABLED', false),
-
-	/*
-	 |--------------------------------------------------------------------------
-	 | Enable Struct-of-Arrays (SoA) v3 endpoints in the frontend (v8)
-	 |--------------------------------------------------------------------------
-	 |
-	 | When enabled, v8's album-listing consumers (Move-target picker, Fix
-	 | Tree, Bulk Album Edit) call the v3 Struct-of-Arrays `GET /api/v3/Albums`
-	 | endpoint instead of their v2 equivalents. Named generally (not
-	 | album-specific) since it is intended to also gate a future Photos SoA
-	 | v3 endpoint. Disabled by default; the v2 paths remain fully functional
-	 | either way. See Feature 058.
-	 */
-	'struct-of-array' => (bool) env('STRUCT_OF_ARRAY_ENABLED', false),
 ];
