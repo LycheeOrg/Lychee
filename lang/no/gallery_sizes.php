@@ -17,8 +17,6 @@ return [
     'live_title' => 'Størrelser i galleriet (direkte)',
     'live_hint' => 'Endringer gjelder galleriet bak dette panelet. Lukking uten å lagre forkaster dem.',
     'spotlight_action' => 'Juster størrelser i galleriet (direkte)',
-    'settings_link' => 'Forhåndsvis størrelsene i galleriet',
-    'settings_link_details' => 'Prøv album- og bildestørrelser på plassholdere før du lagrer dem.',
     'not_allowed' => 'Bare administratorer kan endre størrelsene i galleriet.',
     'section_albums' => 'Album',
     'section_photos' => 'Bilder',

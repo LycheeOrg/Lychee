@@ -17,8 +17,6 @@ return [
     'live_title' => 'Velikosti galerie (živě)',
     'live_hint' => 'Změny se projeví v galerii za tímto panelem. Zavřením bez uložení se zahodí.',
     'spotlight_action' => 'Upravit velikosti galerie (živě)',
-    'settings_link' => 'Náhled velikostí galerie',
-    'settings_link_details' => 'Vyzkoušejte velikosti alb a fotek na zástupných dlaždicích, než je uložíte.',
     'not_allowed' => 'Velikosti galerie mohou měnit pouze správci.',
     'section_albums' => 'Alba',
     'section_photos' => 'Fotky',

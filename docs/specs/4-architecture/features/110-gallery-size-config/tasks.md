@@ -102,6 +102,11 @@ _Last updated: 2026-11-07_
   _Verification commands:_ `vp test resources/js`, `vp run typecheck`, `vp check --fix <files>`, `php artisan test --filter=LangTest`, `php artisan test --filter=AlbumThumbGapConfigTest`, `php artisan test --filter=AlbumThumbMinWidthConfigTest`, `php artisan test --filter=ConfigTranslationKeysTest`
   _Result 2026-11-07:_ red first (`liveGallerySections` 6, `GallerySizesControls.test.ts` 8 after a ResizeObserver stub for jsdom, `resetKey` 1) → green; Vitest 33 files / 255 tests, typecheck, lint, server tests green. Browser (`pw/check-110d.cjs`): double-click 300 → 175 and marker cleared, masonry reset shows Masonry; drawer Albums only on root, Photos only in "Big" and on the timeline; live double-click 448 → 183 px.
 
+- [x] T-110-22 – Remove the Settings › Gallery link (FR-110-04, S-110-12).
+  _Intent:_ owner request after commit `3937890c6`: delete `GallerySizesSettingsLink.vue`, drop it from `Settings.vue` and `AllSettings.vue`, remove `settings_link` and `settings_link_details` from the 23 `gallery_sizes.php`.
+  _Verification commands:_ `vp check --fix` (2 files), `vp run typecheck`, `vp test resources/js`, `php artisan test --filter=LangTest`, `vp run build`
+  _Result 2026-11-07:_ all green (Vitest 33 files / 255 tests, LangTest 2); `public/build` no longer contains the strings. The git-ignored `lang/php_*.json` still hold them: the i18n plugin restores those files' previous content after each build; `vp dev` regenerates them.
+
 ## Requirement coverage
 
 | Requirement | Tasks |
@@ -121,7 +126,7 @@ _Last updated: 2026-11-07_
 | FR-110-14 | T-110-11, T-110-12 |
 | FR-110-15 | T-110-12 |
 | FR-110-16 | T-110-16 … 20 |
-| owner follow-ups | T-110-21 |
+| owner follow-ups | T-110-21, T-110-22 |
 | NFR-110-01 | T-110-05, T-110-11 |
 | NFR-110-02, 06, 07 | T-110-14 |
 | NFR-110-03 | T-110-05 |

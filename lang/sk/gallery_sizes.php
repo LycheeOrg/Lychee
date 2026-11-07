@@ -17,8 +17,6 @@ return [
     'live_title' => 'Veľkosti galérie (naživo)',
     'live_hint' => 'Zmeny sa prejavia v galérii za týmto panelom. Zatvorením bez uloženia sa zahodia.',
     'spotlight_action' => 'Upraviť veľkosti galérie (naživo)',
-    'settings_link' => 'Náhľad veľkostí galérie',
-    'settings_link_details' => 'Vyskúšajte veľkosti albumov a fotiek na zástupných dlaždiciach skôr, ako ich uložíte.',
     'not_allowed' => 'Veľkosti galérie môžu meniť iba správcovia.',
     'section_albums' => 'Albumy',
     'section_photos' => 'Fotky',

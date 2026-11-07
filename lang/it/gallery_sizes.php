@@ -17,8 +17,6 @@ return [
     'live_title' => 'Dimensioni della galleria (dal vivo)',
     'live_hint' => 'Le modifiche si applicano alla galleria dietro questo pannello. Chiudere senza salvare le annulla.',
     'spotlight_action' => 'Regola le dimensioni della galleria (dal vivo)',
-    'settings_link' => 'Anteprima delle dimensioni della galleria',
-    'settings_link_details' => 'Prova le dimensioni di album e foto su segnaposto prima di salvarle.',
     'not_allowed' => 'Solo gli amministratori possono modificare le dimensioni della galleria.',
     'section_albums' => 'Album',
     'section_photos' => 'Foto',

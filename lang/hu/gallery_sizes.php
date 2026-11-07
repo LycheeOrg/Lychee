@@ -17,8 +17,6 @@ return [
     'live_title' => 'Galériaméretek (élő)',
     'live_hint' => 'A módosítások a panel mögötti galériára vonatkoznak. Mentés nélküli bezáráskor elvesznek.',
     'spotlight_action' => 'Galériaméretek beállítása (élő)',
-    'settings_link' => 'Galériaméretek előnézete',
-    'settings_link_details' => 'Próbálja ki az album- és fotóméreteket helykitöltőkön, mielőtt mentené őket.',
     'not_allowed' => 'Csak rendszergazdák módosíthatják a galériaméreteket.',
     'section_albums' => 'Albumok',
     'section_photos' => 'Fotók',

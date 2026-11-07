@@ -17,8 +17,6 @@ return [
     'live_title' => '图库尺寸(实时)',
     'live_hint' => '更改会应用到此面板后面的图库。不保存就关闭会放弃更改。',
     'spotlight_action' => '调整图库尺寸(实时)',
-    'settings_link' => '预览图库尺寸',
-    'settings_link_details' => '保存前先用占位块试试相册和照片的尺寸。',
     'not_allowed' => '只有管理员可以更改图库尺寸。',
     'section_albums' => '相册',
     'section_photos' => '照片',

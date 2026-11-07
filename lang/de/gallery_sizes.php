@@ -17,8 +17,6 @@ return [
     'live_title' => 'Galeriegrößen (live)',
     'live_hint' => 'Änderungen gelten für die Galerie hinter diesem Bereich. Schließen ohne Speichern verwirft sie.',
     'spotlight_action' => 'Galeriegrößen anpassen (live)',
-    'settings_link' => 'Galeriegrößen in der Vorschau ansehen',
-    'settings_link_details' => 'Album- und Fotogrößen an Platzhaltern ausprobieren, bevor sie gespeichert werden.',
     'not_allowed' => 'Nur Administratoren können die Galeriegrößen ändern.',
     'section_albums' => 'Alben',
     'section_photos' => 'Fotos',

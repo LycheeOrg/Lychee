@@ -17,8 +17,6 @@ return [
     'live_title' => 'ギャラリーのサイズ (ライブ)',
     'live_hint' => '変更はこのパネルの後ろのギャラリーに反映されます。保存せずに閉じると破棄されます。',
     'spotlight_action' => 'ギャラリーのサイズを調整 (ライブ)',
-    'settings_link' => 'ギャラリーのサイズをプレビュー',
-    'settings_link_details' => '保存する前に、アルバムと写真のサイズをプレースホルダーで試せます。',
     'not_allowed' => 'ギャラリーのサイズを変更できるのは管理者のみです。',
     'section_albums' => 'アルバム',
     'section_photos' => '写真',

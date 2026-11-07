@@ -17,8 +17,6 @@ return [
     'live_title' => 'Tamaños de la galería (en vivo)',
     'live_hint' => 'Los cambios se aplican a la galería detrás de este panel. Cerrar sin guardar los descarta.',
     'spotlight_action' => 'Ajustar los tamaños de la galería (en vivo)',
-    'settings_link' => 'Previsualizar los tamaños de la galería',
-    'settings_link_details' => 'Prueba los tamaños de álbumes y fotos con marcadores de posición antes de guardarlos.',
     'not_allowed' => 'Solo los administradores pueden cambiar los tamaños de la galería.',
     'section_albums' => 'Álbumes',
     'section_photos' => 'Fotos',

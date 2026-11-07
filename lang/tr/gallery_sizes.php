@@ -17,8 +17,6 @@ return [
     'live_title' => 'Galeri boyutları (canlı)',
     'live_hint' => 'Değişiklikler bu panelin arkasındaki galeriye uygulanır. Kaydetmeden kapatmak onları iptal eder.',
     'spotlight_action' => 'Galeri boyutlarını ayarla (canlı)',
-    'settings_link' => 'Galeri boyutlarını önizle',
-    'settings_link_details' => 'Albüm ve fotoğraf boyutlarını kaydetmeden önce yer tutucular üzerinde deneyin.',
     'not_allowed' => 'Galeri boyutlarını yalnızca yöneticiler değiştirebilir.',
     'section_albums' => 'Albümler',
     'section_photos' => 'Fotoğraflar',

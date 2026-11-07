@@ -17,8 +17,6 @@ return [
     'live_title' => 'Kích thước thư viện (trực tiếp)',
     'live_hint' => 'Thay đổi áp dụng cho thư viện phía sau bảng này. Đóng mà không lưu sẽ hủy chúng.',
     'spotlight_action' => 'Điều chỉnh kích thước thư viện (trực tiếp)',
-    'settings_link' => 'Xem trước kích thước thư viện',
-    'settings_link_details' => 'Thử kích thước album và ảnh trên các ô giữ chỗ trước khi lưu.',
     'not_allowed' => 'Chỉ quản trị viên mới có thể thay đổi kích thước thư viện.',
     'section_albums' => 'Album',
     'section_photos' => 'Ảnh',

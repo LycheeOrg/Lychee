@@ -17,8 +17,6 @@ return [
     'live_title' => 'Tailles de la galerie (en direct)',
     'live_hint' => 'Les changements s’appliquent à la galerie derrière ce panneau. Fermer sans enregistrer les annule.',
     'spotlight_action' => 'Ajuster les tailles de la galerie (en direct)',
-    'settings_link' => 'Prévisualiser les tailles de la galerie',
-    'settings_link_details' => 'Essayez les tailles des albums et des photos sur des vignettes factices avant de les enregistrer.',
     'not_allowed' => 'Seuls les administrateurs peuvent modifier les tailles de la galerie.',
     'section_albums' => 'Albums',
     'section_photos' => 'Photos',

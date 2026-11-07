@@ -17,8 +17,6 @@ return [
     'live_title' => 'Gallery sizes (live)',
     'live_hint' => 'Changes apply to the gallery behind this panel. Closing without saving discards them.',
     'spotlight_action' => 'Adjust gallery sizes (live)',
-    'settings_link' => 'Preview the gallery sizes',
-    'settings_link_details' => 'Try album and photo sizes on placeholders before saving them.',
     'not_allowed' => 'Only administrators can change the gallery sizes.',
 
     'section_albums' => 'Albums',

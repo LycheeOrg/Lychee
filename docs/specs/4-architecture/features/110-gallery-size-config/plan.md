@@ -39,7 +39,7 @@ Run 2026-11-07 by the agent after T-110-14 (15/15 tasks).
 |-------------|------|------------------|
 | FR-110-01, 02 | migration `2026_11_07_000001_add_album_thumb_configs.php`, `SettingsController::V8_CONFIGS`, `InitConfig`, `LycheeState`, `albumTileWidth.ts` | `AlbumThumbMinWidthConfigTest`, `albumTileWidth.test.ts`; browser 183 px tiles at 1440 (7 columns) |
 | FR-110-03 | `computeAlbumTileGeometry` below `sm` | `albumTileWidth.test.ts`, `galleryPreviewGeometry.test.ts` (Phone) |
-| FR-110-04 | `paths.ts`, `routes/web_v2.php`, `v8/router/routes.ts`, `GallerySizes.vue`, `useAdminTiles.ts`, `GallerySizesSettingsLink.vue` in `Settings.vue` and `AllSettings.vue` | browser: tile, link on the Gallery tab and the "all" view, logged-out redirect |
+| FR-110-04 | `paths.ts`, `routes/web_v2.php`, `v8/router/routes.ts`, `GallerySizes.vue`, `useAdminTiles.ts` | browser: tile, logged-out redirect (Settings link checked, then removed 2026-11-07) |
 | FR-110-05 … 09 | `GallerySizesControls.vue`, `GallerySizesPreview.vue`, `gallerySizes.ts`, `galleryPreviewPlaceholders.ts`, `galleryPreviewGeometry.ts` | 3 helper test files (23); browser: stored values, Laptop 7, Wide 13, Phone 3, min 300 → 4, masonry edit selects Masonry, 200 photos, aspect 2:3, 0 requests while editing |
 | FR-110-10, 11 | `useGallerySizesDraft.ts` | `useGallerySizesDraft.test.ts` (8); browser: one `setConfigs`, gallery at 263 px without reload, Revert clears the dot |
 | FR-110-12 | `AlbumThumbVirtual.vue` | `AlbumThumbVirtual.test.ts`; browser: tile covers `small` at 1×, `small2x` at 2× |
@@ -134,6 +134,7 @@ Findings: none blocking. Lightweight decisions recorded in the spec without a qu
 - `medium` through the v3 asset API (existing row) would sharpen tiles above 360 CSS px on 2× screens.
 
 ## Intent Log
+- 2026-11-07 (after commit `3937890c6`): owner removed the "Preview the gallery sizes" link from Settings › Gallery: `GallerySizesSettingsLink.vue` deleted, its uses in `Settings.vue` and `AllSettings.vue` removed, `settings_link` / `settings_link_details` removed from the 23 `gallery_sizes.php`. T-110-22.
 - 2026-11-07 (later): owner: drawer sections only when the page has those tiles (`liveGallerySections`), double-click on a label resets that setting (`resetKey`), T-110-21.
 - 2026-11-07 (later): owner UI notes: drawer sections as plain headings (no fieldsets, `GallerySizesControls` `plain` prop); inactive layout rows muted instead of the active one in primary. Browser screenshot `shots/15-drawer-plain.png`.
 - 2026-11-07 (later): owner asked to merge the two config migrations into `2026_11_07_000001_add_album_thumb_configs.php` and to drop ", v8 only" from the setting descriptions (23 locales and the migration). Old migration records renamed/removed in the test and scratch DBs (script in scratchpad `merge_migrations.php`, guarded on the expected state); the dev DB was left untouched because its state differed (gap row and record absent).

@@ -17,8 +17,6 @@ return [
     'live_title' => 'Storlekar i galleriet (live)',
     'live_hint' => 'Ändringarna gäller galleriet bakom den här panelen. Om du stänger utan att spara förkastas de.',
     'spotlight_action' => 'Justera storlekar i galleriet (live)',
-    'settings_link' => 'Förhandsgranska storlekarna i galleriet',
-    'settings_link_details' => 'Prova album- och fotostorlekar på platshållare innan du sparar dem.',
     'not_allowed' => 'Endast administratörer kan ändra storlekarna i galleriet.',
     'section_albums' => 'Album',
     'section_photos' => 'Foton',

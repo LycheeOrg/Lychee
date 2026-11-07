@@ -17,8 +17,6 @@ return [
     'live_title' => 'Rozmiary galerii (na żywo)',
     'live_hint' => 'Zmiany dotyczą galerii za tym panelem. Zamknięcie bez zapisu je odrzuca.',
     'spotlight_action' => 'Dostosuj rozmiary galerii (na żywo)',
-    'settings_link' => 'Podgląd rozmiarów galerii',
-    'settings_link_details' => 'Wypróbuj rozmiary albumów i zdjęć na elementach zastępczych przed ich zapisaniem.',
     'not_allowed' => 'Tylko administratorzy mogą zmieniać rozmiary galerii.',
     'section_albums' => 'Albumy',
     'section_photos' => 'Zdjęcia',

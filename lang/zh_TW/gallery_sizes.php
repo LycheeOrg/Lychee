@@ -17,8 +17,6 @@ return [
     'live_title' => '圖庫尺寸(即時)',
     'live_hint' => '變更會套用到此面板後方的圖庫。未儲存就關閉會捨棄變更。',
     'spotlight_action' => '調整圖庫尺寸(即時)',
-    'settings_link' => '預覽圖庫尺寸',
-    'settings_link_details' => '儲存前先用預留位置試試相簿和照片的尺寸。',
     'not_allowed' => '只有管理員可以變更圖庫尺寸。',
     'section_albums' => '相簿',
     'section_photos' => '照片',

@@ -17,8 +17,6 @@ return [
     'live_title' => 'Galerijformaten (live)',
     'live_hint' => 'Wijzigingen gelden voor de galerij achter dit paneel. Sluiten zonder opslaan verwerpt ze.',
     'spotlight_action' => 'Galerijformaten aanpassen (live)',
-    'settings_link' => 'Voorbeeld van de galerijformaten',
-    'settings_link_details' => 'Probeer album- en fotoformaten uit op plaatsaanduidingen voordat u ze opslaat.',
     'not_allowed' => 'Alleen beheerders kunnen de galerijformaten wijzigen.',
     'section_albums' => 'Albums',
     'section_photos' => 'Foto’s',
