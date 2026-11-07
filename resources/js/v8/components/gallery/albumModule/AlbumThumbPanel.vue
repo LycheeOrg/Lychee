@@ -1,7 +1,7 @@
 <template>
 	<div v-if="isTimeline === false" class="border-0 w-full px-4 sm:px-6" :class="paddingTopClass">
 		<template v-if="isAlone">
-			<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
+			<div class="flex flex-wrap flex-row shrink w-full justify-start pt-4" :style="gapStyle">
 				<AlbumListView
 					v-if="album_view_mode === 'list'"
 					:albums="props.albums"
@@ -26,7 +26,7 @@
 				{{ $t(props.header) }}
 			</button>
 			<template #content>
-				<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
+				<div class="flex flex-wrap flex-row shrink w-full justify-start pt-4" :style="gapStyle">
 					<AlbumListView
 						v-if="album_view_mode === 'list'"
 						:albums="props.albums"
@@ -51,7 +51,8 @@
 		<template v-for="(albumTimeline, idx) in albumsTimeLine" :key="'albumTimeline' + idx">
 			<div
 				v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
-				class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
+				class="flex flex-wrap flex-row shrink w-full justify-start pb-8"
+				:style="gapStyle"
 				:class="{ 'ltr:border-l rtl:border-r border-accented ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 			>
 				<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">{{ albumTimeline.header }}</div>
@@ -84,6 +85,7 @@ import AlbumThumbPanelList from "./AlbumThumbPanelList.vue";
 import AlbumListView from "./AlbumListView.vue";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
+import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 
 const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible, is_timeline_left_border_visible, is_debug_enabled, album_view_mode } = storeToRefs(lycheeStore);
@@ -120,6 +122,11 @@ const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.lengt
 
 // We do not show the left border on touch devices (mostly phones) due to limited real estate.
 const isLeftBorderVisible = computed(() => is_timeline_left_border_visible.value && !isTouchDevice());
+
+// Same gap as the virtual grids and the tiles' own width (`AlbumThumb.vue`): `album_thumb_gap`,
+// scaled by breakpoint, or the live drawer's value while it is open (Feature 110, FR-110-16).
+const { gap: albumGap } = useAlbumTileWidth();
+const gapStyle = computed(() => ({ gap: `${albumGap.value}px` }));
 
 const paddingTopClass = computed(() => {
 	return props.isAlone && lycheeStore.album_view_mode === "list" ? "pt-4" : "pt-0";

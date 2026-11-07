@@ -119,6 +119,8 @@ import { isTouchDevice, ctrlKeyState, metaKeyState, shiftKeyState } from "@/util
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { initLayouts } from "@/v8/layouts/wasmLayouts";
+import { usePhotoLayoutConfig } from "@/v8/composables/gallerySizes/gallerySizesLive";
+import { photoTargetAndGap } from "@/v8/utils/galleryPreviewGeometry";
 import { HEADER_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import {
 	buildPhotoChunks,
@@ -228,24 +230,18 @@ const ready = ref(false);
 
 const mode = computed<PhotoLayoutMode>(() => layoutStore.layout as PhotoLayoutMode);
 
+// Stored layout config, or the live drawer's values while it is open (Feature 110, FR-110-14).
+const photoLayoutConfig = usePhotoLayoutConfig();
 const targetAndGap = computed<{ target: number; gap: number }>(() => {
-	const config = layoutStore.config;
+	const config = photoLayoutConfig.value;
+	const layout = mode.value;
 	if (config === undefined) {
 		return { target: 200, gap: 12 };
 	}
-	switch (mode.value) {
-		case "justified":
-			return { target: config.photo_layout_justified_row_height, gap: config.photo_layout_gap };
-		case "square":
-			return { target: config.photo_layout_square_column_width, gap: config.photo_layout_gap };
-		case "masonry":
-			return { target: config.photo_layout_masonry_column_width, gap: config.photo_layout_gap };
-		case "grid":
-			return { target: config.photo_layout_grid_column_width, gap: config.photo_layout_gap };
-		case "list":
-		default:
-			return { target: 0, gap: 0 };
+	if (layout === "list") {
+		return { target: 0, gap: 0 };
 	}
+	return photoTargetAndGap(layout, config);
 });
 
 // Rating-filter-aware boundary recompute (FR-065-19, discovered necessity —

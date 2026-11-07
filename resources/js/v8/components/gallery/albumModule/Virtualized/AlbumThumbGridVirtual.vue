@@ -93,6 +93,7 @@ import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
@@ -137,7 +138,9 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 // activeHeaderLabel below needs to account for.
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
-const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio));
+// The open album's ratio, or the live drawer's default while it is open (Feature 110).
+const childAspectRatio = useAlbumThumbAspectRatio("album");
+const aspectRatioNumber = computed(() => aspectRatioCssToNumber(childAspectRatio.value));
 
 // Single unbucketed section when tier 1 isn't bucketable, the
 // count-mismatch fallback fires (boundariesV3 === null), or the album's own

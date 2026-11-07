@@ -13,6 +13,7 @@
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
 				>
+					<GallerySizesSettingsLink v-if="configGroup.cat === 'Gallery'" />
 					<ConfigGroup
 						:configs="configGroup.configs"
 						:all-configs="allConfigs"
@@ -29,6 +30,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import ConfigGroup from "./ConfigGroup.vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
+import GallerySizesSettingsLink from "@/v8/components/gallerySizes/GallerySizesSettingsLink.vue";
 import { useTranslation } from "@/composables/useTranslation";
 import type { NavigationMenuItem } from "@nuxt/ui";
 

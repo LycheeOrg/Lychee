@@ -142,6 +142,8 @@ class SettingsController extends Controller
 	];
 
 	public const V8_CONFIGS = [
+		'album_thumb_min_width',
+		'album_thumb_gap',
 		'site_logo',
 		'primary_color',
 		'enable_design_system',

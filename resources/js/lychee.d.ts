@@ -702,6 +702,8 @@ declare namespace App {
 					album_decoration: App.Enum.AlbumDecorationType;
 					album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 					number_albums_per_row_mobile: 1 | 2 | 3;
+					album_thumb_min_width: number;
+					album_thumb_gap: number;
 					photo_thumb_info: App.Enum.PhotoThumbInfoType;
 					is_photo_thumb_tags_enabled: boolean;
 					is_rounded_corners_enabled: boolean;

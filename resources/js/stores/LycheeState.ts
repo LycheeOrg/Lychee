@@ -58,6 +58,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
 		album_view_mode: "grid" as App.Enum.AlbumLayoutType,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
+		// Feature 110 (FR-110-02): v8 album tile minimum width in CSS px.
+		album_thumb_min_width: 175,
+		// Feature 110 (FR-110-16): gap between v8 album tiles in CSS px from 768 px wide.
+		album_thumb_gap: 16,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
 		is_rounded_corners_enabled: true,
@@ -275,6 +279,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
 					this.is_white_label_enabled = data.is_white_label_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
+					this.album_thumb_min_width = data.album_thumb_min_width;
+					this.album_thumb_gap = data.album_thumb_gap;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
 					this.is_rounded_corners_enabled = data.is_rounded_corners_enabled;

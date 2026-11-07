@@ -10,6 +10,8 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { useAlbumThumbAspectRatio, usePhotoLayoutConfig } from "@/v8/composables/gallerySizes/gallerySizesLive";
+import { photoTargetAndGap } from "@/v8/utils/galleryPreviewGeometry";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { computeVisiblePhotoLayout, type PhotoLayoutMode } from "@/v8/composables/photo/analyticPhotoLayout";
 import { useLayoutStore } from "@/stores/LayoutState";
@@ -48,6 +50,10 @@ export function useDragAndSelect(
 	const lycheeStore = useLycheeStateStore();
 	const albumStore = useAlbumStore();
 	const layoutStore = useLayoutStore();
+	// Same values the grids lay out with, including the live drawer's (Feature 110), so drag boxes match the tiles.
+	const photoLayoutConfig = usePhotoLayoutConfig();
+	const childAlbumAspectRatio = useAlbumThumbAspectRatio("album");
+	const rootAlbumAspectRatio = useAlbumThumbAspectRatio("root");
 	// The very geometry the grids render with: AlbumThumbGridVirtual.vue (sub-albums, beside
 	// the date scrubber) and AlbumRootGridVirtual.vue (root gallery). Measuring the grid root
 	// instead drifts from it whenever the analytic container width differs from the real one.
@@ -378,9 +384,7 @@ export function useDragAndSelect(
 				itemsPerRow = geometry.itemsPerRow.value;
 				tileWidth = geometry.tileWidth.value;
 				gap = geometry.gap.value;
-				aspectRatioNumber = aspectRatioCssToNumber(
-					scope === null ? albumStore.config?.album_thumb_css_aspect_ratio : albumsStore.rootConfig?.album_thumb_css_aspect_ratio,
-				);
+				aspectRatioNumber = aspectRatioCssToNumber(scope === null ? childAlbumAspectRatio.value : rootAlbumAspectRatio.value);
 			}
 
 			const boundaries =
@@ -459,20 +463,8 @@ export function useDragAndSelect(
 
 		const mode = layoutStore.layout as PhotoLayoutMode;
 		const containerWidth = gridRootEl.getBoundingClientRect().width;
-		const config = layoutStore.config;
-		const target =
-			config === undefined
-				? 0
-				: mode === "justified"
-					? config.photo_layout_justified_row_height
-					: mode === "square"
-						? config.photo_layout_square_column_width
-						: mode === "masonry"
-							? config.photo_layout_masonry_column_width
-							: mode === "grid"
-								? config.photo_layout_grid_column_width
-								: 0;
-		const gap = config === undefined ? 0 : config.photo_layout_gap;
+		const config = photoLayoutConfig.value;
+		const { target, gap } = config === undefined || mode === "list" ? { target: 0, gap: 0 } : photoTargetAndGap(mode, config);
 
 		const ratingFilterActive = photosStore.photoRatingFilter !== null;
 		const filteredPhotoIds = ratingFilterActive ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null;

@@ -65,6 +65,7 @@
 									class="configDescription w-full text-highlighted pl-6 pb-8"
 									v-html="tCatDesc({ key: config.cat, description: config.description })"
 								></div>
+								<GallerySizesSettingsLink v-if="config.cat === 'Gallery'" />
 								<ConfigGroup
 									:configs="config.configs"
 									:all-configs="allConfigs"
@@ -99,6 +100,7 @@ import CssJs from "@/v8/components/settings/CssJs.vue";
 import { useRoute, useRouter } from "vue-router";
 import { watch } from "vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
+import GallerySizesSettingsLink from "@/v8/components/gallerySizes/GallerySizesSettingsLink.vue";
 import { useTranslation } from "@/composables/useTranslation";
 
 const props = defineProps<{

@@ -1,22 +1,20 @@
 import { computed, type Ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useBreakpoints, useWindowSize, breakpointsTailwind } from "@vueuse/core";
-import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
+import { useEffectiveAlbumTileSettings } from "@/v8/composables/gallerySizes/gallerySizesLive";
 
 /**
  * `breakpointsTailwind` (`@vueuse/core`) only carries Tailwind's own
  * `sm`/`md`/`lg`/`xl`/`2xl` defaults — this project's `@theme` block
- * (`resources/sass/app-v8.css`) now additionally defines `3xl`/`4xl`/`5xl`/
- * `6xl` (continuing Tailwind's own `md`→`lg`→`xl`→`2xl` +256px increment),
- * so this composable's breakpoint resolution needs its own extended table
- * rather than the stock one — scoped to this file only (not a global
- * override of vueuse's export) so every *other* `useBreakpoints(breakpointsTailwind)`
- * consumer in this codebase (`AlbumNavPanel.vue`, `useAdminTiles.ts`, ...)
- * is unaffected.
+ * (`resources/sass/app-v8.css`) additionally defines `3xl`/`4xl`/`5xl`/`6xl`.
+ * The tile width no longer depends on the breakpoint (Feature 110), but the
+ * gap and the mobile/desktop split still do, and `resolveBreakpoint()` keeps
+ * returning the same names the grids and `dragAndSelect.ts` already use.
+ * Scoped to this file only (not a global override of vueuse's export).
  */
 const ALBUM_TILE_BREAKPOINTS = {
 	...breakpointsTailwind,
@@ -26,10 +24,12 @@ const ALBUM_TILE_BREAKPOINTS = {
 	"6xl": 2560,
 };
 
-// Same fixed guess `getWidth()` (resources/js/layouts/getWidth.ts) uses for
-// the equivalent photo-layout problem. No scrollbar reserves space on touch
-// devices (overlay-style), so the guess is 0 there.
-const ASSUMED_SCROLLBAR_WIDTH = 15;
+/**
+ * Same fixed guess `getWidth()` (resources/js/layouts/getWidth.ts) uses for
+ * the equivalent photo-layout problem. No scrollbar reserves space on touch
+ * devices (overlay-style), so callers pass 0 there.
+ */
+export const ASSUMED_SCROLLBAR_WIDTH = 15;
 
 // The grid/list root's own wrapper is `class="w-full px-4 sm:px-6"`
 // (AlbumThumbGridVirtual.vue / AlbumListViewVirtual.vue) — computed
@@ -46,70 +46,28 @@ const WRAPPER_PADDING_PX = 24; // px-6 (sm and above)
 const WRAPPER_PADDING_PX_MOBILE = 16; // px-4 (below sm)
 
 /**
- * `AlbumThumbVirtual.vue`'s width classes, extracted here as the single
- * shared source of truth: `tileWidth = viewportWidth *
- * vwFraction - remOffset * 16px`, exactly reproducing
- * `sm:w-[calc(25vw-1rem)] md:w-[calc(19vw-1rem)] lg:w-[calc(16vw-1rem)]
- * xl:w-[calc(14vw-1rem)] 2xl:w-[calc(11vw-0.75rem)] 3xl:w-[calc(10vw-0.75rem)]
- * 4xl:w-[calc(8vw-0.75rem)] 5xl:w-[calc(6vw-0.75rem)] 6xl:w-[calc(4vw-0.75rem)]`.
- * Uses `viewportWidth` (not the scroll container's own width) because the
- * original CSS is `vw`-relative, not container-relative — `itemsPerRow`
- * below is what uses the container's own width, to fit that viewport-sized
- * tile as many times as it can.
- *
- * `2xl`'s `vwFraction` was `0.12` originally; lowered to `0.11` after a
- * reported case at a 1709px-wide viewport (within the `2xl` tier, now
- * capped at `3xl`'s 1792px threshold rather than extending unbounded): at
- * `0.12`, `nominalTileWidth` (193.08px) landed a hair over the width
- * needed for an 8th column (191.75px), so only 7 fit; `floor()` doesn't
- * round a near-miss up. `0.11` clears that with margin across the whole
- * `2xl` range (1536-1792px both give 8 now, not just 1709px), robust to
- * the actual OS/browser scrollbar width varying from `ASSUMED_SCROLLBAR_WIDTH`'s
- * guess below.
- *
- * `3xl`/`4xl`/`5xl`/`6xl` continue the same diminishing-`vwFraction` idea
- * (keeping `remOffset` at `2xl`'s already-reduced `0.75`) — this project's
- * `@theme` block (`resources/sass/app-v8.css`) now defines the matching
- * `--breakpoint-3xl`/`4xl`/`5xl`/`6xl` custom properties (previously
- * absent, so every `3xl:`/`4xl:`-prefixed utility, including
- * `AlbumThumb.vue`'s own then-`3xl:w-[calc(12vw-0.75rem)] 4xl:w-52`,
- * silently compiled to a dead, dropped class — confirmed via the actual
- * production build at the time). Keeps tile *pixel* width from scaling
- * linearly forever on very large/ultra-wide viewports, the same reasoning
- * `sm`→`2xl`'s own diminishing fractions already apply at smaller sizes.
+ * Default of the `album_thumb_min_width` setting (Feature 110, DO-110-01),
+ * also used when the store holds a non-positive value. 175 px reproduces the
+ * column count of the former per-breakpoint vw table at 59 % of window widths
+ * from 640 to 2559 px, and stays within one column at 87 % (spec Appendix A).
  */
-const TILE_WIDTH_FORMULA: Record<string, { vwFraction: number; remOffset: number }> = {
-	sm: { vwFraction: 0.25, remOffset: 1 },
-	md: { vwFraction: 0.19, remOffset: 1 },
-	lg: { vwFraction: 0.16, remOffset: 1 },
-	xl: { vwFraction: 0.14, remOffset: 1 },
-	"2xl": { vwFraction: 0.11, remOffset: 0.75 },
-	"3xl": { vwFraction: 0.1, remOffset: 0.75 },
-	"4xl": { vwFraction: 0.08, remOffset: 0.75 },
-	"5xl": { vwFraction: 0.06, remOffset: 0.75 },
-	"6xl": { vwFraction: 0.04, remOffset: 0.75 },
-};
+export const DEFAULT_ALBUM_THUMB_MIN_WIDTH = 175;
+
+/** Default of the `album_thumb_gap` setting (Feature 110, FR-110-16): gives the former 4/8/16 px. */
+export const DEFAULT_ALBUM_THUMB_GAP = 16;
 
 /**
- * `AlbumThumbPanel.vue`'s existing `gap-1 sm:gap-2 md:gap-4` classes — caps
- * at `md` (16px), no further increase at `lg`/`xl`/`2xl`/`3xl`/`4xl`/`5xl`/
- * `6xl` either (unchanged by adding those breakpoints — only tile width
- * needed a new tier per breakpoint, gap didn't).
+ * Gap between album tiles for a breakpoint (FR-110-16, Q-110-05 A): the
+ * `album_thumb_gap` value from `md` (768 px), half of it at `sm`, a quarter
+ * below `sm`, rounded. Negative or non-finite values use the default.
  */
-const GAP_PX: Record<string, number> = {
-	base: 4,
-	sm: 8,
-	md: 16,
-	lg: 16,
-	xl: 16,
-	"2xl": 16,
-	"3xl": 16,
-	"4xl": 16,
-	"5xl": 16,
-	"6xl": 16,
-};
-
-const REM_PX = 16;
+export function albumGapForBreakpoint(breakpoint: string, gapSetting: number): number {
+	const gap = Number.isFinite(gapSetting) && gapSetting >= 0 ? gapSetting : DEFAULT_ALBUM_THUMB_GAP;
+	if (breakpoint === "") {
+		return Math.round(gap / 4);
+	}
+	return breakpoint === "sm" ? Math.round(gap / 2) : gap;
+}
 
 /** `TimelineDatesV3.vue`'s rail (`w-16`), mounted beside the grids of `AlbumPanel.vue`. */
 const DATE_SCRUBBER_WIDTH_PX = 64;
@@ -124,8 +82,8 @@ function getNavBarWidthPx(): number {
 /**
  * Imperative, synchronous equivalent of `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()`
  * — same threshold table, but a plain function of a width
- * number rather than a reactive media-query listener, for
- * `dragAndSelect.ts`'s one-shot snapshot at drag-start.
+ * number rather than a reactive media-query listener, for one-shot
+ * snapshots (`dragAndSelect.ts`) and simulated widths (Feature 110 preview).
  */
 export function resolveBreakpoint(viewportWidth: number): string {
 	const entries = Object.entries(ALBUM_TILE_BREAKPOINTS) as [string, number][];
@@ -138,68 +96,67 @@ export function resolveBreakpoint(viewportWidth: number): string {
 	return "";
 }
 
+/**
+ * Width the album grid gets inside a window of `viewportWidth`: the wrapper's
+ * padding (by breakpoint), the scrollbar (`ASSUMED_SCROLLBAR_WIDTH`, or 0 on
+ * touch devices) and whatever sits beside the grid (inline nav panel, date
+ * scrubber) are subtracted. Pure, so the Feature 110 preview can lay out for
+ * a simulated window exactly as the gallery does for the real one.
+ */
+export function computeAlbumContainerWidth(viewportWidth: number, breakpoint: string, scrollbarWidth: number, sideChromeWidth: number): number {
+	const paddingPx = breakpoint === "" ? WRAPPER_PADDING_PX_MOBILE : WRAPPER_PADDING_PX;
+	return Math.max(0, viewportWidth - paddingPx * 2 - scrollbarWidth - sideChromeWidth);
+}
+
 export type AlbumTileGeometry = {
 	tileWidth: number;
 	itemsPerRow: number;
 	gap: number;
 };
 
+/** The three album size settings (stored, or the live drawer's while it is open). */
+export type AlbumTileSettings = {
+	/** `album_thumb_min_width` in CSS px; non-positive values fall back to the default. */
+	minWidth: number;
+	/** `number_albums_per_row_mobile`, used below `sm`. */
+	perRowMobile: number;
+	/** `album_thumb_gap` in CSS px (full value from `md`, see `albumGapForBreakpoint`). */
+	gap: number;
+};
+
 /**
- * Pure form of the analytic tile-geometry formula — extracted so
- * `dragAndSelect.ts`'s imperative, one-shot
- * `getBoundingClientRect()`-based snapshot can compute the exact
- * same geometry a mounted grid uses without itself depending on the
- * `useElementSize`/`useBreakpoints` reactive composables below (whose
- * ResizeObserver-driven updates are asynchronous — unsuitable for a value
- * that must be correct synchronously at drag-start).
+ * Pure form of the analytic tile-geometry formula — shared by the mounted
+ * grids (through `useAlbumTileWidth()`), `dragAndSelect.ts`'s one-shot
+ * snapshot and the Feature 110 preview.
+ *
+ * At `sm` and above (FR-110-01, ADR-110-01): as many columns of at least
+ * `minWidth` as fit the container, then the columns share the leftover width,
+ * so `minWidth ≤ tileWidth < minWidth + (minWidth + gap) / itemsPerRow`.
+ * Only the container width decides: a row holding fewer albums than columns
+ * keeps the same tile width and leaves the remaining slots empty. Below `sm`
+ * (FR-110-03), `perRowMobile` decides the column count. The gap follows
+ * `albumGapForBreakpoint()` (FR-110-16).
  *
  * @param breakpoint Active breakpoint key (`""` below `sm`), same values
  *                    `useBreakpoints(ALBUM_TILE_BREAKPOINTS).active()` returns.
  */
-export function computeAlbumTileGeometry(
-	viewportWidth: number,
-	containerWidth: number,
-	breakpoint: string,
-	numberAlbumsPerRowMobile: number,
-): AlbumTileGeometry {
-	const gap = breakpoint === "" ? GAP_PX.base : (GAP_PX[breakpoint] ?? GAP_PX["6xl"]);
+export function computeAlbumTileGeometry(containerWidth: number, breakpoint: string, settings: AlbumTileSettings): AlbumTileGeometry {
+	const gap = albumGapForBreakpoint(breakpoint, settings.gap);
+	const min = settings.minWidth > 0 ? settings.minWidth : DEFAULT_ALBUM_THUMB_MIN_WIDTH;
 
 	let itemsPerRow: number;
 	if (breakpoint === "") {
-		// Below `sm`: mobile explicit-column mode — numberAlbumsPerRowMobile
-		// directly, no vw formula (matches AlbumThumb.vue's own
-		// w-[calc(100%)]/w-[calc(50%-0.25rem)]/w-[calc(33%-0.25rem)] classes).
-		itemsPerRow = Math.max(1, numberAlbumsPerRowMobile);
+		itemsPerRow = Math.max(1, settings.perRowMobile);
+	} else if (containerWidth <= 0) {
+		itemsPerRow = 1;
 	} else {
-		// The vw formula below gives a *nominal* tile width, used only to
-		// decide how many columns should fit — the actually-rendered
-		// tileWidth (below) is then stretched to exactly fill the row for
-		// that column count, rather than leaving up to one tile+gap of
-		// unfilled space on the right whenever containerWidth isn't a clean
-		// multiple of (nominal tile + gap). This is a deliberate fluid-grid
-		// choice for the virtualized layout (the legacy non-virtualized grid
-		// uses fixed vw-widths in a flex-wrap and does leave that leftover
-		// space, native to how flex-wrap lays out fixed-size items).
-		const formula = TILE_WIDTH_FORMULA[breakpoint] ?? TILE_WIDTH_FORMULA["6xl"];
-		const nominalTileWidth = Math.max(0, viewportWidth * formula.vwFraction - formula.remOffset * REM_PX);
-		if (nominalTileWidth <= 0 || containerWidth <= 0) {
-			itemsPerRow = 1;
-		} else {
-			// +1e-6 guards against floating-point imprecision at an exact-fit
-			// boundary (e.g. containerWidth/nominalTileWidth/gap divide out to
-			// exactly N tiles): raw division can land a hair under N (e.g.
-			// 6.999999999998), which Math.floor would wrongly round down to
-			// N-1, silently losing a whole tile+gap of width to rounding
-			// error alone.
-			itemsPerRow = Math.max(1, Math.floor((containerWidth + gap) / (nominalTileWidth + gap) + 1e-6));
-		}
+		// +1e-6 guards against floating-point imprecision at an exact-fit
+		// boundary: raw division can land a hair under N (e.g.
+		// 6.999999999998), which Math.floor would wrongly round down to N-1.
+		itemsPerRow = Math.max(1, Math.floor((containerWidth + gap) / (min + gap) + 1e-6));
 	}
 
-	// Stretch tiles to exactly fill the row for the chosen itemsPerRow —
-	// same formula the mobile branch above has always used, just also
-	// applied once itemsPerRow itself is settled for the vw-formula
-	// breakpoints.
-	const tileWidth = itemsPerRow > 0 ? Math.max(0, (containerWidth - gap * (itemsPerRow - 1)) / itemsPerRow) : containerWidth;
+	const tileWidth = Math.max(0, (containerWidth - gap * (itemsPerRow - 1)) / itemsPerRow);
 
 	return { tileWidth, itemsPerRow, gap };
 }
@@ -212,15 +169,15 @@ export type AlbumTileWidthResult = {
 
 /**
  * Reactive `itemsPerRow`/`tileWidth` derived analytically from viewport
- * width and the current Tailwind breakpoint — no probe tile, no DOM
- * measurement of any tile or container element. Correct synchronously
- * from the very first evaluation, with no
- * post-mount correction (see WRAPPER_PADDING_PX's own comment for why that
- * matters here specifically).
+ * width, the current breakpoint and `album_thumb_min_width` (or the live
+ * drawer's value) — no probe tile,
+ * no DOM measurement of any tile or container element. Correct synchronously
+ * from the very first evaluation, with no post-mount correction (see
+ * WRAPPER_PADDING_PX's own comment for why that matters here specifically).
  */
 export function useAlbumTileWidth(withDateScrubber: boolean = false): AlbumTileWidthResult {
-	const lycheeStore = useLycheeStateStore();
-	const { number_albums_per_row_mobile } = storeToRefs(lycheeStore);
+	// Stored values, or the live drawer's while it is open (Feature 110, FR-110-14).
+	const { minWidth, perRowMobile, gap: gapSetting } = useEffectiveAlbumTileSettings();
 	const { isNavOpen } = storeToRefs(useTogglablesStateStore());
 	const { isAvailable: isDateScrubberAvailable, isHidden: isDateScrubberHidden } = useAlbumDateScrubberState();
 	const isNavPanelInline = useBreakpoints(breakpointsTailwind).greaterOrEqual("lg");
@@ -269,14 +226,16 @@ export function useAlbumTileWidth(withDateScrubber: boolean = false): AlbumTileW
 		return nav + scrubber;
 	});
 
-	const containerWidth = computed(() => {
-		const paddingPx = activeBreakpoint.value === "" ? WRAPPER_PADDING_PX_MOBILE : WRAPPER_PADDING_PX;
-		const scrollbarWidth = isTouchDevice() ? 0 : ASSUMED_SCROLLBAR_WIDTH;
-		return Math.max(0, viewportWidth.value - paddingPx * 2 - scrollbarWidth - sideChromeWidth.value);
-	});
+	const containerWidth = computed(() =>
+		computeAlbumContainerWidth(viewportWidth.value, activeBreakpoint.value, isTouchDevice() ? 0 : ASSUMED_SCROLLBAR_WIDTH, sideChromeWidth.value),
+	);
 
 	const geometry = computed<AlbumTileGeometry>(() =>
-		computeAlbumTileGeometry(viewportWidth.value, containerWidth.value, activeBreakpoint.value, number_albums_per_row_mobile.value),
+		computeAlbumTileGeometry(containerWidth.value, activeBreakpoint.value, {
+			minWidth: minWidth.value,
+			perRowMobile: perRowMobile.value,
+			gap: gapSetting.value,
+		}),
 	);
 
 	const tileWidth = computed(() => geometry.value.tileWidth);

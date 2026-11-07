@@ -176,6 +176,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, globalRightsStore: 
 			visible: computed(() => rights.value?.settings.can_edit ?? false),
 		},
 		{
+			key: "gallery-sizes",
+			group: "extensions",
+			label: "gallery_sizes.title",
+			icon: "lucide:ruler",
+			to: "/admin/gallery-sizes",
+			isExternal: false,
+			visible: computed(() => rights.value?.settings.can_edit ?? false),
+		},
+		{
 			key: "bulk-album-edit",
 			group: "core",
 			label: "bulk_album_edit.title",

@@ -96,6 +96,7 @@ import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
@@ -125,7 +126,9 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
-const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumsStore.rootConfig?.album_thumb_css_aspect_ratio));
+// The root ratio, or the live drawer's while it is open (Feature 110).
+const rootAspectRatio = useAlbumThumbAspectRatio("root");
+const aspectRatioNumber = computed(() => aspectRatioCssToNumber(rootAspectRatio.value));
 
 const tiles = computed<AdaptedAlbumTile[]>(() => (props.scope === "own" ? (albumsStore.albums as AdaptedAlbumTile[]) : albumsStore.sharedAlbumsV3));
 // Also gated on the instance-wide `is_album_timeline_enabled` display toggle

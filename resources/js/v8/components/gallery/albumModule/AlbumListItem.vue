@@ -111,11 +111,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from "vue";
+import { toRef } from "vue";
 import AlbumThumbImage from "./thumbs/AlbumThumbImage.vue";
-import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
 import ListBadge from "./thumbs/ListBadge.vue";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -123,8 +122,6 @@ import { storeToRefs } from "pinia";
 import { ALBUM_BADGE_FILL, ALBUM_BADGE_TEXT } from "@/v8/utils/albumBadgeColors";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
 
-const albumStore = useAlbumStore();
-const albumsStore = useAlbumsStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
@@ -157,7 +154,6 @@ function maySelect(e: MouseEvent, id: string) {
 	propagateClicked(e, id);
 }
 
-const aspectRatio = computed(
-	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
-);
+// Open album's ratio, else the root's, else square; the live drawer's while it is open (Feature 110).
+const aspectRatio = useAlbumThumbAspectRatio("nearest");
 </script>
