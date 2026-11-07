@@ -18,6 +18,7 @@ const NsfwFindings = () => import("@/v8/views/admin/NsfwFindings.vue");
 const DesignSystem = () => import("@/v8/views/admin/DesignSystem.vue");
 const WatermarkPreview = () => import("@/v8/views/admin/WatermarkPreview.vue");
 const LandingConfig = () => import("@/v8/views/admin/LandingConfig.vue");
+const GallerySizes = () => import("@/v8/views/admin/GallerySizes.vue");
 const Settings = () => import("@/v8/views/admin/Settings.vue");
 const Sharing = () => import("@/v8/views/Sharing.vue");
 const Users = () => import("@/v8/views/admin/Users.vue");
@@ -79,6 +80,7 @@ const componentByName: Record<string, any> = {
 	"design-system": DesignSystem,
 	"watermark-preview": WatermarkPreview,
 	"landing-config": LandingConfig,
+	"gallery-sizes": GallerySizes,
 	settings: Settings,
 	sharing: Sharing,
 	users: Users,

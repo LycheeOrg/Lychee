@@ -11,6 +11,8 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_login_open: false,
 		is_webauthn_open: false,
 		is_metrics_open: false,
+		// Feature 110: live gallery sizes drawer (v8, opened from Spotlight only).
+		is_gallery_sizes_live_open: false,
 
 		// upload
 		is_upload_visible: false,
@@ -94,6 +96,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 				state.is_login_open ||
 				state.is_webauthn_open ||
 				state.is_metrics_open ||
+				state.is_gallery_sizes_live_open ||
 				state.is_upload_visible ||
 				state.is_camera_capture_visible ||
 				state.is_create_album_visible ||

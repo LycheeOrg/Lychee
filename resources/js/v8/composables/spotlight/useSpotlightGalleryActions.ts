@@ -13,6 +13,7 @@ import UsersService from "@/services/users-service";
 import { useUserStore } from "@/stores/UserState";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 import type { SpotlightItem } from "./types";
+import { canOfferLiveGallerySizes } from "@/v8/composables/gallerySizes/gallerySizesLive";
 
 export type SpotlightGalleryActionToggles = {
 	toggleCreateAlbum: () => void;
@@ -25,7 +26,8 @@ export type SpotlightGalleryActionToggles = {
 /**
  * The 10 context-aware album/gallery actions (create/move/edit/share/upload/tracks/
  * watermark/scan-faces/apply-renamer), gated exactly like their existing non-Spotlight
- * triggers (Hero buttons, "+" menus, AlbumEdit's own section gates).
+ * triggers (Hero buttons, "+" menus, AlbumEdit's own section gates), plus the live
+ * gallery sizes drawer (Feature 110), which has no other trigger and is mounted in App.vue.
  *
  * The dialogs these actions open only ever get mounted while the matching route is
  * active (see Album.vue/Albums.vue), so gating visibility on the route is enough - no
@@ -223,6 +225,19 @@ export function useSpotlightGalleryActions(
 				onSelect: () => {
 					close();
 					toggles.toggleApplyRenamer();
+				},
+			});
+		}
+
+		// Feature 110 (FR-110-13): the only way to open the live gallery sizes drawer.
+		if (canOfferLiveGallerySizes(route.name, globalRights.value?.settings.can_edit ?? false)) {
+			items.push({
+				label: trans("gallery_sizes.spotlight_action"),
+				icon: "lucide:ruler",
+				kind: "nav",
+				onSelect: () => {
+					close();
+					togglableStore.is_gallery_sizes_live_open = true;
 				},
 			});
 		}

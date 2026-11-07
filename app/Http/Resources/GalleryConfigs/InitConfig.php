@@ -74,6 +74,10 @@ class InitConfig extends Data
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	#[LiteralTypeScriptType('1|2|3')]
 	public int $number_albums_per_row_mobile;
+	// Feature 110 (FR-110-02): v8 album tile minimum width in CSS px.
+	public int $album_thumb_min_width;
+	// Feature 110 (FR-110-16): gap between v8 album tiles in CSS px from 768 px wide.
+	public int $album_thumb_gap;
 	public PhotoThumbInfoType $photo_thumb_info;
 	public bool $is_photo_thumb_tags_enabled;
 	public bool $is_rounded_corners_enabled;
@@ -263,6 +267,8 @@ class InitConfig extends Data
 		$this->album_decoration = request()->configs()->getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = request()->configs()->getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 		$this->number_albums_per_row_mobile = request()->configs()->getValueAsInt('number_albums_per_row_mobile');
+		$this->album_thumb_min_width = request()->configs()->getValueAsInt('album_thumb_min_width');
+		$this->album_thumb_gap = request()->configs()->getValueAsInt('album_thumb_gap');
 		$this->photo_thumb_info = request()->configs()->getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
 		$this->is_photo_thumb_tags_enabled = request()->configs()->getValueAsBool('photo_thumb_tags_enabled');
 		$this->is_rounded_corners_enabled = request()->configs()->getValueAsBool('rounded_corners_enabled');

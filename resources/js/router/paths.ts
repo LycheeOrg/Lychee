@@ -121,6 +121,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/landing-config",
 	},
 	{
+		name: "gallery-sizes",
+		path: "/admin/gallery-sizes",
+	},
+	{
 		name: "tree",
 		path: "/fixTree",
 	},
