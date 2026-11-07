@@ -31,7 +31,6 @@ class TimelineFullPhotoAccessTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		Config::set('features.struct-of-array', true);
 		Configs::set('grants_full_photo_access', '1');
 		Configs::set('timeline_page_enabled', '1');
 	}

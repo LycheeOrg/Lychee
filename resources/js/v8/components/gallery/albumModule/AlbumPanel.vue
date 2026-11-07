@@ -13,7 +13,7 @@
 	/>
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
+			<AlbumNavPanel />
 			<div class="flex-1 flex-col min-w-0">
 				<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 					<UContextMenu :items="menuSections" :disabled="noData" class="contents">
@@ -58,7 +58,7 @@
 							<div class="flex w-full">
 								<div class="flex flex-1 min-w-0 flex-wrap content-start justify-start">
 									<AlbumThumbPanelVirtual
-										v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
+										v-if="albumsStore.albums.length > 0"
 										ref="albumPanelVirtualRef"
 										@scrubber-layout-changed="onAlbumScrubberLayout"
 										@scroll-offset-changed="onAlbumScrubberScroll"
@@ -67,35 +67,6 @@
 										@selected="albumSelect"
 										@contexted="contextMenuAlbumOpen"
 									/>
-									<template v-else>
-										<AlbumThumbPanel
-											v-if="albumsStore.albums.length > 0"
-											header="gallery.album.header_albums"
-											:albums="albumsStore.albums"
-											:config="albumPanelConfig"
-											:is-alone="photosStore.photos.length === 0"
-											:selected-albums="selectedAlbumsIds"
-											:is-timeline="albumStore.config.is_album_timeline_enabled"
-											@clicked="albumSelect"
-											@selected="albumSelect"
-											@contexted="contextMenuAlbumOpen"
-										/>
-										<!-- Pagination for albums -->
-										<Pagination
-											v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-											:mode="lycheeStore.albums_pagination_mode"
-											:loading="albumStore.albums_loading"
-											:has-more="albumStore.hasMoreAlbums"
-											:current-page="albumStore.albums_current_page"
-											:last-page="albumStore.albums_last_page"
-											:per-page="albumStore.albums_per_page"
-											:total="albumStore.albums_total"
-											:remaining="albumStore.albumsRemainingCount"
-											resource-type="albums"
-											@load-more="albumStore.loadMoreAlbums()"
-											@go-to-page="goToAlbumsPage"
-										/>
-									</template>
 									<!-- Tag Filter -->
 									<PhotoThumbPanelVirtual
 										v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
@@ -184,7 +155,6 @@
 <script setup lang="ts">
 import { computed, ref, ComponentPublicInstance, provide } from "vue";
 import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
-import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import PhotoThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbPanelVirtual.vue";
@@ -205,7 +175,6 @@ import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
-import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import GalleryFooter from "@/v8/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/v8/components/drawers/AlbumStatistics.vue";
@@ -263,7 +232,7 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled } = storeToRefs(lycheeStore);
 
 // --- Feature 071: album date scrubber ---
 
@@ -362,10 +331,6 @@ function goToPhotosPage(page: number) {
 	albumStore.loadPhotos(page, false);
 }
 
-function goToAlbumsPage(page: number) {
-	albumStore.loadAlbums(page, false);
-}
-
 const areStatisticsOpen = ref(false);
 function toggleStatistics() {
 	if (is_se_enabled) {
@@ -409,14 +374,6 @@ function toggleDownloadAlbumFromSelection() {
 	downloadAlbumIds.value = selectedAlbumsIds.value;
 	is_download_album_visible.value = true;
 }
-
-const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
-	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",
-	album_subtitle_type: lycheeStore.album_subtitle_type,
-	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
-	album_decoration: lycheeStore.album_decoration,
-	album_decoration_orientation: lycheeStore.album_decoration_orientation,
-}));
 
 const photoCallbacks = {
 	star: () => {

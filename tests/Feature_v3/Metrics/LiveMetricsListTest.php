@@ -37,7 +37,6 @@ class LiveMetricsListTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		$this->requireSe();
 		Configs::set('live_metrics_enabled', true);
 	}
@@ -54,7 +53,7 @@ class LiveMetricsListTest extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Metrics'));
 	}
 

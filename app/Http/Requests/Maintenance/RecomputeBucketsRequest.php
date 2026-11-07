@@ -10,7 +10,7 @@ namespace App\Http\Requests\Maintenance;
 
 /**
  * Bucket keys only feed the struct-of-arrays listings: the maintenance
- * action is gated by the `features.struct-of-array` flag on top of the
+ * action is gated by the `features.v8` flag on top of the
  * admin check.
  */
 class RecomputeBucketsRequest extends MaintenanceRequest
@@ -20,6 +20,6 @@ class RecomputeBucketsRequest extends MaintenanceRequest
 	 */
 	public function authorize(): bool
 	{
-		return config('features.struct-of-array') === true && parent::authorize();
+		return config('features.v8') === true && parent::authorize();
 	}
 }

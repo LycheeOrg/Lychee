@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Gate;
 
 /**
  * Request for `GET /api/v3/Map/album` (Feature 086, FR-086-05): the album's
- * map access gate, without the `struct-of-array` flag the Feature 067
+ * map access gate, without the `v8` flag the Feature 067
  * endpoints require (ADR-086-01).
  */
 class GetMapAlbumRequest extends BaseApiRequest implements HasAbstractAlbum

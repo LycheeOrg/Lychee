@@ -27,7 +27,6 @@ class FaceQueueTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
@@ -53,7 +52,7 @@ class FaceQueueTest extends BaseApiWithDataTest
 
 	public function testFlagOffIsForbidden(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Faces/queue'));
 	}
 

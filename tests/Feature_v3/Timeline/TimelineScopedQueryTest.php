@@ -30,7 +30,6 @@ class TimelineScopedQueryTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 
 		// One photo in two albums of the same owner.
 		$this->twice = Photo::factory()->owned_by($this->userMayUpload1)->in($this->album1)

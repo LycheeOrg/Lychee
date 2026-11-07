@@ -55,17 +55,11 @@ class PhotoBucketsV3Test extends BaseApiWithDataTest
 		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
 	}
 
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Flag gate ─────────────────────────────────────────────────
 
 	public function testFlagOffReturns403RegardlessOfCallerRights(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/Photos/buckets");
 		$this->assertForbidden($response);

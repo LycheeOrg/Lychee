@@ -33,12 +33,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class SearchV3FullPhotoAccessTest extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		Config::set('features.struct-of-array', true);
-	}
-
 	/**
 	 * @param string[] $photo_ids
 	 */

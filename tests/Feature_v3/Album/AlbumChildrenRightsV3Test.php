@@ -36,12 +36,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	private function recompute(Album $album): void
 	{
 		(new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false))->handle();
@@ -51,7 +45,7 @@ class AlbumChildrenRightsV3Test extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403RegardlessOfCallerRights(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/rights");
 		$this->assertForbidden($response);

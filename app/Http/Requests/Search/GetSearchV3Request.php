@@ -36,7 +36,7 @@ use function Safe\base64_decode;
  *
  * Validation and gating mirror v2's {@see GetSearchRequest} exactly (NFR-069-07)
  * with two additions:
- *  - the `features.struct-of-array` flag is checked first, as on every other v3
+ *  - the `features.v8` flag is checked first, as on every other v3
  *    route (FR-069-10);
  *  - `terms` is validated as decodable base64 rather than being handed to
  *    `base64_decode()` unchecked (FR-069-11) — v2 would pass `false` straight
@@ -78,7 +78,7 @@ class GetSearchV3Request extends BaseApiRequest implements HasAbstractAlbum, Has
 	 */
 	public function authorize(): bool
 	{
-		if (config('features.struct-of-array') !== true) {
+		if (config('features.v8') !== true) {
 			return false;
 		}
 

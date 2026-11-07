@@ -35,7 +35,6 @@ class MapListingV3Test extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		Configs::set('map_display', '1');
 		Configs::set('map_display_public', '1');
 	}
@@ -49,7 +48,7 @@ class MapListingV3Test extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403OnBuckets(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/buckets', $this->defaultViewportParams());
 		$this->assertForbidden($response);
@@ -57,7 +56,7 @@ class MapListingV3Test extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403OnPhotos(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/Photos', $this->defaultViewportParams());
 		$this->assertForbidden($response);

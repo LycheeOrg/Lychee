@@ -17,14 +17,14 @@ use Illuminate\Support\Facades\Gate;
  * Request for `GET /api/v3/People` (Feature 093, API-093-04).
  *
  * Same gate as `GET /api/v2/People` ({@see ListPersonsRequest}), plus the
- * `features.struct-of-array` flag and the face recognition settings, which
+ * `features.v8` flag and the face recognition settings, which
  * the v2 route enforces through its middleware group instead.
  */
 class GetPeopleListRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
-		return config('features.struct-of-array') === true &&
+		return config('features.v8') === true &&
 			$this->configs()->getValueAsBool('ai_vision_enabled') &&
 			$this->configs()->getValueAsBool('ai_vision_face_enabled') &&
 			Gate::check(AiVisionPolicy::CAN_VIEW_PEOPLE, Person::class);

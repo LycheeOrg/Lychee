@@ -38,17 +38,11 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class PhotoRatiosV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Flag gate ─────────────────────────────────────────────────
 
 	public function testFlagOffReturns403(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 		$response = $this->actingAs($this->admin)->getJsonV3("Albums/{$this->album1->id}/Photos");
 		$this->assertForbidden($response);
 	}

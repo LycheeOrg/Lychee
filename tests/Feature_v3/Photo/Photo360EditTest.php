@@ -103,7 +103,6 @@ class Photo360EditTest extends BaseApiWithDataTest
 
 	public function testChangeInvalidatesCachedListing(): void
 	{
-		Config::set('features.struct-of-array', true);
 		Config::set('features.enable-caching', true);
 		Configs::set('managed_cache_enabled', '1');
 		Configs::set('managed_cache_albums_enabled', '1');

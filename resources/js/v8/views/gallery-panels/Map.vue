@@ -43,6 +43,8 @@ import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { clusterFunc } from "@/composables/photo";
 import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 import { useMapStore, type MapBounds } from "@/stores/MapState";
+import MapV3Service from "@/services/map-v3-service";
+import { paddedBounds, viewportContentPoints } from "@/v8/utils/mapContentBounds";
 import ThumbAssetService from "@/services/thumb-asset-service";
 
 type MapPhotoEntry = {
@@ -77,12 +79,7 @@ const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 
-// Feature 067 (I8) — flag-on dispatcher, mirrors `TimelineState.ts`'s own
-// `isTimelineSoaActive` pattern. Delegates to `mapStore.isMapSoaActive` (the
-// same underlying `is_struct_of_array_enabled` flag) rather than
-// re-deriving it here.
 const mapStore = useMapStore();
-const isMapSoaActive = computed(() => mapStore.isMapSoaActive);
 
 function goBack() {
 	if (props.albumId !== undefined && props.albumId !== "") {
@@ -97,18 +94,12 @@ const { is_full_screen } = storeToRefs(togglableStore);
 const camera_date = trans("gallery.camera_date");
 const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 const map = ref(undefined) as Ref<L.Map | undefined>;
-const bounds = ref<L.LatLngBoundsExpression | undefined>(undefined);
 const photoLayer = ref<unknown>(undefined);
-// One entry per track; keyed by track id so a future re-fetch could diff them.
-const trackLayers = ref<Map<number, L.Layer>>(new Map());
-const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
-
-// Feature 067 (I8) — SoA path state. `aggregateMarkers` renders when the
-// viewport's total photo count is over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS`
-// (server-decided, not mirrored client-side - see `renderAggregateMarkers()`);
-// under that cap, every individual photo is fed to the same
-// `clusterFunc()`/`leaflet.markercluster` machinery the v2 path already uses
-// instead (Q-067-13, amended).
+// Feature 067 (I8). `aggregateMarkers` renders when the viewport's total photo
+// count is over `QueryMapPhotos::MAX_VIEWPORT_PHOTOS` (server-decided, not
+// mirrored client-side - see `renderAggregateMarkers()`); under that cap, every
+// individual photo is fed to the `clusterFunc()`/`leaflet.markercluster`
+// machinery instead (Q-067-13, amended).
 const aggregateMarkers = ref<L.Marker[]>([]);
 // `ThumbAssetService.acquire()` releases for every currently-rendered individual photo marker.
 const individualPhotoReleases = ref<(() => void)[]>([]);
@@ -119,7 +110,7 @@ const individualPhotoReleases = ref<(() => void)[]>([]);
 // used by both a standalone marker and a cluster badge (or several
 // clusters, across zoom levels) would leak one `release()` per redundant call.
 const requestedPhotoIds = ref<Set<string>>(new Set());
-// Mirrors `trackLayers` above, for the v3 (viewport-independent) track fetch.
+// One entry per track of the (viewport-independent) track fetch, keyed by track id.
 const trackLayersV3 = ref<Map<number, L.Layer>>(new Map());
 
 // Fixed palette cycled across tracks (no persisted/user-chosen colors).
@@ -169,36 +160,13 @@ function mapInit() {
 		}).addTo(map.value);
 
 		open();
-
-		if (isMapSoaActive.value) {
-			initSoaMap();
-		} else {
-			fetchData();
-		}
+		initSoaMap();
 	}
 }
 
-function fetchData() {
-	AlbumService.getMapData(props.albumId)
-		.then((mapData) => {
-			data.value = mapData.data;
-			addContentsToMap();
-		})
-		.catch((e) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		})
-		.finally(() => {
-			isLoading.value = false;
-		});
-}
-
-// ── Feature 067 (I8): SoA (v3) rendering path ─────────────────────────
+// ── Feature 067 (I8): SoA (v3) rendering ─────────────────────────────
 // Viewport-driven buckets/photos, decoupled track loading, aggregate-badge
-// vs. individually-clustered-photo split (Q-067-13, amended). Dispatched
-// into from `mapInit()` above, mirroring `Timeline.vue`'s own
-// `isTimelineSoaActive`-driven dispatcher. The v2 path above
-// (`fetchData()`/`addContentsToMap()`/`data`) is untouched by any of this
-// (NFR-067-03).
+// vs. individually-clustered-photo split (Q-067-13, amended).
 
 /**
  * Leaflet doesn't wrap longitude: at low zoom (e.g. the initial `fitWorld()`
@@ -243,16 +211,64 @@ function onMapViewportChanged() {
 	mapStore.requestViewport(current.bounds, current.zoom);
 }
 
+// Feature 109 (FR-109-08): the map opens fitted to its content, once per
+// opening, like v2 did. "tracks": an album without geotagged photos, fitted to
+// its tracks as they load.
+let contentFit: "pending" | "done" | "tracks" = "pending";
+let trackBounds: L.LatLngBounds | undefined = undefined;
+
+function fitToAlbumPoints(albumId: string) {
+	MapV3Service.getAlbumPoints(albumId)
+		.then((response) => {
+			if (contentFit !== "pending" || mapStore.albumId !== albumId) return;
+			const bounds = paddedBounds(response.data);
+			if (bounds === undefined) {
+				contentFit = "tracks";
+				fitToTracks();
+				return;
+			}
+			contentFit = "done";
+			map.value?.fitBounds(bounds);
+		})
+		.catch(() => {
+			// The whole-world view stays; the viewport listing reports its own errors.
+			contentFit = "done";
+		});
+}
+
+function fitToFirstFetch() {
+	if (contentFit !== "pending") return;
+	contentFit = "done";
+	const bounds = paddedBounds(viewportContentPoints(mapStore.bucketsV3, mapStore.photosV3));
+	if (bounds !== undefined) {
+		map.value?.fitBounds(bounds);
+	}
+}
+
+function fitToTracks() {
+	if (contentFit === "tracks" && trackBounds !== undefined) {
+		map.value?.fitBounds(trackBounds);
+	}
+}
+
+function onTrackLoaded(bounds: L.LatLngBounds) {
+	trackBounds = trackBounds === undefined ? L.latLngBounds(bounds.getSouthWest(), bounds.getNorthEast()) : trackBounds.extend(bounds);
+	fitToTracks();
+}
+
 function initSoaMap() {
 	if (map.value === undefined) return;
 
 	mapStore.reset();
 	mapStore.setAlbumId(props.albumId !== undefined && props.albumId !== "" ? props.albumId : null);
+	contentFit = "pending";
+	trackBounds = undefined;
 
 	map.value.on("moveend zoomend", onMapViewportChanged);
 
 	if (mapStore.albumId !== null) {
 		mapStore.loadTracks();
+		fitToAlbumPoints(mapStore.albumId);
 	}
 
 	// Eager first load - not debounced, so the map isn't empty on mount.
@@ -263,6 +279,9 @@ function initSoaMap() {
 	}
 	mapStore.fetchViewportNow(current.bounds, current.zoom).finally(() => {
 		isLoading.value = false;
+		if (mapStore.albumId === null) {
+			fitToFirstFetch();
+		}
 	});
 }
 
@@ -325,8 +344,7 @@ function clearIndividualPhotos() {
 	requestedPhotoIds.value = new Set();
 }
 
-// Sentinel distinguishing a v3 entry still awaiting its lazily-loaded
-// thumbnail from a v2 entry, which already carries a real URL synchronously.
+// Sentinel for an entry still awaiting its lazily-loaded thumbnail.
 const UNRESOLVED_THUMBNAIL = "img/placeholder.png";
 
 function buildPhotoIconHtml(thumbnail: string): string {
@@ -380,8 +398,7 @@ function individualPhotosForViewport(): App.Http.Resources.V3.MapPhotoResource |
 /**
  * Below `MAX_VIEWPORT_PHOTOS` (Q-067-13, amended), the backend ships every
  * individual photo in the viewport with no server-side clustering at all -
- * handed straight to the same `clusterFunc()`/`Cluster.add()` machinery the
- * v2 (non-SoA) `addContentsToMap()` path already uses, so Leaflet's own
+ * handed straight to the `clusterFunc()`/`Cluster.add()` machinery, so Leaflet's own
  * pixel-radius clustering (graduated sizes, real thumbnails) does the work
  * that a fixed SQL grid could only ever approximate (owner: "the clustering
  * threshold is too wide"). Every marker starts on a shared placeholder icon
@@ -456,9 +473,8 @@ function clearTracksV3() {
 
 /**
  * Fetched once via `MapState.ts.loadTracks()` when an album context is
- * present, independent of viewport changes (FR-067-22) — `L.GPX` layer
- * rendering, the fixed color palette, and the layers control are unchanged
- * from the v2 path's own `addContentsToMap()` track-rendering block.
+ * present, independent of viewport changes (FR-067-22): one `L.GPX` layer per
+ * track, colored from the fixed palette, listed in Leaflet's layers control.
  */
 function renderTracksV3() {
 	if (map.value === undefined) return;
@@ -478,9 +494,13 @@ function renderTracksV3() {
 				endIconUrl: null,
 				shadowUrl: null,
 			},
-		}).on("error", function (e: { err: string }) {
-			toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
-		});
+		})
+			.on("error", function (e: { err: string }) {
+				toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
+			})
+			.on("loaded", function (e: { target: { getBounds: () => L.LatLngBounds } }) {
+				onTrackLoaded(e.target.getBounds());
+			});
 		layer.addTo(map.value as L.Map);
 		trackLayersV3.value.set(track.id, layer as L.Layer);
 		overlays[escapeHtml(track.name)] = layer as L.Layer;
@@ -534,11 +554,8 @@ function photoClusterIconCreateFunction(cluster: L.MarkerCluster): L.DivIcon {
 	const representative = cluster.getAllChildMarkers()[0] as L.Marker & { photo?: MapPhotoEntry };
 	const thumbnail = representative.photo?.thumbnail ?? UNRESOLVED_THUMBNAIL;
 
-	// `photoLayer` is shared with the v2 (non-SoA) path, whose photos already
-	// carry a real, synchronously-available thumbnail URL - only a v3 entry
-	// still sitting on the shared placeholder sentinel needs lazy-loading at
-	// all (v2 clusters must not pay for a redundant `ThumbAssetService` fetch
-	// of an image it already has a perfectly good URL for).
+	// Only an entry still sitting on the placeholder sentinel needs
+	// lazy-loading; a resolved one already carries its object URL.
 	if (representative.photo !== undefined && thumbnail === UNRESOLVED_THUMBNAIL) {
 		ensureThumbnailLoaded(representative.photo, () => {
 			cluster.setIcon(photoClusterIconCreateFunction(cluster));
@@ -606,128 +623,13 @@ function open() {
 			.openPopup();
 	});
 
-	// Both `addContentsToMap()` (v2) and `renderIndividualPhotos()` (v3 SoA)
-	// call `.add(photos)` on this layer, which only adds member markers - it
-	// never attaches the layer GROUP itself to the map. Both used to rely on
-	// their own `.addTo(map.value)` for that (or, in an earlier v3 SoA
-	// iteration, skip it entirely via a bare `addLayer()`, silently making
-	// every individual photo invisible). Attaching it here once,
-	// unconditionally, covers every path.
+	// `renderIndividualPhotos()` calls `.add(photos)` on this layer, which only
+	// adds member markers - it never attaches the layer GROUP itself to the map
+	// (an earlier iteration skipped that via a bare `addLayer()`, silently
+	// making every individual photo invisible). Attaching it here once,
+	// unconditionally, covers it.
 	// @ts-expect-error photoLayer is created by leaflet.photo and is not typed
 	photoLayer.value.addTo(map.value);
-}
-
-/**
- * Adds photos to the map.
- */
-function addContentsToMap() {
-	// check if empty
-	if (data.value === undefined) return;
-	if (data.value.photos.length === 0 && data.value.tracks.length === 0) return;
-
-	// Check initializations
-	if (map.value === undefined) return;
-	if (photoLayer.value === null || photoLayer.value === undefined) return;
-
-	const photos: MapPhotoEntry[] = [];
-	let min_lat: number | null = null;
-	let min_lng: number | null = null;
-	let max_lat: number | null = null;
-	let max_lng: number | null = null;
-
-	data.value.photos.forEach(function (element: App.Http.Resources.Models.PhotoResource) {
-		if (element.precomputed.latitude || element.precomputed.longitude) {
-			photos.push({
-				lat: element.precomputed.latitude,
-				lng: element.precomputed.longitude,
-				thumbnail: element.size_variants.thumb?.url ?? "img/placeholder.png",
-				thumbnail2x: element.size_variants.thumb2x?.url,
-				url: element.size_variants.small?.url ?? element.size_variants.medium?.url ?? "",
-				url2x: element.size_variants.small2x?.url ?? "",
-				name: element.title,
-				taken_at: element.preformatted.taken_at,
-				albumID: element.album_id,
-				photoID: element.id,
-			});
-
-			// Update min/max lat/lng
-			if (element.precomputed.latitude !== null && (min_lat === null || min_lat > element.precomputed.latitude)) {
-				min_lat = element.precomputed.latitude;
-			}
-			if (element.precomputed.longitude !== null && (min_lng === null || min_lng > element.precomputed.longitude)) {
-				min_lng = element.precomputed.longitude;
-			}
-			if (element.precomputed.latitude !== null && (max_lat === null || max_lat < element.precomputed.latitude)) {
-				max_lat = element.precomputed.latitude;
-			}
-			if (element.precomputed.longitude !== null && (max_lng === null || max_lng < element.precomputed.longitude)) {
-				max_lng = element.precomputed.longitude;
-			}
-		}
-	});
-
-	// Add Photos to map
-	// @ts-expect-error photoLater is created by leaflet.photo and is not typed
-	photoLayer.value.add(photos).addTo(map.value);
-
-	if (photos.length > 0 && max_lat !== null && min_lat !== null && max_lng !== null && min_lng !== null) {
-		// update map bounds
-		const dist_lat = max_lat - min_lat;
-		const dist_lng = max_lng - min_lng;
-		bounds.value = [
-			[min_lat - 0.1 * dist_lat, min_lng - 0.1 * dist_lng],
-			[max_lat + 0.1 * dist_lat, max_lng + 0.1 * dist_lng],
-		];
-	}
-
-	// add tracks: one L.GPX layer per track, colored from a fixed palette, wired into
-	// Leaflet's native layers control for the legend/visibility checkboxes.
-	// Placed before any early return so a track still renders on a photo-less album.
-	const overlays: Record<string, L.Layer> = {};
-	data.value.tracks.forEach((track, index) => {
-		// @ts-expect-error L.GPX is not typed
-		const layer = new L.GPX(track.url, {
-			async: true,
-			polyline_options: { color: colorForTrackIndex(index), weight: 4 },
-			marker_options: {
-				startIconUrl: null,
-				endIconUrl: null,
-				shadowUrl: null,
-			},
-		})
-			.on("error", function (e: { err: string }) {
-				toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
-			})
-			.on("loaded", function (e: { target: { getBounds: () => L.LatLngBounds } }) {
-				if (photos.length === 0) {
-					// no photos: extend the map bounds to keep every track visible
-					const loadedBounds = e.target.getBounds();
-					bounds.value = bounds.value instanceof L.LatLngBounds ? bounds.value.extend(loadedBounds) : loadedBounds;
-					updateZoom();
-				}
-			});
-		layer.addTo(map.value as L.Map);
-		trackLayers.value.set(track.id, layer as L.Layer);
-		overlays[escapeHtml(track.name)] = layer as L.Layer;
-	});
-	if (Object.keys(overlays).length > 0) {
-		L.control.layers(undefined, overlays).addTo(map.value);
-	}
-
-	// Update Zoom and Position
-	updateZoom();
-}
-
-// Adjusts zoom and position of map to show all images
-function updateZoom() {
-	if (map.value === undefined) {
-		return;
-	}
-	if (bounds.value) {
-		map.value.fitBounds(bounds.value);
-	} else {
-		map.value.fitWorld();
-	}
 }
 
 definePanelShortcuts({
@@ -739,12 +641,8 @@ definePanelShortcuts({
 
 onMounted(() => {
 	leftMenuStore.left_menu_open = false;
-	// `isMapSoaActive` (mapInit()'s v2/v3 dispatch) reads `lycheeStore`'s
-	// `is_struct_of_array_enabled`, which defaults to false until this load
-	// resolves - chained so mapInit() never runs against that default.
-	lycheeStore.load().then(() => {
-		loadMapProvider();
-	});
+	lycheeStore.load();
+	loadMapProvider();
 });
 </script>
 <style lang="css">

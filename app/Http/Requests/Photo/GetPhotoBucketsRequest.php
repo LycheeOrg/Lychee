@@ -36,7 +36,7 @@ class GetPhotoBucketsRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		return config('features.struct-of-array') === true &&
+		return config('features.v8') === true &&
 			Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
 	}
 

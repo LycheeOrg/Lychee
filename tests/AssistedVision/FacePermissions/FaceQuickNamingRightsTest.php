@@ -24,7 +24,6 @@ class FaceQuickNamingRightsTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
 		Configs::set('ai_vision_face_permission_mode', 'public');
@@ -66,9 +65,9 @@ class FaceQuickNamingRightsTest extends BaseApiWithDataTest
 		}
 	}
 
-	public function testFalseWhenStructOfArrayFlagIsOff(): void
+	public function testFalseWhenV8IsOff(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 		self::assertFalse($this->canQuickName($this->admin));
 	}
 
