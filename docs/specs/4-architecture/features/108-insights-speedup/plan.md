@@ -1,8 +1,8 @@
 # Feature Plan 108 – Insights Speedup
 
 _Linked specification:_ [spec.md](spec.md)  
-_Status:_ Implemented  
-_Last updated:_ 2026-11-05
+_Status:_ In progress  
+_Last updated:_ 2026-11-06
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -11,11 +11,12 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 
 ## Scope Alignment
 - **In scope:** album-scope paging (NFR-108-01); album and people counts for Year/Range from the core window plus paged edge photos (NFR-108-02); years list cached per revision (FR-108-03); cheaper local time and single EXIF parse (NFR-108-03); Feature 085 docs and knowledge map.
-- **Out of scope:** N-108-01 … 04 (no index, no queue, no limit change, no other endpoint).
+- **In scope (I9):** the widened `size_variants` index (NFR-108-06, Q-108-05 A).
+- **Out of scope:** N-108-01 … 05 (no column and no `photos` index, no queue, no limit change, no other endpoint, no redesign for ×10–×50 libraries: Q-108-06).
 
 ## Dependencies & Interfaces
 - Feature 085 code (`app/Actions/Insights`, `app/DTO/Insights`), tests (`tests/Feature_v3/Insights`, `tests/Unit/Actions/Insights`), ADR-085-03.
-- Dev database (MariaDB 11.8) read-only for measurements; SQLite for tests.
+- Dev database (MariaDB 11.8) read-only for measurements; SQLite for tests. Since 2026-11-06 the dev database holds the owner's server dump (owner import), and its `size_variants` index was widened by hand at the owner's request, then reverted and migrated in I9.
 
 ## Assumptions & Risks
 - **Assumptions:** the server failure is the Octane time limit (Q-108-01 B).
@@ -62,6 +63,12 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
    - _Steps:_ tests first (`testEdgePagesHoldEachEdgePhotoOnce`, `testLibraryHasNoEdgePages`, `testEdgeRowsAreReadOnePageOfPhotosAtATime`; red: class missing, 2 edge reads instead of 4); `PeriodEdges::photoIdPages()`; `distinctInPeriod()` reads each page by ID. First cut followed the option's wording (`[first, last]` ranges with `BETWEEN`, on `photos.id`, then on the link table's `photo_id`): `EXPLAIN` on the dev copy showed MariaDB driving every range from the album index over all links of the tree (`albums range … Using temporary`, `photo_album ref album_id`), so the cost was ranges × links; binding the page's IDs instead (≤ 1,000, like `albumStream()`) gives `photos range PRIMARY rows=1000` → `photo_album ref PRIMARY` → `albums eq_ref PRIMARY`, and the window filters are no longer needed in the read (low-impact, agent).
    - _Commands:_ `php artisan test --filter=InsightsScalingTest`, every Insights class, `make phpstan`, `vendor/bin/php-cs-fixer fix`; scratchpad `explain6.php 2019-06-08`, `bench.php`/`bench_base.php`.
 
+9. **I9 – Widened `size_variants` index (Q-108-04, Q-108-05 A, 2026-11-06)**
+   - _Goal:_ NFR-108-06, S-108-12: the pass reads the originals from an index in photo-ID order.
+   - _Steps:_ test first (`SizeVariantsOriginalsIndexMigrationTest`: index columns after the migrations, `down()` then `up()`; red: index missing, migration file missing); migration `2026_11_06_000001_widen_size_variants_ratio_index` (`OptimizeTables::dropIndexIfExists()` on both names, owner review, then add `size_variants_photo_id_type_ratio_filesize_width_height_index`; `down()` the reverse; `up()` re-runnable); on the dev database (hand-made wide index in place) run `php artisan migrate`, re-measure (`bench.php`, hashes) and `EXPLAIN` the page and the two `ratio` readers.
+   - _Commands:_ `php artisan test --filter=SizeVariantsOriginalsIndexMigrationTest`, Insights classes reading originals (`InsightsAggregateOverviewTest`, `InsightsFormatsTest`, `InsightsTimelineTest`, `InsightsScalingTest`), ratio readers (`PhotoSearchTest`, `AlbumMapHeaderTest`), `make phpstan`, `vendor/bin/php-cs-fixer fix`.
+   - _Exit:_ tests green; identical hashes on the server dump; `originals ref … Using index`.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -77,6 +84,7 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 | S-108-09 | I6 / T-108-11, T-108-12 | `InsightsScalingTest::testAlbumScopeBindsAFixedNumberOfParameters` |
 | S-108-10 | I7 / T-108-13, T-108-14 | `LocalCaptureTimeTest` (3 cases), `InsightsScalingTest::testOffsetBeyondFourteenHoursCountsInItsUtcYear` |
 | S-108-11 | I8 / T-108-17, T-108-18 | `InsightsScalingTest::testEdgePagesHoldEachEdgePhotoOnce`, `testLibraryHasNoEdgePages`, `testEdgeRowsAreReadOnePageOfPhotosAtATime` |
+| S-108-12 | I9 / T-108-20, T-108-21 | `SizeVariantsOriginalsIndexMigrationTest` |
 
 ## Analysis Gate
 2026-11-04, agent review against `analysis-gate-checklist.md`:
@@ -86,6 +94,14 @@ Insights answer within the 30 s Octane limit on large libraries by removing the 
 4. Tasks coverage — pass: FR-108-01 by the existing Feature 085 classes (T-108-06, T-108-10), FR-108-02 by T-108-02/05, FR-108-03 by T-108-03/07; tests (T-108-01 … 03) before code; success (equal aggregates), edge (one-day range, boundary photos) and failure (cache miss → years pass) branches listed.
 5. Working agreements — pass: no dependency, no migration, no deletion; helpers keep branches out (`utcCore()` inverted bounds instead of a branch, `photoIdPages()` generator); ADR-085-01 … 04 reviewed.
 6. Tooling — pass: commands per task; `make phpstan` and `vendor/bin/php-cs-fixer fix` in T-108-10.
+
+Addendum 2026-11-06 (I9), agent review against `analysis-gate-checklist.md`:
+1. Specification completeness — pass: NFR-108-06, S-108-12, N-108-01 and NFR-108-04 amended, N-108-05 added; Overview states the server cause (Q-108-04).
+2. Open questions — pass: Q-108-04 and Q-108-05 resolved and folded into the spec; ADR-085-03 amended (2026-11-06); Q-108-06 open but deferred out of scope (N-108-05).
+3. Plan alignment — pass: I9 maps NFR-108-06 and S-108-12 to T-108-20 … 23.
+4. Tasks coverage — pass: test before migration (T-108-20 before T-108-21); success (index present), rollback (`down()` restores the old index) and re-apply branches.
+5. Working agreements — pass: one migration approved by the owner (Q-108-05 A); no dependency; dev-database changes requested by the owner (hand-made index, then migration); no deletion.
+6. Tooling — pass: commands per task; `make phpstan`, `vendor/bin/php-cs-fixer fix` in T-108-23.
 
 ## Exit Criteria
 - All tasks `[x]`; every Insights test class green; `make phpstan` and `php-cs-fixer` clean.
@@ -126,3 +142,6 @@ PHP per Library pass (67,790 rows): local time 0.47 → 0.20 s, `PhotoRow` 0.07 
 
 ## Follow-ups / Backlog
 - Check the album-scope page plan on PostgreSQL with a large library (needs a PostgreSQL copy of a large library; none here).
+- Q-108-06 (deferred by the owner): libraries ×10–×50 the server's size exceed the 30 s limit with one pass per computation (≈ 12 µs of PHP per photo, working set ≈ 1–5 GB).
+- NFR-108-06 plan verified on MariaDB only; MySQL, PostgreSQL (index-only scans depend on the visibility map) and SQLite plans not checked on a large library.
+- 2026-11-06: owner server log (`Maximum execution time of 30 seconds exceeded` in the `lazyById` stream, 30,182 ms) after #4959. Dev copy fine (`bench.php`, `explain.php`, `io.php`: 0 disk reads, pool 128 MB 90 % full); owner gave the server's size (85,743 photos, 1,017 albums, 550,491 size variants), MariaDB 11.8.9 and 128 MB pool, declined changing the MariaDB container, then imported the server dump into the dev database. `io.php`/`pagesql.php` (`ANALYZE FORMAT=JSON`, `r_engine_stats`) put the disk reads on the `size_variants` lookups (Q-108-04 resolved). `order.php` (stream from `size_variants` order: no gain), `cover.php`/`paged.php` (session `TEMPORARY` copies with the widened index: 22,551 → 6,027 cold). Owner: "Create the index directly in the DB and retry with measurements … do not do the migration yet" → hand-made `ALTER` (1.1 s), `bench.php` before/after (hashes identical), `ratioq.php` (ratio readers still covering). Owner asked about ×10/×50 → Q-108-06 logged, deferred. Owner: "Let's first ship the index solution" → Q-108-05 A, I9.

@@ -79,7 +79,7 @@ RUN npm run build
 # ============================================================================
 # Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-101-01).
 # Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases.
-FROM dunglas/frankenphp:1.13.3-php8-trixie@sha256:73053ec45f0ad33c8e6f71f60ec3a11133899eecc73d7aa577b6d3a1ff5649c2 AS imagemagick
+FROM dunglas/frankenphp:1.13.5-php8-trixie@sha256:7e73a27eb7712a5b4073b92f8f0dec91e9400138604b76cc791589faaa6a639c AS imagemagick
 
 ARG IMAGEMAGICK_VERSION=7.1.2-32
 ARG IMAGEMAGICK_SHA256=940e349f0ef394e658fd57400b83d1d7a81b954f6e7bdbfbfad31b2718c10add
@@ -139,7 +139,7 @@ RUN curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK
 # ============================================================================
 # Stage 4: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:1.13.3-php8-trixie@sha256:73053ec45f0ad33c8e6f71f60ec3a11133899eecc73d7aa577b6d3a1ff5649c2
+FROM dunglas/frankenphp:1.13.5-php8-trixie@sha256:7e73a27eb7712a5b4073b92f8f0dec91e9400138604b76cc791589faaa6a639c
 
 ARG USER=appuser
 
