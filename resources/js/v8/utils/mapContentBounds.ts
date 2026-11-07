@@ -20,10 +20,10 @@ export function paddedBounds(points: MapPoints): PaddedBounds | undefined {
 		return undefined;
 	}
 
-	const minLat = Math.min(...points.latitudes);
-	const maxLat = Math.max(...points.latitudes);
-	const minLng = Math.min(...points.longitudes);
-	const maxLng = Math.max(...points.longitudes);
+	const minLat = points.latitudes.reduce((min, value) => Math.min(min, value), Infinity);
+	const maxLat = points.latitudes.reduce((max, value) => Math.max(max, value), -Infinity);
+	const minLng = points.longitudes.reduce((min, value) => Math.min(min, value), Infinity);
+	const maxLng = points.longitudes.reduce((max, value) => Math.max(max, value), -Infinity);
 	const padLat = 0.1 * (maxLat - minLat);
 	const padLng = 0.1 * (maxLng - minLng);
 
