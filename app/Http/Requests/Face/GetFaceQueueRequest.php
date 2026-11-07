@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Request for `GET /api/v3/Faces/queue` (Feature 093, API-093-03).
  *
- * Gate: `features.struct-of-array`, AI Vision and face recognition enabled,
+ * Gate: `features.v8`, AI Vision and face recognition enabled,
  * a logged-in user, and the library-wide batch face right
  * (`AlbumPolicy::CAN_BATCH_FACE_OPS` with a null album — admins in every
  * mode, logged-in users in `public`/`private` mode).
@@ -50,7 +50,7 @@ class GetFaceQueueRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return config('features.struct-of-array') === true &&
+		return config('features.v8') === true &&
 			Auth::check() &&
 			$this->configs()->getValueAsBool('ai_vision_enabled') &&
 			$this->configs()->getValueAsBool('ai_vision_face_enabled') &&

@@ -34,7 +34,6 @@ class TimelineNsfwFlagTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		foreach (self::KEYS as $key) {
 			$this->initial_values[$key] = strval(Configs::query()->where('key', '=', $key)->value('value'));
 		}

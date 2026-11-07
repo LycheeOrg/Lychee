@@ -50,7 +50,6 @@ class AlbumSlugV3Test extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 
 		// Slugs are a supporter-gated *edit* (StringRequireSupportRule on the
 		// update requests), but resolution itself is not gated — assign the

@@ -63,14 +63,14 @@ class ModulesRightsResource extends Data
 
 	/**
 	 * Whether the face quick naming view is available (Feature 093, FR-093-07):
-	 * struct-of-array flag on, AI Vision and face recognition enabled, and the
+	 * v8 flag on, AI Vision and face recognition enabled, and the
 	 * library-wide batch face right (admins in every mode, logged-in users in
 	 * `public`/`private` mode).
 	 */
 	private function canQuickNameFaces(bool $is_logged_in): bool
 	{
 		return $is_logged_in &&
-			config('features.struct-of-array') === true &&
+			config('features.v8') === true &&
 			request()->configs()->getValueAsBool('ai_vision_enabled') &&
 			request()->configs()->getValueAsBool('ai_vision_face_enabled') &&
 			Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]);

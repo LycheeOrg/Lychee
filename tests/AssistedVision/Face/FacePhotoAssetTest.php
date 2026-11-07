@@ -35,7 +35,6 @@ class FacePhotoAssetTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Storage::fake(StorageDiskType::LOCAL->value);
-		config(['features.struct-of-array' => true]);
 
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
@@ -97,7 +96,7 @@ class FacePhotoAssetTest extends BaseApiWithDataTest
 
 	public function testFlagOffIsForbidden(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 		$this->actingAs($this->admin)->getV3($this->url())->assertForbidden();
 	}
 

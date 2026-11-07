@@ -17,7 +17,7 @@
 	<AlbumsHeader v-if="userStore.isLoaded && albumsStore.rootConfig" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
+			<AlbumNavPanel />
 			<div class="flex-1 flex-col min-w-0">
 				<!-- Disabled only when there is no album to right-click at all: `selectableAlbums` is the pool the
 				     selection resolves against (own, pinned and shared scopes), so a guest whose public albums arrive
@@ -77,7 +77,6 @@
 											/>
 										</template>
 										<AlbumRootPanelVirtual
-											v-if="is_struct_of_array_enabled"
 											scope="own"
 											header="gallery.albums"
 											:selected-albums="selectedAlbumsIds"
@@ -85,40 +84,17 @@
 											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-										<template v-else-if="displayAlbums.length > 0">
-											<AlbumThumbPanel
-												:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
-												header="gallery.albums"
-												:albums="displayAlbums"
-												:is-alone="!albumsStore.pinnedAlbums.length"
-												:selected-albums="selectedAlbumsIds"
-												@clicked="albumSelect"
-												@contexted="contextMenuAlbumOpen"
-											/>
-										</template>
 									</ResetDir>
 								</template>
 								<template #shared>
 									<ResetDir>
 										<AlbumRootPanelVirtual
-											v-if="is_struct_of_array_enabled"
 											scope="shared"
 											:selected-albums="selectedAlbumsIds"
 											@clicked="albumSelect"
 											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-										<template v-else v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-											<AlbumThumbPanel
-												:header="sharedAlbum.header"
-												:albums="sharedAlbum.data"
-												:is-alone="displaySharedAlbums.length === 1"
-												:selected-albums="selectedAlbumsIds"
-												:is-timeline="false"
-												@clicked="albumSelect"
-												@contexted="contextMenuAlbumOpen"
-											/>
-										</template>
 									</ResetDir>
 								</template>
 							</UTabs>
@@ -138,7 +114,6 @@
 								/>
 							</template>
 							<AlbumRootPanelVirtual
-								v-if="is_struct_of_array_enabled"
 								scope="own"
 								header="gallery.albums"
 								:selected-albums="selectedAlbumsIds"
@@ -146,37 +121,14 @@
 								@selected="albumSelect"
 								@contexted="contextMenuAlbumOpen"
 							/>
-							<template v-else-if="displayAlbums.length > 0">
-								<AlbumThumbPanel
-									:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
-									header="gallery.albums"
-									:albums="displayAlbums"
-									:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
-									:selected-albums="selectedAlbumsIds"
-									@clicked="albumSelect"
-									@contexted="contextMenuAlbumOpen"
-								/>
-							</template>
 							<AlbumRootPanelVirtual
-								v-if="is_struct_of_array_enabled && shouldShowSharedAlbums"
+								v-if="shouldShowSharedAlbums"
 								scope="shared"
 								:selected-albums="selectedAlbumsIds"
 								@clicked="albumSelect"
 								@selected="albumSelect"
 								@contexted="contextMenuAlbumOpen"
 							/>
-							<template v-else-if="!is_struct_of_array_enabled" v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-								<AlbumThumbPanel
-									v-if="shouldShowSharedAlbums"
-									:header="sharedAlbum.header"
-									:albums="sharedAlbum.data"
-									:is-alone="!displayAlbums.length"
-									:selected-albums="selectedAlbumsIds"
-									:is-timeline="false"
-									@clicked="albumSelect"
-									@contexted="contextMenuAlbumOpen"
-								/>
-							</template>
 						</template>
 						<!-- </div> -->
 					</div>
@@ -337,7 +289,7 @@ const {
 	is_keybindings_help_open,
 	is_download_album_visible,
 } = storeToRefs(togglableStore);
-const { are_nsfw_visible, title, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,
@@ -459,43 +411,19 @@ const displayAlbums = computed(() => {
 	return albumsStore.albums;
 });
 
-// Determine which shared albums to display based on visibility mode
-const displaySharedAlbums = computed(() => {
-	if (sharedAlbumsVisibilityMode.value === "hide") {
-		// HIDE: don't show shared albums at all
-		return [];
-	}
-	if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
-		// Filter to only show directly shared albums (not public albums owned by others)
-		// An album is "directly shared" if it's not public (is_public === false)
-		return albumsStore.sharedAlbums
-			.map((group) => ({
-				...group,
-				data: group.data.filter((album) => !album.is_public),
-			}))
-			.filter((group) => group.data.length > 0);
-	}
-	// SHOW and SEPARATE: show all shared albums grouped by owner
-	return albumsStore.sharedAlbums;
-});
-
-// Whether there are shared albums to show, respecting visibility mode.
-// `displaySharedAlbums` only ever reflects `albumsStore.sharedAlbums`, the
-// flag-off field — under struct-of-array, shared root data lands in
-// `sharedAlbumsV3` instead (see `AlbumsState.ts`'s `load()`), so that branch
-// must be checked separately or guests (who only ever have a "shared" scope,
-// never "own") see an empty root page.
+// Whether there are shared albums to show, respecting visibility mode. Shared
+// root data lands in `sharedAlbumsV3` (see `AlbumsState.ts`'s `load()`); guests
+// only ever have a "shared" scope, never "own", so without it they would see an
+// empty root page. "separate_shared_only" keeps only directly shared albums
+// (not public albums owned by others).
 const hasSharedAlbums = computed(() => {
 	if (sharedAlbumsVisibilityMode.value === "hide") {
 		return false;
 	}
-	if (is_struct_of_array_enabled.value) {
-		if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
-			return albumsStore.sharedAlbumsV3.some((album) => !album.is_public);
-		}
-		return albumsStore.sharedAlbumsV3.length > 0;
+	if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
+		return albumsStore.sharedAlbumsV3.some((album) => !album.is_public);
 	}
-	return displaySharedAlbums.value.length > 0;
+	return albumsStore.sharedAlbumsV3.length > 0;
 });
 
 // Check if we should show shared albums section (for inline mode)

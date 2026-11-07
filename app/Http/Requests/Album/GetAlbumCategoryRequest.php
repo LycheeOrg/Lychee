@@ -23,7 +23,7 @@ class GetAlbumCategoryRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return config('features.struct-of-array') === true;
+		return config('features.v8') === true;
 	}
 
 	/**

@@ -42,7 +42,6 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		config(['features.struct-of-array' => true]);
 		DB::table('configs')->where('key', '=', 'sorting_albums_col')->update(['value' => 'created_at']);
 		DB::table('configs')->where('key', '=', 'sorting_albums_order')->update(['value' => 'ASC']);
 		DB::table('configs')->where('key', '=', 'timeline_albums_granularity')->update(['value' => 'year']);
@@ -57,7 +56,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 
 	public function testFlagOffReturns403RegardlessOfCallerRights(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/root?scope=own'));
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/root/buckets?scope=own'));
@@ -69,7 +68,7 @@ class AlbumRootV3Test extends BaseApiWithDataTest
 		// Unauthenticated + failed authorize() -> 401 per
 		// BaseApiRequest::failedAuthorization()'s existing convention
 		// (403 is reserved for an authenticated-but-not-permitted caller).
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$this->assertUnauthorized($this->getJsonV3('Albums/root'));
 	}

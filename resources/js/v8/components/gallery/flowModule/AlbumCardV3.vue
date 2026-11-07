@@ -7,19 +7,59 @@
 			'--top-images-height': props.config.image_header_height / 2 + 'rem',
 		}"
 	>
-		<AlbumCardSkeletonV3 v-if="props.config.is_image_header_enabled && (loadState === 'loading' || loadState === 'idle')" />
+		<AlbumCardSkeletonV3 v-if="loadState === 'loading' || loadState === 'idle'" />
 		<template v-else>
-			<div v-if="headerPhotoId !== undefined" class="w-full h-(--header-height) relative">
-				<Thumb :album-id="props.album.id" :photo-id="headerPhotoId" type="small" class="w-full h-full object-cover" @click="headerClicked" />
+			<!-- Mirrors v2 HeaderImage.vue (Feature 109, FR-109-07): natural height once "show more" is open,
+			     whole photo over a blurred copy in `fit` mode, cropped in `cover` mode. `small2x` keeps the
+			     default 24 rem header sharp on 1x and 2x screens (Q-109-06). -->
+			<div v-if="headerPhotoId !== undefined" :class="{ 'w-full relative': true, 'h-(--header-height)': !seeMore }">
+				<Thumb
+					v-if="seeMore"
+					:album-id="props.album.id"
+					:photo-id="headerPhotoId"
+					type="small2x"
+					class="w-full object-cover"
+					@click="headerClicked"
+				/>
+				<template v-else-if="props.config.image_header_cover === 'fit'">
+					<Thumb
+						:album-id="props.album.id"
+						:photo-id="headerPhotoId"
+						type="thumb"
+						class="absolute w-full h-full object-cover object-center"
+					/>
+					<div class="w-full h-full bg-repeat absolute bg-noise backdrop-blur-3xl blur-3xl"></div>
+					<Thumb
+						:album-id="props.album.id"
+						:photo-id="headerPhotoId"
+						type="small2x"
+						class="w-full h-(--header-height) absolute object-contain"
+						@click="headerClicked"
+					/>
+				</template>
+				<Thumb
+					v-else
+					:album-id="props.album.id"
+					:photo-id="headerPhotoId"
+					type="small2x"
+					class="w-full h-full object-cover"
+					@click="headerClicked"
+				/>
 				<Blur v-if="props.album.isNsfw">
 					<UIcon name="lucide:eye-off" class="text-6xl text-white" />
 				</Blur>
 			</div>
-			<div
-				v-else-if="props.config.is_image_header_enabled && photos.length > 0"
-				class="w-full bg-neutral-800 flex h-(--header-height) gap-1 flex-wrap"
-			>
-				<div v-for="photo in photos.slice(0, 5)" :key="`top-${photo.id}`" class="relative shrink grow flex-1/4 h-(--top-images-height)">
+			<!-- Mirrors v2 TopImages.vue (Feature 109, FR-109-09): shown whenever there is no header photo,
+			     i.e. with the image header off; one full-height row below 4 photos, "+N" past 5. -->
+			<div v-else-if="photos.length > 0" :class="{ 'w-full bg-neutral-800 flex h-(--header-height) gap-1': true, 'flex-wrap': !isShortGrid }">
+				<div
+					v-for="photo in photos.slice(0, 5)"
+					:key="`top-${photo.id}`"
+					:class="{
+						'relative shrink grow flex-1/4 h-(--top-images-height)': !isShortGrid,
+						'relative grow h-(--header-height)': isShortGrid,
+					}"
+				>
 					<Thumb
 						:album-id="props.album.id"
 						:photo-id="photo.id"
@@ -28,6 +68,10 @@
 						@click="carouselClicked(photo.id)"
 					/>
 					<Blur v-if="props.album.isNsfw" />
+				</div>
+				<div v-if="morePhotoCount > 0" class="aspect-square flex items-center justify-center px-16 text-muted text-2xl">
+					<UIcon name="lucide:plus" class="mx-2" />
+					{{ morePhotoCount }}
 				</div>
 			</div>
 			<div
@@ -184,4 +228,12 @@ const headerPhotoId = computed<string | undefined>(() => {
 // Mirrors CarouselImages.vue's `dropFirst` prop - the header already shows
 // the first photo when highlighting it, so the carousel skips it.
 const carouselPhotos = computed(() => (props.config.is_highlight_first_picture ? photos.value.slice(1) : photos.value));
+
+// Mirrors TopImages.vue (FR-109-09): one full-height row below 4 photos.
+const isShortGrid = computed(() => photos.value.length < 4);
+
+// Photos beyond the 5 shown. The preview is capped at FLOW_CAROUSEL_PHOTO_LIMIT,
+// so the album's own count decides; the preview count covers an album whose
+// photos come from its children (`numPhotos` 0).
+const morePhotoCount = computed(() => Math.max(props.album.numPhotos, photos.value.length) - 5);
 </script>

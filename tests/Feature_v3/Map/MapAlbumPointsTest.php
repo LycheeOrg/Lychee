@@ -127,9 +127,9 @@ class MapAlbumPointsTest extends BaseApiWithDataTest
 		$response->assertExactJson(['ids' => [], 'album_ids' => [], 'latitudes' => [], 'longitudes' => []]);
 	}
 
-	public function testWorksWithStructOfArrayFlagOff(): void
+	public function testWorksWithV8Off(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Map/album', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);

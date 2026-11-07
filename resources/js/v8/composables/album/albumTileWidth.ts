@@ -220,7 +220,7 @@ export type AlbumTileWidthResult = {
  */
 export function useAlbumTileWidth(withDateScrubber: boolean = false): AlbumTileWidthResult {
 	const lycheeStore = useLycheeStateStore();
-	const { number_albums_per_row_mobile, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+	const { number_albums_per_row_mobile } = storeToRefs(lycheeStore);
 	const { isNavOpen } = storeToRefs(useTogglablesStateStore());
 	const { isAvailable: isDateScrubberAvailable, isHidden: isDateScrubberHidden } = useAlbumDateScrubberState();
 	const isNavPanelInline = useBreakpoints(breakpointsTailwind).greaterOrEqual("lg");
@@ -264,7 +264,7 @@ export function useAlbumTileWidth(withDateScrubber: boolean = false): AlbumTileW
 	// The scrubber counts even while a photo is open (and the rail hidden), so opening a photo
 	// does not relayout the grid underneath.
 	const sideChromeWidth = computed(() => {
-		const nav = is_struct_of_array_enabled.value && isNavOpen.value && isNavPanelInline.value ? getNavBarWidthPx() : 0;
+		const nav = isNavOpen.value && isNavPanelInline.value ? getNavBarWidthPx() : 0;
 		const scrubber = withDateScrubber && isDateScrubberAvailable.value && !isDateScrubberHidden.value ? DATE_SCRUBBER_WIDTH_PX : 0;
 		return nav + scrubber;
 	});

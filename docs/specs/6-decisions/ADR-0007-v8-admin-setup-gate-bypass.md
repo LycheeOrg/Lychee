@@ -4,6 +4,7 @@
 - **Date:** 2026-07-26
 - **Related features/specs:** Feature 051 (docs/specs/4-architecture/features/051-admin-setup-page/spec.md)
 - **Related open questions:** Q-051-01, Q-051-04
+- **Amended by:** ADR-109-01 (2026-11-07): the redirect condition reads `features.v8` (`V8_ENABLED`); `features.nuxt_ui` / `NUXT_UI_ENABLED` no longer exists.
 - **Relationship to ADR-0006:** Extends ADR-0006's shared `router/paths.ts` manifest with one deliberate exception (a v8-only route with no v7 twin); does not amend ADR-0006's decision itself.
 
 ## Context

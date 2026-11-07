@@ -596,6 +596,20 @@ class MetaTest extends AbstractTestCase
 		self::assertSame('Album', $meta->page_title);
 	}
 
+	public function testSvgIconIsLinkedWithV8(): void
+	{
+		config(['features.v8' => true]);
+
+		$this->blade('<x-meta />')->assertSee('img/logo4.svg', false);
+	}
+
+	public function testSvgIconIsNotLinkedWithoutV8(): void
+	{
+		config(['features.v8' => false]);
+
+		$this->blade('<x-meta />')->assertDontSee('img/logo4.svg', false);
+	}
+
 	public function testRenderReturnsView(): void
 	{
 		$meta = $this->buildMeta();

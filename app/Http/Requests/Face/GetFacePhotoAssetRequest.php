@@ -60,7 +60,7 @@ class GetFacePhotoAssetRequest extends BaseApiRequest
 			return false;
 		}
 
-		return config('features.struct-of-array') === true &&
+		return config('features.v8') === true &&
 			$user !== null &&
 			$this->configs()->getValueAsBool('ai_vision_enabled') &&
 			$this->configs()->getValueAsBool('ai_vision_face_enabled') &&

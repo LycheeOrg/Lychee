@@ -26,24 +26,22 @@ class AdminSetupTest extends AbstractTestCase
 {
 	use DatabaseTransactions;
 
-	public function testRedirectsToLegacyInstallWhenNuxtUiInactive(): void
+	public function testRedirectsToLegacyInstallWhenV8Inactive(): void
 	{
-		config(['features.nuxt_ui' => false]);
+		config(['features.v8' => false]);
 
 		$response = $this->get('/');
 		self::assertEquals(307, $response->getStatusCode());
 		$response->assertRedirect('/install/admin');
 	}
 
-	public function testRedirectsToV8SetupWhenNuxtUiActive(): void
+	public function testRedirectsToV8SetupWhenV8Active(): void
 	{
-		config(['features.nuxt_ui' => true]);
+		config(['features.v8' => true]);
 
 		$response = $this->get('/');
 		self::assertEquals(307, $response->getStatusCode());
 		$response->assertRedirect('/setup-admin');
-
-		config(['features.nuxt_ui' => false]);
 	}
 
 	public function testSetupAdminRouteServesVueAppWhenNoAdmin(): void

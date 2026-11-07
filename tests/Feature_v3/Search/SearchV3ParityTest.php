@@ -33,7 +33,6 @@ class SearchV3ParityTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		Config::set('features.struct-of-array', true);
 		$this->actingAs($this->userMayUpload1);
 	}
 

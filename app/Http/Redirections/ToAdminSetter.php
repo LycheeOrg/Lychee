@@ -27,7 +27,7 @@ class ToAdminSetter implements Redirection
 	 */
 	public static function go(): RedirectResponse
 	{
-		$route_name = Features::active('nuxt_ui') ? 'admin-setup' : 'install-admin';
+		$route_name = Features::active('v8') ? 'admin-setup' : 'install-admin';
 
 		return redirect(route($route_name), Response::HTTP_TEMPORARY_REDIRECT, [
 			'Cache-Control' => 'no-cache, must-revalidate',
