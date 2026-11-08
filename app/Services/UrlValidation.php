@@ -9,6 +9,7 @@
 namespace App\Services;
 
 use App\DTO\UrlValidatedDTO;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
@@ -147,12 +148,7 @@ class UrlValidation
 			return [$host];
 		}
 
-		$octal = $this->octalToIp($host);
-		if ($octal !== null) {
-			return [$octal];
-		}
-
-		$hex = $this->hexToIp($host);
+		$hex = $this->octalHexToIp($host);
 		if ($hex !== null) {
 			return [$hex];
 		}
@@ -188,43 +184,68 @@ class UrlValidation
 		return $ips;
 	}
 
-	/**
-	 * Convert an octal formatted ip string to its decimal equivalent.
-	 *
-	 * @param string $ip_number
-	 *
-	 * @return string|null
-	 */
-	private function octalToIp(string $ip_number): ?string
+	private function octalHexToIp(string $ip_number): ?string
 	{
-		// Handle octal IP numbers, e.g. "0177.0.0.1" for 127.0.0.1.
-		if (!str_starts_with($ip_number, '0') || !str_contains($ip_number, '.')) {
+		if (!str_contains($ip_number, '.')) {
 			return null;
 		}
 
 		$ip_number = explode('.', $ip_number);
-		$ip_number = array_map(fn ($part) => octdec($part), $ip_number);
+		$ip = [];
+		foreach ($ip_number as $ip_part) {
+			if ($this->validateHex($ip_part)) {
+				$ip_part = hexdec($ip_part);
+			}
+			if ($this->validateOctal($ip_part)) {
+				$ip_part = octdec($ip_part);
+			}
+			$ip[] = $ip_part;
+		}
 
-		return implode('.', $ip_number);
+		return implode('.', $ip);
 	}
 
 	/**
-	 * Convert an hexadecimal formatted ip string to its decimal equivalent.
+	 * Validate that this is a correct hex number.
 	 *
-	 * @param string $ip_number
+	 * @param string $ip_part
 	 *
-	 * @return string|null
+	 * @return bool
+	 *
+	 * @throws LycheeInvalidArgumentException
 	 */
-	private function hexToIp(string $ip_number): ?string
+	private function validateHex(string $ip_part): bool
 	{
-		if (!str_starts_with($ip_number, '0x') || !str_contains($ip_number, '.')) {
-			return null;
+		if (!str_starts_with($ip_part, '0x')) {
+			return false;
 		}
+		if (!ctype_xdigit(substr($ip_part, 2))) {
+			return true;
+		}
+		throw new LycheeInvalidArgumentException("Invalid hexadecimal IP part: $ip_part");
+	}
 
-		$ip_number = explode('.', $ip_number);
-		$ip_number = array_map(fn ($part) => hexdec($part), $ip_number);
-
-		return implode('.', $ip_number);
+	/**
+	 * Validate that this is a correct octal number.
+	 *
+	 * @param string $ip_part
+	 *
+	 * @return bool
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 */
+	private function validateOctal(string $ip_part): bool
+	{
+		if ($ip_part === '0') {
+			return true;
+		}
+		if (!str_starts_with($ip_part, '0')) {
+			return false;
+		}
+		if (ctype_digit(substr($ip_part, 1)) && !(str_contains($ip_part, '8') || str_contains($ip_part, '9'))) {
+			return true;
+		}
+		throw new LycheeInvalidArgumentException("Invalid octal IP part: $ip_part");
 	}
 
 	/**
