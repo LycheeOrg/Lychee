@@ -253,7 +253,7 @@ class UrlValidation
 		// 32 bit integer architecture work around.
 		if (PHP_INT_SIZE === 4) {
 			$bin_str = sprintf('%032s', decbin((float) $ip_number));
-			if (strlen($bin_str) != 32) {
+			if (strlen($bin_str) !== 32) {
 				// Not a valid 32-bit binary string.
 				return null;
 			}
