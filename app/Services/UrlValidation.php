@@ -190,6 +190,12 @@ class UrlValidation
 			return null;
 		}
 
+		// Validate that this is Maybe an ip: it contains only digits, x, and dots.
+		// Goal is to weed out things like 0day.de
+		if (preg_match('/^(0[xX][0-9a-fA-F]+|[0-9]+)(\.(0[xX][0-9a-fA-F]+|[0-9]+)){0,3}$/', $ip_number) !== 1) {
+			return null;
+		}
+
 		$ip_number = explode('.', $ip_number);
 		$ip = [];
 		foreach ($ip_number as $ip_part) {
@@ -257,6 +263,11 @@ class UrlValidation
 	 */
 	private function stringToIp(string $ip_number): ?string
 	{
+		// Skip if the IP number contains dots, as it's not a single numeric IP.
+		if (str_contains($ip_number, '.')) {
+			return null;
+		}
+
 		// Handle hexadecimal IP numbers, e.g. "0x7f000001" for 127.0.0.1.
 		if (str_starts_with($ip_number, '0x')) {
 			$ip_number = hexdec($ip_number);
