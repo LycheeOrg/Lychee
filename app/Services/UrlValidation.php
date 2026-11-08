@@ -223,7 +223,7 @@ class UrlValidation
 	 */
 	private function validateHex(string $ip_part): bool
 	{
-		if (!str_starts_with($ip_part, '0x')) {
+		if (!str_starts_with($ip_part, '0x') && !str_starts_with($ip_part, '0X')) {
 			return false;
 		}
 		if (ctype_xdigit(substr($ip_part, 2))) {
@@ -270,7 +270,7 @@ class UrlValidation
 		}
 
 		// Handle hexadecimal IP numbers, e.g. "0x7f000001" for 127.0.0.1.
-		if (str_starts_with($ip_number, '0x')) {
+		if (str_starts_with($ip_number, '0x') || str_starts_with($ip_number, '0X')) {
 			$ip_number = hexdec($ip_number);
 		}
 
