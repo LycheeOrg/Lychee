@@ -16,17 +16,19 @@ Deleting a large album (≈4000 photos) or a large photo selection times out. Th
 - File deletion: one `FileDeleterJob` per (disk, kind) carries every path (28 000 for 4000 photos), writes one log line per file, and calls S3 twice per file. On the default `sync` queue it runs inside the HTTP request.
 - Multi-photo delete with the webhook feature on: one `PhotoWillBeDeleted` per photo, each fanning out to 15 `RecomputeAlbumUserThumbsJob`s plus per-photo queries (504 s for 4000 photos on `sync`).
 
-Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion jobs (`Actions\Album\Delete`, `DTO\Delete\PhotosToBeDeletedDTO`, `Actions\SizeVariant\Delete`), `Actions\Photo\Delete`, `Listeners\RecomputeAlbumUserThumbsOnPhotoChange`, `Listeners\ManagedCacheAlbumListingInvalidator`, `EventServiceProvider`. No REST contract, schema or frontend change. Decisions: Q-112-01 A and Q-112-02 A (with the thumb refresh computed once per delete request), see [open-questions.md](open-questions.md).
+Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion jobs (`Actions\Album\Delete`, `DTO\Delete\PhotosToBeDeletedDTO`, `Actions\SizeVariant\Delete`), `Actions\Photo\Delete`, `Listeners\RecomputeAlbumUserThumbsOnPhotoChange`, `Listeners\ManagedCacheAlbumListingInvalidator`, `EventServiceProvider`. No REST contract, schema or frontend change. Decisions: Q-112-01 A, Q-112-02 A (with the thumb refresh computed once per delete request) and Q-112-03 A (no query binds more than 1000 parameters), see [open-questions.md](open-questions.md).
 
 ## Goals
 - File deletion costs O(files) with a small constant, in bounded jobs, and stays out of the HTTP response time on the `sync` queue.
 - Deleting N photos does a constant number of thumb-refresh resolutions and dispatches each `RecomputeAlbumUserThumbsJob` at most once, whatever N is.
 - `PhotoWillBeDeleted` is fired only when a `photo.delete` webhook can consume it.
+- No delete query binds more than 1000 parameters (MySQL fails above that), whatever the selection, subtree or shop size.
 
 ## Non-Goals
 - Making the album/photo DB deletion itself a queued job (Q-112-01 Option B).
 - Sending `photo.delete` webhooks for photos removed together with their album (album delete never fired `PhotoWillBeDeleted`; unchanged).
 - Changing the `photo.delete` webhook payload or the `RecomputeAlbumUserThumbsJob` semantics.
+- Bounding `whereIn` lists outside the album/photo/size-variant delete flow and the two listeners named in FR-112-09.
 - Changing the other jobs returned by `PhotosToBeDeletedDTO::executeDelete()` (`RecomputePersonStatsJob`, `DeleteFaceEmbeddingsJob`).
 
 ## Functional Requirements
@@ -41,6 +43,7 @@ Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion
 | FR-112-06 | `Photo\Delete` fires `PhotoWillBeDeleted` only when the webhook feature is active and at least one enabled webhook subscribes to `photo.delete`. | One query for such webhooks; none → no event, no size-variant URL build. Some → one event per hard-deleted photo with today's payload. | — | — | — | Q-112-02 A |
 | FR-112-07 | `Photo\Delete` refreshes cached album thumbs once per delete request: it resolves the affected thumb albums once over all hard-deleted photos before the DB delete and dispatches one `RecomputeAlbumUserThumbsJob` per affected album after the DB delete. Independent of the webhook feature. | Affected set = every `SmartAlbumType`, tag albums sharing a tag with the photos, person albums sharing a non-dismissed person, and tag/person albums currently caching one of the photos as thumb. Each (kind, album) dispatched once. Applies to `do()` and `forceDeletePhoto()`. | No hard-deleted photo → no resolution and no job. | — | — | Q-112-02 A (owner: thumb jobs computed once) |
 | FR-112-08 | The affected-album resolution of FR-112-07 is the same code the listener uses for its other photo events. | `RecomputeAlbumUserThumbsOnPhotoChange` and `Photo\Delete` share one resolver (`App\Actions\Album\AlbumUserThumbTargets::resolve(array $photo_ids)` returning the (kind, album_id) list, and `dispatch(list)`). | — | — | — | Q-112-02 A |
+| FR-112-09 | No query in the delete flow binds more than 1000 parameters. Id lists are split into chunks of 500 (`App\Constants\QueryLimits::ID_CHUNK_SIZE`), and the `order_items` exclusion uses a subquery that binds no ids. | Sites: `Photo\Delete::do()` and `dispatchWillBeDeletedEvents()`, `PurchasableService::deleteMulitplePhotoPurchasables()`, `Album\Delete::findAllPhotosToDelete()`, `findAllAlbumsToDelete()`, `getGaps()`, `deleteTagAlbums()`, `deletePersonAlbums()`, `PhotosToBeDeletedDTO::forceDelete()` (album/tag-album re-reads, `order_items` exclusion), `SizeVariant\Delete::do()` (`order_items` exclusion), `AlbumUserThumbTargets::resolve()`, `ManagedCacheAlbumListingInvalidator::evictPersonTagsForPhotos()`. Results are merged across chunks and deduplicated. | Empty list → no query. | — | — | Q-112-03 A (owner: >1000 parameters fails on MySQL) |
 
 ## Non-Functional Requirements
 
@@ -49,6 +52,7 @@ Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion
 | NFR-112-01 | Deleting 4000 selected photos with the webhook feature on and no `photo.delete` webhook does not grow `RecomputeAlbumUserThumbsJob` dispatches or listener queries with N. | 504 s measured on `sync`. | Test: deleting several photos dispatches each thumb job (kind, id) exactly once and no `PhotoWillBeDeleted`. | Bus/Event fakes. | Q-112-02 |
 | NFR-112-02 | No `FileDeleterJob` payload exceeds 500 paths. | Worker `--timeout`, payload size. | Unit test on `FileDeleterJob::batches()`, feature test on album delete. | — | Q-112-01 |
 | NFR-112-03 | DB records are still removed before any file. | Today's ordering; a failed file delete never leaves dangling DB rows. | Existing delete tests stay green. | — | Q-112-01 A |
+| NFR-112-04 | Every query issued by the delete flow binds at most 1000 parameters for any input size. | MySQL fails above 1000 parameters (owner). | Feature tests delete 1200 selected photos (with purchasables) and 1200 `order_items` rows present, and assert via the query log that no query binds more than 1000 parameters. | — | Q-112-03 A |
 
 ## Branch & Scenario Matrix
 
@@ -63,10 +67,12 @@ Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion
 | S-112-07 | Multi-photo delete (webhook feature on or off): each affected (kind, album) `RecomputeAlbumUserThumbsJob` dispatched exactly once, after the photos are gone. |
 | S-112-08 | Delete where every photo stays in another album (soft delete only): no thumb resolution, no thumb job. |
 | S-112-09 | `PhotoWillBeDeleted` reaches only `WebhookListener`. |
+| S-112-10 | Delete 1200 selected photos with purchasables, with 1200 sold size variants in `order_items`: succeeds, no query binds more than 1000 parameters. |
+| S-112-11 | Delete an album whose subtree and photo set exceed 1000 ids: succeeds, no query binds more than 1000 parameters. |
 
 ## Test Strategy
 - **Unit:** `FileDeleterJobTest` gains summary-log and `batches()` cases (S-112-01/02). `ManagedCacheAlbumListingInvalidatorTest` loses its `PhotoWillBeDeleted` row. New `AlbumUserThumbTargetsTest` covers smart/tag/person/backward resolution and dedup. Event wiring test asserts S-112-09.
-- **Feature_v2:** new `PhotoDeleteFanOutTest` (S-112-05..08) over `DELETE /api/v2/Photo` with `Bus::fake`/`Event::fake`. `AlbumDeleteTrackTest` and a new album-delete dispatch test cover S-112-03/04.
+- **Feature_v2:** new `DeleteBindLimitTest` asserts via `DB::listen` that no query binds more than 1000 parameters (S-112-10/11). New `PhotoDeleteFanOutTest` (S-112-05..08) over `DELETE /api/v2/Photo` with `Bus::fake`/`Event::fake`. `AlbumDeleteTrackTest` and a new album-delete dispatch test cover S-112-03/04.
 - Failing tests are written before each implementation step (see tasks).
 
 ## Interface & Contract Catalogue
@@ -76,6 +82,7 @@ Affected layers: `App\Jobs\FileDeleterJob`, the three producers of file-deletion
 |----|-------------|---------|
 | DO-112-01 | `FileDeleterJob::batches(StorageDiskType $disk, array $paths): list<FileDeleterJob>`; `FileDeleterJob::BATCH_SIZE = 500`. | jobs |
 | DO-112-02 | `App\Actions\Album\AlbumUserThumbTargets`: `resolve(array $photo_ids): list<array{0:string,1:string}>` (kind, album_id), `dispatch(array $targets): void`. | actions, listeners |
+| DO-112-04 | `App\Constants\QueryLimits::ID_CHUNK_SIZE = 500`, shared by every chunked `whereIn` of FR-112-09 (replaces the local `CHUNK_SIZE` constants of the two delete DTOs). | constants, DTO, actions, listeners |
 | DO-112-03 | `App\Actions\Shared\DispatchFileDeletion::dispatch(iterable $jobs): void`: `afterResponse()` on the `sync` connection, plain `dispatch()` otherwise. | actions, DTO |
 
 ### API Routes / Services

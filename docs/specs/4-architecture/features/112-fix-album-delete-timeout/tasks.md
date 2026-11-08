@@ -28,7 +28,13 @@ _Last updated: 2026-11-08_
 - [ ] T-112-08 – Unsubscribe the two listeners, early return without `photo.delete` webhook, once-per-request thumb refresh in `Photo\Delete::do()` and `forceDeletePhoto()`; update `ManagedCacheAlbumListingInvalidatorTest` (FR-112-05..07).  
   _Verification:_ `php artisan test --filter=PhotoDeleteFanOutTest`, `--filter=ManagedCacheAlbumListingInvalidatorTest`, `--filter=WebhookListenerTest`, existing photo delete tests.
 
-- [ ] T-112-09 – Knowledge map, roadmap, drift gate; `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit.
+- [ ] T-112-09 – Failing `DeleteBindLimitTest`: 1200 selected photos with purchasables and 1200 `order_items`, album with >1000 photos and sub-albums; `DB::listen` asserts ≤1000 bindings per query (FR-112-09, NFR-112-04, S-112-10, S-112-11).  
+  _Verification:_ `php artisan test --filter=DeleteBindLimitTest` (red).
+
+- [ ] T-112-10 – `QueryLimits::ID_CHUNK_SIZE`, chunk every FR-112-09 site, `order_items` exclusion as subquery (FR-112-09).  
+  _Verification:_ `php artisan test --filter=DeleteBindLimitTest`, `--filter=AlbumDeleteTrackTest`, existing photo/album/size-variant delete and shop tests.
+
+- [ ] T-112-11 – Knowledge map, roadmap, drift gate; `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit.
 
 ## Notes / TODOs
 Run test classes one at a time (shared SQLite DB).

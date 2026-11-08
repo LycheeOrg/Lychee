@@ -8,6 +8,7 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-112-01~~ | 112 | High | Deleting a 4000-photo album times out: fix direction, since the DB queries are not the measured bottleneck | Resolved (A, owner 2026-11-08, spec FR-112-01–04) | 2026-11-05 | 2026-11-08 |
 | ~~Q-112-02~~ | 112 | High | Deleting 4000 selected photos stalls: per-photo `PhotoWillBeDeleted` fan-out when the webhook feature is on | Resolved (A, thumb jobs computed once per request, owner 2026-11-08, spec FR-112-05–08) | 2026-11-05 | 2026-11-08 |
+| ~~Q-112-03~~ | 112 | Medium | Unbounded `whereIn` id lists in the delete flow can exceed the bind-parameter limit | Resolved (A, owner 2026-11-08: a `whereIn` over 1000 parameters fails on MySQL, spec FR-112-09, NFR-112-04) | 2026-11-08 | 2026-11-08 |
 
 ## Question Details
 
@@ -101,3 +102,42 @@ Remember already-dispatched album IDs within the request in the thumb listener (
 
 Pros: smallest change.
 Cons: still 4000 events, URL builds and per-photo queries (~20 s on `database` per the breakdown). Request-scoped static state is fragile under Octane / queue workers.
+
+### Q-112-03 – Unbounded `whereIn` id lists in the delete flow
+
+**Context.** `PhotosToBeDeletedDTO` and `AlbumsToBeDeletedDTO` chunk their id lists (500 / 1000), but several queries around them bind the whole list. Limits: SQLite 32 766 bind parameters, MySQL/MariaDB and PostgreSQL 65 535. `DeletePhotosRequest` and `DeleteAlbumsRequest` have no `max` on their id arrays.
+
+| Site | List bound | Grows with |
+|------|------------|------------|
+| `Photo\Delete::do()` (3 queries on `photos`/`photo_album`) | request `photo_ids` | selection size |
+| `PurchasableService::deleteMulitplePhotoPurchasables()` | request `photo_ids` | selection size |
+| `Photo\Delete::dispatchWillBeDeletedEvents()` first query (later chunked) | hard-deleted ids | selection size |
+| `Album\Delete::findAllPhotosToDelete()` (2 queries) | recursive album ids | subtree size |
+| `Album\Delete::findAllAlbumsToDelete()`, `getGaps()`, tag/person album deletes | request `album_ids` | selection size |
+| `PhotosToBeDeletedDTO::forceDelete()` `Album`/`TagAlbum` re-reads | albums whose cover/header was a deleted photo | photos × covers |
+| `PhotosToBeDeletedDTO::forceDelete()` and `SizeVariant\Delete` `order_items` exclusion (`whereIn`/`whereNotIn`, added to every 500-chunk) | every `order_items.size_variant_id` in the instance | shop orders, not the request |
+| `RecomputeAlbumUserThumbsOnPhotoChange::refreshForPhotoIds()` (becomes `AlbumUserThumbTargets`) and `ManagedCacheAlbumListingInvalidator::evictPersonTagsForPhotos()` | event photo ids | bulk edit size |
+
+With the 1000-parameter bound on MySQL, a 4000-photo selection already fails in `Photo\Delete::do()` and `PurchasableService`, and the `order_items` exclusion fails every delete once the shop has sold more than ≈500 size variants.
+
+**Question.** How far should Feature 112 go?
+
+**Resolution (2026-11-08).** Option A. Owner: a `whereIn` with more than 1000 parameters fails on MySQL, so the bound is 1000 per query, not the 32 766 / 65 535 placeholder limits. Every listed site binds at most 500 ids per query. Encoded in [spec.md](spec.md) FR-112-09 and NFR-112-04.
+
+#### Option A – Chunk every listed site inside Feature 112 (recommended)
+
+Use a shared chunk size (500) for request/derived id lists. Replace the `order_items` id list by a `NOT EXISTS` / subquery on `order_items`, so it binds nothing. `AlbumUserThumbTargets` chunks from the start.
+
+Pros: removes the whole class of failure in the code this feature already touches. No API change.
+Cons: more files in the diff (adds `PurchasableService`, `Album\Delete` queries).
+
+#### Option B – Chunk only the code Feature 112 writes, plus the `order_items` exclusion
+
+Pros: smaller diff. Fixes the one site that grows independently of the request.
+Cons: very large selections can still fail in `Photo\Delete` and `PurchasableService`.
+
+#### Option C – Cap the request arrays (`max:N` on `photo_ids` / `album_ids`)
+
+Pros: one-line bound at the edge.
+Cons: changes the API contract (422 above N), does not bound derived lists (subtree, `order_items`, events).
+
