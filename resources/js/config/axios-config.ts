@@ -118,6 +118,11 @@ const AxiosConfig = {
 					return axios(retryConfig);
 				}
 
+				// Both password login forms display throttling inline.
+				if (error.response.status === 429 && error.config?.method === "post" && error.config.url?.endsWith("/api/v2/Auth::login")) {
+					return Promise.reject(error);
+				}
+
 				const data = await extractErrorData(error.response.data);
 				const message = data.message || "An error occurred";
 

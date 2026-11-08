@@ -42,6 +42,13 @@
 			<UFormField :label="$t('dialogs.login.password')">
 				<InputPassword id="password" v-model="password" autocomplete="current-password" @keydown.enter="login" />
 				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.login.unknown_invalid')" />
+				<UAlert
+					v-if="too_many_attempts"
+					color="error"
+					variant="soft"
+					class="mt-2"
+					:description="$t('dialogs.gallery_unlock.too_many_attempts')"
+				/>
 			</UFormField>
 			<UCheckbox v-if="!hideRememberMe" v-model="rememberMe" :label="$t('dialogs.login.remember_me')" />
 			<div class="flex items-center gap-2 mt-4">
@@ -114,6 +121,7 @@ const lycheeStore = useLycheeStateStore();
 const { is_basic_auth_enabled, is_webauthn_enabled, is_email_login_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
+const too_many_attempts = ref(false);
 
 // With `email_login_enabled` the field accepts a username or an email address.
 const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
@@ -121,10 +129,13 @@ const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dia
 const oauths = ref<OauthProvider[] | undefined>(undefined);
 
 function login() {
+	invalidPassword.value = false;
+	too_many_attempts.value = false;
 	AuthService.login(username.value, password.value, rememberMe.value)
 		.then(() => {
 			is_login_open.value = false;
 			invalidPassword.value = false;
+			too_many_attempts.value = false;
 			clearViewerState();
 			// Init data depends on the user (e.g. face recognition availability).
 			// Kept out of this chain: its failures are not authentication errors.
@@ -140,6 +151,7 @@ function login() {
 				.catch(() => {});
 		})
 		.catch((e) => {
+			too_many_attempts.value = e.response?.status === 429;
 			if (e.response && e.response.status === 401) {
 				invalidPassword.value = true;
 			}
@@ -147,6 +159,7 @@ function login() {
 }
 
 function openWebAuthn() {
+	too_many_attempts.value = false;
 	is_login_open.value = false;
 	is_webauthn_open.value = true;
 	username.value = "";
