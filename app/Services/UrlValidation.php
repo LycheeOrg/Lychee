@@ -17,6 +17,7 @@ use function Safe\inet_ntop;
 use function Safe\inet_pton;
 use function Safe\long2ip;
 use function Safe\parse_url;
+use function Safe\preg_match;
 
 class UrlValidation
 {
