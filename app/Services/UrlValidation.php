@@ -101,8 +101,7 @@ class UrlValidation
 
 		try {
 			$resolved_ips = $this->resolveHostToIPs($host);
-		}
-		catch (LycheeInvalidArgumentException $e){
+		} catch (LycheeInvalidArgumentException $e) {
 			return UrlValidatedDTO::fromError(
 				url: $value,
 				error: $e->getMessage(),
@@ -158,7 +157,7 @@ class UrlValidation
 		}
 
 		// Remove last dot if exists
-		$host = rtrim($host,'.');
+		$host = rtrim($host, '.');
 
 		$hex = $this->octalHexToIp($host);
 		if ($hex !== null) {
