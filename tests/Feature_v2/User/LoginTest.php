@@ -41,4 +41,24 @@ class LoginTest extends BaseApiWithDataTest
 		$response->assertStatus(429);
 		Cache::flush();
 	}
+
+	/**
+	 * Feature 112, S-112-07 – the console unban lets the IP log in again at once.
+	 */
+	public function testUnbanFromConsoleLetsTheIpLogInAgain(): void
+	{
+		Cache::flush();
+		$credentials = ['username' => 'username', 'password' => 'wrong_password'];
+		for ($i = 0; $i < 10; $i++) {
+			$this->postJson('Auth::login', $credentials)->assertStatus(401);
+		}
+		$this->postJson('Auth::login', $credentials)->assertStatus(429);
+
+		$this->artisan('lychee:blocked-ips', ['--unban' => '127.0.0.1'])
+			->expectsOutput('Unbanned 127.0.0.1.')
+			->assertExitCode(0);
+
+		$this->postJson('Auth::login', $credentials)->assertStatus(401);
+		Cache::flush();
+	}
 }

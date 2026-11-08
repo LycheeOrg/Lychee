@@ -165,7 +165,7 @@ Route::get('/Search', [SearchController::class, 'search'])->middleware(['cache_c
 /**
  * SESSION.
  */
-Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login')->withoutMiddleware(['gallery_password']);
+Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('login_throttle')->withoutMiddleware(['gallery_password']);
 Route::post('/Auth::logout', [AuthController::class, 'logout'])->withoutMiddleware(['gallery_password']);
 Route::get('/Auth::user', [AuthController::class, 'getCurrentUser'])->withoutMiddleware(['gallery_password']);
 Route::get('/Auth::rights', [AuthController::class, 'getGlobalRights']);
