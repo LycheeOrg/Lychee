@@ -14,8 +14,8 @@ use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
 use function Safe\inet_ntop;
 use function Safe\inet_pton;
-use function Safe\parse_url;
 use function Safe\long2ip;
+use function Safe\parse_url;
 
 class UrlValidation
 {
@@ -192,7 +192,8 @@ class UrlValidation
 	 * Convert an octal formatted ip string to its decimal equivalent.
 	 *
 	 * @param string $ip_number
-	 * @return null|string
+	 *
+	 * @return string|null
 	 */
 	private function octalToIp(string $ip_number): ?string
 	{
@@ -202,7 +203,8 @@ class UrlValidation
 		}
 
 		$ip_number = explode('.', $ip_number);
-		$ip_number = array_map(fn($part) => octdec($part), $ip_number);
+		$ip_number = array_map(fn ($part) => octdec($part), $ip_number);
+
 		return implode('.', $ip_number);
 	}
 
@@ -210,7 +212,8 @@ class UrlValidation
 	 * Convert an hexadecimal formatted ip string to its decimal equivalent.
 	 *
 	 * @param string $ip_number
-	 * @return null|string
+	 *
+	 * @return string|null
 	 */
 	private function hexToIp(string $ip_number): ?string
 	{
@@ -219,7 +222,8 @@ class UrlValidation
 		}
 
 		$ip_number = explode('.', $ip_number);
-		$ip_number = array_map(fn($part) => hexdec($part), $ip_number);
+		$ip_number = array_map(fn ($part) => hexdec($part), $ip_number);
+
 		return implode('.', $ip_number);
 	}
 
@@ -227,7 +231,8 @@ class UrlValidation
 	 * Convert a string full of numbers into it's IP equivalent.
 	 *
 	 * @param string $ip_number
-	 * @return null|string
+	 *
+	 * @return string|null
 	 */
 	private function stringToIp(string $ip_number): ?string
 	{
@@ -241,26 +246,25 @@ class UrlValidation
 			$ip_number = octdec($ip_number);
 		}
 
-		if(! is_numeric($ip_number)) {
+		if (!is_numeric($ip_number)) {
 			return null;
 		}
 
 		// 32 bit integer architecture work around.
 		if (PHP_INT_SIZE === 4) {
-		    $binStr = sprintf("%032s", decbin((float)$ip_number));
-			if (strlen($binStr) != 32) {
+			$bin_str = sprintf('%032s', decbin((float) $ip_number));
+			if (strlen($bin_str) != 32) {
 				// Not a valid 32-bit binary string.
 				return null;
 			}
 
-			$ipArr = [];
-			for ($i = 0; $i < 4; ++$i) {
-				$ipArr[] = bindec(substr($binStr, $i*8, 8));
+			$ip_arr = [];
+			for ($i = 0; $i < 4; $i++) {
+				$ip_arr[] = bindec(substr($bin_str, $i * 8, 8));
 			}
 
-		    return implode('.', $ipArr);
+			return implode('.', $ip_arr);
 		}
-
 
 		try {
 			return long2ip($ip_number);

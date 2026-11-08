@@ -141,10 +141,10 @@ class UrlValidationTest extends AbstractTestCase
 			'https://0',
 			'https://3232235521',
 			'https://2852039166',
-			'https://[::ffff:127.0.0.1]'
+			'https://[::ffff:127.0.0.1]',
 		];
 
-		foreach( $to_be_blocked as $url) {
+		foreach ($to_be_blocked as $url) {
 			$dto = $this->url_validation->validate($url);
 			self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error, $url . ' should be blocked');
 		}

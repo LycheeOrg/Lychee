@@ -31,9 +31,9 @@ final class TraceService implements TraceServiceInterface
 		Span::getCurrent()->addEvent($name, $attributes);
 	}
 
-	public function addEventWithMemToCurrentSpan(string $eventName): void
+	public function addEventWithMemToCurrentSpan(string $event_name): void
 	{
-		$this->addEventToCurrentSpan($eventName, [
+		$this->addEventToCurrentSpan($event_name, [
 			'lychee.memory.current' => memory_get_usage(true),
 			'lychee.memory.peak' => memory_get_peak_usage(true),
 		]);
