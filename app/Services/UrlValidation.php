@@ -99,7 +99,15 @@ class UrlValidation
 			);
 		}
 
-		$resolved_ips = $this->resolveHostToIPs($host);
+		try {
+			$resolved_ips = $this->resolveHostToIPs($host);
+		}
+		catch (LycheeInvalidArgumentException $e){
+			return UrlValidatedDTO::fromError(
+				url: $value,
+				error: $e->getMessage(),
+			);
+		}
 
 		if (
 			$this->config_manager->getValueAsBool('import_via_url_forbidden_local_ip') &&
@@ -148,6 +156,9 @@ class UrlValidation
 		if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
 			return [$host];
 		}
+
+		// Remove last dot if exists
+		$host = rtrim($host,'.');
 
 		$hex = $this->octalHexToIp($host);
 		if ($hex !== null) {
@@ -270,12 +281,12 @@ class UrlValidation
 		}
 
 		// Handle hexadecimal IP numbers, e.g. "0x7f000001" for 127.0.0.1.
-		if (str_starts_with($ip_number, '0x') || str_starts_with($ip_number, '0X')) {
+		if ($this->validateHex($ip_number)) {
 			$ip_number = hexdec($ip_number);
 		}
 
 		// Handle octal IP numbers e.g. 0177.0.0.1
-		if (str_starts_with($ip_number, '0')) {
+		if ($this->validateOctal($ip_number)) {
 			$ip_number = octdec($ip_number);
 		}
 
