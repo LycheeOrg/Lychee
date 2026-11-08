@@ -219,7 +219,7 @@ class UrlValidation
 		if (!str_starts_with($ip_part, '0x')) {
 			return false;
 		}
-		if (!ctype_xdigit(substr($ip_part, 2))) {
+		if (ctype_xdigit(substr($ip_part, 2))) {
 			return true;
 		}
 		throw new LycheeInvalidArgumentException("Invalid hexadecimal IP part: $ip_part");
