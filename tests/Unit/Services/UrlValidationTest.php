@@ -136,7 +136,7 @@ class UrlValidationTest extends AbstractTestCase
 			'https://192.168.1.1',
 			'https://2130706433',
 			'https://0x7f000001',
-			// 'https://0177.0.0.1',
+			'https://0177.0.0.1',
 			'https://127.1',
 			'https://0',
 			'https://3232235521',
