@@ -6,8 +6,8 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-112-01 | 112 | High | Deleting a 4000-photo album times out: fix direction, since the DB queries are not the measured bottleneck | Open | 2026-11-05 | 2026-11-05 |
-| Q-112-02 | 112 | High | Deleting 4000 selected photos stalls: per-photo `PhotoWillBeDeleted` fan-out when the webhook feature is on | Open | 2026-11-05 | 2026-11-05 |
+| ~~Q-112-01~~ | 112 | High | Deleting a 4000-photo album times out: fix direction, since the DB queries are not the measured bottleneck | Resolved (A, owner 2026-11-08, spec FR-112-01–04) | 2026-11-05 | 2026-11-08 |
+| ~~Q-112-02~~ | 112 | High | Deleting 4000 selected photos stalls: per-photo `PhotoWillBeDeleted` fan-out when the webhook feature is on | Resolved (A, thumb jobs computed once per request, owner 2026-11-08, spec FR-112-05–08) | 2026-11-05 | 2026-11-08 |
 
 ## Question Details
 
@@ -27,6 +27,8 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 - Re-measured over HTTP (`DELETE /api/v2/Album`, request validation and policy included), 4000 photos × 7 size variants, `sync` queue, webhook feature **on**: **2.8 s wall, 194 queries, 0.3 s in SQL, +16 MB peak memory**. The album path never dispatches `PhotoWillBeDeleted`, so the fan-out in Q-112-02 does not apply here. The request runs no hydration and no per-ID policy loop (authorization is two aggregate queries).
 
 **Question.** Which direction should the fix take?
+
+**Resolution (2026-11-08).** Option A. Encoded in [spec.md](spec.md) FR-112-01–04.
 
 #### Option A – Make file deletion cheap and bounded (recommended)
 
@@ -74,6 +76,8 @@ No memory issue (peak +27 MB) and no model hydration. The cost is linear in phot
 Side note: album deletion never fires `PhotoWillBeDeleted`, so `photo.delete` webhooks are not sent for photos removed with their album. This is kept out of scope unless requested.
 
 **Question.** How should the fan-out be removed?
+
+**Resolution (2026-11-08).** Option A, with the owner's amendment that the `RecomputeAlbumUserThumbsJob`s are still dispatched, computed once per delete request: the affected albums are resolved once before the DB delete and each job is dispatched once after it. Encoded in [spec.md](spec.md) FR-112-05–08.
 
 #### Option A – Keep `PhotoWillBeDeleted` for webhooks only, batch the rest (recommended)
 
