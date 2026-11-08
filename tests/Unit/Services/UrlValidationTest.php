@@ -129,6 +129,27 @@ class UrlValidationTest extends AbstractTestCase
 		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
 	}
 
+	public function testForbiddenLocalIp(): void
+	{
+		$to_be_blocked = [
+			'https://127.0.0.1',
+			'https://192.168.1.1',
+			'https://2130706433',
+			'https://0x7f000001',
+			// 'https://0177.0.0.1',
+			'https://127.1',
+			'https://0',
+			'https://3232235521',
+			'https://2852039166',
+			'https://[::ffff:127.0.0.1]'
+		];
+
+		foreach( $to_be_blocked as $url) {
+			$dto = $this->url_validation->validate($url);
+			self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error, $url . ' should be blocked');
+		}
+	}
+
 	public function testForbiddenLocalhost(): void
 	{
 		Configs::set('import_via_url_forbidden_local_ip', '0');
