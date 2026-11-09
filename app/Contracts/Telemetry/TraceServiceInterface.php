@@ -14,5 +14,5 @@ interface TraceServiceInterface
 
 	public function addEventToCurrentSpan(string $name, array $attributes = []): void;
 
-	public function addEventWithMemToCurrentSpan(string $eventName): void;
+	public function addEventWithMemToCurrentSpan(string $event_name): void;
 }
