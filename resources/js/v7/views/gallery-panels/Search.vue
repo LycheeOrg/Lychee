@@ -10,7 +10,7 @@
 			:class="{
 				'relative flex flex-wrap content-start w-full justify-start overflow-y-auto': true,
 				'h-svh': is_full_screen,
-				'h-[calc(100vh-3.5rem)]': !is_full_screen,
+				'h-[calc(100svh-3.5rem)]': !is_full_screen,
 			}"
 		>
 			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" />
@@ -219,7 +219,14 @@ function onSearch(terms: string, startPage = 1) {
 	searchStore.search(terms, startPage).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
-				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
+				// `block: "nearest"` (not the default "start") matters here: `resultsMarkerRef` sits
+				// inside the inner `overflow-y-auto` results div, itself inside an outer
+				// `overflow-y-hidden` wrapper (added only to suppress a scrollbar artifact, not meant
+				// to be scrollable). `overflow: hidden` ancestors still count as "scrolling boxes" per
+				// spec, so the default "start" alignment can make the browser scroll that outer div too
+				// -- dragging the header (its first child) off-screen. "nearest" scrolls only as much
+				// as needed and keeps the walk from climbing into that outer container.
+				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 			});
 		}
 	});
