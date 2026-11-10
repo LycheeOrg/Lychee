@@ -6,6 +6,7 @@
 
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
+import { assetBlobToUrl } from "./asset-url";
 
 /** Size variants accepted by `GET /api/v3/Faces/{face_id}/photo/{variant}` (ADR-093-01). */
 export type FacePhotoVariant = "medium" | "small2x" | "small" | "thumb";
@@ -25,11 +26,11 @@ const FaceQuickNamingService = {
 		return axios.get(`${Constants.getApiUrlV3()}People`, { data: {} });
 	},
 
-	/** Resolves to an object URL; the caller revokes it. */
+	/** Resolves to an object URL, which the caller revokes, or to the S3 URL of an S3 photo (Feature 113, FR-113-02). */
 	getPhoto(faceId: string, variant: FacePhotoVariant, signal?: AbortSignal): Promise<string> {
 		return axios
 			.get(`${Constants.getApiUrlV3()}Faces/${faceId}/photo/${variant}`, { responseType: "blob", signal, data: {} })
-			.then((response) => URL.createObjectURL(response.data as Blob));
+			.then((response) => assetBlobToUrl(response.data as Blob));
 	},
 
 	assignPerson(faceId: string, personId: string): Promise<AxiosResponse<App.Http.Resources.Models.FaceResource>> {

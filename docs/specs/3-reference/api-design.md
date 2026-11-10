@@ -197,7 +197,7 @@ Two access modes, both always gated by `PhotoPolicy` (`CAN_SEE` for thumbnail-cl
 | Code | Meaning |
 |------|---------|
 | 200 | Binary file streamed directly (local-disk size variant) |
-| 302 | Redirect to a native S3 temporary URL (S3-backed size variant, no proxying through Lychee) |
+| 200 | JSON `{ "url": … }` (`AssetUrlResource`): the S3 bucket URL (public bucket) or presigned URL (S3-backed size variant, `Cache-Control: no-store`, no proxying through Lychee). The client renders it with `<img src>`; no redirect, so the bucket needs no CORS rule (Feature 113, ADR-113-01) |
 | 401 | No/invalid/expired/future-dated temporary-link signature, or session insufficient per config |
 | 403 | `PhotoPolicy` denies the resolved caller |
 | 404 | Unknown `photo_id`, or the photo has no `SizeVariant` row of the requested type |
