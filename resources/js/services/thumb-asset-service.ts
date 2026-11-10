@@ -1,5 +1,6 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import Constants from "./constants";
+import { assetBlobToUrl, isObjectUrl } from "./asset-url";
 
 type CacheEntry = {
 	promise: Promise<string>;
@@ -22,11 +23,11 @@ function cacheKey(albumId: string, photoId: string, type: App.Enum.SizeVariantAs
 	return `${albumId}:${photoId}:${type}`;
 }
 
-// Revokes the object URL once resolved. Only call this for entries with `refCount <= 0` —
-// revoking a URL still in use would break whatever is rendering it.
+// Revokes the object URL once resolved; an S3 URL (Feature 113) has nothing to revoke. Only call
+// this for entries with `refCount <= 0` — revoking a URL still in use would break whatever is rendering it.
 function revoke(entry: CacheEntry): void {
 	if (entry.settled) {
-		void entry.promise.then((url) => URL.revokeObjectURL(url));
+		void entry.promise.then((url) => isObjectUrl(url) && URL.revokeObjectURL(url));
 	}
 }
 
@@ -98,12 +99,14 @@ const ThumbAssetService = {
 					// Thumbnails stay cached even with CLIENT_CACHE_ENABLED=false.
 					cache: { enabled: true },
 				} as AxiosRequestConfig)
-				.then((response) => {
+				// Object URL of the bytes, or the S3 URL of a JSON body (Feature 113, FR-113-02).
+				.then((response) => assetBlobToUrl(response.data as Blob))
+				.then((url) => {
 					if (entry !== undefined) {
 						entry.settled = true;
 						entry.expiresAt = Date.now() + TTL_MS;
 					}
-					return URL.createObjectURL(response.data as Blob);
+					return url;
 				})
 				.catch((error: unknown) => {
 					if (cache.get(key) === entry) {
@@ -139,6 +142,22 @@ const ThumbAssetService = {
 				}
 			},
 		};
+	},
+
+	/**
+	 * Forgets one cached file so the next `acquire()` asks `/Asset` again, e.g. after its S3 URL
+	 * failed to load (Feature 113, FR-113-03). Holders keep their URL until their `release()`.
+	 */
+	invalidate(albumId: string, photoId: string, type: App.Enum.SizeVariantAssetType): void {
+		const key = cacheKey(albumId, photoId, type);
+		const entry = cache.get(key);
+		if (entry === undefined) {
+			return;
+		}
+		cache.delete(key);
+		if (entry.refCount <= 0) {
+			revoke(entry);
+		}
 	},
 
 	/**

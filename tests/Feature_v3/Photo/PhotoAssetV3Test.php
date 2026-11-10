@@ -324,43 +324,93 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-056-15: Authorized request for a size_variant stored on the S3 disk
-	 * → 302 redirect to a native S3 temporary URL, no bytes proxied through
-	 * Lychee.
+	 * Moves `$variant` to the S3 disk and fakes that disk: only the 's3'
+	 * disk is mocked, every other disk name (e.g. the 'images' local disk,
+	 * already faked in setUp()) still resolves through the real manager.
+	 * The mock exposes no read method, so any attempt to proxy the bytes
+	 * fails the test (NFR-113-02).
+	 *
+	 * @param \Closure(MockInterface): void $expectations
 	 */
-	public function testS3BackedVariantRedirectsToTemporaryUrl(): void
+	private function moveToFakeS3(SizeVariant $variant, \Closure $expectations): void
 	{
-		$variant = $this->smallVariantOf($this->photo1);
 		$variant->storage_disk = StorageDiskType::S3;
 		$variant->save();
 
 		$aws_adapter = \Mockery::mock(AwsS3V3Adapter::class);
-		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $variant): void {
+		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $expectations): void {
 			$mock->shouldReceive('getAdapter')->andReturn($aws_adapter);
-			$mock->shouldReceive('temporaryUrl')
-				->once()
-				->with($variant->short_path, \Mockery::any())
-				->andReturn('https://example-bucket.s3.amazonaws.com/signed-url');
-			// Resolving album1 also eagerly loads its cover/thumb (Album::$with),
-			// which may compute a URL for whichever photo/variant was picked as
-			// the album's thumbnail — incidental to what this test asserts, but
-			// still needs a stub since it can land on the S3 disk too.
-			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
+			$expectations($mock);
 		});
 
-		// Only the 's3' disk is faked; every other disk name (e.g. the
-		// 'images' local disk, already faked in setUp()) must still resolve
-		// through the real manager, so we capture it before mocking the
-		// facade and delegate non-S3 calls to it directly.
 		$real_manager = Storage::getFacadeRoot();
 		Storage::partialMock();
 		Storage::shouldReceive('disk')->andReturnUsing(
 			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
 		);
+	}
+
+	/**
+	 * S-113-01 (replaces S-056-15's redirect): authorized request for a
+	 * size_variant on a private S3 bucket → 200 JSON carrying S3's presigned
+	 * URL, never a redirect, never cached, no bytes proxied through Lychee.
+	 */
+	public function testS3BackedVariantAnswersWithPresignedUrl(): void
+	{
+		config(['filesystems.disks.s3.visibility' => 'private']);
+		$variant = $this->smallVariantOf($this->photo1);
+		$this->moveToFakeS3($variant, function (MockInterface $mock) use ($variant): void {
+			$mock->shouldReceive('temporaryUrl')
+				->once()
+				->with($variant->short_path, \Mockery::any())
+				->andReturn('https://example-bucket.s3.amazonaws.com/signed-url');
+		});
 
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small");
 
-		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/signed-url');
+		$response->assertOk();
+		$response->assertExactJson(['url' => 'https://example-bucket.s3.amazonaws.com/signed-url']);
+		$response->assertHeaderMissing('Location');
+		self::assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
+	}
+
+	/**
+	 * S-113-02: same on a public bucket → the bucket URL, as FR-102-05
+	 * hands out, and no presigned URL is generated.
+	 */
+	public function testS3BackedVariantOnPublicBucketAnswersWithBucketUrl(): void
+	{
+		config(['filesystems.disks.s3.visibility' => 'public']);
+		$variant = $this->smallVariantOf($this->photo1);
+		$this->moveToFakeS3($variant, function (MockInterface $mock) use ($variant): void {
+			$mock->shouldReceive('temporaryUrl')->never();
+			$mock->shouldReceive('url')
+				->once()
+				->with($variant->short_path)
+				->andReturn('https://example-bucket.s3.amazonaws.com/public-url');
+		});
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small");
+
+		$response->assertOk();
+		$response->assertExactJson(['url' => 'https://example-bucket.s3.amazonaws.com/public-url']);
+	}
+
+	/**
+	 * S-113-04: a caller denied for an S3 variant gets 403 as before, and no
+	 * S3 URL is generated.
+	 */
+	public function testS3BackedVariantDeniedGeneratesNoUrl(): void
+	{
+		$variant = $this->smallVariantOf($this->photo2);
+		$this->moveToFakeS3($variant, function (MockInterface $mock): void {
+			$mock->shouldReceive('temporaryUrl')->never();
+			$mock->shouldReceive('url')->never();
+		});
+
+		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo2->id}/small");
+
+		$response->assertForbidden();
 	}
 
 	/**
@@ -653,45 +703,32 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S3-backed variants are redirected unconditionally: PhotoAssetController
-	 * does not check S3 object existence before redirecting, and does not
-	 * fall back to a smaller local variant just because one happens to
-	 * exist — once the selected variant resolves to the S3 disk, serving it
-	 * (or 404ing on a stale/missing object) is left to the client following
-	 * the signed URL, not to Lychee.
+	 * S3-backed variants are answered unconditionally: PhotoAssetController
+	 * does not check S3 object existence before answering with the S3 URL,
+	 * and does not fall back to a smaller local variant just because one
+	 * happens to exist — once the selected variant resolves to the S3 disk,
+	 * serving it (or 404ing on a stale/missing object) is left to the client
+	 * loading that URL, not to Lychee (FR-113-01).
 	 */
-	public function testS3PrimaryRedirectsWithoutFallingBackToLocalVariant(): void
+	public function testS3PrimaryAnswersWithoutFallingBackToLocalVariant(): void
 	{
+		config(['filesystems.disks.s3.visibility' => 'private']);
 		$primary = $this->small2xVariantOf($this->photo1);
-		$primary->storage_disk = StorageDiskType::S3;
-		$primary->save();
 
 		// A local fallback variant exists and has bytes, but must not be used.
 		$this->putBytes($this->smallVariantOf($this->photo1), 'small-bytes');
 
-		$aws_adapter = \Mockery::mock(AwsS3V3Adapter::class);
-		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $primary): void {
-			$mock->shouldReceive('getAdapter')->andReturn($aws_adapter);
+		$this->moveToFakeS3($primary, function (MockInterface $mock) use ($primary): void {
 			$mock->shouldReceive('temporaryUrl')
 				->once()
 				->with($primary->short_path, \Mockery::any())
 				->andReturn('https://example-bucket.s3.amazonaws.com/primary-signed-url');
-			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
 		});
-
-		// Only the 's3' disk is faked; every other disk name (e.g. the
-		// 'images' local disk, already faked in setUp()) must still resolve
-		// through the real manager, so we capture it before mocking the
-		// facade and delegate non-S3 calls to it directly.
-		$real_manager = Storage::getFacadeRoot();
-		Storage::partialMock();
-		Storage::shouldReceive('disk')->andReturnUsing(
-			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
-		);
 
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
 
-		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/primary-signed-url');
+		$response->assertOk();
+		$response->assertExactJson(['url' => 'https://example-bucket.s3.amazonaws.com/primary-signed-url']);
 	}
 
 	/**
@@ -699,38 +736,25 @@ class PhotoAssetV3Test extends BaseApiWithDataTest
 	 * the primary variant that failed. PhotoAssetController::fallback()
 	 * must resolve that candidate's own disk rather than reusing the
 	 * primary's, so an S3-backed fallback variant is still recognized and
-	 * redirected correctly instead of being checked against the wrong disk.
+	 * answered with its S3 URL instead of being checked against the wrong disk.
 	 */
 	public function testFallbackVariantServedFromItsOwnDiskWhenDifferentFromPrimary(): void
 	{
+		config(['filesystems.disks.s3.visibility' => 'private']);
 		// small2x row exists on the local disk (factory default) but no bytes are put for it.
 		$fallback_variant = $this->smallVariantOf($this->photo1);
-		$fallback_variant->storage_disk = StorageDiskType::S3;
-		$fallback_variant->save();
 
-		$aws_adapter = \Mockery::mock(AwsS3V3Adapter::class);
-		$s3_disk = \Mockery::mock(FilesystemAdapter::class, function (MockInterface $mock) use ($aws_adapter, $fallback_variant): void {
-			$mock->shouldReceive('getAdapter')->andReturn($aws_adapter);
+		$this->moveToFakeS3($fallback_variant, function (MockInterface $mock) use ($fallback_variant): void {
 			$mock->shouldReceive('temporaryUrl')
 				->once()
 				->with($fallback_variant->short_path, \Mockery::any())
 				->andReturn('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
-			// Resolving album1 also eagerly loads its cover/thumb (Album::$with),
-			// which may compute a URL for whichever photo/variant was picked as
-			// the album's thumbnail — incidental to what this test asserts, but
-			// still needs a stub since it can land on the S3 disk too.
-			$mock->shouldReceive('url')->andReturn('https://example-bucket.s3.amazonaws.com/incidental-thumb-url');
 		});
-
-		$real_manager = Storage::getFacadeRoot();
-		Storage::partialMock();
-		Storage::shouldReceive('disk')->andReturnUsing(
-			fn (?string $name = null) => $name === StorageDiskType::S3->value ? $s3_disk : $real_manager->disk($name)
-		);
 
 		$response = $this->actingAs($this->userMayUpload1)->getV3("Asset/{$this->album1->id}/{$this->photo1->id}/small2x");
 
-		$response->assertRedirect('https://example-bucket.s3.amazonaws.com/fallback-signed-url');
+		$response->assertOk();
+		$response->assertExactJson(['url' => 'https://example-bucket.s3.amazonaws.com/fallback-signed-url']);
 	}
 
 	/**
