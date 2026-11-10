@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\ReadOnlyStartSession;
+use App\Http\Middleware\ResolveVerify;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Session\Middleware\StartSession;
@@ -34,6 +35,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 // A gallery page issues one request per thumbnail: the session is read
 // (authenticated user, unlocked albums) but never written back, and no
 // cookie (session, XSRF-TOKEN) is issued. GET only, so no CSRF check.
+// No SE verification runs (ADR-102-02).
 Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetController::class, 'show'])
 	->withoutMiddleware([
 		'accept_content_type:json',
@@ -42,6 +44,7 @@ Route::get('/Asset/{album_id}/{photo_id}/{size_variant}', [Gallery\PhotoAssetCon
 		StartSession::class,
 		ShareErrorsFromSession::class,
 		VerifyCsrfToken::class,
+		ResolveVerify::class,
 	])
 	->middleware(['json_errors', ReadOnlyStartSession::class]);
 
@@ -52,16 +55,15 @@ Route::get('/Albums', [Gallery\AlbumListController::class, 'index']);
 // API-068-01) - each album is its own "bucket equivalent," loaded
 // whole-scope in one request; per-card photo previews are fetched
 // separately via the existing `/Albums/{album_id}/Photos?limit=N` route
-// below, coexisting with the v2 `GET /Flow` route (routes/api_v2.php)
-// behind `is_struct_of_array_enabled`.
+// below. v8 uses it, v7 keeps the v2 `GET /Flow` route (routes/api_v2.php);
+// gated by `features.v8` (Feature 109).
 Route::get('/Flow', [Gallery\FlowListController::class, 'index']);
 
 // Flat Struct-of-Arrays listing of album access permissions for the bulk-share page.
 Route::get('/Albums::accessPermissions', [Gallery\AlbumAccessPermissionListController::class, 'index']);
 
-// Album virtual-scroll backend, gated by features.struct-of-array at each
-// request's FormRequest::authorize() (exposed to the frontend as
-// modules.is_struct_of_array_enabled). Literal segments (`root`, `smart`,
+// Album virtual-scroll backend, gated by `features.v8` at each
+// request's FormRequest::authorize() (Feature 109). Literal segments (`root`, `smart`,
 // `persons`, `tags`, `pinned`) are registered ahead of this `{album_id}`
 // family so Laravel never matches the wildcard first.
 Route::get('/Albums/root', [Gallery\AlbumListing\AlbumRootController::class, 'index']);
@@ -85,11 +87,12 @@ Route::get('/Albums/{album_id}/rights', [Gallery\AlbumListing\AlbumChildrenContr
 Route::get('/Albums/{album_id}/Photos', [Gallery\AlbumListing\PhotoChildrenController::class, 'index']);
 Route::get('/Albums/{album_id}/Photos/buckets', [Gallery\AlbumListing\PhotoChildrenController::class, 'buckets']);
 Route::get('/Albums/{album_id}/Photos/details', [Gallery\AlbumListing\PhotoChildrenController::class, 'details']);
+// Direct tile URLs for the photos about to be rendered (Feature 102, ADR-102-01).
+Route::get('/Albums/{album_id}/Photos/urls', [Gallery\AlbumListing\PhotoChildrenController::class, 'urls']);
 
 // Search's Struct-of-Arrays API (Feature 069), coexisting with the v2
-// `/Search` route (routes/api_v2.php) behind the same
-// `is_struct_of_array_enabled` flag — v7 and `SpotlightSearch.vue` keep using
-// v2. A dedicated family rather than a pseudo-album on the `/Albums/...`
+// `/Search` route (routes/api_v2.php), gated by `features.v8` — v7 and
+// `SpotlightSearch.vue` keep using v2. A dedicated family rather than a pseudo-album on the `/Albums/...`
 // routes (Q-069-01): search is not an album scope, and its result has an album
 // half as well as a photo half. Literal `/Photos/details` and `/albums/rights`
 // segments are registered before their parents, as elsewhere in this file.
@@ -101,11 +104,34 @@ Route::get('/Search/albums', [Gallery\SearchListingController::class, 'albums'])
 Route::get('/Search/albums/rights', [Gallery\SearchListingController::class, 'albumRights']);
 
 // Map's bucket-tiered API (Feature 067), coexisting with the v2 `/Map` route
-// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+// (routes/api_v2.php), gated by `features.v8`.
 Route::get('/Map/buckets', [Gallery\MapListingController::class, 'buckets']);
 Route::get('/Map/Photos', [Gallery\MapListingController::class, 'photos']);
 Route::get('/Map/tracks', [Gallery\MapListingController::class, 'tracks']);
+// Album map header points (Feature 086), not behind the `features.v8` gate.
+Route::get('/Map/album', [Gallery\MapListingController::class, 'album']);
 
 // Live metrics feed (Feature 079), coexisting with the v2 `/Metrics` route
-// (routes/api_v2.php) behind the same `is_struct_of_array_enabled` flag.
+// (routes/api_v2.php), gated by `features.v8`.
 Route::get('/Metrics', [Gallery\LiveMetricsListController::class, 'index'])->middleware(['support:se']);
+
+// Library insights (Feature 085): aggregates over one owner or the whole
+// instance for a period; replaces the v2 Statistics counts endpoint.
+Route::get('/Insights', [InsightsController::class, 'index'])->middleware(['support:se']);
+
+// Face quick naming (Feature 093): people list for the name box.
+Route::get('/People', [AiVision\PeopleListController::class, 'index']);
+Route::get('/Faces/queue', [AiVision\FaceQueueController::class, 'index']);
+// Photo carrying a face (Feature 093, ADR-093-01): binary passthrough like
+// `/Asset` above, with the same middleware exemptions.
+Route::get('/Faces/{face_id}/photo/{variant}', [AiVision\FacePhotoAssetController::class, 'show'])
+	->withoutMiddleware([
+		'accept_content_type:json',
+		'content_type:json',
+		AddQueuedCookiesToResponse::class,
+		StartSession::class,
+		ShareErrorsFromSession::class,
+		VerifyCsrfToken::class,
+		ResolveVerify::class,
+	])
+	->middleware(['json_errors', ReadOnlyStartSession::class]);

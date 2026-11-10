@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import AlbumService from "@/services/album-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumListStore } from "@/stores/AlbumListState";

@@ -37,30 +37,16 @@ class SetParent implements SharedPipe
 				->where(PA::ALBUM_ID, '=', $state->album->id)
 				->delete();
 
-			// Compute this new pivot row's bucket_id inline, against
-			// $state->album's own currently effective photo-sort/timeline
-			// settings.
-			$bucket_computer = resolve(PhotoBucketComputer::class);
-			$sorting = $state->album->getEffectivePhotoSorting();
-			$granularity = $bucket_computer->resolveGranularity($state->album->photo_timeline);
-			$photo = $state->photo;
+			// The new pivot row's key, for $state->album's effective photo
+			// sort column (FR-092-03).
+			$bucket_key = resolve(PhotoBucketComputer::class)->keyForPhoto($state->album->getEffectivePhotoSorting()->column, $state->photo);
 
 			// Insert the new link
 			DB::table(PA::PHOTO_ALBUM)
 				->insert([
-					'photo_id' => $photo->id,
+					'photo_id' => $state->photo->id,
 					'album_id' => $state->album->id,
-					'bucket_id' => $bucket_computer->compute(
-						sorting_column: $sorting->column,
-						granularity: $granularity,
-						title: $photo->title,
-						title_base: $photo->title_base ?? '',
-						created_at: $photo->created_at,
-						taken_at: $photo->taken_at,
-						is_highlighted: $photo->is_highlighted,
-						type: $photo->type ?? '',
-						rating_avg: $photo->rating_avg,
-					),
+					'bucket_key' => $bucket_key,
 				]);
 
 			// Avoid unnecessary DB request, when we access the album of a

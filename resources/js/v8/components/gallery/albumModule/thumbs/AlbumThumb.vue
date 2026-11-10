@@ -14,6 +14,7 @@
 			'opacity-25! ': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
+		data-drag-select-start="true"
 	>
 		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
 		<AlbumThumbImage
@@ -103,8 +104,7 @@ import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useRouter } from "vue-router";
 import { useAlbumActions } from "@/composables/album/albumActions";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useAlbumStore } from "@/stores/AlbumState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { ALBUM_BADGE_BG } from "@/v8/utils/albumBadgeColors";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
@@ -139,8 +139,6 @@ const emits = defineEmits<{
 const { canInteractAlbum } = useAlbumActions();
 const router = useRouter();
 const userStore = useUserStore();
-const albumStore = useAlbumStore();
-const albumsStore = useAlbumsStore();
 
 const lycheeStore = useLycheeStateStore();
 
@@ -149,9 +147,8 @@ const { getPlayIcon } = useImageHelpers();
 const { display_thumb_album_overlay, is_nsfw_background_blurred, is_smart_album_flags_enabled, is_cover_id_flag_enabled } = storeToRefs(lycheeStore);
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
-const aspectRatio = computed(
-	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
-);
+// Open album's ratio, else the root's, else square; the live drawer's while it is open (Feature 110).
+const aspectRatio = useAlbumThumbAspectRatio("nearest");
 
 const { tileWidth } = useAlbumTileWidth();
 

@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 
 /**
@@ -23,9 +22,9 @@ use App\DTO\PhotoCreate\StandaloneDTO;
  * For duplicate uploads this pipe never runs; the duplicate keeps its existing
  * title and description.
  */
-class ApplyUserProvidedMetadata implements StandalonePipe
+class ApplyUserProvidedMetadata extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->title !== null) {
 			$state->photo->title = $state->title;
@@ -36,5 +35,10 @@ class ApplyUserProvidedMetadata implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.apply_user_provided_metadata';
 	}
 }

@@ -8,113 +8,88 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
-use App\Exceptions\UnauthenticatedException;
+use App\Actions\WebAuthn\GenerateLoginOptions;
+use App\Actions\WebAuthn\VerifyLogin;
 use App\Exceptions\WebAuthnDisabledExecption;
+use App\Exceptions\WebAuthnVerificationException;
+use App\Http\Requests\WebAuthn\LoginCredentialRequest;
+use App\Http\Requests\WebAuthn\LoginOptionsRequest;
 use App\Models\User;
 use App\Providers\AuthServiceProvider;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Support\Responsable;
+use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Laragear\WebAuthn\Assertion\Validator\AssertionValidation;
-use Laragear\WebAuthn\Assertion\Validator\AssertionValidator;
-use Laragear\WebAuthn\Http\Requests\AssertedRequest;
-use Laragear\WebAuthn\Http\Requests\AssertionRequest;
-use Laragear\WebAuthn\JsonTransport;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class WebAuthnLoginController extends Controller
 {
 	/**
-	 * Returns the challenge to assertion.
+	 * Returns the challenge to assertion (FR-107-04).
 	 *
-	 * @throws BindingResolutionException
+	 * @return array<array-key,mixed>
+	 *
+	 * @throws WebAuthnDisabledExecption
 	 */
-	public function options(AssertionRequest $request): Responsable
+	public function options(LoginOptionsRequest $request, GenerateLoginOptions $generate): array
 	{
 		$this->checkEnabled();
 
-		/** @phpstan-ignore staticMethod.dynamicCall */
-		$fields = $request->validate([
-			'user_id' => 'sometimes|int',
-			'username' => 'sometimes|string',
-		]);
-
-		$username = $fields['username'] ?? null;
-		$authenticatable = $fields['user_id'] ?? ($username !== null ? ['username' => $username] : null);
-
-		return $request->toVerify($authenticatable);
+		return $generate->do($this->findUser($request));
 	}
 
 	/**
-	 * Log the user in.
+	 * Log the user in (FR-107-05).
 	 *
-	 * 1. We retrieve the credentials candidate
-	 * 2. Double check the challenge is signed.
-	 * 3. Retrieve the User from the credential ID, we will use it to validate later (otherwise keys like yubikey4 are not working).
-	 * 4. Validate the credentials
-	 * 5. Log in on success
+	 * The key is looked up by its id first, so the owner is known before the
+	 * assertion is checked: keys without a user handle (e.g. YubiKey 4) work.
+	 *
+	 * @throws WebAuthnDisabledExecption
+	 * @throws WebAuthnVerificationException
 	 */
-	public function login(AssertedRequest $request, AssertionValidator $validator): void
+	public function login(LoginCredentialRequest $request, VerifyLogin $verify): void
 	{
 		$this->checkEnabled();
 
-		$credentials = $request->validated();
-
-		if (!$this->isSignedChallenge($credentials)) {
-			// @codeCoverageIgnoreStart
-			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Response is not signed.');
-			// @codeCoverageIgnoreEnd
-		}
-		$associated_user = $this->retrieveByCredentials($credentials);
-
-		if ($associated_user === null) {
-			// @codeCoverageIgnoreStart
-			throw new HttpException(Response::HTTP_UNPROCESSABLE_ENTITY, 'Associated user does not exists.');
-			// @codeCoverageIgnoreEnd
-		}
-
-		$json_transport = new JsonTransport($request->only(AssertionValidation::REQUEST_KEYS));
-
-		$credential = $validator
-			->send(new AssertionValidation($json_transport, $associated_user))
-			->thenReturn()
-			->credential;
-
-		if ($credential === null) {
-			// @codeCoverageIgnoreStart
-			throw new UnauthenticatedException('Invalid credentials');
-			// @codeCoverageIgnoreEnd
-		}
-
-		$authenticatable = $credential->authenticatable;
-		Auth::login($authenticatable);
+		Auth::login($verify->do($request->publicKeyCredential()));
 	}
 
 	/**
-	 * Check if the credentials are for a public key signed challenge.
-	 *
-	 * @param array<string,string> $credentials
+	 * The user whose keys the options allow, if the request names one.
 	 */
-	private function isSignedChallenge(#[\SensitiveParameter] array $credentials): bool
+	private function findUser(LoginOptionsRequest $request): ?User
 	{
-		return isset($credentials['id'], $credentials['rawId'], $credentials['response'], $credentials['type']);
+		if ($request->userId() !== null) {
+			return User::query()->find($request->userId());
+		}
+
+		$username = $request->username();
+
+		return $username === null ? null : User::query()->where('username', '=', $this->resolveIdentifier($username))->first();
 	}
 
 	/**
-	 * Retrieve a user by the given credentials.
+	 * Translate a submitted identifier into the username the credential list is narrowed by.
 	 *
-	 * @param array<string,string> $credentials
+	 * `email_login_enabled` lets the login form accept an email address
+	 * (Feature 091), so the same identifier has to find its credentials here.
+	 * The username stays authoritative: the email lookup only runs when no
+	 * account carries that username, which mirrors the attempt order of
+	 * `AuthController::attemptLocalLogin()`.
+	 *
+	 * @param string $identifier submitted username or email address
+	 *
+	 * @return string the username to narrow the credential list by
 	 */
-	public function retrieveByCredentials(#[\SensitiveParameter] array $credentials): User|null
+	private function resolveIdentifier(string $identifier): string
 	{
-		/** @var User|null $user */
-		$user = User::whereHas('webAuthnCredentials',
-			fn ($query) => $query->where('id', '=', $credentials['id'])->whereNull('disabled_at')
-		)->first();
+		if (!resolve(ConfigManager::class)->getValueAsBool('email_login_enabled')) {
+			return $identifier;
+		}
 
-		return $user;
+		if (User::query()->where('username', '=', $identifier)->exists()) {
+			return $identifier;
+		}
+
+		return User::query()->where('email', '=', $identifier)->first()?->username ?? $identifier;
 	}
 
 	/**

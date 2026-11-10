@@ -778,6 +778,37 @@ _Last updated: 2026-04-11_
   - `php artisan test --filter=UnrelatedAlbumBypassTest`
   - `php artisan test --filter=FaceDetectionTest`
 
+### I41 — Linked Persons are managed only by their linked User or an admin (GHSA-wc2r-9r6v-f3ch)
+
+- [x] T-030-107 – Add failing regression tests for the `user_id: null` unlink bypass (FR-030-49 (a), S-030-70, S-030-71).
+  _Intent:_ `PeopleControllerTest` (public mode): admin sets and clears `user_id` → 200; non-admin sets `user_id` → 403; non-admin sends `user_id: null` on a Person linked to another User → 403 with the link unchanged; the linked User sends `user_id: null` on their own Person → 403.
+  _Verification commands:_
+  - `php artisan test --filter=PeopleControllerTest`
+
+- [x] T-030-108 – Gate `user_id` on presence instead of value (FR-030-49 (a)).
+  _Intent:_ `UpdatePersonRequest::authorize()` uses `hasUserId()` (three-state: absent `-1`, `null`, int) for the admin-only check, so `user_id: null` no longer slips past the `!== null` guard.
+  _Verification commands:_
+  - `php artisan test --filter=PeopleControllerTest`
+  - `php artisan test --filter=PersonClaimTest`
+  - `make phpstan`
+
+- [x] T-030-109 – Add failing tests for rename, delete, and merge of linked Persons (FR-030-49 (b), S-030-72, S-030-73).
+  _Intent:_ `PeopleControllerTest`: a logged user renames or deletes a Person linked to another User → 403 and the Person is unchanged; the same user on an unlinked Person → 200/204; the linked User on their own Person → 200/204; admin on a linked Person → 200. `PersonClaimTest`: merging a source linked to another User → 403 with both Persons unchanged; merging their own linked source → 201; merging an unlinked source into a target linked to another User → 201.
+  _Verification commands:_
+  - `php artisan test --filter=PeopleControllerTest`
+  - `php artisan test --filter=PersonClaimTest`
+
+- [x] T-030-110 – Wire `canManagePerson` into the Person write requests (FR-030-49 (b)).
+  _Intent:_ `AiVisionPolicy::canManagePerson` (new `CAN_MANAGE_PERSON` constant) returns `canEditPerson($user)` and then `user_id === null || user_id === $user->id`. `UpdatePersonRequest` replaces its class-level `CAN_EDIT_PERSON` check with the entity gate. `DestroyPersonRequest` resolves the Person (`HasPerson`) and checks the entity gate. `MergePersonRequest` resolves the source Person and checks `CAN_MERGE_PERSONS` plus the entity gate on the source. Controllers read the resolved models from the requests.
+  _Verification commands:_
+  - `php artisan test --filter=PeopleControllerTest`
+  - `php artisan test --filter=PersonClaimTest`
+  - `php artisan test --filter=PublicModeTest`
+  - `php artisan test --filter=PrivateModeTest`
+  - `php artisan test --filter=RestrictedModeTest`
+  - `php artisan test --filter=PrivacyPreservingModeTest`
+  - `make phpstan`
+
 ## Notes / TODOs
 
 **Q-030-01 through Q-030-53 have been resolved.** All decisions are encoded in spec.md normative sections.
@@ -802,3 +833,5 @@ _Last updated: 2026-04-11_
 **I39 added (2026-04-11):** Per-resource face access rights in `PhotoPolicy` and `AlbumPolicy`; `PhotoRightsResource` and `AlbumRightsResource` extended with face flags; all `// TODO: FacePermissionMode` gaps in request authorizers closed. Resolves Q-030-63 and Q-030-72. Q-030-77/78/79 raised and resolved same day. Tasks T-030-98 through T-030-103.
 
 **I40 added (2026-09-23):** Fix for GHSA-x6f7-qp5q-w37f — an unrelated album supplied as `album_id` authorized batch face operations and scan dispatch on another user's faces/photos. `album_id` now only narrows a request that already passed per-object authorization. Spec: FR-030-48, FR-030-47 (c)/(d), S-030-66 … S-030-69. Tasks T-030-104 through T-030-106.
+
+**I41 added (2026-11-02):** Fix for GHSA-wc2r-9r6v-f3ch — a non-admin could send `user_id: null` to unlink another user's claimed Person and then claim it, and could rename, delete, or merge away Persons linked to other users. `user_id` is now admin-only by presence, and a linked Person is managed only by its linked User or an admin (Q-030-80). Spec: FR-030-49, S-030-70 … S-030-73. Tasks T-030-107 through T-030-110.

@@ -8,6 +8,7 @@
 
 namespace App\Actions\Profile;
 
+use App\Actions\User\AssertIdentifierIsUnambiguous;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Log;
 
 class UpdateLogin
 {
+	public function __construct(
+		protected readonly AssertIdentifierIsUnambiguous $assert_identifier_is_unambiguous,
+	) {
+	}
+
 	/**
 	 * Update Username if it does not already exists.
 	 *
@@ -42,6 +48,7 @@ class UpdateLogin
 			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) tried to change their identity to (%s) from %s', $user->username, $username, $ip));
 			throw new ConflictingPropertyException('Username already exists.');
 		}
+		$this->assert_identifier_is_unambiguous->username($username, $user->id);
 
 		// Change username
 		Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . sprintf('User (%s) changed their identity to (%s) from %s', $user->username, $username, $ip));
@@ -57,9 +64,15 @@ class UpdateLogin
 	 * @param ?string $email
 	 *
 	 * @return User
+	 *
+	 * @throws ConflictingPropertyException
 	 */
 	public function updateEmail(User &$user, ?string $email): User
 	{
+		if ($email !== $user->email) {
+			$this->assert_identifier_is_unambiguous->email($email, $user->id);
+		}
+
 		$user->email = $email;
 		if ($email === null) {
 			$user->notifications()->delete();

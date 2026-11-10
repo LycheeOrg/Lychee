@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => '同步伺服器檔案',
+    'description' => '將您的伺服器檔案與 Lychee 同步。這會從一個目錄及其所有子目錄匯入相片。此過程非常緩慢，建議使用 worker 與佇列以避免逾時。',
+    'sync' => '同步',
+    'loading' => '載入中...',
+    'selected_directory' => '目前選擇的目錄：',
+    'resync_metadata' => '重新同步現有檔案的中繼資料。',
+    'delete_imported' => '刪除原始檔案。',
+    'import_via_symlink' => '透過符號連結匯入相片，而非複製檔案。',
+    'skip_duplicates' => '若相片和相簿已存在於相簿庫中則略過。',
+    'delete_missing_photos' => '刪除相簿中不存在於同步目錄的相片。',
+    'delete_missing_albums' => '刪除上層相簿中不存在於同步目錄的相簿。',
+    'importing_please_be_patient' => '匯入中，請耐心等候...',
 ];
 

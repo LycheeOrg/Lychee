@@ -136,7 +136,7 @@ Mastodon requires a domain configuration:
 ],
 ```
 
-### Keycloak, Authelia, Authentik, Kanidm
+### Keycloak, Authelia, Authentik, Kanidm, Pocket ID
 
 These providers require a base URL:
 
@@ -152,6 +152,13 @@ These providers require a base URL:
 
 Kanidm enables PKCE by default. If you have explicitly disabled it, you can set
 env var `KANIDM_ENABLE_PKCE` to `false`.
+
+### Pocket ID
+
+[Pocket ID](https://pocket-id.org/) uses `POCKETID_BASE_URL` (e.g. `https://id.example.com`, without a trailing path).
+In Pocket ID, create an OIDC client with the callback URL `https://<your-lychee>/auth/pocketid/redirect`.
+Lychee sends PKCE by default, which Pocket ID accepts whether or not PKCE is required on the client.
+To disable it, set env var `POCKETID_USE_PKCE` to `false`.
 
 ## Internal Implementation Details
 
@@ -176,4 +183,4 @@ For developers who want to understand the OAuth implementation in Lychee:
 
 ---
 
-*Last updated: September 20, 2026*
+*Last updated: October 7, 2026*

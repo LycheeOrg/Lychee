@@ -69,9 +69,11 @@ class FaceClusterController extends Controller
 			->selectRaw('cluster_label, COUNT(*) as face_count')
 			->groupBy('cluster_label')
 			->orderBy('face_count', 'desc')
+			// Tie-breaker: without it equal-sized clusters come back in any order and pages overlap.
+			->orderBy('cluster_label')
 			->get();
 		$total = $totals->count();
-		$paginated = $totals->forPage($page, self::PER_PAGE);
+		$paginated = $totals->forPage($page, self::PER_PAGE)->values();
 
 		// Prefetch sample faces for all clusters in the paginated set to avoid N+1
 		$cluster_labels = $paginated->pluck('cluster_label')->all();
@@ -110,7 +112,7 @@ class FaceClusterController extends Controller
 			->notDismissed()
 			->update(['person_id' => $person->id]);
 
-		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
+		// Recount denormalized counters after the bulk update.
 		$person->face_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->count();
 		$person->photo_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
 		$person->save();

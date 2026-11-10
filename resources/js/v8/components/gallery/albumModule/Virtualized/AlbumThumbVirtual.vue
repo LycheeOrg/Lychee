@@ -13,6 +13,7 @@
 			'opacity-25!': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
+		data-drag-select-start="true"
 	>
 		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
 		<template v-if="props.album.cover_id !== null">
@@ -22,7 +23,6 @@
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="small"
 			/>
 			<Thumb
 				v-if="!togglableStore.isDragging"
@@ -30,14 +30,12 @@
 				:class="[chromeClass, cornerClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="small"
 			/>
 			<Thumb
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
 				:class="[chromeClass, cornerClass, cssClass]"
 				:album-id="props.album.id"
 				:photo-id="props.album.cover_id"
-				type="small"
 			/>
 		</template>
 		<template v-else>
@@ -50,7 +48,7 @@
 				class="thumbimg absolute w-full h-full m-0 p-0 object-cover top-0 left-0 ease-out transition-transform"
 				:alt="$t('gallery.thumbnail')"
 				:src="noCoverIconSrc"
-				:class="[chromeClass, cornerClass]"
+				:class="[chromeClass, cornerClass, cssClass]"
 				draggable="false"
 			/>
 			<!-- </span> -->
@@ -115,8 +113,7 @@ import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { useRouter } from "vue-router";
 import { useAlbumActions } from "@/composables/album/albumActions";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useAlbumStore } from "@/stores/AlbumState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { ALBUM_BADGE_BG } from "@/v8/utils/albumBadgeColors";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
@@ -134,8 +131,6 @@ const emits = defineEmits<{
 const { canInteractAlbum } = useAlbumActions();
 const router = useRouter();
 const userStore = useUserStore();
-const albumStore = useAlbumStore();
-const albumsStore = useAlbumsStore();
 
 const lycheeStore = useLycheeStateStore();
 
@@ -145,9 +140,8 @@ const { display_thumb_album_overlay, is_nsfw_background_blurred, is_cover_id_fla
 	storeToRefs(lycheeStore);
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
-const aspectRatio = computed(
-	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
-);
+// Open album's ratio, else the root's, else square; the live drawer's while it is open (Feature 110).
+const aspectRatio = useAlbumThumbAspectRatio("nearest");
 
 const { albumRoutes } = useAlbumRoute(router);
 const cannotInteractWhileDragging = computed(() => togglableStore.isDragging === true && canInteractAlbum(props.album) === false);

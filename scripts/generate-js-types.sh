@@ -2,7 +2,7 @@
 set -euo pipefail
 # auto-imports.d.ts and components.d.ts are gitignored: they're written by the
 # @nuxt/ui Vite plugin (unplugin-auto-import / unplugin-vue-components) as a
-# side effect of Vite resolving its plugin pipeline. `npm run check` (vue-tsc)
+# side effect of Vite resolving its plugin pipeline. `vp run typecheck` (vue-tsc)
 # needs them to resolve globals like `defineShortcuts`, but doesn't run Vite
 # itself - so on a fresh checkout the type-check fails with "Cannot find
 # name" for every auto-imported symbol.
@@ -22,7 +22,7 @@ rm -f auto-imports.d.ts components.d.ts
 build_out="$(mktemp -d)"
 trap 'rm -rf "$build_out"' EXIT
 
-npx vite build --mode development --outDir "$build_out" --emptyOutDir --logLevel warn
+node_modules/.bin/vp build --mode development --outDir "$build_out" --emptyOutDir --logLevel warn
 
 if [ ! -f auto-imports.d.ts ] || [ ! -f components.d.ts ]; then
 	echo "Failed to generate auto-imports.d.ts / components.d.ts" >&2

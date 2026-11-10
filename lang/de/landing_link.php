@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Zusätzliche Links',
+    'description' => 'Verwalten Sie eine beliebige, geordnete Liste zusätzlicher Links, die in der Navigation und/oder Fußzeile der Startseite angezeigt werden.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Noch keine zusätzlichen Links konfiguriert.',
+    'create_first' => 'Ersten Link erstellen',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Beschriftung',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Platzierung',
+    'col_enabled' => 'Aktiviert',
+    'col_actions' => 'Aktionen',
 
     // Placement labels
     'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_footer' => 'Fußzeile',
+    'placement_both' => 'Nav & Fußzeile',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Integriert',
+    'built_in_cannot_delete' => 'Dieser integrierte Link kann nicht gelöscht werden. Deaktivieren Sie ihn stattdessen oder ordnen Sie ihn wie jeden anderen Link neu an.',
+    'built_in_url_hint' => 'Dies ist ein integrierter Link, sein Ziel kann nicht geändert werden.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Link erstellen',
+    'edit' => 'Bearbeiten',
+    'delete' => 'Löschen',
+    'cancel' => 'Abbrechen',
+    'save' => 'Speichern',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Beschriftung',
+    'field_label_placeholder' => 'z. B. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Platzierung',
+    'field_open_in_new_tab' => 'In neuem Tab öffnen',
+    'field_enabled' => 'Aktiviert',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Link erstellen',
+    'modal_edit_title' => 'Link bearbeiten',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Link löschen',
+    'confirm_delete_message' => 'Möchten Sie den Link ":label" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Link erfolgreich erstellt.',
+    'updated' => 'Link erfolgreich aktualisiert.',
+    'deleted' => 'Link erfolgreich gelöscht.',
+    'reordered' => 'Links erfolgreich neu angeordnet.',
+    'error_load' => 'Links konnten nicht geladen werden.',
+    'error_save' => 'Link konnte nicht gespeichert werden.',
+    'error_delete' => 'Link konnte nicht gelöscht werden.',
+    'error_reorder' => 'Links konnten nicht neu angeordnet werden.',
 ];

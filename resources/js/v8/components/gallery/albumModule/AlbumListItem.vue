@@ -5,6 +5,7 @@
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
 		:data-album-id="album.id"
+		data-drag-select-start="true"
 		@click="maySelect($event, album.id)"
 		@contextmenu="propagateContexted($event, album.id)"
 	>
@@ -23,6 +24,7 @@
 		</div>
 		<!-- Thumbnail -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="relative block h-8 md:h-5"
 			:class="{
@@ -70,6 +72,7 @@
 
 		<!-- Content (title + counts) -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right"
 		>
@@ -108,11 +111,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from "vue";
+import { toRef } from "vue";
 import AlbumThumbImage from "./thumbs/AlbumThumbImage.vue";
-import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
 import ListBadge from "./thumbs/ListBadge.vue";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -120,8 +122,6 @@ import { storeToRefs } from "pinia";
 import { ALBUM_BADGE_FILL, ALBUM_BADGE_TEXT } from "@/v8/utils/albumBadgeColors";
 import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
 
-const albumStore = useAlbumStore();
-const albumsStore = useAlbumsStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
@@ -154,7 +154,6 @@ function maySelect(e: MouseEvent, id: string) {
 	propagateClicked(e, id);
 }
 
-const aspectRatio = computed(
-	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
-);
+// Open album's ratio, else the root's, else square; the live drawer's while it is open (Feature 110).
+const aspectRatio = useAlbumThumbAspectRatio("nearest");
 </script>

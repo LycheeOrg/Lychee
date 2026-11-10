@@ -6,6 +6,6 @@ return [
     | Changelogs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Change logs',
-    'description' => 'This page contains the changelogs up to the latest available version of Lychee. It is voluntarily not limited to the changes on your installed version. With this, we want to give you a better overview of what to expect when you decide to upgrade.',
+    'title' => 'Változásnaplók',
+    'description' => 'Ez az oldal a Lychee legújabb elérhető verziójáig tartalmazza a változásnaplókat. Szándékosan nem korlátozódik a telepített verzió változásaira. Ezzel szeretnénk jobb áttekintést adni arról, mire számíthat, ha a frissítés mellett dönt.',
 ];

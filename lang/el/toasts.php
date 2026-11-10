@@ -6,8 +6,8 @@ return [
     | Toasts
     |--------------------------------------------------------------------------
     */
-    'error' => 'Error',
-    'success' => 'Success',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'error' => 'Σφάλμα',
+    'success' => 'Επιτυχία',
+    'album_updated' => 'Το άλμπουμ ενημερώθηκε',
+    'update_failed' => 'Αποτυχία ενημέρωσης άλμπουμ',
 ];

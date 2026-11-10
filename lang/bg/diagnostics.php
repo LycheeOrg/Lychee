@@ -19,5 +19,5 @@ return [
         'info' => 'Информация',
         'copy' => 'Диагностиката е копирана в клипборда!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Копирането на диагностиката е достъпно само в защитен контекст (HTTPS).',
 ];

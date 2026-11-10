@@ -195,6 +195,30 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		$new_face = Face::where('photo_id', $this->photo1->id)->first();
 		self::assertNotNull($new_face);
 		self::assertEquals($person->id, $new_face->person_id);
+
+		// Counters are recomputed, not incremented on top of the replaced face
+		self::assertEquals(1, $person->refresh()->face_count);
+		self::assertEquals(1, $this->photo1->refresh()->face_count);
+	}
+
+	public function testResultsRescanWithoutFacesResetsCounters(): void
+	{
+		$person = Person::factory()->with_name('Alice')->create();
+		Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+		self::assertEquals(1, $person->refresh()->face_count);
+
+		Photo::where('id', $this->photo1->id)->update(['face_scan_status' => FaceScanStatus::PENDING->value]);
+
+		$response = $this->postJson('FaceDetection/results', [
+			'photo_id' => $this->photo1->id,
+			'status' => 'success',
+			'faces' => [],
+		], ['X-API-Key' => $this->api_key]);
+
+		$this->assertOk($response);
+		self::assertEquals(0, $this->photo1->refresh()->face_count);
+		self::assertEquals(0, $person->refresh()->face_count);
+		self::assertEquals(0, $person->photo_count);
 	}
 
 	// ── BULK SCAN ───────────────────────────────────────────────

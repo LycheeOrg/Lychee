@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'Tìm album, ảnh hoặc chuyển đến một trang…',
+    'navigation' => 'Đi tới',
+    'actions' => 'Thao tác',
+    'albums' => 'Album',
+    'results' => 'Kết quả tìm kiếm',
+    'empty' => 'Không tìm thấy kết quả.',
+    'dark_mode' => 'Chuyển sang chế độ tối',
+    'light_mode' => 'Chuyển sang chế độ sáng',
+    'language' => 'Ngôn ngữ',
 ];

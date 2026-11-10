@@ -83,6 +83,9 @@ class FaceAssignmentTest extends BaseApiWithDataTest
 		]);
 		$this->assertStatus($response, [200, 201]);
 		self::assertEquals($person2->id, $response->json('person_id'));
+		self::assertEquals(0, $this->person1->refresh()->face_count);
+		self::assertEquals(1, $person2->refresh()->face_count);
+		self::assertEquals(1, $person2->photo_count);
 	}
 
 	public function testAssignEmptyBodyCreatesDefaultPerson(): void

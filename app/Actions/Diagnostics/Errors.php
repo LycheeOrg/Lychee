@@ -12,6 +12,8 @@ use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceConfigCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AlbumSizeStatisticsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AlbumTakenAtRangeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
@@ -24,6 +26,7 @@ use App\Actions\Diagnostics\Pipes\Checks\GDSupportCheck;
 use App\Actions\Diagnostics\Pipes\Checks\HashCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
+use App\Actions\Diagnostics\Pipes\Checks\ImagickJxlCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\KeygenApiTokenCheck;
@@ -33,13 +36,16 @@ use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\RecomputeQueueCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SecurityAdvisoriesCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
 use App\Actions\Diagnostics\Pipes\Checks\TimezoneCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WebAuthnCredentialsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
+use App\Actions\Diagnostics\Pipes\Checks\WorkerCacheCheck;
 use App\DTO\DiagnosticData;
 use Illuminate\Pipeline\Pipeline;
 
@@ -54,6 +60,7 @@ class Errors
 		HashCheck::class,
 		AdminUserExistsCheck::class,
 		AuthDisabledCheck::class,
+		WebAuthnCredentialsCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
 		OldLicenseCheck::class,
@@ -75,12 +82,17 @@ class Errors
 		CountSizeVariantsCheck::class,
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
+		ImagickJxlCheck::class,
 		WatermarkerEnabledCheck::class,
 		AiVisionFaceRecognitionServiceCheck::class,
 		AiVisionFaceRecognitionServiceConfigCheck::class,
 		AiVisionNsfwServiceCheck::class,
 		LocalGeoDecodingServiceCheck::class,
 		StatisticsIntegrityCheck::class,
+		AlbumSizeStatisticsCheck::class,
+		AlbumTakenAtRangeCheck::class,
+		RecomputeQueueCheck::class,
+		WorkerCacheCheck::class,
 		WebshopCheck::class,
 		SecurityAdvisoriesCheck::class,
 	];

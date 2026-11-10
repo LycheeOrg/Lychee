@@ -57,7 +57,7 @@ return [
             'up' => 'Omhoog',
             'down' => 'Omlaag',
         ],
-        'reset_to_zero' => 'Reset to 0',
+        'reset_to_zero' => 'Terugzetten naar 0',
 
         'save' => 'Instellingen opslaan',
         'saved' => 'Watermerkinstellingen opgeslagen.',

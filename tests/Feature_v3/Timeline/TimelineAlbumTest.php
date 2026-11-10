@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v3\Timeline;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
@@ -34,12 +35,6 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class TimelineAlbumTest extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Access gating (F-066-03, S-066-02, S-066-03) ────────────────
 
 	public function testGuestDeniedByDefault(): void
@@ -101,6 +96,36 @@ class TimelineAlbumTest extends BaseApiWithDataTest
 		$details = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/timeline/Photos/details', ['bucket_id' => '2024']);
 		$this->assertOk($details);
 		self::assertContains($photo->id, $details->json('ids'));
+	}
+
+	/**
+	 * S-092-04, S-092-07: Timeline buckets come from `taken_key`, in the
+	 * zone the photo was taken in; windows are key ranges; photos without a
+	 * date are excluded from the buckets.
+	 */
+	public function testTakenAtBucketsAreCaptureLocal(): void
+	{
+		DB::table('configs')->where('key', '=', 'timeline_photos_order')->update(['value' => 'taken_at']);
+		DB::table('configs')->where('key', '=', 'timeline_photos_granularity')->update(['value' => 'hour']);
+		DB::table('photos')->update(['taken_at' => null, 'taken_key' => null]);
+
+		// 14:05 UTC taken at UTC+02:00.
+		$photo = Photo::factory()->owned_by($this->userMayUpload1)->in($this->album1)->create(['taken_at' => new Carbon('2026-07-01 16:05:00', '+02:00')]);
+		$this->assertSame('2026-07-01-16', $photo->taken_key);
+
+		$buckets = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/timeline/Photos/buckets');
+		$this->assertOk($buckets);
+		self::assertSame(['2026-07-01-16'], $buckets->json('bucket_ids'));
+		self::assertSame([1], $buckets->json('counts'));
+
+		$ratios = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/timeline/Photos', ['bucket_ids' => ['2026-07-01-16']]);
+		$this->assertOk($ratios);
+		self::assertSame([$photo->id], $ratios->json('ids'));
+		self::assertSame(['2026-07-01-16'], $ratios->json('bucket_ids'));
+
+		$details = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/timeline/Photos/details', ['bucket_id' => '2026-07-01-16']);
+		$this->assertOk($details);
+		self::assertSame([$photo->id], $details->json('ids'));
 	}
 
 	public function testUnknownAlbumIdStillReturns404(): void
@@ -270,6 +295,7 @@ class TimelineAlbumTest extends BaseApiWithDataTest
 
 		$this->album1->is_nsfw = true;
 		$this->album1->save();
+		(new SyncRecursiveNsfw())->do();
 
 		$sensitive_photo = Photo::factory()->owned_by($this->userMayUpload1)->in($this->album1)->create();
 
@@ -285,5 +311,6 @@ class TimelineAlbumTest extends BaseApiWithDataTest
 		Configs::set('hide_nsfw_in_timeline', '1');
 		$this->album1->is_nsfw = false;
 		$this->album1->save();
+		(new SyncRecursiveNsfw())->do();
 	}
 }

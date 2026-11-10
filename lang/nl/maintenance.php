@@ -71,28 +71,39 @@ return [
     ],
     'old-orders' => [
         'title' => 'Oude Orders',
-        'description' => '%d oude orders gevonden.<br/><br/>Een oude order is ouder dan 14 dagen, heeft geen gekoppelde gebruiker en is nog in afwachting van betaling of bevat geen items.',
+        'description' => '%d oude orders gevonden.<br/>Een oude order is ouder dan 14 dagen, heeft geen gekoppelde gebruiker en is nog in afwachting van betaling of bevat geen items.',
         'button' => 'Verwijder oude orders',
     ],
     'fulfill-orders' => [
         'title' => 'Af te handelen orders',
-        'description' => '%d orders gevonden met inhoud die nog niet beschikbaar is gemaakt.<br/><br/>Klik op de knop om waar mogelijk inhoud toe te wijzen.',
+        'description' => '%d orders gevonden met inhoud die nog niet beschikbaar is gemaakt.<br/>Klik op de knop om waar mogelijk inhoud toe te wijzen.',
         'button' => 'Orders afhandelen',
     ],
     'fulfill-precompute' => [
         'title' => 'Vooraf berekende albumvelden',
-        'description' => '%d albums gevonden met ontbrekende vooraf berekende velden.<br/><br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-album-fields',
+        'description' => '%d albums gevonden met ontbrekende vooraf berekende velden.<br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-album-stats',
         'button' => 'Velden berekenen',
     ],
     'flush-queue' => [
         'title' => 'Wachtrij leegmaken',
-        'description' => '%d wachtende taken gevonden in de wachtrij.<br/><br/>LET OP: Het legen van de wachtrij verwijdert alle wachtende taken permanent. Dit kan niet ongedaan worden gemaakt.',
+        'description' => '%d wachtende taken gevonden in de wachtrij.<br/>LET OP: Het legen van de wachtrij verwijdert alle wachtende taken permanent. Dit kan niet ongedaan worden gemaakt.',
         'button' => 'Wachtrij legen',
     ],
     'backfill-album-sizes' => [
         'title' => 'Albumgroottestatistieken',
-        'description' => '%d albums gevonden zonder groottestatistieken.<br/><br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-album-sizes',
+        'description' => '%d albums gevonden zonder groottestatistieken.<br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Berekent de groottestatistieken van alle albums op de achtergrond opnieuw.<br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-album-sizes',
         'button' => 'Groottes berekenen',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Tijdlijngroepen',
+        'description' => 'Berekent de tijdlijngroep van elk album en elke foto opnieuw en vernieuwt daarna de album- en fotolijsten.<br/>Gelijk aan het uitvoeren van: php artisan lychee:recompute-buckets',
+        'button' => 'Herberekenen',
+    ],
+    'recompute-taken-at-range' => [
+        'title' => 'Opnamedatumbereiken van albums',
+        'description' => '%d albums gevonden waarvan het opnamedatumbereik niet overeenkomt met hun foto’s.<br/>Albums gesorteerd op opnamedatum staan op de verkeerde plek tot ze opnieuw berekend zijn.',
+        'button' => 'Bereiken herberekenen',
     ],
 
     'face_quality' => [
@@ -130,7 +141,7 @@ return [
         'selected_count' => ':count geselecteerd',
     ],
     'bulk-scan-faces' => [
-        'description' => '%d foto’s gevonden die nog niet zijn gescand voor gezichtsherkenning.<br/><br/>Vereist dat de AI Vision-service actief is.',
+        'description' => '%d foto’s gevonden die nog niet zijn gescand voor gezichtsherkenning.<br/>Vereist dat de AI Vision-service actief is.',
     ],
     'run-clustering' => [
         'description' => 'Start gezichtsclustering in de AI Vision-service. Groepeert gedetecteerde gezichten op gelijkenis zodat u ze aan personen kunt toewijzen.',
@@ -156,10 +167,10 @@ return [
     ],
 
         'purge-orphan-face-embeddings' => [
-            'title' => 'Purge Orphan Face Embeddings',
-            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
-            'action' => 'Purge Now',
-            'success' => 'Orphaned face embeddings purged successfully.',
+            'title' => 'Verweesde gezichtsembeddings opschonen',
+            'description' => 'De AI Vision-service bevat mogelijk tot %d embedding(s) die niet meer in Lychee bestaan. Bij het opschonen wordt de huidige lijst met gezichten naar AI Vision gestuurd en wordt alles wat overblijft definitief verwijderd.',
+            'action' => 'Nu opschonen',
+            'success' => 'Verweesde gezichtsembeddings succesvol opgeschoond.',
         ],
         'bulk-scan-nsfw' => [
         'title' => 'Bulk NSFW-scan',

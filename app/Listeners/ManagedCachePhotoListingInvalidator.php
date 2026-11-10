@@ -10,17 +10,21 @@ namespace App\Listeners;
 
 use App\Constants\PersonAlbumPersons as PAP;
 use App\Enum\ColumnSortingPhotoType;
+use App\Enum\ColumnSortingType;
 use App\Enum\SmartAlbumType;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Repositories\ConfigManager;
+use App\Services\BucketKeys;
+use App\Services\BucketScheme;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use App\Services\PhotoBucketComputer;
@@ -101,36 +105,22 @@ class ManagedCachePhotoListingInvalidator
 	 * Resolves each of `$photo_ids`' current Timeline bucket (per the
 	 * instance-wide `timeline_photos_order`/`timeline_photos_granularity`
 	 * config, mirroring {@see \App\Actions\Photo\StructOfArrays\ResolvesPhotoSource::resolveEffectiveSorting()}'s
-	 * `TimelineAlbum` branch) and evicts its fine tag, plus
+	 * `TimelineAlbum` branch) from its `taken_key` or `created_at`
+	 * (FR-092-17) and evicts its fine tag, plus
 	 * {@see CacheKeyProvider::photoBucketsTierTag()} unconditionally once
-	 * (FR-066-09/FR-066-10) — Timeline's `buckets` tier response
-	 * (whole-library counts) depends on every photo, so it must be
-	 * invalidated on every relevant save/move regardless; only the
-	 * *other* cached buckets' `ratios`/`details` entries are spared
-	 * (NFR-066-04). Evicting the dedicated tier tag rather than the coarse
-	 * {@see CacheKeyProvider::photoListingTag()} is what spares them: the
-	 * coarse tag is also carried by every `ratios`/`details` window, so
-	 * evicting it would flush every cached window regardless of bucket.
+	 * (FR-066-09/FR-066-10): Timeline's `buckets` tier depends on every
+	 * photo; only the other cached buckets' `ratios`/`details` entries are
+	 * spared (NFR-066-04).
 	 *
-	 * Carbon-free (`[[feedback_avoid_carbon_server_side]]`): reads the raw
-	 * `created_at`/`taken_at` column value directly, truncated via
-	 * {@see PhotoBucketComputer::truncateRawDate()}.
+	 * A save that moves a photo out of its previous bucket leaves that
+	 * bucket's cached windows stale: `$previous_dates` (captured via
+	 * `getRawOriginal()` before the save) resolves the previous bucket too.
+	 * When a photo's entry does not cover the configured sort column, the
+	 * previous bucket is unknown and the coarse
+	 * {@see CacheKeyProvider::photoListingTag()} is evicted instead.
 	 *
-	 * A save that changes the configured sort column moves a photo OUT of
-	 * its previous bucket - re-reading only the (already-updated) DB row
-	 * only ever resolves the NEW bucket, leaving the old bucket's cached
-	 * `ratios`/`details` entries stale until expiry. `$previous_dates` (when
-	 * supplied by the caller, captured via `getRawOriginal()` before the
-	 * save landed) lets us evict that old bucket's fine tag too. When a
-	 * photo has an entry in `$previous_dates` but it doesn't cover the
-	 * currently-configured sort column, the previous bucket can't be
-	 * resolved at all - fall back to evicting the coarse
-	 * {@see CacheKeyProvider::photoListingTag()} (not the tier tag, already
-	 * evicted above unconditionally) since that coarse tag is also carried
-	 * by every `ratios`/`details` window regardless of bucket.
-	 *
-	 * @param array<int,string>                                          $photo_ids
-	 * @param array<string,array{created_at?:?string,taken_at?:?string}> $previous_dates keyed by photo id, see {@see \App\Events\PhotoSaved::$previous_dates}
+	 * @param array<int,string>                                           $photo_ids
+	 * @param array<string,array{created_at?:?string,taken_key?:?string}> $previous_dates keyed by photo id, see {@see \App\Events\PhotoSaved::$previous_dates}
 	 */
 	private function evictTimelineBucketsFor(array $photo_ids, array $previous_dates = []): void
 	{
@@ -139,43 +129,36 @@ class ManagedCachePhotoListingInvalidator
 		}
 
 		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
-		if (!in_array($order, [ColumnSortingPhotoType::CREATED_AT, ColumnSortingPhotoType::TAKEN_AT], true)) {
-			$order = ColumnSortingPhotoType::TAKEN_AT;
-		}
-		$granularity = $this->bucket_computer->resolveGranularity(null);
+		$column = $order === ColumnSortingPhotoType::CREATED_AT ? ColumnSortingType::CREATED_AT : ColumnSortingType::TAKEN_AT;
+		$key_column = $column === ColumnSortingType::CREATED_AT ? 'created_at' : 'taken_key';
+		$scheme = BucketScheme::forPhotos($column, $this->bucket_computer->resolveGranularity(null), $this->config_manager);
+		$bucket_id_of = fn (?string $raw): string => $scheme->idOfKey(($raw !== null && $column === ColumnSortingType::CREATED_AT) ? BucketKeys::createdKey($raw) : $raw);
 
-		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select(['id', $order->value])->get();
+		$rows = DB::table('photos')->whereIn('id', $photo_ids)->select(['id', $key_column])->get();
 
 		$tags = [$this->cache_key_provider->photoBucketsTierTag(self::TIMELINE_ALBUM_ID)];
 		foreach ($rows as $row) {
-			/** @var string|null $raw_date */
-			$raw_date = $row->{$order->value};
-			$bucket_id = $raw_date === null ? 'unknown' : $this->bucket_computer->truncateRawDate($raw_date, $granularity);
+			$bucket_id = $bucket_id_of($row->{$key_column});
 			$tags[] = $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $bucket_id);
 
-			if (array_key_exists($row->id, $previous_dates)) {
-				$previous_entry = $previous_dates[$row->id];
-				if (array_key_exists($order->value, $previous_entry)) {
-					/** @var string|null $previous_raw */
-					$previous_raw = $previous_entry[$order->value];
-					$previous_bucket_id = $previous_raw === null ? 'unknown' : $this->bucket_computer->truncateRawDate($previous_raw, $granularity);
-					if ($previous_bucket_id !== $bucket_id) {
-						$tags[] = $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $previous_bucket_id);
-					}
-				} else {
-					$tags[] = $this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID);
-				}
+			if (!array_key_exists($row->id, $previous_dates)) {
+				continue;
 			}
+
+			$previous_entry = $previous_dates[$row->id];
+			$tags[] = array_key_exists($key_column, $previous_entry)
+				? $this->cache_key_provider->photoListingBucketTag(self::TIMELINE_ALBUM_ID, $bucket_id_of($previous_entry[$key_column]))
+				: $this->cache_key_provider->photoListingTag(self::TIMELINE_ALBUM_ID);
 		}
 
-		$this->cache->forgetTags(array_unique($tags));
+		$this->cache->forgetTags(array_values(array_unique($tags)));
 	}
 
 	/**
 	 * Dedicated signal for when an album's own `sorting_col`/
 	 * `sorting_order`/`photo_timeline` changed, which
 	 * {@see \App\Jobs\RecomputeAlbumPhotoBucketsJob} bulk-`upsert()`s
-	 * every direct photo's `bucket_id` for, bypassing Eloquent events
+	 * every direct photo's `bucket_key` for, bypassing Eloquent events
 	 * entirely - the photo-listing cache for that album must be evicted
 	 * explicitly here.
 	 */
@@ -185,8 +168,17 @@ class ManagedCachePhotoListingInvalidator
 	}
 
 	/**
+	 * Instance-wide photo bucket setting changed (FR-092-13): every cached
+	 * photo listing carries the global tag.
+	 */
+	public function handlePhotoListingCacheFlushRequested(PhotoListingCacheFlushRequested $event): void
+	{
+		$this->cache->forgetTag($this->cache_key_provider->photoListingGlobalTag());
+	}
+
+	/**
 	 * Dedicated signal for {@see \App\Jobs\RecomputePhotoBucketsJob}, which
-	 * bulk-`upsert()`s every linked album's `photo_album.bucket_id` for one
+	 * bulk-`upsert()`s every linked album's `photo_album.bucket_key` for one
 	 * photo, bypassing Eloquent events entirely - the photo-listing cache
 	 * for every affected album must be evicted explicitly here.
 	 */

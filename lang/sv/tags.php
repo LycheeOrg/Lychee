@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Taggar',
+    'description' => 'Hantera dina taggar här. Du kan byta namn på, slå samman och radera taggar.',
+    'no_tags' => 'Inga taggar hittades.',
+    'loading' => 'Läser in taggar...',
+    'rename' => 'Byt namn',
+    'merge' => 'Slå samman',
+    'delete' => 'Radera',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Namn',
+    'column_photos' => 'Foton',
+    'column_albums' => 'Album',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Är du säker på att du vill radera taggen ”%s”?',
+    'delete_confirm_multiple' => 'Är du säker på att du vill radera dessa %d taggar?',
+    'delete_warning' => 'Denna åtgärd kan inte ångras! Alla foton som har denna tagg kommer inte längre att ha den.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Är du säker på att du vill slå samman taggen ”%1$s” med taggen ”%2$s”?',
+    'merge_warning' => 'Denna åtgärd kan inte ångras! Alla foton med källtaggen flyttas till måltaggen.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Byt namn på tagg',
 ];

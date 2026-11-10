@@ -216,8 +216,7 @@ class Generate
 		if ($this->config_manager->getValueAsBool('hide_nsfw_in_rss')) {
 			$albums_query
 				->join('albums', 'albums.id', '=', PA::ALBUM_ID)
-				->whereNotExists(fn (BaseBuilder $q) => $this->album_query_policy
-					->appendRecursiveSensitiveAlbumsCondition($q, null, null));
+				->where('albums.is_recursive_nsfw', '=', false);
 		}
 
 		$albums_by_photo = $albums_query

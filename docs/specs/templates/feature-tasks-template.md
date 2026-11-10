@@ -13,7 +13,7 @@ _Last updated: YYYY-MM-DD_
   _Intent:_ What this task delivers (tests, implementation, docs).  
   _Verification commands:_  
   - `php artisan test --filter=<ClassName>`  
-  - `npm run check`  
+  - `vp run typecheck`  
   - `make phpstan`  
   _Notes:_ Link to related spec sections or follow-ups.
 

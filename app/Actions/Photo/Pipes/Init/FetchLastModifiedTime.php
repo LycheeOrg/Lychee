@@ -8,24 +8,28 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 
 /**
  * Set file_last_modified_time if null.
  */
-class FetchLastModifiedTime implements InitPipe
+class FetchLastModifiedTime extends AbstractInitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->file_last_modified_time === null) {
 			$state->file_last_modified_time ??= $state->source_file->lastModified();
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.fetch_last_modified_time';
 	}
 }
 

@@ -73,6 +73,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 
 		$request->merge([
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => true,
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => false,
 			RequestAttribute::IS_PINNED_ATTRIBUTE => false,
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
 			RequestAttribute::HEADER_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
@@ -125,6 +126,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => ['required', 'boolean', 'declined_if:' . RequestAttribute::IS_COMPACT_ATTRIBUTE . ',true'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],

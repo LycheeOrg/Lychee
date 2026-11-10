@@ -55,6 +55,9 @@ use function Safe\preg_match;
  * @property string                $title
  * @property string|null           $title_base
  * @property int                   $title_index
+ * @property string|null           $title_date_key           Leading date of the title as `Y-m-d` (FR-092-02).
+ * @property string|null           $taken_key                `taken_at` in `taken_at_orig_tz` as `Y-m-d-H` (FR-092-01).
+ * @property int|null              $month_day_key            Month × 100 + day of `taken_key`, else of `created_at` (FR-106-01).
  * @property string|null           $description
  * @property Collection<int,Tag>   $tags
  * @property int                   $owner_id
@@ -245,9 +248,12 @@ class Photo extends Model implements HasUTCBasedTimes
 		return $this->belongsTo(User::class, 'owner_id', 'id');
 	}
 
+	/**
+	 * @return HasManySizeVariants<SizeVariant>
+	 */
 	public function size_variants(): HasManySizeVariants
 	{
-		return new HasManySizeVariants($this);
+		return new HasManySizeVariants(SizeVariant::query(), $this);
 	}
 
 	/**
@@ -289,7 +295,6 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	public function rating(): HasOne
 	{
-		/** @phpstan-ignore return.type (because of when() method used in the return statement) */
 		return $this->hasOne(PhotoRating::class)
 			->when(Auth::check(), fn ($query) => $query->where('user_id', '=', Auth::id()))
 			->when(!Auth::check(), fn ($query) => $query->whereNull('user_id'));

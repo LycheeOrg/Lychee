@@ -17,7 +17,7 @@ import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 
 const data = ref<number | undefined>(undefined);
@@ -25,8 +25,9 @@ const loading = ref(false);
 const toast = useAppToast();
 
 const description = computed(() => {
+	// -1: queued mode, every album is recomputed, there is no count to show.
 	if (data.value === -1) {
-		return "";
+		return trans("maintenance.backfill-album-sizes.description_queue");
 	}
 	return sprintf(trans("maintenance.backfill-album-sizes.description"), data.value);
 });

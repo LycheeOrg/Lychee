@@ -156,6 +156,7 @@ class GdHandler extends BaseImageHandler
 	 */
 	public function load(MediaFile $file): void
 	{
+		$this->assertCanProcess($file->getOriginalExtension());
 		try {
 			$in_memory_buffer = new InMemoryBuffer();
 			$this->reset();
@@ -246,6 +247,7 @@ class GdHandler extends BaseImageHandler
 		if ($this->gd_image === null) {
 			throw new MediaFileOperationException('No image loaded');
 		}
+		$this->assertCanProcess($file->getExtension());
 		try {
 			// We write the image into a memory buffer first, because
 			// we don't know if the file is a local file (or hosted elsewhere)

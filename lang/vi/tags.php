@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Thẻ',
+    'description' => 'Quản lý thẻ của bạn tại đây. Bạn có thể đổi tên, hợp nhất và xóa thẻ.',
+    'no_tags' => 'Không tìm thấy thẻ nào.',
+    'loading' => 'Đang tải thẻ...',
+    'rename' => 'Đổi tên',
+    'merge' => 'Hợp nhất',
+    'delete' => 'Xóa',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Tên',
+    'column_photos' => 'Ảnh',
+    'column_albums' => 'Album',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Bạn có chắc muốn xóa thẻ “%s”?',
+    'delete_confirm_multiple' => 'Bạn có chắc muốn xóa %d thẻ này?',
+    'delete_warning' => 'Thao tác này không thể hoàn tác! Tất cả ảnh gắn với thẻ này sẽ không còn thẻ này nữa.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Bạn có chắc muốn hợp nhất thẻ “%1$s” vào thẻ “%2$s”?',
+    'merge_warning' => 'Thao tác này không thể hoàn tác! Tất cả ảnh gắn với thẻ nguồn sẽ được chuyển sang thẻ đích.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Đổi tên thẻ',
 ];

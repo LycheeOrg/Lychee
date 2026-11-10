@@ -18,6 +18,9 @@ class FrameData extends Data
 		public int $timeout,
 		public string $src,
 		public string $srcset,
+		public FrameClockData $clock,
+		public FrameInfoData $info,
+		public ?FramePhotoData $photo,
 	) {
 	}
 }

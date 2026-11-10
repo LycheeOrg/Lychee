@@ -27,7 +27,11 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 {
 	protected AlbumQueryPolicy $album_query_policy;
 
-	public function __construct(Album $owning_album)
+	/**
+	 * @param Album $owning_album
+	 * @param bool  $include_nsfw if false, photos in sensitive albums below the owning album are left out
+	 */
+	public function __construct(Album $owning_album, protected bool $include_nsfw = true)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
@@ -92,7 +96,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 				user: $user,
 				unlocked_album_ids: $unlocked_album_ids,
 				origin: $albums[0],
-				include_nsfw: true
+				include_nsfw: $this->include_nsfw
 			);
 
 		$sorting = $albums[0]->getEffectivePhotoSorting();

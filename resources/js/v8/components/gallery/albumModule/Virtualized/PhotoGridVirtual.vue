@@ -3,15 +3,18 @@
 		<div data-photo-grid-root role="list" class="relative w-full" :style="{ height: `${layout.totalHeight}px` }">
 			<!-- Sticky pinned header: mirrors AlbumThumbGridVirtual.vue's own
 			     mechanism exactly — only rendered once the active bucket's own
-			     real header row has scrolled past the top. -->
+			     real header row has scrolled past the top. The negative margins bleed
+			     the band across the wrapping `UContainer`'s padding so the blur spans the
+			     whole column up to the date scrubber; the band's padding puts the label
+			     back on the grid's left edge. -->
 			<div
 				v-if="activeHeaderLabel !== null"
-				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none -mx-4 sm:-mx-6 lg:-mx-8"
 				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
 			>
 				<!-- <div class="absolute inset-0 bg-default/50 backdrop-blur mask-[linear-gradient(to_bottom,#000,transparent_50%)]" />
 				<div class="relative w-full h-full flex items-center font-semibold text-toned text-lg"> -->
-				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
+				<div class="w-full h-full flex items-center px-4 sm:px-6 lg:px-8 font-semibold text-toned text-lg bg-default/50 backdrop-blur">
 					{{ activeHeaderLabel }}
 				</div>
 			</div>
@@ -116,6 +119,8 @@ import { isTouchDevice, ctrlKeyState, metaKeyState, shiftKeyState } from "@/util
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { initLayouts } from "@/v8/layouts/wasmLayouts";
+import { usePhotoLayoutConfig } from "@/v8/composables/gallerySizes/gallerySizesLive";
+import { photoTargetAndGap } from "@/v8/utils/galleryPreviewGeometry";
 import { HEADER_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import {
 	buildPhotoChunks,
@@ -125,14 +130,17 @@ import {
 	type PhotoLayoutMode,
 	type PhotoBox,
 	type PhotoChunk,
+	type PositionedPhoto,
 	type TimelineChunk,
 	type TimelineLayoutCacheEntry,
 } from "@/v8/composables/photo/analyticPhotoLayout";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
-import { deriveDayScrubEntries, formatDayLabel, tileDayKey, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
+import { deriveDayScrubEntries, formatDayLabel, type DateScrubberField, type DateScrubLayout } from "@/v8/utils/dateScrubber";
 import PhotoThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbVirtual.vue";
 import PhotoListItemVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoListItemVirtual.vue";
 import { useKenBurnsHover } from "@/v8/composables/photo/kenBurnsHover";
+import { useTileUrlRequests } from "@/v8/composables/photo/useTileUrlRequests";
+import { useTileKeys } from "@/v8/composables/photo/useTileKeys";
 
 const props = defineProps<{
 	selectedPhotos: string[];
@@ -222,24 +230,18 @@ const ready = ref(false);
 
 const mode = computed<PhotoLayoutMode>(() => layoutStore.layout as PhotoLayoutMode);
 
+// Stored layout config, or the live drawer's values while it is open (Feature 110, FR-110-14).
+const photoLayoutConfig = usePhotoLayoutConfig();
 const targetAndGap = computed<{ target: number; gap: number }>(() => {
-	const config = layoutStore.config;
+	const config = photoLayoutConfig.value;
+	const layout = mode.value;
 	if (config === undefined) {
 		return { target: 200, gap: 12 };
 	}
-	switch (mode.value) {
-		case "justified":
-			return { target: config.photo_layout_justified_row_height, gap: config.photo_layout_gap };
-		case "square":
-			return { target: config.photo_layout_square_column_width, gap: config.photo_layout_gap };
-		case "masonry":
-			return { target: config.photo_layout_masonry_column_width, gap: config.photo_layout_gap };
-		case "grid":
-			return { target: config.photo_layout_grid_column_width, gap: config.photo_layout_gap };
-		case "list":
-		default:
-			return { target: 0, gap: 0 };
+	if (layout === "list") {
+		return { target: 0, gap: 0 };
 	}
+	return photoTargetAndGap(layout, config);
 });
 
 // Rating-filter-aware boundary recompute (FR-065-19, discovered necessity —
@@ -300,7 +302,7 @@ const layoutResult = computed(() => {
 	// incremental, hole-tolerant layout is different.
 	if (source.value === "timeline" || !ready.value || containerWidth.value <= 0) {
 		return {
-			positioned: [] as { photo: App.Http.Resources.Models.PhotoResource; box: PhotoBox }[],
+			positioned: [] as PositionedPhoto[],
 			totalHeight: 0,
 			headerTops: [] as { top: number; label: string; bucketId: string }[],
 			boundaries: [] as import("@/v8/utils/albumBucketBoundaries").AlbumBucketBoundary[],
@@ -397,6 +399,11 @@ const virtualizer = useWindowVirtualizer(
 
 const virtualChunks = computed(() => virtualizer.value.getVirtualItems().map((item) => ({ ...item, chunk: chunks.value[item.index] })));
 
+// Feature 102: ask for the direct URLs of every rendered tile (visible plus overscan).
+useTileUrlRequests(() =>
+	virtualChunks.value.flatMap((item) => (item.chunk === undefined ? [] : tilesForChunk(item.chunk).map((tile) => tile.photo.id))),
+);
+
 /** Sum of `chunk.size` for every chunk entirely above `offset` (i.e. its own bottom is at/before `offset`) — the cumulative height of "already scrolled past" content. */
 function cumulativeChunkHeightAbove(chunkList: (PhotoChunk | TimelineChunk)[], offset: number): number {
 	let total = 0;
@@ -467,12 +474,15 @@ function tilesForChunk(chunk: PhotoChunk | TimelineChunk): PositionedTile[] {
 		}
 		return result;
 	}
+	// The layout positions tiles by their index in `photosStore.photos`; the
+	// rendered tile gets the store's reactive photo (FR-103-05).
 	const result: PositionedTile[] = [];
 	for (let i = 0; i < chunk.tileCount; i++) {
 		const index = chunk.tileStart + i;
 		const entry = layoutResult.value.positioned[index];
-		if (entry !== undefined) {
-			result.push({ photo: entry.photo, box: entry.box, index });
+		const photo = entry === undefined ? undefined : photosStore.photos[entry.index];
+		if (entry !== undefined && photo !== undefined) {
+			result.push({ photo, box: entry.box, index });
 		}
 	}
 	return result;
@@ -565,15 +575,30 @@ watch(
  * scroll tick (NFR-071-03). `null` when the album's photo ordering is not
  * date-based.
  */
+/** Feature 094 (FR-094-10): hour runs when the album's photo headers are hour buckets (`Y-m-d-H`, 13 characters), day runs otherwise. */
+const isPhotoGranularityHourly = computed(() => albumStore.photoBucketsV3?.bucket_ids.find((id) => id !== "unknown")?.length === 13);
+
+const scrubberField = computed(() =>
+	source.value === "album" ? ((albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null) : null,
+);
+
+// Computed once per photo array, field and granularity; a new layout of the
+// same photos only re-pairs them with tops (FR-103-06).
+const tileKeys = useTileKeys(
+	() => photosStore.photos,
+	() => scrubberField.value,
+	() => isPhotoGranularityHourly.value,
+);
+
 const scrubberLayout = computed<DateScrubLayout | null>(() => {
-	const field = (albumStore.config?.photo_date_scrubber_field ?? null) as DateScrubberField | null;
-	if (source.value !== "album" || field === null) {
+	if (scrubberField.value === null) {
 		return null;
 	}
 	const format = lycheeStore.date_scrubber_label_format;
-	const items = layoutResult.value.positioned.map((p) => ({ day: tileDayKey(p.photo, field), top: p.box.top }));
+	const keys = tileKeys.value;
+	const items = layoutResult.value.positioned.map((p) => ({ day: keys[p.index] ?? null, top: p.box.top }));
 	const separatorTops = layoutResult.value.headerTops.map((h) => h.top);
-	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (day) => formatDayLabel(day, format));
+	return deriveDayScrubEntries(items, layoutResult.value.totalHeight, separatorTops, (key) => formatDayLabel(key.slice(0, 10), format));
 });
 
 watch(

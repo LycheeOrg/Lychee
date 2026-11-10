@@ -8,18 +8,17 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Repositories\ConfigManager;
 
-class ReplaceOriginalWithBackup implements StandalonePipe
+class ReplaceOriginalWithBackup extends AbstractStandalonePipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->backup_file === null) {
 			return $next($state);
@@ -33,5 +32,10 @@ class ReplaceOriginalWithBackup implements StandalonePipe
 		$state->backup_file->delete();
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.replace_original_with_backup';
 	}
 }

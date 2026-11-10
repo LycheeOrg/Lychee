@@ -31,7 +31,7 @@ class PhotoRatioResource extends Data
 	 * @param string[]                 $ids
 	 * @param string[]                 $titles            guest-blanked identically to {@see \App\Http\Resources\Models\PhotoResource::$title}'s `file_name_hidden` rule
 	 * @param string[]                 $types             raw photo `type` enum value
-	 * @param string[]                 $bucket_ids        `"unknown"` for a `null` `photo_album.bucket_id`
+	 * @param string[]                 $bucket_ids        `"unknown"` for a `null` bucket key
 	 * @param float[]                  $ratios            aspect ratio, `width/height`
 	 * @param int[]                    $owner_ids
 	 * @param bool[]                   $is_highlighteds

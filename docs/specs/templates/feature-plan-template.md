@@ -30,7 +30,7 @@ Break the feature into ≤90-minute increments. Each increment should identify p
    - _Goal:_ Brief description.
    - _Preconditions:_ Specs/tests that must already exist.
    - _Steps:_ Bullet the work items (tests first, then implementation).
-   - _Commands:_ `php artisan test --filter=<ClassName>`, `npm run check`, `make phpstan`, etc.
+   - _Commands:_ `php artisan test --filter=<ClassName>`, `vp run typecheck`, `make phpstan`, etc.
    - _Exit:_ Definition of done for this increment.
 2. **I2 – <Title>**
    - …

@@ -41,6 +41,7 @@ use App\Services\PhotoBucketComputer;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 
 /**
@@ -61,18 +62,23 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 		parent::setUp();
 		config(['features.enable-caching' => true]);
 
+		// Timeline's effective sort/granularity (F-066-10) - CREATED_AT/YEAR
+		// by default, mirroring TimelineAlbumTest's own fixture convention.
+		$this->listener = $this->makeListener(ColumnSortingPhotoType::CREATED_AT, TimelinePhotoGranularity::YEAR);
+	}
+
+	private function makeListener(ColumnSortingPhotoType $order, TimelinePhotoGranularity $granularity): ManagedCachePhotoListingInvalidator
+	{
 		$config_manager = \Mockery::mock(ConfigManager::class);
 		$config_manager->shouldReceive('getValueAsBool')->with('managed_cache_enabled')->andReturn(true);
-		// Timeline's effective sort/granularity (F-066-10) - CREATED_AT/YEAR
-		// throughout this test class, mirroring TimelineAlbumTest's own
-		// fixture convention.
-		$config_manager->shouldReceive('getValueAsEnum')->with('timeline_photos_order', ColumnSortingPhotoType::class)->andReturn(ColumnSortingPhotoType::CREATED_AT);
-		$config_manager->shouldReceive('getValueAsEnum')->with('timeline_photos_granularity', TimelinePhotoGranularity::class)->andReturn(TimelinePhotoGranularity::YEAR);
+		$config_manager->shouldReceive('getValueAsEnum')->with('timeline_photos_order', ColumnSortingPhotoType::class)->andReturn($order);
+		$config_manager->shouldReceive('getValueAsEnum')->with('timeline_photos_granularity', TimelinePhotoGranularity::class)->andReturn($granularity);
+		$config_manager->shouldReceive('getValueAsString')->andReturn('Y');
 
 		$this->cache_service = new ManagedCacheService($config_manager);
 		$this->cache_key_provider = new CacheKeyProvider();
-		$bucket_computer = new PhotoBucketComputer($config_manager);
-		$this->listener = new ManagedCachePhotoListingInvalidator($this->cache_service, $this->cache_key_provider, $config_manager, $bucket_computer);
+
+		return new ManagedCachePhotoListingInvalidator($this->cache_service, $this->cache_key_provider, $config_manager, new PhotoBucketComputer($config_manager));
 	}
 
 	protected function tearDown(): void
@@ -185,11 +191,33 @@ class ManagedCachePhotoListingInvalidatorTest extends AbstractTestCase
 		// cover the currently-configured sort column ('created_at') - the
 		// previous bucket genuinely can't be resolved, so the fallback is
 		// the coarse tag, not a guess at which specific bucket it was.
-		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id], [$photo->id => ['taken_at' => '2022-01-01 00:00:00']]));
+		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id], [$photo->id => ['taken_key' => '2022-01-01-00']]));
 
 		$this->assertEvicted('k:timeline-2024');
 		$this->assertNotEvicted('k:timeline-2022');
 		$this->assertEvicted('k:timeline-coarse');
+	}
+
+	/**
+	 * FR-092-17, S-092-18: with the Timeline sorted by `taken_at`, the old
+	 * and new buckets resolve from `taken_key` (capture-local), others stay.
+	 */
+	public function testTakenAtTimelineBucketsResolveFromTakenKey(): void
+	{
+		$this->listener = $this->makeListener(ColumnSortingPhotoType::TAKEN_AT, TimelinePhotoGranularity::HOUR);
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		DB::table('photos')->where('id', '=', $photo->id)->update(['taken_key' => '2026-07-01-16']);
+
+		$this->seedCache('k:new', [$this->cache_key_provider->photoListingBucketTag('timeline', '2026-07-01-16')]);
+		$this->seedCache('k:old', [$this->cache_key_provider->photoListingBucketTag('timeline', '2025-01-01-08')]);
+		$this->seedCache('k:other', [$this->cache_key_provider->photoListingBucketTag('timeline', '2026-07-01-14')]);
+
+		$this->listener->handlePhotoSaved(new PhotoSaved([$photo->id], [$photo->id => ['created_at' => null, 'taken_key' => '2025-01-01-08']]));
+
+		$this->assertEvicted('k:new');
+		$this->assertEvicted('k:old');
+		$this->assertNotEvicted('k:other');
 	}
 
 	public function testPhotoMovedEvictsOnlyTheTouchedTimelineBucketPlusBucketsTierTag(): void

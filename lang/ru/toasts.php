@@ -8,6 +8,6 @@ return [
     */
     'error' => 'Ошибка',
     'success' => 'Успешно',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'album_updated' => 'Альбом обновлён',
+    'update_failed' => 'Не удалось обновить альбом',
 ];

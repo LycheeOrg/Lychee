@@ -21,7 +21,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";

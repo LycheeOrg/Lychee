@@ -20,6 +20,7 @@ class Save
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
+		protected readonly AssertIdentifierIsUnambiguous $assert_identifier_is_unambiguous,
 	) {
 	}
 
@@ -52,6 +53,7 @@ class Save
 		) {
 			throw new ConflictingPropertyException('Username already exists');
 		}
+		$this->assert_identifier_is_unambiguous->username($username, $user->id);
 
 		if ($quota_kb === 0) {
 			$default_bytes = $this->config_manager->getValueAsByteSize('default_user_quota');

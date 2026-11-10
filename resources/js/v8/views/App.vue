@@ -8,6 +8,7 @@
 				<LeftMenu />
 				<EmbedCodeDialog />
 				<SpotlightSearch />
+				<GallerySizesLive />
 				<main class="relative">
 					<router-view v-slot="{ Component, route }">
 						<Transition name="lychee-page">
@@ -26,6 +27,7 @@ import LeftMenu from "@/v8/menus/LeftMenu.vue";
 import Error from "@/v8/views/Error.vue";
 import EmbedCodeDialog from "@/v8/components/forms/album/EmbedCodeDialog.vue";
 import SpotlightSearch from "@/v8/components/modals/SpotlightSearch.vue";
+import GallerySizesLive from "@/v8/components/drawers/GallerySizesLive.vue";
 import GalleryUnlock from "@/v8/views/GalleryUnlock.vue";
 import { useGalleryLock } from "@/composables/useGalleryLock";
 import { disableCtrlA } from "@/utils/keybindings-utils";

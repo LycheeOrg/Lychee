@@ -1,5 +1,5 @@
 import { TogglablesStateStore } from "@/stores/ModalsState";
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
 import { modKey, shiftKeyState } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "./albumActions";
@@ -7,9 +7,11 @@ import { AlbumsStore } from "@/stores/AlbumsState";
 import { PhotosStore } from "@/stores/PhotosState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useAlbumStore } from "@/stores/AlbumState";
-import { computeAlbumTileGeometry, resolveBreakpoint } from "@/v8/composables/album/albumTileWidth";
+import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { useAlbumThumbAspectRatio, usePhotoLayoutConfig } from "@/v8/composables/gallerySizes/gallerySizesLive";
+import { photoTargetAndGap } from "@/v8/utils/galleryPreviewGeometry";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { computeVisiblePhotoLayout, type PhotoLayoutMode } from "@/v8/composables/photo/analyticPhotoLayout";
 import { useLayoutStore } from "@/stores/LayoutState";
@@ -48,6 +50,15 @@ export function useDragAndSelect(
 	const lycheeStore = useLycheeStateStore();
 	const albumStore = useAlbumStore();
 	const layoutStore = useLayoutStore();
+	// Same values the grids lay out with, including the live drawer's (Feature 110), so drag boxes match the tiles.
+	const photoLayoutConfig = usePhotoLayoutConfig();
+	const childAlbumAspectRatio = useAlbumThumbAspectRatio("album");
+	const rootAlbumAspectRatio = useAlbumThumbAspectRatio("root");
+	// The very geometry the grids render with: AlbumThumbGridVirtual.vue (sub-albums, beside
+	// the date scrubber) and AlbumRootGridVirtual.vue (root gallery). Measuring the grid root
+	// instead drifts from it whenever the analytic container width differs from the real one.
+	const subAlbumTileGeometry = useAlbumTileWidth(true);
+	const rootAlbumTileGeometry = useAlbumTileWidth(false);
 
 	const cache = {
 		max_height: 0,
@@ -79,11 +90,25 @@ export function useDragAndSelect(
 		return document.getElementById("galleryView")?.scrollTop ?? 0;
 	}
 
-	// Convert the pageY coordinate (from e.g. mouse event) to the "real"
+	// Convert a viewport y coordinate (a bounding rect's `top`) to the "real"
 	// y coordinate in the gallery view.
 	// y = 0 is the top of the gallery view, not the top of the page.
-	function y(pageY: number): number {
-		return pageY + scrollFromTop() - paddingTop();
+	function y(top: number): number {
+		return top + scrollFromTop() - paddingTop();
+	}
+
+	// The pointer's y in the gallery view, where `#selector` is absolutely positioned.
+	function pointerY(e: MouseEvent): number {
+		// Without scroll handling (root gallery), the gallery view starts at the top of the page.
+		if (withScroll === false) return e.pageY;
+		// `clientY`, not `pageY`: when the window scrolls (v8), `paddingTop()` already moves with it.
+		return y(e.clientY);
+	}
+
+	// The pointer's x in the gallery view, where `#selector` is absolutely positioned: the view
+	// does not start at the page's left edge when AlbumNavPanel.vue is open beside it.
+	function pointerX(e: MouseEvent): number {
+		return e.clientX - (document.getElementById("galleryView")?.getBoundingClientRect().left ?? 0);
 	}
 
 	// Resize the selection box based on mouse position.
@@ -91,8 +116,8 @@ export function useDragAndSelect(
 		if (initialPosition.value === undefined) return false;
 		togglableStore.isDragging = true;
 
-		const diffX = e.pageX - initialPosition.value.left;
-		const diffY = y(e.pageY) - initialPosition.value.top;
+		const diffX = pointerX(e) - initialPosition.value.left;
+		const diffY = pointerY(e) - initialPosition.value.top;
 
 		position.value = {
 			left: diffX < 0 ? initialPosition.value.left + diffX + "px" : initialPosition.value.left + "px",
@@ -131,19 +156,83 @@ export function useDragAndSelect(
 		return true;
 	}
 
+	const INTERACTIVE_SELECTORS =
+		"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
+
 	function isInteractiveTarget(target: EventTarget | null): boolean {
-		if (!(target instanceof HTMLElement)) return false;
+		// `Element`, not `HTMLElement`: SVG targets (icons, map track lines) must resolve their ancestors too.
+		if (!(target instanceof Element)) return false;
 		if (target.closest("[data-stop-drag-select='true']")) return true;
-		const interactiveSelectors =
-			"a,button,input,textarea,select,summary,[role='button'],[role='menuitem'],[role='link'],.p-drawer-mask,.p-speeddial,.p-contextmenu,.p-dialog";
-		return target.closest(interactiveSelectors) !== null;
+		return target.closest(INTERACTIVE_SELECTORS) !== null;
 	}
 
+	/**
+	 * A tile opted in with `data-drag-select-start` (v8 photos) starts the
+	 * selection too, unless the press lands on a control inside it.
+	 */
+	function isDragStartTile(target: EventTarget | null): boolean {
+		if (!(target instanceof Element)) return false;
+		const tile = target.closest("[data-drag-select-start='true']");
+		if (tile === null || target.closest("[data-stop-drag-select='true']")) return false;
+		const interactive = target.closest(INTERACTIVE_SELECTORS);
+		return interactive === null || interactive === tile;
+	}
+
+	// A press on a tile only becomes a drag after this much movement, so a click stays a click.
+	const TILE_DRAG_THRESHOLD_PX = 4;
+	let tilePress: MouseEvent | undefined = undefined;
+	let swallowNextClick = false;
+
 	function show(e: MouseEvent) {
-		if (!canStart(e) || isInteractiveTarget(e.target)) {
+		if (!canStart(e)) {
 			return;
 		}
+		if (isDragStartTile(e.target)) {
+			waitForTileDrag(e);
+			return;
+		}
+		if (isInteractiveTarget(e.target)) {
+			return;
+		}
+		start(e);
+	}
 
+	/**
+	 * Opted-in tiles are links and images, which the browser drags natively:
+	 * that would swallow the mouse events the selection needs.
+	 */
+	function preventNativeTileDrag(e: DragEvent) {
+		if (isDragStartTile(e.target)) {
+			e.preventDefault();
+		}
+	}
+
+	function waitForTileDrag(e: MouseEvent) {
+		tilePress = e;
+		document.addEventListener("mousemove", startOnceMoved);
+		document.addEventListener("mouseup", cancelTileDrag);
+	}
+
+	function startOnceMoved(e: MouseEvent) {
+		const press = tilePress;
+		if (press === undefined || Math.hypot(e.clientX - press.clientX, e.clientY - press.clientY) < TILE_DRAG_THRESHOLD_PX) {
+			return;
+		}
+		cancelTileDrag();
+		// The click ending this drag lands on the tile: it must not open it.
+		swallowNextClick = true;
+		start(press);
+		// `applySelection()` measures `#selector`, which renders on the next tick.
+		void nextTick(() => resize(e));
+	}
+
+	function cancelTileDrag() {
+		tilePress = undefined;
+		document.removeEventListener("mousemove", startOnceMoved);
+		document.removeEventListener("mouseup", cancelTileDrag);
+	}
+
+	function start(e: MouseEvent) {
 		// If we do not have the shift or control key pressed, erase the selection immediately.
 		if (!modKey().value && !shiftKeyState.value) {
 			togglableStore.selectedPhotosIds = [];
@@ -160,12 +249,12 @@ export function useDragAndSelect(
 		cache.currentAlbumSelectionIds = togglableStore.selectedAlbumsIds.slice();
 
 		initialPosition.value = {
-			top: y(e.pageY),
-			left: e.pageX,
+			top: pointerY(e),
+			left: pointerX(e),
 		};
 		position.value = {
-			top: y(e.pageY),
-			left: e.pageX,
+			top: pointerY(e),
+			left: pointerX(e),
 		};
 		document.addEventListener("mousemove", resize);
 		document.addEventListener("mouseup", stopResize);
@@ -174,9 +263,31 @@ export function useDragAndSelect(
 	function stopResize() {
 		document.removeEventListener("mousemove", resize);
 		document.removeEventListener("mouseup", stopResize);
+		// The throttle drops trailing calls and measures the previous frame's `#selector`:
+		// apply the final rectangle once more, now that it is rendered.
+		if (togglableStore.isDragging) {
+			applySelection();
+		}
 		initialPosition.value = undefined;
 		position.value = undefined;
 		togglableStore.isDragging = false;
+		if (swallowNextClick) {
+			swallowNextClick = false;
+			swallowClick();
+		}
+	}
+
+	/**
+	 * The click follows this mouseup in the same task; the timeout drops the
+	 * listener when no click comes (button released outside the window).
+	 */
+	function swallowClick() {
+		const swallow = (e: MouseEvent) => {
+			e.stopPropagation();
+			e.preventDefault();
+		};
+		window.addEventListener("click", swallow, { capture: true, once: true });
+		setTimeout(() => window.removeEventListener("click", swallow, { capture: true }), 0);
 	}
 
 	function getBounding(e: HTMLElement, id: string): Bounding {
@@ -220,7 +331,7 @@ export function useDragAndSelect(
 	 * AlbumThumbGridVirtual.vue/AlbumListViewVirtual.vue (sub-album children)
 	 * or AlbumRootGridVirtual.vue/AlbumRootListViewVirtual.vue (root gallery
 	 * own/shared, 2026-09-02 root-SoA addendum) lay their tiles out with —
-	 * same `computeAlbumTileGeometry`/`buildVirtualAlbumRows` pure functions,
+	 * same `useAlbumTileWidth()` geometry and `buildVirtualAlbumRows` pure function,
 	 * same inputs — and anchors it via `getBounding()` on each mounted grid
 	 * root (`[data-album-grid-root]`, always in the DOM even when its tiles
 	 * aren't), so the result lands in the exact same coordinate system
@@ -258,8 +369,6 @@ export function useDragAndSelect(
 				isAlbumTimelineEnabled;
 
 			const isListMode = lycheeStore.album_view_mode === "list";
-			const viewportWidth = window.innerWidth;
-			const containerWidth = gridRootEl.getBoundingClientRect().width;
 
 			let itemsPerRow: number;
 			let tileWidth: number;
@@ -271,14 +380,11 @@ export function useDragAndSelect(
 				gap = 0;
 				aspectRatioNumber = 1;
 			} else {
-				const breakpoint = resolveBreakpoint(viewportWidth);
-				const geometry = computeAlbumTileGeometry(viewportWidth, containerWidth, breakpoint, lycheeStore.number_albums_per_row_mobile);
-				itemsPerRow = geometry.itemsPerRow;
-				tileWidth = geometry.tileWidth;
-				gap = geometry.gap;
-				aspectRatioNumber = aspectRatioCssToNumber(
-					scope === null ? albumStore.config?.album_thumb_css_aspect_ratio : albumsStore.rootConfig?.album_thumb_css_aspect_ratio,
-				);
+				const geometry = scope === null ? subAlbumTileGeometry : rootAlbumTileGeometry;
+				itemsPerRow = geometry.itemsPerRow.value;
+				tileWidth = geometry.tileWidth.value;
+				gap = geometry.gap.value;
+				aspectRatioNumber = aspectRatioCssToNumber(scope === null ? childAlbumAspectRatio.value : rootAlbumAspectRatio.value);
 			}
 
 			const boundaries =
@@ -357,20 +463,8 @@ export function useDragAndSelect(
 
 		const mode = layoutStore.layout as PhotoLayoutMode;
 		const containerWidth = gridRootEl.getBoundingClientRect().width;
-		const config = layoutStore.config;
-		const target =
-			config === undefined
-				? 0
-				: mode === "justified"
-					? config.photo_layout_justified_row_height
-					: mode === "square"
-						? config.photo_layout_square_column_width
-						: mode === "masonry"
-							? config.photo_layout_masonry_column_width
-							: mode === "grid"
-								? config.photo_layout_grid_column_width
-								: 0;
-		const gap = config === undefined ? 0 : config.photo_layout_gap;
+		const config = photoLayoutConfig.value;
+		const { target, gap } = config === undefined || mode === "list" ? { target: 0, gap: 0 } : photoTargetAndGap(mode, config);
 
 		const ratingFilterActive = photosStore.photoRatingFilter !== null;
 		const filteredPhotoIds = ratingFilterActive ? new Set(photosStore.filteredPhotos.map((p) => p.id)) : null;
@@ -396,11 +490,11 @@ export function useDragAndSelect(
 
 		const gridBox = getBounding(gridRootEl, "root");
 
-		return positioned.map(({ photo, box }) => {
+		return positioned.map(({ index, box }) => {
 			const top = gridBox.top + box.top;
 			const left = gridBox.left + box.left;
 			return {
-				id: photo.id,
+				id: photosStore.photos[index].id,
 				top: top,
 				left: left,
 				right: left + box.width,
@@ -461,5 +555,6 @@ export function useDragAndSelect(
 		initialPosition,
 		position,
 		show,
+		preventNativeTileDrag,
 	};
 }

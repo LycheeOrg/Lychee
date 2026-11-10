@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'پیوندهای اضافی',
+    'description' => 'فهرست مرتب و دلخواهی از پیوندهای اضافی را که در منوی ناوبری و/یا پانویس صفحه فرود نمایش داده می‌شوند مدیریت کنید.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'هنوز هیچ پیوند اضافی پیکربندی نشده است.',
+    'create_first' => 'اولین پیوند خود را ایجاد کنید',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'برچسب',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'محل قرارگیری',
+    'col_enabled' => 'فعال',
+    'col_actions' => 'اقدامات',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'ناوبری',
+    'placement_footer' => 'پانویس',
+    'placement_both' => 'ناوبری و پانویس',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'داخلی',
+    'built_in_cannot_delete' => 'این پیوند داخلی قابل حذف نیست. به‌جای آن غیرفعالش کنید، یا مانند هر پیوند دیگری ترتیب آن را تغییر دهید.',
+    'built_in_url_hint' => 'این یک پیوند داخلی است و مقصد آن قابل تغییر نیست.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'ایجاد پیوند',
+    'edit' => 'ویرایش',
+    'delete' => 'حذف',
+    'cancel' => 'لغو',
+    'save' => 'ذخیره',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'برچسب',
+    'field_label_placeholder' => 'مثلاً Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'محل قرارگیری',
+    'field_open_in_new_tab' => 'باز کردن در زبانه جدید',
+    'field_enabled' => 'فعال',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'ایجاد پیوند',
+    'modal_edit_title' => 'ویرایش پیوند',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'حذف پیوند',
+    'confirm_delete_message' => 'آیا مطمئن هستید که می‌خواهید پیوند ":label" را حذف کنید؟ این عمل قابل بازگشت نیست.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'پیوند با موفقیت ایجاد شد.',
+    'updated' => 'پیوند با موفقیت به‌روزرسانی شد.',
+    'deleted' => 'پیوند با موفقیت حذف شد.',
+    'reordered' => 'ترتیب پیوندها با موفقیت تغییر کرد.',
+    'error_load' => 'بارگذاری پیوندها ناموفق بود.',
+    'error_save' => 'ذخیره پیوند ناموفق بود.',
+    'error_delete' => 'حذف پیوند ناموفق بود.',
+    'error_reorder' => 'تغییر ترتیب پیوندها ناموفق بود.',
 ];

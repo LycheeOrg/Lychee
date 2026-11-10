@@ -124,32 +124,6 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums']);
 
 /**
- * Embed.
- * Public endpoints for embedding albums on external websites.
- * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
- * IMPORTANT: More specific routes (stream) must come before generic routes ({album_id}) to avoid conflicts.
- */
-Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
-	->withoutMiddleware('api')
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:900', // 15 minutes cache (longer for stream due to expensive query)
-		'throttle:30,1', // 30 requests per minute per IP (more restrictive)
-	])
-	->name('embed.stream');
-
-Route::match(['GET', 'OPTIONS'], '/Embed/{album_id}', [Gallery\EmbedController::class, 'getAlbum'])
-	->withoutMiddleware('api')
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:300', // 5 minutes cache (reduced from 1 hour for more frequent updates)
-		'throttle:120,1', // 120 requests per minute per IP
-	])
-	->name('embed.album');
-
-/**
  * IMPORT.
  */
 Route::post('/Import', Admin\ImportFromServerController::class);
@@ -331,6 +305,8 @@ Route::delete('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeatur
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
 Route::get('/Moderation::photo', [Admin\ModerationController::class, 'photo']);
 Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
+Route::get('/Moderation::history', [Admin\ModerationController::class, 'history']);
+Route::get('/Moderation::photoHistory', [Admin\ModerationController::class, 'photoHistory']);
 
 /**
  * SETTINGS.
@@ -375,11 +351,13 @@ Route::get('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'ch
 Route::post('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'do']);
 Route::get('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'check']);
 Route::post('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'do']);
+Route::post('/Maintenance::recomputeBuckets', [Admin\Maintenance\RecomputeBuckets::class, 'do']);
+Route::get('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'check']);
+Route::post('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'do']);
 
 /**
  * STATISTICS.
  */
-Route::get('/Statistics::userSpace', [StatisticsController::class, 'getSpacePerUser'])->middleware(['support:se']);
 Route::get('/Statistics::sizeVariantSpace', [StatisticsController::class, 'getSpacePerSizeVariantType'])->middleware(['support:se']);
 Route::get('/Statistics::albumSpace', [StatisticsController::class, 'getSpacePerAlbum'])->middleware(['support:se']);
 Route::get('/Statistics::totalAlbumSpace', [StatisticsController::class, 'getTotalSpacePerAlbum'])->middleware(['support:se']);
@@ -472,6 +450,9 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	// TODO: Those should require admin no ???
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);
+	Route::get('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'index'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'destroy'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings/photos', [AiVision\NsfwFindingsController::class, 'destroyByPhotos'])->middleware(['support:se']);
 
 	/**
 	 * AI VISION — MAINTENANCE.

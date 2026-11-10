@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -30,10 +31,6 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
-use Laragear\WebAuthn\Models\WebAuthnCredential;
-use Laragear\WebAuthn\WebAuthnAuthentication;
-use Laragear\WebAuthn\WebAuthnData;
 use function Safe\mb_convert_encoding;
 
 /**
@@ -91,12 +88,11 @@ use function Safe\mb_convert_encoding;
  *
  * @mixin \Eloquent
  */
-class User extends Authenticatable implements WebAuthnAuthenticatable
+class User extends Authenticatable
 {
 	/** @phpstan-use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory;
 	use Notifiable;
-	use WebAuthnAuthentication;
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions {
 		delete as parentDelete;
@@ -264,12 +260,22 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
-	 * Returns displayable data to be used to create WebAuthn Credentials.
-	 * The default function use email and name, however in Lyche the email is optional.
+	 * The security keys of this user (Feature 107).
+	 *
+	 * @return MorphMany<WebAuthnCredential,$this>
 	 */
-	public function webAuthnData(): WebAuthnData
+	public function webAuthnCredentials(): MorphMany
 	{
-		return WebAuthnData::make($this->email ?? ($this->name . '#' . request()->httpHost()), $this->name);
+		return $this->morphMany(WebAuthnCredential::class, 'authenticatable');
+	}
+
+	/**
+	 * Account name shown by the authenticator when a key is registered (FR-107-01):
+	 * the email, or `<name>#<host>` because the email is optional in Lychee.
+	 */
+	public function webAuthnUserName(): string
+	{
+		return $this->email ?? ($this->name . '#' . request()->httpHost());
 	}
 
 	/**

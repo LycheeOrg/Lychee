@@ -74,6 +74,10 @@ class InitConfig extends Data
 	public AlbumDecorationOrientation $album_decoration_orientation;
 	#[LiteralTypeScriptType('1|2|3')]
 	public int $number_albums_per_row_mobile;
+	// Feature 110 (FR-110-02): v8 album tile minimum width in CSS px.
+	public int $album_thumb_min_width;
+	// Feature 110 (FR-110-16): gap between v8 album tiles in CSS px from 768 px wide.
+	public int $album_thumb_gap;
 	public PhotoThumbInfoType $photo_thumb_info;
 	public bool $is_photo_thumb_tags_enabled;
 	public bool $is_rounded_corners_enabled;
@@ -91,6 +95,11 @@ class InitConfig extends Data
 	public string $date_format_sidebar_uploaded;
 	public string $date_format_sidebar_taken_at;
 	public string $date_scrubber_label_format;
+	public string $date_scrubber_album_label_format;
+	public string $date_scrubber_format_year;
+	public string $date_scrubber_format_month;
+	public string $date_scrubber_format_day;
+	public string $date_scrubber_format_hour;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -146,6 +155,8 @@ class InitConfig extends Data
 	public bool $is_webauthn_enabled = true;
 	// User registration enabled
 	public bool $is_registration_enabled;
+	// The login field also accepts the email address of the account
+	public bool $is_email_login_enabled;
 
 	// Gesture settings
 	public bool $is_scroll_to_navigate_photos_enabled;
@@ -203,9 +214,6 @@ class InitConfig extends Data
 	public bool $use_admin_dashboard;
 	public bool $is_person_album_enabled;
 
-	// Struct-of-Arrays (SoA) v3 endpoints. Pure client-behavior switch: no DB config layer, no auth-gating. See Feature 058.
-	public bool $is_struct_of_array_enabled;
-
 	// Flags visibility settings
 	public bool $is_cover_id_flag_enabled;
 	public bool $is_header_id_flag_enabled;
@@ -259,6 +267,8 @@ class InitConfig extends Data
 		$this->album_decoration = request()->configs()->getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = request()->configs()->getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
 		$this->number_albums_per_row_mobile = request()->configs()->getValueAsInt('number_albums_per_row_mobile');
+		$this->album_thumb_min_width = request()->configs()->getValueAsInt('album_thumb_min_width');
+		$this->album_thumb_gap = request()->configs()->getValueAsInt('album_thumb_gap');
 		$this->photo_thumb_info = request()->configs()->getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
 		$this->is_photo_thumb_tags_enabled = request()->configs()->getValueAsBool('photo_thumb_tags_enabled');
 		$this->is_rounded_corners_enabled = request()->configs()->getValueAsBool('rounded_corners_enabled');
@@ -276,6 +286,11 @@ class InitConfig extends Data
 		$this->date_format_sidebar_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
 		$this->date_format_sidebar_taken_at = request()->configs()->getValueAsString('date_format_sidebar_taken_at');
 		$this->date_scrubber_label_format = request()->configs()->getValueAsString('timeline_photo_date_format_day');
+		$this->date_scrubber_album_label_format = request()->configs()->getValueAsString('timeline_album_date_format_day');
+		$this->date_scrubber_format_year = request()->configs()->getValueAsString('date_scrubber_format_year');
+		$this->date_scrubber_format_month = request()->configs()->getValueAsString('date_scrubber_format_month');
+		$this->date_scrubber_format_day = request()->configs()->getValueAsString('date_scrubber_format_day');
+		$this->date_scrubber_format_hour = request()->configs()->getValueAsString('date_scrubber_format_hour');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
@@ -315,6 +330,7 @@ class InitConfig extends Data
 		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
 		$this->is_registration_enabled = request()->configs()->getValueAsBool('user_registration_enabled');
+		$this->is_email_login_enabled = request()->configs()->getValueAsBool('email_login_enabled');
 
 		// Gesture settings
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');
@@ -372,7 +388,6 @@ class InitConfig extends Data
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
-		$this->is_struct_of_array_enabled = Features::active('struct-of-array');
 
 		// Flags visibility settings
 		$flags_enabled = request()->configs()->getValueAsBool('flags_enabled');

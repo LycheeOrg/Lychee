@@ -16,7 +16,7 @@ return [
     'columns' => [
         'album' => 'Album',
         'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'checksum' => 'Somme de contrôle',
     ],
     'warning' => [
         'no-original-left' => 'Aucun original restant.',

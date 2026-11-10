@@ -128,6 +128,15 @@ const MaintenanceService = {
 	backfillAlbumSizesDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
 	},
+	recomputeBucketsDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::recomputeBuckets`, {});
+	},
+	recomputeTakenAtRangeCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::recomputeTakenAtRange`, { data: {} });
+	},
+	recomputeTakenAtRangeDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::recomputeTakenAtRange`, {});
+	},
 	bulkScanFacesCheck(): Promise<AxiosResponse<number>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, { data: {} });
 	},

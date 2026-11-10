@@ -24,6 +24,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -550,6 +551,63 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		$idx = $this->indexOf($json['ids'], $this->subAlbum1->id);
 		self::assertSame($this->album1->id, $json['parent_ids'][$idx]);
 		self::assertSame($this->userMayUpload1->id, $json['bulk_edit']['owner_ids'][$idx]);
+	}
+
+	// ── Capture range (Feature 103) ───────────────────────────────
+
+	/**
+	 * S-103-30: the range covers the photos of the album and of its sub-album.
+	 */
+	public function testAdminForBulkEditReturnsCaptureRange(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub_album = Album::factory()->children_of($album)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => Carbon::create(2023, 8, 28, 12)]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($sub_album)->create(['taken_at' => Carbon::create(2019, 6, 3, 10)]);
+		(new RecomputeAlbumStatsJob($sub_album->id))->handle();
+		(new RecomputeAlbumStatsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->admin)->getJsonV3('Albums', ['for_bulk_edit' => true]);
+		$response->assertOk();
+		$json = $response->json();
+
+		$idx = $this->indexOf($json['ids'], $album->id);
+		self::assertStringStartsWith('2019-06-03', $json['bulk_edit']['min_taken_ats'][$idx]);
+		self::assertStringStartsWith('2023-08-28', $json['bulk_edit']['max_taken_ats'][$idx]);
+	}
+
+	/**
+	 * S-103-31: an album without photos has no capture range.
+	 */
+	public function testAdminForBulkEditCaptureRangeOfEmptyAlbumIsNull(): void
+	{
+		$response = $this->actingAs($this->admin)->getJsonV3('Albums', ['for_bulk_edit' => true]);
+		$response->assertOk();
+		$json = $response->json();
+
+		$idx = $this->indexOf($json['ids'], $this->album5->id);
+		self::assertNull($json['bulk_edit']['min_taken_ats'][$idx]);
+		self::assertNull($json['bulk_edit']['max_taken_ats'][$idx]);
+	}
+
+	/**
+	 * S-103-33: the capture range is read by the listing query itself.
+	 */
+	public function testCaptureRangeIsReadByTheListingQuery(): void
+	{
+		Configs::set('managed_cache_albums_enabled', '0');
+		$this->actingAs($this->admin);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$this->getJsonV3('Albums', ['for_bulk_edit' => true])->assertOk();
+		$queries = array_map(fn (array $q) => str_replace(['"', '`'], '', $q['query']), DB::getQueryLog());
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		$range_queries = array_values(array_filter($queries, fn (string $sql) => str_contains($sql, 'min_taken_at')));
+		self::assertCount(1, $range_queries);
+		self::assertStringContainsString('albums._lft', $range_queries[0]);
 	}
 
 	// ── Managed cache (Feature 052/053 integration) ──────────────

@@ -48,7 +48,7 @@ const FaceClusters = () => import("@/v7/views/face-recog/FaceClusters.vue");
 const FaceMaintenance = () => import("@/v7/views/face-recog/FaceMaintenance.vue");
 const NsfwConfig = () => import("@/v7/views/admin/NsfwConfig.vue");
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const componentByName: Record<string, any> = {
 	landing: Landing,
 	favourites: Favourites,

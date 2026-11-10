@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Конфигурирайте изходящи webhooks, които се задействат при добавяне, преместване или изтриване на снимки.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Все още няма конфигурирани webhooks.',
+    'create_first' => 'Създайте първия си webhook',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Име',
+    'col_event' => 'Събитие',
+    'col_method' => 'Метод',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Формат',
+    'col_enabled' => 'Активен',
+    'col_actions' => 'Действия',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Добавена снимка',
+    'event_photo_move' => 'Преместена снимка',
+    'event_photo_delete' => 'Изтрита снимка',
 
     // Payload format labels
     'format_json' => 'JSON',
     'format_query_string' => 'Query String',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Създай webhook',
+    'edit' => 'Редактирай',
+    'delete' => 'Изтрий',
+    'cancel' => 'Отказ',
+    'save' => 'Запази',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Име',
+    'field_name_placeholder' => 'напр. Моят webhook',
+    'field_event' => 'Събитие',
+    'field_method' => 'HTTP метод',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Формат на данните (payload)',
+    'field_enabled' => 'Активен',
+    'field_secret' => 'Тайна',
+    'field_secret_placeholder' => 'Оставете празно, за да запазите съществуващата тайна',
+    'field_secret_header' => 'Заглавка за тайната',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Изпращай ID на снимката',
+    'field_send_album_id' => 'Изпращай ID на албума',
+    'field_send_title' => 'Изпращай заглавието',
+    'field_send_size_variants' => 'Изпращай размерните варианти',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Създаване на webhook',
+    'modal_edit_title' => 'Редактиране на webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Изтриване на webhook',
+    'confirm_delete_message' => 'Сигурни ли сте, че искате да изтриете webhook ":name"? Това действие не може да бъде отменено.',
+    'delete_warning' => 'Това действие не може да бъде отменено.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Webhook е създаден успешно.',
+    'updated' => 'Webhook е обновен успешно.',
+    'deleted' => 'Webhook е изтрит успешно.',
+    'error_load' => 'Неуспешно зареждане на webhooks.',
+    'error_save' => 'Неуспешно запазване на webhook.',
+    'error_delete' => 'Неуспешно изтриване на webhook.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Зададена тайна',
+    'no_secret' => 'Без тайна',
 ];

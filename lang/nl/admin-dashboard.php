@@ -36,7 +36,7 @@ return [
     'update' => [
         'title' => 'Updatestatus',
         'update_available' => 'Er is een nieuwere versie beschikbaar (huidig: :current, nieuwste: :latest).',
-        'git_update_available' => 'Your installation is :count commits behind master.',
+        'git_update_available' => 'Uw installatie loopt :count commits achter op master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW-detectie en moderatie',
@@ -83,5 +83,8 @@ return [
         'legend_approve' => 'Foto wordt geaccepteerd, bevinding wordt vastgelegd.',
         'legend_mark_album' => 'Het album van de foto wordt als gevoelig gemarkeerd.',
         'legend_nothing' => 'Geen actie ondernomen.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'NSFW-bevindingen',
     ],
 ];

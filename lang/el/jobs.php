@@ -6,14 +6,14 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'title' => 'Εργασίες',
+    'no_data' => 'Δεν έχουν εκτελεστεί ακόμη εργασίες.',
+    'ready' => 'Έτοιμη',
+    'success' => 'Επιτυχία',
+    'failure' => 'Αποτυχία',
+    'started' => 'Ξεκίνησε',
+    'col_date' => 'Ημερομηνία',
+    'col_status' => 'Κατάσταση',
+    'col_username' => 'Χρήστης',
+    'col_job' => 'Εργασία',
 ];

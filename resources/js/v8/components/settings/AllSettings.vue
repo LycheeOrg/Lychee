@@ -13,7 +13,13 @@
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
 				>
-					<ConfigGroup :configs="configGroup.configs" :modified="props.modified" @filled="filled" @reset="reset" />
+					<ConfigGroup
+						:configs="configGroup.configs"
+						:all-configs="allConfigs"
+						:modified="props.modified"
+						@filled="filled"
+						@reset="reset"
+					/>
 				</Fieldset>
 			</div>
 		</div>
@@ -38,6 +44,8 @@ const emits = defineEmits<{
 	filled: [key: string, value: string];
 	reset: [key: string];
 }>();
+
+const allConfigs = computed(() => props.configs.flatMap((c) => c.configs));
 
 function reset(configKey: string) {
 	emits("reset", configKey);

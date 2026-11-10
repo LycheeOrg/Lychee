@@ -73,13 +73,13 @@
   3. `make phpstan` — PHPStan at the level configured in `phpstan.neon`; fix all errors before committing
   
   **Frontend changes** (if `.vue`, `.ts`, `.js`, or `.css` files were modified):
-  1. `npm run format` — apply frontend code formatting with Prettier
-  2. `npm run check` — TypeScript type-check (`vue-tsc`) must pass
+  1. `vp check --fix` — format (Oxfmt) and lint (Oxlint) the frontend sources through Vite+
+  2. `vp run typecheck` — TypeScript type-check (`vue-tsc`) must pass
   
   **Full quality gate** (if both PHP and frontend files were modified):
   1. `vendor/bin/php-cs-fixer fix`
-  2. `npm run format`
-  3. `npm run check`
+  2. `vp check --fix`
+  3. `vp run typecheck`
   4. `php artisan test --filter=<ClassName>` (every touched or related test class)
   5. `make phpstan`
 - Update/close entries in the feature's `open-questions.md`.

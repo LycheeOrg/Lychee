@@ -19,5 +19,5 @@ return [
         'info' => '提示',
         'copy' => '诊断信息已复制到剪贴板！',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => '复制诊断信息仅在安全上下文（HTTPS）中可用。',
 ];

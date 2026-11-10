@@ -122,6 +122,8 @@
 			</ul>
 		</div>
 
+		<PhotoModerationHistory v-if="userStore.isAdmin" :photo-id="photoStore.photo?.id" :is-open="are_details_open" />
+
 		<!-- Exif stuff -->
 		<div v-if="photoStore.photo!.precomputed.has_exif">
 			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
@@ -280,6 +282,7 @@ import ColourSquare from "@/v8/components/gallery/photoModule/ColourSquare.vue";
 import PhotoRatingWidget from "@/v8/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/v8/components/gallery/photoModule/LinksInclude.vue";
+import PhotoModerationHistory from "@/v8/components/gallery/photoModule/PhotoModerationHistory.vue";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
@@ -441,9 +444,10 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 }
 
 watch(
-	() => photoStore.photo?.id,
-	(photo_id) => {
-		if (photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, () => photoStore.photo?.face_count ?? 0],
+	([photo_id, faceCount]) => {
+		// face_count is a source too: on the SoA path it only arrives once the tier-3 details resolve.
+		if (photo_id === undefined || faceCount <= 0) {
 			return;
 		}
 

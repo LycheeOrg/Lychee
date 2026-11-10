@@ -106,7 +106,7 @@ class PeopleController extends Controller
 	 */
 	public function destroy(DestroyPersonRequest $request): void
 	{
-		$person = Person::findOrFail($request->personId());
+		$person = $request->person();
 		// Break the link between the person and its person albums
 		DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->where('person_id', '=', $person->id)->delete();
 		// detach all faces from the person and mark them as dismissed

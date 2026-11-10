@@ -26,12 +26,12 @@
 						<UCheckbox v-model="editEnabled[field.key]" class="mt-2 shrink-0" />
 						<UFormField :label="$t('bulk_album_edit.' + field.label)" class="flex-1">
 							<USelectMenu
-								:model-value="findOption(field.options, editEnumValues[field.key])"
+								:model-value="optionFor(field.options, editEnumValues[field.key])"
 								:items="field.options"
 								label-key="label"
 								class="w-full"
 								size="sm"
-								@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(field.key, v?.value ?? null)"
+								@update:model-value="(v: SelectOption<string | null> | undefined) => onEnumChange(field.key, v?.value ?? null)"
 							>
 								<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 								<template #item-label="{ item }">{{ $t(item.label) }}</template>
@@ -44,26 +44,34 @@
 							<UCheckbox v-model="editEnabled[pair.col.key]" class="mt-2 shrink-0" />
 							<UFormField :label="$t('bulk_album_edit.' + pair.col.label)" class="flex-1">
 								<USelectMenu
-									:model-value="findOption(pair.col.options, editEnumValues[pair.col.key])"
+									:model-value="optionFor(pair.col.options, editEnumValues[pair.col.key])"
 									:items="pair.col.options"
 									label-key="label"
 									class="w-full"
 									size="sm"
-									@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(pair.col.key, v?.value ?? null)"
+									@update:model-value="(v: SelectOption<string | null> | undefined) => onEnumChange(pair.col.key, v?.value ?? null)"
 								>
 									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
 								</USelectMenu>
 							</UFormField>
-							<UCheckbox v-model="editEnabled[pair.order.key]" class="mt-2 shrink-0" />
+							<UCheckbox
+								:model-value="isOrderLocked(pair) || editEnabled[pair.order.key] === true"
+								:disabled="isOrderLocked(pair)"
+								class="mt-2 shrink-0"
+								@update:model-value="(v: boolean | 'indeterminate') => (editEnabled[pair.order.key] = v === true)"
+							/>
 							<UFormField :label="$t('bulk_album_edit.' + pair.order.label)" class="flex-1">
 								<USelectMenu
-									:model-value="findOption(pair.order.options, editEnumValues[pair.order.key])"
+									:model-value="optionFor(sortingOrderLookup, sentOrder(pair))"
 									:items="pair.order.options"
 									label-key="label"
+									:disabled="isOrderLocked(pair) && editEnumValues[pair.col.key] === null"
 									class="w-full"
 									size="sm"
-									@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(pair.order.key, v?.value ?? null)"
+									@update:model-value="
+										(v: SelectOption<string | null> | undefined) => onEnumChange(pair.order.key, v?.value ?? null)
+									"
 								>
 									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
@@ -86,7 +94,7 @@
 										@input="(e: Event) => onDateChange(field.key, (e.target as HTMLInputElement).value || null)"
 									/>
 									<USelectMenu
-										:model-value="findOption(timeZoneOptions, editDateTzValues[field.key] ?? null)"
+										:model-value="optionFor(timeZoneOptions, editDateTzValues[field.key])"
 										:items="timeZoneOptions"
 										label-key="label"
 										size="sm"
@@ -166,6 +174,10 @@ import {
 } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
+import { optionFor, sortingOrderValueFor, timelineSelectOptions, withDefaultOption } from "@/v8/utils/albumSelectOptions";
+
+type EnumField = { key: string; label: string; options: SelectOption<string | null>[] };
+type SortingPair = { col: EnumField; order: EnumField };
 
 const props = defineProps<{
 	albumIds: string[];
@@ -196,27 +208,27 @@ const textFields = [
 	{ key: "copyright", label: "field_copyright" },
 ];
 
-const enumFields = [
+// Feature 105 (FR-105-10): "Default" (`null`) sets a field back to the gallery setting.
+const enumFields: EnumField[] = [
 	{ key: "license", label: "field_license", options: licenseOptions },
-	{ key: "photo_layout", label: "field_photo_layout", options: photoLayoutOptions },
-	{ key: "album_thumb_aspect_ratio", label: "field_album_thumb_aspect_ratio", options: aspectRatioOptions },
-	{ key: "album_timeline", label: "field_album_timeline", options: timelineAlbumGranularityOptions },
-	{ key: "photo_timeline", label: "field_photo_timeline", options: timelinePhotoGranularityOptions },
-] as { key: string; label: string; options: SelectOption<string>[] }[];
+	{ key: "photo_layout", label: "field_photo_layout", options: withDefaultOption(photoLayoutOptions) },
+	{ key: "album_thumb_aspect_ratio", label: "field_album_thumb_aspect_ratio", options: withDefaultOption(aspectRatioOptions) },
+	{ key: "album_timeline", label: "field_album_timeline", options: timelineSelectOptions(timelineAlbumGranularityOptions) },
+	{ key: "photo_timeline", label: "field_photo_timeline", options: timelineSelectOptions(timelinePhotoGranularityOptions) },
+];
 
-const sortingPairs = [
+const sortingPairs: SortingPair[] = [
 	{
-		col: { key: "photo_sorting_col", label: "field_photo_sorting_col", options: photoSortingColumnsOptions },
+		col: { key: "photo_sorting_col", label: "field_photo_sorting_col", options: withDefaultOption(photoSortingColumnsOptions) },
 		order: { key: "photo_sorting_order", label: "field_photo_sorting_order", options: sortingOrdersOptions },
 	},
 	{
-		col: { key: "album_sorting_col", label: "field_album_sorting_col", options: albumSortingColumnsOptions },
+		col: { key: "album_sorting_col", label: "field_album_sorting_col", options: withDefaultOption(albumSortingColumnsOptions) },
 		order: { key: "album_sorting_order", label: "field_album_sorting_order", options: sortingOrdersOptions },
 	},
-] as {
-	col: { key: string; label: string; options: SelectOption<string>[] };
-	order: { key: string; label: string; options: SelectOption<string>[] };
-}[];
+];
+// Shows "Default" for the order of a "Default" column, which its own list does not offer.
+const sortingOrderLookup = withDefaultOption(sortingOrdersOptions);
 
 const dateFields = [{ key: "published_at", label: "field_published_at" }];
 
@@ -233,11 +245,19 @@ const visibleBoolFields = computed(() => boolFields.filter((f) => !f.seOnly || i
 
 const hasAnyEnabled = computed(() => Object.values(editEnabled.value).some((v) => v === true));
 
-function findOption(options: SelectOption<string>[], value: string | null): SelectOption<string> | undefined {
-	return options.find((o) => o.value === value);
+// A ticked column is always sent with its order (FR-105-10): the album ignores one without the other.
+function isOrderLocked(pair: SortingPair): boolean {
+	return editEnabled.value[pair.col.key] === true;
 }
 
-function selectedLabel(option: SelectOption<string> | undefined): string {
+function sentOrder(pair: SortingPair): string | null {
+	if (!isOrderLocked(pair)) {
+		return editEnumValues.value[pair.order.key];
+	}
+	return sortingOrderValueFor(editEnumValues.value[pair.col.key], editEnumValues.value[pair.order.key]);
+}
+
+function selectedLabel(option: SelectOption<string | null> | undefined): string {
 	// A single space (matching USelectMenu's own placeholder fallback) keeps the
 	// trigger's line box at its normal height; an empty string collapses it.
 	return option ? trans(option.label) : " ";
@@ -304,6 +324,7 @@ watch(visible, (val) => {
 				enabled[f.key] = false;
 				enumVals[f.key] = null;
 			});
+			enumVals[pair.order.key] = "ASC";
 		});
 		boolFields.forEach((f) => {
 			enabled[f.key] = false;
@@ -341,6 +362,9 @@ function doEditFields(): void {
 				payload[f.key] = editEnumValues.value[f.key];
 			}
 		});
+		if (isOrderLocked(pair)) {
+			payload[pair.order.key] = sentOrder(pair);
+		}
 	});
 	boolFields.forEach((f) => {
 		if (editEnabled.value[f.key] === true) {

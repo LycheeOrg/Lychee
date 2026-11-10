@@ -10,7 +10,6 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
 use App\Contracts\Image\StreamStats;
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\CreateSizeVariantFlags;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
@@ -20,14 +19,14 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
 use App\Repositories\ConfigManager;
 
-class PlacePhoto implements StandalonePipe
+class PlacePhoto extends AbstractStandalonePipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create target file and symlink/copy/move source file to target.
 		// If the import strategy requests to delete the source file
@@ -146,5 +145,10 @@ class PlacePhoto implements StandalonePipe
 	{
 		$state->backup_file = $state->naming_strategy->createFile(SizeVariantType::ORIGINAL, new CreateSizeVariantFlags(is_backup: true));
 		$state->backup_file->write($state->source_file->read(), true);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.place_photo';
 	}
 }

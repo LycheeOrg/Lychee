@@ -15,7 +15,7 @@ _Last updated:_ 2026-08-08
 ## Scope Alignment
 
 - **In scope:** `App\Services\Cache\ManagedCacheService` (new); `App\Events\AccessPermissionChanged`, `App\Events\UserGroupMembershipChanged` (new); `Actions\Album\Move::do()` dispatching `AlbumSaved`; `SharingController::create/edit/delete/propagate` dispatching `AccessPermissionChanged`; `UserGroupsManagementController::addUser/removeUser/updateUserRole` dispatching `UserGroupMembershipChanged`; `App\Listeners\ManagedCacheAlbumInvalidator`, `App\Listeners\ManagedCacheUserInvalidator` (new); `AlbumRepository::getChildrenPaginated()` and `PhotoRepository::getPhotosForAlbumPaginated()` wrapped in `remember()`; new config `managed_cache_enabled`/`managed_cache_ttl` (+ new Settings category, pending Q-052-07); `EventServiceProvider` listener registration.
-- **Out of scope:** `RouteCacher`/`RouteCacheManager`/`CacheTag`/`cache_enabled` (Feature 040, untouched); any consumer beyond the two pilot repository methods; any UI change beyond the two new settings fields; `CACHE_DRIVER`/Redis; native Laravel cache tagging.
+- **Out of scope:** `RouteCacher`/`RouteCacheManager`/`CacheTag`/`cache_enabled` (Feature 040, untouched); any consumer beyond the two pilot repository methods; any UI change beyond the two new settings fields; `CACHE_STORE`/Redis; native Laravel cache tagging.
 
 ## Dependencies & Interfaces
 

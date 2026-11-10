@@ -50,7 +50,7 @@ import { onMounted, watch } from "vue";
 import CardForm from "@/v8/components/forms/card/CardForm.vue";
 import { useMollie } from "@/composables/checkout/useMollie";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { usePaypal } from "@/composables/checkout/usePaypal";
 
 const userStore = useUserStore();

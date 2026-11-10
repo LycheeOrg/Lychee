@@ -4,7 +4,8 @@ import { useLayoutStore } from "./LayoutState";
 import { useLycheeStateStore } from "./LycheeState";
 import TimelineService from "@/services/timeline-service";
 import PhotoChildrenV3Service, { type PhotoBucketResource } from "@/services/photo-children-v3-service";
-import { adaptPhotoTile, mergePhotoDetail } from "@/v8/utils/adaptPhotoTile";
+import { adaptPhotoTile, mergePhotoDetail, tileIndexById } from "@/v8/utils/adaptPhotoTile";
+import { createDetailRequests } from "@/utils/detailRequests";
 import { computeTimelineBucketLayout, type TimelineBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
 import { AxiosResponse } from "axios";
 import { useSplitter } from "@/composables/album/splitter";
@@ -28,6 +29,9 @@ const { spliter, merge } = useSplitter();
  * `timelineLayoutCache`.
  */
 let ensureBucketsV3Promise: Promise<void> | null = null;
+
+/** In-flight tier-3 requests of Timeline photos (FR-103-08). */
+const timelineDetailRequests = createDetailRequests();
 
 export type TimelineStore = ReturnType<typeof useTimelineStore>;
 
@@ -178,9 +182,23 @@ export const useTimelineStore = defineStore("timeline-store", {
 			});
 		},
 
+		/**
+		 * Drops what was loaded for the current viewer (Feature 102, FR-102-08): the init data
+		 * (`load()` returns early once `layout` is set), the v2 `dates` (`loadDates()` returns
+		 * early once filled) and the v3 state. The v2 pages need no reset: `initialLoad()` rewrites them.
+		 */
+		reset(): void {
+			this.isTimelineEnabled = undefined;
+			this.layout = undefined;
+			this.rootConfig = undefined;
+			this.rootRights = undefined;
+			this.dates = [];
+			this.resetV3();
+		},
+
 		// --- Feature 066 v3 actions ---
 
-		/** Fully resets the v3 (SoA) state — mirrors `AlbumState.ts.reset()`'s own discipline, called whenever the Timeline panel is torn down/remounted. Deliberately leaves v2 state (`dates`/pages/…) alone — `reset()`-ing that is unnecessary here since v2 and v3 never run concurrently. */
+		/** Fully resets the v3 (SoA) state — mirrors `AlbumState.ts.reset()`'s own discipline, part of `reset()`. Leaves v2 state (`dates`/pages/…) alone — v2 and v3 never run concurrently. */
 		resetV3(): void {
 			this.bucketsV3 = undefined;
 			this.boundariesV3 = [];
@@ -384,38 +402,39 @@ export const useTimelineStore = defineStore("timeline-store", {
 		 * counterpart `PhotoState.ts.load()` calls when `isTimelineSoaActive`
 		 * is true.
 		 */
-		async loadPhotoDetailsV3(ids: string[]): Promise<void> {
+		async loadPhotoDetailsV3(ids: string[]): Promise<boolean> {
 			const photosState = usePhotosStore();
+			const indexById = tileIndexById(photosState.photos);
 
-			const idsToFetch = [...new Set(ids)].filter((id) => !this.photoDetailsResolvedIdsV3[id] && photosState.photos.some((p) => p.id === id));
-			if (idsToFetch.length === 0) {
-				return;
-			}
+			// Ids already merged or in flight are not requested again; resolves
+			// false when a request carrying one of `ids` failed (FR-103-07/08).
+			return timelineDetailRequests.load(
+				ids.filter((id) => indexById.has(id)),
+				(id) => this.photoDetailsResolvedIdsV3[id] === true,
+				async (idsToFetch) => {
+					const CHUNK_SIZE = 300;
+					const chunks: string[][] = [];
+					for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
+						chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
+					}
 
-			const CHUNK_SIZE = 300;
-			const chunks: string[][] = [];
-			for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
-				chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
-			}
+					const responses = await Promise.all(chunks.map((chunk) => PhotoChildrenV3Service.getDetails("timeline", { photoIds: chunk })));
 
-			try {
-				const responses = await Promise.all(chunks.map((chunk) => PhotoChildrenV3Service.getDetails("timeline", { photoIds: chunk })));
-
-				for (const response of responses) {
-					const detail = response.data;
-					for (let i = 0; i < detail.ids.length; i++) {
-						const photo = photosState.photos.find((p) => p.id === detail.ids[i]);
-						if (photo !== undefined) {
-							mergePhotoDetail(photo, detail, i);
+					const indexAfter = tileIndexById(photosState.photos);
+					for (const response of responses) {
+						const detail = response.data;
+						for (let i = 0; i < detail.ids.length; i++) {
+							const index = indexAfter.get(detail.ids[i]);
+							if (index !== undefined) {
+								mergePhotoDetail(photosState.photos[index], detail, i);
+							}
 						}
 					}
-				}
-				for (const id of idsToFetch) {
-					this.photoDetailsResolvedIdsV3[id] = true;
-				}
-			} catch (error) {
-				console.error(error);
-			}
+					for (const id of idsToFetch) {
+						this.photoDetailsResolvedIdsV3[id] = true;
+					}
+				},
+			);
 		},
 	},
 	getters: {

@@ -15,6 +15,7 @@ use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
+use App\ModelFunctions\H264MOVFormat;
 use App\ModelFunctions\MOVFormat;
 use App\Repositories\ConfigManager;
 use FFMpeg\Exception\ExecutableNotFoundException;
@@ -42,9 +43,21 @@ class GoogleMotionPictureHandler extends VideoHandler
 {
 	public const PRELIMINARY_VIDEO_FILE_EXTENSION = '.mp4';
 	public const FINAL_VIDEO_FILE_EXTENSION = '.mov';
+	private const CODEC_H264 = 'h264';
 
 	/** @var TemporaryLocalFile a working copy of the video stream */
 	protected TemporaryLocalFile $working_copy;
+
+	/**
+	 * Path at which the video of a motion photo is stored: next to the
+	 * original, under the same file name, with the final video extension.
+	 *
+	 * @param string $original_path path of the original size variant, relative to its disk
+	 */
+	public static function videoPathNextTo(string $original_path): string
+	{
+		return pathinfo($original_path, PATHINFO_DIRNAME) . '/' . pathinfo($original_path, PATHINFO_FILENAME) . self::FINAL_VIDEO_FILE_EXTENSION;
+	}
 
 	/**
 	 * @throws MediaFileOperationException
@@ -106,6 +119,10 @@ class GoogleMotionPictureHandler extends VideoHandler
 	/**
 	 * Save the video stream to the provided file.
 	 *
+	 * An H.264 stream is copied as is; any other codec (HEVC on current
+	 * Pixel phones) is transcoded to H.264 so that every browser can play it
+	 * (Feature 100, Q-100-09).
+	 *
 	 * @param NativeLocalFile $file the file to write into
 	 *
 	 * @throws MediaFileOperationException
@@ -113,9 +130,9 @@ class GoogleMotionPictureHandler extends VideoHandler
 	public function saveVideoStream(NativeLocalFile $file): void
 	{
 		try {
-			$format = new MOVFormat();
+			$format = $this->isH264() ? new MOVFormat() : new H264MOVFormat();
 			// Add additional parameter to extract the first video stream
-			$format->setAdditionalParameters(['-map', '0:0']);
+			$format->setAdditionalParameters([...($format->getAdditionalParameters() ?? []), '-map', '0:0']);
 			$this->video->save($format, $file->getRealPath());
 			// @codeCoverageIgnoreStart
 		} catch (RuntimeException $e) {
@@ -124,5 +141,13 @@ class GoogleMotionPictureHandler extends VideoHandler
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Whether the first video stream is already H.264.
+	 */
+	private function isH264(): bool
+	{
+		return $this->video->getStreams()->videos()->first()?->get('codec_name') === self::CODEC_H264;
 	}
 }

@@ -34,17 +34,11 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
  */
 class AlbumCategoryV3Test extends BaseApiWithDataTest
 {
-	public function setUp(): void
-	{
-		parent::setUp();
-		config(['features.struct-of-array' => true]);
-	}
-
 	// ── Flag gate (S-062-18) ──────────────────────────────────────────
 
 	public function testFlagOffReturns403ForEveryCategoryRoute(): void
 	{
-		config(['features.struct-of-array' => false]);
+		config(['features.v8' => false]);
 
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/smart'));
 		$this->assertForbidden($this->actingAs($this->admin)->getJsonV3('Albums/tags'));
@@ -72,7 +66,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartWithEveryCoverCachedRunsOnlyDateDependentValidityQueries(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->where('id', '=', $this->photoUnsorted->id)->update(['taken_at' => '2020-10-03 12:00:00', 'created_at' => '2026-10-03 11:00:00']);
+		DB::table('photos')->where('id', '=', $this->photoUnsorted->id)->update(['taken_at' => '2020-10-03 12:00:00', 'taken_key' => '2020-10-03-12', 'month_day_key' => 1003, 'created_at' => '2026-10-03 11:00:00']);
 
 		$ids = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json('ids');
 		self::assertContains(SmartAlbumType::ON_THIS_DAY->value, $ids);
@@ -131,8 +125,8 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartOnThisDayStaleCoverIsReplacedByTodaysPhoto(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
-		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => '2020-10-03 12:00:00']);
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00', 'taken_key' => '2020-05-01-12', 'month_day_key' => 501]);
+		DB::table('photos')->where('id', '=', $this->photo1->id)->update(['taken_at' => '2020-10-03 12:00:00', 'taken_key' => '2020-10-03-12', 'month_day_key' => 1003]);
 		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
 
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();
@@ -148,7 +142,7 @@ class AlbumCategoryV3Test extends BaseApiWithDataTest
 	public function testSmartOnThisDayStaleCoverWithoutPhotoTodayIsDropped(): void
 	{
 		$this->travelTo(new \DateTimeImmutable('2026-10-03 12:00:00'));
-		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00']);
+		DB::table('photos')->update(['taken_at' => '2020-05-01 12:00:00', 'taken_key' => '2020-05-01-12', 'month_day_key' => 501]);
 		$this->seedSmartRow(SmartAlbumType::ON_THIS_DAY, $this->photoUnsorted->id);
 
 		$json = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums/smart')->assertOk()->json();

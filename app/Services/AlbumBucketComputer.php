@@ -11,24 +11,19 @@ namespace App\Services;
 use App\Enum\ColumnSortingType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TitleBucketMode;
-use App\Exceptions\Internal\LycheeLogicException;
-use App\Http\Resources\Models\Utils\TimelineData;
+use App\Models\Album;
 use App\Repositories\ConfigManager;
-use Carbon\Carbon;
 
 /**
- * Shared `bucket_id` truncation logic, reused by every write path that populates it:
- * {@see \App\Jobs\RecomputeAlbumStatsJob}, {@see \App\Jobs\RecomputeChildAlbumBucketsJob},
- * and the `lychee:recompute-buckets` backfill command — so a
- * bucket-truncation bugfix or a `title_bucket_mode` semantics change only
- * needs to happen once.
+ * `albums.bucket_key` of one album for its parent's effective album sort
+ * column (FR-092-04, ADR-092-01). Album dates are aggregate instants
+ * stored and displayed without a zone: their keys are the stored (UTC)
+ * day. The key never depends on the granularity or the title prefix
+ * length.
  *
- * Operates purely on already-resolved scalar/Carbon inputs — never queries
- * `photos` and never resolves an `Album`'s parent itself; each
- * caller is responsible for resolving the effective sort column/granularity
- * (which differs by write path: an Eloquent relation for a single album, a
- * raw self-join for a full-table pass) and handing this class only the
- * already-decided values.
+ * Shared by {@see \App\Jobs\RecomputeAlbumStatsJob} and, through
+ * {@see BucketKeyWriter}, {@see \App\Jobs\RecomputeChildAlbumBucketsJob},
+ * {@see \App\Jobs\RecomputeAllAlbumBucketsJob} and `lychee:recompute-buckets`.
  */
 final class AlbumBucketComputer
 {
@@ -38,13 +33,9 @@ final class AlbumBucketComputer
 	}
 
 	/**
-	 * Resolves `$candidate` (a parent's own `album_timeline` override, or
-	 * `null` for a root album/no override) against the instance-wide
-	 * `timeline_albums_granularity` default, mirroring
-	 * {@see \App\Http\Resources\Traits\HasTimelineData::getAlbumTimeline()}
-	 * — reimplemented here (rather than reusing that trait) because it reads
-	 * config via `request()->configs()`, which is unavailable in a
-	 * queue-worker/console-command context.
+	 * Resolves `$candidate` (a parent's `album_timeline` override, or `null`
+	 * for a root album) against the instance-wide
+	 * `timeline_albums_granularity` default.
 	 */
 	public function resolveGranularity(?TimelineAlbumGranularity $candidate): TimelineAlbumGranularity
 	{
@@ -58,76 +49,69 @@ final class AlbumBucketComputer
 	}
 
 	/**
-	 * Computes one album row's `bucket_id`, given its own `title`/
-	 * `title_base`/`created_at`/`min_taken_at`/`max_taken_at` values and its
-	 * parent's already-resolved effective sort column and granularity.
-	 * `OWNER_ID` is not a bucketable source (every direct child of a given
-	 * album always shares that album's exact owner_id) and always yields
-	 * `null`, uncomputed.
+	 * Read-time scheme of a children listing sorted by `$column`, with the
+	 * parent's `album_timeline` override (`null` for root).
 	 */
-	public function compute(
-		ColumnSortingType $sorting_column,
-		TimelineAlbumGranularity $granularity,
+	public function scheme(ColumnSortingType $column, ?TimelineAlbumGranularity $candidate): BucketScheme
+	{
+		return BucketScheme::forAlbums($column, $this->resolveGranularity($candidate), $this->config_manager);
+	}
+
+	/**
+	 * Key of a raw album row (`base_albums` joined with `albums`).
+	 *
+	 * @param object{title:string,title_base:?string,created_at:string,min_taken_at:?string,max_taken_at:?string} $row
+	 */
+	public function keyForRow(ColumnSortingType $column, object $row): ?string
+	{
+		return $this->key(
+			$column,
+			$row->title,
+			$row->title_base,
+			substr((string) $row->created_at, 0, 10),
+			$row->min_taken_at === null ? null : substr((string) $row->min_taken_at, 0, 10),
+			$row->max_taken_at === null ? null : substr((string) $row->max_taken_at, 0, 10),
+		);
+	}
+
+	public function keyForAlbum(ColumnSortingType $column, Album $album): ?string
+	{
+		return $this->key(
+			$column,
+			$album->title,
+			$album->title_base,
+			BucketKeys::storedDayKey($album->created_at) ?? '',
+			BucketKeys::storedDayKey($album->min_taken_at),
+			BucketKeys::storedDayKey($album->max_taken_at),
+		);
+	}
+
+	/**
+	 * `OWNER_ID` yields `null`: every child of one album shares its owner.
+	 *
+	 * @param string      $created_day   `created_at` as stored, `Y-m-d`
+	 * @param string|null $min_taken_day `min_taken_at` as stored, `Y-m-d`
+	 * @param string|null $max_taken_day `max_taken_at` as stored, `Y-m-d`
+	 */
+	public function key(
+		ColumnSortingType $column,
 		string $title,
-		string $title_base,
-		Carbon $created_at,
-		?Carbon $min_taken_at,
-		?Carbon $max_taken_at,
+		?string $title_base,
+		string $created_day,
+		?string $min_taken_day,
+		?string $max_taken_day,
 	): ?string {
-		if ($sorting_column === ColumnSortingType::OWNER_ID) {
-			return null;
-		}
-
-		if ($sorting_column === ColumnSortingType::TITLE) {
-			return $this->computeTitleBucket($granularity, $title, $title_base);
-		}
-
-		$date = match ($sorting_column) {
-			ColumnSortingType::CREATED_AT => $created_at,
-			ColumnSortingType::MIN_TAKEN_AT => $min_taken_at,
-			ColumnSortingType::MAX_TAKEN_AT => $max_taken_at,
+		return match ($column) {
+			ColumnSortingType::CREATED_AT => $created_day,
+			ColumnSortingType::MIN_TAKEN_AT => $min_taken_day,
+			ColumnSortingType::MAX_TAKEN_AT => $max_taken_day,
+			ColumnSortingType::TITLE => $this->isAlphabetical() ? mb_substr($title_base ?? '', 0, BucketScheme::MAX_PREFIX_LENGTH) : BucketKeys::titleDateKey($title),
 			default => null,
 		};
-
-		return $date === null ? null : $this->truncateDate($date, $granularity);
 	}
 
-	/**
-	 * Bucket computation for a `TITLE`-sorted parent, branching on the
-	 * instance-wide `title_bucket_mode` config.
-	 */
-	private function computeTitleBucket(TimelineAlbumGranularity $granularity, string $title, string $title_base): ?string
+	private function isAlphabetical(): bool
 	{
-		$mode = $this->config_manager->getValueAsEnum('title_bucket_mode', TitleBucketMode::class) ?? TitleBucketMode::DATE_PREFIX;
-
-		if ($mode === TitleBucketMode::ALPHABETICAL) {
-			$length = max(1, $this->config_manager->getValueAsInt('title_bucket_prefix_length'));
-
-			return mb_substr($title_base, 0, $length);
-		}
-
-		$date = TimelineData::parseDateFromTitle(trim($title));
-		if ($date === null) {
-			return null;
-		}
-
-		return $this->truncateDate($date, $granularity);
-	}
-
-	/**
-	 * Truncates `$date` at `$granularity`, in the same `Y`/`Y-m`/`Y-m-d`
-	 * format {@see TimelineData::fromAlbum()}'s `time_date` uses, so the
-	 * buckets endpoint can re-parse `bucket_id` as a real date at read time.
-	 */
-	private function truncateDate(Carbon $date, TimelineAlbumGranularity $granularity): string
-	{
-		return match ($granularity) {
-			TimelineAlbumGranularity::YEAR => $date->format('Y'),
-			TimelineAlbumGranularity::MONTH => $date->format('Y-m'),
-			TimelineAlbumGranularity::DAY => $date->format('Y-m-d'),
-			// @codeCoverageIgnoreStart
-			TimelineAlbumGranularity::DEFAULT, TimelineAlbumGranularity::DISABLED => throw new LycheeLogicException('DEFAULT/DISABLED is not a valid resolved granularity for albums'),
-			// @codeCoverageIgnoreEnd
-		};
+		return $this->config_manager->getValueAsEnum('title_bucket_mode', TitleBucketMode::class) === TitleBucketMode::ALPHABETICAL;
 	}
 }

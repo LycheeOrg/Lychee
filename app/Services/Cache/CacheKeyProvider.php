@@ -111,8 +111,9 @@ class CacheKeyProvider
 
 	/**
 	 * Coarse tag carried by every cached entry across all six listing
-	 * query types, in addition to its own specific tag(s); evicting it
-	 * alone is sufficient to flush the whole album-listing cache.
+	 * query types and the root and child `buckets`/`data`/`rights` tiers,
+	 * in addition to its own specific tag(s); evicting it alone is
+	 * sufficient to flush the whole album-listing cache (FR-092-13).
 	 */
 	public function albumListingGlobalTag(): string
 	{
@@ -421,6 +422,17 @@ class CacheKeyProvider
 	public function photoListingTag(string $album_id): string
 	{
 		return "photo-listing:{$album_id}";
+	}
+
+	/**
+	 * Coarse tag carried by every cached photo-listing entry of every album
+	 * — sufficient alone to flush the whole photo-listing cache when an
+	 * instance-wide bucket setting changes (FR-092-13), mirroring
+	 * {@see self::albumListingGlobalTag()}.
+	 */
+	public function photoListingGlobalTag(): string
+	{
+		return 'photo-listing-global';
 	}
 
 	/**
@@ -743,6 +755,20 @@ class CacheKeyProvider
 		$user_tag = $this->userTag($user_id);
 
 		return "{$tag}:tracks:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/album` (Feature 086) — viewport-independent,
+	 * like {@see self::mapTracksKey()}. `$include_sub_albums` is part of the key
+	 * so a setting change never serves the other scope.
+	 */
+	public function mapAlbumPointsKey(string $album_id, bool $include_sub_albums, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+		$sub_albums = $include_sub_albums ? 'with-sub-albums' : 'own';
+
+		return "{$tag}:points:{$sub_albums}:{$user_tag}:unlocked:{$unlocked_digest}";
 	}
 
 	/**

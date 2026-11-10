@@ -1,6 +1,6 @@
 import { trans } from "laravel-vue-i18n";
 import { type ToastLike } from "@/composables/toast-contract";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref, type Ref } from "vue";
 import init, {
 	prepareAlbums as wasmPrepareAlbums,

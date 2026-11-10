@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Seřadit podle fotek',
     'col_album_sorting' => 'Seřadit podle alb',
     'col_created_at' => 'Vytvořeno',
+    'taken_range' => 'Pořízeno: :range',
+    'taken_none' => 'Žádná data',
 
     // Filter
     'filter_placeholder' => 'Hledat podle názvu...',
@@ -69,7 +71,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Poměr stran miniatur',
     'field_album_timeline' => 'Časová osa alba',
     'field_photo_timeline' => 'Časová osa fotografie',
-    'field_published_at' => 'Flow Publish Date',
+    'field_published_at' => 'Datum zveřejnění ve Flow',
     'field_is_nsfw' => 'Citlivý obsah',
     'field_is_public' => 'Veřejný',
     'field_is_link_required' => 'Vyžaduje odkaz',
@@ -99,7 +101,7 @@ return [
     'error_load' => 'Načtení alb se nezdařilo.',
     'error_load_ids' => 'Nepodařilo se načíst ID alb.',
     'error_patch' => 'Nepodařilo se aktualizovat alba.',
-    'error_missing_timezone' => 'Please select a timezone for the publish date.',
+    'error_missing_timezone' => 'Vyberte prosím časové pásmo pro datum zveřejnění.',
     'error_set_owner' => 'Nepodařilo se převést vlastnictví.',
     'error_delete' => 'Nepodařilo se smazat alba.',
     'error_load_users' => 'Nepodařilo se načíst uživatele.',

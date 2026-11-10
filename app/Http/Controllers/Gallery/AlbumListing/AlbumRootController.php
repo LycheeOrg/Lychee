@@ -11,10 +11,6 @@ namespace App\Http\Controllers\Gallery\AlbumListing;
 use App\Assets\DbBool;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\AlbumListingScope;
-use App\Enum\ColumnSortingType;
-use App\Enum\OrderSortingType;
-use App\Enum\TimelineAlbumGranularity;
-use App\Enum\TitleBucketMode;
 use App\Http\Controllers\Gallery\AlbumListController;
 use App\Http\Requests\Album\GetAlbumCategoryRequest;
 use App\Http\Requests\Album\GetScopedAlbumsRequest;
@@ -29,6 +25,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\AlbumBucketComputer;
+use App\Services\BucketScheme;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,7 +33,6 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use function Safe\mktime;
 use Spatie\LaravelData\Optional;
 
 /**
@@ -44,8 +40,8 @@ use Spatie\LaravelData\Optional;
  * root albums (`parent_id IS NULL`) get the same buckets/index/rights
  * trio as sub-albums, plus a `scope` (`own`\|`shared`) dimension
  * reproducing today's `Top::get()` owned/shared partition.
- * `own` scope reuses the exact bucket_id/instance-default-sorting mechanism sub-albums use;
- * `shared` scope groups by owner as a **live** `GROUP BY owner_id` at read time, never via the persisted `bucket_id` column.
+ * `own` scope reuses the exact bucket_key/instance-default-sorting mechanism sub-albums use;
+ * `shared` scope groups by owner as a **live** `GROUP BY owner_id` at read time, never via the persisted `bucket_key` column.
  */
 class AlbumRootController extends Controller
 {
@@ -125,17 +121,15 @@ class AlbumRootController extends Controller
 	{
 		$query = $this->baseQuery($scope, $user);
 		$sorting = AlbumSortingCriterion::createDefault();
-		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
 
+		$scheme = $this->bucket_computer->scheme($sorting->column, null);
 		if ($scope === AlbumListingScope::OWN) {
-			// Mirrors the sub-album tier exactly: order by the
-			// already-persisted bucket_id (NULL last), then the effective
-			// sort criterion.
-			$query->orderByRaw('(albums.bucket_id IS NULL) ASC')
-				->orderBy('albums.bucket_id', $direction);
+			// Mirrors the sub-album tier exactly: order by the bucket id
+			// (`unknown` last), then the effective sort criterion.
+			$scheme->orderRows($query, $scheme->storedIdSql('albums.bucket_key'), $sorting->order);
 		} else {
 			// Owner-ordered first, never by the persisted
-			// bucket_id column.
+			// bucket_key column.
 			$query->orderBy('base_albums.owner_id', 'asc');
 		}
 		(new SortingDecorator($query))->orderBy($sorting->column, $sorting->order)->applyOrdering();
@@ -160,7 +154,6 @@ class AlbumRootController extends Controller
 				'albums.auto_cover_id_max_privilege',
 				'albums.auto_cover_id_least_privilege',
 				'base_albums.owner_id',
-				'albums.bucket_id',
 				'computed_access_permissions.password',
 				'base_albums.is_nsfw',
 				'base_albums.is_pinned',
@@ -173,16 +166,17 @@ class AlbumRootController extends Controller
 				'albums.max_taken_at',
 			])
 			->selectRaw('SUBSTR(base_albums.description, 1, 100) as description')
+			->selectRaw($scheme->storedIdSql('albums.bucket_key') . ' as bucket_id')
 			->toBase()
 			->get();
 
-		return $this->toAlbumDataResource($rows, $user, $scope);
+		return $this->toAlbumDataResource($rows, $user, $scope, $scheme);
 	}
 
 	/**
 	 * @param Collection<int,object{id:string,title:string,description:?string,cover_id:?string,auto_cover_id_max_privilege:?string,auto_cover_id_least_privilege:?string,owner_id:int,bucket_id:?string,password:?string,is_nsfw:mixed,is_pinned:mixed,public_grant_id:?string,public_is_link_required:mixed,num_children:int|string,num_photos:int|string,created_at:string,min_taken_at:?string,max_taken_at:?string}> $rows
 	 */
-	private function toAlbumDataResource(Collection $rows, ?User $user, AlbumListingScope $scope): AlbumDataResource
+	private function toAlbumDataResource(Collection $rows, ?User $user, AlbumListingScope $scope, BucketScheme $scheme): AlbumDataResource
 	{
 		$ids = [];
 		$titles = [];
@@ -212,7 +206,7 @@ class AlbumRootController extends Controller
 			// row's own owner_id (never the persisted date/title column) so
 			// grouping response rows by bucket_id reproduces the buckets
 			// endpoint's own owner grouping.
-			$bucket_ids[] = $scope === AlbumListingScope::SHARED ? (string) $row->owner_id : ($row->bucket_id ?? 'unknown');
+			$bucket_ids[] = $scope === AlbumListingScope::SHARED ? (string) $row->owner_id : $scheme->normalizeId($row->bucket_id);
 			$owner_ids[] = (string) $row->owner_id;
 			$is_password_requireds[] = $row->password !== null;
 			$is_nsfws[] = DbBool::parse($row->is_nsfw);
@@ -278,74 +272,24 @@ class AlbumRootController extends Controller
 	private function queryOwnBuckets(?User $user): AlbumBucketResource
 	{
 		$sorting = AlbumSortingCriterion::createDefault();
-		$query = $this->baseQuery(AlbumListingScope::OWN, $user);
-		$direction = $sorting->order === OrderSortingType::DESC ? 'desc' : 'asc';
+		// Root albums have no parent: the instance-wide granularity applies.
+		$scheme = $this->bucket_computer->scheme($sorting->column, null);
+		$id_sql = $scheme->storedIdSql('albums.bucket_key');
 
-		$rows = $query
-			->select(['albums.bucket_id'])
+		$query = $this->baseQuery(AlbumListingScope::OWN, $user)
+			->select(DB::raw($id_sql . ' as bucket_id'))
 			->selectRaw('COUNT(*) as bucket_count')
-			->groupBy('albums.bucket_id')
-			->orderByRaw('(albums.bucket_id IS NULL) ASC')
-			->orderBy('albums.bucket_id', $direction)
-			->toBase()
-			->get();
+			->groupByRaw($id_sql);
+		$scheme->orderRows($query, $id_sql, $sorting->order);
 
-		$bucket_ids = [];
-		$counts = [];
-		foreach ($rows as $row) {
-			$bucket_ids[] = $row->bucket_id ?? 'unknown';
-			$counts[] = (int) $row->bucket_count;
-		}
+		[$bucket_ids, $counts] = $scheme->collectBuckets($query->toBase()->get());
 
-		$labels = $this->computeDateTitleLabels($bucket_ids, $sorting->column);
-
-		return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $labels, bucketable: true);
-	}
-
-	/**
-	 * Mirrors {@see \App\Http\Controllers\Gallery\AlbumListing\AlbumChildrenController}'s
-	 * `computeLabels()`, minus the `$album_timeline` per-parent override
-	 * (root has no single parent to carry one — the granularity is purely
-	 * instance-wide, same reasoning as {@see \App\Jobs\RecomputeRootAlbumBucketsJob}).
-	 *
-	 * @param string[] $bucket_ids
-	 */
-	private function computeDateTitleLabels(array $bucket_ids, ColumnSortingType $sorting_column): array
-	{
-		$is_alphabetical_title = $sorting_column === ColumnSortingType::TITLE &&
-			(request()->configs()->getValueAsEnum('title_bucket_mode', TitleBucketMode::class) ?? TitleBucketMode::DATE_PREFIX) === TitleBucketMode::ALPHABETICAL;
-
-		if ($is_alphabetical_title) {
-			return $bucket_ids;
-		}
-
-		$granularity = $this->bucket_computer->resolveGranularity(null);
-		$format = match ($granularity) {
-			TimelineAlbumGranularity::YEAR => request()->configs()->getValueAsString('timeline_album_date_format_year'),
-			TimelineAlbumGranularity::MONTH => request()->configs()->getValueAsString('timeline_album_date_format_month'),
-			TimelineAlbumGranularity::DAY => request()->configs()->getValueAsString('timeline_album_date_format_day'),
-			default => request()->configs()->getValueAsString('timeline_album_date_format_year'),
-		};
-
-		return array_map(
-			fn (string $bucket_id): string => $bucket_id === 'unknown' ? 'unknown' : $this->formatBucketLabel($bucket_id, $format),
-			$bucket_ids,
-		);
-	}
-
-	private function formatBucketLabel(string $bucket_id, string $format): string
-	{
-		$parts = explode('-', $bucket_id);
-		$year = (int) $parts[0];
-		$month = (int) ($parts[1] ?? 1);
-		$day = (int) ($parts[2] ?? 1);
-
-		return date($format, mktime(0, 0, 0, $month, $day, $year));
+		return new AlbumBucketResource(bucket_ids: $bucket_ids, counts: $counts, labels: $scheme->labels($bucket_ids), bucketable: true);
 	}
 
 	/**
 	 * A live `GROUP BY base_albums.owner_id` — never the
-	 * persisted `bucket_id` column, never {@see AlbumBucketComputer}.
+	 * persisted `bucket_key` column, never {@see BucketScheme}.
 	 * `bucketable` is unconditionally `true`, even for a
 	 * zero-result query. Label resolution is authentication-gated:
 	 * the `users` join runs only for an authenticated caller;

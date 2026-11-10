@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
-    'loading' => 'Loading…',
-    'identical_content' => 'Identical content',
+    'title' => 'Tanılama',
+    'copy_to_clipboard' => 'Tanılamayı panoya kopyala',
+    'self-diagnosis' => 'Kendi kendine tanılama',
+    'info' => 'Bilgi',
+    'space' => 'Alan',
+    'load_space' => 'Alan kullanımını yükle.',
+    'configuration' => 'Yapılandırma',
+    'loading' => 'Yükleniyor…',
+    'identical_content' => 'Aynı içerik',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => 'Bilgi',
+        'copy' => 'Tanılama panoya kopyalandı!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Tanılamayı kopyalama yalnızca güvenli bağlamlarda (HTTPS) kullanılabilir.',
 ];

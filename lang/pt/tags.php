@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Etiquetas',
+    'description' => 'Faça aqui a gestão das suas etiquetas. Pode renomear, fundir e eliminar etiquetas.',
+    'no_tags' => 'Nenhuma etiqueta encontrada.',
+    'loading' => 'A carregar etiquetas...',
+    'rename' => 'Renomear',
+    'merge' => 'Fundir',
+    'delete' => 'Eliminar',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Nome',
+    'column_photos' => 'Fotos',
+    'column_albums' => 'Álbuns',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Tem a certeza de que pretende eliminar a etiqueta “%s”?',
+    'delete_confirm_multiple' => 'Tem a certeza de que pretende eliminar estas %d etiquetas?',
+    'delete_warning' => 'Esta ação não pode ser anulada! Todas as fotos associadas a esta etiqueta deixarão de a ter.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Tem a certeza de que pretende fundir a etiqueta “%1$s” na etiqueta “%2$s”?',
+    'merge_warning' => 'Esta ação não pode ser anulada! Todas as fotos associadas à etiqueta de origem serão movidas para a etiqueta de destino.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Renomear etiqueta',
 ];

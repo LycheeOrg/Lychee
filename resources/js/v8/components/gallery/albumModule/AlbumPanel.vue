@@ -13,7 +13,7 @@
 	/>
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
+			<AlbumNavPanel />
 			<div class="flex-1 flex-col min-w-0">
 				<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 					<UContextMenu :items="menuSections" :disabled="noData" class="contents">
@@ -58,7 +58,7 @@
 							<div class="flex w-full">
 								<div class="flex flex-1 min-w-0 flex-wrap content-start justify-start">
 									<AlbumThumbPanelVirtual
-										v-if="is_struct_of_array_enabled && albumsStore.albums.length > 0"
+										v-if="albumsStore.albums.length > 0"
 										ref="albumPanelVirtualRef"
 										@scrubber-layout-changed="onAlbumScrubberLayout"
 										@scroll-offset-changed="onAlbumScrubberScroll"
@@ -67,35 +67,6 @@
 										@selected="albumSelect"
 										@contexted="contextMenuAlbumOpen"
 									/>
-									<template v-else>
-										<AlbumThumbPanel
-											v-if="albumsStore.albums.length > 0"
-											header="gallery.album.header_albums"
-											:albums="albumsStore.albums"
-											:config="albumPanelConfig"
-											:is-alone="photosStore.photos.length === 0"
-											:selected-albums="selectedAlbumsIds"
-											:is-timeline="albumStore.config.is_album_timeline_enabled"
-											@clicked="albumSelect"
-											@selected="albumSelect"
-											@contexted="contextMenuAlbumOpen"
-										/>
-										<!-- Pagination for albums -->
-										<Pagination
-											v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-											:mode="lycheeStore.albums_pagination_mode"
-											:loading="albumStore.albums_loading"
-											:has-more="albumStore.hasMoreAlbums"
-											:current-page="albumStore.albums_current_page"
-											:last-page="albumStore.albums_last_page"
-											:per-page="albumStore.albums_per_page"
-											:total="albumStore.albums_total"
-											:remaining="albumStore.albumsRemainingCount"
-											resource-type="albums"
-											@load-more="albumStore.loadMoreAlbums()"
-											@go-to-page="goToAlbumsPage"
-										/>
-									</template>
 									<!-- Tag Filter -->
 									<PhotoThumbPanelVirtual
 										v-if="albumStore.isPhotoSoaActive && photosStore.photos.length > 0"
@@ -155,7 +126,6 @@
 									:lens-falloff="lycheeStore.timeline_lens_falloff / 10"
 									:lens-magnification="lycheeStore.timeline_lens_magnification / 10"
 									:count-label-key="dateScrubberSource === 'albums' ? 'gallery.album.date_scrubber.albums_count' : undefined"
-									@load="jumpToDateScrubberEntry"
 									@scrub="scrubDateScrubberTo"
 								/>
 							</div>
@@ -183,8 +153,8 @@
 	</UMain>
 </template>
 <script setup lang="ts">
-import { computed, ref, ComponentPublicInstance } from "vue";
-import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import { computed, ref, ComponentPublicInstance, provide } from "vue";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import AlbumThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbPanelVirtual.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import PhotoThumbPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoThumbPanelVirtual.vue";
@@ -196,6 +166,7 @@ import AlbumNavPanel from "@/v8/components/gallery/albumModule/AlbumNavPanel.vue
 import TimelineDatesV3 from "@/v8/components/gallery/timelineModule/TimelineDatesV3.vue";
 import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
 import { toRailBuckets, type DateScrubLayout } from "@/v8/utils/dateScrubber";
+import { hourlyLensLabels } from "@/v8/utils/railTicks";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
@@ -204,7 +175,6 @@ import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
-import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import GalleryFooter from "@/v8/components/footers/GalleryFooter.vue";
 import AlbumStatistics from "@/v8/components/drawers/AlbumStatistics.vue";
@@ -227,6 +197,7 @@ import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import Pagination from "@/v8/components/pagination/Pagination.vue";
 import { trans } from "laravel-vue-i18n";
+import { isDetailPending } from "@/utils/photoView";
 import type { ContextMenuItem } from "@nuxt/ui";
 
 const router = useRouter();
@@ -238,6 +209,8 @@ const props = defineProps<{
 
 const userStore = useUserStore();
 const albumStore = useAlbumStore();
+// Feature 100: thumbnails fetch their live photo video URL on hover.
+provide(MOTION_URL_LOADER, (ids) => albumStore.loadPhotoDetails(ids).then(() => undefined));
 const photosStore = usePhotosStore();
 const catalogStore = useCatalogStore();
 const albumsStore = useAlbumsStore();
@@ -259,7 +232,7 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const { is_se_enabled, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled } = storeToRefs(lycheeStore);
 
 // --- Feature 071: album date scrubber ---
 
@@ -281,7 +254,14 @@ const albumPanelVirtualRef = ref<InstanceType<typeof AlbumThumbPanelVirtual> | n
 const photoPanelVirtualRef = ref<InstanceType<typeof PhotoThumbPanelVirtual> | null>(null);
 
 const isDateScrubberVisible = computed(() => isDateScrubberAvailable.value && !isDateScrubberHidden.value && !props.isPhotoOpen);
-const dateScrubberBuckets = computed(() => toRailBuckets(dateScrubberLayout.value?.entries ?? []));
+// Feature 094 (FR-094-10): hour runs get the hourly lens and pill labels of `/timeline`; day runs are returned unchanged.
+const dateScrubberBuckets = computed(() =>
+	hourlyLensLabels(
+		toRailBuckets(dateScrubberLayout.value?.entries ?? []),
+		lycheeStore.date_scrubber_label_format,
+		lycheeStore.date_scrubber_format_hour,
+	),
+);
 
 function onAlbumScrubberLayout(layout: DateScrubLayout): void {
 	albumLayout.value = layout;
@@ -296,7 +276,7 @@ function onPhotoScrubberScroll(offset: number): void {
 	photoScrollOffset.value = offset;
 }
 
-/** Drag-scrub, and the in-place jump below — never a route push (FR-071-10). */
+/** Drag-scrub and click-scrub — the grid stays exactly where the rail was pressed or released, never snapped to a section top, never a route push (FR-071-10). */
 function scrubDateScrubberTo(px: number): void {
 	if (dateScrubberSource.value === "albums") {
 		albumPanelVirtualRef.value?.scrollToPixelOffset(px);
@@ -305,12 +285,6 @@ function scrubDateScrubberTo(px: number): void {
 	photoPanelVirtualRef.value?.scrollToPixelOffset(px);
 }
 
-function jumpToDateScrubberEntry(bucketId: string): void {
-	const entry = dateScrubberLayout.value?.entries.find((e) => e.bucketId === bucketId);
-	if (entry !== undefined) {
-		scrubDateScrubberTo(entry.top);
-	}
-}
 const { is_download_album_visible } = storeToRefs(togglableStore);
 const noData = computed(() => {
 	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
@@ -357,10 +331,6 @@ function goToPhotosPage(page: number) {
 	albumStore.loadPhotos(page, false);
 }
 
-function goToAlbumsPage(page: number) {
-	albumStore.loadAlbums(page, false);
-}
-
 const areStatisticsOpen = ref(false);
 function toggleStatistics() {
 	if (is_se_enabled) {
@@ -405,14 +375,6 @@ function toggleDownloadAlbumFromSelection() {
 	is_download_album_visible.value = true;
 }
 
-const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
-	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",
-	album_subtitle_type: lycheeStore.album_subtitle_type,
-	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
-	album_decoration: lycheeStore.album_decoration,
-	album_decoration_orientation: lycheeStore.album_decoration_orientation,
-}));
-
 const photoCallbacks = {
 	star: () => {
 		PhotoService.highlight(selectedPhotosIds.value, true);
@@ -456,13 +418,18 @@ const photoCallbacks = {
 		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
-	setAsHeader: () => {
+	setAsHeader: async () => {
+		const photo = selectedPhoto.value!;
+		// A struct-of-arrays tile has no size variants until its details load (Feature 105, FR-105-09).
+		if (isDetailPending(photo)) {
+			await albumStore.loadPhotoDetails([photo.id]);
+		}
 		if (albumStore.album === undefined) return;
-		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
+		PhotoService.setAsHeader(photo.id, albumStore.album.id, false);
 		// Update the album's header_id immediately to reflect the change (toggle behavior)
-		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
+		const isToggleOff = albumStore.modelAlbum?.header_id === photo.id;
 		if (albumStore.modelAlbum !== undefined) {
-			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			albumStore.modelAlbum.header_id = isToggleOff ? null : photo.id;
 			if (albumStore.modelAlbum.preFormattedData) {
 				albumStore.modelAlbum.preFormattedData.header_photo_focus = null;
 			}
@@ -473,16 +440,18 @@ const photoCallbacks = {
 			albumStore.album.editable !== undefined &&
 			albumStore.album.editable !== null
 		) {
-			albumStore.album.editable.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			albumStore.album.editable.header_id = isToggleOff ? null : photo.id;
 			albumStore.album.preFormattedData.header_photo_focus = null;
 		}
 		// Update the header image URL in the album's preFormattedData
 		if (albumStore.album.preFormattedData) {
+			// A photo header (or its toggle-off) always replaces the map header (Feature 086).
+			albumStore.album.preFormattedData.is_map_header = false;
 			if (isToggleOff) {
 				albumStore.album.preFormattedData.url = null;
 			} else {
 				// Use medium or small variant for the header image
-				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
+				const headerUrl = photo.size_variants.medium?.url ?? photo.size_variants.small?.url ?? null;
 				albumStore.album.preFormattedData.url = headerUrl;
 				albumStore.album.preFormattedData.header_photo_focus = null;
 			}

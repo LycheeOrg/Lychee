@@ -1,9 +1,9 @@
 <template>
 	<UContextMenu :items="menuSections" :disabled="!hasResults" class="contents">
-		<!-- v3 Struct-of-Arrays path (Feature 069). No UPagination at all:
-		     the photo tier is whole-scope, virtualized, and bounded by the
+		<!-- Struct-of-Arrays results (Feature 069). No pagination: the photo
+		     tier is whole-scope, virtualized, and bounded by the
 		     `search_result_limit` cap rather than by a page size. -->
-		<div v-if="searchStore.isSearchSoaActive" class="contents">
+		<div class="contents">
 			<SearchAlbumGridV3
 				:header="albumHeaderV3"
 				:selected-albums="selectedAlbumsIds"
@@ -30,52 +30,19 @@
 				/>
 			</template>
 		</div>
-		<div v-else class="contents">
-			<AlbumThumbPanel
-				v-if="albumsStore.albums.length > 0"
-				:header="albumHeader"
-				:albums="albumsStore.albums"
-				:is-alone="false"
-				:selected-albums="selectedAlbumsIds"
-				:is-timeline="false"
-				@clicked="albumSelect"
-				@contexted="contextMenuAlbumOpen"
-			/>
-			<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
-				<UPagination v-model:page="page" :total="searchStore.total" :items-per-page="rows ?? 20" @update:page="emits('refresh')" />
-			</div>
-			<PhotoThumbPanel
-				v-if="photosStore.photos.length > 0"
-				:header="photoHeader"
-				:photos="photosStore.photos"
-				:photos-timeline="undefined"
-				:selected-photos="selectedPhotosIds"
-				:is-timeline="false"
-				:with-control="true"
-				@clicked="photoClick"
-				@selected="selectPhoto"
-				@contexted="contextMenuPhotoOpen"
-			/>
-			<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
-				<UPagination v-model:page="page" :total="searchStore.total" :items-per-page="rows ?? 20" @update:page="emits('refresh')" />
-			</div>
-		</div>
 	</UContextMenu>
 </template>
 <script setup lang="ts">
 import { useContextMenu, type PhotoCallbacks, type AlbumCallbacks, type Selectors } from "@/v8/composables/contextMenus/contextMenu";
 import { useSelection } from "@/composables/selections/selections";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
-import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoGridVirtual from "@/v8/components/gallery/albumModule/Virtualized/PhotoGridVirtual.vue";
 import SearchAlbumGridV3 from "@/v8/components/gallery/searchModule/SearchAlbumGridV3.vue";
-import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 import { computed } from "vue";
 import { useSearchStore } from "@/stores/SearchState";
@@ -88,9 +55,6 @@ const searchStore = useSearchStore();
 const router = useRouter();
 
 const props = defineProps<{
-	// config
-	albumPanelConfig: AlbumThumbConfig;
-	isPhotoTimelineEnabled: boolean;
 	// for menu
 	photoCallbacks: PhotoCallbacks;
 	albumCallbacks: AlbumCallbacks;
@@ -109,42 +73,18 @@ const truncationHint = computed(() => {
 	return sprintf(trans("gallery.search.results_truncated"), searchStore.total);
 });
 
-const albumHeader = computed(() => {
-	if (albumsStore.albums.length === 0) {
-		return "";
-	}
-	return sprintf(trans("gallery.search.albums"), albumsStore.albums.length);
-});
-
-const first = defineModel<number | undefined>("first");
-const rows = defineModel<number | undefined>("rows");
-
-// UPagination is 1-indexed by page number; v7's Paginator used a 0-indexed row offset (`first`).
-const page = computed<number>({
-	get: () => Math.floor((first.value ?? 0) / (rows.value ?? 20)) + 1,
-	set: (newPage: number) => {
-		first.value = (newPage - 1) * (rows.value ?? 20);
-	},
-});
-
-const emits = defineEmits<{
-	refresh: [];
-}>();
-
 const { photoRoute } = usePhotoRoute(router);
 
 function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
-// On the v3 path the album hits never reach `albumsStore` (FR-069-20), so both
+// The album hits never reach `albumsStore` (FR-069-20), so both
 // the selection pool and the "is there anything to act on" gate above have to
 // read them from the search store instead.
-const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() =>
-	searchStore.isSearchSoaActive ? searchStore.albumTilesV3 : undefined,
-);
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() => searchStore.albumTilesV3);
 
-const hasResults = computed<boolean>(() => (searchAlbumsV3.value ?? albumsStore.albums).length > 0 || photosStore.photos.length > 0);
+const hasResults = computed<boolean>(() => searchStore.albumTilesV3.length > 0 || photosStore.photos.length > 0);
 
 const {
 	selectedPhotosIds,

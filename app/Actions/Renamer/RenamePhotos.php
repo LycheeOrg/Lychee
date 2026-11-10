@@ -8,8 +8,10 @@
 
 namespace App\Actions\Renamer;
 
+use App\Jobs\RecomputePhotoBucketsJob;
 use App\Metadata\Renamer\PhotoRenamer;
 use App\Models\Photo;
+use App\Services\BucketKeys;
 use App\Services\TitleSplitter;
 use Illuminate\Support\Collection;
 
@@ -43,6 +45,11 @@ class RenamePhotos
 				$photo_instance = new Photo();
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($photo_instance, $values, 'id');
+
+				// FR-092-10: the bulk write bypasses Eloquent, so every renamed
+				// photo's `photo_album` keys are recomputed explicitly.
+				$photos->filter(fn (Photo $photo, int $index) => $values[$index]['title'] !== $photo->title)
+					->each(fn (Photo $photo) => RecomputePhotoBucketsJob::dispatch($photo->id));
 			});
 	}
 
@@ -52,7 +59,7 @@ class RenamePhotos
 	 * @param Photo        $photo
 	 * @param PhotoRenamer $photo_renamer
 	 *
-	 * @return array{id:string,title:string,title_base:string,title_index:int}
+	 * @return array{id:string,title:string,title_base:string,title_index:int,title_date_key:string|null}
 	 */
 	private function buildUpdateValues(Photo $photo, PhotoRenamer $photo_renamer): array
 	{
@@ -64,6 +71,7 @@ class RenamePhotos
 			'title' => $title,
 			'title_base' => $title_split->base,
 			'title_index' => $title_split->index,
+			'title_date_key' => BucketKeys::titleDateKey($title),
 		];
 	}
 }

@@ -239,9 +239,9 @@ async function refresh(isDelete: boolean = false) {
 	photoStore.load();
 }
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { albumId, isLoading, current_page } = storeToRefs(albumStore);
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 const { are_nsfw_visible, slideshow_timeout, is_slideshow_enabled } = storeToRefs(lycheeStore);

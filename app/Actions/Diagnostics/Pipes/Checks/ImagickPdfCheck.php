@@ -27,12 +27,13 @@ class ImagickPdfCheck implements DiagnosticPipe
 	}
 
 	public const IMAGICK_POLICY_LOCATIONS = [
+		'/opt/imagemagick/etc/ImageMagick-7/policy.xml', // Docker image (Dockerfile)
 		'/etc/ImageMagick-7/policy.xml',
 		'/etc/ImageMagick-6/policy.xml',
 	];
 
 	public const DETAILS = [
-		'Make sure to have the policy.xml file in `/etc/ImageMagick-6/` or `/etc/ImageMagick-7/`.',
+		'Make sure to have the policy.xml file in `/opt/imagemagick/etc/ImageMagick-7/`, `/etc/ImageMagick-6/` or `/etc/ImageMagick-7/`.',
 		'Verify that the file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .',
 	];
 

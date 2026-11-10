@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Http\Controllers\Admin\Maintenance\Model\Album;
 use App\Http\Requests\Maintenance\FullTreeUpdateRequest;
@@ -35,6 +36,7 @@ class FullTree extends Controller
 			$key_name = 'id';
 			$album_instance = new Album();
 			batch()->update($album_instance, $request->albums(), $key_name);
+			(new SyncRecursiveNsfw())->do();
 		});
 
 		Cache::forget('tree_state');

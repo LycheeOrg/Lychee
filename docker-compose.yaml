@@ -29,10 +29,18 @@ x-base-lychee-setup:
   # There are two main images: `latest` and `edge`.
   # `latest` is mapped to the last published version
   # `edge` is mapped to the last build on master branch (may be unstable)
+  # `vX` (e.g. `v7`) is mapped to the last published version of that major release
   #
   # There are also other images available which uses nginx as a base instead of FrankenPHP:
   # - ghcr.io/lycheeorg/lychee:latest-legacy
   # - ghcr.io/lycheeorg/lychee:edge-legacy
+  #
+  # Each image also exists with OpenTelemetry tracing installed, by adding `-telemetry`:
+  # - ghcr.io/lycheeorg/lychee:latest-telemetry
+  # - ghcr.io/lycheeorg/lychee:edge-telemetry
+  # - ghcr.io/lycheeorg/lychee:latest-legacy-telemetry
+  # - ghcr.io/lycheeorg/lychee:edge-legacy-telemetry
+  # Tracing stays off until OTEL_PHP_AUTOLOAD_ENABLED=true is set (see .env.example).
   &base-lychee-setup
   image: ghcr.io/lycheeorg/lychee:latest
 
@@ -213,7 +221,10 @@ x-common-env:
   # SESSION_DOMAIN: "${SESSION_DOMAIN:-null}"
 
   # Cache
-  CACHE_STORE: "${CACHE_STORE:-file}"
+  # 'file' keeps one cache per container: with the queue worker below (its own container),
+  # use a store shared by both containers, 'database' or 'redis' (Diagnostics warn otherwise).
+  # CACHE_DRIVER is read when CACHE_STORE is unset.
+  CACHE_STORE: "${CACHE_STORE:-${CACHE_DRIVER:-file}}"
   CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
   # REDIS_HOST: "lychee_cache"
   # REDIS_PASSWORD: "null"
@@ -386,6 +397,13 @@ x-common-env:
   # NEXTCLOUD_CLIENT_SECRET_FILE=/run/secrets/nextcloud_client_secret
   # NEXTCLOUD_REDIRECT_URI=/auth/nextcloud/redirect
   # NEXTCLOUD_BASE_URI=
+
+  # POCKETID_BASE_URL=
+  # POCKETID_CLIENT_ID=
+  # POCKETID_CLIENT_SECRET=
+  # POCKETID_CLIENT_SECRET_FILE=/run/secrets/pocketid_client_secret
+  # POCKETID_REDIRECT_URI=/auth/pocketid/redirect
+  # POCKETID_USE_PKCE=true
 
   # KEYCLOAK_CLIENT_ID=
   # KEYCLOAK_CLIENT_SECRET=

@@ -13,6 +13,7 @@
 
 namespace Tests\Unit\Models;
 
+use App\Actions\Face\RecountFaceCounters;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\Photo;
@@ -24,7 +25,7 @@ use Tests\AbstractTestCase;
  * Tests for the denormalized face_count counter on Photo.
  *
  * face_count represents the number of non-dismissed faces detected on a photo.
- * The FaceObserver is responsible for keeping this column up-to-date.
+ * The write paths call RecountFaceCounters to keep this column up-to-date.
  */
 class FaceCounterPhotoTest extends AbstractTestCase
 {
@@ -71,6 +72,7 @@ class FaceCounterPhotoTest extends AbstractTestCase
 
 		$face->is_dismissed = true;
 		$face->save();
+		$this->recount();
 
 		$this->photo->refresh();
 		self::assertEquals(0, $this->photo->face_count);
@@ -87,6 +89,7 @@ class FaceCounterPhotoTest extends AbstractTestCase
 
 		$face->is_dismissed = false;
 		$face->save();
+		$this->recount();
 
 		$this->photo->refresh();
 		self::assertEquals(1, $this->photo->face_count);
@@ -102,6 +105,7 @@ class FaceCounterPhotoTest extends AbstractTestCase
 		self::assertEquals(1, $this->photo->face_count);
 
 		$face->delete();
+		$this->recount();
 
 		$this->photo->refresh();
 		self::assertEquals(0, $this->photo->face_count);
@@ -119,6 +123,7 @@ class FaceCounterPhotoTest extends AbstractTestCase
 		$count_before = $this->photo->face_count;
 
 		$dismissed->delete();
+		$this->recount();
 
 		$this->photo->refresh();
 		self::assertEquals($count_before, $this->photo->face_count);
@@ -136,8 +141,14 @@ class FaceCounterPhotoTest extends AbstractTestCase
 
 		$face->person_id = $person->id;
 		$face->save();
+		$this->recount();
 
 		$this->photo->refresh();
 		self::assertEquals($count_before, $this->photo->face_count);
+	}
+
+	private function recount(): void
+	{
+		(new RecountFaceCounters())->forPhotos([$this->photo->id]);
 	}
 }

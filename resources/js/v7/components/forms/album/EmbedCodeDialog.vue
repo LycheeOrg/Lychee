@@ -142,7 +142,7 @@ import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
 import Constants from "@/services/constants";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 // Type declaration for the embed widget global
 declare global {

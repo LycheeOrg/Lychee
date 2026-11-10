@@ -309,6 +309,18 @@ _Last updated: 2026-09-06 (implementation pass — 39/53 tasks code-complete, de
   _Verification commands:_
   - `npm run check`
 
+- [x] T-065-57 – Drag selection starts on photo tiles (UI-065-11): `PhotoThumb.vue`, `PhotoThumbVirtual.vue`, `PhotoListItem.vue`, `PhotoListItemVirtual.vue` carry `data-drag-select-start="true"`; `dragAndSelect.ts` starts from such a tile after 4 px of movement and swallows the click that ends the drag; tile images get `draggable="false"`. `dragAndSelect.ts` converts the pointer with `clientY` when the gallery view handles scroll (the v8 album page scrolls the window, `pageY` counted the scroll twice) and applies the final rectangle on release (the leading-only throttle measured the previous frame's `#selector`).
+  _Verification commands:_
+  - `npm run format`
+  - `npm run check`
+  - scratch Playwright check (reproduced first): drag from a photo selects, plain click opens, Ctrl+click toggles, no photo opens after a drag; rectangle follows the pointer at scroll 0, 700 and 1500 on the album page and at 0 and 100 on the root gallery; map header drags still opt out
+
+- [x] T-065-56 – `PhotoGridVirtual.vue`'s pinned bucket header bleeds across the `UContainer` padding so its blurred band touches the column edges and the date scrubber; the label keeps the grid's left edge (UI-065-01). Applies to the album photo grid and the Timeline page.
+  _Verification commands:_
+  - `npm run format`
+  - `npm run check`
+  - scratch Playwright check: pinned band edges equal the column edges
+
 - [x] T-065-55 – `PhotoGridVirtual.vue`'s root applies the Ken-Burns-on-hover class and CSS custom properties through the new shared `useKenBurnsHover()` composable, which `PhotoThumbPanelList.vue` also consumes (FR-065-09, FR-065-10 visual parity with `PhotoThumb.vue`).
   _Verification commands:_
   - `npm run format`

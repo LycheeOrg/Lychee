@@ -6,21 +6,21 @@ return [
     | Duplicate Finder Page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Maintenance',
-    'intro' => 'On this page you will find the duplicate pictures found in your database.',
-    'found' => ' duplicates found!',
-    'invalid-search' => ' At least the checksum or title condition must be checked.',
-    'checksum-must-match' => 'Checksum must match.',
-    'title-must-match' => 'Title must match.',
-    'must-be-in-same-album' => 'Must be in the same album.',
+    'title' => 'Συντήρηση',
+    'intro' => 'Σε αυτή τη σελίδα θα βρείτε τις διπλότυπες φωτογραφίες που εντοπίστηκαν στη βάση δεδομένων σας.',
+    'found' => ' διπλότυπα βρέθηκαν!',
+    'invalid-search' => ' Πρέπει να επιλεγεί τουλάχιστον η συνθήκη checksum ή τίτλου.',
+    'checksum-must-match' => 'Το checksum πρέπει να ταιριάζει.',
+    'title-must-match' => 'Ο τίτλος πρέπει να ταιριάζει.',
+    'must-be-in-same-album' => 'Πρέπει να βρίσκονται στο ίδιο άλμπουμ.',
     'columns' => [
-        'album' => 'Album',
-        'photo' => 'Photo',
+        'album' => 'Άλμπουμ',
+        'photo' => 'Φωτογραφία',
         'checksum' => 'Checksum',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'Δεν απομένει κανένα πρωτότυπο.',
+        'keep-one' => 'Επιλέξατε όλα τα διπλότυπα αυτής της ομάδας. Επιλέξτε τουλάχιστον ένα διπλότυπο για διατήρηση.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Διαγραφή επιλεγμένων',
 ];

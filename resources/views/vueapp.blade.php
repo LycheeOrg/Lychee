@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <x-meta />
-    @if(Features::active('nuxt_ui'))
+    @if(Features::active('v8'))
     @vite(['resources/js/app-v8.ts','resources/sass/app-v8.css'])
 	{{-- <x-style /> overrides app-v8.css's --ui-color-* custom properties via plain
 	     unlayered same-specificity, later-source-wins cascade (app-v8.css has no

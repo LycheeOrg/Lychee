@@ -5,6 +5,7 @@
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
 		:data-album-id="album.id"
+		data-drag-select-start="true"
 		@click="maySelect($event, album.id)"
 		@contextmenu="propagateContexted($event, album.id)"
 	>
@@ -23,6 +24,7 @@
 		</div>
 		<!-- Thumbnail -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="relative block h-8 md:h-5 shrink-0"
 			:class="{
@@ -49,6 +51,7 @@
 
 		<!-- Content (title + counts) -->
 		<router-link
+			data-drag-select-start="true"
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right"
 		>
@@ -100,9 +103,8 @@
  */
 import { computed, toRef } from "vue";
 import Thumb from "@/v8/components/thumbs/Thumb.vue";
-import { useAlbumStore } from "@/stores/AlbumState";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
 import ListBadge from "@/v8/components/gallery/albumModule/thumbs/ListBadge.vue";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -112,8 +114,6 @@ import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
 import { useImageHelpers } from "@/utils/Helpers";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
 
-const albumStore = useAlbumStore();
-const albumsStore = useAlbumsStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
@@ -143,9 +143,8 @@ function maySelect(e: MouseEvent, id: string) {
 	propagateClicked(e, id);
 }
 
-const aspectRatio = computed(
-	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
-);
+// Open album's ratio, else the root's, else square; the live drawer's while it is open (Feature 110).
+const aspectRatio = useAlbumThumbAspectRatio("nearest");
 
 const noCoverIconSrc = computed(() => (props.album.is_password_required ? getPaswwordIcon() : getNoImageIcon()));
 </script>

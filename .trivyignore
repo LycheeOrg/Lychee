@@ -9,22 +9,17 @@
 
 # google.golang.org/grpc │ GHSA-hrxh-6v49-42gf │ HIGH     │ fixed  │ v1.81.1           │ 1.82.1        │ gRPC-Go: xDS RBAC and HTTP/2 Vulnerabilities
 # Nasty nasty
-GHSA-hrxh-6v49-42gf
+# GHSA-hrxh-6v49-42gf
 
 # github.com/getkin/kin-openapi │ GHSA-r277-6w6q-xmqw │ CRITICAL │ fixed  │ v0.140.0          │ 0.144.0       │ kin-openapi: ValidationHandler.Load() Fail-Open Authentication Bypass via NoopAuthenticationFunc Default │
-GHSA-r277-6w6q-xmqw
+# GHSA-r277-6w6q-xmqw
 
 # kin-openapi openai3filter: nil-pointer panic in ConvertErrors on malformed multipart/form-data body enables unauthenticated DoS
-CVE-2026-76905
+# CVE-2026-76905
 
 # kin-openapi has uncontrolled resource consumption in openapi3filter deepObject query parameter decoding
-CVE-2026-77354
+# CVE-2026-77354
 
 # Authentication bypass on the ssh part of the golang.org/x/crypto package, which is used by the golang.org/x/crypto/ssh
 # This is not impactful on Lychee as it is not used in frankenphp
-CVE-2026-56854
-
-# There is no fix yet compiled in a new Frankenphp docker image.
-# It would be nice if Douglas was a bit more reactive on those.
-CVE-2026-84304
-CVE-2026-84445
+# CVE-2026-56854

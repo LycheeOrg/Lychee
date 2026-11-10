@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Liens supplémentaires',
+    'description' => 'Gérez une liste ordonnée de liens supplémentaires affichés dans la navigation et/ou le pied de page de la page d’accueil.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Aucun lien supplémentaire configuré pour l’instant.',
+    'create_first' => 'Créer votre premier lien',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Libellé',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
+    'col_placement' => 'Emplacement',
+    'col_enabled' => 'Activé',
     'col_actions' => 'Actions',
 
     // Placement labels
     'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_footer' => 'Pied de page',
+    'placement_both' => 'Nav et pied de page',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Intégré',
+    'built_in_cannot_delete' => 'Ce lien intégré ne peut pas être supprimé. Désactivez-le plutôt, ou réordonnez-le comme n’importe quel autre lien.',
+    'built_in_url_hint' => 'Il s’agit d’un lien intégré et sa cible ne peut pas être modifiée.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Créer un lien',
+    'edit' => 'Modifier',
+    'delete' => 'Supprimer',
+    'cancel' => 'Annuler',
+    'save' => 'Enregistrer',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Libellé',
+    'field_label_placeholder' => 'p. ex. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Emplacement',
+    'field_open_in_new_tab' => 'Ouvrir dans un nouvel onglet',
+    'field_enabled' => 'Activé',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Créer un lien',
+    'modal_edit_title' => 'Modifier le lien',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Supprimer le lien',
+    'confirm_delete_message' => 'Voulez-vous vraiment supprimer le lien « :label » ? Cette action est irréversible.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Lien créé avec succès.',
+    'updated' => 'Lien mis à jour avec succès.',
+    'deleted' => 'Lien supprimé avec succès.',
+    'reordered' => 'Liens réordonnés avec succès.',
+    'error_load' => 'Échec du chargement des liens.',
+    'error_save' => 'Échec de l’enregistrement du lien.',
+    'error_delete' => 'Échec de la suppression du lien.',
+    'error_reorder' => 'Échec de la réorganisation des liens.',
 ];

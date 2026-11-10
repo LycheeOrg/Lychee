@@ -16,6 +16,14 @@ const ModerationService = {
 		return axios.post(`${Constants.getApiUrl()}Moderation::approve`, { photo_ids });
 	},
 
+	history(page: number, per_page: number = 30): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedModerationHistoryResource>> {
+		return axios.get(`${Constants.getApiUrl()}Moderation::history`, { params: { page, per_page }, data: {} });
+	},
+
+	photoHistory(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.ModerationEventResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Moderation::photoHistory`, { params: { photo_id }, data: {} });
+	},
+
 	getPhoto(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
 		return axios.get(`${Constants.getApiUrl()}Moderation::photo`, { params: { photo_id }, data: {} });
 	},

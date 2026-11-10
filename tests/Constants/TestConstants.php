@@ -21,6 +21,7 @@ class TestConstants
 	public const MIME_TYPE_IMG_XCF = 'image/x-xcf';
 	public const MIME_TYPE_IMG_HEIC = 'image/heic';
 	public const MIME_TYPE_IMG_HEIF = 'image/heif';
+	public const MIME_TYPE_IMG_JXL = 'image/jxl';
 	public const MIME_TYPE_VID_MP4 = 'video/mp4';
 	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
 	public const MIME_TYPE_APP_ZIP = 'application/zip';
@@ -38,6 +39,9 @@ class TestConstants
 	public const SAMPLE_FILE_GIF = 'tests/Samples/gif.gif';
 	public const SAMPLE_FILE_GMP_BROKEN_IMAGE = 'tests/Samples/google_motion_photo_broken.jpg';
 	public const SAMPLE_FILE_GMP_IMAGE = 'tests/Samples/google_motion_photo.jpg';
+	public const SAMPLE_FILE_GMP_PIXEL_IMAGE = 'tests/Samples/google_motion_photo_pixel.jpg';
+	public const SAMPLE_FILE_GMP_ULTRAHDR_IMAGE = 'tests/Samples/google_motion_photo_ultrahdr.jpg';
+	public const SAMPLE_FILE_GMP_V1_IMAGE = 'tests/Samples/google_motion_photo_v1.jpg';
 	public const SAMPLE_FILE_HOCHUFERWEG = 'tests/Samples/hochuferweg.jpg';
 	public const SAMPLE_FILE_MONGOLIA_IMAGE = 'tests/Samples/mongolia.jpeg';
 	public const SAMPLE_FILE_NIGHT_IMAGE = 'tests/Samples/night.jpg';
@@ -55,6 +59,7 @@ class TestConstants
 	public const SAMPLE_FILE_PDF_MANY_LEGIT_MEDIABOX = 'tests/Samples/pdf_many_legit_mediabox.pdf';
 	public const SAMPLE_FILE_PNG = 'tests/Samples/png.png';
 	public const SAMPLE_FILE_SUNSET_IMAGE = 'tests/Samples/fin de journée.jpg';
+	public const SAMPLE_FILE_JXL = 'tests/Samples/jxl.jxl';
 	public const SAMPLE_FILE_TIFF = 'tests/Samples/tiff.tif';
 	public const SAMPLE_FILE_TRAIN_IMAGE = 'tests/Samples/train.jpg';
 	public const SAMPLE_FILE_TRAIN_VIDEO = 'tests/Samples/train.mov';
@@ -74,6 +79,9 @@ class TestConstants
 		self::SAMPLE_FILE_GIF => self::MIME_TYPE_IMG_GIF,
 		self::SAMPLE_FILE_GMP_BROKEN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_GMP_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_PIXEL_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_ULTRAHDR_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_GMP_V1_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_HOCHUFERWEG => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_MONGOLIA_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_NIGHT_IMAGE => self::MIME_TYPE_IMG_JPEG,
@@ -91,6 +99,7 @@ class TestConstants
 		self::SAMPLE_FILE_PDF_MANY_LEGIT_MEDIABOX => self::MIME_TYPE_APP_PDF,
 		self::SAMPLE_FILE_PNG => self::MIME_TYPE_IMG_PNG,
 		self::SAMPLE_FILE_SUNSET_IMAGE => self::MIME_TYPE_IMG_JPEG,
+		self::SAMPLE_FILE_JXL => self::MIME_TYPE_IMG_JXL,
 		self::SAMPLE_FILE_TIFF => self::MIME_TYPE_IMG_TIFF,
 		self::SAMPLE_FILE_TRAIN_IMAGE => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_TRAIN_VIDEO => self::MIME_TYPE_VID_QUICKTIME,

@@ -92,7 +92,7 @@ export function usePaypal(toast: ToastLike) {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 	async function onApprove(data: any, _actions: any) {
 		try {
 			WebshopService.Checkout.completePayment(data.orderID, "PayPal")
@@ -115,7 +115,7 @@ export function usePaypal(toast: ToastLike) {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 	async function onCancel(data: any) {
 		WebshopService.Checkout.cancelPayment(data.orderID)
 			.then((response) => {

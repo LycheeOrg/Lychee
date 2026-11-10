@@ -103,7 +103,7 @@ formatting: rector
 		echo "  composer install"; \
 		echo ""; \
 	fi
-	npm run format
+	node_modules/.bin/vp fmt
 
 rector:
 	 vendor/bin/rector process

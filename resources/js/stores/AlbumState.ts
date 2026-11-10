@@ -12,9 +12,13 @@ import { useUserStore } from "./UserState";
 import { computeBucketBoundaries, type AlbumBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
 import { adaptAlbumChildTile, combineAlbumChildRights, isRegularAlbumParentOwner, DEFAULT_ALBUM_CHILD_RIGHTS } from "@/v8/utils/adaptAlbumChildTile";
 import PhotoChildrenV3Service, { type PhotoBucketResource } from "@/services/photo-children-v3-service";
-import { adaptPhotoTile, mergePhotoDetail } from "@/v8/utils/adaptPhotoTile";
+import { adaptPhotoTile, linkNeighbours, mergePhotoDetail, tileIndexById } from "@/v8/utils/adaptPhotoTile";
+import { createDetailRequests } from "@/utils/detailRequests";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
+
+/** In-flight tier-3 requests of album photos (FR-103-08). */
+const albumDetailRequests = createDetailRequests();
 
 export const useAlbumStore = defineStore("album-store", {
 	state: () => ({
@@ -390,11 +394,12 @@ export const useAlbumStore = defineStore("album-store", {
 
 					const lycheeStore = useLycheeStateStore();
 					const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, requestedAlbumId, lycheeStore));
-					photosState.setPhotos(tiles, false);
 					// next_photo_id/previous_photo_id are derived purely
 					// client-side from array order (FR-065-15), never from a
-					// backend field — neither tier ever carries one.
-					photosState.rebuildNavigationLinks();
+					// backend field — neither tier ever carries one. Set on the
+					// plain tiles before the store holds them (FR-103-03).
+					linkNeighbours(tiles);
+					photosState.setPhotos(tiles, false);
 
 					this.photos_current_page = 1;
 					this.photos_last_page = 1;
@@ -428,48 +433,51 @@ export const useAlbumStore = defineStore("album-store", {
 		 * more than a handful of ids at a time in this feature (NFR-065-04);
 		 * defensively chunks at Feature 064's own 300-id input cap regardless.
 		 */
-		async loadPhotoDetails(ids: string[]): Promise<void> {
+		async loadPhotoDetails(ids: string[]): Promise<boolean> {
 			const photosState = usePhotosStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
-				return;
+				return true;
 			}
 
 			const requestedAlbumId = this.albumId;
-			const idsToFetch = [...new Set(ids)].filter((id) => !this.photoDetailsResolvedIds[id] && photosState.photos.some((p) => p.id === id));
+			const indexById = tileIndexById(photosState.photos);
 
-			if (idsToFetch.length === 0) {
-				return;
-			}
+			// Ids already merged or in flight are not requested again; resolves
+			// false when a request carrying one of `ids` failed (FR-103-07/08).
+			return albumDetailRequests.load(
+				ids.filter((id) => indexById.has(id)),
+				(id) => this.photoDetailsResolvedIds[id] === true,
+				async (idsToFetch) => {
+					const CHUNK_SIZE = 300;
+					const chunks: string[][] = [];
+					for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
+						chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
+					}
 
-			const CHUNK_SIZE = 300;
-			const chunks: string[][] = [];
-			for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
-				chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
-			}
+					const responses = await Promise.all(
+						chunks.map((chunk) => PhotoChildrenV3Service.getDetails(requestedAlbumId, { photoIds: chunk })),
+					);
 
-			try {
-				const responses = await Promise.all(chunks.map((chunk) => PhotoChildrenV3Service.getDetails(requestedAlbumId, { photoIds: chunk })));
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
 
-				if (this.albumId !== requestedAlbumId) {
-					return;
-				}
-
-				for (const response of responses) {
-					const detail = response.data;
-					for (let i = 0; i < detail.ids.length; i++) {
-						const photo = photosState.photos.find((p) => p.id === detail.ids[i]);
-						if (photo !== undefined) {
-							mergePhotoDetail(photo, detail, i);
+					const indexAfter = tileIndexById(photosState.photos);
+					for (const response of responses) {
+						const detail = response.data;
+						for (let i = 0; i < detail.ids.length; i++) {
+							const index = indexAfter.get(detail.ids[i]);
+							if (index !== undefined) {
+								mergePhotoDetail(photosState.photos[index], detail, i);
+							}
 						}
 					}
-				}
-				for (const id of idsToFetch) {
-					this.photoDetailsResolvedIds[id] = true;
-				}
-			} catch (error) {
-				console.error(error);
-			}
+					for (const id of idsToFetch) {
+						this.photoDetailsResolvedIds[id] = true;
+					}
+				},
+			);
 		},
 
 		/**

@@ -14,9 +14,11 @@ const MapView = () => import("@/v8/views/gallery-panels/Map.vue");
 const Diagnostics = () => import("@/v8/views/Diagnostics.vue");
 const FaceMaintenance = () => import("@/v8/views/face-recog/FaceMaintenance.vue");
 const NsfwConfig = () => import("@/v8/views/admin/NsfwConfig.vue");
+const NsfwFindings = () => import("@/v8/views/admin/NsfwFindings.vue");
 const DesignSystem = () => import("@/v8/views/admin/DesignSystem.vue");
 const WatermarkPreview = () => import("@/v8/views/admin/WatermarkPreview.vue");
 const LandingConfig = () => import("@/v8/views/admin/LandingConfig.vue");
+const GallerySizes = () => import("@/v8/views/admin/GallerySizes.vue");
 const Settings = () => import("@/v8/views/admin/Settings.vue");
 const Sharing = () => import("@/v8/views/Sharing.vue");
 const Users = () => import("@/v8/views/admin/Users.vue");
@@ -33,12 +35,13 @@ const OrderDownload = () => import("@/v8/views/webshop/OrderDownload.vue");
 const People = () => import("@/v8/views/face-recog/People.vue");
 const PersonDetail = () => import("@/v8/views/face-recog/PersonDetail.vue");
 const FaceClusters = () => import("@/v8/views/face-recog/FaceClusters.vue");
+const FaceQuickNaming = () => import("@/v8/views/face-recog/FaceQuickNaming.vue");
 const Permissions = () => import("@/v8/views/Permissions.vue");
 const Profile = () => import("@/v8/views/Profile.vue");
 const TagsManagement = () => import("@/v8/views/TagsManagement.vue");
 const Contact = () => import("@/v8/views/Contact.vue");
 const ChangeLogs = () => import("@/v8/views/ChangeLogs.vue");
-const Statistics = () => import("@/v8/views/Statistics.vue");
+const Insights = () => import("@/v8/views/Insights.vue");
 const Favourites = () => import("@/v8/views/gallery-panels/Favourites.vue");
 const Flow = () => import("@/v8/views/gallery-panels/Flow.vue");
 const Frame = () => import("@/v8/views/gallery-panels/Frame.vue");
@@ -58,7 +61,7 @@ const DuplicatesFinder = () => import("@/v8/views/DuplicatesFinder.vue");
  * Routes not yet migrated fall back to Placeholder;
  * each build-out task replaces its own entries here as it lands.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const componentByName: Record<string, any> = {
 	landing: Landing,
 	"admin-setup": AdminSetupPage,
@@ -73,9 +76,11 @@ const componentByName: Record<string, any> = {
 	diagnostics: Diagnostics,
 	"face-maintenance": FaceMaintenance,
 	"nsfw-config": NsfwConfig,
+	"nsfw-findings": NsfwFindings,
 	"design-system": DesignSystem,
 	"watermark-preview": WatermarkPreview,
 	"landing-config": LandingConfig,
+	"gallery-sizes": GallerySizes,
 	settings: Settings,
 	sharing: Sharing,
 	users: Users,
@@ -91,13 +96,14 @@ const componentByName: Record<string, any> = {
 	order: OrderDownload,
 	people: People,
 	"face-clusters": FaceClusters,
+	"face-quick-naming": FaceQuickNaming,
 	person: PersonDetail,
 	permissions: Permissions,
 	profile: Profile,
 	tags: TagsManagement,
 	contact: Contact,
 	changelogs: ChangeLogs,
-	statistics: Statistics,
+	insights: Insights,
 	favourites: Favourites,
 	flow: Flow,
 	frame: Frame,

@@ -13,6 +13,7 @@
 
 namespace Tests\AssistedVision\NsfwClassification;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Events\AlbumSaved;
 use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\BaseAlbumImpl;
@@ -61,6 +62,7 @@ class ApplyNsfwAlbumSensitivityJobTest extends BaseApiWithDataTest
 	public function testSkipsAlbumAlreadyMarkedNsfw(): void
 	{
 		BaseAlbumImpl::where('id', $this->album1->id)->update(['is_nsfw' => true]);
+		(new SyncRecursiveNsfw())->do();
 
 		$job = new ApplyNsfwAlbumSensitivityJob([$this->album1->id]);
 		$job->handle();

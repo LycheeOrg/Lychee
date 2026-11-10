@@ -70,28 +70,39 @@ return [
     ],
     'old-orders' => [
         'title' => 'Alte Bestellungen',
-        'description' => 'Es wurden %d alte Bestellungen gefunden.<br/><br/>Als „alt“ gelten Bestellungen, die älter als 14 Tage sind, keinem Benutzer zugeordnet wurden und entweder noch auf die Zahlung warten oder keine Artikel enthalten.',
+        'description' => 'Es wurden %d alte Bestellungen gefunden.<br/>Als „alt“ gelten Bestellungen, die älter als 14 Tage sind, keinem Benutzer zugeordnet wurden und entweder noch auf die Zahlung warten oder keine Artikel enthalten.',
         'button' => 'Alte Bestellungen löschen',
     ],
     'fulfill-orders' => [
         'title' => 'Offene Bestellungen',
-        'description' => 'Es wurden %d Bestellungen gefunden, deren Inhalte noch nicht bereitgestellt wurden.<br/><br/>Klicken Sie auf die Schaltfläche, um Inhalte zuzuweisen, sofern möglich.',
+        'description' => 'Es wurden %d Bestellungen gefunden, deren Inhalte noch nicht bereitgestellt wurden.<br/>Klicken Sie auf die Schaltfläche, um Inhalte zuzuweisen, sofern möglich.',
         'button' => 'Bestellungen abwickeln',
     ],
     'fulfill-precompute' => [
         'title' => 'Vorberechnete Album-Felder',
-        'description' => 'Es wurden %d Alben mit fehlenden vorberechneten Feldern gefunden.<br/><br/>Entspricht dem Befehl: php artisan lychee:recompute-album-fields',
+        'description' => 'Es wurden %d Alben mit fehlenden vorberechneten Feldern gefunden.<br/>Entspricht dem Befehl: php artisan lychee:recompute-album-stats',
         'button' => 'Felder berechnen',
     ],
     'flush-queue' => [
         'title' => 'Warteschlange leeren',
-        'description' => 'Es befinden sich %d ausstehende Aufträge in der Warteschlange.<br/><br/>VORSICHT: Das Leeren der Warteschlange löscht alle ausstehenden Aufträge dauerhaft. Dies kann nicht rückgängig gemacht werden.',
+        'description' => 'Es befinden sich %d ausstehende Aufträge in der Warteschlange.<br/>VORSICHT: Das Leeren der Warteschlange löscht alle ausstehenden Aufträge dauerhaft. Dies kann nicht rückgängig gemacht werden.',
         'button' => 'Warteschlange leeren',
     ],
     'backfill-album-sizes' => [
         'title' => 'Album-Größenstatistik',
-        'description' => 'Es wurden %d Alben ohne Größenstatistik gefunden.<br/><br/>Entspricht dem Befehl: php artisan lychee:recompute-album-sizes',
+        'description' => 'Es wurden %d Alben ohne Größenstatistik gefunden.<br/>Entspricht dem Befehl: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'Berechnet die Größenstatistik aller Alben im Hintergrund neu.<br/>Entspricht dem Befehl: php artisan lychee:recompute-album-sizes',
         'button' => 'Größen berechnen',
+    ],
+    'recompute-buckets' => [
+        'title' => 'Zeitstrahl-Gruppen',
+        'description' => 'Berechnet die Zeitstrahl-Gruppe jedes Albums und jedes Fotos neu und aktualisiert danach die Album- und Fotolisten.<br/>Entspricht dem Befehl: php artisan lychee:recompute-buckets',
+        'button' => 'Neu berechnen',
+    ],
+    'recompute-taken-at-range' => [
+        'title' => 'Aufnahmezeiträume der Alben',
+        'description' => 'Es wurden %d Alben gefunden, deren Aufnahmezeitraum nicht zu ihren Fotos passt.<br/>Nach Aufnahmedatum sortierte Alben stehen an der falschen Stelle, bis sie neu berechnet werden.',
+        'button' => 'Zeiträume neu berechnen',
     ],
     'face_quality' => [
         'title' => 'Überprüfung der Bildqualität',
@@ -102,7 +113,7 @@ return [
         'no_faces' => 'Keine verdächtigen Gesichter. Alles sieht gut aus!',
         'col_face' => 'Macht',
         'col_person' => 'Person',
-        'col_cluster' => 'Cluster',
+        'col_cluster' => 'Gruppe',
         'col_confidence' => 'Selbstvertrauen',
         'col_blur' => 'Unschärfe-Wert',
         'col_actions' => 'Maßnahmen',
@@ -128,7 +139,7 @@ return [
         'selected_count' => ':Anzahl der ausgewählten Elemente',
     ],
     'bulk-scan-faces' => [
-        'description' => 'Es wurden %d Fotos gefunden, die noch nicht zur Gesichtserkennung gescannt wurden.<br/><br/>Hierfür muss der AI Vision-Dienst ausgeführt werden.',
+        'description' => 'Es wurden %d Fotos gefunden, die noch nicht zur Gesichtserkennung gescannt wurden.<br/>Hierfür muss der AI Vision-Dienst ausgeführt werden.',
     ],
     'run-clustering' => [
         'description' => 'Lösen Sie die Gesichtsgruppierung im AI Vision-Dienst aus. Die erkannten Gesichter werden nach Ähnlichkeit gruppiert, sodass Sie sie bestimmten Personen zuordnen können.',
@@ -153,10 +164,10 @@ return [
         'success' => 'Die Status der Gesichtsscans wurden erfolgreich zurückgesetzt.',
     ],
     'purge-orphan-face-embeddings' => [
-        'title' => 'Purge Orphan Face Embeddings',
-        'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
-        'action' => 'Purge Now',
-        'success' => 'Orphaned face embeddings purged successfully.',
+        'title' => 'Verwaiste Gesichts-Embeddings bereinigen',
+        'description' => 'Der AI Vision-Dienst enthält möglicherweise bis zu %d Embedding(s), die in Lychee nicht mehr existieren. Beim Bereinigen wird die aktuelle Liste der Gesichter an AI Vision übertragen und alles Übrige endgültig gelöscht.',
+        'action' => 'Jetzt bereinigen',
+        'success' => 'Verwaiste Gesichts-Embeddings erfolgreich bereinigt.',
     ],
     'bulk-scan-nsfw' => [
         'title' => 'NSFW-Massen-Scan',

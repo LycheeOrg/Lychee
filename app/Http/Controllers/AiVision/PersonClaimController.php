@@ -81,7 +81,7 @@ class PersonClaimController extends Controller
 	public function merge(MergePersonRequest $request, string $id): PersonResource
 	{
 		$target = Person::findOrFail($id);
-		$source = Person::findOrFail($request->sourcePersonId());
+		$source = $request->sourcePerson();
 
 		// Reassign all faces from source to target
 		Face::where('person_id', '=', $source->id)->update(['person_id' => $target->id]);
@@ -89,7 +89,7 @@ class PersonClaimController extends Controller
 		// Delete source person
 		$source->delete();
 
-		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
+		// Recount denormalized counters after the bulk update.
 		$target->face_count = Face::where('person_id', '=', $target->id)->where('is_dismissed', '=', false)->count();
 		$target->photo_count = Face::where('person_id', '=', $target->id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
 		$target->save();

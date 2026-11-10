@@ -11,7 +11,6 @@ namespace Tests\Precomputing\CoverSelection;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
-use App\Enum\TimelineAlbumGranularity;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Models\Album;
@@ -20,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
- * Test RecomputeChildAlbumBucketsJob (Feature 061, FR-061-03).
+ * Test RecomputeChildAlbumBucketsJob (FR-092-04, FR-092-12, FR-092-14).
  */
 class RecomputeChildAlbumBucketsJobTest extends BasePrecomputingTest
 {
@@ -43,25 +42,45 @@ class RecomputeChildAlbumBucketsJobTest extends BasePrecomputingTest
 		return $ids;
 	}
 
-	public function testAlbumTimelineChangeRecomputesAllDirectChildren(): void
+	public function testParentSortColumnChangeRecomputesAllDirectChildren(): void
 	{
+		DB::table('configs')->where('key', '=', 'title_bucket_mode')->update(['value' => 'date_prefix']);
 		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
 		$user = User::factory()->create();
 		$parent = Album::factory()->as_root()->owned_by($user)->create();
 		$child_ids = $this->makeThreeChildren($user, $parent);
+		DB::table('base_albums')->whereIn('id', $child_ids)->update(['title' => '2022-07 Vacation']);
 
 		foreach ($child_ids as $id) {
-			$this->assertSame(Album::find($id)->created_at->format('Y'), Album::find($id)->bucket_id);
+			$this->assertSame(Album::find($id)->created_at->copy()->utc()->format('Y-m-d'), Album::find($id)->bucket_key);
 		}
 
-		$parent->album_timeline = TimelineAlbumGranularity::MONTH;
+		$parent->album_sorting = new AlbumSortingCriterion(ColumnSortingType::TITLE, OrderSortingType::ASC);
 		$parent->save();
 
 		(new RecomputeChildAlbumBucketsJob($parent->id))->handle();
 
 		foreach ($child_ids as $id) {
-			$child = Album::find($id);
-			$this->assertSame($child->created_at->format('Y-m'), $child->bucket_id);
+			$this->assertSame('2022-07-01', Album::find($id)->bucket_key);
+		}
+	}
+
+	/**
+	 * Only the parent's effective sort column decides the key: a parent
+	 * without both column and order follows the instance default.
+	 */
+	public function testParentWithoutOrderFollowsInstanceDefault(): void
+	{
+		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
+		$user = User::factory()->create();
+		$parent = Album::factory()->as_root()->owned_by($user)->create();
+		$child_ids = $this->makeThreeChildren($user, $parent);
+		DB::table('albums')->where('id', '=', $parent->id)->update(['album_sorting_col' => 'owner_id', 'album_sorting_order' => null]);
+
+		(new RecomputeChildAlbumBucketsJob($parent->id))->handle();
+
+		foreach ($child_ids as $id) {
+			$this->assertSame(Album::find($id)->created_at->copy()->utc()->format('Y-m-d'), Album::find($id)->bucket_key);
 		}
 	}
 
@@ -78,7 +97,7 @@ class RecomputeChildAlbumBucketsJobTest extends BasePrecomputingTest
 		(new RecomputeChildAlbumBucketsJob($parent->id))->handle();
 
 		foreach ($child_ids as $id) {
-			$this->assertNull(Album::find($id)->bucket_id);
+			$this->assertNull(Album::find($id)->bucket_key);
 		}
 	}
 
@@ -99,9 +118,6 @@ class RecomputeChildAlbumBucketsJobTest extends BasePrecomputingTest
 		$user = User::factory()->create();
 		$parent = Album::factory()->as_root()->owned_by($user)->create();
 		$this->makeThreeChildren($user, $parent);
-
-		$parent->album_timeline = TimelineAlbumGranularity::MONTH;
-		$parent->save();
 
 		DB::flushQueryLog();
 		DB::enableQueryLog();

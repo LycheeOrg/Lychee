@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Ετικέτες',
+    'description' => 'Διαχειριστείτε τις ετικέτες σας εδώ. Μπορείτε να μετονομάσετε, να συγχωνεύσετε και να διαγράψετε ετικέτες.',
+    'no_tags' => 'Δεν βρέθηκαν ετικέτες.',
+    'loading' => 'Φόρτωση ετικετών...',
+    'rename' => 'Μετονομασία',
+    'merge' => 'Συγχώνευση',
+    'delete' => 'Διαγραφή',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Όνομα',
+    'column_photos' => 'Φωτογραφίες',
+    'column_albums' => 'Άλμπουμ',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε την ετικέτα “%s”;',
+    'delete_confirm_multiple' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτές τις %d ετικέτες;',
+    'delete_warning' => 'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί! Όλες οι φωτογραφίες που σχετίζονται με αυτή την ετικέτα δεν θα την έχουν πλέον.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Είστε βέβαιοι ότι θέλετε να συγχωνεύσετε την ετικέτα “%1$s” στην ετικέτα “%2$s”;',
+    'merge_warning' => 'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί! Όλες οι φωτογραφίες που σχετίζονται με την ετικέτα προέλευσης θα μεταφερθούν στην ετικέτα προορισμού.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Μετονομασία ετικέτας',
 ];

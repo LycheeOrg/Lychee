@@ -577,6 +577,8 @@ function saveAlbum() {
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
 		cover_id: cover_id.value?.id ?? null,
 		is_compact: header_id.value?.id === "compact",
+		// v7 has no map header (Feature 086): saving replaces one.
+		is_map_header: false,
 		photo_layout: photoLayout.value?.value ?? null,
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,

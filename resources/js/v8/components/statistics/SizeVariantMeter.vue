@@ -33,6 +33,11 @@ import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
+const props = defineProps<{
+	/** Album to measure; when absent, the current album of the album store. */
+	albumId?: string | null;
+}>();
+
 const { sizeToUnit, sizeVariantToColour } = useSizeVariantStats();
 
 type SizeVariantData = {
@@ -51,7 +56,7 @@ const sizeVariantSpaceMeter = ref<SizeVariantData[] | undefined>(undefined);
 const { is_se_preview_enabled } = storeToRefs(lycheeStore);
 
 function loadSizeVariantSpace() {
-	StatisticsService.getSizeVariantSpace(albumStore.albumId).then((response) => {
+	StatisticsService.getSizeVariantSpace(props.albumId !== undefined ? props.albumId : albumStore.albumId).then((response) => {
 		sizeVariantSpace.value = response.data;
 		prepSizeVariantData();
 	});

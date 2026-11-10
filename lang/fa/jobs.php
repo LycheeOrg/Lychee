@@ -12,8 +12,8 @@ return [
     'success' => 'موفق',
     'failure' => 'ناموفق',
     'started' => 'شروع شده',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'col_date' => 'تاریخ',
+    'col_status' => 'وضعیت',
+    'col_username' => 'کاربر',
+    'col_job' => 'وظیفه',
 ];

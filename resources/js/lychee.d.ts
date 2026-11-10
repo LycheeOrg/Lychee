@@ -50,12 +50,21 @@ declare namespace App {
 		export type AlbumTitleColor = "white" | "black" | "colour_1" | "colour_2" | "colour_3" | "colour_4" | "colour_5";
 		export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
+		export type AspectRatioGroup = "1:1" | "5:4" | "4:3" | "3:2" | "16:9" | "2:1" | "panorama" | "other";
 		export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 		export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
 		export type ColumnSortingAlbumType = "created_at" | "title" | "min_taken_at" | "max_taken_at";
 		export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
 		export type ColumnSortingType =
-			"owner_id" | "created_at" | "title" | "min_taken_at" | "max_taken_at" | "taken_at" | "is_highlighted" | "type" | "rating_avg";
+			| "owner_id"
+			| "created_at"
+			| "title"
+			| "min_taken_at"
+			| "max_taken_at"
+			| "taken_at"
+			| "is_highlighted"
+			| "type"
+			| "rating_avg";
 		export type ConfigType =
 			| "int"
 			| "positive"
@@ -76,12 +85,18 @@ declare namespace App {
 		export type DateOrderingType = "older_younger" | "younger_older";
 		export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 		export type DefaultAlbumProtectionType = "private" | "public" | "inherit" | "public_hidden";
+		export type DeviceCategory = "camera" | "mobile" | "other";
 		export type DownloadVariantType = "RAW" | "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 		export type FacePermissionMode = "public" | "private" | "privacy-preserving" | "restricted";
+		export type FacePhotoAssetType = "medium" | "small2x" | "small" | "thumb";
 		export type FaceScanStatus = "pending" | "completed" | "failed";
 		export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 		export type FlowStrategy = "auto" | "opt-in";
+		export type FrameBoxPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
+		export type FrameTimeFormat = "24h" | "12h";
+		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
+		export type InsightsPeriodType = "library" | "year" | "range";
 		export type JobStatus = 0 | 1 | 2 | 3;
 		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
 		export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
@@ -132,6 +147,8 @@ declare namespace App {
 		export type MessageType = "info" | "warning" | "error";
 		export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
 		export type MetricsAction = "visit" | "favourite" | "download" | "shared";
+		export type ModerationEvent = "held" | "approved";
+		export type ModerationSource = "upload" | "nsfw_scan" | "admin";
 		export type NsfwBlockFindingAction = "block" | "moderate" | "approve";
 		export type NsfwDetectionLabel =
 			| "FEMALE_GENITALIA_COVERED"
@@ -168,6 +185,7 @@ declare namespace App {
 			| "mastodon"
 			| "microsoft"
 			| "nextcloud"
+			| "pocketid"
 			| "keycloak";
 		export type OgImageAlbumSourceType = "header" | "cover";
 		export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
@@ -189,7 +207,7 @@ declare namespace App {
 		export type ShiftX = "left" | "right";
 		export type ShiftY = "up" | "down";
 		export type SizeVariantAssetType = "small2x" | "small" | "thumb2x" | "thumb" | "placeholder";
-		export type SizeVariantFormat = "original" | "jpeg" | "webp";
+		export type SizeVariantFormat = "original" | "jpeg" | "webp" | "jxl";
 		export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 		export type SmallLargeType = "small" | "large";
 		export type SmartAlbumType =
@@ -210,8 +228,36 @@ declare namespace App {
 			| "timeline";
 		export type StorageDiskType = "images" | "s3";
 		export type ThumbAlbumSubtitleType =
-			"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
+			| "disabled"
+			| "description"
+			| "takedate"
+			| "creation"
+			| "oldstyle"
+			| "num_photos"
+			| "num_albums"
+			| "num_photos_albums";
 		export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
+		export type TimelineCategory = "first_last" | "device" | "milestone" | "record" | "break";
+		export type TimelineEventKind =
+			| "first_capture"
+			| "first_video"
+			| "first_located"
+			| "first_with_people"
+			| "first_highlighted"
+			| "device_first"
+			| "milestone"
+			| "longest_video"
+			| "largest_file"
+			| "highest_iso"
+			| "longest_exposure"
+			| "widest_aperture"
+			| "longest_focal"
+			| "break_start"
+			| "break_end"
+			| "streak_start"
+			| "streak_end"
+			| "device_last"
+			| "last_capture";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 		export type TitleBucketMode = "date_prefix" | "alphabetical";
 		export type UserGroupRole = "member" | "admin";
@@ -320,8 +366,22 @@ declare namespace App {
 					per_page: number;
 					total: number;
 				};
+				export type PaginatedModerationHistoryResource = {
+					events: App.Http.Resources.Models.ModerationEventResource[];
+					current_page: number;
+					last_page: number;
+					per_page: number;
+					total: number;
+				};
 				export type PaginatedModerationResource = {
 					photos: App.Http.Resources.Models.ModerationResource[];
+					current_page: number;
+					last_page: number;
+					per_page: number;
+					total: number;
+				};
+				export type PaginatedNsfwFindingsResource = {
+					photos: App.Http.Resources.Models.NsfwFindingResource[];
 					current_page: number;
 					last_page: number;
 					per_page: number;
@@ -520,10 +580,46 @@ declare namespace App {
 				};
 			}
 			namespace Frame {
+				export type FrameClockData = {
+					is_time_enabled: boolean;
+					time_format: App.Enum.FrameTimeFormat;
+					is_date_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
 				export type FrameData = {
 					timeout: number;
 					src: string;
 					srcset: string;
+					clock: App.Http.Resources.Frame.FrameClockData;
+					info: App.Http.Resources.Frame.FrameInfoData;
+					photo: App.Http.Resources.Frame.FramePhotoData | null;
+				};
+				export type FrameInfoData = {
+					is_title_enabled: boolean;
+					is_albums_enabled: boolean;
+					is_exif_enabled: boolean;
+					is_exif_exposure_enabled: boolean;
+					is_exif_camera_enabled: boolean;
+					is_exif_taken_at_enabled: boolean;
+					position: App.Enum.FrameBoxPosition;
+					background_color: string;
+					background_opacity: number;
+					opacity: number;
+				};
+				export type FramePhotoData = {
+					title: string | null;
+					albums: string[] | null;
+					focal: string | null;
+					aperture: string | null;
+					shutter: string | null;
+					iso: string | null;
+					make: string | null;
+					model: string | null;
+					lens: string | null;
+					taken_at: string | null;
 				};
 			}
 			namespace GalleryConfigs {
@@ -606,6 +702,8 @@ declare namespace App {
 					album_decoration: App.Enum.AlbumDecorationType;
 					album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 					number_albums_per_row_mobile: 1 | 2 | 3;
+					album_thumb_min_width: number;
+					album_thumb_gap: number;
 					photo_thumb_info: App.Enum.PhotoThumbInfoType;
 					is_photo_thumb_tags_enabled: boolean;
 					is_rounded_corners_enabled: boolean;
@@ -621,6 +719,11 @@ declare namespace App {
 					date_format_sidebar_uploaded: string;
 					date_format_sidebar_taken_at: string;
 					date_scrubber_label_format: string;
+					date_scrubber_album_label_format: string;
+					date_scrubber_format_year: string;
+					date_scrubber_format_month: string;
+					date_scrubber_format_day: string;
+					date_scrubber_format_hour: string;
 					album_layout: App.Enum.AlbumLayoutType;
 					is_raw_download_enabled: boolean;
 					is_thumb_download_enabled: boolean;
@@ -651,6 +754,7 @@ declare namespace App {
 					is_basic_auth_enabled: boolean;
 					is_webauthn_enabled: boolean;
 					is_registration_enabled: boolean;
+					is_email_login_enabled: boolean;
 					is_scroll_to_navigate_photos_enabled: boolean;
 					is_swipe_vertically_to_go_back_enabled: boolean;
 					disable_swipe_effect: boolean;
@@ -688,7 +792,6 @@ declare namespace App {
 					is_album_header_landing_title_enabled: boolean;
 					use_admin_dashboard: boolean;
 					is_person_album_enabled: boolean;
-					is_struct_of_array_enabled: boolean;
 					is_cover_id_flag_enabled: boolean;
 					is_header_id_flag_enabled: boolean;
 					is_highlighted_flag_enabled: boolean;
@@ -783,6 +886,8 @@ declare namespace App {
 					is_header_bar_transparent: boolean;
 					is_header_bar_gradient: boolean;
 					shared_albums_visibility_mode: App.Enum.SharedAlbumsVisibility;
+					is_tag_albums_separate_category_enabled: boolean;
+					is_person_albums_separate_category_enabled: boolean;
 				};
 				export type SettingsConfig = {
 					default_old_settings: boolean;
@@ -836,6 +941,161 @@ declare namespace App {
 						workers: string;
 					};
 				}
+			}
+			namespace Insights {
+				export type AspectRatioData = {
+					group: App.Enum.AspectRatioGroup;
+					count: number;
+				};
+				export type BusiestDayData = {
+					date: string;
+					count: number;
+					photo_id: string;
+					thumb_url: string | null;
+				};
+				export type CalendarData = {
+					dates: string[];
+					counts: number[];
+					low: number;
+					medium: number;
+					high: number;
+				};
+				export type CapturePointData = {
+					photo_id: string;
+					taken_at: string;
+					thumb_url: string | null;
+				};
+				export type DeviceEntryData = {
+					name: string | null;
+					category: App.Enum.DeviceCategory;
+					all: number;
+					photos: number;
+					videos: number;
+					highlighted: number;
+					located: number;
+					with_people: number;
+				};
+				export type DeviceFocalData = {
+					name: string | null;
+					category: App.Enum.DeviceCategory;
+					values: number[];
+					counts: number[];
+				};
+				export type DevicesData = {
+					devices: App.Http.Resources.Insights.DeviceEntryData[];
+					manufacturers: App.Http.Resources.Insights.DeviceEntryData[];
+					lenses: App.Http.Resources.Insights.DeviceEntryData[];
+					focal_lengths: App.Http.Resources.Insights.DeviceFocalData[];
+				};
+				export type DimensionsData = {
+					widths: number[];
+					heights: number[];
+					counts: number[];
+					formats: number;
+					with_dimensions: number;
+				};
+				export type DistributionData = {
+					values: number[];
+					counts: number[];
+					total: number;
+					excluded: number;
+					min: number | null;
+					max: number | null;
+					median: number | null;
+					mean: number | null;
+					mode: number | null;
+				};
+				export type ExposureData = {
+					iso: App.Http.Resources.Insights.DistributionData;
+					focal: App.Http.Resources.Insights.DistributionData;
+					shutter: App.Http.Resources.Insights.DistributionData;
+					aperture: App.Http.Resources.Insights.DistributionData;
+					video_length: App.Http.Resources.Insights.DistributionData;
+					total_video_duration: number;
+				};
+				export type FormatsData = {
+					all: App.Http.Resources.Insights.OrientationCountData;
+					photos: App.Http.Resources.Insights.OrientationCountData;
+					videos: App.Http.Resources.Insights.OrientationCountData;
+					aspect_ratios: App.Http.Resources.Insights.AspectRatioData[];
+					dimensions: App.Http.Resources.Insights.DimensionsData;
+				};
+				export type InsightsResource = {
+					years: number[];
+					overview: App.Http.Resources.Insights.OverviewData;
+					storage: App.Http.Resources.Insights.StorageData;
+					people: App.Http.Resources.Insights.PeopleData;
+					places: App.Http.Resources.Insights.PlacesData;
+					time_span: App.Http.Resources.Insights.TimeSpanData;
+					calendar: App.Http.Resources.Insights.CalendarData;
+					rhythm: App.Http.Resources.Insights.RhythmData;
+					devices: App.Http.Resources.Insights.DevicesData;
+					exposure: App.Http.Resources.Insights.ExposureData;
+					formats: App.Http.Resources.Insights.FormatsData;
+					timeline: App.Http.Resources.Insights.TimelineEventData[];
+				};
+				export type OrientationCountData = {
+					portrait: number;
+					landscape: number;
+					square: number;
+					unknown: number;
+				};
+				export type OverviewData = {
+					total: number;
+					photos: number;
+					videos: number;
+					others: number;
+					highlighted: number;
+					albums: number;
+					photos_without_album: number;
+				};
+				export type PeopleData = {
+					has_faces: boolean;
+					photos_with_people: number;
+					people: number;
+					faces: number;
+					faces_per_photo: number | null;
+				};
+				export type PlacesData = {
+					located: number;
+					share: number;
+				};
+				export type RhythmData = {
+					week_hour: number[][];
+					months: number[];
+					weekdays: number[];
+					hours: number[];
+				};
+				export type SpanData = {
+					length: number;
+					from: string;
+					to: string;
+				};
+				export type StorageData = {
+					total_size: number;
+					size_unknown: number;
+					average_photo_size: number | null;
+					average_video_size: number | null;
+				};
+				export type TimeSpanData = {
+					first: App.Http.Resources.Insights.CapturePointData | null;
+					last: App.Http.Resources.Insights.CapturePointData | null;
+					busiest_day: App.Http.Resources.Insights.BusiestDayData | null;
+					days_with_photos: number;
+					calendar_days: number;
+					undated: number;
+					longest_break: App.Http.Resources.Insights.SpanData | null;
+					longest_daily_streak: App.Http.Resources.Insights.SpanData | null;
+					longest_weekly_streak: App.Http.Resources.Insights.SpanData | null;
+				};
+				export type TimelineEventData = {
+					kind: App.Enum.TimelineEventKind;
+					category: App.Enum.TimelineCategory;
+					date: string;
+					subject: string | null;
+					value: number | null;
+					photo_id: string | null;
+				};
 			}
 			namespace Models {
 				export type AccessPermissionResource = {
@@ -1053,6 +1313,17 @@ declare namespace App {
 					title: string;
 					url: string | null;
 				};
+				export type ModerationEventResource = {
+					id: number;
+					photo_id: string;
+					photo_title: string;
+					thumb_url: string | null;
+					owner_username: string;
+					event: App.Enum.ModerationEvent;
+					source: App.Enum.ModerationSource;
+					username: string | null;
+					created_at: string;
+				};
 				export type ModerationResource = {
 					photo_id: string;
 					title: string;
@@ -1075,6 +1346,17 @@ declare namespace App {
 					is_block: boolean;
 					is_review: boolean;
 					is_sensitive: boolean;
+				};
+				export type NsfwFindingResource = {
+					photo_id: string;
+					title: string;
+					thumb_url: string | null;
+					owner_username: string;
+					nsfw_status: string | null;
+					is_validated: boolean;
+					detections: App.Http.Resources.Models.NsfwDetectionResource[];
+					albums: App.Http.Resources.Models.PhotoAlbumResource[];
+					scanned_at: string | null;
 				};
 				export type PanoramaResource = {
 					full_width: number;
@@ -1355,6 +1637,7 @@ declare namespace App {
 						title_color: App.Enum.AlbumTitleColor | null;
 						title_position: App.Enum.AlbumTitlePosition | null;
 						header_photo_focus: App.Http.Resources.Models.Utils.HeaderFocusData | null;
+						is_map_header: boolean;
 					};
 					export type PreformattedPhotoData = {
 						created_at: string;
@@ -1435,6 +1718,7 @@ declare namespace App {
 					is_nsfw_classifier_enabled: boolean;
 					is_face_overlay_enabled: boolean;
 					is_face_recognition_warning_enabled: boolean;
+					can_quick_name_faces: boolean;
 					is_contact_enabled: boolean;
 					messages_count: number;
 					is_design_system_enabled: boolean;
@@ -1654,6 +1938,7 @@ declare namespace App {
 			}
 			namespace Statistics {
 				export type Album = {
+					id: string;
 					username: string;
 					title: string;
 					is_nsfw: boolean;
@@ -1678,11 +1963,6 @@ declare namespace App {
 				export type Sizes = {
 					type: App.Enum.SizeVariantType;
 					label: string;
-					size: number;
-				};
-				export type UserSpace = {
-					id: number;
-					username: string;
 					size: number;
 				};
 			}
@@ -1803,6 +2083,8 @@ declare namespace App {
 					grants_downloads: boolean[];
 					grants_uploads: boolean[];
 					created_ats: string[];
+					min_taken_ats: (string | null)[];
+					max_taken_ats: (string | null)[];
 				};
 				export type AlbumListResource = {
 					ids: string[];
@@ -1826,6 +2108,20 @@ declare namespace App {
 				export type AlbumRootConfigResource = {
 					config: App.Http.Resources.GalleryConfigs.RootConfig;
 					rights: App.Http.Resources.Rights.RootAlbumRightsResource;
+				};
+				export type FaceQueueResource = {
+					ids: string[];
+					photo_ids: string[];
+					xs: number[];
+					ys: number[];
+					widths: number[];
+					heights: number[];
+					crop_urls: (string | null)[];
+					cluster_labels: (number | null)[];
+					suggested_person_ids: (string | null)[];
+					suggested_person_names: (string | null)[];
+					laplacian_variances: number[];
+					is_truncated: boolean;
 				};
 				export type FlowListResource = {
 					ids: string[];
@@ -1866,6 +2162,18 @@ declare namespace App {
 					latitudes: number[];
 					longitudes: number[];
 				};
+				export type MapPointResource = {
+					ids: string[];
+					album_ids: (string | null)[];
+					latitudes: number[];
+					longitudes: number[];
+				};
+				export type PeopleListResource = {
+					ids: string[];
+					names: string[];
+					face_counts: number[];
+					crop_urls: (string | null)[];
+				};
 				export type PhotoBucketResource = {
 					bucket_ids: string[];
 					counts: number[];
@@ -1889,6 +2197,8 @@ declare namespace App {
 					live_photo_urls: (string | null)[];
 					panoramas: (App.Http.Resources.Models.PanoramaResource | null)[];
 					face_counts: number[];
+					is_camera_dates: boolean[];
+					is_taken_at_modifieds: boolean[];
 					palette: (App.Http.Resources.Models.ColourPaletteResource | null)[];
 					size_variants: (App.Http.Resources.Models.SizeVariantsResouce | null)[];
 					statistics: (App.Http.Resources.Models.PhotoStatisticsResource | null)[];
@@ -1899,6 +2209,8 @@ declare namespace App {
 					shutters?: (string | null)[];
 					focals?: (string | null)[];
 					isos?: (string | null)[];
+					durations?: string[];
+					fps?: string[];
 					latitudes?: (number | null)[];
 					longitudes?: (number | null)[];
 					altitudes?: (number | null)[];
@@ -1924,6 +2236,11 @@ declare namespace App {
 					rating_users?: (number | null)[];
 					thumb_infos?: (string | null)[];
 					tags?: string[][];
+				};
+				export type PhotoUrlResource = {
+					ids: string[];
+					grid_urls: (string | null)[];
+					thumb_urls: (string | null)[];
 				};
 				export type SearchPhotoResource = {
 					ids: string[];

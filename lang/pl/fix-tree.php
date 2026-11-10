@@ -20,7 +20,7 @@ return [
         'slowness' => 'W przypadku dużej liczby albumów ta strona będzie działać wolno.',
     ],
     'buttons' => [
-        'reset' => 'Reset',
+        'reset' => 'Resetuj',
         'check' => 'Sprawdź',
         'apply' => 'Zastosuj',
     ],

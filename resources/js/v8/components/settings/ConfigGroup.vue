@@ -218,6 +218,9 @@ const { is_old_style, is_expert_mode, is_debug_enabled } = storeToRefs(lycheeSto
 
 const props = defineProps<{
 	configs: App.Http.Resources.Models.ConfigResource[];
+	// Every config across all categories: a required key may live in another category
+	// (e.g. hide_nsfw_in_frame sits in Mod NSFW but requires mod_frame_enabled from Mod Frame).
+	allConfigs: App.Http.Resources.Models.ConfigResource[];
 	modified: App.Http.Resources.Editable.EditableConfigResource[];
 }>();
 
@@ -264,7 +267,7 @@ function currentValue(key: string): string | undefined {
 		return pending.value ?? undefined;
 	}
 
-	return props.configs.find((c) => c.key === key)?.value;
+	return props.allConfigs.find((c) => c.key === key)?.value;
 }
 
 function isConfigActive(config: App.Http.Resources.Models.ConfigResource): boolean {

@@ -60,6 +60,7 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 		return match ($size_variant_format) {
 			SizeVariantFormat::JPEG => '.jpeg',
 			SizeVariantFormat::WEBP => '.webp',
+			SizeVariantFormat::JXL => '.jxl',
 			default => $this->getExtensionForSizeVariant($size_variant),
 		};
 	}

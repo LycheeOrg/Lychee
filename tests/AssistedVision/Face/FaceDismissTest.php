@@ -15,6 +15,7 @@ namespace Tests\AssistedVision\Face;
 
 use App\Models\Configs;
 use App\Models\Face;
+use App\Models\Person;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -50,11 +51,53 @@ class FaceDismissTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id);
 		$this->assertOk($response);
 		self::assertTrue($response->json('is_dismissed'));
+		self::assertEquals(1, $this->photo1->refresh()->face_count);
 
 		// Toggle back
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id);
 		$this->assertOk($response);
 		self::assertFalse($response->json('is_dismissed'));
+		self::assertEquals(2, $this->photo1->refresh()->face_count);
+	}
+
+	// ── Explicit value (Feature 093, API-093-02, Q-093-12) ─────
+
+	public function testExplicitTrueIsIdempotent(): void
+	{
+		$url = 'Face/' . $this->face1->id;
+		$this->assertOk($this->actingAs($this->userMayUpload1)->patchJson($url, ['is_dismissed' => true]));
+		$response = $this->actingAs($this->userMayUpload1)->patchJson($url, ['is_dismissed' => true]);
+		$this->assertOk($response);
+		self::assertTrue($response->json('is_dismissed'));
+		self::assertTrue(Face::query()->findOrFail($this->face1->id)->is_dismissed);
+	}
+
+	public function testExplicitFalseRestores(): void
+	{
+		$url = 'Face/' . $this->face1->id;
+		$this->assertOk($this->actingAs($this->userMayUpload1)->patchJson($url, ['is_dismissed' => true]));
+		$response = $this->actingAs($this->userMayUpload1)->patchJson($url, ['is_dismissed' => false]);
+		$this->assertOk($response);
+		self::assertFalse($response->json('is_dismissed'));
+		$response = $this->actingAs($this->userMayUpload1)->patchJson($url, ['is_dismissed' => false]);
+		self::assertFalse($response->json('is_dismissed'));
+	}
+
+	public function testExplicitTrueClearsPerson(): void
+	{
+		$person = Person::factory()->create();
+		$this->face1->person_id = $person->id;
+		$this->face1->save();
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id, ['is_dismissed' => true]);
+		$this->assertOk($response);
+		self::assertNull($response->json('person_id'));
+		self::assertNull(Person::query()->find($person->id));
+	}
+
+	public function testNonBooleanValueIsRejected(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Face/' . $this->face1->id, ['is_dismissed' => 'maybe']);
+		$this->assertUnprocessable($response);
 	}
 
 	public function testToggleDismissedByNonOwnerForbidden(): void

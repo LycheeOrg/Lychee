@@ -21,6 +21,15 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-074-02](ADR-074-02-gallery-unlock-encrypted-cookie.md) | Accepted | Gallery unlock stored in an encrypted cookie, not the server-side session |
 | [ADR-074-03](ADR-074-03-password-config-type.md) | Accepted | Write-only `password` config type (hashed on write, masked on read) |
 | [ADR-082-01](ADR-082-01-in-house-webgl2-sphere-renderer.md) | Accepted | In-house TypeScript + WebGL2 sphere renderer for 360° photos |
+| [ADR-089-01](ADR-089-01-moderation-history-event-log.md) | Accepted | Moderation history as an append-only event log |
+| [ADR-089-02](ADR-089-02-nsfw-findings-dismissal-deletes.md) | Accepted | Dismissing an NSFW finding deletes it |
+| [ADR-092-01](ADR-092-01-granularity-free-bucket-keys.md) | Accepted | Granularity-free bucket keys, bucket ids derived at read time |
+| [ADR-092-02](ADR-092-02-capture-local-photo-date-buckets.md) | Accepted | Photo capture dates bucketed in the zone the photo was taken in |
+| [ADR-096-01](ADR-096-01-vite-plus-single-frontend-toolchain.md) | Accepted | Vite+ (`vp`: Vite 8, Oxlint, Oxfmt, `vp staged`) as the single frontend toolchain; `vue-tsc` and the npm bootstrap kept |
+| [ADR-100-01](ADR-100-01-motion-photo-reader-in-php-exif.md) | Accepted | The Google Motion Photo reader (legacy `MicroVideoOffset` and Motion Photo 1.0 `Container:Directory`) lives in `lychee-org/php-exif` (`PHPExif\MotionPhoto`, run by `Reader::read()` for every adapter, result in `MicroVideoOffset`) |
+| [ADR-101-01](ADR-101-01-docker-imagemagick-jxl.md) | Accepted | Docker image ships ImageMagick 7 built against libjxl (pinned, source-built unless a trixie package with JXL exists); JXL smoke test in the Docker workflow |
+| [ADR-103-01](ADR-103-01-stored-recursive-nsfw-flag.md) | Accepted | Stored recursive NSFW flag on albums (`albums.is_recursive_nsfw`), written explicitly; no-origin sensitivity checks read it |
+| [ADR-110-01](ADR-110-01-album-tile-min-width.md) | Accepted | v8 album tiles sized by a minimum CSS px width (`album_thumb_min_width`), covers chosen by screen density (`Thumb.vue` FR-102-06 rule) |
 
 ## Templates
 

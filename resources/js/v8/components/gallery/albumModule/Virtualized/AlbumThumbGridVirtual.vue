@@ -9,10 +9,10 @@
 			     page/window's own scroll, not a nested scroll container. -->
 			<div
 				v-if="activeHeaderLabel !== null"
-				class="sticky top-(--ui-header-height) z-10 pointer-events-none"
+				class="sticky top-(--ui-header-height) z-10 pointer-events-none -mx-4 sm:-mx-6"
 				:style="{ height: `${HEADER_ROW_HEIGHT}px`, marginBottom: `-${HEADER_ROW_HEIGHT}px` }"
 			>
-				<div class="w-full h-full flex items-center font-semibold text-toned text-lg bg-default/50 backdrop-blur">
+				<div class="w-full h-full flex items-center px-4 sm:px-6 font-semibold text-toned text-lg bg-default/50 backdrop-blur">
 					{{ activeHeaderLabel }}
 				</div>
 			</div>
@@ -93,6 +93,7 @@ import { useAlbumTileWidth } from "@/v8/composables/album/albumTileWidth";
 import { buildVirtualAlbumRows, HEADER_ROW_HEIGHT, type VirtualTileRow } from "@/v8/composables/album/virtualAlbumRows";
 import { filterBucketedTiles } from "@/v8/utils/albumBucketBoundaries";
 import { aspectRatioCssToNumber } from "@/v8/utils/aspectRatioNumber";
+import { useAlbumThumbAspectRatio } from "@/v8/composables/gallerySizes/gallerySizesLive";
 import { resolveCssLengthPx } from "@/v8/utils/resolveCssLengthPx";
 import AlbumThumbVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumThumbVirtual.vue";
 import type { AdaptedAlbumTile } from "@/v8/utils/adaptAlbumChildTile";
@@ -120,7 +121,7 @@ const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const containerRef = ref<HTMLElement>();
-const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth();
+const { tileWidth, itemsPerRow, gap } = useAlbumTileWidth(true);
 
 // Document-relative top of this component's own root element — reactive to
 // both scroll (viewportTop and window.scrollY move in lockstep, so their
@@ -137,7 +138,9 @@ const scrollMargin = computed(() => viewportTop.value + window.scrollY);
 // activeHeaderLabel below needs to account for.
 const uiHeaderHeightPx = resolveCssLengthPx("var(--ui-header-height)");
 
-const aspectRatioNumber = computed(() => aspectRatioCssToNumber(albumStore.config?.album_thumb_css_aspect_ratio));
+// The open album's ratio, or the live drawer's default while it is open (Feature 110).
+const childAspectRatio = useAlbumThumbAspectRatio("album");
+const aspectRatioNumber = computed(() => aspectRatioCssToNumber(childAspectRatio.value));
 
 // Single unbucketed section when tier 1 isn't bucketable, the
 // count-mismatch fallback fires (boundariesV3 === null), or the album's own

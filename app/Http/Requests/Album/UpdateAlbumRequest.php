@@ -92,6 +92,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasPublishedAtTrait;
 
 	private bool $tags_provided = false;
+	private bool $is_map_header = false;
 	private ?Photo $cover_photo = null;
 
 	/**
@@ -112,6 +113,14 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	public function tagsProvided(): bool
 	{
 		return $this->tags_provided;
+	}
+
+	/**
+	 * Whether the album header shall be the map of its photos (Feature 086).
+	 */
+	public function is_map_header(): bool
+	{
+		return $this->is_map_header;
 	}
 
 	public function authorize(): bool
@@ -167,6 +176,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => ['required', 'boolean', 'declined_if:' . RequestAttribute::IS_COMPACT_ATTRIBUTE . ',true'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
@@ -212,7 +222,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			null :
 			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
-		$album_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
+		$album_column = ColumnSortingAlbumType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
 		$album_order = OrderSortingType::tryFrom($values[RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE]);
 
 		$this->album_sorting_criterion = $album_column === null ?
@@ -246,7 +256,9 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$cover_id = $values[RequestAttribute::COVER_ID_ATTRIBUTE];
 		$this->cover_photo = $cover_id !== null ? Photo::query()->findOrFail($cover_id) : null;
 
-		if ($this->is_compact) {
+		$this->is_map_header = static::toBoolean($values[RequestAttribute::IS_MAP_HEADER_ATTRIBUTE]);
+
+		if ($this->is_compact || $this->is_map_header) {
 			return;
 		}
 

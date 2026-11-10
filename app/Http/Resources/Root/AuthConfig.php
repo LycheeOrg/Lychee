@@ -9,7 +9,7 @@
 namespace App\Http\Resources\Root;
 
 use App\Enum\OauthProvidersType;
-use Laragear\WebAuthn\Models\WebAuthnCredential;
+use App\Models\WebAuthnCredential;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 

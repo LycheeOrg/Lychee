@@ -58,6 +58,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
 		album_view_mode: "grid" as App.Enum.AlbumLayoutType,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
+		// Feature 110 (FR-110-02): v8 album tile minimum width in CSS px.
+		album_thumb_min_width: 175,
+		// Feature 110 (FR-110-16): gap between v8 album tiles in CSS px from 768 px wide.
+		album_thumb_gap: 16,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
 		is_rounded_corners_enabled: true,
@@ -73,6 +77,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		date_format_sidebar_uploaded: "M j, Y, g:i:s A e",
 		date_format_sidebar_taken_at: "M j, Y, g:i:s A e",
 		date_scrubber_label_format: "j M Y",
+		date_scrubber_album_label_format: "j M Y",
+		date_scrubber_format_year: "Y",
+		date_scrubber_format_month: "M",
+		date_scrubber_format_day: "d/m",
+		date_scrubber_format_hour: "H:00",
 
 		// Enhanced Album Display
 		is_album_enhanced_display_enabled: false,
@@ -80,6 +89,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_album_header_landing_title_enabled: false,
 
 		use_admin_dashboard: true,
+		// v3 struct-of-arrays listing path of the shared stores: set to true by
+		// `app-v8.ts` at boot, never by v7, which stays on v2 (Feature 109, FR-109-05).
 		is_struct_of_array_enabled: false,
 
 		// Download settings
@@ -135,6 +146,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Registration settings
 		is_registration_enabled: false,
+		is_email_login_enabled: false,
 
 		// Gesture settings
 		is_scroll_to_navigate_photos_enabled: true,
@@ -175,6 +187,20 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_sensitive_flag_enabled: true,
 	}),
 	actions: {
+		/**
+		 * Drop the cached init data and fetch it again.
+		 * Needed after login: part of the init data (e.g. `is_face_recognition_enabled`) depends on the user.
+		 */
+		async refresh(): Promise<void> {
+			// An anonymous load may still be in flight: let it settle, otherwise load() would just
+			// wait for it and return, leaving us with the guest data.
+			while (this.is_loading) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
+			}
+
+			this.is_init = false;
+			return this.load();
+		},
 		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
@@ -253,6 +279,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
 					this.is_white_label_enabled = data.is_white_label_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
+					this.album_thumb_min_width = data.album_thumb_min_width;
+					this.album_thumb_gap = data.album_thumb_gap;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
 					this.is_rounded_corners_enabled = data.is_rounded_corners_enabled;
@@ -268,6 +296,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.date_format_sidebar_uploaded = data.date_format_sidebar_uploaded;
 					this.date_format_sidebar_taken_at = data.date_format_sidebar_taken_at;
 					this.date_scrubber_label_format = data.date_scrubber_label_format;
+					this.date_scrubber_album_label_format = data.date_scrubber_album_label_format;
+					this.date_scrubber_format_year = data.date_scrubber_format_year;
+					this.date_scrubber_format_month = data.date_scrubber_format_month;
+					this.date_scrubber_format_day = data.date_scrubber_format_day;
+					this.date_scrubber_format_hour = data.date_scrubber_format_hour;
 					this.album_view_mode = data.album_layout;
 
 					this.is_raw_download_enabled = data.is_raw_download_enabled;
@@ -292,6 +325,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					togglableStore.are_details_open = data.is_photo_details_always_open;
 
 					this.is_registration_enabled = data.is_registration_enabled;
+					this.is_email_login_enabled = data.is_email_login_enabled;
 
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
@@ -329,7 +363,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.default_album_protection = data.default_album_protection;
 					this.expert_album_settings = data.expert_album_settings;
 					this.use_admin_dashboard = data.use_admin_dashboard;
-					this.is_struct_of_array_enabled = data.is_struct_of_array_enabled;
 
 					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;
 					this.is_header_id_flag_enabled = data.is_header_id_flag_enabled;

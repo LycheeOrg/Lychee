@@ -105,6 +105,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/nsfw-config",
 	},
 	{
+		name: "nsfw-findings",
+		path: "/admin/nsfw-findings",
+	},
+	{
 		name: "design-system",
 		path: "/admin/design",
 	},
@@ -115,6 +119,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "landing-config",
 		path: "/admin/landing-config",
+	},
+	{
+		name: "gallery-sizes",
+		path: "/admin/gallery-sizes",
 	},
 	{
 		name: "tree",
@@ -140,6 +148,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "statistics",
 		path: "/statistics",
+	},
+	{
+		name: "insights",
+		path: "/insights",
 	},
 	{
 		name: "users",
@@ -218,6 +230,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "face-clusters",
 		path: "/people/clusters",
+	},
+	{
+		name: "face-quick-naming",
+		path: "/people/quick-naming",
 	},
 	{
 		name: "person",

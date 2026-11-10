@@ -77,7 +77,7 @@ class EditableBaseAlbumResource extends Data
 			$this->is_model_album = true;
 			$this->license = $album->license;
 			$this->album_sorting = $album->album_sorting;
-			$this->header_id = $album->header_id;
+			$this->header_id = $album->header_id !== null ? trim($album->header_id) : null;
 			$this->cover_id = $album->cover_id;
 			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
 			$this->album_timeline = $album->album_timeline;

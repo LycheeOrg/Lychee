@@ -26,7 +26,7 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 
 	public function authorize(): bool
 	{
-		if (!Gate::check(AiVisionPolicy::CAN_EDIT_PERSON, Person::class)) {
+		if (!Gate::check(AiVisionPolicy::CAN_MANAGE_PERSON, [Person::class, $this->person])) {
 			return false;
 		}
 
@@ -35,8 +35,8 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 			return false;
 		}
 
-		// Only admins may set user_id
-		if ($this->user_id !== null && !request()->user()?->may_administrate) {
+		// Only admins may set or clear user_id (null unlinks, so presence is what matters)
+		if ($this->hasUserId() && !request()->user()?->may_administrate) {
 			return false;
 		}
 

@@ -37,6 +37,9 @@ class RootConfig extends Data
 
 	public SharedAlbumsVisibility $shared_albums_visibility_mode = SharedAlbumsVisibility::SHOW;
 
+	public bool $is_tag_albums_separate_category_enabled = false;
+	public bool $is_person_albums_separate_category_enabled = false;
+
 	public function __construct()
 	{
 		$is_logged_in = Auth::check();
@@ -53,6 +56,9 @@ class RootConfig extends Data
 		$this->back_button_enabled = request()->configs()->getValueAsBool('back_button_enabled');
 		$this->back_button_text = request()->configs()->getValueAsString('back_button_text');
 		$this->back_button_url = request()->configs()->getValueAsString('back_button_url');
+
+		$this->is_tag_albums_separate_category_enabled = request()->configs()->getValueAsBool('TA_separate_category');
+		$this->is_person_albums_separate_category_enabled = request()->configs()->getValueAsBool('PA_separate_category');
 
 		$this->setHeaderImageUrl();
 		$this->setSharedAlbumsVisibilityMode();

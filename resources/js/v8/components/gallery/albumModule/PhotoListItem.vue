@@ -5,6 +5,7 @@
 			'bg-primary-100 dark:bg-primary-900/50 ring-2 ring-primary-500': isSelected,
 		}"
 		:data-photo-id="photo.id"
+		data-drag-select-start="true"
 		:aria-label="ariaLabel"
 		role="row"
 		tabindex="0"

@@ -20,7 +20,6 @@ namespace Tests\Feature_v3\Photo;
 
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Support\Facades\Config;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
@@ -42,7 +41,6 @@ class Photo360ResourcesTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		Config::set('features.struct-of-array', true);
 
 		$this->album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
 		$this->full = $this->photo('full', ['is_360' => true]);

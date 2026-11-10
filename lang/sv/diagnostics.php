@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
+    'title' => 'Diagnostik',
+    'copy_to_clipboard' => 'Kopiera diagnostik till urklipp',
+    'self-diagnosis' => 'Självdiagnos',
     'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'space' => 'Utrymme',
+    'load_space' => 'Läs in utrymmesanvändning.',
+    'configuration' => 'Konfiguration',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Identiskt innehåll',
     'toast' => [
         'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'copy' => 'Diagnostik kopierad till urklipp!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Kopiering av diagnostik är endast tillgänglig i säkra kontexter (HTTPS).',
 ];

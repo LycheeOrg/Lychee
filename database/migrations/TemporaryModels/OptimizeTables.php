@@ -31,7 +31,6 @@ class OptimizeTables
 	 */
 	public function exec(): void
 	{
-		/** @var array{name:string,schema:?string,size:int,comment:?string,collation:?string,engine:?string}[] */
 		$tables = Schema::getTables();
 
 		match ($this->driverName) {

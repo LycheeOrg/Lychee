@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-explicit-any */
 import L from "leaflet";
 
 // `L.FeatureGroup.extend`/`L.MarkerClusterGroup.extend` must not run at module

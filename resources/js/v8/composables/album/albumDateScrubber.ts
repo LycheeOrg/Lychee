@@ -42,7 +42,8 @@ export function useAlbumRowsDateScrubber(
 		if (field === null) {
 			return null;
 		}
-		const format = lycheeStore.date_scrubber_label_format;
+		// Feature 095 (FR-095-06): sub-album rails match the sub-album day headers.
+		const format = lycheeStore.date_scrubber_album_label_format;
 		// `created_at` is the tile's display string; the rail reads the raw value.
 		const datedTiles = tiles.value.map((tile) => ({
 			title: tile.title,

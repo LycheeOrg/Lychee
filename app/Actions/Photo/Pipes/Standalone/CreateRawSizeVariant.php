@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\CreateSizeVariantFlags;
 use App\DTO\ImageDimension;
 use App\DTO\PhotoCreate\StandaloneDTO;
@@ -22,9 +21,9 @@ use App\Enum\SizeVariantType;
  * If so, it copies the original (untouched) file to storage and creates
  * the RAW row in `size_variants`.
  */
-class CreateRawSizeVariant implements StandalonePipe
+class CreateRawSizeVariant extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->raw_source_file === null) {
 			return $next($state);
@@ -74,5 +73,10 @@ class CreateRawSizeVariant implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.create_raw_size_variant';
 	}
 }

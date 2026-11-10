@@ -8,21 +8,20 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\UserUploadTrustLevel;
 use App\Jobs\DispatchNsfwScanJob;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
 
-class AutoScanNsfwOnUpload implements StandalonePipe
+class AutoScanNsfwOnUpload extends AbstractStandalonePipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Step 1: Snapshot the uploader's trust level on the in-memory model.
 		$state->photo->upload_trust_level = $state->upload_trust_level;
@@ -78,5 +77,10 @@ class AutoScanNsfwOnUpload implements StandalonePipe
 			UserUploadTrustLevel::TRUSTED => $this->config_manager->getValueAsBool('ai_vision_nsfw_trust_hide_on_scan'),
 			default => false, // CHECK users are already hidden via SetUploadValidated
 		};
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.auto_scan_nsfw_on_upload';
 	}
 }

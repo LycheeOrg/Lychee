@@ -27,7 +27,7 @@ import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref } from "vue";
 import { Ref } from "vue";
 

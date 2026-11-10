@@ -35,7 +35,7 @@ import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import AlbumService from "@/services/album-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import SearchTargetUser from "@/v7/components/forms/album/SearchTargetUser.vue";
 import { type UserOrGroup } from "@/stores/UsersAndGroupsState";
 import { useAlbumStore } from "@/stores/AlbumState";

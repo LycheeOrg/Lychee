@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="isEditOpen" fullscreen :dismissible="false" :title="modalTitle" :close="{ icon: 'lucide:x' }">
+	<UModal v-model:open="isEditOpen" fullscreen :title="modalTitle" :close="{ icon: 'lucide:x' }">
 		<template #body>
 			<div class="w-full max-w-4xl mx-auto">
 				<form v-if="photo" class="w-full flex flex-col md:gap-y-4 md:grid md:grid-cols-[200px_minmax(auto,1fr)] justify-center">
@@ -82,7 +82,7 @@ import { trans } from "laravel-vue-i18n";
 import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@/config/constants";
 import PhotoService from "@/services/photo-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import TagsInput from "@/v8/components/forms/basic/TagsInput.vue";

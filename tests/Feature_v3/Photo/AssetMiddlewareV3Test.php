@@ -21,6 +21,9 @@ namespace Tests\Feature_v3\Photo;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Http\Middleware\ReadOnlyStartSession;
+use App\Http\Middleware\ResolveConfigs;
+use App\Http\Middleware\ResolveVerify;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -29,6 +32,8 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Policies\AlbumPolicy;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\SortedMiddleware;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -158,5 +163,111 @@ class AssetMiddlewareV3Test extends BaseApiWithDataTest
 		self::assertNotFalse($read_only);
 		self::assertNotFalse($authenticate);
 		self::assertLessThan($authenticate, $read_only);
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function binaryRoutes(): array
+	{
+		return [
+			'asset' => ['/api/v3/Asset/album/photo/thumb'],
+			'face photo' => ['/api/v3/Faces/face/photo/medium'],
+		];
+	}
+
+	/**
+	 * S-102-04, FR-102-07: the binary routes resolve configs and the locale
+	 * but skip SE verification.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('binaryRoutes')]
+	public function testBinaryRouteResolvesConfigsWithoutVerification(string $uri): void
+	{
+		$middleware = $this->resolvedMiddleware($uri);
+
+		self::assertNotContains(ResolveVerify::class, $middleware);
+		$configs = array_search(ResolveConfigs::class, $middleware, true);
+		$locale = array_search(SetLocale::class, $middleware, true);
+		self::assertNotFalse($configs);
+		self::assertNotFalse($locale);
+		self::assertLessThan($locale, $configs);
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function groupRoutes(): array
+	{
+		return [
+			'api v2' => ['/api/v2/Gallery::Init'],
+			'api v3' => ['/api/v3/Albums'],
+			'web' => ['/gallery'],
+			'web-admin' => ['/phpinfo'],
+			'image' => ['/image/medium/foo.jpg'],
+			'embed album' => ['/api/v2/Embed/album'],
+			'embed stream' => ['/api/v2/Embed/stream'],
+		];
+	}
+
+	/**
+	 * S-102-04, FR-102-07: every other route still resolves configs, SE
+	 * verification and the locale, first and in that order.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('groupRoutes')]
+	public function testGroupRouteResolvesConfigsVerifyAndLocaleFirst(string $uri): void
+	{
+		$middleware = $this->resolvedMiddleware($uri);
+
+		self::assertSame([ResolveConfigs::class, ResolveVerify::class, SetLocale::class], array_slice($middleware, 0, 3));
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function embedRoutes(): array
+	{
+		return [
+			'embed album' => ['/api/v2/Embed/album'],
+			'embed stream' => ['/api/v2/Embed/stream'],
+		];
+	}
+
+	/**
+	 * FR-102-07: the Embed routes run in the `embed` group (configs,
+	 * verification, locale, CORS) and nothing of the `api` group.
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider('embedRoutes')]
+	public function testEmbedRouteUsesTheEmbedGroupOnly(string $uri): void
+	{
+		$route = Route::getRoutes()->match(Request::create($uri));
+		self::assertContains('embed', $route->middleware());
+		self::assertNotContains('api', $route->middleware());
+		self::assertSame([], $route->excludedMiddleware());
+
+		$middleware = $this->resolvedMiddleware($uri);
+		self::assertContains(HandleCors::class, $middleware);
+		self::assertNotContains(StartSession::class, $middleware);
+		self::assertNotContains(EncryptCookies::class, $middleware);
+		self::assertNotContains(VerifyCsrfToken::class, $middleware);
+	}
+
+	/**
+	 * FR-102-07: the installer has no license yet, only configs.
+	 */
+	public function testInstallRouteResolvesConfigsOnly(): void
+	{
+		$middleware = $this->resolvedMiddleware('/install/');
+
+		self::assertSame(ResolveConfigs::class, $middleware[0]);
+		self::assertNotContains(ResolveVerify::class, $middleware);
+		self::assertNotContains(SetLocale::class, $middleware);
+	}
+
+	/**
+	 * FR-102-07: log-viewer's API routes sit outside the route groups.
+	 */
+	public function testLogViewerApiResolvesConfigs(): void
+	{
+		self::assertContains(ResolveConfigs::class, config('log-viewer.api_middleware'));
 	}
 }

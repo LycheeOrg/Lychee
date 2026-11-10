@@ -13,6 +13,8 @@
 
 ## Overview
 
+> Feature 092 ([spec](../092-bucketing-refactor/spec.md)) supersedes this spec's stored `photo_album.bucket_id`: the column is now `bucket_key`, a granularity-free key (FR-092-03); bucket ids are a SQL prefix of it at read time (FR-092-05), the `buckets` tier reads `photo_album` alone (FR-092-09), and tag/person/smart albums compute ids in SQL (FR-092-06). Read `bucket_id` below as that read-time id.
+
 Feature 057 established the flat, `toBase()`-queried Struct-of-Arrays (SoA) response convention (ADR-0009). Feature 061/062 applied it — plus a materialized `bucket_id`-driven virtual-scroll backend (buckets / children-data / rights) — to **sub-albums and root albums**. Photos are the one remaining major listing surface still served exclusively by the fully-hydrated, paginated v2 path (`GET /api/v2/Album::photos`, `AlbumPhotosController::get()` → `PhotoRepository::getPhotosForAlbumPaginated()` → `PaginatedPhotosResource` wrapping a full `PhotoResource` per photo — ~26 fields including all 9 size variants, EXIF, palette, statistics, rating — per the `virtual-scrolling-study.md` finding, lines 321-341). At the confirmed real-world scale (~700,000 photos across ~7,000 albums, individual albums reaching five-figure photo counts), this is both the heaviest per-row payload and the largest per-parent row count in the codebase — worse on both axes than the sub-album case Feature 061 solved.
 
 This feature ports the SoA + bucket contract to **photos directly inside one album**, per user direction, as a three-tier split (naming chosen by the user):

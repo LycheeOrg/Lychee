@@ -290,6 +290,9 @@ ui_states:
 
 ## Appendix
 
+### Later features
+- [Feature 089](../089-moderation-history-nsfw-review/spec.md) records every hold and approval of a photo (`photo_moderation_events`): `Standalone\RecordUploadHold` after upload, `ModerationController::approvePhotos()` on approval (hidden photos only, one insert per chunk), and adds a History tab to the v8 Moderation page.
+
 ### Trust Level Decision Matrix
 
 | User type | Trust level | `is_validated` on new photo | Photo visible to public? |

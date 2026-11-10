@@ -36,7 +36,7 @@
 import { computed, ref } from "vue";
 import Button from "primevue/button";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import SearchTargetAlbum from "@/v7/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";
 import { useToast } from "primevue/usetoast";

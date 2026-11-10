@@ -55,6 +55,27 @@ class FaceClusterReviewTest extends BaseApiWithDataTest
 		self::assertGreaterThanOrEqual(2, count($data));
 	}
 
+	public function testListClustersPagesAreDisjointAndTiesOrderedByLabel(): void
+	{
+		// 25 single-face clusters (a tie on face_count), inserted out of label order, plus one larger cluster.
+		foreach (range(30, 6) as $label) {
+			Face::factory()->for_photo($this->photo1)->with_cluster($label)->create();
+		}
+		Face::factory()->for_photo($this->photo1)->with_cluster(99)->count(2)->create();
+
+		$page1 = $this->actingAs($this->userMayUpload1)->getJson('FaceDetection/clusters?page=1');
+		$this->assertOk($page1);
+		$page2 = $this->actingAs($this->userMayUpload1)->getJson('FaceDetection/clusters?page=2');
+		$this->assertOk($page2);
+
+		$labels = array_merge(
+			array_column($page1->json('data'), 'cluster_label'),
+			array_column($page2->json('data'), 'cluster_label'),
+		);
+		self::assertSame(array_merge([99], range(6, 30)), $labels);
+		self::assertTrue(array_is_list($page2->json('data')));
+	}
+
 	public function testListClustersExcludesAssigned(): void
 	{
 		$person = Person::factory()->create();

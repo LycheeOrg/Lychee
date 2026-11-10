@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { toRaw } from "vue";
 import { type SplitData, useSplitter } from "@/composables/album/splitter";
 const { spliter, merge } = useSplitter();
 
@@ -74,12 +75,15 @@ export const usePhotosStore = defineStore("photos-store", {
 			}
 		},
 		/**
-		 * Record the page number for a batch of photos in photoPageMap.
+		 * Record the page number for a batch of photos in photoPageMap, as one
+		 * new map rather than one reactive write per photo (FR-103-03).
 		 */
 		recordPhotoPages(photos: App.Http.Resources.Models.PhotoResource[], page: number) {
+			const pages: Record<string, number> = { ...toRaw(this.photoPageMap) };
 			photos.forEach((p) => {
-				this.photoPageMap[p.id] = page;
+				pages[p.id] = page;
 			});
+			this.photoPageMap = pages;
 		},
 		setPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean, page: number = 1) {
 			// Every non-search writer of `photos` goes through here, so this is

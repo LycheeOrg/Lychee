@@ -28,11 +28,11 @@ return [
         'upload_trust_level' => 'Úroveň důvěry při nahrávání',
         'upload_trust_level_check' => 'Kontrola – nahraný obsah vyžaduje schválení administrátora.',
         'upload_trust_level_monitor' => 'Dohled - nahraný obsah veřejně přístupný, pokud není označen jako nevhodný.',
-        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
+        'upload_trust_level_trust_but_verify' => 'Důvěřuj, ale prověřuj – nahrané soubory jsou veřejné; nálezy ke kontrole jsou automaticky schváleny, blokující nálezy lze nastavit.',
         'upload_trust_level_trusted' => 'Důvěryhodný - nahraný obsah je okamžitě zveřejněn.',
         'trust_level_options' => [
             'trusted' => 'Důvěryhodný',
-            'trust_but_verify' => 'Trust but Verify',
+            'trust_but_verify' => 'Důvěřuj, ale prověřuj',
             'monitor' => 'Dohled',
             'check' => 'Kontrola',
         ],

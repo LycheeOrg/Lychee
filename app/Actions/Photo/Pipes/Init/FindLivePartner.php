@@ -9,7 +9,6 @@
 namespace App\Actions\Photo\Pipes\Init;
 
 use App\Constants\PhotoAlbum as PA;
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
@@ -19,7 +18,7 @@ use App\Services\Image\FileExtensionService;
 /**
  * Try to link live photo components together.
  */
-class FindLivePartner implements InitPipe
+class FindLivePartner extends AbstractInitPipe
 {
 	public function __construct(
 		private FileExtensionService $file_extension_service,
@@ -29,7 +28,7 @@ class FindLivePartner implements InitPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		try {
 			// find a potential partner which has the same content id
@@ -59,6 +58,11 @@ class FindLivePartner implements InitPipe
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.find_live_partner';
 	}
 }
 

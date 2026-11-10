@@ -50,7 +50,7 @@ return [
         'favourite_plural' => '%1$s أضاف %2$s إلى المفضلة',
         'download_plural' => '%1$s قام بتنزيل %2$s',
         'shared_plural' => '%1$s شارك %2$s',
-        'truncated' => 'Older activity is not shown.',
+        'truncated' => 'لا يتم عرض النشاط الأقدم.',
         'ago' => [
             'days' => 'منذ %d يوم',
             'day' => 'منذ يوم',

@@ -142,5 +142,6 @@ Completed 2026-10-03, re-run after the review pass and Q-078-07/08 (agent self-r
 - Knowledge map and roadmap updated; drift gate report added here.
 
 ## Follow-ups / Backlog
-- Frontend unit tests for `panZoom.ts` once a test runner is approved.
+- 2026-11-03, discussion #4954 (T-078-18, T-082-23): on Android Chromium, the first tap within 1–2 s after a fast swipe was ignored. The reporter's `input` trace showed `GestureFlingStart` on `#imageview`. `touch-action: none` filters the scroll updates in the browser, so no unconsumed scroll stops the fling, which runs invisibly, and `FlingController` consumes the next tap as a fling cancel. Fix: non-passive `touchmove` + `preventDefault()` in `usePanZoom` (zoomable only, FR-078-15) and on the sphere canvas (FR-082-10). Rejected: `useSwipe({ passive: false })`, which only cancels single-finger horizontal moves (vertical go-back swipes would still fling) and applies to non-zoomable photos too, breaking native page pinch and pan. Real-device confirmation pending (S-078-26, S-082-19).
+- Frontend unit tests for the rest of `panZoom.ts` (Vitest is available since Feature 097).
 - Possible later: pan & zoom in the Flow lightbox and live photos.

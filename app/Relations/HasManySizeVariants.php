@@ -11,6 +11,7 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -22,14 +23,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @extends HasMany<SizeVariant,Photo>
+ * Generic over the related model so that the template is part of this class:
+ * Larastan forwards query builder calls (`where()`, ...) on a relation through
+ * the relation class's own `TRelatedModel`.
+ *
+ * @template TRelatedModel of SizeVariant
+ *
+ * @extends HasMany<TRelatedModel,Photo>
  */
 class HasManySizeVariants extends HasMany
 {
-	public function __construct(Photo $owning_photo)
+	/**
+	 * @param SizeVariantBuilder<TRelatedModel> $query
+	 */
+	public function __construct(SizeVariantBuilder $query, Photo $owning_photo)
 	{
 		parent::__construct(
-			SizeVariant::query(),
+			$query,
 			$owning_photo,
 			'photo_id',
 			'id'

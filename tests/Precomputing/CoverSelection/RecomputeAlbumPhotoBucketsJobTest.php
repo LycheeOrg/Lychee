@@ -11,7 +11,6 @@ namespace Tests\Precomputing\CoverSelection;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
-use App\Enum\TimelinePhotoGranularity;
 use App\Events\AlbumPhotoSortingChanged;
 use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Models\Album;
@@ -44,7 +43,7 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 		return $ids;
 	}
 
-	public function testAlbumPhotoTimelineChangeRecomputesAllDirectPhotos(): void
+	public function testAlbumSortColumnChangeRecomputesAllDirectPhotos(): void
 	{
 		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
 		$user = User::factory()->create();
@@ -54,19 +53,55 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 		// Not yet computed (attached directly via factory, bypassing SetParent).
 		foreach ($photo_ids as $id) {
 			$row = DB::table('photo_album')->where('photo_id', '=', $id)->where('album_id', '=', $album->id)->first();
-			$this->assertNull($row->bucket_id);
+			$this->assertNull($row->bucket_key);
 		}
 
-		$album->photo_timeline = TimelinePhotoGranularity::MONTH;
+		$album->photo_sorting = new PhotoSortingCriterion(ColumnSortingType::TYPE, OrderSortingType::ASC);
 		$album->save();
 
 		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
 
-		$expected = Photo::find($photo_ids[0])->created_at->format('Y-m');
 		foreach ($photo_ids as $id) {
 			$row = DB::table('photo_album')->where('photo_id', '=', $id)->where('album_id', '=', $album->id)->first();
-			$this->assertSame($expected, $row->bucket_id);
+			$this->assertSame('image/jpeg', $row->bucket_key);
 		}
+	}
+
+	/**
+	 * FR-092-14, S-092-12: 1,001 links are written in two statements, every
+	 * key correct.
+	 */
+	public function testRecomputesInChunksOfAThousand(): void
+	{
+		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$template = (array) DB::table('photos')->where('id', '=', Photo::factory()->owned_by($user)->in($album)->create()->id)->first();
+		$rows = [];
+		$links = [];
+		for ($i = 0; $i < 1000; $i++) {
+			$id = sprintf('chunk%019d', $i);
+			$rows[] = array_merge($template, ['id' => $id, 'created_at' => sprintf('2020-01-%02d %02d:00:00.000000', 1 + $i % 28, $i % 24)]);
+			$links[] = ['photo_id' => $id, 'album_id' => $album->id];
+		}
+		foreach (array_chunk($rows, 100) as $chunk) {
+			DB::table('photos')->insert($chunk);
+		}
+		foreach (array_chunk($links, 500) as $chunk) {
+			DB::table('photo_album')->insert($chunk);
+		}
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
+		$log = DB::getQueryLog();
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		$write_queries = array_filter($log, fn (array $q) => preg_match('/^(update|insert)/i', trim($q['query'])) === 1);
+		$this->assertCount(2, $write_queries);
+		$this->assertSame(1001, DB::table('photo_album')->where('album_id', '=', $album->id)->whereNotNull('bucket_key')->count());
+		$this->assertSame('2020-01-05-04', DB::table('photo_album')->where('photo_id', '=', sprintf('chunk%019d', 4))->value('bucket_key'));
 	}
 
 	public function testAlbumSortingColChangeToOwnerIdRecomputesAllToNull(): void
@@ -83,7 +118,7 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 
 		foreach ($photo_ids as $id) {
 			$row = DB::table('photo_album')->where('photo_id', '=', $id)->where('album_id', '=', $album->id)->first();
-			$this->assertNull($row->bucket_id);
+			$this->assertNull($row->bucket_key);
 		}
 	}
 
@@ -115,7 +150,7 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * The job bulk-`upsert()`s every direct photo's `bucket_id`, bypassing
+	 * The job bulk-`upsert()`s every direct photo's `bucket_key`, bypassing
 	 * Eloquent events entirely - it must dispatch the dedicated
 	 * photo-listing cache-invalidation signal itself once that write has
 	 * landed, since nothing else will (regression coverage for the bucket
@@ -127,9 +162,6 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 		$this->makeThreePhotos($user, $album);
-
-		$album->photo_timeline = TimelinePhotoGranularity::MONTH;
-		$album->save();
 
 		Event::fake([AlbumPhotoSortingChanged::class]);
 
@@ -145,9 +177,6 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 		$this->makeThreePhotos($user, $album);
 
-		$album->photo_timeline = TimelinePhotoGranularity::MONTH;
-		$album->save();
-
 		DB::flushQueryLog();
 		DB::enableQueryLog();
 		(new RecomputeAlbumPhotoBucketsJob($album->id))->handle();
@@ -157,36 +186,5 @@ class RecomputeAlbumPhotoBucketsJobTest extends BasePrecomputingTest
 
 		$write_queries = array_filter($log, fn (array $q) => preg_match('/^(update|insert)/i', trim($q['query'])) === 1);
 		$this->assertCount(1, $write_queries, 'Expected exactly one bulk write query, got: ' . implode(' | ', array_column($write_queries, 'query')));
-	}
-
-	/**
-	 * A photo linked into two albums with different effective photo-sort
-	 * settings carries two different `bucket_id` values, one per
-	 * `photo_album` row.
-	 */
-	public function testSamePhotoInTwoAlbumsWithDifferentSettingsDivergesCorrectly(): void
-	{
-		$this->setInstanceDefaults(sorting_col: 'created_at', granularity: 'year');
-		$user = User::factory()->create();
-		$album_a = Album::factory()->as_root()->owned_by($user)->create();
-		$album_b = Album::factory()->as_root()->owned_by($user)->create();
-		$album_a->photo_timeline = TimelinePhotoGranularity::YEAR;
-		$album_a->save();
-		$album_b->photo_timeline = TimelinePhotoGranularity::MONTH;
-		$album_b->save();
-
-		$photo = Photo::factory()->owned_by($user)->create();
-		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album_a->id]);
-		DB::table('photo_album')->insert(['photo_id' => $photo->id, 'album_id' => $album_b->id]);
-
-		(new RecomputeAlbumPhotoBucketsJob($album_a->id))->handle();
-		(new RecomputeAlbumPhotoBucketsJob($album_b->id))->handle();
-
-		$row_a = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_a->id)->first();
-		$row_b = DB::table('photo_album')->where('photo_id', '=', $photo->id)->where('album_id', '=', $album_b->id)->first();
-
-		$this->assertSame($photo->created_at->format('Y'), $row_a->bucket_id);
-		$this->assertSame($photo->created_at->format('Y-m'), $row_b->bucket_id);
-		$this->assertNotSame($row_a->bucket_id, $row_b->bucket_id);
 	}
 }

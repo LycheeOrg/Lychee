@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'ترتیب عکس',
     'col_album_sorting' => 'ترتیب آلبوم',
     'col_created_at' => 'تاریخ ایجاد',
+    'taken_range' => 'تاریخ عکاسی: :range',
+    'taken_none' => 'بدون داده',
 
     // Filter
     'filter_placeholder' => 'جستجو بر اساس عنوان...',
@@ -66,7 +68,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'نسبت ابعاد بندانگشتی',
     'field_album_timeline' => 'جدول زمانی آلبوم',
     'field_photo_timeline' => 'جدول زمانی عکس',
-    'field_published_at' => 'Flow Publish Date',
+    'field_published_at' => 'تاریخ انتشار در جریان',
     'field_is_nsfw' => 'حساس',
     'field_is_public' => 'عمومی',
     'field_is_link_required' => 'نیازمند لینک',
@@ -94,7 +96,7 @@ return [
     'error_load' => 'بارگذاری آلبوم‌ها ناموفق بود.',
     'error_load_ids' => 'بارگذاری شناسه‌های آلبوم ناموفق بود.',
     'error_patch' => 'به‌روزرسانی آلبوم‌ها ناموفق بود.',
-    'error_missing_timezone' => 'Please select a timezone for the publish date.',
+    'error_missing_timezone' => 'لطفاً یک منطقه زمانی برای تاریخ انتشار انتخاب کنید.',
     'error_set_owner' => 'انتقال مالکیت ناموفق بود.',
     'error_delete' => 'حذف آلبوم‌ها ناموفق بود.',
     'error_load_users' => 'بارگذاری کاربران ناموفق بود.',

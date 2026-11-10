@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Ek bağlantılar',
+    'description' => 'Açılış sayfasının gezinme çubuğunda ve/veya alt bilgisinde gösterilen, istediğiniz sırada ek bağlantıların listesini yönetin.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Henüz yapılandırılmış ek bağlantı yok.',
+    'create_first' => 'İlk bağlantınızı oluşturun',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Etiket',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Yerleşim',
+    'col_enabled' => 'Etkin',
+    'col_actions' => 'İşlemler',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Gezinme',
+    'placement_footer' => 'Alt bilgi',
+    'placement_both' => 'Gezinme ve alt bilgi',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Yerleşik',
+    'built_in_cannot_delete' => 'Bu yerleşik bağlantı silinemez. Bunun yerine devre dışı bırakın veya diğer bağlantılar gibi yeniden sıralayın.',
+    'built_in_url_hint' => 'Bu yerleşik bir bağlantıdır ve hedefi değiştirilemez.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Bağlantı oluştur',
+    'edit' => 'Düzenle',
+    'delete' => 'Sil',
+    'cancel' => 'İptal',
+    'save' => 'Kaydet',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Etiket',
+    'field_label_placeholder' => 'örn. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Yerleşim',
+    'field_open_in_new_tab' => 'Yeni sekmede aç',
+    'field_enabled' => 'Etkin',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Bağlantı oluştur',
+    'modal_edit_title' => 'Bağlantıyı düzenle',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Bağlantıyı sil',
+    'confirm_delete_message' => '":label" bağlantısını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Bağlantı başarıyla oluşturuldu.',
+    'updated' => 'Bağlantı başarıyla güncellendi.',
+    'deleted' => 'Bağlantı başarıyla silindi.',
+    'reordered' => 'Bağlantılar başarıyla yeniden sıralandı.',
+    'error_load' => 'Bağlantılar yüklenemedi.',
+    'error_save' => 'Bağlantı kaydedilemedi.',
+    'error_delete' => 'Bağlantı silinemedi.',
+    'error_reorder' => 'Bağlantılar yeniden sıralanamadı.',
 ];

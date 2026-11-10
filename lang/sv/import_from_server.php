@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Synkronisera dina serverfiler',
+    'description' => 'Synkronisera dina serverfiler med Lychee. Detta importerar foton från en katalog och alla dess underkataloger. Processen är mycket långsam och vi rekommenderar att använda workers och köer för att undvika timeout.',
+    'sync' => 'Synkronisera',
+    'loading' => 'Laddar...',
+    'selected_directory' => 'Nuvarande vald katalog:',
+    'resync_metadata' => 'Synkronisera om metadata för befintliga filer.',
+    'delete_imported' => 'Radera originalfilerna.',
+    'import_via_symlink' => 'Importera foton via symbolisk länk i stället för att kopiera filerna.',
+    'skip_duplicates' => 'Hoppa över foton och album som redan finns i galleriet.',
+    'delete_missing_photos' => 'Radera foton i albumet som inte finns i den synkroniserade katalogen.',
+    'delete_missing_albums' => 'Radera album i det överordnade albumet som inte finns i den synkroniserade katalogen.',
+    'importing_please_be_patient' => 'Importerar, ha tålamod...',
 ];
 

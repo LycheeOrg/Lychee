@@ -61,6 +61,7 @@ class UpdateAlbumDateScrubberTest extends BaseApiWithDataTest
 			'photo_layout' => null,
 			'copyright' => '',
 			'is_compact' => false,
+			'is_map_header' => false,
 			'is_pinned' => false,
 			'header_id' => null,
 			'cover_id' => null,

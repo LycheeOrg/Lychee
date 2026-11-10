@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Actions\Face\RecountFaceCounters;
 use App\Enum\FaceScanStatus;
 use App\Http\Requests\Face\BulkScanRequest;
 use App\Http\Requests\Face\ClusterResultsRequest;
@@ -292,6 +293,11 @@ class FaceDetectionController extends Controller
 				'lychee_face_id' => $face->id,
 			];
 		}
+
+		// Old faces were bulk-deleted and new ones created: recount from scratch.
+		$recount = new RecountFaceCounters();
+		$recount->forPhotos([$photo_id]);
+		$recount->forPersons($old_faces->pluck('person_id')->all());
 
 		return $mapping;
 	}

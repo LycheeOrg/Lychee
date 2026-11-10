@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Etiquetas',
+    'description' => 'Gestiona aquí tus etiquetas. Puedes renombrarlas, fusionarlas y eliminarlas.',
+    'no_tags' => 'No se encontraron etiquetas.',
+    'loading' => 'Cargando etiquetas...',
+    'rename' => 'Renombrar',
+    'merge' => 'Fusionar',
+    'delete' => 'Eliminar',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Nombre',
+    'column_photos' => 'Fotos',
+    'column_albums' => 'Álbumes',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => '¿Seguro que quieres eliminar la etiqueta “%s”?',
+    'delete_confirm_multiple' => '¿Seguro que quieres eliminar estas %d etiquetas?',
+    'delete_warning' => '¡Esta acción no se puede deshacer! Todas las fotos asociadas a esta etiqueta dejarán de tenerla.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => '¿Seguro que quieres fusionar la etiqueta “%1$s” con la etiqueta “%2$s”?',
+    'merge_warning' => '¡Esta acción no se puede deshacer! Todas las fotos asociadas a la etiqueta de origen se moverán a la etiqueta de destino.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Renombrar etiqueta',
 ];

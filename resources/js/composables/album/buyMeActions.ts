@@ -4,9 +4,10 @@ import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { PhotosStore } from "@/stores/PhotosState";
 import WebshopService from "@/services/webshop-service";
+import { isDetailPending } from "@/utils/photoView";
 
 const buyablePhotoId = ref<string | undefined>(undefined);
 const buyableAlbumId = ref<string | undefined>(undefined);
@@ -48,6 +49,11 @@ export function useBuyMeActions(
 		if (photoToAdd === undefined) {
 			// Photo not found
 			return;
+		}
+
+		// A struct-of-arrays tile has no size variants until its details load (Feature 105, FR-105-09).
+		if (isDetailPending(photoToAdd)) {
+			await albumStore.loadPhotoDetails([idx]);
 		}
 
 		// Filter out the options which do not exists on the photo

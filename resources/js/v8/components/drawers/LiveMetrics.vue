@@ -63,7 +63,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { watch } from "vue";
@@ -86,7 +86,6 @@ type LiveMetrics = {
 	// v3 rows: the thumbnail is fetched through the Asset endpoint instead of `src`.
 	thumb?: { albumId: string; photoId: string | null };
 };
-const data = ref<App.Http.Resources.Models.LiveMetricsResource[] | undefined>(undefined);
 const prettifiedData = ref<LiveMetrics[] | undefined>(undefined);
 const isTruncated = ref(false);
 // Reopening the drawer starts a new load: responses of earlier loads are dropped.
@@ -96,7 +95,6 @@ function load() {
 	const id = ++loadId;
 	if (lycheeStore.is_se_preview_enabled) {
 		// Do not load, if the preview is enabled
-		data.value = [];
 		AlbumService.getAll()
 			.then((response) => {
 				if (id !== loadId) {
@@ -129,27 +127,12 @@ function load() {
 		return;
 	}
 
-	if (lycheeStore.is_struct_of_array_enabled) {
-		MetricsService.getV3()
-			.then((response) => {
-				if (id !== loadId) {
-					return;
-				}
-				prettifyV3(response.data);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-		return;
-	}
-
-	MetricsService.get()
+	MetricsService.getV3()
 		.then((response) => {
 			if (id !== loadId) {
 				return;
 			}
-			data.value = response.data;
-			prettifyData();
+			prettifyV3(response.data);
 		})
 		.catch((error) => {
 			console.error(error);
@@ -196,30 +179,8 @@ function titlize(title: string) {
 	return span.outerHTML;
 }
 
-function prettifyData() {
-	if (data.value === undefined || data.value.length === 0) {
-		return;
-	}
-
-	const dateMetrics: Record<string, LiveMetrics> = {};
-
-	data.value.forEach((item) => {
-		const k = genKey(item);
-
-		if (k in dateMetrics) {
-			dateMetrics[k].count++;
-		} else {
-			dateMetrics[k] = LiveMetricsToPretty(item, 1);
-		}
-	});
-
-	prettifiedData.value = Object.values(dateMetrics).sort((a, b) => {
-		return b.date.getTime() - a.date.getTime();
-	});
-}
-
 // Each v3 row is already a group of `counts[i]` events within one minute:
-// merge the groups into the same relative-time buckets as the v2 path.
+// merge the groups into relative-time buckets.
 function prettifyV3(soa: App.Http.Resources.V3.LiveMetricsListResource) {
 	isTruncated.value = soa.is_truncated;
 	const dateMetrics: Record<string, LiveMetrics> = {};
@@ -258,10 +219,6 @@ function prettifyV3(soa: App.Http.Resources.V3.LiveMetricsListResource) {
 	});
 }
 
-function genKey(item: App.Http.Resources.Models.LiveMetricsResource) {
-	return item.action + dateToAgo(item.created_at) + (item.photo_id ?? item.album_id ?? "undefined");
-}
-
 function dateToAgo(date: string) {
 	const dateObj = new Date(date);
 	const now = new Date();
@@ -290,26 +247,6 @@ function dateToAgo(date: string) {
 	} else {
 		return trans("statistics.metrics.ago.seconds");
 	}
-}
-
-function LiveMetricsToPretty(data: App.Http.Resources.Models.LiveMetricsResource, count: number): LiveMetrics {
-	const ago = dateToAgo(data.created_at);
-	return {
-		ago: ago,
-		date: new Date(data.created_at),
-		action: data.action,
-		title: data.title ?? "undefined",
-		id: data.photo_id ?? data.album_id ?? "undefined",
-		count: count,
-		src: data.url,
-		link: {
-			name: "album",
-			params: {
-				albumId: data.album_id,
-				photoId: data.photo_id,
-			},
-		},
-	};
 }
 
 onMounted(() => {

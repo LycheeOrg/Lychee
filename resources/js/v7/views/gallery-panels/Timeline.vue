@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="timelineStore.isLoading" />
-	<LoginModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
-	<WebauthnModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
+	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
+	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
 	<div v-if="timelineStore.rootConfig && timelineStore.rootRights" class="h-svh overflow-y-auto" id="scrollArea">
@@ -216,7 +216,7 @@ const layoutStore = useLayoutStore();
 const userStore = useUserStore();
 const timelineStore = useTimelineStore();
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 lycheeStore.load();

@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'Bildesortering',
     'col_album_sorting' => 'Albumsortering',
     'col_created_at' => 'Opprettet',
+    'taken_range' => 'Tatt: :range',
+    'taken_none' => 'Ingen data',
 
     // Filter
     'filter_placeholder' => 'Søk etter tittel…',
@@ -66,7 +68,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Sideforhold for miniatyrbilde',
     'field_album_timeline' => 'Albumtidslinje',
     'field_photo_timeline' => 'Bildetidslinje',
-    'field_published_at' => 'Flow Publish Date',
+    'field_published_at' => 'Publiseringsdato i Flow',
     'field_is_nsfw' => 'Følsomt',
     'field_is_public' => 'Offentlig',
     'field_is_link_required' => 'Lenke påkrevd',
@@ -94,7 +96,7 @@ return [
     'error_load' => 'Kunne ikke laste inn album.',
     'error_load_ids' => 'Kunne ikke laste inn album-ID-er.',
     'error_patch' => 'Kunne ikke oppdatere album.',
-    'error_missing_timezone' => 'Please select a timezone for the publish date.',
+    'error_missing_timezone' => 'Velg en tidssone for publiseringsdatoen.',
     'error_set_owner' => 'Kunne ikke overføre eierskap.',
     'error_delete' => 'Kunne ikke slette album.',
     'error_load_users' => 'Kunne ikke laste inn brukere.',

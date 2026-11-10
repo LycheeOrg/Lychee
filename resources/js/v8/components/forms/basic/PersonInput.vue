@@ -37,6 +37,7 @@
 				class="w-full"
 				:placeholder="$t('people.assignment.new_person_placeholder')"
 				@input="personId = undefined"
+				@keydown.enter.prevent="emits('submit')"
 			/>
 		</div>
 	</div>
@@ -48,6 +49,11 @@ import { usePeopleList } from "@/composables/usePeopleList";
 
 const personId = defineModel<string | undefined>("personId", { default: undefined });
 const newPersonName = defineModel<string>("newPersonName", { default: "" });
+
+/** Enter in the new person field submits the host modal. */
+const emits = defineEmits<{
+	submit: [];
+}>();
 
 const { people, loading, load } = usePeopleList();
 

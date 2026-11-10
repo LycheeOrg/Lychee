@@ -32,6 +32,7 @@ class ConfigIntegrity
 		'timeline_photo_date_format_month',
 		'timeline_photo_date_format_day',
 		'timeline_photo_date_format_hour',
+		'timeline_photo_date_format_hour_multi_day',
 		'timeline_album_date_format_year',
 		'timeline_album_date_format_month',
 		'timeline_album_date_format_day',
@@ -39,6 +40,9 @@ class ConfigIntegrity
 		'timeline_quick_access_date_format_month',
 		'timeline_quick_access_date_format_day',
 		'timeline_quick_access_date_format_hour',
+		'date_scrubber_format_year',
+		'date_scrubber_format_month',
+		'date_scrubber_format_hour',
 		'number_albums_per_row_mobile',
 		'client_side_favourite_enabled',
 		'extract_zip_on_upload',
@@ -126,6 +130,7 @@ class ConfigIntegrity
 		'ai_vision_nsfw_monitor_hide_on_scan',
 		'ai_vision_nsfw_trust_but_verify_hide_on_scan',
 		'ai_vision_nsfw_trust_hide_on_scan',
+		'moderation_history_log_nsfw_holds',
 	];
 
 	public const PRO_FIELDS = [

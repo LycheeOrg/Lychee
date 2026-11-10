@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Đồng bộ tệp trên máy chủ',
+    'description' => 'Đồng bộ các tệp trên máy chủ của bạn với Lychee. Thao tác này sẽ nhập ảnh từ một thư mục và tất cả các thư mục con. Quá trình này rất chậm, chúng tôi khuyên bạn nên dùng worker và hàng đợi (queue) để tránh bị hết thời gian chờ.',
+    'sync' => 'Đồng bộ',
+    'loading' => 'Đang tải...',
+    'selected_directory' => 'Thư mục đang chọn:',
+    'resync_metadata' => 'Đồng bộ lại siêu dữ liệu của các tệp hiện có.',
+    'delete_imported' => 'Xóa các tệp gốc.',
+    'import_via_symlink' => 'Nhập ảnh qua liên kết tượng trưng (symlink) thay vì sao chép tệp.',
+    'skip_duplicates' => 'Bỏ qua ảnh và album nếu chúng đã có trong thư viện ảnh.',
+    'delete_missing_photos' => 'Xóa các ảnh trong album không có trong thư mục được đồng bộ.',
+    'delete_missing_albums' => 'Xóa các album trong album cha không có trong thư mục được đồng bộ.',
+    'importing_please_be_patient' => 'Đang nhập, vui lòng chờ...',
 ];
 

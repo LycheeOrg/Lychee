@@ -9,12 +9,15 @@
 namespace App\Services;
 
 use App\DTO\UrlValidatedDTO;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
 use function Safe\inet_ntop;
 use function Safe\inet_pton;
+use function Safe\long2ip;
 use function Safe\parse_url;
+use function Safe\preg_match;
 
 class UrlValidation
 {
@@ -96,7 +99,14 @@ class UrlValidation
 			);
 		}
 
-		$resolved_ips = $this->resolveHostToIPs($host);
+		try {
+			$resolved_ips = $this->resolveHostToIPs($host);
+		} catch (LycheeInvalidArgumentException $e) {
+			return UrlValidatedDTO::fromError(
+				url: $value,
+				error: $e->getMessage(),
+			);
+		}
 
 		if (
 			$this->config_manager->getValueAsBool('import_via_url_forbidden_local_ip') &&
@@ -146,6 +156,19 @@ class UrlValidation
 			return [$host];
 		}
 
+		// Remove last dot if exists
+		$host = rtrim($host, '.');
+
+		$hex = $this->octalHexToIp($host);
+		if ($hex !== null) {
+			return [$hex];
+		}
+
+		$ip = $this->stringToIp($host);
+		if ($ip !== null) {
+			return [$ip];
+		}
+
 		$ips = [];
 
 		try {
@@ -170,6 +193,127 @@ class UrlValidation
 		}
 
 		return $ips;
+	}
+
+	private function octalHexToIp(string $ip_number): ?string
+	{
+		if (!str_contains($ip_number, '.')) {
+			return null;
+		}
+
+		// Validate that this is Maybe an ip: it contains only digits, x, and dots.
+		// Goal is to weed out things like 0day.de
+		if (preg_match('/^(0[xX][0-9a-fA-F]+|[0-9]+)(\.(0[xX][0-9a-fA-F]+|[0-9]+)){0,3}$/', $ip_number) !== 1) {
+			return null;
+		}
+
+		$ip_number = explode('.', $ip_number);
+		$ip = [];
+		foreach ($ip_number as $ip_part) {
+			if ($this->validateHex($ip_part)) {
+				$ip_part = hexdec($ip_part);
+			}
+			if ($this->validateOctal($ip_part)) {
+				$ip_part = octdec($ip_part);
+			}
+			$ip[] = $ip_part;
+		}
+
+		return implode('.', $ip);
+	}
+
+	/**
+	 * Validate that this is a correct hex number.
+	 *
+	 * @param string $ip_part
+	 *
+	 * @return bool
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 */
+	private function validateHex(string $ip_part): bool
+	{
+		if (!str_starts_with($ip_part, '0x') && !str_starts_with($ip_part, '0X')) {
+			return false;
+		}
+		if (ctype_xdigit(substr($ip_part, 2))) {
+			return true;
+		}
+		throw new LycheeInvalidArgumentException("Invalid hexadecimal IP part: $ip_part");
+	}
+
+	/**
+	 * Validate that this is a correct octal number.
+	 *
+	 * @param string $ip_part
+	 *
+	 * @return bool
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 */
+	private function validateOctal(string $ip_part): bool
+	{
+		if ($ip_part === '0') {
+			return true;
+		}
+		if (!str_starts_with($ip_part, '0')) {
+			return false;
+		}
+		if (ctype_digit(substr($ip_part, 1)) && !(str_contains($ip_part, '8') || str_contains($ip_part, '9'))) {
+			return true;
+		}
+		throw new LycheeInvalidArgumentException("Invalid octal IP part: $ip_part");
+	}
+
+	/**
+	 * Convert a string full of numbers into it's IP equivalent.
+	 *
+	 * @param string $ip_number
+	 *
+	 * @return string|null
+	 */
+	private function stringToIp(string $ip_number): ?string
+	{
+		// Skip if the IP number contains dots, as it's not a single numeric IP.
+		if (str_contains($ip_number, '.')) {
+			return null;
+		}
+
+		// Handle hexadecimal IP numbers, e.g. "0x7f000001" for 127.0.0.1.
+		if ($this->validateHex($ip_number)) {
+			$ip_number = hexdec($ip_number);
+		}
+
+		// Handle octal IP numbers e.g. 0177.0.0.1
+		if ($this->validateOctal($ip_number)) {
+			$ip_number = octdec($ip_number);
+		}
+
+		if (!is_numeric($ip_number)) {
+			return null;
+		}
+
+		// 32 bit integer architecture work around.
+		if (PHP_INT_SIZE === 4) {
+			$bin_str = sprintf('%032s', decbin((float) $ip_number));
+			if (strlen($bin_str) !== 32) {
+				// Not a valid 32-bit binary string.
+				return null;
+			}
+
+			$ip_arr = [];
+			for ($i = 0; $i < 4; $i++) {
+				$ip_arr[] = bindec(substr($bin_str, $i * 8, 8));
+			}
+
+			return implode('.', $ip_arr);
+		}
+
+		try {
+			return long2ip($ip_number);
+		} catch (\ErrorException) {
+			return null;
+		}
 	}
 
 	/**

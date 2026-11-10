@@ -1,8 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, type AxiosResponse } from "axios";
 import CSRF from "./csrf-getter";
-// import { setupCache } from "axios-cache-interceptor/dev";
-import { setupCache } from "axios-cache-interceptor";
 import InitService from "../services/init-service";
+import { isClientCacheEnabled, setUpClientCache } from "./client-cache";
 
 // Cached for the life of the session (unlike InitService.fetchMac()'s in-flight dedup, which only
 // coalesces concurrent callers of one fetch): once resolved, later Asset requests reuse this value
@@ -57,9 +56,17 @@ async function extractErrorData(data: unknown): Promise<{ message?: string } & R
 	return (data ?? {}) as { message?: string };
 }
 
+/**
+ * Binary image routes needing the temporary-link signature: `Asset/...` (Feature 056)
+ * and the face-scoped photo `Faces/{id}/photo/{variant}` (Feature 093, ADR-093-01).
+ */
+function needsMac(url: string | undefined): boolean {
+	return url !== undefined && (url.includes("Asset/") || /Faces\/[^/]+\/photo\//.test(url));
+}
+
 const AxiosConfig = {
 	axiosSetUp() {
-		setupCache(axios);
+		setUpClientCache(axios, isClientCacheEnabled());
 		axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 		axios.interceptors.request.use(
 			async function (config: InternalAxiosRequestConfig) {
@@ -74,7 +81,7 @@ const AxiosConfig = {
 					// return Promise.reject("session_expired");
 				}
 
-				if (config.url?.includes("Asset/")) {
+				if (needsMac(config.url)) {
 					if (!macFetched) {
 						const { data } = await InitService.fetchMac();
 						cachedMac = data.mac || null;
@@ -111,6 +118,11 @@ const AxiosConfig = {
 					return axios(retryConfig);
 				}
 
+				// Both password login forms display throttling inline.
+				if (error.response.status === 429 && error.config?.method === "post" && error.config.url?.endsWith("/api/v2/Auth::login")) {
+					return Promise.reject(error);
+				}
+
 				const data = await extractErrorData(error.response.data);
 				const message = data.message || "An error occurred";
 
@@ -139,7 +151,7 @@ const AxiosConfig = {
 				// window). Invalidate it and retry once - if the retry also 401s (e.g. the
 				// feature was disabled meanwhile), __macRetried stops this from looping.
 				const config = error.config as MacRetryConfig | undefined;
-				if (error.response.status === 401 && config?.url?.includes("Asset/") && !config.__macRetried) {
+				if (error.response.status === 401 && config !== undefined && needsMac(config.url) && !config.__macRetried) {
 					cachedMac = null;
 					macFetched = false;
 					config.__macRetried = true;

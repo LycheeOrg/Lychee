@@ -94,7 +94,8 @@ web)
 
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
-    php-fpm8.5
+    # The image's FPM config sets daemonize = no, nginx is started after it
+    php-fpm --daemonize
   fi
 
   # Execute the main command (from Dockerfile CMD: octane:start) as www-data
@@ -140,7 +141,10 @@ worker)
   echo "🔄 Auto-restart enabled: worker will restart if it exits"
 
   # Get queue configuration from environment
-  QUEUE_NAMES=${QUEUE_NAMES:-default}
+  # 'high' is drained first (no job is pushed on it yet).
+  # Recompute jobs (album statistics, covers, sizes, buckets) are pushed on 'low':
+  # it must stay in the list, after 'default'.
+  QUEUE_NAMES=${QUEUE_NAMES:-high,default,low}
   WORKER_MAX_TIME=${WORKER_MAX_TIME:-3600}
   QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
 

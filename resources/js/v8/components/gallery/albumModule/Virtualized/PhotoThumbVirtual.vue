@@ -8,14 +8,33 @@
 		}"
 		:style="boxStyle"
 		:data-photo-id="props.photo.id"
-		@mouseenter="prefetchFaces"
+		data-drag-select-start="true"
+		@mouseenter="onMouseEnter"
+		@mouseleave="stopMotion"
 	>
 		<span class="thumbimg block relative w-full h-full border-none overflow-hidden">
 			<Thumb
 				class="thumb-image absolute w-full h-full top-0 left-0 object-cover object-center"
+				draggable="false"
 				:album-id="props.albumId"
 				:photo-id="props.photo.id"
-				type="small2x"
+				:direct-url="tileUrls?.grid"
+				:pending="tileUrls === undefined"
+			/>
+			<video
+				v-if="motionSrc"
+				:src="motionSrc"
+				class="absolute top-0 left-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
+				:class="isMotionPlaying ? 'opacity-100' : 'opacity-0'"
+				muted
+				loop
+				autoplay
+				playsinline
+				disablepictureinpicture
+				aria-hidden="true"
+				data-overlay="false"
+				@playing="onMotionPlaying"
+				@error="onMotionError"
 			/>
 		</span>
 		<div
@@ -61,7 +80,7 @@
 			v-if="props.photo.precomputed.is_video"
 			class="w-full top-0 h-full absolute hover:opacity-70 transition-opacity duration-300 flex justify-center items-center"
 		>
-			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
+			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" draggable="false" />
 		</div>
 		<!-- Touch select mode indicator -->
 		<div
@@ -83,6 +102,12 @@
 			<ThumbBadge v-if="showHeaderIdFlag" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
 			<ThumbBadge v-if="showValidatedFlag" class="bg-neutral-800" border-color="border-none" pi="lucide:shield text-amber-500 text-shadow-md" />
 			<ThumbBadge v-if="props.photo.precomputed.is_360" class="bg-sky-700" pi="lucide:rotate-3d" />
+			<ThumbBadge
+				v-if="props.photo.precomputed.is_livephoto"
+				class="bg-purple-700"
+				pi="lucide:smartphone"
+				:label="$t('gallery.motion_photo')"
+			/>
 		</div>
 		<!-- Rating Overlay -->
 		<ThumbRatingOverlay v-if="rating_album_view_mode !== 'never' && props.photo.rating !== null" :rating="props.photo.rating" />
@@ -114,7 +139,10 @@
  * (those live in `PhotoListItemVirtual.vue`/its own effective no-op, see
  * that file and `adaptPhotoTile.ts`'s own doc comment — NG11/Q-065-06).
  */
-import { computed, ref, toRef } from "vue";
+import { computed, inject, ref, toRef } from "vue";
+import { useMotionHover } from "@/v8/composables/photo/useMotionHover";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
+import { useTileUrlsStore } from "@/stores/TileUrlsState";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/v8/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import ThumbRatingOverlay from "@/v8/components/gallery/albumModule/thumbs/ThumbRatingOverlay.vue";
@@ -195,6 +223,26 @@ function toggleBuyMe() {
 // `@mouseenter` binding.
 function prefetchFaces() {
 	// Intentional no-op — see this component's own doc comment (NG11/Q-065-06).
+}
+
+// Feature 100: live photos play their motion on hover; v3 tiles fetch the
+// video URL through the loader their view provides.
+const {
+	videoSrc: motionSrc,
+	isPlaying: isMotionPlaying,
+	onEnter: startMotion,
+	onLeave: stopMotion,
+	onPlaying: onMotionPlaying,
+	onError: onMotionError,
+} = useMotionHover(() => props.photo, inject(MOTION_URL_LOADER, undefined));
+
+// Feature 102: the image comes from a direct URL when the route has a tile URL source.
+const tileUrlsStore = useTileUrlsStore();
+const tileUrls = computed(() => tileUrlsStore.urlsOf(props.photo.id));
+
+function onMouseEnter() {
+	prefetchFaces();
+	startMotion();
 }
 
 const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));

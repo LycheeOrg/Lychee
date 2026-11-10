@@ -1,5 +1,11 @@
 <template>
-	<span class="badge inline-block ltr:ml-1 rtl:mr-1 px-2 pt-2 pb-1 rounded-md rounded-t-none text-white text-center" :class="spanClass">
+	<span
+		class="badge inline-block ltr:ml-1 rtl:mr-1 px-2 pt-2 pb-1 rounded-md rounded-t-none text-white text-center"
+		:class="spanClass"
+		:title="props.label"
+		:aria-label="props.label"
+		:role="props.label ? 'img' : undefined"
+	>
 		<UIcon v-if="props.pi" :name="piIconName" :class="piExtraClasses" />
 		<svg v-if="props.icon" class="iconic inline w-4 h-4 fill-white">
 			<use :xlink:href="iconHref" />
@@ -15,6 +21,8 @@ const props = defineProps<{
 	/** Full Iconify name, optionally followed by extra classes for the icon: "lucide:shield text-amber-500". */
 	pi?: string;
 	borderColor?: string;
+	/** Tooltip and accessible name; without it the badge is decorative. */
+	label?: string;
 }>();
 
 const iconHref = computed(() => (props.icon ? `#${props.icon}` : ""));

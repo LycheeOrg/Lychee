@@ -30,6 +30,8 @@ return [
     'col_photo_sorting' => 'ترتيب الصور',
     'col_album_sorting' => 'ترتيب الألبومات',
     'col_created_at' => 'تاريخ الإنشاء',
+    'taken_range' => 'تاريخ الالتقاط: :range',
+    'taken_none' => 'لا توجد بيانات',
 
     // Filter
     'filter_placeholder' => 'البحث حسب العنوان...',
@@ -66,7 +68,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'نسبة عرض إلى ارتفاع الصورة المصغرة',
     'field_album_timeline' => 'الجدول الزمني للألبوم',
     'field_photo_timeline' => 'الجدول الزمني للصور',
-    'field_published_at' => 'Flow Publish Date',
+    'field_published_at' => 'تاريخ النشر في التدفق',
     'field_is_nsfw' => 'حساس',
     'field_is_public' => 'عام',
     'field_is_link_required' => 'الرابط مطلوب',
@@ -94,7 +96,7 @@ return [
     'error_load' => 'فشل تحميل الألبومات.',
     'error_load_ids' => 'فشل تحميل معرفات الألبومات.',
     'error_patch' => 'فشل تحديث الألبومات.',
-    'error_missing_timezone' => 'Please select a timezone for the publish date.',
+    'error_missing_timezone' => 'يرجى اختيار منطقة زمنية لتاريخ النشر.',
     'error_set_owner' => 'فشل نقل الملكية.',
     'error_delete' => 'فشل حذف الألبومات.',
     'error_load_users' => 'فشل تحميل المستخدمين.',

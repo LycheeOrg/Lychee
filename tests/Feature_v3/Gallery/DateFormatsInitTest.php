@@ -19,7 +19,7 @@ use Tests\Feature_v3\Base\BaseApiWithDataTest;
 
 /**
  * Every date format the frontend applies client-side is served once, through
- * Gallery::Init, and nowhere else (FR-063-16, FR-065-21, FR-071).
+ * Gallery::Init, and nowhere else (FR-063-16, FR-065-21, FR-071, FR-095-02).
  */
 class DateFormatsInitTest extends BaseApiWithDataTest
 {
@@ -30,6 +30,11 @@ class DateFormatsInitTest extends BaseApiWithDataTest
 		'date_format_sidebar_uploaded',
 		'date_format_sidebar_taken_at',
 		'timeline_photo_date_format_day',
+		'timeline_album_date_format_day',
+		'date_scrubber_format_year',
+		'date_scrubber_format_month',
+		'date_scrubber_format_day',
+		'date_scrubber_format_hour',
 	];
 
 	/** @var array<string,string> */
@@ -63,6 +68,11 @@ class DateFormatsInitTest extends BaseApiWithDataTest
 			'date_format_sidebar_uploaded' => 'M j, Y, g:i:s A e',
 			'date_format_sidebar_taken_at' => 'M j, Y, g:i:s A e',
 			'date_scrubber_label_format' => $this->initial_values['timeline_photo_date_format_day'],
+			'date_scrubber_album_label_format' => 'j M Y',
+			'date_scrubber_format_year' => 'Y',
+			'date_scrubber_format_month' => 'M',
+			'date_scrubber_format_day' => 'd/m',
+			'date_scrubber_format_hour' => 'H:00',
 		]);
 	}
 
@@ -74,6 +84,11 @@ class DateFormatsInitTest extends BaseApiWithDataTest
 		Configs::set('date_format_sidebar_uploaded', 'Y-m-d H:i');
 		Configs::set('date_format_sidebar_taken_at', 'j F Y');
 		Configs::set('timeline_photo_date_format_day', 'Y/m/d');
+		Configs::set('timeline_album_date_format_day', 'd.m.Y');
+		Configs::set('date_scrubber_format_year', 'y');
+		Configs::set('date_scrubber_format_month', 'F');
+		Configs::set('date_scrubber_format_day', 'j.n.');
+		Configs::set('date_scrubber_format_hour', 'G\h');
 		resolve(ConfigManager::class)->invalidateCache();
 
 		$response = $this->getJson('Gallery::Init');
@@ -85,6 +100,11 @@ class DateFormatsInitTest extends BaseApiWithDataTest
 			'date_format_sidebar_uploaded' => 'Y-m-d H:i',
 			'date_format_sidebar_taken_at' => 'j F Y',
 			'date_scrubber_label_format' => 'Y/m/d',
+			'date_scrubber_album_label_format' => 'd.m.Y',
+			'date_scrubber_format_year' => 'y',
+			'date_scrubber_format_month' => 'F',
+			'date_scrubber_format_day' => 'j.n.',
+			'date_scrubber_format_hour' => 'G\h',
 		]);
 	}
 
@@ -95,7 +115,7 @@ class DateFormatsInitTest extends BaseApiWithDataTest
 		$root = $this->actingAs($this->userMayUpload1)->getJson('Albums');
 		$this->assertOk($root);
 
-		foreach (['date_format_album_thumb', 'thumb_min_max_order', 'date_scrubber_label_format'] as $field) {
+		foreach (['date_format_album_thumb', 'thumb_min_max_order', 'date_scrubber_label_format', 'date_scrubber_album_label_format', 'date_scrubber_format_day'] as $field) {
 			self::assertArrayNotHasKey($field, $head->json('config'));
 			self::assertArrayNotHasKey($field, $root->json('config'));
 		}

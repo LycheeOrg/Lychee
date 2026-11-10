@@ -71,28 +71,39 @@ return [
     ],
     'old-orders' => [
         'title' => 'الطلبات القديمة',
-        'description' => 'تم العثور على %d طلب قديم.<br/><br/>يُعتبر الطلب قديمًا إذا مر عليه أكثر من 14 يومًا، وليس له مستخدم مرتبط به، وهو إما لا يزال في انتظار الدفع أو لا يحتوي على أي عناصر.',
+        'description' => 'تم العثور على %d طلب قديم.<br/>يُعتبر الطلب قديمًا إذا مر عليه أكثر من 14 يومًا، وليس له مستخدم مرتبط به، وهو إما لا يزال في انتظار الدفع أو لا يحتوي على أي عناصر.',
         'button' => 'حذف الطلبات القديمة',
     ],
     'fulfill-orders' => [
         'title' => 'طلبات بانتظار التنفيذ',
-        'description' => 'تم العثور على %d طلب يحتوي على محتوى لم يُتَح بعد.<br/><br/>انقر على الزر لتخصيص المحتوى عند الإمكان.',
+        'description' => 'تم العثور على %d طلب يحتوي على محتوى لم يُتَح بعد.<br/>انقر على الزر لتخصيص المحتوى عند الإمكان.',
         'button' => 'تنفيذ الطلبات',
     ],
     'fulfill-precompute' => [
         'title' => 'الحقول المحسوبة مسبقًا للألبومات',
-        'description' => 'تم العثور على %d ألبوم تنقصه الحقول المحسوبة مسبقًا.<br/><br/>يعادل تشغيل الأمر: php artisan lychee:recompute-album-fields',
+        'description' => 'تم العثور على %d ألبوم تنقصه الحقول المحسوبة مسبقًا.<br/>يعادل تشغيل الأمر: php artisan lychee:recompute-album-stats',
         'button' => 'حساب الحقول',
     ],
     'flush-queue' => [
         'title' => 'تفريغ قائمة الانتظار',
-        'description' => 'تم العثور على %d مهمة معلّقة في قائمة الانتظار.<br/><br/>تحذير: سيؤدي تفريغ قائمة الانتظار إلى حذف جميع المهام المعلّقة نهائيًا. لا يمكن التراجع عن هذا الإجراء.',
+        'description' => 'تم العثور على %d مهمة معلّقة في قائمة الانتظار.<br/>تحذير: سيؤدي تفريغ قائمة الانتظار إلى حذف جميع المهام المعلّقة نهائيًا. لا يمكن التراجع عن هذا الإجراء.',
         'button' => 'تفريغ القائمة',
     ],
     'backfill-album-sizes' => [
         'title' => 'إحصائيات حجم الألبومات',
-        'description' => 'تم العثور على %d ألبوم بدون إحصائيات الحجم.<br/><br/>يعادل تشغيل الأمر: php artisan lychee:recompute-album-sizes',
+        'description' => 'تم العثور على %d ألبوم بدون إحصائيات الحجم.<br/>يعادل تشغيل الأمر: php artisan lychee:recompute-album-sizes',
+        'description_queue' => 'يعيد حساب إحصاءات حجم جميع الألبومات في الخلفية.<br/>يعادل تشغيل الأمر: php artisan lychee:recompute-album-sizes',
         'button' => 'حساب الأحجام',
+    ],
+    'recompute-buckets' => [
+        'title' => 'مجموعات الخط الزمني',
+        'description' => 'يعيد حساب مجموعة الخط الزمني لكل ألبوم ولكل صورة، ثم يحدّث قوائم الألبومات والصور.<br/>يعادل تشغيل الأمر: php artisan lychee:recompute-buckets',
+        'button' => 'إعادة الحساب',
+    ],
+    'recompute-taken-at-range' => [
+        'title' => 'نطاقات تواريخ التقاط الألبومات',
+        'description' => 'تم العثور على %d ألبوم لا يتطابق نطاق تواريخ التقاطه مع صوره.<br/>تظهر الألبومات المرتبة حسب تاريخ الالتقاط في غير مكانها حتى تتم إعادة حسابها.',
+        'button' => 'إعادة حساب النطاقات',
     ],
 
     'face_quality' => [
@@ -130,7 +141,7 @@ return [
         'selected_count' => ':count محدد',
     ],
     'bulk-scan-faces' => [
-        'description' => 'تم العثور على %d صورة لم يتم فحصها بعد للتعرف على الوجوه.<br/><br/>يتطلب تشغيل خدمة الرؤية بالذكاء الاصطناعي (AI Vision).',
+        'description' => 'تم العثور على %d صورة لم يتم فحصها بعد للتعرف على الوجوه.<br/>يتطلب تشغيل خدمة الرؤية بالذكاء الاصطناعي (AI Vision).',
     ],
     'run-clustering' => [
         'description' => 'تشغيل عملية تجميع الوجوه في خدمة الرؤية بالذكاء الاصطناعي (AI Vision). يقوم بتجميع الوجوه المكتشفة حسب التشابه لتتمكن من تعيينها للأشخاص.',
@@ -156,10 +167,10 @@ return [
     ],
 
         'purge-orphan-face-embeddings' => [
-            'title' => 'Purge Orphan Face Embeddings',
-            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
-            'action' => 'Purge Now',
-            'success' => 'Orphaned face embeddings purged successfully.',
+            'title' => 'تنظيف بصمات الوجوه اليتيمة',
+            'description' => 'قد تحتفظ خدمة AI Vision بما يصل إلى %d من بصمات الوجوه التي لم تعد موجودة في Lychee. سيؤدي التنظيف إلى إرسال القائمة الحالية للوجوه إلى AI Vision وحذف كل ما تبقى نهائيًا.',
+            'action' => 'تنظيف الآن',
+            'success' => 'تم تنظيف بصمات الوجوه اليتيمة بنجاح.',
         ],
         'bulk-scan-nsfw' => [
         'title' => 'فحص جماعي للمحتوى الحساس (NSFW)',

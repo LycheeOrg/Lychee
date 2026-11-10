@@ -52,7 +52,7 @@ return [
         'mark_read' => 'Merk som lest',
         'mark_unread' => 'Merk som ulest',
         'delete_confirm_header' => 'Slett melding',
-        'delete_confirm_message' => 'Are you sure you want to delete this message?',
+        'delete_confirm_message' => 'Er du sikker på at du vil slette meldingen fra ":name"?',
         'delete_warning' => 'Denne handlingen kan ikke angres.',
         'delete_success' => 'Melding slettet.',
         'delete_error' => 'Kunne ikke slette meldingen.',

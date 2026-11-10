@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Felhasználói csoportok',
+    'explanation' => 'A felhasználói csoportokkal rendszerezheti a felhasználókat, és együttesen kezelheti a jogosultságokat.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Csoport létrehozása',
+    'edit' => 'Szerkesztés',
+    'delete' => 'Törlés',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Csoportok betöltése...',
+    'empty' => 'Nem található csoport.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Tag hozzáadása...',
+    'empty_group' => 'Ez a csoport üres.',
+    'no_permission_members' => 'Nincs jogosultsága a csoport tagjainak megtekintéséhez.',
+    'remove_success' => '%s eltávolítva innen: %s.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Csoport törlése',
+    'confirm_delete_message' => 'Biztosan törli ezt a csoportot?',
+    'cancel' => 'Mégse',
+    'confirm' => 'Törlés',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Csoport neve',
+        'description' => 'Leírás',
+        'users' => 'Felhasználók',
+        'cancel' => 'Mégse',
+        'create' => 'Létrehozás',
+        'edit' => 'Szerkesztés',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'A csoport neve kötelező.',
     ],
 ];

@@ -23,12 +23,12 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Enum\TitleBucketMode;
 use App\Repositories\ConfigManager;
 use App\Services\PhotoBucketComputer;
-use Illuminate\Support\Carbon;
 use Tests\AbstractTestCase;
 
 /**
- * Covers {@see \App\Services\PhotoBucketComputer} (all 6 bucketable
- * `ColumnSortingPhotoType` branches, and `OWNER_ID` always excluded).
+ * Covers {@see PhotoBucketComputer}: the granularity-free
+ * `photo_album.bucket_key` per sort column (FR-092-03), `OWNER_ID`
+ * excluded, and granularity resolution.
  */
 class PhotoBucketComputerTest extends AbstractTestCase
 {
@@ -38,308 +38,96 @@ class PhotoBucketComputerTest extends AbstractTestCase
 		parent::tearDown();
 	}
 
-	private function makeComputer(): array
+	private function computer(?TitleBucketMode $mode = null, ?TimelinePhotoGranularity $default = null): PhotoBucketComputer
 	{
 		$config_manager = \Mockery::mock(ConfigManager::class);
+		if ($mode !== null) {
+			$config_manager->shouldReceive('getValueAsEnum')->with('photo_title_bucket_mode', TitleBucketMode::class)->andReturn($mode);
+		}
+		if ($default !== null) {
+			$config_manager->shouldReceive('getValueAsEnum')->with('timeline_photos_granularity', TimelinePhotoGranularity::class)->andReturn($default);
+		}
 
-		return [new PhotoBucketComputer($config_manager), $config_manager];
+		return new PhotoBucketComputer($config_manager);
 	}
 
-	private function compute(
-		PhotoBucketComputer $computer,
-		ColumnSortingType $sorting_column,
-		TimelinePhotoGranularity $granularity = TimelinePhotoGranularity::YEAR,
-		string $title = '',
-		string $title_base = '',
-		?Carbon $created_at = null,
-		?Carbon $taken_at = null,
-		bool $is_highlighted = false,
-		string $type = 'image/jpeg',
-		?string $rating_avg = null,
-	): ?string {
-		return $computer->compute(
-			sorting_column: $sorting_column,
-			granularity: $granularity,
-			title: $title,
-			title_base: $title_base,
-			created_at: $created_at ?? Carbon::create(2024, 3, 15, 10, 0, 0),
-			taken_at: $taken_at,
-			is_highlighted: $is_highlighted,
-			type: $type,
-			rating_avg: $rating_avg,
-		);
-	}
-
-	// ── OWNER_ID ───────────────────────────────────────────────────
-
-	public function testOwnerIdAlwaysReturnsNullWithoutTouchingConfig(): void
+	/**
+	 * @param array<string,mixed> $overrides
+	 */
+	private function row(array $overrides = []): object
 	{
-		[$computer, $config_manager] = $this->makeComputer();
-		// No shouldReceive() set up at all: any config call would throw.
-
-		$result = $this->compute($computer, ColumnSortingType::OWNER_ID, rating_avg: '4.5000');
-
-		$this->assertNull($result);
+		return (object) array_merge([
+			'taken_key' => '2026-07-01-16',
+			'created_at' => '2026-07-02 03:04:05.000000',
+			'title_date_key' => '2024-03-01',
+			'title_base' => 'Trip',
+			'is_highlighted' => 0,
+			'type' => 'image/jpeg',
+			'rating_avg' => null,
+		], $overrides);
 	}
 
-	// ── CREATED_AT / TAKEN_AT ───────────────────────────────────────
-
-	public function testCreatedAtBucketsByYear(): void
+	public function testOwnerIdIsNotBucketableAndReadsNoConfig(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::CREATED_AT, TimelinePhotoGranularity::YEAR, created_at: Carbon::create(2024, 3, 15));
-		$this->assertSame('2024', $result);
+		// No expectation set: any config call would throw.
+		$this->assertNull($this->computer()->keyForRow(ColumnSortingType::OWNER_ID, $this->row()));
 	}
 
-	public function testCreatedAtBucketsByMonth(): void
+	public function testTakenAtIsTheCaptureLocalKey(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::CREATED_AT, TimelinePhotoGranularity::MONTH, created_at: Carbon::create(2024, 3, 15));
-		$this->assertSame('2024-03', $result);
+		$computer = $this->computer();
+		$this->assertSame('2026-07-01-16', $computer->keyForRow(ColumnSortingType::TAKEN_AT, $this->row()));
+		$this->assertNull($computer->keyForRow(ColumnSortingType::TAKEN_AT, $this->row(['taken_key' => null])));
 	}
 
-	public function testCreatedAtBucketsByDay(): void
+	public function testCreatedAtIsTheStoredValueToTheHour(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::CREATED_AT, TimelinePhotoGranularity::DAY, created_at: Carbon::create(2024, 3, 15));
-		$this->assertSame('2024-03-15', $result);
+		$this->assertSame('2026-07-02-03', $this->computer()->keyForRow(ColumnSortingType::CREATED_AT, $this->row()));
 	}
 
-	public function testCreatedAtBucketsByHour(): void
+	public function testTitleDatePrefixIsTheTitleDateKey(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::CREATED_AT, TimelinePhotoGranularity::HOUR, created_at: Carbon::create(2024, 3, 15, 14));
-		$this->assertSame('2024-03-15-14', $result);
+		$computer = $this->computer(TitleBucketMode::DATE_PREFIX);
+		$this->assertSame('2024-03-01', $computer->keyForRow(ColumnSortingType::TITLE, $this->row()));
+		$this->assertNull($computer->keyForRow(ColumnSortingType::TITLE, $this->row(['title_date_key' => null])));
 	}
 
-	public function testTakenAtBucketsByMonth(): void
+	public function testTitleAlphabeticalIsTheTitleBaseCappedAt255(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::TAKEN_AT, TimelinePhotoGranularity::MONTH, taken_at: Carbon::create(2023, 7, 4));
-		$this->assertSame('2023-07', $result);
+		$computer = $this->computer(TitleBucketMode::ALPHABETICAL);
+		$this->assertSame('Trip', $computer->keyForRow(ColumnSortingType::TITLE, $this->row()));
+
+		$long = str_repeat('é', 300);
+		$this->assertSame(str_repeat('é', 255), $computer->keyForRow(ColumnSortingType::TITLE, $this->row(['title_base' => $long])));
+		$this->assertSame('', $computer->keyForRow(ColumnSortingType::TITLE, $this->row(['title_base' => null])));
 	}
 
-	public function testTakenAtNullYieldsNullUnknownBucket(): void
+	public function testHighlightedIsOneOrZero(): void
 	{
-		[$computer] = $this->makeComputer();
-		$result = $this->compute($computer, ColumnSortingType::TAKEN_AT, taken_at: null);
-		$this->assertNull($result);
+		$computer = $this->computer();
+		$this->assertSame('1', $computer->keyForRow(ColumnSortingType::IS_HIGHLIGHTED, $this->row(['is_highlighted' => 1])));
+		$this->assertSame('0', $computer->keyForRow(ColumnSortingType::IS_HIGHLIGHTED, $this->row(['is_highlighted' => false])));
 	}
 
-	// ── TITLE (photo-specific config pair) ───────────────────────────
-
-	public function testTitleAlphabeticalModeUsesPhotoSpecificPrefixLength(): void
+	public function testTypeIsTheValue(): void
 	{
-		[$computer, $config_manager] = $this->makeComputer();
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('photo_title_bucket_mode', TitleBucketMode::class)
-			->andReturn(TitleBucketMode::ALPHABETICAL);
-		$config_manager->shouldReceive('getValueAsInt')
-			->once()
-			->with('photo_title_bucket_prefix_length')
-			->andReturn(3);
-
-		$result = $this->compute($computer, ColumnSortingType::TITLE, title: 'Vacation Photos', title_base: 'Vacation Photos');
-
-		$this->assertSame('Vac', $result);
+		$this->assertSame('video/mp4', $this->computer()->keyForRow(ColumnSortingType::TYPE, $this->row(['type' => 'video/mp4'])));
 	}
 
-	public function testTitleDateParsedModeParsesLeadingDate(): void
+	public function testRatingIsTheRoundedAverage(): void
 	{
-		[$computer, $config_manager] = $this->makeComputer();
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('photo_title_bucket_mode', TitleBucketMode::class)
-			->andReturn(TitleBucketMode::DATE_PREFIX);
-
-		$result = $this->compute($computer, ColumnSortingType::TITLE, TimelinePhotoGranularity::MONTH, title: '2020-03 Vacation', title_base: '2020-03 Vacation');
-
-		$this->assertSame('2020-03', $result);
+		$computer = $this->computer();
+		$this->assertSame('5', $computer->keyForRow(ColumnSortingType::RATING_AVG, $this->row(['rating_avg' => '4.5000'])));
+		$this->assertSame('4', $computer->keyForRow(ColumnSortingType::RATING_AVG, $this->row(['rating_avg' => '4.4999'])));
+		$this->assertNull($computer->keyForRow(ColumnSortingType::RATING_AVG, $this->row()));
 	}
 
-	public function testTitleDateParsedModeUnparseableTitleYieldsNull(): void
+	public function testResolveGranularityPrefersTheAlbumOverride(): void
 	{
-		[$computer, $config_manager] = $this->makeComputer();
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('photo_title_bucket_mode', TitleBucketMode::class)
-			->andReturn(TitleBucketMode::DATE_PREFIX);
-
-		$result = $this->compute($computer, ColumnSortingType::TITLE, title: 'No date here', title_base: 'No date here');
-
-		$this->assertNull($result);
-	}
-
-	public function testTitleBranchNeverReadsTheAlbumOnlyConfigKeys(): void
-	{
-		[$computer, $config_manager] = $this->makeComputer();
-		// Mockery::mock() without shouldReceive() throws on any unexpected
-		// call - if the TITLE branch read 'title_bucket_mode' (album-only)
-		// instead of 'photo_title_bucket_mode', this would fail loudly.
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('photo_title_bucket_mode', TitleBucketMode::class)
-			->andReturn(TitleBucketMode::ALPHABETICAL);
-		$config_manager->shouldReceive('getValueAsInt')
-			->once()
-			->with('photo_title_bucket_prefix_length')
-			->andReturn(1);
-
-		$this->compute($computer, ColumnSortingType::TITLE, title: 'Zebra', title_base: 'Zebra');
-
-		// Mockery will flag any call to 'title_bucket_mode'/'title_bucket_prefix_length'
-		// as an unexpected invocation at Mockery::close() time (tearDown()).
-		$this->assertTrue(true);
-	}
-
-	// ── IS_HIGHLIGHTED ────────────────────────────────────────────
-
-	public function testIsHighlightedTrueBucketsAsOne(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame('1', $this->compute($computer, ColumnSortingType::IS_HIGHLIGHTED, is_highlighted: true));
-	}
-
-	public function testIsHighlightedFalseBucketsAsZero(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame('0', $this->compute($computer, ColumnSortingType::IS_HIGHLIGHTED, is_highlighted: false));
-	}
-
-	// ── TYPE ──────────────────────────────────────────────────────
-
-	public function testTypeBucketsByRawEnumValue(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame('video/mp4', $this->compute($computer, ColumnSortingType::TYPE, type: 'video/mp4'));
-	}
-
-	// ── RATING_AVG ────────────────────────────────────────────────
-
-	public function testRatingAvgRoundsToNearestIntegerString(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame('5', $this->compute($computer, ColumnSortingType::RATING_AVG, rating_avg: '4.6000'));
-		$this->assertSame('1', $this->compute($computer, ColumnSortingType::RATING_AVG, rating_avg: '1.4000'));
-	}
-
-	public function testRatingAvgNullYieldsNullUnknownBucket(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertNull($this->compute($computer, ColumnSortingType::RATING_AVG, rating_avg: null));
-	}
-
-	// ── resolveGranularity() ──────────────────────────────────────
-
-	public function testResolveGranularityPassesThroughExplicitValue(): void
-	{
-		[$computer, $config_manager] = $this->makeComputer();
-		// The instance-wide default is always resolved (mirrors
-		// AlbumBucketComputer::resolveGranularity()) even though it is
-		// discarded here in favour of the explicit $candidate.
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('timeline_photos_granularity', TimelinePhotoGranularity::class)
-			->andReturn(TimelinePhotoGranularity::YEAR);
-
-		$this->assertSame(TimelinePhotoGranularity::DAY, $computer->resolveGranularity(TimelinePhotoGranularity::DAY));
-	}
-
-	public function testResolveGranularityFallsBackToInstanceDefaultForNull(): void
-	{
-		[$computer, $config_manager] = $this->makeComputer();
-		$config_manager->shouldReceive('getValueAsEnum')
-			->once()
-			->with('timeline_photos_granularity', TimelinePhotoGranularity::class)
-			->andReturn(TimelinePhotoGranularity::MONTH);
-
+		$computer = $this->computer(default: TimelinePhotoGranularity::MONTH);
+		$this->assertSame(TimelinePhotoGranularity::HOUR, $computer->resolveGranularity(TimelinePhotoGranularity::HOUR));
 		$this->assertSame(TimelinePhotoGranularity::MONTH, $computer->resolveGranularity(null));
-	}
-
-	public function testResolveGranularityFallsBackToInstanceDefaultForDefaultOrDisabled(): void
-	{
-		[$computer, $config_manager] = $this->makeComputer();
-		$config_manager->shouldReceive('getValueAsEnum')
-			->twice()
-			->with('timeline_photos_granularity', TimelinePhotoGranularity::class)
-			->andReturn(TimelinePhotoGranularity::DAY);
-
-		$this->assertSame(TimelinePhotoGranularity::DAY, $computer->resolveGranularity(TimelinePhotoGranularity::DEFAULT));
-		$this->assertSame(TimelinePhotoGranularity::DAY, $computer->resolveGranularity(TimelinePhotoGranularity::DISABLED));
-	}
-
-	// ── bucketDateRange() (pure, Carbon-free) ───────────────────────
-
-	public function testBucketDateRangeYear(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-01-01 00:00:00', '2025-01-01 00:00:00'],
-			$computer->bucketDateRange('2024', TimelinePhotoGranularity::YEAR),
-		);
-	}
-
-	public function testBucketDateRangeMonth(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-03-01 00:00:00', '2024-04-01 00:00:00'],
-			$computer->bucketDateRange('2024-03', TimelinePhotoGranularity::MONTH),
-		);
-	}
-
-	public function testBucketDateRangeMonthDecemberRollsIntoNextYear(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-12-01 00:00:00', '2025-01-01 00:00:00'],
-			$computer->bucketDateRange('2024-12', TimelinePhotoGranularity::MONTH),
-		);
-	}
-
-	public function testBucketDateRangeDay(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-03-15 00:00:00', '2024-03-16 00:00:00'],
-			$computer->bucketDateRange('2024-03-15', TimelinePhotoGranularity::DAY),
-		);
-	}
-
-	public function testBucketDateRangeDayRollsIntoNextMonth(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-01-31 00:00:00', '2024-02-01 00:00:00'],
-			$computer->bucketDateRange('2024-01-31', TimelinePhotoGranularity::DAY),
-		);
-	}
-
-	public function testBucketDateRangeHour(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-03-15 14:00:00', '2024-03-15 15:00:00'],
-			$computer->bucketDateRange('2024-03-15-14', TimelinePhotoGranularity::HOUR),
-		);
-	}
-
-	public function testBucketDateRangeHourRollsIntoNextDay(): void
-	{
-		[$computer] = $this->makeComputer();
-		$this->assertSame(
-			['2024-03-15 23:00:00', '2024-03-16 00:00:00'],
-			$computer->bucketDateRange('2024-03-15-23', TimelinePhotoGranularity::HOUR),
-		);
-	}
-
-	public function testBucketDateRangeNeverTouchesConfig(): void
-	{
-		[$computer, $config_manager] = $this->makeComputer();
-		// No shouldReceive() set up at all: any config call would throw -
-		// bucketDateRange() is a pure function of its own arguments.
-		$computer->bucketDateRange('2024-03', TimelinePhotoGranularity::MONTH);
-		$this->assertTrue(true);
+		$this->assertSame(TimelinePhotoGranularity::MONTH, $computer->resolveGranularity(TimelinePhotoGranularity::DEFAULT));
+		$this->assertSame(TimelinePhotoGranularity::MONTH, $computer->resolveGranularity(TimelinePhotoGranularity::DISABLED));
 	}
 }

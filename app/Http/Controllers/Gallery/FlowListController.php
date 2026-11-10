@@ -47,14 +47,6 @@ class FlowListController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 
-		// hide_nsfw_in_flow===true means Flow::do() has already excluded every
-		// recursively-NSFW album via a whereNotExists() clause, and never adds
-		// the virtual `is_recursive_nsfw` select in that case (see Flow::do()) -
-		// so `is_nsfws[i]` is unconditionally false without needing to select
-		// anything for it. Only when hide_nsfw_in_flow===false does Flow::do()
-		// add that virtual column, and only then can/must we select it here.
-		$hide_nsfw_in_flow = request()->configs()->getValueAsBool('hide_nsfw_in_flow');
-
 		$query = $this->flow->do(false);
 		$this->album_query_policy->joinBaseAlbumOwnerId($query, 'albums.id', 'v3_');
 		$query->leftJoin('users', 'users.id', '=', 'v3_base_albums.owner_id');
@@ -62,9 +54,6 @@ class FlowListController extends Controller
 			$join->on('v3_stats.album_id', '=', 'albums.id')->whereNull('v3_stats.photo_id');
 		});
 
-		// Note: addSelect() only - Flow::do() may already have added its own
-		// virtual `is_recursive_nsfw` select; the replacing select() would
-		// silently drop it.
 		$query->addSelect([
 			'albums.id',
 			'albums.cover_id',
@@ -83,10 +72,8 @@ class FlowListController extends Controller
 			'v3_stats.visit_count',
 			'v3_stats.download_count',
 			'v3_stats.shared_count',
+			'albums.is_recursive_nsfw',
 		]);
-		if (!$hide_nsfw_in_flow) {
-			$query->addSelect(['is_recursive_nsfw']);
-		}
 
 		$rows = $query->toBase()->get();
 
@@ -127,7 +114,7 @@ class FlowListController extends Controller
 			$descriptions[] = $this->resolveDescription($row->id, $row->description ?? '');
 			$cover_ids[] = $row->cover_id;
 			$owner_names[] = $is_authenticated ? ($row->display_name ?? $row->username) : null;
-			$is_nsfws[] = $hide_nsfw_in_flow === false && DbBool::parse($row->is_recursive_nsfw ?? false);
+			$is_nsfws[] = $hide_nsfw_in_flow === false && DbBool::parse($row->is_recursive_nsfw);
 			$num_photos[] = (int) $row->num_photos;
 			$num_children[] = (int) $row->num_children;
 			$min_max_texts[] = $this->resolveMinMaxText($row, $flow_min_max_enabled, $min_max_date_format, $flow_min_max_order);

@@ -22,7 +22,9 @@
 		<MaintenanceOldOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillOrders v-if="rights?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
+		<MaintenanceRecomputeTakenAtRange />
 		<MaintenanceBackfillAlbumSizes />
+		<MaintenanceRecomputeBuckets />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
@@ -54,7 +56,9 @@ import MaintenanceMissingPalettes from "@/v8/components/maintenance/MaintenanceM
 import MaintenanceOldOrders from "@/v8/components/maintenance/MaintenanceOldOrders.vue";
 import MaintenanceFulfillOrders from "@/v8/components/maintenance/MaintenanceFulfillOrders.vue";
 import MaintenanceFulfillPrecompute from "@/v8/components/maintenance/MaintenanceFulfillPrecompute.vue";
+import MaintenanceRecomputeTakenAtRange from "@/v8/components/maintenance/MaintenanceRecomputeTakenAtRange.vue";
 import MaintenanceBackfillAlbumSizes from "@/v8/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
+import MaintenanceRecomputeBuckets from "@/v8/components/maintenance/MaintenanceRecomputeBuckets.vue";
 import MaintenanceFlushQueue from "@/v8/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/v8/components/maintenance/MaintenanceBulkScanFaces.vue";
 import MaintenanceBulkScanNsfw from "@/v8/components/maintenance/MaintenanceBulkScanNsfw.vue";

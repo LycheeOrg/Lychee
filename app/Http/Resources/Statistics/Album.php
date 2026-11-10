@@ -14,6 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript()]
 class Album extends Data
 {
+	public string $id;
 	public string $username;
 	public string $title;
 	public bool $is_nsfw;
@@ -31,6 +32,7 @@ class Album extends Data
 	 */
 	public function __construct(array $space_data, array $count_data)
 	{
+		$this->id = $count_data['id'];
 		$this->username = $count_data['username'];
 		$this->title = $count_data['title'];
 		$this->is_nsfw = $count_data['is_nsfw'];

@@ -8,7 +8,6 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Constants\PhotoAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantAssetType;
@@ -16,6 +15,7 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\ResolvesSizeVariantAssetTrait;
 use App\Models\Album;
 use App\Models\PersonAlbum;
 use App\Models\SizeVariant;
@@ -24,9 +24,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
-use App\Services\TemporaryLinkSigner;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -64,21 +62,21 @@ use Illuminate\Validation\Rules\Enum;
  * `photo_id` is taken straight from the validated route parameter with no
  * extra Photo lookup, and {@link self::sizeVariant()}'s query is narrowed to
  * only the columns {@link \App\Image\Watermarker::get_path()} and the
- * controller actually read.
+ * controller actually read. The album is loaded with its base record and
+ * access permissions only, a regular album's membership is selected by the
+ * size variant query itself, and admins skip the album entirely: they may
+ * read every photo, so `album_id` is validated but never resolved for them
+ * (Feature 102, FR-102-02).
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
-	private const MAC_HEADER = 'X-Mac';
+	use ResolvesSizeVariantAssetTrait;
 
-	/** Internal validation-bag key the header is merged into (see prepareForValidation()). */
-	private const MAC_ATTRIBUTE = 'temporary_link_mac';
-
-	private AbstractAlbum $album;
+	/** `null` for admins, who skip the album checks (see {@link self::skipsAlbumCheck()}). */
+	private ?AbstractAlbum $album = null;
 	private string $photo_id;
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
-
-	private ?string $mac = null;
 
 	/**
 	 * Set to true only when a required temporary-link signature is absent,
@@ -89,8 +87,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * (FR-056-05), since the inherited `Auth::check()`-based mechanism
 	 * cannot express this endpoint's required mapping.
 	 */
-	private bool $signature_check_failed = false;
-
 	public function sizeVariant(): SizeVariant
 	{
 		return $this->size_variant;
@@ -108,6 +104,11 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			$this->signature_check_failed = true;
 
 			return false;
+		}
+
+		// Admins: no album was loaded (see skipsAlbumCheck()).
+		if ($this->album === null) {
+			return true;
 		}
 
 		// The album must itself be accessible to the caller (owner, shared
@@ -155,10 +156,9 @@ class GetPhotoAssetRequest extends BaseApiRequest
 				return true;
 			}
 
-			return DB::table(PhotoAlbum::PHOTO_ALBUM)
-				->where(PhotoAlbum::ALBUM_ID, $album->id)
-				->where(PhotoAlbum::PHOTO_ID, $this->photo_id)
-				->exists();
+			// Selected from `photo_album` by the size variant query (see
+			// processValidatedValues()).
+			return $this->size_variant->getAttribute(self::IS_IN_ALBUM_ATTRIBUTE) === true;
 		}
 
 		if ($album instanceof TagAlbum && $album->cover_id === $this->photo_id) {
@@ -256,96 +256,26 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		/** @var string $size_variant_token */
 		$size_variant_token = $values[RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE];
 
-		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
+		if (!$this->skipsAlbumCheck(Auth::user())) {
+			$this->album = $this->album_factory->findAbstractAlbumForAccessCheckOrFail($album_id);
+		}
 		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
-		// The requested type may simply never have been generated for this
-		// photo (e.g. a `small2x` variant when the source is too small to
-		// warrant a 2x thumbnail) - walk the same fallback chain
-		// PhotoAssetController::fallback() uses for a missing *file*
-		// (SizeVariantType::fallbackType()) so a missing DB *row* degrades
-		// the same way instead of 404ing outright. The controller then
-		// continues that exact chain from whichever type we resolve to here
-		// if that type's file also turns out to be missing on disk.
-		$type = $this->size_variant_type;
-		$size_variant = null;
-		while ($size_variant === null) {
-			// SizeVariant must stay a real model: Watermarker::get_path() and
-			// the controller rely on its enum casts (type, storage_disk). We
-			// still limit the hydrated columns to only what those two call
-			// sites read.
-			$size_variant = SizeVariant::query()
-				->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
-				->where('photo_id', '=', $this->photo_id)
-				->where('type', '=', $type)
-				->first();
-
-			if ($size_variant !== null) {
-				break;
-			}
-
-			$next = $type->fallbackType();
-			if ($next === null) {
-				throw (new ModelNotFoundException())->setModel(SizeVariant::class);
-			}
-			$type = $next;
-		}
-
-		$this->size_variant_type = $type;
+		$membership_album_id = $this->album instanceof Album ? $this->album->id : null;
+		$size_variant = $this->resolveSizeVariant($this->photo_id, $this->size_variant_type, $membership_album_id);
+		$this->size_variant_type = $size_variant->type;
 		$this->size_variant = $size_variant;
 
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
 	}
 
 	/**
-	 * Determines whether `$user` must additionally present a valid
-	 * temporary-link signature to be authorized (ADR-0008).
-	 *
-	 * `false` for every caller — guests included — when
-	 * `temporary_image_link_enabled` is off (Q-056-05): disabling the
-	 * feature drops the extra signature requirement outright rather than
-	 * locking guests out, so a disabled-feature guest relies solely on the
-	 * ordinary `AlbumPolicy`/`PhotoPolicy` check like any other caller.
-	 * Otherwise, guests are only ever authorized via a valid temporary link
-	 * (FR-056-05) — there's no session to fall back on. For authenticated
-	 * users, this mirrors
-	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
-	 * generation-time predicate, re-purposed for validation.
+	 * Admins may read every photo ({@link \App\Policies\BasePolicy::before()}),
+	 * so neither the album access nor the photo membership can deny them:
+	 * the album is not loaded at all (Feature 102, FR-102-02).
 	 */
-	private function signatureRequired(?User $user): bool
+	private function skipsAlbumCheck(?User $user): bool
 	{
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($user === null) {
-			return true;
-		}
-
-		if ($user->may_administrate) {
-			return $this->configs()->getValueAsBool('temporary_image_link_when_admin');
-		}
-
-		return $this->configs()->getValueAsBool('temporary_image_link_when_logged_in');
-	}
-
-	/**
-	 * Validates the temporary-link signature: the feature must be globally
-	 * enabled, the header must be present (FR-056-04), and the code must
-	 * verify against the current time step (or its one-step grace window —
-	 * see {@link TemporaryLinkSigner}), which is what bounds its freshness;
-	 * there is no separate timestamp/TTL check to make here any more.
-	 */
-	public function isSignatureValid(): bool
-	{
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($this->mac === null) {
-			return false;
-		}
-
-		return (new TemporaryLinkSigner())->verify($this->mac);
+		return $user?->may_administrate === true;
 	}
 }

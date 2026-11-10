@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Další odkazy',
+    'description' => 'Spravujte libovolný seřazený seznam dalších odkazů zobrazených v navigaci a/nebo zápatí úvodní stránky.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Zatím nejsou nastaveny žádné další odkazy.',
+    'create_first' => 'Vytvořte svůj první odkaz',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Popisek',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Umístění',
+    'col_enabled' => 'Povoleno',
+    'col_actions' => 'Akce',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Navigace',
+    'placement_footer' => 'Zápatí',
+    'placement_both' => 'Navigace a zápatí',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Vestavěný',
+    'built_in_cannot_delete' => 'Tento vestavěný odkaz nelze smazat. Můžete ho zakázat nebo změnit jeho pořadí jako u jakéhokoli jiného odkazu.',
+    'built_in_url_hint' => 'Toto je vestavěný odkaz a jeho cíl nelze změnit.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Vytvořit odkaz',
+    'edit' => 'Upravit',
+    'delete' => 'Smazat',
+    'cancel' => 'Zrušit',
+    'save' => 'Uložit',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Popisek',
+    'field_label_placeholder' => 'např. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Umístění',
+    'field_open_in_new_tab' => 'Otevřít v nové kartě',
+    'field_enabled' => 'Povoleno',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Vytvořit odkaz',
+    'modal_edit_title' => 'Upravit odkaz',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Smazat odkaz',
+    'confirm_delete_message' => 'Opravdu chcete smazat odkaz ":label"? Tuto akci nelze vrátit zpět.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Odkaz byl úspěšně vytvořen.',
+    'updated' => 'Odkaz byl úspěšně aktualizován.',
+    'deleted' => 'Odkaz byl úspěšně smazán.',
+    'reordered' => 'Pořadí odkazů bylo úspěšně změněno.',
+    'error_load' => 'Odkazy se nepodařilo načíst.',
+    'error_save' => 'Odkaz se nepodařilo uložit.',
+    'error_delete' => 'Odkaz se nepodařilo smazat.',
+    'error_reorder' => 'Pořadí odkazů se nepodařilo změnit.',
 ];

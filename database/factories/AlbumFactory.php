@@ -8,6 +8,7 @@
 
 namespace Database\Factories;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Models\Album;
 use App\Models\Statistics;
 use Database\Factories\Traits\OwnedBy;
@@ -85,6 +86,7 @@ class AlbumFactory extends Factory
 	{
 		return $this->afterCreating(function (Album $album) {
 			Statistics::factory()->with_album($album->id)->create();
+			(new SyncRecursiveNsfw())->do();
 			$album->fresh();
 			$album->load('statistics');
 		});

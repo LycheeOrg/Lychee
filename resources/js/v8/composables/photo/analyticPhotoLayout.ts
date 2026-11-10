@@ -1,3 +1,4 @@
+import { toRaw } from "vue";
 import { justified, masonry, grid, square } from "@/v8/layouts/wasmLayouts";
 import { HEADER_ROW_HEIGHT, LIST_ROW_HEIGHT } from "@/v8/composables/album/virtualAlbumRows";
 import { filterBucketedTiles, type AlbumBucketBoundary, type TimelineBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
@@ -195,16 +196,19 @@ export function buildPhotoChunks(
 	return chunks;
 }
 
-export type PositionedPhoto = { photo: App.Http.Resources.Models.PhotoResource; box: PhotoBox };
+/** `index` is the tile's position in the photo array the layout was computed from. */
+export type PositionedPhoto = { index: number; box: PhotoBox };
 
 /**
  * Shared by `PhotoGridVirtual.vue` (rendering) and `dragAndSelect.ts`'s
  * `getPhotoBoxesV3()` (hit-testing) so the rating-filter-aware boundary
  * recompute (FR-065-19 — discovered necessity, no Feature 063 precedent)
  * exists in exactly one place. Reuses the already-generic
- * `filterBucketedTiles()` over `{photo, ratio}` pairs so the photo array and
- * its parallel ratio array are filtered/re-chunked in lockstep, never
- * separately (which could desync).
+ * `filterBucketedTiles()` over `{id, index, ratio}` pairs so the photo array
+ * and its parallel ratio array are filtered/re-chunked in lockstep, never
+ * separately (which could desync). Reads both arrays raw: no reactive proxy
+ * or dependency per photo, callers read the photo of each `index` from their
+ * store (FR-103-05).
  */
 export function computeVisiblePhotoLayout(
 	mode: PhotoLayoutMode,
@@ -218,10 +222,12 @@ export function computeVisiblePhotoLayout(
 	target: number,
 	gap: number,
 ): { positioned: PositionedPhoto[]; totalHeight: number; headerTops: PhotoHeaderTop[]; boundaries: AlbumBucketBoundary[] } {
+	const rawPhotos = toRaw(photos);
+	const rawRatios = toRaw(ratios);
 	const effectiveBoundaries: AlbumBucketBoundary[] = bucketable
 		? (boundaries ?? [])
-		: [{ bucketId: "all", label: "", startIndex: 0, count: photos.length }];
-	const pairs = photos.map((photo, i) => ({ photo, ratio: ratios[i] ?? 1 }));
+		: [{ bucketId: "all", label: "", startIndex: 0, count: rawPhotos.length }];
+	const pairs = rawPhotos.map((photo, index) => ({ id: photo.id, index, ratio: rawRatios[index] ?? 1 }));
 
 	// Headers still render when a rating filter is active (FR-065-19) — only
 	// the per-bucket *counts* change, re-scanned from the filtered array's
@@ -232,7 +238,7 @@ export function computeVisiblePhotoLayout(
 	const showHeaders = bucketable;
 	const { tiles: visiblePairs, boundaries: visibleBoundaries } =
 		ratingFilterActive && filteredPhotoIds !== null
-			? filterBucketedTiles(pairs, effectiveBoundaries, (pair) => filteredPhotoIds.has(pair.photo.id))
+			? filterBucketedTiles(pairs, effectiveBoundaries, (pair) => filteredPhotoIds.has(pair.id))
 			: { tiles: pairs, boundaries: effectiveBoundaries };
 
 	const layout = computePhotoLayout(
@@ -245,7 +251,7 @@ export function computeVisiblePhotoLayout(
 		gap,
 	);
 
-	const positioned: PositionedPhoto[] = visiblePairs.map((p, i) => ({ photo: p.photo, box: layout.boxes[i] }));
+	const positioned: PositionedPhoto[] = visiblePairs.map((p, i) => ({ index: p.index, box: layout.boxes[i] }));
 	return { positioned, totalHeight: layout.totalHeight, headerTops: layout.headerTops, boundaries: visibleBoundaries };
 }
 
@@ -312,6 +318,7 @@ export function computeTimelinePhotoLayout(
 	const boxes: (PhotoBox | undefined)[] = new Array(ratios.length);
 	const headerTops: PhotoHeaderTop[] = [];
 	const bucketLayouts: TimelineBucketPixelLayout[] = [];
+	const placeholderHeights = new Map<number, number>();
 	let runningTop = 0;
 
 	for (const bucket of boundaries) {
@@ -334,8 +341,15 @@ export function computeTimelinePhotoLayout(
 				const { boxes: bucketBoxes, containerHeight } = computeBucketLayout(mode, bucketRatios, containerWidth, target, gap);
 				cached = { boxes: bucketBoxes, containerHeight, signature };
 			} else {
-				const placeholderRatios: number[] = new Array(bucket.count).fill(1);
-				const { containerHeight } = computeBucketLayout(mode, placeholderRatios, containerWidth, target, gap);
+				// A placeholder's height depends only on its tile count here
+				// (mode/width/target/gap are fixed for the call): one layout
+				// per distinct count, not per bucket (FR-103-10).
+				let containerHeight = placeholderHeights.get(bucket.count);
+				if (containerHeight === undefined) {
+					const placeholderRatios: number[] = new Array(bucket.count).fill(1);
+					containerHeight = computeBucketLayout(mode, placeholderRatios, containerWidth, target, gap).containerHeight;
+					placeholderHeights.set(bucket.count, containerHeight);
+				}
 				cached = { boxes: null, containerHeight, signature };
 			}
 			cache.set(bucket.bucketId, cached);
