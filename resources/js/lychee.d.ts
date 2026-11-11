@@ -2109,6 +2109,9 @@ declare namespace App {
 					config: App.Http.Resources.GalleryConfigs.RootConfig;
 					rights: App.Http.Resources.Rights.RootAlbumRightsResource;
 				};
+				export type AssetUrlResource = {
+					url: string;
+				};
 				export type FaceQueueResource = {
 					ids: string[];
 					photo_ids: string[];

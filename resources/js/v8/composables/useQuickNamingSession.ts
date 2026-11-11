@@ -6,6 +6,7 @@
 
 import { computed, reactive, ref } from "vue";
 import FaceQuickNamingService from "@/services/face-quick-naming-service";
+import { isObjectUrl } from "@/services/asset-url";
 import { adaptFaceQueue, adaptPeopleList, resolveSuggestion, type PersonOption, type QueueFace, type Suggestion } from "@/v8/utils/quickNaming";
 
 export type EntryStatus = "open" | "named" | "skipped" | "discarded";
@@ -349,7 +350,10 @@ export function useQuickNamingSession(clusterLabel: number | null, onFailure: (i
 		photoRequests.delete(faceId);
 		const url = photoUrls.get(faceId);
 		if (url !== undefined) {
-			URL.revokeObjectURL(url);
+			// An S3 URL (Feature 113) is not an object URL: nothing to revoke.
+			if (isObjectUrl(url)) {
+				URL.revokeObjectURL(url);
+			}
 			photoUrls.delete(faceId);
 		}
 	}
