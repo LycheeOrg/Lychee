@@ -32,14 +32,17 @@ on:
         required: true
         description: 'Docker Hub access token'
 
+# Read-only by default: each job that pushes to GHCR asks for `packages: write` itself.
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build:
     name: Build ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write # push the per-platform image by digest to ghcr.io
     strategy:
       fail-fast: false
       matrix:
@@ -124,6 +127,9 @@ jobs:
   merge:
     name: Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # push the multi-platform manifest list to ghcr.io
     needs:
       - build
 

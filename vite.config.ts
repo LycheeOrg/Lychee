@@ -262,6 +262,11 @@ const baseConfig = {
 	 * Vitest (bundled with Vite+, run with `vp test`): frontend unit tests sit
 	 * next to the module they cover as `*.test.ts` under resources/js (Feature
 	 * 097). `e2e/` holds Playwright specs, which Vitest must not pick up.
+	 *
+	 * Vitest's hint to reuse jsdom (`isolate: false` or `pool: 'vmThreads'`) is
+	 * declined: about half the test files rely on `vi.mock`, which leaks between
+	 * files once they share a module graph (`isolate: false` failed 19 tests on
+	 * 4 workers, 2026-11-15). Per-file isolation costs about 0.5 s of wall time.
 	 */
 	test: {
 		include: ["resources/js/**/*.test.ts"],

@@ -40,5 +40,14 @@ jobs:
       - name: Check TypeScript
         run: vp run typecheck
 
+      - name: Run unit tests
+        # Vitest loads vite.config.ts in serve mode, and laravel-vite-plugin
+        # refuses serve mode whenever CI is set (it guards against running the
+        # HMR server there). Vitest starts no HMR server, so the check is
+        # bypassed for this step only.
+        env:
+          LARAVEL_BYPASS_ENV_CHECK: "1"
+        run: vp test run
+
       - name: Compile Front-end
         run: vp run build

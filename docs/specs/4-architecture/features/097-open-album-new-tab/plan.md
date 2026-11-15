@@ -129,4 +129,4 @@ Lessons: Nuxt UI renders context-menu sections as `role="group"` containers with
 
 ## Follow-ups / Backlog
 
-- `vp test` step in `.github/workflows/js_check.yml` (N-097-05, owner).
+- ~~`vp test` step in `.github/workflows/js_check.yml` (N-097-05, owner).~~ Done 2026-11-15: `Run unit tests` (`vp test run`) runs after `Check TypeScript` on Node 24 and 26.
