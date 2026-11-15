@@ -12,6 +12,7 @@ return [
     'success' => '成功',
     'failure' => '失敗',
     'started' => '開始',
+    'skipped' => 'スキップ',
     'col_date' => '日付',
     'col_status' => 'ステータス',
     'col_username' => 'ユーザー',

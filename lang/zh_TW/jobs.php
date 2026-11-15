@@ -12,6 +12,7 @@ return [
     'success' => '成功',
     'failure' => '失敗',
     'started' => '已開始',
+    'skipped' => '已略過',
     'col_date' => '日期',
     'col_status' => '狀態',
     'col_username' => '使用者',
