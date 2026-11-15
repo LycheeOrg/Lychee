@@ -11,6 +11,7 @@ return [
     'success' => 'Erfolgreich',
     'failure' => 'Fehlgeschlagen',
     'started' => 'Gestartet',
+    'skipped' => 'Übersprungen',
     'col_date' => 'Datum',
     'col_status' => 'Status',
     'col_username' => 'Benutzer',

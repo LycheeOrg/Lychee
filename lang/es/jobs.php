@@ -12,6 +12,7 @@ return [
     'success' => 'Éxito',
     'failure' => 'Fallo',
     'started' => 'Comenzó',
+    'skipped' => 'Omitido',
     'col_date' => 'Fecha',
     'col_status' => 'Estado',
     'col_username' => 'Usuario',

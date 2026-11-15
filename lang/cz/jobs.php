@@ -12,6 +12,7 @@ return [
     'success' => 'Dokončeno',
     'failure' => 'Chyba',
     'started' => 'Spuštěno',
+    'skipped' => 'Přeskočeno',
     'col_date' => 'Datum',
     'col_status' => 'Stav',
     'col_username' => 'Uživatel',

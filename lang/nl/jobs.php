@@ -12,6 +12,7 @@ return [
     'success' => 'Succes',
     'failure' => 'Mislukt',
     'started' => 'Gestart',
+    'skipped' => 'Overgeslagen',
     'col_date' => 'Datum',
     'col_status' => 'Status',
     'col_username' => 'Gebruiker',
