@@ -12,6 +12,9 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-04~~ | 112 | High | `order_items` exclusion: a NULL `size_variant_id` empties every `NOT IN`, and the "keep" update detaches sold variants of photos that are not deleted | Resolved (A, owner 2026-11-15, spec FR-112-10, S-112-13..15) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-05~~ | 112 | High | The delete policies bind every request id, before the action runs; FR-112-09 does not list them | Resolved (A, owner 2026-11-15, spec FR-112-11, NFR-112-04, S-112-16) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-06~~ | 112 | Medium | Which post-delete jobs run after the response on `sync` (producers return file, person-stats and face-embedding jobs together; FR-112-07 adds thumb jobs, also with the webhook feature off) | Resolved (A, owner 2026-11-15, spec FR-112-04, FR-112-07, DO-112-03, S-112-18) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-07~~ | 112 | Medium | With a `photo.delete` webhook on `sync`, one inline HTTP call per deleted photo still runs before the DB delete | Resolved (A, owner 2026-11-15, spec FR-112-12, S-112-21) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-08~~ | 112 | High | `SizeVariant\Delete` keeps sold variants attached, so rotating a photo with a sold variant breaks `unique(photo_id, type)` | Resolved (A, owner 2026-11-15, spec FR-112-10, S-112-15, S-112-20) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-09~~ | 112 | Medium | Repair sold variants already detached from photos that still exist by the old instance-wide update | Resolved (A, owner 2026-11-15, spec FR-112-13, DO-112-05, S-112-22) | 2026-11-15 | 2026-11-15 |
 
 ## Question Details
 
@@ -234,3 +237,91 @@ Cons: default installs gain 15+ inline thumb jobs per photo delete. The face-emb
 
 Pros: removes the latency FR-112-07 adds, keeps the other jobs as today.
 Cons: the split is arbitrary. The face-embedding call stays on the response path.
+
+### Q-112-07 – `photo.delete` webhooks on `sync`
+
+**Context (2026-11-15, second review).** FR-112-06 keeps one `PhotoWillBeDeleted` per hard-deleted photo when a `photo.delete` webhook is enabled. `WebhookListener::handlePhotoWillBeDeleted()` then dispatches one `WebhookDispatchJob` per (photo, webhook). That job is `ShouldQueue` and makes an HTTP call with a 10 s timeout (`features.webhook_timeout_seconds`). On `sync` it runs inline, before the DB delete, because the event fires before `executeDelete()`. Deleting 4000 photos with one delete webhook therefore makes 4000 sequential HTTP calls inside the request, so it still times out. FR-112-04 leaves listener jobs unchanged, and the plan's success criterion ("a 4000-photo selection returns once the DB transaction commits") does not hold in this case.
+
+**Question.** Should delete webhooks also leave the response path?
+
+**Resolution (2026-11-15).** Option A. Encoded in [spec.md](spec.md) FR-112-12, FR-112-04, DO-112-03, S-112-21; the listener non-goal names this exception. No ADR.
+
+#### Option A – `WebhookListener` hands its delete jobs to `DispatchAfterDelete` (recommended)
+
+`handlePhotoWillBeDeleted()` passes its `WebhookDispatchJob`s to the after-response helper: after the response on `sync`, queued normally otherwise. Payload, per-photo semantics and the "before delete" snapshot stay unchanged.
+
+Pros: a 4000-photo delete with a delete webhook returns once the commit is done, matching Q-112-06 A. One-line change in one listener.
+Cons: the "listener jobs unchanged" non-goal gets one exception. As today, a webhook is still sent if the DB delete then fails (the event fires before the delete).
+
+#### Option B – Keep as is, document the limit
+
+Record in the spec and release note: installs with a `photo.delete` webhook should use an async queue for large deletes.
+
+Pros: no change.
+Cons: the timeout stays for those installs on `sync`.
+
+#### Option C – Option A plus firing the events after the commit
+
+Build the snapshots before the delete, fire `PhotoWillBeDeleted` after `executeDelete()` succeeds, and defer the webhook jobs.
+
+Pros: no webhook for a delete that failed.
+Cons: the event name no longer matches its timing. 4000 snapshots (28 000 URLs) are held in memory across the delete. Larger change.
+
+### Q-112-08 – Sold variants in `SizeVariant\Delete`
+
+**Context (2026-11-15, second review).** `size_variants` has `unique(photo_id, type)` (2021_12_04 refactor, never dropped). FR-112-10 keeps a sold variant's row and file in `SizeVariant\Delete::do()`, with its `photo_id` unchanged. `Rotate` calls `size_variants->deleteAll()` (→ `SizeVariant\Delete`) and then `SizeVariant::create()` for the new original and the other types. If one of the photo's variants is sold, the kept row still holds (photo_id, type), and the insert fails after the old files were already queued for deletion. The same holds for the photo's same-checksum duplicates, which `Rotate` rebuilds the same way. Today it is worse: with any NULL `size_variant_id` in `order_items`, `SizeVariant\Delete` deletes no row at all, so every rotate fails that way. FR-112-10 (`NOT EXISTS`) already fixes the unsold case.
+
+**Question.** What does `SizeVariant\Delete` do with a sold variant?
+
+**Resolution (2026-11-15).** Option A. Encoded in [spec.md](spec.md) FR-112-10 (detach in every delete path), S-112-15, S-112-20. No ADR.
+
+#### Option A – Detach it like photo delete does (recommended)
+
+`SizeVariant\Delete` sets `photo_id = NULL` on sold variants (row and file kept), deletes the unsold ones, and queues only the unsold files. Same rule as FR-112-10's force delete.
+
+Pros: rotate and regeneration work for photos with sales. The customer keeps downloading the version they bought (`order_items.size_variant_id` still points at it). One rule for every delete path.
+Cons: after a rotate, the photo shows the new variant while the buyer downloads the old one (expected for a purchase). The detached variant stays in storage until the order item is removed.
+
+#### Option B – Keep it attached (as written) and refuse the operation
+
+`Rotate` (and any regeneration) checks for sold variants first and fails with a 422 ("photo has sold size variants").
+
+Pros: the photo never changes after a sale.
+Cons: owners cannot rotate or regenerate sold photos. Needs a new error path in `Rotate`.
+
+#### Option C – Keep it attached, let callers skip the sold types
+
+Callers re-create only the types that are not sold.
+
+Pros: the sold variant stays visible on the photo.
+Cons: a rotated photo mixes rotated and unrotated variants. Each caller has to know about sales.
+
+### Q-112-09 – Repair variants already detached by the old update
+
+**Context (2026-11-15, second review).** Before FR-112-10, every photo force-delete ran `size_variants SET photo_id = NULL WHERE id IN (every sold variant)` across the whole instance. On a shop that sold something and later deleted any photo, the sold variants of photos that still exist are detached: those photos lost, for example, their original or medium. They can be found: `sv.photo_id IS NULL`, an `order_items` row with `size_variant_id = sv.id` and `order_items.photo_id IS NOT NULL`. The FK sets `order_items.photo_id` to NULL when a photo is really deleted, so a non-NULL value means the photo still exists. `unique(photo_id, type)` blocks re-linking when the photo has since been given a new variant of that type (for example by "generate missing size variants").
+
+**Question.** Does Feature 112 repair those rows?
+
+**Resolution (2026-11-15).** Option A. Encoded in [spec.md](spec.md) FR-112-13, DO-112-05, S-112-22 (manual check on the dev DB, no test per owner rule). When several detached variants compete for one (photo, type), the highest id is re-linked. No ADR.
+
+#### Option A – Migration that re-links them (recommended)
+
+Set `sv.photo_id = oi.photo_id` for those rows when the photo has no variant of that type yet. Leave the others detached (row and file kept). Idempotent, no schema change. Per the owner's rule, no migration test: run it on the dev DB.
+
+Pros: affected photos get their variants back on upgrade, with no admin action.
+Cons: a data migration on shop data. Rows skipped because of the unique index stay detached (their files are kept).
+
+#### Option B – Admin maintenance action
+
+The same re-link as a Maintenance page check/fix with a count.
+
+Pros: visible to the admin and opt-in.
+Cons: most admins never run it. Needs v7/v8 UI and translations.
+
+#### Option C – No repair
+
+Only stop the damage (FR-112-10) and mention it in the release note.
+
+Pros: smallest change.
+Cons: photos already damaged stay broken.
+
