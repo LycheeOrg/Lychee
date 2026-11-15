@@ -76,11 +76,16 @@ cosign verify-blob-attestation \
 
 Expected output is "Verified OK". Any other result means the archive was not built by Lychee's release workflow from that tag: do not install it.
 
-Alternatively, with the GitHub CLI (drop `--bundle` to fetch the attestation from GitHub instead, which also works for releases older than the `.intoto.jsonl` asset):
+Alternatively, with the GitHub CLI (drop `--bundle` to fetch the attestation from GitHub instead, which also works for releases older than the `.intoto.jsonl` asset). Again, replace `v7.13.1` with the tag of the release you downloaded:
 
 ```bash
-gh attestation verify Lychee.zip --repo LycheeOrg/Lychee --bundle Lychee.zip.intoto.jsonl
+gh attestation verify Lychee.zip \
+	--repo LycheeOrg/Lychee \
+	--cert-identity "https://github.com/LycheeOrg/Lychee/.github/workflows/CICD.yml@refs/tags/v7.13.1" \
+	--bundle Lychee.zip.intoto.jsonl
 ```
+
+Keep `--cert-identity`: the workflow also attests builds from `master`, and without it any attestation from `LycheeOrg/Lychee` is accepted, including one from a `master` build instead of the release tag.
 
 To read the provenance itself (source commit, workflow run, build parameters):
 
