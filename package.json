@@ -88,6 +88,10 @@
 	"overrides": {
 		"rollup": "npm:@rollup/wasm-node",
 		"vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
+		"js-beautify": {
+			"editorconfig": "^4.0.1",
+			"glob": "^14.0.6"
+		},
 		"@tailwindcss/typography": {
 			"postcss-selector-parser": "^7.1.6"
 		}

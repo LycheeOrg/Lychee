@@ -36,6 +36,15 @@ jobs:
           # The Vite that actually runs is the 8.x bundled by Vite+. A new Vite
           # advisory whose range starts below 1.x matches again until its ID is
           # added here (docs/specs/4-architecture/features/096-vite-plus-migration/open-questions.md, Q-096-07).
+          #
+          # Not an allow-list entry, recorded here because package.json takes
+          # no comments: the `overrides.js-beautify` block (editorconfig ^4,
+          # glob ^14) lifts minimatch from 10.2.6 to 11.x and so clears
+          # GHSA-g3hv-75wg-m249. js-beautify 2.0.3 (via @vue/test-utils, dev
+          # only) still pins editorconfig ^3 and glob ^13, which need
+          # minimatch 10. Both are loaded only by js-beautify's CLI, which
+          # nothing here runs. Remove the override once js-beautify depends on
+          # editorconfig >= 4 and glob >= 14.
           allow-ghsas: >-
             GHSA-g7r4-m6w7-qqqr,
             GHSA-mv48-hcvh-8jj8,

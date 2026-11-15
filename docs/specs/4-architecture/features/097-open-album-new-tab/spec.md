@@ -32,7 +32,7 @@ Frontend only: two context-menu composables, one shared helper, one label key in
 - N-097-02 – No "open all in new tabs" entry on the multi-album menu: browsers allow one window per user gesture.
 - N-097-03 – Photo context menus and photo tiles.
 - N-097-04 – Smart albums (not in `selectableAlbums`, so they get no context menu today).
-- N-097-05 – A `vp test` step in CI (Q-097-02, owner follow-up).
+- N-097-05 – A `vp test` step in CI (Q-097-02, owner follow-up). Added 2026-11-15 outside this feature: `.github/workflows/js_check.yml` step `Run unit tests`.
 
 ## Functional Requirements
 
