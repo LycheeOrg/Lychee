@@ -9,6 +9,9 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-01~~ | 112 | High | Deleting a 4000-photo album times out: fix direction, since the DB queries are not the measured bottleneck | Resolved (A, owner 2026-11-08, spec FR-112-01–04) | 2026-11-05 | 2026-11-08 |
 | ~~Q-112-02~~ | 112 | High | Deleting 4000 selected photos stalls: per-photo `PhotoWillBeDeleted` fan-out when the webhook feature is on | Resolved (A, thumb jobs computed once per request, owner 2026-11-08, spec FR-112-05–08) | 2026-11-05 | 2026-11-08 |
 | ~~Q-112-03~~ | 112 | Medium | Unbounded `whereIn` id lists in the delete flow can exceed the bind-parameter limit | Resolved (A, owner 2026-11-08: a `whereIn` over 1000 parameters fails on MySQL, spec FR-112-09, NFR-112-04) | 2026-11-08 | 2026-11-08 |
+| ~~Q-112-04~~ | 112 | High | `order_items` exclusion: a NULL `size_variant_id` empties every `NOT IN`, and the "keep" update detaches sold variants of photos that are not deleted | Resolved (A, owner 2026-11-15, spec FR-112-10, S-112-13..15) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-05~~ | 112 | High | The delete policies bind every request id, before the action runs; FR-112-09 does not list them | Resolved (A, owner 2026-11-15, spec FR-112-11, NFR-112-04, S-112-16) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-06~~ | 112 | Medium | Which post-delete jobs run after the response on `sync` (producers return file, person-stats and face-embedding jobs together; FR-112-07 adds thumb jobs, also with the webhook feature off) | Resolved (A, owner 2026-11-15, spec FR-112-04, FR-112-07, DO-112-03, S-112-18) | 2026-11-15 | 2026-11-15 |
 
 ## Question Details
 
@@ -141,3 +144,93 @@ Cons: very large selections can still fail in `Photo\Delete` and `PurchasableSer
 Pros: one-line bound at the edge.
 Cons: changes the API contract (422 above N), does not bound derived lists (subtree, `order_items`, events).
 
+
+### Q-112-04 – `order_items` exclusion: NULL ids and the instance-wide detach
+
+**Context (2026-11-15 review).** FR-112-09 rewrites the three `order_items` sites as a subquery. Two existing defects sit on those lines:
+
+1. `order_items.size_variant_id` is nullable. Only `OrderCompletedListener::fullfillOrder()` sets it, and only for MEDIUM / MEDIUM2X / ORIGINAL photo items whose variant exists. It stays NULL **permanently** for every item delivered by URL: print and pixel items, FULL items, and any item that already has a `download_link` (`fullfillOrder()` skips it, and `markAsDelivered` writes only `download_link`). It is also NULL for album items and for items not yet fulfilled. `pluck('size_variant_id')` keeps the NULL and Laravel binds it. `sv.id NOT IN (…, NULL)` is never true (checked on SQLite: `NOT IN (1, NULL)` and `NOT IN (SELECT …)` return no row, `NOT EXISTS` returns the expected rows). So once the shop has one such item (one print, FULL or URL-delivered sale is enough, and it never clears):
+   - `PhotosToBeDeletedDTO::collectSizeVariantPathsByPhotoID()` returns nothing. The DB rows are deleted but the files stay on disk (silent leak).
+   - `SizeVariant\Delete::do()` deletes the files (the `array_diff` path) but `whereNotIn('id', …)` deletes no row. The rows then point at missing files.
+   A `whereNotIn('sv.id', fn => select size_variant_id from order_items)` subquery has the same defect.
+2. `PhotosToBeDeletedDTO::forceDelete()` line 184 runs `size_variants WHERE id IN (every sold variant) SET photo_id = NULL` with no photo filter. Every photo delete detaches all sold variants of every photo in the instance, including photos that are not deleted (for example, a surviving photo whose original was sold loses its original). Existing tests only check the deleted photo's sold variant.
+
+**Question.** Does Feature 112 fix these while it rewrites the lines?
+
+**Resolution (2026-11-15).** Option A. Encoded in [spec.md](spec.md) FR-112-10, S-112-13..15. No ADR: local bug fix on lines the feature already rewrites.
+
+#### Option A – Fix both in Feature 112 (recommended)
+
+- The exclusion uses `NOT EXISTS (SELECT 1 FROM order_items oi WHERE oi.size_variant_id = sv.id)`. It binds nothing and NULLs are harmless.
+- The "keep" update is scoped to the force-deleted chunk: `size_variants WHERE photo_id IN (chunk) AND EXISTS (order_items …) SET photo_id = NULL`, run before the chunk's `size_variants` delete.
+- URL-delivered items protect no size variant: the customer downloads from `download_link`, not from Lychee's variant. An item with both a `size_variant_id` and a `download_link` (auto-fulfilled, then overridden by the admin) still protects its variant. A `download_link` that points at a file Lychee serves is not tracked and breaks when the photo is deleted, as today (out of scope).
+- Regression tests: one URL-delivered order item (NULL `size_variant_id`, `download_link` set) present → files and rows of the deleted photo are gone; a sold variant of a surviving photo keeps its `photo_id`.
+
+Pros: the rewrite is on these lines anyway. Fixes a silent file leak and a data-corrupting update. No schema change.
+Cons: the diff grows by one scoped update and two tests. It also changes behaviour outside the timeout fix (shop data).
+
+#### Option B – NULL-safe subquery in Feature 112, detach bug in its own feature
+
+Feature 112 uses `NOT EXISTS`. Line 184 only stops binding the list (`whereExists` on `order_items`) and keeps its instance-wide scope, and a new feature is opened for it.
+
+Pros: keeps 112 to performance and bounding.
+Cons: leaves a known data-corrupting update in place, on a line 112 already edits.
+
+#### Option C – Fix both in a separate feature before 112
+
+Pros: shop fixes ship and are reviewed on their own.
+Cons: blocks 112 on another feature. Both features touch the same lines, so they will conflict.
+
+### Q-112-05 – Delete authorization binds every request id
+
+**Context (2026-11-15 review).** `DeletePhotosRequest::authorize()` → `PhotoPolicy::canDeleteById()` runs three queries with `whereIn` over all request `photo_ids` (owner count, unsorted check, parent albums). It then calls `AlbumPolicy::canDeleteContentById()` → `hasGrantOnParentsById()` with every parent album id. `DeleteAlbumsRequest` → `AlbumPolicy::canDeleteById()` does the same with `album_ids`. These run before the action, so with the 1000-parameter bound a 4000-photo selection still fails in authorization. FR-112-09 does not list them, while S-112-10 / NFR-112-04 measure the whole HTTP request and would fail on them.
+
+**Question.** Are the delete policies part of the bound?
+
+**Resolution (2026-11-15).** Option A. Encoded in [spec.md](spec.md) FR-112-11, NFR-112-04, S-112-16. No ADR: permission semantics unchanged, only the query shape.
+
+#### Option A – Add the delete policies to FR-112-09 (recommended)
+
+Chunk `PhotoPolicy::canDeleteById()` and the `AlbumPolicy` delete checks used by the two delete requests. Counts are summed across chunks and compared with the de-duplicated input size. Parent-album lists are merged and de-duplicated before they are chunked.
+
+Pros: makes Goal 4 true end to end over HTTP. S-112-10/11 stay HTTP tests.
+Cons: touches two policies, which other features use (move-by-id shares `hasGrantOnParentsById()`).
+
+#### Option B – Keep policies out of scope, test the actions directly
+
+NFR-112-04 is measured on `Photo\Delete::do()` / `Album\Delete::do()` and not over HTTP. Policies get a follow-up feature.
+
+Pros: smaller diff.
+Cons: on MySQL a selection of more than 1000 photos still fails, now in the policy. The goal is not met for users.
+
+#### Option C – Cap request arrays at 1000 (`max:1000`)
+
+Pros: bounds policies and request-derived lists with one rule each.
+Cons: API contract change (422 above 1000). Rejected as the sole bound in Q-112-03, it would only add to A.
+
+### Q-112-06 – Which post-delete jobs run after the response on `sync`
+
+**Context (2026-11-15 review).** `PhotosToBeDeletedDTO::executeDelete()` returns `FileDeleterJob`s mixed with `RecomputePersonStatsJob` and `DeleteFaceEmbeddingsJob` (which calls the facial-recognition service). DO-112-03 takes `iterable $jobs`, but FR-112-04 says "file-deletion jobs" and the non-goals say the other jobs are not changed. FR-112-07 also adds one `RecomputeAlbumUserThumbsJob` per affected album (at least 15 smart albums) on every photo delete, with the webhook feature on or off. `WEBHOOK_ENABLED` defaults to `false`, so default installs run no thumb job on delete today. On `sync` they would run inline before the response, each one recomputing every cached viewer.
+
+**Question.** Which jobs does the `sync` after-response helper defer?
+
+**Resolution (2026-11-15).** Option A. Helper `DispatchAfterDelete`. Encoded in [spec.md](spec.md) FR-112-04, FR-112-07, FR-112-08, DO-112-02/03, S-112-03/04/18; the non-goal now reads "payload and semantics unchanged, only the dispatch moves". Jobs dispatched by event listeners stay as they are. No ADR: dispatch timing inside one feature.
+
+#### Option A – Every job the delete actions dispatch after the commit (recommended)
+
+One helper (for example `DispatchAfterDelete`) defers file, person-stats, face-embedding and thumb-refresh jobs on `sync`, and dispatches them normally otherwise. Producers pass their whole job list.
+
+Pros: none of this work is on the response path, which is the goal of Q-112-01. The thumb jobs added by FR-112-07 cost default installs no request latency. Call sites stay simple.
+Cons: on `sync`, person counts and thumbs are refreshed a moment after the client gets the response (the next read can still see the old count). It changes how the "other jobs" are dispatched, so the non-goal is reworded to "their payload and semantics are unchanged".
+
+#### Option B – File deletion only (as written)
+
+Producers split the list: `FileDeleterJob`s go through the helper, the rest is dispatched inline as today. Thumb jobs are dispatched inline.
+
+Pros: strictly matches FR-112-04 and the non-goals.
+Cons: default installs gain 15+ inline thumb jobs per photo delete. The face-embedding HTTP call stays on the response path.
+
+#### Option C – File deletion and thumb jobs, person/face jobs inline
+
+Pros: removes the latency FR-112-07 adds, keeps the other jobs as today.
+Cons: the split is arbitrary. The face-embedding call stays on the response path.
