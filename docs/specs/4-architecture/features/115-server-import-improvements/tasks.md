@@ -22,11 +22,11 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I2 – Schema and owner grant
-- [ ] T-115-03 – Migration test, red (FR-115-01, FR-115-14, S-115-38).
+- [x] T-115-03 – Migration test, red (FR-115-01, FR-115-14, S-115-38).
   _Intent:_ `tests/Unit/Database/ServerPathMigrationTest.php` loads the migration class and runs its owner grant on fixture users (owner, other admin, user; `owner_id = 0`).
   _Verification commands:_
   - `php artisan test --filter=ServerPathMigrationTest` (red)
-- [ ] T-115-04 – Column, owner grant, model (FR-115-01, FR-115-14).
+- [x] T-115-04 – Column, owner grant, model (FR-115-01, FR-115-14).
   _Intent:_ `database/migrations/2026_11_15_000001_add_server_path_to_users.php` (nullable string 4096, grant `/` to `owner_id` user; `down()` drops), `User` `@property ?string $server_path`.
   _Verification commands:_
   - `php artisan test --filter=ServerPathMigrationTest`

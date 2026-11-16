@@ -54,6 +54,7 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $remember_token
  * @property UserSharedAlbumsVisibility                            $shared_albums_visibility
  * @property UserUploadTrustLevel                                  $upload_trust_level
+ * @property string|null                                           $server_path
  * @property Collection<int,BaseAlbumImpl>                         $albums
  * @property Collection<int,OauthCredential>                       $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
