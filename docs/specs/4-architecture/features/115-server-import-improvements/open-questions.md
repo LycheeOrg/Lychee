@@ -12,6 +12,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-04~~ | 115 | Medium | Trust level on web import: (A) derived from the importer like uploads and the CLI, (B) A plus a picker for admins and `--trust_level`, (C) picker for everyone capped at their own level | Resolved (A, owner, 2026-11-15: FR-115-08) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
+| ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (A, owner directive, 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-16 |
 
 ## Question Details
 
@@ -274,3 +275,41 @@ With `sync_users_server_paths = 1` and no path, which users are synced, and what
 
 **Next action**
 Owner picks A or B; the answer goes into FR-115-12.
+
+### ~~Q-115-07~~ · Who may set `server_path`
+
+**Status:** Resolved (A, owner directive, 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ (**recommended**) Option A – Server owner only, refused for other admins
+
+**Question**
+The spec let every admin set `server_path`. The owner stated on 2026-11-16: "Only the owner of the server is allowed to modify the path limitations of users. Admins are not allowed to modify this." What does an admin who is not the owner get when the request carries `server_path`, and what does the form show them?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Server owner only, refused for other admins
+- **Idea:** New ability `UserPolicy::CAN_EDIT_SERVER_PATH` (owner only, no admin bypass). `AddUserRequest` and `SetUserSettingsRequest` check it whenever the `server_path` key is present, whatever its value, so a `null` cannot revoke access either. 403 otherwise. `UserManagementRightsResource::$can_edit_server_path` drives the v7/v8 forms, which hide the field and omit the key for other admins.
+- **Spec impact:** FR-115-02, FR-115-16, new FR-115-19, S-115-42, UI-115-04, ADR-115-01 amended.
+- **Pros:**
+  - ✅ Explicit refusal, no silent fallback (AGENTS.md greenfield stance).
+  - ✅ Same pattern as `OwnerIdRule` (owner-only edits answer 403).
+- **Cons:**
+  - ❌ A client built for the first version of the form gets 403 when used by a non-owner admin (none released).
+
+---
+
+#### 🅱️ Option B – Owner only, field ignored for other admins
+- **Idea:** Same ability, but the requests drop `server_path` for non-owners instead of refusing.
+- **Pros:**
+  - ✅ No 403 for older clients.
+- **Cons:**
+  - ❌ The admin believes the path was saved.
+
+---
+
+#### 🅲 Option C – Every admin (as first specified)
+- **Cons:**
+  - ❌ Contradicts the owner directive.
+
+**Next action**
+Resolved: Option A implemented in increment I17.

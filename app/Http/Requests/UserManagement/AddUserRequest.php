@@ -46,10 +46,13 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Sending `server_path`, whatever its value, is reserved to the server owner (Feature 115, FR-115-19).
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]) &&
+			(!$this->has(RequestAttribute::SERVER_PATH_ATTRIBUTE) || Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class]));
 	}
 
 	/**

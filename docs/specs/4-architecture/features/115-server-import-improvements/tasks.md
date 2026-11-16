@@ -196,6 +196,24 @@ _Last updated: 2026-11-16_
 - [x] T-115-32 – Drift gate report and commit preparation.
   _Intent:_ FR/NFR → class/test table in plan.md, divergences logged, `./scripts/codex-commit-review.sh` and copy/paste-ready `git commit` for the operator.
 
+### I17 – `server_path` for the server owner only (Q-115-07)
+- [x] T-115-33 – Tests for S-115-42 (FR-115-19), red first.
+  _Intent:_ `tests/Feature_v2/UserManagement/ServerPathTest.php`: a second admin who is not `owner_id` creates and edits with `server_path` = a path, `/`, `''`, `null` → 403, nothing saved; same requests without the key → saved, path unchanged; `GET /api/v2/Auth::rights` gives `can_edit_server_path` false for them, true for the owner.
+  _Verification commands:_
+  - `php artisan test --filter=ServerPathTest`
+- [x] T-115-34 – Policy, requests and rights (FR-115-19).
+  _Intent:_ `UserPolicy::CAN_EDIT_SERVER_PATH` + `canEditServerPath()` + `before()` override; `AddUserRequest::authorize()` and `SetUserSettingsRequest::authorize()` check it when the key is present; `UserManagementRightsResource::$can_edit_server_path`; `php artisan typescript:transform`.
+  _Verification commands:_
+  - `php artisan test --filter=ServerPathTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+- [x] T-115-35 – v7/v8 user forms (FR-115-16, UI-115-04).
+  _Intent:_ `resources/js/v7/components/forms/users/CreateEditUser.vue` and `resources/js/v8/components/forms/users/CreateEditUser.vue`: field shown and `server_path` sent only when `rights.user_management.can_edit_server_path`.
+  _Verification commands:_
+  - `vp check --fix` on the two files
+  - `vp run typecheck`
+  _Notes:_ manual check of the form as owner and as another admin by the operator.
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

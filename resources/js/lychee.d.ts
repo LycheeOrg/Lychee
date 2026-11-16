@@ -1761,6 +1761,7 @@ declare namespace App {
 					can_list: boolean;
 					can_edit: boolean;
 					can_delete: boolean;
+					can_edit_server_path: boolean;
 				};
 				export type UserRightsResource = {
 					can_edit: boolean;

@@ -114,6 +114,11 @@ Run once T-115-01 … 32 are `[x]`: map each FR/NFR to the classes and tests tha
     - _Exit:_ docs merged with spec wording.
 16. **I16 – Quality gate and drift gate**
     - _Goal:_ `vendor/bin/php-cs-fixer fix`, `vp check --fix`, `vp run typecheck`, every test class above, `make phpstan`; drift gate report; operator commit command.
+17. **I17 – `server_path` for the server owner only** (FR-115-02/16/19, Q-115-07)
+    - _Goal:_ `UserPolicy::CAN_EDIT_SERVER_PATH` (owner only, `before()` skips the admin bypass for it); `AddUserRequest`/`SetUserSettingsRequest::authorize` check it when the `server_path` key is present; `UserManagementRightsResource::$can_edit_server_path`; `php artisan typescript:transform`; v7/v8 `CreateEditUser.vue` show the field and send the key only when the right is true.
+    - _Steps:_ `ServerPathTest` S-115-42 cases red (non-owner admin create/edit with a path, `/`, `''`, `null` → 403; without the key → saved; rights flag) → policy, requests, resource → green; then the forms.
+    - _Commands:_ `php artisan test --filter=ServerPathTest`, `vendor/bin/php-cs-fixer fix`, `make phpstan`, `vp check --fix` (scoped to the two forms), `vp run typecheck`.
+    - _Exit:_ S-115-42 green; manual check of the form as owner and as another admin noted.
 
 ## Scenario Tracking
 
@@ -138,6 +143,7 @@ Run once T-115-01 … 32 are `[x]`: map each FR/NFR to the classes and tests tha
 | S-115-39 | I5 / T-115-09, T-115-10 | `AdminSetupTest` (×2), `Unit/Console/Commands/CreateUserTest` |
 | S-115-40 | I3 / T-115-05, T-115-06 | `ImportSettingsTest` |
 | S-115-41 | I13, I14 / T-115-26, T-115-28 | manual |
+| S-115-42 | I17 / T-115-33 … T-115-35 | `ServerPathTest`; form part manual |
 
 ## Analysis Gate
 
@@ -186,6 +192,7 @@ Every FR/NFR maps to code and tests; no divergence from the spec.
 | FR-115-14 | migration grant, `SetUpAdminController`, `ProfileController::store`, `CreateUser` command | `ServerPathMigrationTest`, `AdminSetupTest`, `Install\AdminTest`, `CreateUserCommandTest` |
 | FR-115-15 | migration `2026_11_15_000002_create_import_category`, `lang/*/all_settings.php` | `ImportSettingsTest`, `ConfigTranslationKeysTest`, `LangTest` |
 | FR-115-16, FR-115-17 | v7/v8 `CreateEditUser.vue`, `ImportFromServer.vue`, `user-management-service.ts`, `lang/*/users.php`, `lang/*/import_from_server.php` | `LangTest`, typecheck; S-115-41 manual (operator) |
+| FR-115-19 | `UserPolicy::canEditServerPath` + `before()`, `AddUserRequest::authorize`, `SetUserSettingsRequest::authorize`, `UserManagementRightsResource`, v7/v8 `CreateEditUser.vue` | `ServerPathTest` |
 | FR-115-18, NFR-115-06 | `ImportImageJob::assertStillInsideImportRoot`, `ImportFileOutsideRootException` | `ImportImageJobTest` |
 | NFR-115-02, NFR-115-03 | `ImportPathGuard`, `ImportPathStatus` | `ImportPathGuardTest` |
 | NFR-115-05 | admin fixtures get `/`; earlier tests unchanged | `ImportFromServerBrowseTest`, `ImportFromServerTest`, `SyncTest` |
@@ -203,3 +210,4 @@ Every FR/NFR maps to code and tests; no divergence from the spec.
 ## Intent Log
 - 2026-11-15: owner request (trust level, root folder option, per-user `server_path`, no-path sync, link handling question). Code survey of `ImportFromServerController`, requests, `Exec` and pipes, `ImportDTO`, `ImportImageJob`, `Sync`, `AlbumPolicy`, user management, first-admin paths, config categories. Q-115-01 … 06 logged and answered by the owner the same day (all A; Q-115-02 + first admin, Q-115-03 as config + new settings category, Q-115-05 + never delete Unsorted). Spec, ADR-115-01, plan and tasks written; analysis gate passed.
 - Implementation: increments I1 … I14 test-first, one commit each (scoped `php artisan test --filter=…`, `phpstan` on touched files, `php-cs-fixer`, `vp check`, `vp run typecheck`). Notes: `vp check --fix` rewrites the two unrelated `EmbedCodeDialog.vue` files (breaks the `<\/script>` escape), restore them; a red symlink-import test left a dangling link in `public/uploads` that broke `RequiresEmptyPhotos`, so refusal tests now use `Queue::fake()`; `User::query()->value()` and `Album::query()->value()` trip strict eager loading in tests, use `DB::table`; the album factory's `children_of` hands every child to the parent's owner.
+- 2026-11-16: owner directive "Only the owner of the server is allowed to modify the path limitations of users. Admins are not allowed to modify this." Logged and resolved as Q-115-07 (A: 403 for any other admin sending `server_path`, whatever its value, field hidden for them). Spec FR-115-02/16 amended, FR-115-19, S-115-42, DO-115-10, UI-115-04 added, ADR-115-01 amended, increment I17 planned. Earlier the same day: the merge from master brought `ImportImageJobTest` and `SkippedDuplicateJobTest` cases without the trust level argument, fixed in `18f027a8f`.

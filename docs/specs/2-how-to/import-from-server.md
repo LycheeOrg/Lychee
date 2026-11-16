@@ -4,7 +4,7 @@ Import from server copies (or links) photos that already sit on the server's dis
 
 ## Who may import
 
-Each user has a **server import path** (`users.server_path`), set by an admin in the user management form:
+Each user has a **server import path** (`users.server_path`), set by the server owner (the `owner_id` user) in the user management form. Other admins do not see the field and cannot change it:
 
 | Value | Meaning |
 |-------|---------|

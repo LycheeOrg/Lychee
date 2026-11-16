@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft (Q-115-01 … 06 resolved 2026-11-15, plan and tasks written) |
-| Last updated | 2026-11-15 |
+| Status | Draft (Q-115-01 … 06 resolved 2026-11-15, Q-115-07 resolved 2026-11-16, plan and tasks written) |
+| Last updated | 2026-11-16 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -17,7 +17,7 @@ Import from server (`POST/GET /api/v2/Import`, `GET /api/v2/Import::browse`, `ly
 Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` and the three first-admin paths, user management API (v2) and forms (v7, v8), `AlbumPolicy::canImportFromServer`, `ImportFromServer*` requests/controller/resources, `Actions\Import\Exec` and its pipes, `ImportDTO`, `ImportImageJob`, `lychee:sync`, configs and config categories, v7/v8 import dialog, translations (23 locales).
 
 ## Goals
-- An admin grants import from server per user with `server_path`; disabled (`null`) by default, `/` for the existing owner and for the first admin of a new install.
+- The server owner (the `owner_id` user) grants import from server per user with `server_path`; disabled (`null`) by default, `/` for the existing owner and for the first admin of a new install. Other admins cannot change it.
 - A user with a restricted `server_path` browses and imports only inside it; nothing outside it is listed, disclosed or imported, through symbolic links included.
 - `server_path = /` keeps today's unrestricted browsing, starting at Lychee's working directory.
 - Imports never merge into or delete another user's albums and photos (setting, on by default).
@@ -27,7 +27,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 - All import settings, from the server and from a URL, live in one new "Import" settings category.
 
 ## Non-Goals
-- Letting users set their own `server_path` (admin only).
+- Letting users set their own `server_path` (server owner only, FR-115-19).
 - `lychee:create_user` / `lychee:update_user` options for `server_path` (the first user still gets `/`, FR-115-14).
 - A trust level picker in the dialog or a `--trust_level` option (Q-115-04 B/C, rejected).
 - A per-user target album for the no-path sync (the target is the gallery root, FR-115-13).
@@ -41,7 +41,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-115-01 | New nullable column `users.server_path` (string, max 4096, default `null`). `null` = import from server disabled for that user. A value starting with `/` = enabled. `/` alone = full access; any other value = restricted to that directory and its descendants (the **import root**). | Column present after migration; `User::$server_path` typed `?string`. | — | — | None. | Owner request |
-| FR-115-02 | Admins set `server_path` when creating or editing a user (`POST /api/v2/UserManagement`, `PATCH /api/v2/UserManagement`). `UserManagementResource` exposes it. Stored normalised: trailing `/` removed (except for `/`), repeated `/` collapsed. Empty string or absent on create → `null`; absent on update → unchanged; `null` or empty string on update → `null`. | Value persisted and returned. | Must start with `/`; no `.` or `..` segment; no NUL byte; must be an existing directory readable by PHP at save time. Otherwise 422 on `server_path`. | — | None. | Owner request |
+| FR-115-02 | The server owner sets `server_path` when creating or editing a user (FR-115-19) (`POST /api/v2/UserManagement`, `PATCH /api/v2/UserManagement`). `UserManagementResource` exposes it. Stored normalised: trailing `/` removed (except for `/`), repeated `/` collapsed. Empty string or absent on create → `null`; absent on update → unchanged; `null` or empty string on update → `null`. | Value persisted and returned. | Must start with `/`; no `.` or `..` segment; no NUL byte; must be an existing directory readable by PHP at save time. Otherwise 422 on `server_path`. | — | None. | Owner request |
 | FR-115-03 | `AlbumPolicy::canImportFromServer(User)` = `features.disable-import-from-server` is false **and** `server_path !== null` **and** (`may_administrate` or `may_upload`). The `owner_id` check is removed and admins do not skip it (`AlbumPolicy::before()` leaves this ability to the rule). `can_import_from_server` in album rights follows. | User with a path and upload rights sees "Import from server" in v7/v8 menus. | — | Policy false → 403 on all three `Import` routes, entry hidden. | None. | Owner request |
 | FR-115-04 | `GET /api/v2/Import` returns `directory` = the user's import root, or `base_path()` when `server_path` is `/`; new fields `is_restricted` (`server_path !== '/'`) and `is_root_folder_album` (config `import_root_folder_as_album`). For a restricted user `import_via_symlink` is `false`. | Dialog opens on that directory with the right toggles. | — | Restricted import root missing or unreadable → 422 "Import directory is not available", dialog shows the message. | TE-115-02. | Owner request, Q-115-01 A |
 | FR-115-05 | `GET /api/v2/Import::browse` for a restricted user: the requested directory is first normalised lexically (`.`/`..` resolved without touching the disk) and must equal the import root or start with `<import root>/`; then its `realpath()` must pass the same test against `realpath(<import root>)`. Only then is `is_dir()` evaluated. `..` is not listed when the directory is the import root. A child entry that is a symbolic link is listed only when its real path is inside the import root. Full-access users: unchanged. | Child directories of an allowed directory are listed. | Lexically outside, or real path outside → 403 with one generic message, before any `is_dir()`/`realpath()` on the outside path. Inside but missing → 422 "invalid directory" as today. | Unreadable directory → empty list as today. | TE-115-01. | Owner request, NFR-115-01, Q-115-01 A |
@@ -55,9 +55,10 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 | FR-115-13 | `lychee:sync` `paths` becomes optional. New config `sync_users_server_paths` (bool, default `0`). With no path and the config on, the command syncs, in id order, every user whose `server_path` is set and not `/` and who may import (FR-115-03), as that user (owner, FR-115-08 trust level, FR-115-11 import root), into the gallery root, with the command's import options except `import_via_symlink`, always off for these restricted users (ADR-115-01). Users with `/` are listed as skipped. `--owner_id` given explicitly limits the run to that user; its default moves from the signature to runtime (first admin, as today, when paths are given). `--album_id` with no path → error. | Each eligible user's folder synced; one summary line per user. | No path and config off → error "No path given. Pass paths, or enable sync_users_server_paths.", exit 1. `--album_id` with no path → error, exit 1. `--owner_id` of a user not eligible → error, exit 1. | A user whose path is missing or empty → warning, next user; exit 1 if any user failed. | One `line()` per user (id, username, path, job count or reason skipped). | Owner request, Q-115-06 A |
 | FR-115-14 | Upgrade and first admin: the migration adding `server_path` sets it to `/` on the user named by `owner_id` (no-op when none), every other user `null`. The first admin of a new install gets `/` on every creation path: v7 installer (`SetUpAdminController::create`), v8 admin setup (`ProfileController::store`), `lychee:create_user` when no user exists. Through `Actions\User\Create::do(..., ?string $server_path = null)`. | Existing owner keeps import; new install's admin can import at once. | — | — | None. | Q-115-02 A + owner directive "also when creating the first admin" |
 | FR-115-15 | New config category `import` ("Import"), ordered between Image Processing and Search, with the description "Settings for importing photos from a folder on the server and from a URL." It holds, in this order: the server-import keys `import_root_folder_as_album`, `import_scope_to_owner`, `sync_users_server_paths` and the moved `delete_imported`, `import_via_symlink`, `skip_duplicates_early`, `sync_delete_missing_photos`, `sync_delete_missing_albums`, `sync_dry_run`; then the URL-import keys moved from Admin: `import_via_url_forbidden_localhost`, `import_via_url_forbidden_local_ip`, `import_via_url_require_https`, `import_via_url_forbidden_ports`, `import_via_url_block_redirect`. The migration's `down()` puts the moved keys back in their former category (Image Processing, or Admin for the URL keys) with their old order. | Settings page shows the category, its description and fourteen settings. | — | — | None. | Owner suggestion (Q-115-03 answer) |
-| FR-115-16 | v7 and v8 user create/edit forms gain a "Server import path" text field (empty = disabled), with a hint. The users list shows nothing new. | Admin types `/srv/import/alice`, saves, user can import from there. | 422 message shown under the field. | — | None. | Owner request |
+| FR-115-16 | v7 and v8 user create/edit forms gain a "Server import path" text field (empty = disabled), with a hint. The field is shown, and `server_path` sent, only when `user_management.can_edit_server_path` is true (FR-115-19); otherwise the form omits the key so the stored value is kept. The users list shows nothing new. | Owner types `/srv/import/alice`, saves, user can import from there. Another admin sees no field and saves without touching the path. | 422 message shown under the field. | — | None. | Owner request, Q-115-07 |
 | FR-115-17 | v7 and v8 import dialog: when `is_restricted`, the "import via symbolic link" toggle is hidden and sent as `false`. When `is_root_folder_album` is `false`, a hint under the target says the folder's content goes straight into the target and that delete-missing then applies to the target album. | — | — | — | None. | Q-115-01 A, Q-115-05 A |
 | FR-115-18 | `ImportImageJob` carries the import root (real path, nullable). When it runs with a root, it checks the file's `realpath()` again: outside → the job fails (history `FAILURE`), nothing is imported and the source is not deleted. | File unchanged since the scan → imported. | — | File replaced by a link outside between scan and job → failure, log warning. | `Log::warning` (owner id, file path). | Q-115-01 A, NFR-115-06 |
+| FR-115-19 | Only the server owner (`may_administrate` and `id` = config `owner_id`) may set `server_path`. New ability `UserPolicy::CAN_EDIT_SERVER_PATH`, which admins do not skip (`UserPolicy::before()` leaves it to the rule, as `AlbumPolicy` does for FR-115-03). `AddUserRequest` and `SetUserSettingsRequest` check it whenever the request carries the `server_path` key, whatever its value (`null` and empty string included). `UserManagementRightsResource` gains `can_edit_server_path`. Reading `server_path` in `GET /api/v2/UserManagement` is unchanged. | Owner creates or edits a user with `server_path` → saved as in FR-115-02. Another admin creates or edits a user without the key → saved, path unchanged. | — | Another admin sends `server_path` (any value) → 403, nothing saved. | None. | Owner directive 2026-11-16, Q-115-07 |
 
 ## Non-Functional Requirements
 
@@ -73,20 +74,20 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 
 ## UI / Interaction Mock-ups
 
-User create/edit (v8, v7 equivalent):
+User create/edit (v8, v7 equivalent), as the server owner (left) and as another admin (right, FR-115-19):
 ```
-+------------------------------------------------+
-| Edit user                                       |
-| Username      [ alice                        ]  |
-| Password      [ ••••••                       ]  |
-| [x] Upload rights                               |
-| [x] Can edit own settings                       |
-| Upload trust level  [ Check               v ]   |
-| Server import path  [ /srv/import/alice      ]  |
-|   Empty: disabled. "/": whole server.           |
-|   Otherwise: only this folder and below.        |
-|                         [ Cancel ] [ Save ]     |
-+------------------------------------------------+
++------------------------------------------------+   +------------------------------------------------+
+| Edit user                                       |   | Edit user                                       |
+| Username      [ alice                        ]  |   | Username      [ alice                        ]  |
+| Password      [ ••••••                       ]  |   | Password      [ ••••••                       ]  |
+| [x] Upload rights                               |   | [x] Upload rights                               |
+| [x] Can edit own settings                       |   | [x] Can edit own settings                       |
+| Upload trust level  [ Check               v ]   |   | Upload trust level  [ Check               v ]   |
+| Server import path  [ /srv/import/alice      ]  |   |                                                 |
+|   Empty: disabled. "/": whole server.           |   |                                                 |
+|   Otherwise: only this folder and below.        |   |                                                 |
+|                         [ Cancel ] [ Save ]     |   |                         [ Cancel ] [ Save ]     |
++------------------------------------------------+   +------------------------------------------------+
 ```
 
 Import dialog, restricted user at the import root (no `..`, no symlink toggle) and one level down; `import_root_folder_as_album = 0` shows the hint:
@@ -172,13 +173,14 @@ Import
 | S-115-39 | First admin via v7 installer, v8 admin setup and `lychee:create_user` on an empty database → `/`; second user via `lychee:create_user` → `null`. |
 | S-115-40 | Settings list: category `import` has its description and holds the fourteen keys (nine server, five URL); `skip_duplicates` stays in Image Processing. |
 | S-115-41 | Dialog (v7, v8), restricted user: symlink toggle hidden; `import_root_folder_as_album = 0` → hint shown. |
+| S-115-42 | Admin who is not the server owner: create or edit with `server_path` (a path, `/`, empty string or `null`) → 403, user not created or path unchanged; same request without the key → saved, path unchanged; `user_management.can_edit_server_path` false (owner: true). User form (v7, v8) hides the field for that admin. |
 
 ## Test Strategy
 - **Unit:** `ImportPathGuardTest` (NFR-115-02/03): inside, equal to root, outside, prefix trap, lexical `..`, missing, real path outside through a link, no root. `ImportImageJobTest` (S-115-27, trust level in the payload).
-- **REST API (v2):** `ImportFromServerOptionsTest`, `ImportFromServerBrowseTest`, `ImportFromServerTest` (S-115-01 … 11, 20 … 23, 28); `Feature_v2/UserManagement/ServerPathTest` (S-115-19); `Feature_v2/User/AdminSetupTest`, `Install/AdminTest` (S-115-39). Written first, seen red.
+- **REST API (v2):** `ImportFromServerOptionsTest`, `ImportFromServerBrowseTest`, `ImportFromServerTest` (S-115-01 … 11, 20 … 23, 28); `Feature_v2/UserManagement/ServerPathTest` (S-115-19, S-115-42); `Feature_v2/User/AdminSetupTest`, `Install/AdminTest` (S-115-39). Written first, seen red.
 - **Artisan commands:** `SyncTest` (S-115-12 … 18, 24 … 26, 29 … 37), new `CreateUserCommandTest` (S-115-39). Written first, seen red.
 - **Migrations / configs:** test on the migrated SQLite database for S-115-38 (owner gets `/`) and S-115-40 (category membership).
-- **Frontend (v7/v8):** no automated suite for these forms; `vp check`, `vp run typecheck`, manual check of S-115-41 and the user form.
+- **Frontend (v7/v8):** no automated suite for these forms; `vp check`, `vp run typecheck`, manual check of S-115-41 and the user form (S-115-42 as owner and as another admin).
 - **Docs/Contracts:** `UserManagementResource` and `ImportFromServerOptionsResource` regenerated with `php artisan typescript:transform`.
 
 ## Interface & Contract Catalogue
@@ -195,6 +197,7 @@ Import
 | DO-115-07 | `ImportFromServerOptionsResource` gains `is_restricted`, `is_root_folder_album` | REST, v7/v8 |
 | DO-115-08 | `ImportDTO` / `ImportImageJob` gain `upload_trust_level` and `?string import_root` | import pipeline |
 | DO-115-09 | `ServerPathRule` validation rule (FR-115-02) | user management requests |
+| DO-115-10 | `UserPolicy::CAN_EDIT_SERVER_PATH` (owner only, no admin bypass) and `UserManagementRightsResource::$can_edit_server_path` (FR-115-19) | user management requests, v7/v8 user form |
 
 ### API Routes / Services
 | ID | Transport | Description | Notes |
@@ -202,7 +205,7 @@ Import
 | API-115-01 | REST GET /api/v2/Import | `directory` from `server_path`, `is_restricted`, `is_root_folder_album` | `ImportFromServerOptionsResource` |
 | API-115-02 | REST GET /api/v2/Import::browse | containment for restricted users, links filtered | `ImportFromServerBrowseRequest` |
 | API-115-03 | REST POST /api/v2/Import | containment, owner = requester, upload right on target, no symlink import when restricted | `ImportFromServerRequest` |
-| API-115-04 | REST POST /api/v2/UserManagement, PATCH /api/v2/UserManagement | `server_path` field | `AddUserRequest`, `SetUserSettingsRequest`, `UserManagementResource` |
+| API-115-04 | REST POST /api/v2/UserManagement, PATCH /api/v2/UserManagement | `server_path` field, server owner only (403 otherwise, FR-115-19) | `AddUserRequest`, `SetUserSettingsRequest`, `UserManagementResource` |
 
 ### CLI Commands / Flags
 | ID | Command | Behaviour |
@@ -230,6 +233,7 @@ Import
 | UI-115-01 | Import dialog at restricted import root | No `..` entry, no symlink toggle |
 | UI-115-02 | User form `server_path` error | 422 message under the field |
 | UI-115-03 | Import dialog with `import_root_folder_as_album = 0` | Hint under the target |
+| UI-115-04 | User form opened by an admin who is not the server owner | No server import path field |
 
 ## Telemetry & Observability
 Laravel log lines (TE-115-01/02/05) and import report events (TE-115-03/04); no new telemetry channel.
@@ -277,6 +281,9 @@ domain_objects:
     fields: [upload_trust_level, import_root]
   - id: DO-115-09
     name: ServerPathRule
+  - id: DO-115-10
+    name: UserPolicy::CAN_EDIT_SERVER_PATH
+    fields: [can_edit_server_path]
 routes:
   - id: API-115-01
     method: GET
@@ -316,6 +323,8 @@ ui_states:
     description: server_path validation error
   - id: UI-115-03
     description: root-folder-as-album hint
+  - id: UI-115-04
+    description: user form without server_path for non-owner admins
 ```
 
 ## Appendix

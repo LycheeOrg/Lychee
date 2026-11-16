@@ -38,6 +38,7 @@
 					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>
 				</div>
 				<UFormField
+					v-if="canEditServerPath"
 					:label="$t('users.create_edit.server_path')"
 					:help="$t('users.create_edit.server_path_hint')"
 					:error="serverPathError"
@@ -103,6 +104,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/v8/components/icons/SETag.vue";
 import UsersService from "@/services/users-service";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { trans } from "laravel-vue-i18n";
 
 const lycheeStore = useLycheeStateStore();
@@ -142,11 +144,18 @@ const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
 const upload_trust_level = ref<App.Enum.UserUploadTrustLevel>(props.user?.upload_trust_level ?? "trusted");
+const { rights } = useGlobalRights();
 const server_path = ref<string>(props.user?.server_path ?? "");
 const serverPathError = ref<string | undefined>(undefined);
 
+// Only the server owner may change the path (FR-115-19): for anyone else the key is left out.
+const canEditServerPath = computed(() => rights.value?.user_management.can_edit_server_path ?? false);
+
 // Empty field = import from server disabled.
-function serverPathPayload(): string | null {
+function serverPathPayload(): string | null | undefined {
+	if (!canEditServerPath.value) {
+		return undefined;
+	}
 	const value = server_path.value.trim();
 	return value === "" ? null : value;
 }

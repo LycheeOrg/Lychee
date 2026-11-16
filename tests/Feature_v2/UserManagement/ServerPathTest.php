@@ -26,7 +26,7 @@ use function Safe\touch;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
- * Feature 115: FR-115-02, S-115-19.
+ * Feature 115: FR-115-02, FR-115-19, S-115-19, S-115-42.
  */
 class ServerPathTest extends BaseApiWithDataTest
 {
@@ -46,7 +46,7 @@ class ServerPathTest extends BaseApiWithDataTest
 		parent::tearDown();
 	}
 
-	private function create(?string $server_path, bool $send = true): \Illuminate\Testing\TestResponse
+	private function create(?string $server_path, bool $send = true, ?User $as = null): \Illuminate\Testing\TestResponse
 	{
 		$payload = [
 			'username' => 'alice',
@@ -58,10 +58,10 @@ class ServerPathTest extends BaseApiWithDataTest
 			$payload['server_path'] = $server_path;
 		}
 
-		return $this->actingAs($this->admin)->postJson('UserManagement', $payload);
+		return $this->actingAs($as ?? $this->admin)->postJson('UserManagement', $payload);
 	}
 
-	private function edit(?string $server_path, bool $send = true): \Illuminate\Testing\TestResponse
+	private function edit(?string $server_path, bool $send = true, ?User $as = null): \Illuminate\Testing\TestResponse
 	{
 		$payload = [
 			'id' => $this->userMayUpload1->id,
@@ -73,7 +73,7 @@ class ServerPathTest extends BaseApiWithDataTest
 			$payload['server_path'] = $server_path;
 		}
 
-		return $this->actingAs($this->admin)->patchJson('UserManagement', $payload);
+		return $this->actingAs($as ?? $this->admin)->patchJson('UserManagement', $payload);
 	}
 
 	public function testCreateStoresNormalisedPath(): void
@@ -157,5 +157,71 @@ class ServerPathTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJson('UserManagement');
 		$this->assertOk($response);
 		$response->assertJsonFragment(['id' => $this->userMayUpload1->id, 'server_path' => $this->base . '/alice']);
+	}
+
+	/**
+	 * An admin who is not the server owner (`owner_id` is `$this->admin`).
+	 */
+	private function otherAdmin(): User
+	{
+		return User::factory()->may_administrate()->create();
+	}
+
+	/**
+	 * S-115-42: any `server_path` value from another admin is refused on create.
+	 */
+	public function testOtherAdminCannotCreateWithServerPath(): void
+	{
+		$other_admin = $this->otherAdmin();
+
+		foreach ([$this->base . '/alice', '/', '', null] as $server_path) {
+			$this->assertForbidden($this->create($server_path, true, $other_admin));
+			self::assertFalse(User::query()->where('username', '=', 'alice')->exists());
+		}
+	}
+
+	/**
+	 * S-115-42: any `server_path` value from another admin is refused on edit, `null` included.
+	 */
+	public function testOtherAdminCannotEditServerPath(): void
+	{
+		$other_admin = $this->otherAdmin();
+		$this->userMayUpload1->server_path = $this->base . '/alice';
+		$this->userMayUpload1->save();
+
+		foreach ([$this->base, '/', '', null] as $server_path) {
+			$this->assertForbidden($this->edit($server_path, true, $other_admin));
+			self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
+		}
+	}
+
+	/**
+	 * S-115-42: without the key, another admin still creates and edits users.
+	 */
+	public function testOtherAdminSavesWithoutServerPath(): void
+	{
+		$other_admin = $this->otherAdmin();
+		$this->userMayUpload1->server_path = $this->base . '/alice';
+		$this->userMayUpload1->save();
+
+		$this->assertCreated($this->create(null, false, $other_admin));
+		self::assertNull(User::query()->where('username', '=', 'alice')->first()->server_path);
+
+		$this->assertNoContent($this->edit(null, false, $other_admin));
+		self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
+	}
+
+	/**
+	 * S-115-42: the right drives the user form.
+	 */
+	public function testRightOnlyForOwner(): void
+	{
+		$response = $this->actingAs($this->admin)->getJson('Auth::rights');
+		$this->assertOk($response);
+		$response->assertJsonPath('user_management.can_edit_server_path', true);
+
+		$response = $this->actingAs($this->otherAdmin())->getJson('Auth::rights');
+		$this->assertOk($response);
+		$response->assertJsonPath('user_management.can_edit_server_path', false);
 	}
 }

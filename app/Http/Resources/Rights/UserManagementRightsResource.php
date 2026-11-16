@@ -21,6 +21,7 @@ class UserManagementRightsResource extends Data
 	public bool $can_list;
 	public bool $can_edit;
 	public bool $can_delete;
+	public bool $can_edit_server_path;
 
 	public function __construct()
 	{
@@ -28,5 +29,6 @@ class UserManagementRightsResource extends Data
 		$this->can_list = Gate::check(UserPolicy::CAN_LIST, [User::class]);
 		$this->can_edit = Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 		$this->can_delete = Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
+		$this->can_edit_server_path = Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class]);
 	}
 }
