@@ -11,11 +11,11 @@ _Last updated: 2026-11-15_
 ## Checklist
 
 ### I1 – Path guard
-- [ ] T-115-01 – Guard tests, red (FR-115-05, FR-115-11, FR-115-18, NFR-115-02, NFR-115-03).
+- [x] T-115-01 – Guard tests, red (FR-115-05, FR-115-11, FR-115-18, NFR-115-02, NFR-115-03).
   _Intent:_ `tests/Unit/Actions/Import/ImportPathGuardTest.php`: inside, root itself, outside, `alice2` prefix trap, lexical `..`, missing inside, link inside, link outside, `null` root. Roots built with `realpath()` of a temp dir.
   _Verification commands:_
   - `php artisan test --filter=ImportPathGuardTest` (red)
-- [ ] T-115-02 – `ImportPathGuard` and `ImportPathStatus` (FR-115-05, NFR-115-03).
+- [x] T-115-02 – `ImportPathGuard` and `ImportPathStatus` (FR-115-05, NFR-115-03).
   _Intent:_ `app/Actions/Import/ImportPathGuard.php` (`normalise()`, `check()`), `app/Enum/ImportPathStatus.php`. Pure, no logging.
   _Verification commands:_
   - `php artisan test --filter=ImportPathGuardTest`
