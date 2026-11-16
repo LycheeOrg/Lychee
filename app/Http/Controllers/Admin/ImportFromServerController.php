@@ -9,8 +9,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Import\Exec;
+use App\Actions\Import\ImportPathGuard;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
+use App\Enum\ImportPathStatus;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\InvalidOptionsException;
@@ -22,13 +24,31 @@ use App\Http\Resources\Admin\ImportDirectoryResource;
 use App\Http\Resources\Admin\ImportFromServerOptionsResource;
 use App\Http\Resources\Admin\ImportFromServerResource;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ImportFromServerController extends Controller
 {
+	/**
+	 * @throws InvalidOptionsException when the import root of a restricted user is gone
+	 */
 	public function options(ImportFromServerOptionsRequest $request): ImportFromServerOptionsResource
 	{
-		return new ImportFromServerOptionsResource();
+		$import_root = $request->importRoot();
+		if (!self::isAvailable($import_root)) {
+			Log::warning('import root unavailable', ['user_id' => Auth::id(), 'server_path' => $import_root]);
+			throw new InvalidOptionsException('Import directory is not available');
+		}
+
+		return new ImportFromServerOptionsResource($import_root);
+	}
+
+	/**
+	 * Full access (`null`) is always available; a restricted root must be a readable directory.
+	 */
+	private static function isAvailable(?string $import_root): bool
+	{
+		return $import_root === null || (is_dir($import_root) && is_readable($import_root));
 	}
 
 	/**
@@ -47,14 +67,15 @@ class ImportFromServerController extends Controller
 			throw new InvalidDirectoryException('The specified directory is not valid: ' . $request->directory);
 		}
 
+		$import_root = $request->importRoot();
 		$dirs = [];
-		if ($request->directory !== '/') {
+		if (!self::isTop($request->directory, $import_root)) {
 			$dirs[] = '..';
 		}
 		try {
 			foreach (new \DirectoryIterator($request->directory) as $file_info) {
 				// We only import directories here. Files are imported by the Importer when parsing the directories.
-				if ($file_info->isDir() && !$file_info->isDot()) {
+				if ($file_info->isDir() && !$file_info->isDot() && self::isListable($file_info, $import_root)) {
 					$dirs[] = $file_info->getFilename();
 				}
 			}
@@ -64,6 +85,22 @@ class ImportFromServerController extends Controller
 		}
 
 		return $dirs;
+	}
+
+	/**
+	 * Whether $directory is the top of what the user may browse (no `..` entry).
+	 */
+	private static function isTop(string $directory, ?string $import_root): bool
+	{
+		return $directory === '/' || ($import_root !== null && ImportPathGuard::resolve($directory) === $import_root);
+	}
+
+	/**
+	 * A link is listed to a restricted user only when it points inside their import root (FR-115-05).
+	 */
+	private static function isListable(\SplFileInfo $file_info, ?string $import_root): bool
+	{
+		return !$file_info->isLink() || ImportPathGuard::check($file_info->getPathname(), $import_root) === ImportPathStatus::INSIDE;
 	}
 
 	/**

@@ -70,12 +70,12 @@ _Last updated: 2026-11-15_
   - `php artisan test --filter=CreateUserCommandTest`
 
 ### I6 – Policy, options, browse
-- [ ] T-115-11 – Options and browse tests, red (FR-115-03, FR-115-04, FR-115-05, NFR-115-01, S-115-01 … 08, S-115-20, S-115-21, S-115-22).
-  _Intent:_ `ImportFromServerOptionsTest`, `ImportFromServerBrowseTest`: admin fixture gets `/` in `setUp`; new restricted user fixture (FX-115-01); identical 403 bodies for existing and missing outside paths; inside/outside links in browse.
+- [x] T-115-11 – Options and browse tests, red (FR-115-03, FR-115-04, FR-115-05, NFR-115-01, S-115-01 … 08, S-115-20, S-115-21, S-115-22).
+  _Intent:_ `ImportFromServerOptionsTest`, `ImportFromServerBrowseTest`: admin fixture gets `/` in `setUp`; restricted user and temp tree from `tests/Traits/CreatesImportTree.php` (FX-115-01); identical 403 bodies for existing and missing outside paths; inside/outside links in browse.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerOptionsTest` (red)
   - `php artisan test --filter=ImportFromServerBrowseTest` (red)
-- [ ] T-115-12 – Policy, options resource, browse containment (FR-115-03, FR-115-04, FR-115-05).
+- [x] T-115-12 – Policy, options resource, browse containment (FR-115-03, FR-115-04, FR-115-05).
   _Intent:_ `AlbumPolicy::canImportFromServer`; `ImportFromServerOptionsResource` (`directory`, `is_restricted`, `is_root_folder_album`, `import_via_symlink`; 422 when the root is gone, TE-115-02); `ImportFromServerBrowseRequest` runs the guard (403, TE-115-01); controller hides `..` at the root and filters outside links.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerOptionsTest`

@@ -13,9 +13,25 @@ use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\Traits\CreatesImportTree;
 
 class ImportFromServerTest extends BaseApiWithDataTest
 {
+	use CreatesImportTree;
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->createImportTree();
+		$this->admin = $this->grantFullAccess($this->admin);
+	}
+
+	public function tearDown(): void
+	{
+		$this->removeImportTree();
+		parent::tearDown();
+	}
+
 	private function getDefaultPayload(string $directory, ?string $album_id = null): array
 	{
 		return [

@@ -771,8 +771,28 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Check whether user can import from server.
-	 * Only the owner of Lychee can use this functionality (if not disabled in .env config).
+	 * Admins skip every check except import from server,
+	 * which also needs a server path (Feature 115, FR-115-03).
+	 *
+	 * @param User|null $user
+	 * @param string    $ability
+	 *
+	 * @return void|bool
+	 */
+	public function before(?User $user, $ability)
+	{
+		if ($ability === self::CAN_IMPORT_FROM_SERVER) {
+			return null;
+		}
+
+		return parent::before($user, $ability);
+	}
+
+	/**
+	 * Check whether user can import from server (Feature 115, FR-115-03).
+	 *
+	 * The feature must not be disabled in the .env config, the user must have
+	 * a server path and be allowed to upload (or administrate).
 	 *
 	 * @param User $user
 	 *
@@ -780,10 +800,9 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canImportFromServer(User $user): bool
 	{
-		$config_manager = app(ConfigManager::class);
-
-		return $user->id === $config_manager->getValueAsInt('owner_id') &&
-			config('features.disable-import-from-server', true) === false;
+		return config('features.disable-import-from-server', true) === false &&
+			$user->server_path !== null &&
+			($user->may_administrate || $user->may_upload);
 	}
 
 	// The following methods are not to be called by Gate.

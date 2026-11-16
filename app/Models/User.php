@@ -129,6 +129,16 @@ class User extends Authenticatable
 	protected $hidden = [];
 
 	/**
+	 * Default values of attributes not set on a new instance.
+	 * `server_path` is `null` (import from server disabled, Feature 115).
+	 *
+	 * @var array<string,mixed>
+	 */
+	protected $attributes = [
+		'server_path' => null,
+	];
+
+	/**
 	 * We always want to load the user groups when loading a user.
 	 * So that we can use the groups to determine the permissions without having to do intersection in the db.
 	 *
