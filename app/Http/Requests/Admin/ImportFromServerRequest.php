@@ -14,14 +14,18 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\InvalidOptionsException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\Requests\Traits\HasImportRootTrait;
 use App\Models\Album;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
+	use HasImportRootTrait;
 	/**
 	 * The directories to import from.
 	 *
@@ -37,7 +41,36 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
+		if (!Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class])) {
+			return false;
+		}
+
+		// FR-115-07: the requester needs the upload right on the target album.
+		if ($this->album !== null && !Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $this->album])) {
+			return false;
+		}
+
+		// FR-115-06: every directory must be inside the import root, before any disk access.
+		foreach ($this->directories as $directory) {
+			if (!$this->allowsPath($directory)) {
+				return false;
+			}
+		}
+
+		$this->directories = array_map(fn (string $directory) => $this->effectivePath($directory), $this->directories);
+
+		return true;
+	}
+
+	/**
+	 * Restricted users always get copies (ADR-115-01): a stored link could later be pointed anywhere.
+	 */
+	private function isRestricted(): bool
+	{
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $user?->server_path !== null && $user->server_path !== '/';
 	}
 
 	/**
@@ -50,7 +83,7 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 			'directories.*' => ['required', 'string'],
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			'delete_imported' => ['required', 'boolean'],
-			'import_via_symlink' => ['required', 'boolean'],
+			'import_via_symlink' => ['required', 'boolean', ...($this->isRestricted() ? ['declined'] : [])],
 			'skip_duplicates' => ['required', 'boolean'],
 			'resync_metadata' => ['required', 'boolean'],
 			'delete_missing_photos' => ['required', 'boolean'],

@@ -36,6 +36,8 @@ class Exec
 	 * @param bool       $delete_missing_photos whether to delete photos in the database that are not in the file system
 	 * @param bool       $delete_missing_albums whether to delete albums in the database that are not in the file system
 	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
+	 * @param bool       $should_execute_jobs   whether to dispatch the jobs at the end of the run
+	 * @param ?string    $import_root           real import root links must stay in, `null` when unrestricted (FR-115-11)
 	 */
 	public function __construct(
 		private ImportMode $import_mode,
@@ -44,6 +46,7 @@ class Exec
 		private bool $delete_missing_albums = false,
 		private bool $is_dry_run = false,
 		private bool $should_execute_jobs = false,
+		private ?string $import_root = null,
 	) {
 	}
 
@@ -71,6 +74,7 @@ class Exec
 				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
 				should_execute_jobs: $this->should_execute_jobs,
+				import_root: $this->import_root,
 			);
 
 			try {

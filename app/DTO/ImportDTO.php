@@ -38,6 +38,7 @@ class ImportDTO
 		public readonly bool $delete_missing_albums = false,
 		public readonly bool $is_dry_run = true,
 		public readonly bool $should_execute_jobs = false,
+		public readonly ?string $import_root = null,
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
 		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id, upload_trust_level: UserUploadTrustLevel::TRUSTED);

@@ -83,11 +83,11 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I7 – Import request and owner
-- [ ] T-115-13 – Import request tests, red (FR-115-06, FR-115-07, S-115-09, S-115-10, S-115-11, S-115-28).
+- [x] T-115-13 – Import request tests, red (FR-115-06, FR-115-07, S-115-09, S-115-10, S-115-11, S-115-28).
   _Intent:_ `ImportFromServerTest`: restricted import inside, mixed inside/outside, album without upload right, `import_via_symlink = true` refused, owner of created albums and photos.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerTest` (red)
-- [ ] T-115-14 – Request guard, owner, upload right (FR-115-06, FR-115-07).
+- [x] T-115-14 – Request guard, owner, upload right (FR-115-06, FR-115-07).
   _Intent:_ `ImportFromServerRequest` (guard per directory, `CAN_UPLOAD` on the album, symlink refusal when restricted); `ImportFromServerController::get_exec` (owner `Auth::id()`, import root to `Exec`).
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerTest`

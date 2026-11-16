@@ -11,6 +11,8 @@ namespace Tests\ImageProcessing\Import;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\Album;
+use App\Models\BaseAlbumImpl;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatesImportTree;
@@ -108,5 +110,76 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		Queue::assertPushed(ImportImageJob::class, $response->json('job_count') - 2);
 		Queue::assertPushedOn('low', RecomputeAlbumSizeJob::class);
 		Queue::assertPushedOn('low', RecomputeAlbumStatsJob::class);
+	}
+
+	/** S-115-09: a restricted user imports inside their root as themselves. */
+	public function testRestrictedImportInsideOwnedByUser(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+
+		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album1->id));
+		$this->assertCreated($response);
+
+		$album = Album::query()->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.title', '=', '2026')->where('albums.parent_id', '=', $this->album1->id)->first();
+		self::assertNotNull($album);
+		self::assertSame($alice->id, $album->owner_id);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id === $alice->id);
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id !== $alice->id);
+	}
+
+	/** S-115-09: an admin with full access imports as themselves, not as the `owner_id` user. */
+	public function testAdminImportOwnedByAdmin(): void
+	{
+		Queue::fake();
+		$response = $this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', null));
+		$this->assertCreated($response);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id === $this->admin->id);
+	}
+
+	/** S-115-10: one directory outside → nothing imported. */
+	public function testRestrictedImportWithOutsideDirectoryForbidden(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$payload = $this->getDefaultPayload($this->import_root . '/2026', $this->album1->id);
+		$payload['directories'][] = $this->import_base . '/outside';
+
+		$response = $this->actingAs($alice)->postJson('/Import', $payload);
+		$this->assertForbidden($response);
+		Queue::assertNothingPushed();
+		self::assertSame(0, BaseAlbumImpl::query()->where('title', '=', '2026')->count());
+	}
+
+	/** S-115-10: a link outside is refused like an outside path. */
+	public function testRestrictedImportThroughOutsideLinkForbidden(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/link-outside', $this->album1->id));
+		$this->assertForbidden($response);
+	}
+
+	/** S-115-11 */
+	public function testImportIntoAlbumWithoutUploadRightForbidden(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album2->id));
+		$this->assertForbidden($response);
+	}
+
+	/** S-115-28 */
+	public function testRestrictedSymlinkImportRefused(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$payload = $this->getDefaultPayload($this->import_root . '/2026', $this->album1->id);
+		$payload['import_via_symlink'] = true;
+
+		$response = $this->actingAs($alice)->postJson('/Import', $payload);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors('import_via_symlink');
 	}
 }

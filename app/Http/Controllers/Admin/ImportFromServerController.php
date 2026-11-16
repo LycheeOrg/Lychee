@@ -194,11 +194,12 @@ class ImportFromServerController extends Controller
 
 		return new Exec(
 			import_mode: $import_mode,
-			intended_owner_id: $request->configs()->getValueAsInt('owner_id'),
+			intended_owner_id: intval(Auth::id()),
 			delete_missing_photos: $request->delete_missing_photos,
 			delete_missing_albums: $request->delete_missing_albums,
 			is_dry_run: false,
 			should_execute_jobs: false,
+			import_root: $request->importRoot(),
 		);
 	}
 }
