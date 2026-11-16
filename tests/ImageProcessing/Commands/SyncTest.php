@@ -19,13 +19,31 @@
 namespace Tests\ImageProcessing\Commands;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Enum\UserUploadTrustLevel;
 use App\Models\Configs;
+use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\Traits\CreatesImportTree;
 
 class SyncTest extends BaseApiWithDataTest
 {
+	use CreatesImportTree;
+
 	public const COMMAND = 'lychee:sync';
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$this->createImportTree();
+	}
+
+	public function tearDown(): void
+	{
+		$this->removeImportTree();
+		parent::tearDown();
+	}
 
 	// S-024-01 regression guard: conflicting flags still fail
 	public function testFailedArgs(): void
@@ -208,5 +226,43 @@ class SyncTest extends BaseApiWithDataTest
 			->where(PA::ALBUM_ID, $this->album5->id)
 			->count();
 		$this->assertEquals(1, $count, 'GIF should have been imported even when delete_missing_photos=1 is set for file mode.');
+	}
+
+	/** Feature 115 (S-115-12): photos take the owner's trust level. */
+	public function testTrustLevelFollowsOwner(): void
+	{
+		$owner = User::factory()->may_upload()->create();
+		$owner->upload_trust_level = UserUploadTrustLevel::CHECK;
+		$owner->save();
+
+		$this->artisan(self::COMMAND, [
+			'--import_via_symlink' => '0',
+			'--delete_imported' => '0',
+			'--owner_id' => $owner->id,
+			'paths' => [$this->import_root . '/2026'],
+		])->assertSuccessful();
+
+		$photo = Photo::query()->where('owner_id', '=', $owner->id)->firstOrFail();
+		self::assertSame(UserUploadTrustLevel::CHECK->value, DB::table('photos')->where('id', '=', $photo->id)->value('upload_trust_level'));
+		self::assertFalse((bool) DB::table('photos')->where('id', '=', $photo->id)->value('is_validated'));
+	}
+
+	/** Feature 115 (S-115-13): admins are always trusted. */
+	public function testAdminOwnerIsTrusted(): void
+	{
+		$this->admin->upload_trust_level = UserUploadTrustLevel::CHECK;
+		$this->admin->save();
+
+		$this->artisan(self::COMMAND, [
+			'--import_via_symlink' => '0',
+			'--delete_imported' => '0',
+			'--owner_id' => $this->admin->id,
+			'paths' => [$this->import_root . '/2026'],
+		])->assertSuccessful();
+
+		$photo_id = DB::table('photos')->where('owner_id', '=', $this->admin->id)->where('title', '=', 'b')->value('id');
+		self::assertNotNull($photo_id);
+		self::assertSame(UserUploadTrustLevel::TRUSTED->value, DB::table('photos')->where('id', '=', $photo_id)->value('upload_trust_level'));
+		self::assertTrue((bool) DB::table('photos')->where('id', '=', $photo_id)->value('is_validated'));
 	}
 }

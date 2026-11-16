@@ -12,11 +12,13 @@ use App\Actions\Import\Pipes\HasReporterTrait;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
+use App\Enum\UserUploadTrustLevel;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
+use App\Models\User;
 use App\Services\Image\FileExtensionService;
 use Illuminate\Pipeline\Pipeline;
 use Safe\Exceptions\InfoException;
@@ -29,6 +31,8 @@ use function Safe\set_time_limit;
 class Exec
 {
 	use HasReporterTrait;
+
+	private ?UserUploadTrustLevel $upload_trust_level = null;
 
 	/**
 	 * @param ImportMode $import_mode           the import mode
@@ -70,6 +74,7 @@ class Exec
 				import_mode: $this->import_mode,
 				parent_album: $parent_album,
 				path: $path,
+				upload_trust_level: $this->uploadTrustLevel(),
 				delete_missing_photos: $this->delete_missing_photos,
 				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
@@ -135,7 +140,7 @@ class Exec
 			}
 
 			$file = new NativeLocalFile($file_path);
-			$job_bus[] = new ImportImageJob($file, $this->intended_owner_id, $this->import_mode, $parent_album);
+			$job_bus[] = new ImportImageJob($file, $this->intended_owner_id, $this->import_mode, $parent_album, $this->uploadTrustLevel(), $this->import_root);
 			$this->report(ImportEventReport::createDebug('queued', $file_path, 'Queued file for import'));
 		}
 
@@ -151,5 +156,19 @@ class Exec
 		}
 
 		return $job_bus;
+	}
+
+	/**
+	 * Trust level of the imported photos, resolved once per run with the rule
+	 * uploads use: admins are trusted, others get their own level (FR-115-08).
+	 */
+	private function uploadTrustLevel(): UserUploadTrustLevel
+	{
+		if ($this->upload_trust_level === null) {
+			$owner = User::query()->findOrFail($this->intended_owner_id);
+			$this->upload_trust_level = $owner->may_administrate ? UserUploadTrustLevel::TRUSTED : $owner->upload_trust_level;
+		}
+
+		return $this->upload_trust_level;
 	}
 }

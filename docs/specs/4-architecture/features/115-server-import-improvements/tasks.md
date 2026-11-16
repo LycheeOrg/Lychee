@@ -94,12 +94,12 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I8 – Trust level and job re-check
-- [ ] T-115-15 – Trust level and job tests, red (FR-115-08, FR-115-18, S-115-12, S-115-13, S-115-27).
+- [x] T-115-15 – Trust level and job tests, red (FR-115-08, FR-115-18, S-115-12, S-115-13, S-115-27).
   _Intent:_ `tests/Unit/Jobs/ImportImageJobTest.php` (payload carries trust level and root; swapped file → `FAILURE`, no photo, source kept); `SyncTest` (`check` owner, admin owner); `ImportFromServerTest` (`check` user via web).
   _Verification commands:_
   - `php artisan test --filter=ImportImageJobTest` (red)
   - `php artisan test --filter=SyncTest` (red)
-- [ ] T-115-16 – Owner rule in `Exec`, `ImportDTO`, `ImportImageJob` (FR-115-08, FR-115-18, NFR-115-04).
+- [x] T-115-16 – Owner rule in `Exec`, `ImportDTO`, `ImportImageJob` (FR-115-08, FR-115-18, NFR-115-04).
   _Intent:_ `Exec` loads the owner once, derives the level (admin → `trusted`); `ImportDTO` and `ImportImageJob` take `upload_trust_level` and `?string $import_root`; job re-checks with `ImportPathGuard` (TE-115-05); `doFiles` passes both. No `UserUploadTrustLevel::TRUSTED` left in either class.
   _Verification commands:_
   - `php artisan test --filter=ImportImageJobTest`

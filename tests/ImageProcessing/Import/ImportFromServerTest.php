@@ -8,6 +8,7 @@
 
 namespace Tests\ImageProcessing\Import;
 
+use App\Enum\UserUploadTrustLevel;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
@@ -181,5 +182,18 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($alice)->postJson('/Import', $payload);
 		$this->assertUnprocessable($response);
 		$response->assertJsonValidationErrors('import_via_symlink');
+	}
+
+	/** Feature 115 (S-115-12, web): a `check` user's imported photos need validation. */
+	public function testWebImportTrustLevelFollowsRequester(): void
+	{
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$alice->upload_trust_level = UserUploadTrustLevel::CHECK;
+		$alice->save();
+		Queue::fake();
+
+		$response = $this->actingAs($alice->fresh())->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album1->id));
+		$this->assertCreated($response);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->upload_trust_level === UserUploadTrustLevel::CHECK && $job->import_root === $this->import_root);
 	}
 }

@@ -34,6 +34,7 @@ class ImportDTO
 		public readonly ImportMode $import_mode,
 		public readonly ?Album $parent_album,
 		public readonly string $path,
+		public readonly UserUploadTrustLevel $upload_trust_level,
 		public readonly bool $delete_missing_photos = false,
 		public readonly bool $delete_missing_albums = false,
 		public readonly bool $is_dry_run = true,
@@ -41,7 +42,7 @@ class ImportDTO
 		public readonly ?string $import_root = null,
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
-		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id, upload_trust_level: UserUploadTrustLevel::TRUSTED);
+		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id, upload_trust_level: $upload_trust_level);
 		$this->album_renamer = new AlbumRenamer($intended_owner_id);
 		$this->photo_renamer = new PhotoRenamer($intended_owner_id);
 	}
