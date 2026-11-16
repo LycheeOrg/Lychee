@@ -135,7 +135,7 @@ class ImportImageJobTest extends AbstractTestCase
 	public function testFailedWithSkipRecordsSkipped(): void
 	{
 		$user = User::factory()->create();
-		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null);
+		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null, UserUploadTrustLevel::TRUSTED);
 
 		$job->failed(new PhotoSkippedException());
 
@@ -150,7 +150,7 @@ class ImportImageJobTest extends AbstractTestCase
 	public function testFailedWithOtherErrorRecordsFailure(): void
 	{
 		$user = User::factory()->create();
-		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null);
+		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null, UserUploadTrustLevel::TRUSTED);
 
 		$job->failed(new \RuntimeException('boom'));
 

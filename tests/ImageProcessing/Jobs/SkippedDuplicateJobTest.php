@@ -20,6 +20,7 @@ namespace Tests\ImageProcessing\Jobs;
 
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
@@ -173,11 +174,11 @@ class SkippedDuplicateJobTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * @return array{0:NativeLocalFile,1:int,2:ImportMode,3:null}
+	 * @return array{0:NativeLocalFile,1:int,2:ImportMode,3:null,4:UserUploadTrustLevel}
 	 */
 	private function importJobArguments(ImportMode $import_mode): array
 	{
-		return [new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)), $this->admin->id, $import_mode, null];
+		return [new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)), $this->admin->id, $import_mode, null, UserUploadTrustLevel::TRUSTED];
 	}
 
 	private function assertLatestHistoryStatus(JobStatus $expected): void
