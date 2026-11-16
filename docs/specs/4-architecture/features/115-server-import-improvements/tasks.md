@@ -132,11 +132,11 @@ _Last updated: 2026-11-15_
   - `php artisan test --filter=ImportFromServerTest`
 
 ### I11 – Owner scope
-- [ ] T-115-21 – Owner scope tests, red (FR-115-12, S-115-29, S-115-30, S-115-31).
+- [x] T-115-21 – Owner scope tests, red (FR-115-12, S-115-29, S-115-30, S-115-31).
   _Intent:_ `SyncTest`: same-title album of another owner, delete-missing in a shared album, setting off.
   _Verification commands:_
   - `php artisan test --filter=SyncTest` (red)
-- [ ] T-115-22 – Owner condition in the three pipes (FR-115-12).
+- [x] T-115-22 – Owner condition in the three pipes (FR-115-12).
   _Intent:_ `ImportDTO::$scope_to_owner`; `owner_id` condition in `CreateNonExistingAlbums::findOrCreateAlbum`, `DeleteMissingAlbums::findMissingAlbums`, `DeleteMissingPhotos::findMissingPhotos`.
   _Verification commands:_
   - `php artisan test --filter=SyncTest`

@@ -419,4 +419,59 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertNotNull(Photo::query()->find($a->id));
 		Configs::set('import_root_folder_as_album', '1');
 	}
+
+	/** Feature 115 (S-115-29): an album of another user with the same title is not reused. */
+	public function testOwnerScopeDoesNotReuseOthersAlbum(): void
+	{
+		Queue::fake();
+		$example = $this->createExampleTree();
+		Album::factory()->as_root()->owned_by($this->userMayUpload2)->with_title('Example')->create();
+
+		$this->sync($example, null);
+
+		$owners = DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.title', '=', 'Example')->whereNull('albums.parent_id')->pluck('base_albums.owner_id')->all();
+		sort($owners);
+		self::assertSame([$this->admin->id, $this->userMayUpload2->id], $owners);
+	}
+
+	/** Feature 115 (S-115-30): delete-missing in a shared target leaves other owners' content. */
+	public function testOwnerScopeDeleteMissingLeavesOthersContent(): void
+	{
+		Queue::fake();
+		Configs::set('import_root_folder_as_album', '0');
+		$example = $this->createExampleTree();
+		$bob_album = Album::factory()->children_of($this->album5)->owned_by($this->userMayUpload2)->with_title('BobAlbum')->create();
+		$bob_photo = Photo::factory()->owned_by($this->userMayUpload2)->with_title('bobphoto')->in($this->album5)->create();
+		$ghost = Photo::factory()->owned_by($this->admin)->with_title('ghost')->in($this->album5)->create();
+		$this->album5->refresh();
+		$admin_album = Album::factory()->children_of($this->album5)->owned_by($this->admin)->with_title('AdminGone')->create();
+		// `children_of` hands children to the parent's owner: give it back to Bob.
+		DB::table('base_albums')->where('id', '=', $bob_album->id)->update(['owner_id' => $this->userMayUpload2->id]);
+
+		$this->sync($example, $this->album5->id, delete_missing: true);
+
+		self::assertNotNull(DB::table('albums')->where('id', '=', $bob_album->id)->first());
+		self::assertNotNull(Photo::query()->find($bob_photo->id));
+		self::assertNull(Photo::query()->find($ghost->id));
+		self::assertNull(DB::table('albums')->where('id', '=', $admin_album->id)->first());
+		Configs::set('import_root_folder_as_album', '1');
+	}
+
+	/** Feature 115 (S-115-31): with the scope off, reuse and deletion ignore owners (pre-115 behaviour). */
+	public function testOwnerScopeOff(): void
+	{
+		Queue::fake();
+		Configs::set('import_scope_to_owner', '0');
+		$example = $this->createExampleTree();
+		$bob_example = Album::factory()->as_root()->owned_by($this->userMayUpload2)->with_title('Example')->create();
+		$bob_photo = Photo::factory()->owned_by($this->userMayUpload2)->with_title('bobphoto')->in($bob_example)->create();
+
+		$this->sync($example, null, delete_missing: true);
+
+		self::assertSame(1, DB::table('base_albums')->where('title', '=', 'Example')->count());
+		self::assertSame($bob_example->id, $this->queuedAlbumOf('a.jpg'));
+		self::assertNull(Photo::query()->find($bob_photo->id));
+		Configs::set('import_scope_to_owner', '1');
+	}
 }

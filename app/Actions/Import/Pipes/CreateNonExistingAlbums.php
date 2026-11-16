@@ -109,6 +109,7 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where(fn ($q) => $q->where('base_albums.title', $title)
 					->orWhere('base_albums.title', $old_title))
 				->where('albums.parent_id', $parent_album->id)
+				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $this->state->intended_owner_id))
 				->first();
 		} else {
 			// Check for root-level albums with this title
@@ -118,6 +119,7 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where(fn ($q) => $q->where('base_albums.title', $title)
 					->orWhere('base_albums.title', $old_title))
 				->whereNull('albums.parent_id')
+				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $this->state->intended_owner_id))
 				->first();
 		}
 

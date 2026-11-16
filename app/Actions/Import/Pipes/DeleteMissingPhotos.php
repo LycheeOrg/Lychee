@@ -121,6 +121,7 @@ class DeleteMissingPhotos implements ImportPipe
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, $node->album->id)
 			->whereNotIn('photos.title', $existing_files)
+			->when($this->state->scope_to_owner, fn ($q) => $q->where('photos.owner_id', '=', $this->state->intended_owner_id))
 			->get();
 	}
 
