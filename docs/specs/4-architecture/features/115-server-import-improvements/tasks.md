@@ -45,12 +45,11 @@ _Last updated: 2026-11-15_
   - `php artisan test --filter=LangTest`
 
 ### I4 – User management API
-- [ ] T-115-07 – User management tests, red (FR-115-02, S-115-19).
-  _Intent:_ cases in `tests/Feature_v2/UserManagement/CreateUserTest.php`, `EditUserTest.php`, `ListUserTest.php`: relative path, `..` segment, missing directory → 422; trailing slash normalised; empty → `null`; absent on update keeps the value; list returns the field.
+- [x] T-115-07 – User management tests, red (FR-115-02, S-115-19).
+  _Intent:_ `tests/Feature_v2/UserManagement/ServerPathTest.php` (create, edit, list): relative path, `..` segment, missing directory → 422; trailing slash normalised; empty → `null`; absent on update keeps the value; list returns the field.
   _Verification commands:_
-  - `php artisan test --filter=CreateUserTest` (red)
-  - `php artisan test --filter=EditUserTest` (red)
-- [ ] T-115-08 – `ServerPathRule`, requests, actions, resource (FR-115-02).
+  - `php artisan test --filter='Feature_v2\\UserManagement\\ServerPathTest'` (red)
+- [x] T-115-08 – `ServerPathRule`, requests, actions, resource (FR-115-02).
   _Intent:_ `app/Rules/ServerPathRule.php`, `RequestAttribute::SERVER_PATH_ATTRIBUTE`, `AddUserRequest`, `SetUserSettingsRequest`, `Actions\User\Create::do(..., ?string $server_path = null)`, `Actions\User\Save::do(...)`, `UserManagementController` (select list, pass-through), `UserManagementResource`.
   _Verification commands:_
   - `php artisan test --filter=CreateUserTest`

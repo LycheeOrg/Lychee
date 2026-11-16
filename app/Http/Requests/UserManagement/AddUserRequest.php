@@ -25,6 +25,7 @@ use App\Repositories\ConfigManager;
 use App\Rules\BooleanRequireSupportRule;
 use App\Rules\IntegerRequireSupportRule;
 use App\Rules\PasswordRule;
+use App\Rules\ServerPathRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
@@ -41,6 +42,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
 	protected UserUploadTrustLevel $upload_trust_level = UserUploadTrustLevel::TRUSTED;
+	protected ?string $server_path = null;
 
 	/**
 	 * {@inheritDoc}
@@ -65,6 +67,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify())],
 			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'string', new StringRequireSupportRule('', $this->verify())],
+			RequestAttribute::SERVER_PATH_ATTRIBUTE => ['sometimes', 'nullable', 'string', new ServerPathRule()],
 		];
 	}
 
@@ -87,6 +90,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
+		$this->server_path = ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null);
 	}
 
 	public function mayUpload(): bool
@@ -107,5 +111,10 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	public function uploadTrustLevel(): UserUploadTrustLevel
 	{
 		return $this->upload_trust_level;
+	}
+
+	public function serverPath(): ?string
+	{
+		return $this->server_path;
 	}
 }

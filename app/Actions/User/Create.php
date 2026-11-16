@@ -38,6 +38,7 @@ class Create
 		?int $quota_kb = null,
 		?string $note = null,
 		?UserUploadTrustLevel $upload_trust_level = null,
+		?string $server_path = null,
 	): User {
 		$username = $this->resolveUsername($username, $email);
 
@@ -62,6 +63,7 @@ class Create
 		$user->password = Hash::make($password);
 		$user->quota_kb = $quota_kb;
 		$user->note = $note;
+		$user->server_path = $server_path;
 		$user->upload_trust_level = $upload_trust_level
 			?? $this->config_manager->getValueAsEnum('default_user_trust_level', UserUploadTrustLevel::class)
 			?? UserUploadTrustLevel::TRUSTED;

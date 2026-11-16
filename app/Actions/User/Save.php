@@ -45,6 +45,8 @@ class Save
 		?int $quota_kb = null,
 		?string $note = null,
 		?UserUploadTrustLevel $upload_trust_level = null,
+		bool $update_server_path = false,
+		?string $server_path = null,
 	): void {
 		if (User::query()
 			->where('username', '=', $username)
@@ -68,6 +70,9 @@ class Save
 		$user->quota_kb = $quota_kb;
 		if ($upload_trust_level !== null) {
 			$user->upload_trust_level = $upload_trust_level;
+		}
+		if ($update_server_path) {
+			$user->server_path = $server_path;
 		}
 		if ($password !== null && $password !== '') {
 			$user->password = Hash::make($password);
