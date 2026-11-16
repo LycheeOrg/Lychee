@@ -536,6 +536,9 @@ return [
         'use_admin_dashboard' => 'Bruk admin-dashbordet i stedet for lenker i venstremenyen',
         'video_thumbnail_frame_mode' => 'Bilderute som brukes for videominiatyren',
         'video_thumbnail_frame_seconds' => 'Tidspunkt (i sekunder) for bilderuten som brukes til videominiatyrer',
+        'import_root_folder_as_album' => 'Importer den valgte mappen som et album',
+        'import_scope_to_owner' => 'Gjenbruk og slett bare importørens egne album og bilder',
+        'sync_users_server_paths' => 'lychee:sync uten sti synkroniserer importmappen til hver bruker',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1068,6 +1071,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'First: alltid den aller første bilderuten (0 s), som kan være svart i noen videoer. Middle: bilderuten midt i videoen, med 0 s som reserve hvis varigheten er ukjent. Custom: det faste antallet sekunder angitt nedenfor.',
         'video_thumbnail_frame_seconds' => 'Brukes kun når "Bilderute som brukes for videominiatyren" er satt til custom.',
+        'import_root_folder_as_album' => 'Når deaktivert havner innholdet i den valgte mappen rett i målalbumet (eller i Usortert i galleriets rot), og undermappene blir album rett under målet.',
+        'import_scope_to_owner' => 'Når aktivert slår en import aldri sammen med, eller sletter, album og bilder som eies av en annen bruker.',
+        'sync_users_server_paths' => 'Brukere som er begrenset til en importsti på serveren synkroniseres én etter én, som seg selv, til galleriets rot.',
     ],
     'category_name' => [
         'config' => 'Grunnleggende',
@@ -1099,6 +1105,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Temafarger',
         'contact' => 'Kontakt',
+        'import' => 'Import',
     ],
     'category_description' => [
         'config' => '',
@@ -1130,5 +1137,6 @@ return [
         'AI Vision' => 'AI-drevne funksjoner inkludert ansiktsgjenkjenning og NSFW-innholdsgjenkjenning. Krever en ekstern AI Vision-sidecartjeneste.',
         'Theme Colors' => 'Tilpass sekundærfargene, de semantiske fargene og de nøytrale fargene som brukes i v8-grensesnittet. Hver valgte farge genererer en fullstendig palett, på samme måte som aksentfargen ovenfor.',
         'contact' => 'Denne modulen lar deg administrere kontaktmeldinger som brukerne sender via kontaktskjemaet på nettstedet.',
+        'import' => 'Innstillinger for import av bilder fra en mappe på serveren og fra en URL.',
     ],
 ];

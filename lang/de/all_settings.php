@@ -536,6 +536,9 @@ return [
         'use_admin_dashboard' => 'Admin-Dashboard statt Links im linken Menü verwenden',
         'video_thumbnail_frame_mode' => 'Für das Video-Vorschaubild verwendetes Einzelbild',
         'video_thumbnail_frame_seconds' => 'Zeitpunkt des Einzelbilds (in Sekunden) für Video-Vorschaubilder',
+        'import_root_folder_as_album' => 'Ausgewählten Ordner als Album importieren',
+        'import_scope_to_owner' => 'Nur eigene Alben und Fotos des Importierenden wiederverwenden und löschen',
+        'sync_users_server_paths' => 'lychee:sync ohne Pfad synchronisiert den Importordner jedes Benutzers',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1068,6 +1071,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'First: immer das allererste Einzelbild (0s), das bei manchen Videos schwarz sein kann. Middle: das Einzelbild in der Mitte des Videos, mit Rückfall auf 0s, wenn die Dauer unbekannt ist. Custom: die unten festgelegte Anzahl an Sekunden.',
         'video_thumbnail_frame_seconds' => 'Wird nur verwendet, wenn "Für das Video-Vorschaubild verwendetes Einzelbild" auf custom gesetzt ist.',
+        'import_root_folder_as_album' => 'Wenn deaktiviert, landet der Inhalt des ausgewählten Ordners direkt im Zielalbum (oder in „Unsortiert“ im Galeriestamm) und seine Unterordner werden Alben direkt unter dem Ziel.',
+        'import_scope_to_owner' => 'Wenn aktiviert, führt ein Import niemals Alben und Fotos eines anderen Benutzers zusammen und löscht sie auch nicht.',
+        'sync_users_server_paths' => 'Benutzer mit einem eingeschränkten Server-Importpfad werden nacheinander, in ihrem eigenen Namen, in den Galeriestamm synchronisiert.',
     ],
     'category_name' => [
         'config' => 'Grundeinstellungen',
@@ -1099,6 +1105,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Designfarben',
         'contact' => 'Kontakt',
+        'import' => 'Import',
     ],
     'category_description' => [
         'config' => '',
@@ -1130,5 +1137,6 @@ return [
         'AI Vision' => 'KI-gestützte Funktionen, darunter Gesichtserkennung und Erkennung von nicht jugendfreien Inhalten. Erfordert einen externen „AI Vision“-Sidecar-Dienst.',
         'Theme Colors' => 'Passen Sie die Sekundär-, semantischen und neutralen Farben der v8-Oberfläche an. Jede gewählte Farbe erzeugt eine vollständige Palette, genau wie die obige Akzentfarbe.',
         'contact' => 'Mit diesem Modul können Sie Kontaktnachrichten verwalten, die Benutzer über das Kontaktformular der Website senden.',
+        'import' => 'Einstellungen für den Import von Fotos aus einem Ordner auf dem Server und von einer URL.',
     ],
 ];

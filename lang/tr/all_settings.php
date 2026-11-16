@@ -537,6 +537,9 @@ return [
         'use_admin_dashboard' => 'Sol menüdeki bağlantılar yerine yönetici panosunu kullan',
         'video_thumbnail_frame_mode' => 'Video küçük resmi için kullanılacak kare',
         'video_thumbnail_frame_seconds' => 'Video küçük resimleri için kullanılan karenin zamanı (saniye)',
+        'import_root_folder_as_album' => 'Seçilen klasörü albüm olarak içe aktar',
+        'import_scope_to_owner' => 'Yalnızca içe aktaranın kendi albümlerini ve fotoğraflarını yeniden kullan ve sil',
+        'sync_users_server_paths' => 'Yol belirtilmeyen lychee:sync her kullanıcının içe aktarma klasörünü eşitler',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1069,6 +1072,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'İlk: her zaman en baştaki kare (0 sn); bazı videolarda siyah olabilir. Orta: videonun ortasındaki kare; süre bilinmiyorsa 0 sn\'ye geri döner. Özel: aşağıda ayarlanan sabit saniye sayısı.',
         'video_thumbnail_frame_seconds' => 'Yalnızca "Video küçük resmi için kullanılacak kare" özel olarak ayarlandığında kullanılır.',
+        'import_root_folder_as_album' => 'Devre dışıyken seçilen klasörün içeriği doğrudan hedef albüme (veya galeri kökünde Sıralanmamış’a) gider ve alt klasörleri doğrudan hedefin altında albüm olur.',
+        'import_scope_to_owner' => 'Etkinken bir içe aktarma başka bir kullanıcının albümleri ve fotoğraflarıyla asla birleşmez ve onları silmez.',
+        'sync_users_server_paths' => 'Sunucuda bir içe aktarma yoluyla sınırlandırılmış kullanıcılar, kendi adlarına, sırayla galeri köküne eşitlenir.',
     ],
     'category_name' => [
         'config' => 'Temel Ayarlar',
@@ -1100,6 +1106,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Tema Renkleri',
         'contact' => 'İletişim',
+        'import' => 'İçe aktarma',
     ],
     'category_description' => [
         'config' => '',
@@ -1131,5 +1138,6 @@ return [
         'AI Vision' => 'Yüz tanıma ve NSFW içerik algılama dahil yapay zekâ destekli özellikler. Harici bir AI Vision yardımcı (sidecar) hizmeti gerektirir.',
         'Theme Colors' => 'v8 arayüzünde kullanılan ikincil, anlamsal ve nötr renkleri özelleştirin. Seçilen her renk, yukarıdaki vurgu renginde olduğu gibi tam bir palet oluşturur.',
         'contact' => 'Bu modül, kullanıcıların web sitesindeki iletişim formu aracılığıyla gönderdiği iletişim mesajlarını yönetmenizi sağlar.',
+        'import' => 'Sunucudaki bir klasörden ve bir URL’den fotoğraf içe aktarma ayarları.',
     ],
 ];

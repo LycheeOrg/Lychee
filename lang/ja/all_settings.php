@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => '左メニューのリンクの代わりに管理ダッシュボードを使用する',
         'video_thumbnail_frame_mode' => '動画サムネイルに使用するフレーム',
         'video_thumbnail_frame_seconds' => '動画サムネイルに使用するフレームの時間位置(秒)',
+        'import_root_folder_as_album' => '選択したフォルダーをアルバムとしてインポートする',
+        'import_scope_to_owner' => 'インポートするユーザー自身のアルバムと写真のみを再利用・削除する',
+        'sync_users_server_paths' => 'パスを指定しない lychee:sync で全ユーザーのインポートフォルダーを同期する',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => '最初: 常に最初のフレーム(0秒)。動画によっては黒い画面になる場合があります。中間: 動画の中間地点のフレーム。長さが不明な場合は0秒になります。カスタム: 下で設定した固定の秒数。',
         'video_thumbnail_frame_seconds' => '"動画サムネイルに使用するフレーム" がカスタムに設定されている場合にのみ使用されます。',
+        'import_root_folder_as_album' => '無効にすると、選択したフォルダーの内容は対象アルバム（ギャラリーのルートでは未分類）に直接入り、サブフォルダーは対象の直下のアルバムになります。',
+        'import_scope_to_owner' => '有効にすると、インポートが他のユーザーのアルバムや写真に統合したり、それらを削除したりすることはありません。',
+        'sync_users_server_paths' => 'サーバーのインポートパスに制限されたユーザーは、本人として順番にギャラリーのルートへ同期されます。',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'テーマカラー',
         'contact' => 'お問い合わせ',
+        'import' => 'インポート',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => '顔認識やNSFWコンテンツ検出などのAIを活用した機能です。外部のAI Visionサイドカーサービスが必要です。',
         'Theme Colors' => 'v8インターフェース全体で使用されるセカンダリ、セマンティック、ニュートラルの各カラーをカスタマイズします。選択した各色から、上のアクセントカラーと同様にフルパレットが生成されます。',
         'contact' => 'このモジュールでは、ウェブサイトのお問い合わせフォームからユーザーが送信したメッセージを管理できます。',
+        'import' => 'サーバー上のフォルダーおよび URL から写真をインポートするための設定です。',
     ],
 ];

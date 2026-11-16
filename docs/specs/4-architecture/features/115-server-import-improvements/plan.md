@@ -52,9 +52,9 @@ Run once T-115-01 … 32 are `[x]`: map each FR/NFR to the classes and tests tha
    - _Commands:_ `php artisan test --filter=ServerPathMigrationTest`.
    - _Exit:_ S-115-38 green.
 3. **I3 – Config category and settings** (FR-115-09/12/13/15 config rows)
-   - _Goal:_ migration `create_import_category`: category `import` with its description, configs `import_root_folder_as_album` (1), `import_scope_to_owner` (1), `sync_users_server_paths` (0), six server keys moved from Image Processing and five `import_via_url_*` keys moved from Basics; `down()` restores both. `all_settings.php` entries (category name/description, 3 × description/details) in 23 locales.
+   - _Goal:_ migration `create_import_category`: category `import` with its description, configs `import_root_folder_as_album` (1), `import_scope_to_owner` (1), `sync_users_server_paths` (0), six server keys moved from Image Processing and five `import_via_url_*` keys moved from Admin; `down()` restores both. `all_settings.php` entries (category name/description, 3 × description/details) in 23 locales.
    - _Steps:_ settings test for S-115-40 red; migration; translations.
-   - _Commands:_ `php artisan test --filter=ImportFromServerSettingsTest`, `--filter=ConfigTranslationKeysTest`, `--filter=LangTest`.
+   - _Commands:_ `php artisan test --filter=ImportSettingsTest`, `--filter=ConfigTranslationKeysTest`, `--filter=LangTest`.
    - _Exit:_ S-115-40 green, translation tests green.
 4. **I4 – User management API** (FR-115-02)
    - _Goal:_ `App\Rules\ServerPathRule` (normalises, validates FR-115-02), `server_path` in `AddUserRequest` / `SetUserSettingsRequest`, `Actions\User\Create::do(..., ?string $server_path = null)`, `Save::do(...)`, controller list select, `UserManagementResource`.
@@ -136,7 +136,7 @@ Run once T-115-01 … 32 are `[x]`: map each FR/NFR to the classes and tests tha
 | S-115-34 … 37 | I12 / T-115-23, T-115-24 | `SyncTest` |
 | S-115-38 | I2 / T-115-03, T-115-04 | `ServerPathMigrationTest` |
 | S-115-39 | I5 / T-115-09, T-115-10 | `AdminSetupTest` (×2), `Unit/Console/Commands/CreateUserTest` |
-| S-115-40 | I3 / T-115-05, T-115-06 | `ImportFromServerSettingsTest` |
+| S-115-40 | I3 / T-115-05, T-115-06 | `ImportSettingsTest` |
 | S-115-41 | I13, I14 / T-115-26, T-115-28 | manual |
 
 ## Analysis Gate
