@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Kullanıcı güncellendi',
     'change_saved' => 'Değişiklik kaydedildi!',
     'create_edit' => [
+        'server_path' => 'Sunucu içe aktarma yolu',
+        'server_path_hint' => 'Boş: sunucudan içe aktarma kapalı. "/": tüm sunucu. Aksi halde: yalnızca bu klasör ve altındakiler.',
         'upload_rights' => 'Kullanıcı içerik yükleyebilir.',
         'edit_rights' => 'Kullanıcı profilini (kullanıcı adı, parola) değiştirebilir.',
         'admin_rights' => 'Kullanıcının yönetici hakları var.',

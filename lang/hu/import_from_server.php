@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Az albumban lévő azon fotók törlése, amelyek nincsenek a szinkronizált könyvtárban.',
     'delete_missing_albums' => 'A szülőalbumban lévő azon albumok törlése, amelyek nincsenek a szinkronizált könyvtárban.',
     'importing_please_be_patient' => 'Importálás folyamatban, kérjük, legyen türelemmel...',
+    'root_folder_content_hint' => 'A kiválasztott mappa tartalma közvetlenül a célalbumba kerül. A hiányzó fotók és albumok törlése ekkor a célalbumra vonatkozik.',
 ];
 

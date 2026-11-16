@@ -11,6 +11,7 @@ type UserManagementCreateRequest = {
 	has_quota?: boolean;
 	quota_kb?: number;
 	note?: string;
+	server_path?: string | null;
 };
 
 type HasId = {

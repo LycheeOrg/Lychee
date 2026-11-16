@@ -96,6 +96,7 @@ declare namespace App {
 		export type FrameTimeFormat = "24h" | "12h";
 		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
+		export type ImportPathStatus = "inside" | "outside" | "missing";
 		export type InsightsPeriodType = "library" | "year" | "range";
 		export type JobStatus = 0 | 1 | 2 | 3;
 		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
@@ -227,6 +228,7 @@ declare namespace App {
 			| "my_best_pictures"
 			| "timeline";
 		export type StorageDiskType = "images" | "s3";
+		export type SyncUserEligibility = "eligible" | "no path" | "full access" | "may not import";
 		export type ThumbAlbumSubtitleType =
 			| "disabled"
 			| "description"
@@ -317,6 +319,8 @@ declare namespace App {
 					delete_missing_photos: boolean;
 					delete_missing_albums: boolean;
 					directory: string;
+					is_restricted: boolean;
+					is_root_folder_album: boolean;
 				};
 				export type ImportFromServerResource = {
 					status: boolean;
@@ -1534,6 +1538,7 @@ declare namespace App {
 					may_edit_own_settings: boolean;
 					is_owner: boolean;
 					upload_trust_level: App.Enum.UserUploadTrustLevel;
+					server_path: string | null;
 					quota_kb: number | null;
 					description: string | null;
 					note: string | null;

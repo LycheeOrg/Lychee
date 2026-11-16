@@ -20,6 +20,8 @@ return [
     'user_updated' => 'Benutzer aktualisiert',
     'change_saved' => 'Änderung gespeichert!',
     'create_edit' => [
+        'server_path' => 'Server-Importpfad',
+        'server_path_hint' => 'Leer: Import vom Server deaktiviert. „/“: der ganze Server. Sonst: nur dieser Ordner und darunter.',
         'upload_rights' => 'Benutzer können Inhalte hochladen.',
         'edit_rights' => 'Der Benutzer kann sein Profil (Benutzername, Passwort) ändern.',
         'admin_rights' => 'Der Benutzer hat Administratorrechte.',

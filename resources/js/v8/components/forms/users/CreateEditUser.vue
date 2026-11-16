@@ -37,6 +37,20 @@
 					<UInput id="quotaKb" v-model="quota_kb" class="w-1/2" aria-label="quotaKb" />
 					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>
 				</div>
+				<UFormField
+					:label="$t('users.create_edit.server_path')"
+					:help="$t('users.create_edit.server_path_hint')"
+					:error="serverPathError"
+					class="pt-2"
+				>
+					<UInput
+						id="serverPath"
+						v-model="server_path"
+						class="w-full font-mono"
+						placeholder="/srv/import/username"
+						aria-label="Server import path"
+					/>
+				</UFormField>
 				<UFormField v-if="is_se_enabled" :label="$t('users.create_edit.note')" class="pt-2">
 					<UTextarea id="note" v-model="noteForInput" class="w-full h-18" :rows="2" />
 				</UFormField>
@@ -128,6 +142,19 @@ const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
 const upload_trust_level = ref<App.Enum.UserUploadTrustLevel>(props.user?.upload_trust_level ?? "trusted");
+const server_path = ref<string>(props.user?.server_path ?? "");
+const serverPathError = ref<string | undefined>(undefined);
+
+// Empty field = import from server disabled.
+function serverPathPayload(): string | null {
+	const value = server_path.value.trim();
+	return value === "" ? null : value;
+}
+
+function onSaveError(e: { response: { status: number; data: { message: string; errors?: Record<string, string[]> } } }) {
+	serverPathError.value = e.response.status === 422 ? e.response.data.errors?.server_path?.[0] : undefined;
+	toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
+}
 
 const uploadTrustLevelOption = computed<TrustLevelOption | undefined>({
 	get: () => trustLevelOptions.value.find((o) => o.value === upload_trust_level.value),
@@ -164,6 +191,7 @@ function createUser() {
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
 		note: is_se_enabled ? note.value : undefined,
+		server_path: serverPathPayload(),
 	})
 		.then(() => {
 			visible.value = false;
@@ -175,15 +203,15 @@ function createUser() {
 			has_quota.value = false;
 			quota_kb.value = "0";
 			upload_trust_level.value = "trusted";
+			server_path.value = "";
+			serverPathError.value = undefined;
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("users.user_created"), life: 3000 });
 			emits("refresh");
 
 			// Clear user count as it is cachable.
 			UsersService.clearCount();
 		})
-		.catch((e) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
-		});
+		.catch(onSaveError);
 }
 
 function editUser() {
@@ -202,6 +230,7 @@ function editUser() {
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
 		note: is_se_enabled ? note.value : undefined,
+		server_path: serverPathPayload(),
 	})
 		.then(() => {
 			visible.value = false;
@@ -213,12 +242,12 @@ function editUser() {
 			has_quota.value = false;
 			quota_kb.value = "0";
 			upload_trust_level.value = "trusted";
+			server_path.value = "";
+			serverPathError.value = undefined;
 			toast.add({ severity: "success", summary: trans("users.change_saved"), detail: trans("users.user_updated"), life: 3000 });
 			emits("refresh");
 		})
-		.catch((e) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
-		});
+		.catch(onSaveError);
 }
 
 watch(
@@ -232,6 +261,8 @@ watch(
 		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
 		quota_kb.value = newUser?.quota_kb?.toString() ?? "0";
 		upload_trust_level.value = newUser?.upload_trust_level ?? "trusted";
+		server_path.value = newUser?.server_path ?? "";
+		serverPathError.value = undefined;
 	},
 );
 </script>

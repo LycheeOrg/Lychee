@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Användare uppdaterad',
     'change_saved' => 'Ändringen har sparats!',
     'create_edit' => [
+        'server_path' => 'Importsökväg på servern',
+        'server_path_hint' => 'Tom: import från servern inaktiverad. "/": hela servern. Annars: bara den här mappen och det som ligger under.',
         'upload_rights' => 'Användaren kan ladda upp innehåll.',
         'edit_rights' => 'Användaren kan ändra sin profil (användarnamn, lösenord).',
         'admin_rights' => 'Användaren har administratörsrättigheter.',

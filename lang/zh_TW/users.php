@@ -22,6 +22,8 @@ return [
     'user_updated' => '使用者已更新',
     'change_saved' => '變更已儲存！',
     'create_edit' => [
+        'server_path' => '伺服器匯入路徑',
+        'server_path_hint' => '留空：停用從伺服器匯入。「/」：整個伺服器。否則：僅限此資料夾及其子資料夾。',
         'upload_rights' => '使用者可以上傳內容。',
         'edit_rights' => '使用者可以修改個人資料（使用者名稱、密碼）。',
         'admin_rights' => '使用者具有管理員權限。',

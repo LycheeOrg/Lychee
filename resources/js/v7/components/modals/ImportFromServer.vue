@@ -30,6 +30,10 @@
 							{{ dir }}
 						</div>
 					</div>
+					<p v-if="!importState.options.is_root_folder_album" class="mt-3 text-sm flex gap-2 items-start">
+						<i class="pi pi-info-circle mt-0.5" />
+						{{ $t("import_from_server.root_folder_content_hint") }}
+					</p>
 					<div class="flex flex-col gap-2 mt-4">
 						<form>
 							<div class="flex items-center gap-2">
@@ -42,7 +46,7 @@
 								<span v-if="importState.options.delete_imported" class="pi pi-exclamation-triangle text-danger-600 text-xs"></span>
 								<label for="delete_imported" class="cursor-pointer text-sm">{{ $t("import_from_server.delete_imported") }}</label>
 							</div>
-							<div class="flex items-center gap-2">
+							<div v-if="!importState.options.is_restricted" class="flex items-center gap-2">
 								<ToggleSwitch inputId="import_via_symlink" v-model="importState.options.import_via_symlink" class="cursor-pointer" />
 								<label for="import_via_symlink" class="cursor-pointer text-sm">{{
 									$t("import_from_server.import_via_symlink")
@@ -184,7 +188,8 @@ function submit() {
 		album_id: getParentId() ?? null,
 		directories: [directory.value],
 		delete_imported: importState.options.delete_imported,
-		import_via_symlink: importState.options.import_via_symlink,
+		// Restricted users always get copies.
+		import_via_symlink: !importState.options.is_restricted && importState.options.import_via_symlink,
 		skip_duplicates: importState.options.skip_duplicates,
 		resync_metadata: importState.options.resync_metadata,
 		delete_missing_photos: importState.options.delete_missing_photos,

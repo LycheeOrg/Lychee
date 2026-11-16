@@ -22,6 +22,8 @@ return [
     'user_updated' => '用户已更新',
     'change_saved' => '更改已保存！',
     'create_edit' => [
+        'server_path' => '服务器导入路径',
+        'server_path_hint' => '留空：禁用从服务器导入。“/”：整个服务器。否则：仅限此文件夹及其子文件夹。',
         'upload_rights' => '用户可以上传内容。',
         'edit_rights' => '用户可以修改其个人资料（用户名、密码）。',
         'admin_rights' => '用户拥有管理员权限。',

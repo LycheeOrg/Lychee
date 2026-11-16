@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Aktualizacja użytkownika',
     'change_saved' => 'Zmiana zapisana!',
     'create_edit' => [
+        'server_path' => 'Ścieżka importu z serwera',
+        'server_path_hint' => 'Puste: import z serwera wyłączony. „/”: cały serwer. W przeciwnym razie: tylko ten folder i jego zawartość.',
         'upload_rights' => 'Użytkownik może przesyłać treści.',
         'edit_rights' => 'Użytkownik może modyfikować swój profil (nazwa użytkownika, hasło).',
         'admin_rights' => 'Użytkownik ma uprawnienia administratora.',

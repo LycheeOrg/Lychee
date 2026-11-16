@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Radera foton i albumet som inte finns i den synkroniserade katalogen.',
     'delete_missing_albums' => 'Radera album i det överordnade albumet som inte finns i den synkroniserade katalogen.',
     'importing_please_be_patient' => 'Importerar, ha tålamod...',
+    'root_folder_content_hint' => 'Innehållet i den valda mappen hamnar direkt i målalbumet. Radering av saknade foton och album gäller då målalbumet.',
 ];
 

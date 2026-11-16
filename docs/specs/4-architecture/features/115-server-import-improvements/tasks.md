@@ -154,12 +154,12 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I13 – Types and v8 UI
-- [ ] T-115-25 – Generated types, service, UI translations (FR-115-16, FR-115-17).
+- [x] T-115-25 – Generated types, service, UI translations (FR-115-16, FR-115-17).
   _Intent:_ `php artisan typescript:transform`; `user-management-service.ts` `server_path`; `lang/*/users.php` (field label, hint) and `lang/*/import_from_server.php` (root-folder hint) in 23 locales.
   _Verification commands:_
   - `php artisan test --filter=LangTest`
   - `vp run typecheck`
-- [ ] T-115-26 – v8 user form and import dialog (FR-115-16, FR-115-17, S-115-41).
+- [x] T-115-26 – v8 user form and import dialog (FR-115-16, FR-115-17, S-115-41).
   _Intent:_ `resources/js/v8/components/forms/users/CreateEditUser.vue` field + hint + 422 message; `resources/js/v8/components/modals/ImportFromServer.vue` hides the symlink toggle when `is_restricted`, sends `false`, shows the hint when `is_root_folder_album` is `false`.
   _Verification commands:_
   - `vp check --fix`
@@ -167,12 +167,12 @@ _Last updated: 2026-11-15_
   _Notes:_ manual check S-115-41 (v8) by the operator.
 
 ### I14 – v7 UI
-- [ ] T-115-27 – v7 user form (FR-115-16).
+- [x] T-115-27 – v7 user form (FR-115-16).
   _Intent:_ `resources/js/v7/components/forms/users/CreateEditUser.vue` field + hint + 422 message.
   _Verification commands:_
   - `vp check --fix`
   - `vp run typecheck`
-- [ ] T-115-28 – v7 import dialog (FR-115-17, S-115-41).
+- [x] T-115-28 – v7 import dialog (FR-115-17, S-115-41).
   _Intent:_ `resources/js/v7/components/modals/ImportFromServer.vue`, same behaviour as T-115-26.
   _Verification commands:_
   - `vp check --fix`

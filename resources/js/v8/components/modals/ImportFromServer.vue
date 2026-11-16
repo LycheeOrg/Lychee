@@ -26,6 +26,10 @@
 						{{ dir }}
 					</div>
 				</div>
+				<p v-if="!importState.options.is_root_folder_album" class="mt-3 text-sm text-muted flex gap-1.5 items-start">
+					<UIcon name="lucide:info" class="shrink-0 mt-0.5" />
+					{{ $t("import_from_server.root_folder_content_hint") }}
+				</p>
 				<div class="flex flex-col gap-2 mt-4">
 					<form>
 						<USwitch v-model="importState.options.delete_imported" color="error" :ui="{ label: 'text-sm' }">
@@ -35,6 +39,7 @@
 							</template>
 						</USwitch>
 						<USwitch
+							v-if="!importState.options.is_restricted"
 							v-model="importState.options.import_via_symlink"
 							:label="$t('import_from_server.import_via_symlink')"
 							:ui="{ label: 'text-sm' }"
@@ -156,7 +161,8 @@ function submit() {
 		album_id: getParentId() ?? null,
 		directories: [directory.value],
 		delete_imported: importState.options.delete_imported,
-		import_via_symlink: importState.options.import_via_symlink,
+		// Restricted users always get copies.
+		import_via_symlink: !importState.options.is_restricted && importState.options.import_via_symlink,
 		skip_duplicates: importState.options.skip_duplicates,
 		resync_metadata: importState.options.resync_metadata,
 		delete_missing_photos: importState.options.delete_missing_photos,

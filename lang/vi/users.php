@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Đã cập nhật người dùng',
     'change_saved' => 'Đã lưu thay đổi!',
     'create_edit' => [
+        'server_path' => 'Đường dẫn nhập trên máy chủ',
+        'server_path_hint' => 'Để trống: tắt nhập từ máy chủ. "/": toàn bộ máy chủ. Nếu không: chỉ thư mục này và các thư mục con.',
         'upload_rights' => 'Người dùng có thể tải lên nội dung.',
         'edit_rights' => 'Người dùng có thể sửa hồ sơ của mình (tên người dùng, mật khẩu).',
         'admin_rights' => 'Người dùng có quyền quản trị.',

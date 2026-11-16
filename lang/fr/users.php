@@ -20,6 +20,8 @@ return [
     'user_updated' => 'Utilisateur mis à jour',
     'change_saved' => 'Changement enregistré !',
     'create_edit' => [
+        'server_path' => 'Chemin d’import serveur',
+        'server_path_hint' => 'Vide : import depuis le serveur désactivé. « / » : tout le serveur. Sinon : uniquement ce dossier et ses sous-dossiers.',
         'upload_rights' => 'L’utilisateur peut téléverser du contenu.',
         'edit_rights' => 'L’utilisateur peut modifier son nom d’utilisateur et son mot de passe.',
         'admin_rights' => 'L’utilisateur peut administrer Lychee.',
