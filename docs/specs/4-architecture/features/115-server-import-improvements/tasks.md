@@ -34,11 +34,11 @@ _Last updated: 2026-11-15_
 
 ### I3 – Config category and settings
 - [ ] T-115-05 – Settings test, red (FR-115-15, S-115-40).
-  _Intent:_ `tests/Feature_v2/Settings/ImportFromServerSettingsTest.php`: the nine keys are in `import_from_server` with the spec defaults; `skip_duplicates` stays in `Image Processing`.
+  _Intent:_ `tests/Feature_v2/Settings/ImportFromServerSettingsTest.php`: the category `import` exists with its description and holds the fourteen keys (nine server, five URL) with the spec defaults; `skip_duplicates` stays in `Image Processing`.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerSettingsTest` (red)
 - [ ] T-115-06 – Category migration and translations (FR-115-09, FR-115-12, FR-115-13, FR-115-15).
-  _Intent:_ `database/migrations/2026_11_15_000002_create_import_from_server_category.php` (category with a free order between 6 and 10, three configs, six keys moved with new orders; `down()` restores category and order). `lang/*/all_settings.php` (23 locales): category name and description, description and details for the three keys.
+  _Intent:_ `database/migrations/2026_11_15_000002_create_import_category.php` (category `import` with its description and a free order between 6 and 10, three configs, six server keys moved from Image Processing and five `import_via_url_*` keys moved from Basics, with new orders; `down()` restores category and order: URL keys back to `config` orders 20–24). `lang/*/all_settings.php` (23 locales): category name and description, description and details for the three keys.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerSettingsTest`
   - `php artisan test --filter=ConfigTranslationKeysTest`

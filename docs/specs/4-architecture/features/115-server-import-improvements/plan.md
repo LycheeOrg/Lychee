@@ -52,7 +52,7 @@ Run once T-115-01 … 32 are `[x]`: map each FR/NFR to the classes and tests tha
    - _Commands:_ `php artisan test --filter=ServerPathMigrationTest`.
    - _Exit:_ S-115-38 green.
 3. **I3 – Config category and settings** (FR-115-09/12/13/15 config rows)
-   - _Goal:_ migration `create_import_from_server_category`: category `import_from_server`, configs `import_root_folder_as_album` (1), `import_scope_to_owner` (1), `sync_users_server_paths` (0), six keys moved; `down()` restores. `all_settings.php` entries (category name/description, 3 × description/details) in 23 locales.
+   - _Goal:_ migration `create_import_category`: category `import` with its description, configs `import_root_folder_as_album` (1), `import_scope_to_owner` (1), `sync_users_server_paths` (0), six server keys moved from Image Processing and five `import_via_url_*` keys moved from Basics; `down()` restores both. `all_settings.php` entries (category name/description, 3 × description/details) in 23 locales.
    - _Steps:_ settings test for S-115-40 red; migration; translations.
    - _Commands:_ `php artisan test --filter=ImportFromServerSettingsTest`, `--filter=ConfigTranslationKeysTest`, `--filter=LangTest`.
    - _Exit:_ S-115-40 green, translation tests green.

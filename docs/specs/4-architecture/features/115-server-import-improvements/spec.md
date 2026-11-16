@@ -24,7 +24,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 - Imported photos carry the trust level of the user who owns them, on the web and on the CLI.
 - A setting imports the content of the selected folder straight into the target instead of into an album named after the folder.
 - `lychee:sync` with no path syncs every user's `server_path` as that user, behind a setting disabled by default.
-- Import settings live in a new "Import from server" settings category.
+- All import settings, from the server and from a URL, live in one new "Import" settings category.
 
 ## Non-Goals
 - Letting users set their own `server_path` (admin only).
@@ -34,7 +34,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 - Changing `DISABLE_IMPORT_FROM_SERVER`: it still turns the feature off for everyone, admins included.
 - Restricting the paths an operator passes to `lychee:sync` (shell access is already full access).
 - Moving `skip_duplicates`: uploads and URL import read it too, so it stays in Image Processing.
-- Import from URL and regular uploads.
+- Import from URL behaviour and regular uploads (the URL-import settings only move category, FR-115-15).
 
 ## Functional Requirements
 
@@ -54,7 +54,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 | FR-115-12 | New config `import_scope_to_owner` (bool, default `1`). On: `CreateNonExistingAlbums` reuses only albums owned by the intended owner; `DeleteMissingAlbums` and `DeleteMissingPhotos` only delete albums and photos owned by the intended owner. Off: today's behaviour (any owner). Applies to web and CLI, admins included. | Alice imports `Holidays` at the root where Bob has `Holidays` → new album owned by Alice; Alice's delete-missing in a shared album leaves Bob's photos. | — | — | None. | Q-115-03 A + owner directive "config option, on by default" |
 | FR-115-13 | `lychee:sync` `paths` becomes optional. New config `sync_users_server_paths` (bool, default `0`). With no path and the config on, the command syncs, in id order, every user whose `server_path` is set and not `/` and who may import (FR-115-03), as that user (owner, FR-115-08 trust level, FR-115-11 import root), into the gallery root, with the command's import options. Users with `/` are listed as skipped. `--owner_id` given explicitly limits the run to that user; its default moves from the signature to runtime (first admin, as today, when paths are given). `--album_id` with no path → error. | Each eligible user's folder synced; one summary line per user. | No path and config off → error "No path given. Pass paths, or enable sync_users_server_paths.", exit 1. `--album_id` with no path → error, exit 1. `--owner_id` of a user not eligible → error, exit 1. | A user whose path is missing or empty → warning, next user; exit 1 if any user failed. | One `line()` per user (id, username, path, job count or reason skipped). | Owner request, Q-115-06 A |
 | FR-115-14 | Upgrade and first admin: the migration adding `server_path` sets it to `/` on the user named by `owner_id` (no-op when none), every other user `null`. The first admin of a new install gets `/` on every creation path: v7 installer (`SetUpAdminController::create`), v8 admin setup (`ProfileController::store`), `lychee:create_user` when no user exists. Through `Actions\User\Create::do(..., ?string $server_path = null)`. | Existing owner keeps import; new install's admin can import at once. | — | — | None. | Q-115-02 A + owner directive "also when creating the first admin" |
-| FR-115-15 | New config category `import_from_server` ("Import from server"), ordered between Image Processing and Search. It holds `import_root_folder_as_album`, `import_scope_to_owner`, `sync_users_server_paths` and the moved keys `delete_imported`, `import_via_symlink`, `skip_duplicates_early`, `sync_delete_missing_photos`, `sync_delete_missing_albums`, `sync_dry_run`. The migration's `down()` puts the moved keys back in Image Processing with their old order. | Settings page shows the category with nine settings. | — | — | None. | Owner suggestion (Q-115-03 answer) |
+| FR-115-15 | New config category `import` ("Import"), ordered between Image Processing and Search, with the description "Settings for importing photos from a folder on the server and from a URL." It holds, in this order: the server-import keys `import_root_folder_as_album`, `import_scope_to_owner`, `sync_users_server_paths` and the moved `delete_imported`, `import_via_symlink`, `skip_duplicates_early`, `sync_delete_missing_photos`, `sync_delete_missing_albums`, `sync_dry_run`; then the URL-import keys moved from Basics: `import_via_url_forbidden_localhost`, `import_via_url_forbidden_local_ip`, `import_via_url_require_https`, `import_via_url_forbidden_ports`, `import_via_url_block_redirect`. The migration's `down()` puts the moved keys back in their former category (Image Processing, or Basics for the URL keys) with their old order. | Settings page shows the category, its description and fourteen settings. | — | — | None. | Owner suggestion (Q-115-03 answer) |
 | FR-115-16 | v7 and v8 user create/edit forms gain a "Server import path" text field (empty = disabled), with a hint. The users list shows nothing new. | Admin types `/srv/import/alice`, saves, user can import from there. | 422 message shown under the field. | — | None. | Owner request |
 | FR-115-17 | v7 and v8 import dialog: when `is_restricted`, the "import via symbolic link" toggle is hidden and sent as `false`. When `is_root_folder_album` is `false`, a hint under the target says the folder's content goes straight into the target and that delete-missing then applies to the target album. | — | — | — | None. | Q-115-01 A, Q-115-05 A |
 | FR-115-18 | `ImportImageJob` carries the import root (real path, nullable). When it runs with a root, it checks the file's `realpath()` again: outside → the job fails (history `FAILURE`), nothing is imported and the source is not deleted. | File unchanged since the scan → imported. | — | File replaced by a link outside between scan and job → failure, log warning. | `Log::warning` (owner id, file path). | Q-115-01 A, NFR-115-06 |
@@ -109,7 +109,8 @@ Import dialog, restricted user at the import root (no `..`, no symlink toggle) a
 
 Settings, new category:
 ```
-Import from server
+Import
+  Settings for importing photos from a folder on the server and from a URL.
   Import the selected folder as an album ............. [x]
   Only reuse and delete the importer's own content ... [x]
   lychee:sync with no path syncs every user's folder . [ ]
@@ -119,6 +120,11 @@ Import from server
   Sync: delete missing photos ........................ [ ]
   Sync: delete missing albums ........................ [ ]
   Sync: dry run ...................................... [x]
+  URL: forbid localhost .............................. [x]
+  URL: forbid local IP addresses ..................... [x]
+  URL: require https ................................. [x]
+  URL: only ports 80 and 443 ......................... [x]
+  URL: do not follow redirections .................... [x]
 ```
 
 ## Branch & Scenario Matrix
@@ -164,7 +170,7 @@ Import from server
 | S-115-37 | Sync with no path: user with a path but no upload rights → skipped. Explicit `--owner_id` of that user → error, exit 1. |
 | S-115-38 | Migration: `owner_id` user gets `/`, another admin and a regular user `null`. |
 | S-115-39 | First admin via v7 installer, v8 admin setup and `lychee:create_user` on an empty database → `/`; second user via `lychee:create_user` → `null`. |
-| S-115-40 | Settings list: category `import_from_server` holds the nine keys; `skip_duplicates` stays in Image Processing. |
+| S-115-40 | Settings list: category `import` has its description and holds the fourteen keys (nine server, five URL); `skip_duplicates` stays in Image Processing. |
 | S-115-41 | Dialog (v7, v8), restricted user: symlink toggle hidden; `import_root_folder_as_album = 0` → hint shown. |
 
 ## Test Strategy
@@ -181,11 +187,11 @@ Import from server
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-115-01 | `users.server_path` `?string`, normalised, FR-115-01/02 | migration, `User`, user management |
-| DO-115-02 | Config `import_root_folder_as_album` bool, default `1`, category `import_from_server` | configs, `Exec`, pipes |
-| DO-115-03 | Config `sync_users_server_paths` bool, default `0`, category `import_from_server` | configs, `lychee:sync` |
+| DO-115-02 | Config `import_root_folder_as_album` bool, default `1`, category `import` | configs, `Exec`, pipes |
+| DO-115-03 | Config `sync_users_server_paths` bool, default `0`, category `import` | configs, `lychee:sync` |
 | DO-115-04 | `App\Actions\Import\ImportPathGuard` and enum `ImportPathStatus` (`INSIDE`, `OUTSIDE`, `MISSING`) | requests, controller, `BuildTree`, `ImportImageJob`, `lychee:sync` |
-| DO-115-05 | Config `import_scope_to_owner` bool, default `1`, category `import_from_server` | configs, pipes |
-| DO-115-06 | Config category `import_from_server` and the six moved keys (FR-115-15) | configs |
+| DO-115-05 | Config `import_scope_to_owner` bool, default `1`, category `import` | configs, pipes |
+| DO-115-06 | Config category `import` with its description, the six moved server keys and the five moved URL keys (FR-115-15) | configs |
 | DO-115-07 | `ImportFromServerOptionsResource` gains `is_restricted`, `is_root_folder_album` | REST, v7/v8 |
 | DO-115-08 | `ImportDTO` / `ImportImageJob` gain `upload_trust_level` and `?string import_root` | import pipeline |
 | DO-115-09 | `ServerPathRule` validation rule (FR-115-02) | user management requests |
@@ -261,8 +267,8 @@ domain_objects:
     type: bool
     default: 1
   - id: DO-115-06
-    name: config_category.import_from_server
-    keys: [import_root_folder_as_album, import_scope_to_owner, sync_users_server_paths, delete_imported, import_via_symlink, skip_duplicates_early, sync_delete_missing_photos, sync_delete_missing_albums, sync_dry_run]
+    name: config_category.import
+    keys: [import_root_folder_as_album, import_scope_to_owner, sync_users_server_paths, delete_imported, import_via_symlink, skip_duplicates_early, sync_delete_missing_photos, sync_delete_missing_albums, sync_dry_run, import_via_url_forbidden_localhost, import_via_url_forbidden_local_ip, import_via_url_require_https, import_via_url_forbidden_ports, import_via_url_block_redirect]
   - id: DO-115-07
     name: ImportFromServerOptionsResource
     fields: [is_restricted, is_root_folder_album]

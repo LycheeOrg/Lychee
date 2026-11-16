@@ -8,7 +8,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-115-01~~ | 115 | High | Symbolic links in browse and the import tree, and `import_via_symlink` for restricted users: (A) follow a link only if its real target is inside the import root, loop guard, re-check in the job, no `import_via_symlink` when restricted, (B) restricted users never follow links, (C) follow every link as today | Resolved (A, owner, 2026-11-15: FR-115-04/05/06/11/17/18, NFR-115-06, ADR-115-01) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-02~~ | 115 | High | Access of the current `owner_id` user after upgrade: (A) migration sets its `server_path` to `/`, others `null`, (B) everyone `null`, (C) admins always full access, column only for non-admins | Resolved (A + first admin gets `/` on every creation path, owner, 2026-11-15: FR-115-14, ADR-115-01) | 2026-11-15 | 2026-11-15 |
-| ~~Q-115-03~~ | 115 | High | Album reuse by title and delete-missing touch other users' albums and photos: (A) scope both to the intended owner for every import, (B) scope only for non-admin owners, (C) keep today's behaviour | Resolved (A as config `import_scope_to_owner`, on by default, + new "Import from server" settings category, owner, 2026-11-15: FR-115-12, FR-115-15, ADR-115-01) | 2026-11-15 | 2026-11-15 |
+| ~~Q-115-03~~ | 115 | High | Album reuse by title and delete-missing touch other users' albums and photos: (A) scope both to the intended owner for every import, (B) scope only for non-admin owners, (C) keep today's behaviour | Resolved (A as config `import_scope_to_owner`, on by default, + new "Import" settings category (server and URL settings), owner, 2026-11-15: FR-115-12, FR-115-15, ADR-115-01) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-04~~ | 115 | Medium | Trust level on web import: (A) derived from the importer like uploads and the CLI, (B) A plus a picker for admins and `--trust_level`, (C) picker for everyone capped at their own level | Resolved (A, owner, 2026-11-15: FR-115-08) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
@@ -114,7 +114,7 @@ Owner picks A, B or C; the answer goes into FR-115-13 and the migration task.
 
 ### ~~Q-115-03~~ · Other users' albums and photos during import
 
-**Status:** Resolved (A as config `import_scope_to_owner`, on by default, + new "Import from server" settings category, owner, 2026-11-15: FR-115-12, FR-115-15, ADR-115-01)
+**Status:** Resolved (A as config `import_scope_to_owner`, on by default, + new "Import" settings category (server and URL settings), owner, 2026-11-15: FR-115-12, FR-115-15, ADR-115-01)
 **Feature:** F-115 – Server Import Improvements
 **Preferred option:** 🅰️ (**recommended**) Option A – Scope to the intended owner for every import
 
