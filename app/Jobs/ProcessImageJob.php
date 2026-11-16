@@ -14,9 +14,11 @@ use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\OwnerRequiredException;
+use App\Exceptions\PhotoSkippedException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
+use App\Jobs\Traits\HandlesSkippedPhotoTrait;
 use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Album;
 use App\Models\JobHistory;
@@ -41,6 +43,7 @@ use Illuminate\Support\Str;
 class ProcessImageJob implements ShouldQueue
 {
 	use HasFailedTrait;
+	use HandlesSkippedPhotoTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
@@ -131,8 +134,12 @@ class ProcessImageJob implements ShouldQueue
 	 *
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
+	 *
+	 * @return Photo|null null when the photo is skipped as a duplicate on an asynchronous queue
+	 *
+	 * @throws PhotoSkippedException on the sync queue, when the photo is skipped as a duplicate
 	 */
-	public function handle(AlbumFactory $album_factory, TraceService $trace): Photo
+	public function handle(AlbumFactory $album_factory, TraceService $trace): ?Photo
 	{
 		return $trace->traceMethod('photo.process-execution', function () use ($album_factory, $trace) {
 			$trace->addEventWithMemToCurrentSpan('Process image');
@@ -164,7 +171,13 @@ class ProcessImageJob implements ShouldQueue
 				$album = $album_factory->findAbstractAlbumOrFail($this->album_id, false);
 			}
 
-			$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
+			try {
+				$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
+			} catch (PhotoSkippedException $e) {
+				$this->skipped($e, $this->original_base_name);
+
+				return null;
+			}
 
 			// Once the job has finished, set history status to 1.
 			$this->history->status = JobStatus::SUCCESS;

@@ -19,12 +19,18 @@
 namespace Tests\Unit\Services;
 
 use App\DTO\AdminStatsOverview;
+use App\Enum\JobStatus;
+use App\Models\JobHistory;
+use App\Models\User;
 use App\Services\AdminStatsService;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
 use Tests\AbstractTestCase;
 
 class AdminStatsServiceTest extends AbstractTestCase
 {
+	use DatabaseTransactions;
+
 	private AdminStatsService $service;
 
 	public function setUp(): void
@@ -94,5 +100,24 @@ class AdminStatsServiceTest extends AbstractTestCase
 		// (all queries succeed against the test database).
 		$overview = $this->service->getOverview();
 		$this->assertIsArray($overview->errors);
+	}
+
+	/**
+	 * S-114-07: a photo skipped as a duplicate is not a failed job.
+	 */
+	public function testSkippedJobsAreNotCountedAsFailures(): void
+	{
+		$baseline = $this->service->getOverview(force: true)->failed_jobs_24h;
+
+		$user = User::factory()->create();
+		foreach ([JobStatus::FAILURE, JobStatus::SKIPPED, JobStatus::SKIPPED] as $status) {
+			$history = new JobHistory();
+			$history->owner_id = $user->id;
+			$history->job = 'Process Image: night.jpg added to root.';
+			$history->status = $status;
+			$history->save();
+		}
+
+		$this->assertSame($baseline + 1, $this->service->getOverview(force: true)->failed_jobs_24h);
 	}
 }

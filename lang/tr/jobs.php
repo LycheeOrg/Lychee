@@ -12,6 +12,7 @@ return [
     'success' => 'Başarılı',
     'failure' => 'Başarısız',
     'started' => 'Başladı',
+    'skipped' => 'Atlandı',
     'col_date' => 'Tarih',
     'col_status' => 'Durum',
     'col_username' => 'Kullanıcı',

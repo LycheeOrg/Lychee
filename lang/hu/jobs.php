@@ -12,6 +12,7 @@ return [
     'success' => 'Sikeres',
     'failure' => 'Sikertelen',
     'started' => 'Elindítva',
+    'skipped' => 'Kihagyva',
     'col_date' => 'Dátum',
     'col_status' => 'Állapot',
     'col_username' => 'Felhasználó',

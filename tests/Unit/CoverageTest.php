@@ -78,6 +78,7 @@ class CoverageTest extends AbstractTestCase
 		], SmartAlbumType::array());
 
 		self::assertEquals('failure', JobStatus::FAILURE->name());
+		self::assertEquals('skipped', JobStatus::SKIPPED->name());
 	}
 
 	public function testMapProvidersEnum(): void

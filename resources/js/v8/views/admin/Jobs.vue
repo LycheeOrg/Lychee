@@ -114,11 +114,13 @@ const meter = computed(() => {
 	const success_count = jobs.value.filter((j) => j.status === "success").length;
 	const failure_count = jobs.value.filter((j) => j.status === "failure").length;
 	const started_count = jobs.value.filter((j) => j.status === "started").length;
+	const skipped_count = jobs.value.filter((j) => j.status === "skipped").length;
 
 	const ready_percent = (ready_count * 100) / jobs.value.length;
 	const success_percent = (success_count * 100) / jobs.value.length;
 	const failure_percent = (failure_count * 100) / jobs.value.length;
 	const started_percent = (started_count * 100) / jobs.value.length;
+	const skipped_percent = (skipped_count * 100) / jobs.value.length;
 
 	if (ready_percent > 0) {
 		vals.push({
@@ -148,6 +150,13 @@ const meter = computed(() => {
 			color: "var(--ui-color-primary-500)",
 		});
 	}
+	if (skipped_percent > 0) {
+		vals.push({
+			label: `${translateStatus("skipped")} — ${skipped_count}`,
+			value: skipped_percent,
+			color: "var(--ui-color-neutral-400)",
+		});
+	}
 	return vals;
 });
 
@@ -161,6 +170,8 @@ function textCss(status: string) {
 			return "text-error-700";
 		case "started":
 			return "text-primary-500";
+		case "skipped":
+			return "text-muted";
 		default:
 			return "text-primary";
 	}
@@ -176,6 +187,7 @@ function translateStatus(status: string): string {
 		["success", trans("jobs.success")],
 		["failure", trans("jobs.failure")],
 		["started", trans("jobs.started")],
+		["skipped", trans("jobs.skipped")],
 	]);
 
 	return translationMap.get(status) || status;

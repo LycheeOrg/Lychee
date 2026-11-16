@@ -12,6 +12,7 @@ return [
     'success' => 'Success',
     'failure' => 'Failure',
     'started' => 'Started',
+    'skipped' => 'Skipped',
     'col_date' => 'Date',
     'col_status' => 'Status',
     'col_username' => 'User',

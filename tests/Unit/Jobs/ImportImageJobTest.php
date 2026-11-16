@@ -23,6 +23,7 @@ use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\ImportFileOutsideRootException;
 use App\Factories\AlbumFactory;
+use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
 use App\Models\Album;
@@ -39,10 +40,10 @@ use function Safe\unlink;
 use Tests\AbstractTestCase;
 
 /**
- * Only the constructor (JobHistory bookkeeping) is covered here. `handle()`
- * instantiates `App\Actions\Photo\Create` directly (not injected) and
- * performs real image processing, so it is not unit-testable without
- * exercising the full image pipeline.
+ * Only the constructor and `failed()` (JobHistory bookkeeping) are covered here.
+ * `handle()` instantiates `App\Actions\Photo\Create` directly (not injected) and
+ * performs real image processing; its duplicate-skip paths are covered by
+ * `Tests\ImageProcessing\Jobs\SkippedDuplicateJobTest`.
  */
 class ImportImageJobTest extends AbstractTestCase
 {
@@ -126,5 +127,35 @@ class ImportImageJobTest extends AbstractTestCase
 			self::assertTrue(is_link($base . '/alice/a.jpg'));
 			exec('rm -rf ' . escapeshellarg($base));
 		}
+	}
+
+	/**
+	 * S-114-06: on the sync queue handle() rethrows the skip; failed() keeps it a skip.
+	 */
+	public function testFailedWithSkipRecordsSkipped(): void
+	{
+		$user = User::factory()->create();
+		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null);
+
+		$job->failed(new PhotoSkippedException());
+
+		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
+		self::assertNotNull($history);
+		self::assertSame(JobStatus::SKIPPED, $history->status);
+	}
+
+	/**
+	 * S-114-06: any other exception is still a failure.
+	 */
+	public function testFailedWithOtherErrorRecordsFailure(): void
+	{
+		$user = User::factory()->create();
+		$job = new ImportImageJob($this->makeFile('/tmp/sunset.jpg'), $user->id, new ImportMode(), null);
+
+		$job->failed(new \RuntimeException('boom'));
+
+		$history = JobHistory::query()->where('owner_id', '=', $user->id)->latest()->first();
+		self::assertNotNull($history);
+		self::assertSame(JobStatus::FAILURE, $history->status);
 	}
 }
