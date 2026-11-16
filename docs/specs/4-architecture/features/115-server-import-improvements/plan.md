@@ -2,8 +2,8 @@
 
 _Linked specification:_ [spec.md](spec.md)
 _Linked tasks:_ [tasks.md](tasks.md)
-_Status:_ Draft (analysis gate passed 2026-11-15, implementation not started)
-_Last updated:_ 2026-11-15
+_Status:_ Implemented (analysis and drift gates passed)
+_Last updated:_ 2026-11-16
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in the feature's [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec’s normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -166,6 +166,30 @@ Run 2026-11-15 by the agent, against spec, plan, tasks and open-questions as wri
 
 Findings: none blocking. Note for I6: today's `ImportFromServerBrowseTest` relies on the admin browsing with no column; T-115-11 updates its `setUp`.
 
+## Drift Gate Report
+
+Every FR/NFR maps to code and tests; no divergence from the spec.
+
+| Requirement | Code | Tests |
+|-------------|------|-------|
+| FR-115-01 | migration `2026_11_15_000001_add_server_path_to_users`, `User::$server_path` (default attribute `null`) | `ServerPathMigrationTest` |
+| FR-115-02 | `ServerPathRule`, `AddUserRequest`, `SetUserSettingsRequest`, `Actions\User\Create`/`Save`, `UserManagementController`, `UserManagementResource` | `Feature_v2/UserManagement/ServerPathTest` |
+| FR-115-03 | `AlbumPolicy::before()` + `canImportFromServer` | `ImportFromServerOptionsTest` |
+| FR-115-04 | `ImportFromServerController::options`, `ImportFromServerOptionsResource` | `ImportFromServerOptionsTest` |
+| FR-115-05, NFR-115-01 | `HasImportRootTrait`, `ImportFromServerBrowseRequest::authorize`, controller `isTop`/`isListable` | `ImportFromServerBrowseTest` |
+| FR-115-06, FR-115-07 | `ImportFromServerRequest::authorize`/`rules`, `ImportFromServerController::get_exec` | `ImportFromServerTest` |
+| FR-115-08, NFR-115-04 | `Exec::uploadTrustLevel`, `ImportDTO`, `ImportImageJob` | `SyncTest`, `ImportFromServerTest`, `ImportImageJobTest` |
+| FR-115-09, FR-115-10 | `CreateNonExistingAlbums::processRootAsTarget`, `DeleteMissingPhotos::processNode` | `SyncTest` |
+| FR-115-11, NFR-115-07 | `BuildTree::followedRealPath`, visited set | `ImportFromServerTest`, `SyncTest` |
+| FR-115-12 | owner condition in `CreateNonExistingAlbums`, `DeleteMissingAlbums`, `DeleteMissingPhotos` | `SyncTest` |
+| FR-115-13 | `Sync::syncUsers` and helpers, `SyncUserEligibility` | `SyncTest` |
+| FR-115-14 | migration grant, `SetUpAdminController`, `ProfileController::store`, `CreateUser` command | `ServerPathMigrationTest`, `AdminSetupTest`, `Install\AdminTest`, `CreateUserCommandTest` |
+| FR-115-15 | migration `2026_11_15_000002_create_import_category`, `lang/*/all_settings.php` | `ImportSettingsTest`, `ConfigTranslationKeysTest`, `LangTest` |
+| FR-115-16, FR-115-17 | v7/v8 `CreateEditUser.vue`, `ImportFromServer.vue`, `user-management-service.ts`, `lang/*/users.php`, `lang/*/import_from_server.php` | `LangTest`, typecheck; S-115-41 manual (operator) |
+| FR-115-18, NFR-115-06 | `ImportImageJob::assertStillInsideImportRoot`, `ImportFileOutsideRootException` | `ImportImageJobTest` |
+| NFR-115-02, NFR-115-03 | `ImportPathGuard`, `ImportPathStatus` | `ImportPathGuardTest` |
+| NFR-115-05 | admin fixtures get `/`; earlier tests unchanged | `ImportFromServerBrowseTest`, `ImportFromServerTest`, `SyncTest` |
+
 ## Exit Criteria
 - All tasks `[x]`; quality gate green (php-cs-fixer, `vp check`, typecheck, scoped tests, `make phpstan`).
 - `php artisan typescript:transform` rerun, generated types committed.
@@ -178,3 +202,4 @@ Findings: none blocking. Note for I6: today's `ImportFromServerBrowseTest` relie
 
 ## Intent Log
 - 2026-11-15: owner request (trust level, root folder option, per-user `server_path`, no-path sync, link handling question). Code survey of `ImportFromServerController`, requests, `Exec` and pipes, `ImportDTO`, `ImportImageJob`, `Sync`, `AlbumPolicy`, user management, first-admin paths, config categories. Q-115-01 … 06 logged and answered by the owner the same day (all A; Q-115-02 + first admin, Q-115-03 as config + new settings category, Q-115-05 + never delete Unsorted). Spec, ADR-115-01, plan and tasks written; analysis gate passed.
+- Implementation: increments I1 … I14 test-first, one commit each (scoped `php artisan test --filter=…`, `phpstan` on touched files, `php-cs-fixer`, `vp check`, `vp run typecheck`). Notes: `vp check --fix` rewrites the two unrelated `EmbedCodeDialog.vue` files (breaks the `<\/script>` escape), restore them; a red symlink-import test left a dangling link in `public/uploads` that broke `RequiresEmptyPhotos`, so refusal tests now use `Queue::fake()`; `User::query()->value()` and `Album::query()->value()` trip strict eager loading in tests, use `DB::table`; the album factory's `children_of` hands every child to the parent's owner.

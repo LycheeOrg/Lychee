@@ -1,7 +1,7 @@
 # Feature 115 Tasks – Server Import Improvements
 
-_Status: Draft_
-_Last updated: 2026-11-15_
+_Status: Implemented_
+_Last updated: 2026-11-16_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -180,20 +180,20 @@ _Last updated: 2026-11-15_
   _Notes:_ manual check S-115-41 (v7) by the operator.
 
 ### I15 – Docs
-- [ ] T-115-29 – How-to (Documentation Deliverables).
+- [x] T-115-29 – How-to (Documentation Deliverables).
   _Intent:_ `docs/specs/2-how-to/import-from-server.md`: per-user folders, `/` vs restricted, links, settings of the new category, cron line for `lychee:sync` with no path.
-- [ ] T-115-30 – Knowledge map and roadmap.
+- [x] T-115-30 – Knowledge map and roadmap.
   _Intent:_ `knowledge-map.md` (import access per user, `ImportPathGuard`, owner scope, `lychee:sync [paths*]`), roadmap row #115 progress.
 
 ### I16 – Gates
-- [ ] T-115-31 – Quality gate.
+- [x] T-115-31 – Quality gate.
   _Verification commands:_
   - `vendor/bin/php-cs-fixer fix`
   - `vp check --fix`
   - `vp run typecheck`
   - `php artisan test --filter=<each class above>` (one at a time)
   - `make phpstan`
-- [ ] T-115-32 – Drift gate report and commit preparation.
+- [x] T-115-32 – Drift gate report and commit preparation.
   _Intent:_ FR/NFR → class/test table in plan.md, divergences logged, `./scripts/codex-commit-review.sh` and copy/paste-ready `git commit` for the operator.
 
 ## Notes / TODOs
