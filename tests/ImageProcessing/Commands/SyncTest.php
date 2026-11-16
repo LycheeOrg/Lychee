@@ -21,11 +21,15 @@ namespace Tests\ImageProcessing\Commands;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\UserUploadTrustLevel;
 use App\Jobs\ImportImageJob;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
+use function Safe\exec;
+use function Safe\mkdir;
+use function Safe\unlink;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatesImportTree;
 
@@ -284,5 +288,135 @@ class SyncTest extends BaseApiWithDataTest
 		sort($files);
 		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg', 'file-outside.jpg', 'secret.jpg'], $files);
 		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_root === null);
+	}
+
+	/**
+	 * `<base>/Example/{a.jpg, Keep/k.jpg, Keep/Sub/s.jpg}`.
+	 */
+	private function createExampleTree(): string
+	{
+		$example = $this->import_base . '/Example';
+		mkdir($example . '/Keep/Sub', 0777, true);
+		$this->placeImage($example . '/a.jpg', 'tests/Samples/night.jpg');
+		$this->placeImage($example . '/Keep/k.jpg', 'tests/Samples/train.jpg');
+		$this->placeImage($example . '/Keep/Sub/s.jpg', 'tests/Samples/mongolia.jpeg');
+
+		return $example;
+	}
+
+	private function sync(string $path, ?string $album_id, bool $delete_missing = false): void
+	{
+		$args = [
+			'--import_via_symlink' => '0',
+			'--delete_imported' => '0',
+			'--skip_duplicates' => '0',
+			'--owner_id' => $this->admin->id,
+			'--delete_missing_photos' => $delete_missing ? '1' : '0',
+			'--delete_missing_albums' => $delete_missing ? '1' : '0',
+			'--dry_run' => '0',
+			'paths' => [$path],
+		];
+		if ($album_id !== null) {
+			$args['--album_id'] = $album_id;
+		}
+		$this->artisan(self::COMMAND, $args)->assertSuccessful();
+	}
+
+	private function albumId(string $title, ?string $parent_id): ?string
+	{
+		return DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.title', '=', $title)->where('albums.parent_id', '=', $parent_id)->value('albums.id');
+	}
+
+	private function queuedAlbumOf(string $basename): ?string
+	{
+		return Queue::pushed(ImportImageJob::class)->first(fn (ImportImageJob $job) => basename($job->file_path) === $basename)?->album_id;
+	}
+
+	/** Feature 115 (S-115-14): the selected folder becomes an album (default). */
+	public function testRootFolderAsAlbum(): void
+	{
+		Queue::fake();
+		$example = $this->createExampleTree();
+
+		$this->sync($example, $this->album5->id);
+
+		$example_id = $this->albumId('Example', $this->album5->id);
+		self::assertNotNull($example_id);
+		self::assertSame($example_id, $this->queuedAlbumOf('a.jpg'));
+		self::assertNotNull($this->albumId('Keep', $example_id));
+	}
+
+	/** Feature 115 (S-115-15): the folder's content goes straight into the target album. */
+	public function testRootFolderContentIntoTargetAlbum(): void
+	{
+		Queue::fake();
+		Configs::set('import_root_folder_as_album', '0');
+		$example = $this->createExampleTree();
+
+		$this->sync($example, $this->album5->id);
+
+		self::assertNull($this->albumId('Example', $this->album5->id));
+		$keep_id = $this->albumId('Keep', $this->album5->id);
+		self::assertNotNull($keep_id);
+		self::assertSame($this->album5->id, $this->queuedAlbumOf('a.jpg'));
+		self::assertSame($keep_id, $this->queuedAlbumOf('k.jpg'));
+		self::assertSame($this->albumId('Sub', $keep_id), $this->queuedAlbumOf('s.jpg'));
+		Configs::set('import_root_folder_as_album', '1');
+	}
+
+	/** Feature 115 (S-115-32): at the gallery root, root images go to Unsorted and the root level is never cleaned. */
+	public function testRootFolderContentIntoGalleryRoot(): void
+	{
+		Queue::fake();
+		Configs::set('import_root_folder_as_album', '0');
+		$example = $this->createExampleTree();
+
+		$this->sync($example, null);
+
+		$keep_id = $this->albumId('Keep', null);
+		self::assertNotNull($keep_id);
+		self::assertNull($this->albumId('Example', null));
+		self::assertNull($this->queuedAlbumOf('a.jpg'), 'a.jpg goes to Unsorted');
+		$sub_id = $this->albumId('Sub', $keep_id);
+		self::assertNotNull($sub_id);
+		$ghost = Photo::factory()->owned_by($this->admin)->with_title('ghost')->in(Album::query()->findOrFail($keep_id))->create();
+		$kept = Photo::factory()->owned_by($this->admin)->with_title('k')->in(Album::query()->findOrFail($keep_id))->create();
+		$unsorted = Photo::factory()->owned_by($this->admin)->with_title('unsorted-ghost')->create();
+
+		exec('rm -rf ' . escapeshellarg($example . '/Keep/Sub'));
+		unlink($example . '/a.jpg');
+		$this->sync($example, null, delete_missing: true);
+
+		self::assertNull($this->albumId('Sub', $keep_id), 'Sub is gone from disk');
+		self::assertNotNull($this->albumId('Keep', null));
+		self::assertSame(5, DB::table('albums')->whereIn('id', [$this->album1->id, $this->album2->id, $this->album3->id, $this->album4->id, $this->album5->id])->count(), 'root-level albums untouched');
+		self::assertNull(Photo::query()->find($ghost->id));
+		self::assertNotNull(Photo::query()->find($kept->id));
+		self::assertNotNull(Photo::query()->find($unsorted->id), 'Unsorted photos are never deleted');
+		self::assertNotNull(Photo::query()->find($this->photoUnsorted->id));
+		Configs::set('import_root_folder_as_album', '1');
+	}
+
+	/** Feature 115 (S-115-33): with a target album, delete-missing cleans the target itself. */
+	public function testRootFolderContentDeleteMissingInTargetAlbum(): void
+	{
+		Queue::fake();
+		Configs::set('import_root_folder_as_album', '0');
+		$example = $this->createExampleTree();
+
+		$this->sync($example, $this->album5->id);
+		$keep_id = $this->albumId('Keep', $this->album5->id);
+		self::assertNotNull($keep_id);
+		$ghost = Photo::factory()->owned_by($this->admin)->with_title('ghost')->in($this->album5)->create();
+		$a = Photo::factory()->owned_by($this->admin)->with_title('a')->in($this->album5)->create();
+
+		exec('rm -rf ' . escapeshellarg($example . '/Keep'));
+		$this->sync($example, $this->album5->id, delete_missing: true);
+
+		self::assertNull($this->albumId('Keep', $this->album5->id));
+		self::assertNull(Photo::query()->find($ghost->id));
+		self::assertNotNull(Photo::query()->find($a->id));
+		Configs::set('import_root_folder_as_album', '1');
 	}
 }

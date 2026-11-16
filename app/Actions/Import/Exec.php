@@ -42,6 +42,8 @@ class Exec
 	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
 	 * @param bool       $should_execute_jobs   whether to dispatch the jobs at the end of the run
 	 * @param ?string    $import_root           real import root links must stay in, `null` when unrestricted (FR-115-11)
+	 * @param bool       $root_folder_as_album  whether the selected folder becomes an album (FR-115-09)
+	 * @param bool       $scope_to_owner        whether album reuse and deletion only consider the owner's content (FR-115-12)
 	 */
 	public function __construct(
 		private ImportMode $import_mode,
@@ -51,6 +53,8 @@ class Exec
 		private bool $is_dry_run = false,
 		private bool $should_execute_jobs = false,
 		private ?string $import_root = null,
+		private bool $root_folder_as_album = true,
+		private bool $scope_to_owner = true,
 	) {
 	}
 
@@ -80,6 +84,8 @@ class Exec
 				is_dry_run: $this->is_dry_run,
 				should_execute_jobs: $this->should_execute_jobs,
 				import_root: $this->import_root,
+				root_folder_as_album: $this->root_folder_as_album,
+				scope_to_owner: $this->scope_to_owner,
 			);
 
 			try {

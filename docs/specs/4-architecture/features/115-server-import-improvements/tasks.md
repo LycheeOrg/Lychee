@@ -121,11 +121,11 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I10 – Folder content without its album
-- [ ] T-115-19 – Root folder tests, red (FR-115-09, FR-115-10, S-115-14, S-115-15, S-115-32, S-115-33).
+- [x] T-115-19 – Root folder tests, red (FR-115-09, FR-115-10, S-115-14, S-115-15, S-115-32, S-115-33).
   _Intent:_ `SyncTest`: setting on (today), off into album `T`, off into gallery root (Unsorted), re-sync with both delete-missing flags in both targets.
   _Verification commands:_
   - `php artisan test --filter=SyncTest` (red)
-- [ ] T-115-20 – Root node mapped to the target (FR-115-09, FR-115-10).
+- [x] T-115-20 – Root node mapped to the target (FR-115-09, FR-115-10).
   _Intent:_ `ImportDTO::$root_folder_as_album`; `CreateNonExistingAlbums` sets the root node's album to the target; `ImportPhotos` sends root images there or to Unsorted; delete-missing pipes skip a node with no album (already) and never select photos with no album.
   _Verification commands:_
   - `php artisan test --filter=SyncTest`

@@ -33,9 +33,29 @@ class CreateNonExistingAlbums implements ImportPipe
 		$this->report(ImportEventReport::createNotice('Create Albums', null, 'Creating non-existing albums...'));
 		$this->state = $state;
 
-		$this->processNode($state->root_folder, $state->parent_album);
+		if ($state->root_folder_as_album) {
+			$this->processNode($state->root_folder, $state->parent_album);
+		} else {
+			$this->processRootAsTarget($state->root_folder, $state->parent_album);
+		}
 
 		return $next($state);
+	}
+
+	/**
+	 * The selected folder is not an album: the target (album, or gallery root) takes its place (FR-115-09).
+	 *
+	 * @param FolderNode $node   root node of the tree
+	 * @param Album|null $target selected album, `null` for the gallery root (images then go to Unsorted)
+	 *
+	 * @return void
+	 */
+	private function processRootAsTarget(FolderNode $node, ?Album $target): void
+	{
+		$node->album = $target;
+		foreach ($node->children as $child) {
+			$this->processNode($child, $target);
+		}
 	}
 
 	/**

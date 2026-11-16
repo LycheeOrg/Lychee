@@ -200,6 +200,8 @@ class ImportFromServerController extends Controller
 			is_dry_run: false,
 			should_execute_jobs: false,
 			import_root: $request->importRoot(),
+			root_folder_as_album: $request->configs()->getValueAsBool('import_root_folder_as_album'),
+			scope_to_owner: $request->configs()->getValueAsBool('import_scope_to_owner'),
 		);
 	}
 }

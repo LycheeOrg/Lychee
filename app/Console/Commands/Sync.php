@@ -327,6 +327,8 @@ class Sync extends Command
 			delete_missing_albums: $delete_missing_albums,
 			is_dry_run: $dry_run,
 			should_execute_jobs: true,
+			root_folder_as_album: $this->config_manager->getValueAsBool('import_root_folder_as_album'),
+			scope_to_owner: $this->config_manager->getValueAsBool('import_scope_to_owner'),
 		);
 
 		if (count($paths->directories) > 0) {
