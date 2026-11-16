@@ -58,15 +58,16 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I5 – First admin gets `/`
-- [ ] T-115-09 – First-admin tests, red (FR-115-14, S-115-39).
-  _Intent:_ cases in `tests/Install/AdminSetupTest.php` and `tests/Feature_v2/User/AdminSetupTest.php` (admin has `/`); new `tests/Unit/Console/Commands/CreateUserTest.php` (first user `/`, second user `null`).
+- [x] T-115-09 – First-admin tests, red (FR-115-14, S-115-39).
+  _Intent:_ cases in `tests/Feature_v2/User/AdminSetupTest.php` (admin has `/`); `tests/Install/AdminTest.php` (v7 installer) and new `tests/Unit/Console/Commands/CreateUserCommandTest.php` (first user `/`, second user `null`).
   _Verification commands:_
   - `php artisan test --filter=AdminSetupTest` (red)
-- [ ] T-115-10 – Pass `/` on the three first-admin paths (FR-115-14).
+- [x] T-115-10 – Pass `/` on the three first-admin paths (FR-115-14).
   _Intent:_ `SetUpAdminController::create`, `ProfileController::store`, `CreateUser::handle` (only when the table was empty).
   _Verification commands:_
   - `php artisan test --filter=AdminSetupTest`
-  - `php artisan test --filter=CreateUserTest`
+  - `php artisan test --filter='Install\\AdminTest'`
+  - `php artisan test --filter=CreateUserCommandTest`
 
 ### I6 – Policy, options, browse
 - [ ] T-115-11 – Options and browse tests, red (FR-115-03, FR-115-04, FR-115-05, NFR-115-01, S-115-01 … 08, S-115-20, S-115-21, S-115-22).
