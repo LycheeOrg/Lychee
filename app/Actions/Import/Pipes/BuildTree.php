@@ -8,6 +8,7 @@
 
 namespace App\Actions\Import\Pipes;
 
+use App\Actions\Import\ImportPathGuard;
 use App\Contracts\Import\ImportPipe;
 use App\DTO\FolderNode;
 use App\DTO\ImportDTO;
@@ -30,6 +31,16 @@ class BuildTree implements ImportPipe
 	use HasReporterTrait;
 
 	private array $folder_skip_list = [];
+
+	/** Real import root links must stay in, `null` when unrestricted (FR-115-11). */
+	private ?string $import_root = null;
+
+	/**
+	 * Real paths of the directories already in the tree (loops, several links to one folder).
+	 *
+	 * @var array<string,true>
+	 */
+	private array $visited = [];
 
 	public function __construct(
 		protected readonly FileExtensionService $file_extension_service,
@@ -80,6 +91,8 @@ class BuildTree implements ImportPipe
 	{
 		$this->report(ImportEventReport::createNotice('build_tree', $state->path, 'Building folder tree...'));
 
+		$this->import_root = $state->import_root;
+		$this->visited = [];
 		$state->root_folder = $this->buildTree($state->path);
 
 		return $next($state);
@@ -91,15 +104,17 @@ class BuildTree implements ImportPipe
 	 * @param string          $base_path   Base path to start building the tree from
 	 * @param FolderNode|null $parent_node Parent node (used in recursion)
 	 * @param string[]        $ignore_list List of patterns to ignore
+	 * @param string|null     $real_path   Real path of $base_path when already resolved
 	 *
 	 * @return FolderNode Root node of the built tree
 	 *
 	 * @throws InvalidDirectoryException  If the path is not a valid directory
 	 * @throws ReservedDirectoryException If the path is a reserved directory
 	 */
-	private function buildTree(string $base_path, ?FolderNode $parent_node = null, array $ignore_list = []): FolderNode
+	private function buildTree(string $base_path, ?FolderNode $parent_node = null, array $ignore_list = [], ?string $real_path = null): FolderNode
 	{
-		$base_path = $this->normalizePath($base_path);
+		[$base_path, $real_path] = $this->normalizePath($base_path, $real_path);
+		$this->visited[$real_path] = true;
 		$local_ignore_list = array_merge($ignore_list, $this->readLocalIgnoreList($base_path));
 
 		$folder_name = basename($base_path);
@@ -113,18 +128,19 @@ class BuildTree implements ImportPipe
 	/**
 	 * Removes a trailing `/` from the given path and asserts that the path is usable for import.
 	 *
-	 * @param string $path
+	 * @param string      $path
+	 * @param string|null $real_path real path of $path when already resolved
 	 *
-	 * @return string
+	 * @return array{0:string,1:string} the path without trailing `/` and its real path
 	 *
 	 * @throws ReservedDirectoryException
 	 * @throws InvalidDirectoryException
 	 */
-	private function normalizePath(string $path): string
+	private function normalizePath(string $path, ?string $real_path = null): array
 	{
 		try {
 			$path = rtrim($path, '/');
-			$real_path = realpath($path);
+			$real_path ??= realpath($path);
 
 			if (is_dir($real_path) === false) {
 				throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
@@ -135,7 +151,7 @@ class BuildTree implements ImportPipe
 				throw new ReservedDirectoryException('The given path is a reserved path of Lychee (' . $path . ')');
 			}
 
-			return $path;
+			return [$path, $real_path];
 			// @codeCoverageIgnoreStart
 		} catch (FilesystemException|StringsException) {
 			throw new InvalidDirectoryException('Given path is not a directory (' . $path . ')');
@@ -167,11 +183,16 @@ class BuildTree implements ImportPipe
 				continue;
 			}
 
-			if (is_dir($file)) {
+			$real_path = $this->followedRealPath($file);
+			if ($real_path === null) {
+				continue;
+			}
+
+			if (is_dir($real_path)) {
 				// Recursively process subdirectories
-				$child_node = $this->buildTree($file, $node, $ignore_list);
+				$child_node = $this->buildTree($file, $node, $ignore_list, $real_path);
 				$node->children[] = $child_node;
-			} elseif (is_file($file)) {
+			} elseif (is_file($real_path)) {
 				// Check if this is an image file
 				$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 				if ($this->file_extension_service->isSupportedOrAcceptedFileExtension('.' . $extension)) {
@@ -179,6 +200,36 @@ class BuildTree implements ImportPipe
 				}
 			}
 		}
+	}
+
+	/**
+	 * Real path of an entry that is part of the tree, `null` when it is skipped
+	 * (FR-115-11, NFR-115-07: one `realpath()` per entry).
+	 *
+	 * Entries whose real path leaves the import root (links) are skipped,
+	 * as are directories already in the tree (loops, several links to one folder)
+	 * and dangling links.
+	 */
+	private function followedRealPath(string $file): ?string
+	{
+		$real_path = ImportPathGuard::resolve($file);
+		if ($real_path === null) {
+			return null;
+		}
+
+		if ($this->import_root !== null && !ImportPathGuard::isWithin($real_path, $this->import_root)) {
+			$this->report(ImportEventReport::createWarning('symlink_outside', $file, 'Skipped: the link leaves the import root'));
+
+			return null;
+		}
+
+		if (isset($this->visited[$real_path])) {
+			$this->report(ImportEventReport::createNotice('already_visited', $file, 'Skipped: folder already imported'));
+
+			return null;
+		}
+
+		return $real_path;
 	}
 
 	/**

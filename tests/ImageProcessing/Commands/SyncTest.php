@@ -20,10 +20,12 @@ namespace Tests\ImageProcessing\Commands;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\UserUploadTrustLevel;
+use App\Jobs\ImportImageJob;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatesImportTree;
 
@@ -264,5 +266,23 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertNotNull($photo_id);
 		self::assertSame(UserUploadTrustLevel::TRUSTED->value, DB::table('photos')->where('id', '=', $photo_id)->value('upload_trust_level'));
 		self::assertTrue((bool) DB::table('photos')->where('id', '=', $photo_id)->value('is_validated'));
+	}
+
+	/** Feature 115 (S-115-26): an explicit CLI path follows links wherever they point. */
+	public function testExplicitPathFollowsOutsideLinks(): void
+	{
+		Queue::fake();
+
+		$this->artisan(self::COMMAND, [
+			'--import_via_symlink' => '0',
+			'--delete_imported' => '0',
+			'--owner_id' => $this->admin->id,
+			'paths' => [$this->import_root],
+		])->assertSuccessful();
+
+		$files = Queue::pushed(ImportImageJob::class)->map(fn (ImportImageJob $job) => basename($job->file_path))->all();
+		sort($files);
+		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg', 'file-outside.jpg', 'secret.jpg'], $files);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_root === null);
 	}
 }

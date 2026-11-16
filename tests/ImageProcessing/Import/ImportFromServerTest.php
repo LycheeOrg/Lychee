@@ -14,7 +14,9 @@ use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
+use function Safe\symlink;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatesImportTree;
 
@@ -195,5 +197,72 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($alice->fresh())->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album1->id));
 		$this->assertCreated($response);
 		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->upload_trust_level === UserUploadTrustLevel::CHECK && $job->import_root === $this->import_root);
+	}
+
+	/**
+	 * @return string[] base names of the files queued for import
+	 */
+	private function queuedFiles(): array
+	{
+		$files = Queue::pushed(ImportImageJob::class)->map(fn (ImportImageJob $job) => basename($job->file_path))->all();
+		sort($files);
+
+		return $files;
+	}
+
+	/**
+	 * @return string[] titles of the albums below $parent_id
+	 */
+	private function childAlbumTitles(string $parent_id): array
+	{
+		$titles = DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('albums.parent_id', '=', $parent_id)->pluck('base_albums.title')->all();
+		sort($titles);
+
+		return $titles;
+	}
+
+	/** S-115-21, S-115-22, S-115-23, S-115-25: restricted import of the whole root. */
+	public function testRestrictedImportSkipsOutsideLinksAndDuplicates(): void
+	{
+		Queue::fake();
+		symlink($this->import_root . '/2026', $this->import_root . '/link-inside-2');
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+
+		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root, $this->album1->id));
+		$this->assertCreated($response);
+
+		// b.jpg is reachable three times (2026, link-inside, link-inside-2) and imported once.
+		// secret.jpg (outside, through link-outside and file-outside.jpg) is never queued.
+		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $this->queuedFiles());
+		$alice_album_id = DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('albums.parent_id', '=', $this->album1->id)->where('base_albums.title', '=', 'alice')->value('albums.id');
+		self::assertNotNull($alice_album_id);
+		self::assertSame(['2026', 'Family'], $this->childAlbumTitles($alice_album_id));
+	}
+
+	/** S-115-21: a link inside the root can itself be imported. */
+	public function testRestrictedImportOfInsideLink(): void
+	{
+		Queue::fake();
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+
+		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/link-inside', $this->album1->id));
+		$this->assertCreated($response);
+		self::assertSame(['b.jpg'], $this->queuedFiles());
+	}
+
+	/** S-115-24: a loop is followed once, for every user. */
+	public function testLoopImportedOnce(): void
+	{
+		Queue::fake();
+		symlink($this->import_root . '/Family', $this->import_root . '/Family/loop');
+
+		$response = $this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/Family', $this->album5->id));
+		$this->assertCreated($response);
+		self::assertSame(['c.jpg'], $this->queuedFiles());
+		$family_id = DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('albums.parent_id', '=', $this->album5->id)->where('base_albums.title', '=', 'Family')->value('albums.id');
+		self::assertSame([], $this->childAlbumTitles($family_id));
 	}
 }

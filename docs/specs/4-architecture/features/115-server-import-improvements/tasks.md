@@ -108,12 +108,12 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I9 – Links and loop guard
-- [ ] T-115-17 – Link tests, red (FR-115-11, S-115-21 … 26).
+- [x] T-115-17 – Link tests, red (FR-115-11, S-115-21 … 26).
   _Intent:_ fixtures with inside link, outside directory link, outside file link, loop, two links to one folder; restricted web import and explicit CLI path.
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerTest` (red)
   - `php artisan test --filter=SyncTest` (red)
-- [ ] T-115-18 – `BuildTree` containment and visited set (FR-115-11, NFR-115-07).
+- [x] T-115-18 – `BuildTree` containment and visited set (FR-115-11, NFR-115-07).
   _Intent:_ `BuildTree` reads `ImportDTO::$import_root`, one `realpath()` per entry, `symlink_outside` / `already_visited` report events (TE-115-03/04).
   _Verification commands:_
   - `php artisan test --filter=ImportFromServerTest`
