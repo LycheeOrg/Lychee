@@ -143,11 +143,11 @@ _Last updated: 2026-11-15_
   - `make phpstan`
 
 ### I12 – `lychee:sync` with no path
-- [ ] T-115-23 – No-path sync tests, red (FR-115-13, S-115-16, S-115-17, S-115-18, S-115-34 … 37).
+- [x] T-115-23 – No-path sync tests, red (FR-115-13, S-115-16, S-115-17, S-115-18, S-115-34 … 37).
   _Intent:_ `SyncTest`: config off, two users, missing path, `/` user skipped, explicit `--owner_id`, `--album_id` refused, user without upload rights.
   _Verification commands:_
   - `php artisan test --filter=SyncTest` (red)
-- [ ] T-115-24 – Optional paths, runtime owner default, per-user loop (FR-115-13).
+- [x] T-115-24 – Optional paths, runtime owner default, per-user loop (FR-115-13).
   _Intent:_ `Sync` signature `{paths?*}`, `--owner_id` without default; helpers for argument mode and user eligibility returning enums; one `Exec` per user with its import root; summary lines; exit codes.
   _Verification commands:_
   - `php artisan test --filter=SyncTest`

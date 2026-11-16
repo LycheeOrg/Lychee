@@ -474,4 +474,126 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertNull(Photo::query()->find($bob_photo->id));
 		Configs::set('import_scope_to_owner', '1');
 	}
+
+	/**
+	 * alice → `<base>/alice`, bob → `<base>/bob` (one image), admin → `/`.
+	 *
+	 * @return array{0:User,1:User}
+	 */
+	private function setUpUserFolders(): array
+	{
+		mkdir($this->import_base . '/bob');
+		$this->placeImage($this->import_base . '/bob/e.jpg', 'tests/Samples/night.jpg');
+		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
+		$bob = $this->restrictTo($this->userMayUpload2, $this->import_base . '/bob');
+		$this->admin = $this->grantFullAccess($this->admin);
+
+		return [$alice, $bob];
+	}
+
+	/**
+	 * @return array<int,string[]> owner id => base names queued
+	 */
+	private function queuedPerOwner(): array
+	{
+		$per_owner = [];
+		foreach (Queue::pushed(ImportImageJob::class) as $job) {
+			$per_owner[$job->intended_owner_id][] = basename($job->file_path);
+		}
+		foreach ($per_owner as &$files) {
+			sort($files);
+		}
+
+		return $per_owner;
+	}
+
+	/** Feature 115 (S-115-16) */
+	public function testNoPathWithoutConfigFails(): void
+	{
+		Queue::fake();
+		$this->setUpUserFolders();
+
+		$this->artisan(self::COMMAND)
+			->expectsOutputToContain('No path given. Pass paths, or enable sync_users_server_paths.')
+			->assertExitCode(1);
+		Queue::assertNothingPushed();
+	}
+
+	/** Feature 115 (S-115-17, S-115-34): every restricted user's folder, as that user; `/` users skipped. */
+	public function testNoPathSyncsEveryUser(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		[$alice, $bob] = $this->setUpUserFolders();
+
+		$this->artisan(self::COMMAND)
+			->expectsOutputToContain('skipped: full access')
+			->assertExitCode(0);
+
+		$per_owner = $this->queuedPerOwner();
+		self::assertSame([$alice->id, $bob->id], array_keys($per_owner));
+		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $per_owner[$alice->id]);
+		self::assertSame(['e.jpg'], $per_owner[$bob->id]);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id !== $alice->id || $job->import_root === $this->import_root);
+		self::assertNotNull($this->albumId('alice', null));
+		Configs::set('sync_users_server_paths', '0');
+	}
+
+	/** Feature 115 (S-115-18): a missing folder does not stop the others, exit 1. */
+	public function testNoPathMissingFolder(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		[$alice, $bob] = $this->setUpUserFolders();
+		exec('rm -rf ' . escapeshellarg($this->import_root));
+
+		$this->artisan(self::COMMAND)->assertExitCode(1);
+
+		self::assertSame([$bob->id], array_keys($this->queuedPerOwner()));
+		Configs::set('sync_users_server_paths', '0');
+	}
+
+	/** Feature 115 (S-115-35) */
+	public function testNoPathExplicitOwner(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		[, $bob] = $this->setUpUserFolders();
+
+		$this->artisan(self::COMMAND, ['--owner_id' => $bob->id])->assertExitCode(0);
+
+		self::assertSame([$bob->id], array_keys($this->queuedPerOwner()));
+		Configs::set('sync_users_server_paths', '0');
+	}
+
+	/** Feature 115 (S-115-36) */
+	public function testNoPathWithAlbumFails(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		$this->setUpUserFolders();
+
+		$this->artisan(self::COMMAND, ['--album_id' => $this->album5->id])->assertExitCode(1);
+		Queue::assertNothingPushed();
+		Configs::set('sync_users_server_paths', '0');
+	}
+
+	/** Feature 115 (S-115-37): users who may not upload are skipped, and refused when named. */
+	public function testNoPathUserWithoutUploadRight(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		[$alice, $bob] = $this->setUpUserFolders();
+		$bob->may_upload = false;
+		$bob->save();
+
+		$this->artisan(self::COMMAND)
+			->expectsOutputToContain('skipped: may not import')
+			->assertExitCode(0);
+		self::assertSame([$alice->id], array_keys($this->queuedPerOwner()));
+
+		$this->artisan(self::COMMAND, ['--owner_id' => $bob->id])->assertExitCode(1);
+		$this->artisan(self::COMMAND, ['--owner_id' => $this->admin->id])->assertExitCode(1);
+		Configs::set('sync_users_server_paths', '0');
+	}
 }
