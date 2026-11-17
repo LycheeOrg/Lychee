@@ -115,6 +115,17 @@ class ServerPathTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($this->create($this->base . '/./alice'));
 	}
 
+	public function testTraversalSequencesRefused(): void
+	{
+		// The directories exist, so only the forbidden sequence can make the rule fail.
+		foreach (['a..b', 'a%2eb', 'a%2Eb', 'a%2fb', 'a%2Fb', 'a\\b'] as $name) {
+			mkdir($this->base . '/' . $name);
+			$response = $this->create($this->base . '/' . $name);
+			$this->assertUnprocessable($response);
+			$response->assertJsonValidationErrors('server_path');
+		}
+	}
+
 	public function testMissingDirectoryRefused(): void
 	{
 		$this->assertUnprocessable($this->create($this->base . '/bob'));

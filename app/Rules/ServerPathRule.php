@@ -15,14 +15,16 @@ use Illuminate\Contracts\Validation\ValidationRule;
  * Validates a user's `server_path` (Feature 115, FR-115-02).
  *
  * Empty or `null` disables import from server. Otherwise the value must be an
- * absolute path without `.`/`..` segments nor NUL byte, naming an existing
- * directory readable by PHP.
+ * absolute path without `.` segment, NUL byte, `..`, `%2e`, `%2f` or `\`,
+ * naming an existing directory readable by PHP.
  */
 final class ServerPathRule implements ValidationRule
 {
 	use ValidateTrait;
 
 	public const MAX_LENGTH = 4096;
+
+	private const FORBIDDEN_SEQUENCES = ['..', '%2e', '%2f', '\\'];
 
 	/**
 	 * Normalised value to store: `null` when empty, otherwise without trailing or repeated separators.
@@ -49,10 +51,26 @@ final class ServerPathRule implements ValidationRule
 			strlen($value) <= self::MAX_LENGTH &&
 			str_starts_with($value, '/') &&
 			!str_contains($value, "\0") &&
+			!self::hasForbiddenSequence($value) &&
 			!in_array('.', explode('/', $value), true) &&
-			!in_array('..', explode('/', $value), true) &&
 			is_dir($value) &&
 			is_readable($value);
+	}
+
+	/**
+	 * Same sequences as SecurePathController, compared case-insensitively (`%2E`, `%2F`).
+	 * `..` as a substring also covers the `..` segment.
+	 */
+	private static function hasForbiddenSequence(string $value): bool
+	{
+		$lower = strtolower($value);
+		foreach (self::FORBIDDEN_SEQUENCES as $sequence) {
+			if (str_contains($lower, $sequence)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -60,6 +78,6 @@ final class ServerPathRule implements ValidationRule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be empty or the absolute path of an existing directory readable by Lychee, without "." or ".." segments.';
+		return ':attribute must be empty or the absolute path of an existing directory readable by Lychee, without "." segment, "..", "%2e", "%2f" or "\\".';
 	}
 }
