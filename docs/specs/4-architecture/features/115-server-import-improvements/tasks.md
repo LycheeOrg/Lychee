@@ -46,7 +46,7 @@ _Last updated: 2026-11-16_
 
 ### I4 – User management API
 - [x] T-115-07 – User management tests, red (FR-115-02, S-115-19).
-  _Intent:_ `tests/Feature_v2/UserManagement/ServerPathTest.php` (create, edit, list): relative path, `..` segment, missing directory → 422; trailing slash normalised; empty → `null`; absent on update keeps the value; list returns the field.
+  _Intent:_ `tests/Feature_v2/UserManagement/ServerPathTest.php` (create, edit, list): relative path, `..` segment, missing directory → 422; trailing slash normalised; empty → `null`; absent on update keeps the value (absent = `null` for the owner since T-115-37); list returns the field.
   _Verification commands:_
   - `php artisan test --filter='Feature_v2\\UserManagement\\ServerPathTest'` (red)
 - [x] T-115-08 – `ServerPathRule`, requests, actions, resource (FR-115-02).
@@ -213,6 +213,20 @@ _Last updated: 2026-11-16_
   - `vp check --fix` on the two files
   - `vp run typecheck`
   _Notes:_ manual check of the form as owner and as another admin by the operator.
+- [x] T-115-36 – Non-owner `server_path` ignored instead of 403 (Q-115-07 → B, FR-115-19).
+  _Intent:_ `ServerPathTest` non-owner create/edit cases expect 201/204 with the value ignored (red first), then `AddUserRequest` and `SetUserSettingsRequest` drop the `authorize()` check and gate the value in `processValidatedValues()`.
+  _Verification commands:_
+  - `php artisan test --filter=ServerPathTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+- [x] T-115-37 – `server_path` always considered sent (FR-115-02/16/19).
+  _Intent:_ `ServerPathTest::testEditSetsAndClears` (absent = `null` for the owner, red first). `SetUserSettingsRequest` drops `has_server_path`/`hasServerPath()` and resolves the stored value for non-owners. `Save` drops `update_server_path` and always writes. v7/v8 forms always send `server_path` (`null` for non-owners), `UserManagementCreateRequest.server_path` required. `UserPolicy::before()` owner check made null-safe for guests.
+  _Verification commands:_
+  - `php artisan test --filter='Tests\\Feature_v2\\UserManagement'`
+  - `vp check --fix` on the two forms and the service
+  - `vp run typecheck`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
 
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).

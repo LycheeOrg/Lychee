@@ -63,7 +63,6 @@ class UserManagementController extends Controller
 			quota_kb: $request->quota_kb(),
 			note: $request->note(),
 			upload_trust_level: $request->uploadTrustLevel(),
-			update_server_path: $request->hasServerPath(),
 			server_path: $request->serverPath(),
 		);
 

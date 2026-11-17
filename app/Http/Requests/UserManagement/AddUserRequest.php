@@ -46,13 +46,10 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Sending `server_path`, whatever its value, is reserved to the server owner (Feature 115, FR-115-19).
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]) &&
-			(!$this->has(RequestAttribute::SERVER_PATH_ATTRIBUTE) || Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class]));
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
 	/**
@@ -93,7 +90,10 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
-		$this->server_path = ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null);
+		// Only the server owner sets `server_path` (Feature 115, FR-115-19): ignored for anyone else.
+		if (Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class])) {
+			$this->server_path = ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null);
+		}
 	}
 
 	public function mayUpload(): bool

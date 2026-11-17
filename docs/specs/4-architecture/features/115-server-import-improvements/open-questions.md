@@ -12,7 +12,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-04~~ | 115 | Medium | Trust level on web import: (A) derived from the importer like uploads and the CLI, (B) A plus a picker for admins and `--trust_level`, (C) picker for everyone capped at their own level | Resolved (A, owner, 2026-11-15: FR-115-08) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
-| ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (A, owner directive, 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-16 |
+| ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-17 |
 
 ## Question Details
 
@@ -278,7 +278,7 @@ Owner picks A or B; the answer goes into FR-115-12.
 
 ### ~~Q-115-07~~ · Who may set `server_path`
 
-**Status:** Resolved (A, owner directive, 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01)
+**Status:** Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01)
 **Feature:** F-115 – Server Import Improvements
 **Preferred option:** 🅰️ (**recommended**) Option A – Server owner only, refused for other admins
 
@@ -312,4 +312,4 @@ The spec let every admin set `server_path`. The owner stated on 2026-11-16: "Onl
   - ❌ Contradicts the owner directive.
 
 **Next action**
-Resolved: Option A implemented in increment I17.
+Resolved: Option A implemented in increment I17, then replaced by Option B on 2026-11-17 (owner: validate the value but ignore it for non-owners, T-115-36).

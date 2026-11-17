@@ -46,10 +46,10 @@ class ServerPathTest extends BaseApiWithDataTest
 		parent::tearDown();
 	}
 
-	private function create(?string $server_path, bool $send = true, ?User $as = null): \Illuminate\Testing\TestResponse
+	private function create(?string $server_path, bool $send = true, ?User $as = null, string $username = 'alice'): \Illuminate\Testing\TestResponse
 	{
 		$payload = [
-			'username' => 'alice',
+			'username' => $username,
 			'password' => 'password',
 			'may_upload' => true,
 			'may_edit_own_settings' => false,
@@ -137,14 +137,16 @@ class ServerPathTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($this->create($this->base . '/alice/file.txt'));
 	}
 
-	public function testEditSetsKeepsAndClears(): void
+	public function testEditSetsAndClears(): void
 	{
 		$this->assertNoContent($this->edit($this->base . '/alice/'));
 		self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
 
+		// Absent counts as sent: `null`.
 		$this->assertNoContent($this->edit(null, false));
-		self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
+		self::assertNull($this->userMayUpload1->fresh()->server_path);
 
+		$this->assertNoContent($this->edit($this->base . '/alice'));
 		$this->assertNoContent($this->edit(''));
 		self::assertNull($this->userMayUpload1->fresh()->server_path);
 
@@ -179,29 +181,33 @@ class ServerPathTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-115-42: any `server_path` value from another admin is refused on create.
+	 * S-115-42: on create, any valid `server_path` value from another admin is ignored.
 	 */
-	public function testOtherAdminCannotCreateWithServerPath(): void
+	public function testOtherAdminCreateIgnoresServerPath(): void
 	{
 		$other_admin = $this->otherAdmin();
 
-		foreach ([$this->base . '/alice', '/', '', null] as $server_path) {
-			$this->assertForbidden($this->create($server_path, true, $other_admin));
-			self::assertFalse(User::query()->where('username', '=', 'alice')->exists());
+		foreach ([$this->base . '/alice', '/', '', null] as $i => $server_path) {
+			$username = 'alice' . $i;
+			$response = $this->create($server_path, true, $other_admin, $username);
+			$this->assertCreated($response);
+			$response->assertJsonFragment(['server_path' => null]);
+			self::assertNull(User::query()->where('username', '=', $username)->first()->server_path);
 		}
 	}
 
 	/**
-	 * S-115-42: any `server_path` value from another admin is refused on edit, `null` included.
+	 * S-115-42: on edit, any valid `server_path` value from another admin is ignored, `null` included:
+	 * the stored path is kept.
 	 */
-	public function testOtherAdminCannotEditServerPath(): void
+	public function testOtherAdminEditIgnoresServerPath(): void
 	{
 		$other_admin = $this->otherAdmin();
 		$this->userMayUpload1->server_path = $this->base . '/alice';
 		$this->userMayUpload1->save();
 
 		foreach ([$this->base, '/', '', null] as $server_path) {
-			$this->assertForbidden($this->edit($server_path, true, $other_admin));
+			$this->assertNoContent($this->edit($server_path, true, $other_admin));
 			self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
 		}
 	}

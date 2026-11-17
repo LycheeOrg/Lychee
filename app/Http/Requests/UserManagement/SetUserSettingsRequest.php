@@ -46,18 +46,14 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
 	protected ?UserUploadTrustLevel $upload_trust_level = null;
-	protected bool $has_server_path = false;
 	protected ?string $server_path = null;
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Sending `server_path`, whatever its value, is reserved to the server owner (Feature 115, FR-115-19).
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]) &&
-			(!$this->has(RequestAttribute::SERVER_PATH_ATTRIBUTE) || Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class]));
+		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
 	/**
@@ -105,8 +101,11 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
-		$this->has_server_path = array_key_exists(RequestAttribute::SERVER_PATH_ATTRIBUTE, $values);
-		$this->server_path = ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null);
+		// `server_path` is always considered sent (absent = `null`), but only the server owner
+		// sets it (Feature 115, FR-115-19): anyone else keeps the stored value.
+		$this->server_path = Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class])
+			? ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null)
+			: $this->user2->server_path;
 	}
 
 	public function mayUpload(): bool
@@ -127,14 +126,6 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function uploadTrustLevel(): ?UserUploadTrustLevel
 	{
 		return $this->upload_trust_level;
-	}
-
-	/**
-	 * Whether the request sets `server_path` (absent = keep the stored value).
-	 */
-	public function hasServerPath(): bool
-	{
-		return $this->has_server_path;
 	}
 
 	public function serverPath(): ?string

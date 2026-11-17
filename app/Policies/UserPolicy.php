@@ -36,7 +36,7 @@ class UserPolicy extends BasePolicy
 	public function before(?User $user, $ability)
 	{
 		if ($ability === self::CAN_EDIT_SERVER_PATH) {
-			return null;
+			return $user?->id === app(ConfigManager::class)->getValueAsInt('owner_id');
 		}
 
 		return parent::before($user, $ability);
@@ -48,7 +48,7 @@ class UserPolicy extends BasePolicy
 	 */
 	public function canEditServerPath(User $user): bool
 	{
-		return $user->may_administrate && $user->id === app(ConfigManager::class)->getValueAsInt('owner_id');
+		return false;
 	}
 
 	public function canCreateOrEditOrDelete(User $user): bool

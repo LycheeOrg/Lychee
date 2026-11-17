@@ -161,16 +161,14 @@ const serverPathError = ref<string | undefined>(undefined);
 
 const toast = useToast();
 
-// Only the server owner may change the path (FR-115-19): for anyone else the key is left out.
+// Only the server owner may change the path (FR-115-19): the field is hidden for anyone else.
 const canEditServerPath = computed(() => rights.value?.user_management.can_edit_server_path ?? false);
 
-// Empty field = import from server disabled.
-function serverPathPayload(): string | null | undefined {
-	if (!canEditServerPath.value) {
-		return undefined;
-	}
+// Always sent. Empty field = import from server disabled.
+// Other admins send `null`, ignored by the server: a stale stored path cannot fail their save.
+function serverPathPayload(): string | null {
 	const value = server_path.value.trim();
-	return value === "" ? null : value;
+	return !canEditServerPath.value || value === "" ? null : value;
 }
 
 function onSaveError(e: { response: { status: number; data: { message: string; errors?: Record<string, string[]> } } }) {
