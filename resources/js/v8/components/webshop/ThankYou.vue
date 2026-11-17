@@ -2,9 +2,7 @@
 	<div class="border-2 border-dashed border-default rounded bg-elevated/50 flex-col gap-4 p-4 flex justify-center items-center font-medium">
 		<h2 class="font-bold text-xl">{{ $t("webshop.checkout.thankYou") }}</h2>
 		<div class="text-muted">
-			<p>
-				{{ $t("webshop.checkout.orderNumber") }} <strong class="text-highlighted">{{ order?.id }}</strong>
-			</p>
+			<p>{{ $t("webshop.checkout.orderNumber") }} <strong class="text-highlighted">{{ order?.id }}</strong></p>
 			<p>
 				{{ $t("webshop.checkout.transactionId") }}
 				<strong class="text-highlighted">{{ order?.transaction_id }}</strong>
