@@ -12,9 +12,7 @@
 		@update:model-value="($event: string[]) => emits('updated', $event)"
 		@create="addTag"
 	>
-		<template #item-label="{ item }">
-			{{ item }}<span class="text-muted ltr:ml-2 rtl:mr-2">({{ getNum(item as string) }})</span>
-		</template>
+		<template #item-label="{ item }"> {{ item }}<span class="text-muted ltr:ml-2 rtl:mr-2">({{ getNum(item as string) }})</span> </template>
 		<template #create-item-label="{ item }">
 			<span class="flex items-center gap-1"><UIcon name="lucide:plus" />{{ item.trim() }}</span>
 		</template>

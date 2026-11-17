@@ -8,9 +8,7 @@
 		{{ $t("users.title") }}
 	</UHeader>
 	<USlideover v-model:open="isLegendOpen" side="right" class="w-sm">
-		<template #header
-			><span class="text-xl">{{ $t("users.legend") }}</span></template
-		>
+		<template #header><span class="text-xl">{{ $t("users.legend") }}</span></template>
 		<template #body>
 			<ul class="text-muted flex flex-col gap-y-4">
 				<li class="text-sm flex items-start gap-x-4">

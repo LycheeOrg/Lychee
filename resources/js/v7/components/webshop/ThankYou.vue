@@ -4,9 +4,7 @@
 	>
 		<h2 class="font-bold text-xl">{{ $t("webshop.checkout.thankYou") }}</h2>
 		<div class="text-muted-color">
-			<p>
-				{{ $t("webshop.checkout.orderNumber") }} <strong class="text-muted-color-emphasis">{{ order?.id }}</strong>
-			</p>
+			<p>{{ $t("webshop.checkout.orderNumber") }} <strong class="text-muted-color-emphasis">{{ order?.id }}</strong></p>
 			<p>
 				{{ $t("webshop.checkout.transactionId") }}
 				<strong class="text-muted-color-emphasis">{{ order?.transaction_id }}</strong>

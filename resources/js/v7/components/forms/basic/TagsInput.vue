@@ -13,9 +13,7 @@
 		@complete="search"
 	>
 		<template #option="slotProps">
-			<div class="flex items-center">
-				{{ slotProps.option }}<span class="ltr:ml-2 rtl:mr-2">({{ getNum(slotProps.option) }})</span>
-			</div>
+			<div class="flex items-center">{{ slotProps.option }}<span class="ltr:ml-2 rtl:mr-2">({{ getNum(slotProps.option) }})</span></div>
 		</template>
 	</AutoComplete>
 </template>
