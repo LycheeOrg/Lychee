@@ -19,7 +19,7 @@ An API client uploads a set of files on a worker-backed instance, then polls `GE
 - `ProcessImageJob`, `HasFailedTrait`, `HandlesSkippedPhotoTrait` (ADR-114-01 flow kept).
 - Laravel cache: `Cache::store()`, `Illuminate\Cache\DatabaseStore` (`getConnection()`, `getPrefix()`), `cache` table (ADR-090-01), `Illuminate\Support\Lottery`.
 - `App\Actions\Diagnostics\Pipes\Checks\WorkerCacheCheck` (driver list moves out).
-- `PhotoPolicy::CAN_SEE`, `RandomIDRule`, `spatie/laravel-typescript-transformer`.
+- `RandomIDRule`, `spatie/laravel-typescript-transformer`.
 
 ## Assumptions & Risks
 - **Assumptions:** the job constructor runs in the upload request on every queue (it already saves the `JobHistory` row there), so writing `processing` there precedes any outcome write, including on `sync`. On `sync`, a rethrown skip reaches `failed()` (Laravel `SyncQueue::handleException`), which maps the same exception to the same entry. Job payloads queued before the deploy lack `uploader_id`: a defaulted property (`= null`) keeps them loadable.
@@ -33,7 +33,7 @@ An API client uploads a set of files on a worker-backed instance, then polls `GE
 - Exceptions: `PhotoSkippedException`, `PhotoResyncedException`, `PhotoRejectedException` get a third constructor parameter `?string $photo_id = null` exposed as `public readonly`. Pipes pass `photo_id: $state->photo->id`.
 - `Create`: `private bool $is_duplicate`, set in `handleDuplicate()`; `isDuplicate(): bool`.
 - `ProcessImageJob`: `public ?int $uploader_id = null` (= `Auth::id()` in the constructor); `recordUploadStatus(UploadStatusEntry)` (no-op without `expected_id`); constructor → `processing`; `handle()` success → `ofPhoto`; skip catch → `ofThrowable` before `skipped()`; `failed()` wraps `HasFailedTrait::failed()` then `ofThrowable`.
-- `App\Actions\Photo\ResolveUploadStatuses::do(string[] $ids): Collection<UploadStatusResource>`: one `many()`, one photo query (`whereIn`, `with('albums')`) for readable entries with a `photo_id`, `Gate::check(CAN_SEE)` per photo (NFR-116-01).
+- `App\Actions\Photo\ResolveUploadStatuses::do(string[] $ids): Collection<UploadStatusResource>`: one `many()`, one primary-key lookup (`whereIn('id')`, plucked IDs, no model hydrated) for readable entries with a `photo_id`, to drop deleted photos; no visibility check (NFR-116-01, FR-116-07; replaced `Gate::check(CAN_SEE)` per photo on 2026-11-18, T-116-10/11).
 - `App\Http\Requests\Photo\GetUploadStatusRequest` (`photo_ids` 1…100, `RandomIDRule(false)` each, `authorize()` true), `App\Http\Resources\Models\UploadStatusResource`, `PhotoController::uploadStatus()`, route `GET /Photo::uploadStatus`.
 
 ## Implementation Drift Gate
@@ -47,17 +47,17 @@ An API client uploads a set of files on a worker-backed instance, then polls `GE
 | FR-116-04 | `photo_id` on the three exceptions, passed by `ThrowSkipDuplicate` / `ThrowUntrustedDuplicate` / `ThrowUnownedDuplicate`; skip catch; `ofThrowable()` | `testSkippedDuplicateIsSkipped`, `testDuplicateOfModerationCopyIsSkipped`, `testRejectedDuplicateOfAnotherUserIsSkippedAfterLastAttempt`, `UploadStatusEntryTest` skip provider |
 | FR-116-05 | `ProcessImageJob::failed()` wraps `HasFailedTrait::failed()` | `testFinalFailureOnLycheeExceptionKeepsItsMessage`, `testFinalFailureOnOtherThrowableIsGeneric` |
 | FR-116-06 | `GetUploadStatusRequest`, `ResolveUploadStatuses`, `UploadStatusResource`, `PhotoController::uploadStatus()`, route | `UploadStatusTest` (13) |
-| FR-116-07 | `ResolveUploadStatuses::visiblePhotoIds()` (`PhotoPolicy::CAN_SEE`) | `testInvisibleDuplicateIdIsWithheld`, `testVisibleDuplicateIdIsGiven`, `testDeletedPhotoIdIsWithheld` |
+| FR-116-07 | `ResolveUploadStatuses::existingPhotoIds()` (primary-key lookup, no policy) | `testDuplicateIdOfAnotherUsersPhotoIsGiven`, `testVisibleDuplicateIdIsGiven`, `testDeletedPhotoIdIsWithheld`, `testPhotoIdsOfOtherUsersAreGivenInOneQuery` |
 | FR-116-08 | `UploadStatusStore::TTL`, `put()` on every write | `UploadStatusStoreTest::testEntryExpiresAfterOneDay`, `testEachWriteResetsTheExpiry` |
 | FR-116-09 | constructor runs before the inline job on `sync` | `testSyncUploadStoresTheOutcome` |
 | FR-116-10 | `UploadStatusStore::mayPrune()`, `TransactionSafeDatabaseStore::forgetExpired()` | `testProcessingWriteOnDatabaseStorePrunesExpiredUploadStatuses`, `testLostLotteryDoesNotPrune`, `testOutcomeWriteDoesNotPrune` |
-| NFR-116-01 | one `many()`, one `photos` query | `testBatchAnswersInRequestOrder` (query count) |
+| NFR-116-01 | one `many()`, one primary-key lookup | `testBatchAnswersInRequestOrder`, `testPhotoIdsOfOtherUsersAreGivenInOneQuery` (query counts) |
 | NFR-116-02 | `SharedCacheStore` (shared `PER_CONTAINER_DRIVERS`, `WorkerCacheCheck` reads it) | `SharedCacheStoreTest`, `testAsyncQueueOnArrayCacheWritesToTheDatabaseStore`, `WorkerCacheCheckTest` |
 | NFR-116-03 | `record()` try/catch + `warning` | `testCacheErrorIsLoggedNotThrown` |
 | NFR-116-04 | `UploadStatusEntry::isReadableBy()` | `testUserEntryIsHiddenFromOthers`, `testUserEntryIsHiddenFromGuests`, `testGuestEntryIsReadableByAnyone` |
 | NFR-116-05 | pure `UploadStatusEntry`, `SharedCacheStore::storeName()` | `UploadStatusEntryTest`, `SharedCacheStoreTest` |
 
-Findings: none high/medium. Low, fixed in place: S-116-06 (resync) cannot happen on upload, so it is tested at mapping level only; S-116-17 is covered by the store's unit test (the job only calls `record()`); the prune query lives in `TransactionSafeDatabaseStore::forgetExpired()` (Lychee's own subclass) because Laravel keeps the table name protected; `ResolveUploadStatuses` does not eager-load `albums`, since `Album::$with` pulls cover photos (5 photo queries instead of 1), and `PhotoPolicy::canSee()` loads albums only for photos the caller does not own. Lessons: `BaseApiTest::getJson()` already adds `/api/v2/`, so a prefixed URL falls through to the HTML catch-all and answers `406`.
+Findings: none high/medium. Low, fixed in place: S-116-06 (resync) cannot happen on upload, so it is tested at mapping level only; S-116-17 is covered by the store's unit test (the job only calls `record()`); the prune query lives in `TransactionSafeDatabaseStore::forgetExpired()` (Lychee's own subclass) because Laravel keeps the table name protected; `ResolveUploadStatuses` does not eager-load `albums`, since `Album::$with` pulls cover photos (5 photo queries instead of 1), and `PhotoPolicy::canSee()` loads albums only for photos the caller does not own. **Superseded 2026-11-18 (owner review):** that left a lazy `albums` load (with `Album::$with` covers and access permissions) per photo the caller does not own, the exact `duplicate`/`skipped` case, and the query-count test only used the caller's own photos. Fixed by T-116-10/11: no visibility check on `photo_id` (owner directive), one primary-key lookup for deleted photos. Lessons: `BaseApiTest::getJson()` already adds `/api/v2/`, so a prefixed URL falls through to the HTML catch-all and answers `406`.
 
 Pending: CI on MySQL/PostgreSQL (prune `like` + `expiration` on the real `cache` table); operator check with a Docker worker on `CACHE_STORE=file`.
 
@@ -108,3 +108,11 @@ Pending: CI on MySQL/PostgreSQL (prune `like` + `expiration` on the real `cache`
 ## Follow-ups / Backlog
 - v8 upload panel showing final outcomes of queued files (N6).
 - `PhotoRejectedException` on asynchronous queues still retries and records `FAILURE` (N5).
+
+## Follow-up 2026-11-18 – no visibility check on `photo_id`
+- Owner review: `Gate::check(CAN_SEE)` per photo is too heavy (`canSee()` lazy-loads `albums` with `Album::$with` covers and access permissions for every photo the caller does not own), and the code comment claimed the opposite.
+- Owner directive: revealing the ID of a duplicate is fine. The uploader already has the file, the `duplicate`/`skipped` status already says it exists, and every photo route applies its own policy. FR-116-07 and NFR-116-01 reworded, S-116-08 now answers the other user's photo ID.
+- Kept: a photo deleted since answers `null`, through one primary-key lookup for the batch (not ruled on, existing behaviour).
+- First draft of the fix used `PhotoQueryPolicy::applyVisibilityFilter` (one query, also withholding photos awaiting moderation); dropped after the directive, before any commit.
+- Found while writing T-116-10: `Model::shouldBeStrict()` is unconditional (`AppServiceProvider`), so `canSee()`'s lazy `albums` load threw `LazyLoadingViolationException` for any batch of two or more photos holding one the caller does not own: `500` in production, not only slow. The old tests used one such photo at a time, which Laravel allows.
+- Tasks T-116-10 (failing tests) and T-116-11 (fix). Verified: `UploadStatusTest` 14/14, `make phpstan` clean, `php-cs-fixer` on the three touched files. `testInvisibleDuplicateIdIsWithheld` becomes `testDuplicateIdOfAnotherUsersPhotoIsGiven` (requirement changed, not a red test silenced).

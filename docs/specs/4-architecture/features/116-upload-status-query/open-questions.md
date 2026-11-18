@@ -6,7 +6,7 @@ Open questions for [Feature 116](spec.md). Log every high- and medium-impact que
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| ~~Q-116-01~~ | 116 | High | Who may read an upload's status entry | Resolved (A, owner 2026-11-18, spec FR-116-06, FR-116-07, NFR-116-04) | 2026-11-18 | 2026-11-18 |
+| ~~Q-116-01~~ | 116 | High | Who may read an upload's status entry | Resolved (A, owner 2026-11-18, spec FR-116-06, FR-116-07, NFR-116-04; FR-116-07 amended the same day: `photo_id` not gated by visibility, owner directive) | 2026-11-18 | 2026-11-18 |
 | ~~Q-116-02~~ | 116 | Medium | One provisional ID per request, or a batch | Resolved (A, owner 2026-11-18, spec FR-116-06, API-116-01) | 2026-11-18 | 2026-11-18 |
 | ~~Q-116-03~~ | 116 | Medium | What a `failed` entry tells the client about the cause | Resolved (A, owner 2026-11-18, spec FR-116-04, FR-116-05) | 2026-11-18 | 2026-11-18 |
 | ~~Q-116-04~~ | 116 | Medium | API only, or also the v8 upload panel | Resolved (A, owner 2026-11-18, spec N6) | 2026-11-18 | 2026-11-18 |

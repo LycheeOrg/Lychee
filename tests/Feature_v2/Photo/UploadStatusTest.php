@@ -36,6 +36,7 @@ class UploadStatusTest extends BaseApiWithDataTest
 	private const ID_A = 'UploadStatusTestIdAAAAAA';
 	private const ID_B = 'UploadStatusTestIdBBBBBB';
 	private const ID_C = 'UploadStatusTestIdCCCCCC';
+	private const ID_D = 'UploadStatusTestIdDDDDDD';
 
 	private UploadStatusStore $store;
 
@@ -117,15 +118,16 @@ class UploadStatusTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * FR-116-07: the duplicate's ID is withheld when the caller cannot see that photo.
+	 * FR-116-07, S-116-08: the duplicate's ID is given even when the caller cannot see that photo;
+	 * the uploader has the file already and photo routes apply their own policy.
 	 */
-	public function testInvisibleDuplicateIdIsWithheld(): void
+	public function testDuplicateIdOfAnotherUsersPhotoIsGiven(): void
 	{
 		$this->store->record(self::ID_A, UploadStatusEntry::ofThrowable($this->userMayUpload1->id, new PhotoRejectedException(photo_id: $this->photo2->id)));
 
 		$this->actingAs($this->userMayUpload1)->getJsonWithData('Photo::uploadStatus', ['photo_ids' => [self::ID_A]])
 			->assertOk()
-			->assertExactJson([['expected_id' => self::ID_A, 'status' => 'skipped', 'photo_id' => null, 'message' => PhotoRejectedException::DEFAULT_MESSAGE]]);
+			->assertExactJson([['expected_id' => self::ID_A, 'status' => 'skipped', 'photo_id' => $this->photo2->id, 'message' => PhotoRejectedException::DEFAULT_MESSAGE]]);
 	}
 
 	public function testVisibleDuplicateIdIsGiven(): void
@@ -170,6 +172,40 @@ class UploadStatusTest extends BaseApiWithDataTest
 			['expected_id' => self::ID_A, 'status' => 'completed', 'photo_id' => $this->photo1->id, 'message' => null],
 		]);
 		self::assertCount(1, $photo_queries, 'Expected one photo query for the whole batch.');
+	}
+
+	/**
+	 * FR-116-07, NFR-116-01: photos of other users cost no extra query.
+	 * photo1: album1 shared with userMayUpload2 (perm1); photo4: public album4; photo3: not accessible; ID_D: deleted.
+	 */
+	public function testPhotoIdsOfOtherUsersAreGivenInOneQuery(): void
+	{
+		$uploader = $this->userMayUpload2->id;
+		$this->store->record(self::ID_A, UploadStatusEntry::ofPhoto($uploader, $this->photo1->id, is_duplicate: true));
+		$this->store->record(self::ID_B, UploadStatusEntry::ofPhoto($uploader, $this->photo4->id, is_duplicate: true));
+		$this->store->record(self::ID_C, UploadStatusEntry::ofPhoto($uploader, $this->photo3->id, is_duplicate: true));
+		$this->store->record(self::ID_D, UploadStatusEntry::ofPhoto($uploader, 'DeletedPhotoIdDeletedPho', is_duplicate: true));
+		$this->actingAs($this->userMayUpload2);
+
+		// Warm-up, so that per-process caches do not skew the counts below.
+		$this->getJsonWithData('Photo::uploadStatus', ['photo_ids' => [self::ID_A]]);
+
+		DB::enableQueryLog();
+		$this->getJsonWithData('Photo::uploadStatus', ['photo_ids' => [self::ID_A]]);
+		$single = count(DB::getQueryLog());
+		DB::flushQueryLog();
+		$response = $this->getJsonWithData('Photo::uploadStatus', ['photo_ids' => [self::ID_A, self::ID_B, self::ID_C, self::ID_D]]);
+		$batch = count(DB::getQueryLog());
+		DB::disableQueryLog();
+
+		$this->assertOk($response);
+		$response->assertExactJson([
+			['expected_id' => self::ID_A, 'status' => 'duplicate', 'photo_id' => $this->photo1->id, 'message' => null],
+			['expected_id' => self::ID_B, 'status' => 'duplicate', 'photo_id' => $this->photo4->id, 'message' => null],
+			['expected_id' => self::ID_C, 'status' => 'duplicate', 'photo_id' => $this->photo3->id, 'message' => null],
+			['expected_id' => self::ID_D, 'status' => 'duplicate', 'photo_id' => null, 'message' => null],
+		]);
+		self::assertSame($single, $batch, 'The query count must not grow with the number of photos the caller does not own.');
 	}
 
 	/**

@@ -64,5 +64,18 @@ _Last updated: 2026-11-18_
   _Intent:_ `docs/specs/3-reference/api-design.md` (route, vocabulary, access, store), knowledge map, roadmap, drift gate in the plan.  
   _Verification commands:_ —
 
+- [x] T-116-10 – Failing tests for the ID without visibility check (FR-116-07, NFR-116-01, S-116-08).  
+  _Intent:_ `UploadStatusTest`: other users' photos (shared, public, inaccessible) → IDs given, deleted photo → `null`, total query count of a four-photo batch equal to a one-photo batch; `testInvisibleDuplicateIdIsWithheld` → `testDuplicateIdOfAnotherUsersPhotoIsGiven`.  
+  _Verification commands:_  
+  - `php artisan test --filter=UploadStatusTest` (red)
+
+- [x] T-116-11 – Primary-key lookup instead of `CAN_SEE` (FR-116-07, NFR-116-01).  
+  _Intent:_ `ResolveUploadStatuses::existingPhotoIds()`: `whereIn('id')` plucked through the base query, no hydration, no `Gate`.  
+  _Verification commands:_  
+  - `php artisan test --filter=UploadStatusTest`  
+  - `vendor/bin/php-cs-fixer fix`  
+  - `make phpstan`
+
 ## Notes / TODOs
+- `php-cs-fixer` on several paths needs `--config=.php-cs-fixer.php --path-mode=intersection`.
 - Scope `vp check --fix` to changed files.

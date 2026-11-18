@@ -39,8 +39,8 @@ Every single-file upload records its provisional ID and status in the cache for 
 |----------|---------|------------|
 | `processing` | Last chunk received, job queued, running, or released for a retry. | `null` |
 | `completed` | A photo was created (or a live-photo video was joined to its existing still) and is in the target album. | The resulting photo: the provisional ID, or the still's ID for a joined video. |
-| `duplicate` | The same file already existed; that photo is now in the target album. | The existing photo, if visible to the caller (FR-116-07). |
-| `skipped` | Not added to the target album: `skip_duplicates`, metadata resync (`PhotoResyncedException`), a copy waiting for moderation, or `skip_duplicates_not_owned` (`PhotoRejectedException`). | The existing photo, if visible to the caller (FR-116-07). |
+| `duplicate` | The same file already existed; that photo is now in the target album. | The existing photo, unless deleted since (FR-116-07). |
+| `skipped` | Not added to the target album: `skip_duplicates`, metadata resync (`PhotoResyncedException`), a copy waiting for moderation, or `skip_duplicates_not_owned` (`PhotoRejectedException`). | The existing photo, unless deleted since (FR-116-07). |
 | `failed` | Processing failed after its last attempt. | `null` |
 | `unknown` | No entry: expired, never existed, ZIP upload, or not readable by the caller (FR-116-06). | `null` |
 
@@ -56,7 +56,7 @@ Clients record `photo_id`, never assume it equals the provisional ID. `message` 
 | FR-116-04 | When the duplicate is skipped or rejected, the entry becomes `skipped` with the existing photo's ID and `message` = the exception's message ("The photo has been skipped", "…but its metadata has been updated", "…there is already a copy waiting for moderation", "The photo has been rejected"). | `PhotoSkippedException`, `PhotoResyncedException` and `PhotoRejectedException` carry the existing photo's ID to the job. | — | As FR-116-01. | Existing `jobs` channel `info` line unchanged. | Discussion #4991, case 4. |
 | FR-116-05 | When the job fails for good (`failed()`), the entry becomes `failed`. `message` is the exception's message when it extends `BaseLycheeException` (quota, unsupported media, …), otherwise the fixed `"Processing failed"`; internal messages stay in the logs. | A release for retry (code 999, attempts left) keeps `processing`. | — | As FR-116-01. | Existing `jobs` channel `error` line unchanged. | Discussion #4991, case 5. |
 | FR-116-06 | `GET /api/v2/Photo::uploadStatus?photo_ids[]=…` (1 to 100 provisional IDs) answers a list in request order, one `UploadStatusResource` per ID. An entry with an uploader ID answers only to that authenticated user; a guest entry (`uploader_id` `null`) answers to any caller. Otherwise, or without an entry: `unknown`. | `200` with the list. Repeated IDs answer once per occurrence. | `422` on a malformed ID (not a 24-character random ID), an empty list or more than 100. | — | None new. | Owner directive 2026-11-18, Q-116-01 A, Q-116-02 A. |
-| FR-116-07 | `photo_id` is returned only when the caller passes `PhotoPolicy::CAN_SEE` on that photo at query time; otherwise `null` with the status unchanged. | Uploader's own photo: always visible. | — | Photo deleted since: `null`. | — | Discussion #4991, case 4 note. |
+| FR-116-07 | `photo_id` is returned as recorded, with no visibility check: the caller uploaded the same file, so the ID reveals nothing the `duplicate`/`skipped` status has not already told them, and every photo route still applies its own policy. Only a photo deleted since answers `null`. | Uploader's own photo, or the existing photo of another user (duplicate): its ID. | — | Photo deleted since: `null`. | — | Discussion #4991, case 4 note; owner directive 2026-11-18 (per-photo `CAN_SEE` too heavy, and the ID is not sensitive). |
 | FR-116-08 | Each write resets the one-day expiry. | — | — | — | — | Owner directive 2026-11-18. |
 | FR-116-09 | The `sync` queue writes the same entries. | Upload answers `DONE` (or `409`); the entry already holds the outcome. | — | — | — | G4. |
 | FR-116-10 | When the entries live in a `database` cache store, writing a `processing` entry deletes expired upload status rows with 1-in-50 odds (key prefix match, `expiration` below now). Other stores expire entries themselves. | The `cache` table holds about one day of upload statuses. | — | A delete error is caught and logged like a write error (NFR-116-03). | None new. | Q-116-05 C. |
@@ -65,7 +65,7 @@ Clients record `photo_id`, never assume it equals the provisional ID. `message` 
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-116-01 | The query reads the cache only, plus one photo visibility check per non-null `photo_id`. No job table or photo listing scan. | Polling cost. | Query-count assertion in the feature test. | Laravel cache. | G1. |
+| NFR-116-01 | The query reads the cache only, plus one primary-key lookup on `photos` for all non-null `photo_id`s to drop deleted photos. No model hydration, no relation, no policy check, no job table or photo listing scan: the query count does not depend on the batch size or on who owns the photos. | Polling cost. | Query-count assertions in the feature test (own photos, and photos of other users). | Laravel cache. | G1; owner directive 2026-11-18. |
 | NFR-116-02 | The web container and the worker read and write the same entries, including with the default LycheeOrg compose file (`CACHE_STORE=file`, separate worker container). Entries live in the default cache store, except when `queue.default` is not `sync` and the default store's driver keeps its data in one container (`file`, `array`, `apc`): then in the `database` store. The driver list has one definition, shared with `WorkerCacheCheck` (DO-116-05). | Docker worker mode. | Unit test of the store choice over (queue, driver); `WorkerCacheCheckTest` unchanged. | ADR-090-01 (`database` store, `cache` table), `WorkerCacheCheck`. | Q-116-05 C, ADR-116-01. |
 | NFR-116-03 | Status recording never changes the upload's or the job's outcome: cache errors are caught and logged. | Status is secondary to processing. | Unit test with a throwing cache store. | — | — |
 | NFR-116-04 | An unreadable entry and a missing entry give the same answer. | No existence oracle. | Feature test across two users. | — | Q-116-01 A. |
@@ -82,7 +82,7 @@ Clients record `photo_id`, never assume it equals the provisional ID. `message` 
 | S-116-05 | Async upload, `skip_duplicates` on: `skipped`, existing `photo_id`, reason. |
 | S-116-06 | Metadata resync: `skipped` with the resync reason. Uploads never resync (`ProcessImageJob` builds its `ImportMode` without it), so only the mapping is tested (`UploadStatusEntryTest`). |
 | S-116-07 | Duplicate of a copy waiting for moderation: `skipped` with the moderation reason. |
-| S-116-08 | `skip_duplicates_not_owned`, duplicate owned by another user and not visible: `skipped`, `photo_id` `null`. |
+| S-116-08 | `skip_duplicates_not_owned`, duplicate owned by another user: `skipped`, `photo_id` = that user's photo (FR-116-07). |
 | S-116-09 | Processing fails for good on a Lychee exception: `failed` with its message; on any other throwable: `failed` with `"Processing failed"`. |
 | S-116-10 | Released for retry: still `processing`. |
 | S-116-11 | Live-photo video joined to an existing still: `completed`, `photo_id` = the still. |
@@ -100,7 +100,7 @@ Clients record `photo_id`, never assume it equals the provisional ID. `message` 
 
 - **Models / Actions:** unit tests for the outcome mapping helper (NFR-116-05) and the cache repository (TTL, key, throwing store).
 - **Jobs:** `ProcessImageJob` run with a non-sync queue job double for S-116-02 … 11, asserting the cache entry.
-- **REST API (v2):** new `Feature_v2` test class on `Photo::uploadStatus` for S-116-01, 12, 13, 14, 15, 16 and visibility (FR-116-07); extend `PhotoAddTest`/`UploadWithMetadataTest` only if their fixtures are reused.
+- **REST API (v2):** new `Feature_v2` test class on `Photo::uploadStatus` for S-116-01, 12, 13, 14, 15, 16 and `photo_id` (FR-116-07); extend `PhotoAddTest`/`UploadWithMetadataTest` only if their fixtures are reused.
 - **Frontend (v7/v8):** none (N6); `vp run typecheck` after the TS types change.
 - **Docs/Contracts:** `UploadStatusResource` and `UploadStatus` enum in `lychee.d.ts` (`php artisan typescript:transform`).
 

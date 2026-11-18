@@ -32,17 +32,17 @@ class UploadStatusResource extends Data
 	}
 
 	/**
-	 * @param string                 $expected_id       the provisional ID asked for
-	 * @param UploadStatusEntry|null $entry             the entry readable by the caller, if any
-	 * @param array<string,true>     $visible_photo_ids photos the caller may see
+	 * @param string                 $expected_id        the provisional ID asked for
+	 * @param UploadStatusEntry|null $entry              the entry readable by the caller, if any
+	 * @param array<string,true>     $existing_photo_ids recorded photos that still exist
 	 */
-	public static function of(string $expected_id, ?UploadStatusEntry $entry, array $visible_photo_ids): self
+	public static function of(string $expected_id, ?UploadStatusEntry $entry, array $existing_photo_ids): self
 	{
 		if ($entry === null) {
 			return new self($expected_id, UploadStatus::UNKNOWN, null, null);
 		}
 
-		$photo_id = isset($visible_photo_ids[$entry->photo_id ?? '']) ? $entry->photo_id : null;
+		$photo_id = isset($existing_photo_ids[$entry->photo_id ?? '']) ? $entry->photo_id : null;
 
 		return new self($expected_id, $entry->status, $photo_id, $entry->message);
 	}
