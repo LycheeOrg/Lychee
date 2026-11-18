@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Supprimer les photos de l’album qui ne sont pas présentes dans le répertoire synchronisé.',
     'delete_missing_albums' => 'Supprimer les albums de l’album parent qui ne sont pas présents dans le répertoire synchronisé.',
     'importing_please_be_patient' => 'Importation en cours, veuillez patienter...',
+    'root_folder_content_hint' => 'Le contenu du dossier sélectionné va directement dans l’album cible. La suppression des photos et albums manquants s’applique alors à l’album cible.',
 ];
 

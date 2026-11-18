@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => '刪除相簿中不存在於同步目錄的相片。',
     'delete_missing_albums' => '刪除上層相簿中不存在於同步目錄的相簿。',
     'importing_please_be_patient' => '匯入中，請耐心等候...',
+    'root_folder_content_hint' => '所選資料夾的內容會直接進入目標相簿。此時刪除缺少的照片和相簿將作用於目標相簿。',
 ];
 

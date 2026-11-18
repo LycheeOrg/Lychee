@@ -20,6 +20,8 @@ return [
     'user_updated' => 'Usuario actualizado',
     'change_saved' => '¡Cambio guardado!',
     'create_edit' => [
+        'server_path' => 'Ruta de importación del servidor',
+        'server_path_hint' => 'Vacío: importación desde el servidor desactivada. «/»: todo el servidor. Si no: solo esta carpeta y lo que contiene.',
         'upload_rights' => 'El usuario puede subir contenido.',
         'edit_rights' => 'El usuario puede modificar su perfil (nombre de usuario, contraseña).',
         'admin_rights' => 'El usuario tiene derechos de administrador.',

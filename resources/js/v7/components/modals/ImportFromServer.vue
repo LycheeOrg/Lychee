@@ -30,6 +30,10 @@
 							{{ dir }}
 						</div>
 					</div>
+					<p v-if="!importState.options.is_root_folder_album" class="mt-3 text-sm flex gap-2 items-start">
+						<i class="pi pi-info-circle mt-0.5" />
+						{{ $t("import_from_server.root_folder_content_hint") }}
+					</p>
 					<div class="flex flex-col gap-2 mt-4">
 						<form>
 							<div class="flex items-center gap-2">

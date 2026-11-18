@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Gebruik het beheerdersdashboard in plaats van links in het linkermenu',
         'video_thumbnail_frame_mode' => 'Frame voor de videominiatuur',
         'video_thumbnail_frame_seconds' => 'Tijdstip van het frame (in seconden) voor videominiaturen',
+        'import_root_folder_as_album' => 'De geselecteerde map als album importeren',
+        'import_scope_to_owner' => 'Alleen eigen albums en foto’s van de importeur hergebruiken en verwijderen',
+        'sync_users_server_paths' => 'lychee:sync zonder pad synchroniseert de importmap van elke gebruiker',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Eerste: altijd het allereerste frame (0s), dat bij sommige video\'s zwart kan zijn. Midden: het frame halverwege de video, met terugval naar 0s als de duur onbekend is. Aangepast: het vaste aantal seconden dat hieronder is ingesteld.',
         'video_thumbnail_frame_seconds' => 'Wordt alleen gebruikt wanneer "Frame voor de videominiatuur" is ingesteld op aangepast.',
+        'import_root_folder_as_album' => 'Indien uitgeschakeld gaat de inhoud van de geselecteerde map direct naar het doelalbum (of naar Ongesorteerd in de hoofdmap van de galerij) en worden de submappen albums direct onder het doel.',
+        'import_scope_to_owner' => 'Indien ingeschakeld voegt een import nooit samen met albums en foto’s van een andere gebruiker en verwijdert deze ook niet.',
+        'sync_users_server_paths' => 'Gebruikers die beperkt zijn tot een server-importpad worden na elkaar, als zichzelf, naar de hoofdmap van de galerij gesynchroniseerd.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Themakleuren',
         'contact' => 'Contact',
+        'import' => 'Importeren',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'Op AI gebaseerde functies, waaronder gezichtsherkenning en detectie van NSFW-content. Vereist een externe AI Vision-sidecarservice.',
         'Theme Colors' => 'Pas de secundaire, semantische en neutrale kleuren aan die in de v8-interface worden gebruikt. Elke gekozen kleur genereert een volledig palet, op dezelfde manier als de accentkleur hierboven.',
         'contact' => 'Met deze module beheert u contactberichten die gebruikers via het contactformulier op de website hebben verzonden.',
+        'import' => 'Instellingen voor het importeren van foto’s uit een map op de server en vanaf een URL.',
     ],
 ];

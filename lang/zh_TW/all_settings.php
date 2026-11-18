@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => '使用管理儀表板取代左側選單中的連結',
         'video_thumbnail_frame_mode' => '影片縮圖使用的影格',
         'video_thumbnail_frame_seconds' => '影片縮圖使用的影格時間點（秒）',
+        'import_root_folder_as_album' => '將所選資料夾匯入為相簿',
+        'import_scope_to_owner' => '僅重複使用和刪除匯入者自己的相簿和照片',
+        'sync_users_server_paths' => '不帶路徑的 lychee:sync 會同步每位使用者的匯入資料夾',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => '第一格：一律使用最開頭的影格（0 秒），某些影片可能是黑畫面。中間：使用影片中間點的影格，若無法得知影片長度則改用 0 秒。自訂：使用下方設定的固定秒數。',
         'video_thumbnail_frame_seconds' => '僅在 "Frame to use for the video thumbnail" 設為自訂時使用。',
+        'import_root_folder_as_album' => '停用時，所選資料夾的內容會直接進入目標相簿（在圖庫根目錄時進入未分類），其子資料夾會成為目標下的直接子相簿。',
+        'import_scope_to_owner' => '啟用時，匯入絕不會合併到或刪除其他使用者的相簿和照片。',
+        'sync_users_server_paths' => '被限制在伺服器匯入路徑中的使用者會以其本人身分依序同步到圖庫根目錄。',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => '主題色彩',
         'contact' => '聯絡',
+        'import' => '匯入',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'AI 驅動的功能，包括臉部辨識與 NSFW 內容偵測。需要外部的 AI Vision 輔助服務。',
         'Theme Colors' => '自訂 v8 介面中使用的次要色、語意色與中性色。每個選取的顏色都會產生完整的調色盤，方式與上方的強調色相同。',
         'contact' => '此模組可讓您管理使用者透過網站聯絡表單所傳送的聯絡訊息。',
+        'import' => '從伺服器上的資料夾和從 URL 匯入照片的設定。',
     ],
 ];

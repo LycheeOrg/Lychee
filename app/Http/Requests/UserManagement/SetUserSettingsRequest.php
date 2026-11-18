@@ -28,6 +28,7 @@ use App\Rules\IntegerIDRule;
 use App\Rules\IntegerRequireSupportRule;
 use App\Rules\OwnerIdRule;
 use App\Rules\PasswordRule;
+use App\Rules\ServerPathRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
@@ -45,6 +46,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
 	protected ?UserUploadTrustLevel $upload_trust_level = null;
+	protected ?string $server_path = null;
 
 	/**
 	 * {@inheritDoc}
@@ -70,6 +72,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify())],
 			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'nullable', 'string', new StringRequireSupportRule('', $this->verify())],
+			RequestAttribute::SERVER_PATH_ATTRIBUTE => ['sometimes', 'nullable', 'string', new ServerPathRule()],
 		];
 	}
 
@@ -98,6 +101,11 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
+		// `server_path` is always considered sent (absent = `null`), but only the server owner
+		// sets it (Feature 115, FR-115-19): anyone else keeps the stored value.
+		$this->server_path = Gate::check(UserPolicy::CAN_EDIT_SERVER_PATH, [User::class])
+			? ServerPathRule::normalise($values[RequestAttribute::SERVER_PATH_ATTRIBUTE] ?? null)
+			: $this->user2->server_path;
 	}
 
 	public function mayUpload(): bool
@@ -118,5 +126,10 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function uploadTrustLevel(): ?UserUploadTrustLevel
 	{
 		return $this->upload_trust_level;
+	}
+
+	public function serverPath(): ?string
+	{
+		return $this->server_path;
 	}
 }

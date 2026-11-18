@@ -47,6 +47,8 @@ class AdminSetupTest extends AbstractTestCase
 		$user = User::query()->where('username', '=', 'first-admin')->firstOrFail();
 		$owner_id = DB::table('configs')->where('key', '=', 'owner_id')->value('value');
 		$this->assertEquals($user->id, $owner_id);
+		// Feature 115 (FR-115-14): the first admin may import from the whole server.
+		$this->assertSame('/', $user->server_path);
 	}
 
 	public function testRequiresValidData(): void

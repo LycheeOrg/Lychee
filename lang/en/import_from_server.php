@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
     'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
     'importing_please_be_patient' => 'Importing, please be patient...',
+    'root_folder_content_hint' => 'The content of the selected folder goes straight into the target album. Deleting missing photos and albums then applies to the target album.',
 ];
 

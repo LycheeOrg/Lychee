@@ -69,6 +69,7 @@ class ProfileController extends Controller
 			null,
 			null,
 			UserUploadTrustLevel::TRUSTED,
+			server_path: '/',
 		);
 
 		DB::table('configs')->where('key', '=', 'owner_id')->update(['value' => $user->id]);

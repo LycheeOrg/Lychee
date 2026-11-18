@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Usa la dashboard di amministrazione invece dei link nel menu a sinistra',
         'video_thumbnail_frame_mode' => 'Fotogramma da usare per la miniatura del video',
         'video_thumbnail_frame_seconds' => 'Istante del fotogramma (in secondi) usato per le miniature dei video',
+        'import_root_folder_as_album' => 'Importa la cartella selezionata come album',
+        'import_scope_to_owner' => 'Riutilizza ed elimina solo gli album e le foto di chi importa',
+        'sync_users_server_paths' => 'lychee:sync senza percorso sincronizza la cartella di importazione di ogni utente',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Primo: sempre il primissimo fotogramma (0 s), che in alcuni video può essere nero. Centrale: il fotogramma a metà del video, con ripiego su 0 s se la durata è sconosciuta. Personalizzato: il numero fisso di secondi impostato qui sotto.',
         'video_thumbnail_frame_seconds' => 'Usato solo quando "Fotogramma da usare per la miniatura del video" è impostato su personalizzato.',
+        'import_root_folder_as_album' => 'Se disattivato, il contenuto della cartella selezionata va direttamente nell’album di destinazione (o in Non ordinate alla radice della galleria) e le sue sottocartelle diventano album direttamente sotto la destinazione.',
+        'import_scope_to_owner' => 'Se attivato, un’importazione non unisce né elimina mai album e foto di un altro utente.',
+        'sync_users_server_paths' => 'Gli utenti limitati a un percorso di importazione del server vengono sincronizzati uno dopo l’altro, a loro nome, nella radice della galleria.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Colori del tema',
         'contact' => 'Contatti',
+        'import' => 'Importazione',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'Funzionalità basate sull\'IA, tra cui il riconoscimento facciale e il rilevamento di contenuti NSFW. Richiede un servizio sidecar AI Vision esterno.',
         'Theme Colors' => 'Personalizza i colori secondari, semantici e neutri usati nell\'interfaccia v8. Ogni colore scelto genera una palette completa, come avviene per il colore di accento qui sopra.',
         'contact' => 'Questo modulo permette di gestire i messaggi inviati dagli utenti tramite il modulo di contatto del sito.',
+        'import' => 'Impostazioni per importare foto da una cartella del server e da un URL.',
     ],
 ];

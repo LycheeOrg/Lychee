@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => '使用管理仪表板代替左侧菜单中的链接',
         'video_thumbnail_frame_mode' => '用于视频缩略图的帧',
         'video_thumbnail_frame_seconds' => '用于视频缩略图的帧时间点（秒）',
+        'import_root_folder_as_album' => '将所选文件夹导入为相册',
+        'import_scope_to_owner' => '仅重用和删除导入者自己的相册和照片',
+        'sync_users_server_paths' => '不带路径的 lychee:sync 会同步每个用户的导入文件夹',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => '第一帧：始终使用最开始的帧（0 秒），某些视频中可能为黑屏。中间：使用视频中间位置的帧，如果时长未知则回退到 0 秒。自定义：使用下方设置的固定秒数。',
         'video_thumbnail_frame_seconds' => '仅在 "Frame to use for the video thumbnail" 设置为自定义时使用。',
+        'import_root_folder_as_album' => '禁用时，所选文件夹的内容会直接进入目标相册（在图库根目录时进入未分类），其子文件夹会成为目标下的直接子相册。',
+        'import_scope_to_owner' => '启用时，导入绝不会合并到或删除其他用户的相册和照片。',
+        'sync_users_server_paths' => '被限制在服务器导入路径中的用户会以其本人身份依次同步到图库根目录。',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => '主题颜色',
         'contact' => '联系',
+        'import' => '导入',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => '由 AI 驱动的功能，包括人脸识别和 NSFW 内容检测。需要外部 AI Vision 辅助服务。',
         'Theme Colors' => '自定义 v8 界面中使用的次要色、语义色和中性色。每个选定的颜色都会生成完整的调色板，与上方的强调色相同。',
         'contact' => '此模块允许您管理用户通过网站联系表单发送的消息。',
+        'import' => '从服务器上的文件夹和从 URL 导入照片的设置。',
     ],
 ];

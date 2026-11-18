@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Use admin dashboard instead of links in Left menu',
         'video_thumbnail_frame_mode' => 'Frame to use for the video thumbnail',
         'video_thumbnail_frame_seconds' => 'Timing frame (in seconds) used for video thumbnails',
+        'import_root_folder_as_album' => 'Import the selected folder as an album',
+        'import_scope_to_owner' => 'Only reuse and delete the importer\'s own albums and photos',
+        'sync_users_server_paths' => 'lychee:sync with no path syncs the import folder of every user',
     ],
     'details' => [
         'version' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'First: always the very first frame (0s), which can be black on some videos. Middle: the frame halfway through the video, falling back to 0s if the duration is unknown. Custom: the fixed number of seconds set below.',
         'video_thumbnail_frame_seconds' => 'Only used when "Frame to use for the video thumbnail" is set to custom.',
+        'import_root_folder_as_album' => 'When disabled, the content of the selected folder goes straight into the target album (or Unsorted at the gallery root) and its sub-folders become albums directly under the target.',
+        'import_scope_to_owner' => 'When enabled, an import never merges into, nor deletes, albums and photos owned by another user.',
+        'sync_users_server_paths' => 'Users restricted to a server import path are synced one after the other, as themselves, into the gallery root.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Theme Colors',
         'contact' => 'Contact',
+        'import' => 'Import',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'AI-powered features including facial recognition and NSFW content detection. Requires an external AI Vision sidecar service.',
         'Theme Colors' => 'Customize the secondary, semantic, and neutral colors used across the v8 interface. Each picked color generates a full palette, the same way the accent color above does.',
         'contact' => 'This module allows you to manage contact messages sent by users through the contact form on the website.',
+        'import' => 'Settings for importing photos from a folder on the server and from a URL.',
     ],
 ];

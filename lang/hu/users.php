@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Felhasználó frissítve',
     'change_saved' => 'Módosítás mentve!',
     'create_edit' => [
+        'server_path' => 'Szerveres importálási útvonal',
+        'server_path_hint' => 'Üres: a szerverről importálás ki van kapcsolva. „/”: a teljes szerver. Egyébként: csak ez a mappa és ami alatta van.',
         'upload_rights' => 'A felhasználó tartalmat tölthet fel.',
         'edit_rights' => 'A felhasználó módosíthatja a profilját (felhasználónév, jelszó).',
         'admin_rights' => 'A felhasználó rendszergazdai jogokkal rendelkezik.',

@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Używaj panelu administratora zamiast linków w lewym menu',
         'video_thumbnail_frame_mode' => 'Klatka używana do miniatury wideo',
         'video_thumbnail_frame_seconds' => 'Moment klatki (w sekundach) używanej do miniatur wideo',
+        'import_root_folder_as_album' => 'Importuj wybrany folder jako album',
+        'import_scope_to_owner' => 'Ponownie używaj i usuwaj tylko własne albumy i zdjęcia importującego',
+        'sync_users_server_paths' => 'lychee:sync bez ścieżki synchronizuje folder importu każdego użytkownika',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Pierwsza: zawsze pierwsza klatka (0 s), która w niektórych filmach może być czarna. Środkowa: klatka z połowy filmu, a gdy czas trwania jest nieznany – 0 s. Własna: stała liczba sekund ustawiona poniżej.',
         'video_thumbnail_frame_seconds' => 'Używane tylko wtedy, gdy opcja "Klatka używana jako miniatura filmu" jest ustawiona na własną.',
+        'import_root_folder_as_album' => 'Po wyłączeniu zawartość wybranego folderu trafia bezpośrednio do albumu docelowego (lub do Nieposortowanych w katalogu głównym galerii), a jego podfoldery stają się albumami bezpośrednio pod celem.',
+        'import_scope_to_owner' => 'Po włączeniu import nigdy nie scala ani nie usuwa albumów i zdjęć innego użytkownika.',
+        'sync_users_server_paths' => 'Użytkownicy ograniczeni do ścieżki importu na serwerze są synchronizowani jeden po drugim, we własnym imieniu, do katalogu głównego galerii.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Kolory motywu',
         'contact' => 'Kontakt',
+        'import' => 'Import',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'Funkcje oparte na AI, w tym rozpoznawanie twarzy i wykrywanie treści NSFW. Wymaga zewnętrznej usługi pomocniczej AI Vision.',
         'Theme Colors' => 'Dostosuj kolory dodatkowe, semantyczne i neutralne używane w interfejsie v8. Każdy wybrany kolor generuje pełną paletę, tak samo jak powyższy kolor akcentu.',
         'contact' => 'Ten moduł pozwala zarządzać wiadomościami wysłanymi przez użytkowników za pomocą formularza kontaktowego na stronie.',
+        'import' => 'Ustawienia importu zdjęć z folderu na serwerze oraz z adresu URL.',
     ],
 ];

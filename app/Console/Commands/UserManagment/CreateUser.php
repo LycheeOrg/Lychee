@@ -59,8 +59,9 @@ class CreateUser extends Command
 		$password = strval($this->argument('password'));
 
 		$count = User::query()->count();
+		$is_first_user = $count < 1;
 
-		$may_administrate = $count < 1 || $this->option('may-administrate') === true;
+		$may_administrate = $is_first_user || $this->option('may-administrate') === true;
 		$may_edit_own_settings = $may_administrate || $this->option('may-edit-own-settings') === true;
 		$may_upload = $may_administrate || $this->option('may-upload') === true;
 
@@ -68,7 +69,8 @@ class CreateUser extends Command
 			username: $username,
 			password: $password,
 			may_upload: $may_upload,
-			may_edit_own_settings: $may_edit_own_settings);
+			may_edit_own_settings: $may_edit_own_settings,
+			server_path: $is_first_user ? '/' : null);
 		$user->may_administrate = $may_administrate;
 		$user->save();
 

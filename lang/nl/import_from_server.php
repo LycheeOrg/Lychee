@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Verwijder foto’s in het album die niet aanwezig zijn in de gesynchroniseerde map.',
     'delete_missing_albums' => 'Verwijder albums in het bovenliggende album die niet aanwezig zijn in de gesynchroniseerde map.',
     'importing_please_be_patient' => 'Bezig met importeren, even geduld...',
+    'root_folder_content_hint' => 'De inhoud van de geselecteerde map gaat direct naar het doelalbum. Het verwijderen van ontbrekende foto’s en albums geldt dan voor het doelalbum.',
 ];
 
