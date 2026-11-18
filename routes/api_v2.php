@@ -138,6 +138,7 @@ Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
+Route::get('/Photo::uploadStatus', [Gallery\PhotoController::class, 'uploadStatus']);
 Route::patch('/Photo', [Gallery\PhotoController::class, 'update']);
 Route::patch('/Photo::rename', [Gallery\PhotoController::class, 'rename']);
 Route::patch('/Photo::tags', [Gallery\PhotoController::class, 'tags']);

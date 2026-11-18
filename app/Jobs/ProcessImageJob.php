@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\Actions\Photo\Create;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
+use App\DTO\UploadStatusEntry;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\OwnerRequiredException;
@@ -26,6 +27,7 @@ use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
 use App\Services\Telemetry\TraceService;
+use App\Services\UploadStatusStore;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,7 +44,9 @@ use Illuminate\Support\Str;
  */
 class ProcessImageJob implements ShouldQueue
 {
-	use HasFailedTrait;
+	use HasFailedTrait {
+		failed as recordFailedHistory;
+	}
 	use HandlesSkippedPhotoTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
@@ -61,6 +65,8 @@ class ProcessImageJob implements ShouldQueue
 	public ?string $expected_id;
 	public ?string $title;
 	public ?string $description;
+	/** Authenticated uploader, null for a guest (Feature 116, ADR-116-01). */
+	public ?int $uploader_id = null;
 
 	/**
 	 * Create a new job instance.
@@ -91,6 +97,7 @@ class ProcessImageJob implements ShouldQueue
 		$album_name = $album?->get_title() ?? __('gallery.smart_album.unsorted');
 		$user = Auth::user();
 		$user_id = $user?->id;
+		$this->uploader_id = $user_id;
 		// Resolve trust level now, while the HTTP session is still available.
 		if ($user?->may_administrate === true) {
 			$this->upload_trust_level = UserUploadTrustLevel::TRUSTED;
@@ -127,6 +134,9 @@ class ProcessImageJob implements ShouldQueue
 		$this->history->status = JobStatus::READY;
 
 		$this->history->save();
+
+		// Created in the upload request on every queue: written before any outcome (FR-116-01).
+		$this->recordUploadStatus(UploadStatusEntry::processing($this->uploader_id));
 	}
 
 	/**
@@ -174,6 +184,7 @@ class ProcessImageJob implements ShouldQueue
 			try {
 				$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
 			} catch (PhotoSkippedException $e) {
+				$this->recordUploadStatus(UploadStatusEntry::ofThrowable($this->uploader_id, $e));
 				$this->skipped($e, $this->original_base_name);
 
 				return null;
@@ -182,8 +193,30 @@ class ProcessImageJob implements ShouldQueue
 			// Once the job has finished, set history status to 1.
 			$this->history->status = JobStatus::SUCCESS;
 			$this->history->save();
+			$this->recordUploadStatus(UploadStatusEntry::ofPhoto($this->uploader_id, $photo->id, $create->isDuplicate()));
 
 			return $photo;
 		});
+	}
+
+	/**
+	 * Catch failures: record the job history, then the upload's outcome (FR-116-04, FR-116-05).
+	 */
+	public function failed(\Throwable $th): void
+	{
+		$this->recordFailedHistory($th);
+		$this->recordUploadStatus(UploadStatusEntry::ofThrowable($this->uploader_id, $th));
+	}
+
+	/**
+	 * Only uploads that received a provisional ID are tracked (Feature 116, N1, N2).
+	 */
+	private function recordUploadStatus(UploadStatusEntry $entry): void
+	{
+		if ($this->expected_id === null) {
+			return;
+		}
+
+		resolve(UploadStatusStore::class)->record($this->expected_id, $entry);
 	}
 }

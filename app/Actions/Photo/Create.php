@@ -46,6 +46,9 @@ class Create
 
 	private TraceService $trace;
 
+	/** Whether the last {@see Create::add()} met an existing copy of the file (Feature 116). */
+	private bool $is_duplicate = false;
+
 	public function __construct(
 		?ImportMode $import_mode,
 		int $intended_owner_id,
@@ -86,6 +89,8 @@ class Create
 	 */
 	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
+		$this->is_duplicate = false;
+
 		return $this->trace->traceMethod('photo.create.add', function () use ($source_file,
 			$album,
 			$file_last_modified_time) {
@@ -146,6 +151,15 @@ class Create
 	}
 
 	/**
+	 * Whether the photo returned by the last {@see Create::add()} already existed
+	 * as the same file (it was linked, not created).
+	 */
+	public function isDuplicate(): bool
+	{
+		return $this->is_duplicate;
+	}
+
+	/**
 	 * Handle duplicate case.
 	 *
 	 * @param InitDTO $init_dto initial fetched
@@ -158,6 +172,7 @@ class Create
 	 */
 	private function handleDuplicate(InitDTO $init_dto): Photo
 	{
+		$this->is_duplicate = true;
 		$dto = DuplicateDTO::ofInit($init_dto);
 
 		$pipes = [];

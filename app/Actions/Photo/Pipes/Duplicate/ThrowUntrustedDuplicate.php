@@ -20,6 +20,6 @@ class ThrowUntrustedDuplicate implements DuplicatePipe
 			return $next($state);
 		}
 
-		throw new PhotoSkippedException('The photo has been skipped, there is already a copy waiting for moderation');
+		throw new PhotoSkippedException('The photo has been skipped, there is already a copy waiting for moderation', photo_id: $state->photo->id);
 	}
 }
