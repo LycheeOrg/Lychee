@@ -17,8 +17,16 @@ class PhotoResyncedException extends PhotoSkippedException
 {
 	public const DEFAULT_MESSAGE = 'The photo has been skipped, but its metadata has been updated';
 
-	public function __construct(string $message = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
-	{
-		parent::__construct($message, $previous);
+	/**
+	 * @param string          $message
+	 * @param \Throwable|null $previous
+	 * @param string|null     $photo_id the existing photo the upload duplicates (Feature 116)
+	 */
+	public function __construct(
+		string $message = self::DEFAULT_MESSAGE,
+		?\Throwable $previous = null,
+		?string $photo_id = null,
+	) {
+		parent::__construct($message, $previous, $photo_id);
 	}
 }

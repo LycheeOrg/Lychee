@@ -97,7 +97,7 @@ declare namespace App {
 		export type ImageOrientation = "portrait" | "landscape" | "square" | "unknown";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 		export type InsightsPeriodType = "library" | "year" | "range";
-		export type JobStatus = 0 | 1 | 2 | 3;
+		export type JobStatus = 0 | 1 | 2 | 3 | 4;
 		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
 		export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
 		export type LandingCtaPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
@@ -260,6 +260,7 @@ declare namespace App {
 			| "last_capture";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 		export type TitleBucketMode = "date_prefix" | "alphabetical";
+		export type UploadStatus = "processing" | "completed" | "duplicate" | "skipped" | "failed" | "unknown";
 		export type UserGroupRole = "member" | "admin";
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
 		export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
@@ -1274,7 +1275,7 @@ declare namespace App {
 				};
 				export type JobHistoryResource = {
 					username: string;
-					status: "ready" | "success" | "failure" | "started";
+					status: "ready" | "success" | "failure" | "started" | "skipped";
 					created_at: string;
 					updated_at: string;
 					job: string;
@@ -1518,6 +1519,12 @@ declare namespace App {
 					id: number;
 					name: string;
 					url: string;
+				};
+				export type UploadStatusResource = {
+					expected_id: string;
+					status: App.Enum.UploadStatus;
+					photo_id: string | null;
+					message: string | null;
 				};
 				export type UserGroupResource = {
 					id: number;

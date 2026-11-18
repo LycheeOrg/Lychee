@@ -12,6 +12,7 @@ use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\MoveOrDuplicate;
 use App\Actions\Photo\Rating;
+use App\Actions\Photo\ResolveUploadStatuses;
 use App\Actions\Photo\Rotate;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
@@ -29,6 +30,7 @@ use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoAlbumsRequest;
+use App\Http\Requests\Photo\GetUploadStatusRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
@@ -41,6 +43,7 @@ use App\Http\Requests\Photo\WatermarkPhotoRequest;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Http\Resources\Models\PhotoAlbumResource;
 use App\Http\Resources\Models\PhotoResource;
+use App\Http\Resources\Models\UploadStatusResource;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\UploadedFile;
@@ -186,6 +189,19 @@ class PhotoController extends Controller
 
 			return $meta;
 		});
+	}
+
+	/**
+	 * Outcome of uploads by their provisional ID (Feature 116).
+	 *
+	 * @return Collection<int,UploadStatusResource>
+	 */
+	public function uploadStatus(GetUploadStatusRequest $request, ResolveUploadStatuses $resolve): Collection
+	{
+		/** @var int|null $user_id */
+		$user_id = Auth::id();
+
+		return $resolve->do($request->photoIds(), $user_id);
 	}
 
 	/**

@@ -12,6 +12,7 @@ return [
     'success' => 'موفق',
     'failure' => 'ناموفق',
     'started' => 'شروع شده',
+    'skipped' => 'رد شده',
     'col_date' => 'تاریخ',
     'col_status' => 'وضعیت',
     'col_username' => 'کاربر',

@@ -12,6 +12,7 @@ return [
     'success' => 'Успешно',
     'failure' => 'Неуспешно',
     'started' => 'Стартирано',
+    'skipped' => 'Пропуснато',
     'col_date' => 'Дата',
     'col_status' => 'Състояние',
     'col_username' => 'Потребител',

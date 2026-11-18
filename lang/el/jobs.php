@@ -12,6 +12,7 @@ return [
     'success' => 'Επιτυχία',
     'failure' => 'Αποτυχία',
     'started' => 'Ξεκίνησε',
+    'skipped' => 'Παραλείφθηκε',
     'col_date' => 'Ημερομηνία',
     'col_status' => 'Κατάσταση',
     'col_username' => 'Χρήστης',

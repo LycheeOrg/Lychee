@@ -12,6 +12,7 @@ return [
     'success' => 'Thành công',
     'failure' => 'Thất bại',
     'started' => 'Đã bắt đầu',
+    'skipped' => 'Đã bỏ qua',
     'col_date' => 'Ngày',
     'col_status' => 'Trạng thái',
     'col_username' => 'Người dùng',

@@ -11,6 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Services\Cache\SharedCacheStore;
 
 /**
  * A LycheeOrg image with an asynchronous queue runs its worker in a separate
@@ -20,17 +21,12 @@ use App\DTO\DiagnosticData;
 class WorkerCacheCheck implements DiagnosticPipe
 {
 	/**
-	 * Cache drivers whose data stays inside one container.
-	 */
-	private const PER_CONTAINER_DRIVERS = ['file', 'array', 'apc'];
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
 		$driver = config('cache.stores.' . config('cache.default') . '.driver');
-		if (config('queue.default') === 'sync' || !in_array($driver, self::PER_CONTAINER_DRIVERS, true) || !$this->isLycheeOrgImage()) {
+		if (config('queue.default') === 'sync' || !SharedCacheStore::isPerContainer($driver) || !$this->isLycheeOrgImage()) {
 			return $next($data);
 		}
 
