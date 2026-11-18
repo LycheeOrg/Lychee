@@ -539,6 +539,20 @@ class SyncTest extends BaseApiWithDataTest
 		Configs::set('sync_users_server_paths', '0');
 	}
 
+	/** Feature 115 (S-115-17): the symbolic link option applies to every user's folder. */
+	public function testNoPathKeepsSymlinkOption(): void
+	{
+		Queue::fake();
+		Configs::set('sync_users_server_paths', '1');
+		$this->setUpUserFolders();
+
+		$this->artisan(self::COMMAND, ['--import_via_symlink' => '1'])->assertExitCode(0);
+
+		Queue::assertPushed(ImportImageJob::class);
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => !$job->import_mode->shall_import_via_symlink);
+		Configs::set('sync_users_server_paths', '0');
+	}
+
 	/** Feature 115 (S-115-18): a missing folder does not stop the others, exit 1. */
 	public function testNoPathMissingFolder(): void
 	{

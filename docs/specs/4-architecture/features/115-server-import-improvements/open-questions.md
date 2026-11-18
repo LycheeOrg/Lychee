@@ -15,6 +15,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-17 |
 | Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review): (A) restricted jobs open the file once, prove the open file is inside the root, import from a private temp copy, (B) A without the copy, re-check after the import and roll back, (C) accept the race and weaken NFR-115-06 | Open | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
+| ~~Q-115-10~~ | 115 | High | Symbolic link import for restricted users: (A) allowed as for full-access users, risk accepted, (B) refused (ADR-115-01 point 5 as first decided) | Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01) | 2026-11-19 | 2026-11-19 |
 
 ## Question Details
 
@@ -327,6 +328,8 @@ Raised in the PR #4989 review (thread on `app/Jobs/ImportImageJob.php:96`). `Imp
 
 How should a restricted job make sure the file it imports, and the file it deletes, are the ones that passed the check?
 
+> **Note 2026-11-19 (Q-115-10):** restricted users may now import via symbolic link. Option A's private copy only covers copy imports. With a link import the stored original stays a link to the user's file and is read at every serve, so a swap after the import is never caught by the job. Any option chosen here needs a decision for link imports too (for example a serve-time containment check, or accepting the risk recorded in ADR-115-01).
+
 ---
 
 #### 🅰️ (**recommended**) Option A – Open once, prove the open file is inside the root, import a private copy
@@ -407,3 +410,32 @@ Raised in the PR #4989 review (thread on `lang/en/all_settings.php:1077`). FR-11
 
 **Next action**
 Resolved: Option A (owner, 2026-11-18). Precision found while folding it into the spec: `ImportMode` only resyncs metadata when `skip_duplicates` is on, so the two effects above happen in different modes (resync then skip with `skip_duplicates` on; link into the album with it off). Option A covers both because the rejection runs first. Implementation planned as increment I18 (T-115-38, T-115-39), then the PR #4989 thread is answered.
+
+### ~~Q-115-10~~ · Symbolic link import for restricted users
+
+**Status:** Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ Option A – Allowed as for full-access users (owner directive)
+
+**Question**
+ADR-115-01 point 5 refused `import_via_symlink` to restricted users (copies only). On 2026-11-19 the owner stated: "we want restricted users to also have import via symlink."
+
+---
+
+#### 🅰️ Option A – Allowed as for full-access users, risk accepted
+- **Idea:** Remove the `declined` rule, send the config value in the dialog options, show the toggle, keep the command's option in per-user `lychee:sync`.
+- **Spec impact:** FR-115-04, FR-115-06, FR-115-13, S-115-05, S-115-28, S-115-41, API-115-03, UI-115-01, ADR-115-01 point 5 and consequences, how-to.
+- **Pros:**
+  - ✅ Same options for every user, no disk space spent on copies.
+- **Cons:**
+  - ❌ A user who can write to their import root can, after the import, replace the source with a link to any readable file and have Lychee serve it as the original.
+  - ❌ Q-115-08 option A (private copy) no longer covers every restricted import.
+
+---
+
+#### 🅱️ Option B – Refused (as first decided)
+- **Cons:**
+  - ❌ Contradicts the owner directive.
+
+**Next action**
+Resolved: Option A implemented in increment I19 (T-115-40). Q-115-08 annotated.

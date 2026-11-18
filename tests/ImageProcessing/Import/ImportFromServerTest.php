@@ -174,7 +174,7 @@ class ImportFromServerTest extends BaseApiWithDataTest
 	}
 
 	/** S-115-28 */
-	public function testRestrictedSymlinkImportRefused(): void
+	public function testRestrictedSymlinkImport(): void
 	{
 		Queue::fake();
 		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
@@ -182,8 +182,8 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$payload['import_via_symlink'] = true;
 
 		$response = $this->actingAs($alice)->postJson('/Import', $payload);
-		$this->assertUnprocessable($response);
-		$response->assertJsonValidationErrors('import_via_symlink');
+		$this->assertCreated($response);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_mode->shall_import_via_symlink);
 	}
 
 	/** Feature 115 (S-115-12, web): a `check` user's imported photos need validation. */

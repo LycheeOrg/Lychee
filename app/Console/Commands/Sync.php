@@ -407,19 +407,10 @@ class Sync extends Command
 		$dry_run = $this->option('dry_run') === '1';
 		$delete_missing_photos = $this->validateDeleteMissingPhotos($dry_run);
 		$delete_missing_albums = $this->validateDeleteMissingAlbum($dry_run);
-		// Restricted users always get copies (ADR-115-01).
-		$user_import_mode = new ImportMode(
-			delete_imported: $import_mode->shall_delete_imported,
-			skip_duplicates: $import_mode->shall_skip_duplicates,
-			import_via_symlink: false,
-			resync_metadata: $import_mode->shall_resync_metadata,
-			shall_rename_photo_title: $import_mode->shall_rename_photo_title,
-			shall_rename_album_title: $import_mode->shall_rename_album_title,
-		);
 
 		$status = 0;
 		foreach ($users as $user) {
-			$status = max($status, $this->syncUser($user, $user_import_mode, $delete_missing_photos, $delete_missing_albums, $dry_run));
+			$status = max($status, $this->syncUser($user, $import_mode, $delete_missing_photos, $delete_missing_albums, $dry_run));
 		}
 
 		return $status;

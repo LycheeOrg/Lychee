@@ -34,8 +34,7 @@ class ImportFromServerOptionsResource extends Data
 	{
 		$this->is_restricted = $import_root !== null;
 		$this->delete_imported = request()->configs()->getValueAsBool('delete_imported');
-		// Restricted users always get copies (ADR-115-01).
-		$this->import_via_symlink = !$this->is_restricted && request()->configs()->getValueAsBool('import_via_symlink');
+		$this->import_via_symlink = request()->configs()->getValueAsBool('import_via_symlink');
 		$this->skip_duplicates = request()->configs()->getValueAsBool('skip_duplicates');
 		$this->resync_metadata = false; // Default value as this is not in config
 		$this->delete_missing_photos = request()->configs()->getValueAsBool('sync_delete_missing_photos');

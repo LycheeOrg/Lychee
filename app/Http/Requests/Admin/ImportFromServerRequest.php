@@ -16,10 +16,8 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasImportRootTrait;
 use App\Models\Album;
-use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
@@ -63,17 +61,6 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 	}
 
 	/**
-	 * Restricted users always get copies (ADR-115-01): a stored link could later be pointed anywhere.
-	 */
-	private function isRestricted(): bool
-	{
-		/** @var User|null $user */
-		$user = Auth::user();
-
-		return $user?->server_path !== null && $user->server_path !== '/';
-	}
-
-	/**
 	 * Get the validation rules that apply to the request.
 	 */
 	public function rules(): array
@@ -83,7 +70,7 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 			'directories.*' => ['required', 'string'],
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			'delete_imported' => ['required', 'boolean'],
-			'import_via_symlink' => ['required', 'boolean', ...($this->isRestricted() ? ['declined'] : [])],
+			'import_via_symlink' => 'required|boolean',
 			'skip_duplicates' => ['required', 'boolean'],
 			'resync_metadata' => ['required', 'boolean'],
 			'delete_missing_photos' => ['required', 'boolean'],

@@ -3,8 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-11-15
 - **Related features/specs:** Feature 115 (docs/specs/4-architecture/features/115-server-import-improvements/spec.md), Feature 024 (docs/specs/4-architecture/features/024-sync-file-list/spec.md), Feature 033 (docs/specs/4-architecture/features/033-upload-trust-level/spec.md)
-- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07, Q-115-09
-- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`), 2026-11-18 (Q-115-09: the owner scope also covers duplicate photos)
+- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07, Q-115-09, Q-115-10
+- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`), 2026-11-18 (Q-115-09: the owner scope also covers duplicate photos), 2026-11-19 (Q-115-10: restricted users may import via symbolic link)
 
 ## Context
 
@@ -18,7 +18,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 2. **Containment before disk access.** For a restricted user every requested path is checked lexically against the import root, then by `realpath()` against the real import root with a trailing separator, before `is_dir()` or any read. Outside paths get one generic 403 whether they exist or not. One pure helper (`ImportPathGuard`) does this for browse, import, the tree builder, the job and the sync command.
 3. **Symbolic links are followed only inside the import root.** `BuildTree` resolves each entry and skips links whose real path leaves the root, with a warning. A visited set of real directories skips loops and duplicate subtrees for every user. Explicit `lychee:sync` paths and `/` users have no root, so they follow every link, loop guard included.
 4. **The job checks again.** `ImportImageJob` carries the real import root and re-checks the file's real path when it runs, so a file swapped for a link between scan and job is not read.
-5. **No `import_via_symlink` for restricted users.** A stored link to a file the user controls could later be turned into a link to any readable file and served as the photo's original. Restricted users always get copies.
+5. **`import_via_symlink` for every user** (owner directive 2026-11-19, Q-115-10, replacing "restricted users always get copies"). Restricted users get the same option as full-access users, in the dialog and in `lychee:sync`. The containment checks still apply when the link is created.
 6. **Imports stay within their owner's content.** With `import_scope_to_owner` (on by default) album reuse and delete-missing only consider albums and photos owned by the intended owner, and a file whose duplicate is another user's photo is skipped (that photo is neither resynced nor added to the importer's album), for every import. Admins can turn it off to get the pre-115 behaviour.
 7. **Upgrade and first admin.** The migration grants `/` to the `owner_id` user. Every first-admin creation path (v7 installer, v8 admin setup, `lychee:create_user` on an empty database) grants `/`. Every other user starts at `null`.
 
@@ -32,7 +32,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 
 ### Negative
 - One `realpath()` per tree entry.
-- Restricted users lose `import_via_symlink` and pay the disk space of copies.
+- Accepted risk (Q-115-10): after a symbolic link import, a restricted user who can write to their import root (network share) can replace the source file with a link to any file the PHP process can read. Lychee then serves that file as the photo's original. Copies are not affected.
 - With the owner scope on, an admin syncing into a same-title album owned by someone else gets a new album, where pre-115 Lychee merged.
 - The `owner_id` user keeps whole-disk browsing until they narrow it themselves.
 - Other admins depend on the owner to grant or change import access.

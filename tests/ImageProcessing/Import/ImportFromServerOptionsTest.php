@@ -102,7 +102,7 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 			'directory' => $this->import_root,
 			'is_restricted' => true,
 			'is_root_folder_album' => false,
-			'import_via_symlink' => false,
+			'import_via_symlink' => true,
 		]);
 	}
 

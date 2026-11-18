@@ -242,6 +242,18 @@ _Last updated: 2026-11-16_
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
 
+### I19 – Symbolic link import for restricted users (Q-115-10)
+- [x] T-115-40 – Restricted users may import via symbolic link (FR-115-04/06/13, S-115-05/28/41).
+  _Intent:_ tests flipped first (`ImportFromServerOptionsTest::testRestrictedOptions`, `ImportFromServerTest::testRestrictedSymlinkImport`, new `SyncTest::testNoPathKeepsSymlinkOption`). `ImportFromServerRequest` without `declined`, `ImportFromServerOptionsResource` sends the config value, `Sync` passes the command's `ImportMode` to every user, v7/v8 `ImportFromServer.vue` show the toggle. ADR-115-01 point 5, how-to, ADR index updated.
+  _Verification commands:_
+  - `php artisan test --filter=ImportFromServerOptionsTest`
+  - `php artisan test --filter=ImportFromServerTest`
+  - `php artisan test --filter=SyncTest`
+  - `vp check --fix` on the two dialogs
+  - `vp run typecheck`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

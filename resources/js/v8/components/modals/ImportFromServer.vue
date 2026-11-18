@@ -39,7 +39,6 @@
 							</template>
 						</USwitch>
 						<USwitch
-							v-if="!importState.options.is_restricted"
 							v-model="importState.options.import_via_symlink"
 							:label="$t('import_from_server.import_via_symlink')"
 							:ui="{ label: 'text-sm' }"
@@ -161,8 +160,7 @@ function submit() {
 		album_id: getParentId() ?? null,
 		directories: [directory.value],
 		delete_imported: importState.options.delete_imported,
-		// Restricted users always get copies.
-		import_via_symlink: !importState.options.is_restricted && importState.options.import_via_symlink,
+		import_via_symlink: importState.options.import_via_symlink,
 		skip_duplicates: importState.options.skip_duplicates,
 		resync_metadata: importState.options.resync_metadata,
 		delete_missing_photos: importState.options.delete_missing_photos,
