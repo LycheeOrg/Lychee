@@ -20,7 +20,7 @@ class ThrowUnownedDuplicate implements DuplicatePipe
 		$config_manager = resolve(ConfigManager::class);
 		$skip_duplicates_not_owned = $config_manager->getValueAsBool('skip_duplicates_not_owned');
 		if ($skip_duplicates_not_owned && $state->photo->owner_id !== $state->intended_owner_id) {
-			throw new PhotoRejectedException();
+			throw new PhotoRejectedException(photo_id: $state->photo->id);
 		}
 
 		return $next($state);

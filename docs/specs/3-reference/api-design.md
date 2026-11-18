@@ -166,6 +166,20 @@ Lychee uses route-based versioning:
 - **v3 API**: Greenfield surface (`/api/v3/...`), additive and coexisting with v2 — nothing in v2 is deprecated or changed by v3's introduction. v3 establishes a Struct-of-Arrays (SoA) response convention for future *collection* endpoints (ADR-0009), though the first v3 endpoint below is single-item and doesn't need it.
 - Future versions can be added without breaking existing integrations.
 
+### API v2: Upload Status (Feature 116)
+
+**GET** `/api/v2/Photo::uploadStatus?photo_ids[]=<provisional id>&…`
+
+With a queue worker, `POST /api/v2/Photo` answers `ready` with a provisional ID (`expected_id`) before the photo is processed. This endpoint returns each upload's outcome, so a client can upload a whole set and then poll once per round.
+
+- **Request:** `photo_ids[]`, 1 to 100 provisional IDs (`RandomIDRule`); otherwise `422`. Open to guests.
+- **Response:** a list in request order (repeated IDs answer once per occurrence) of `UploadStatusResource { expected_id, status, photo_id, message }`.
+- **`status`:** `processing` (queued, running or waiting for a retry), `completed` (new photo, or a live-photo video joined to its still), `duplicate` (the same file already existed and is now in the target album), `skipped` (not added: `skip_duplicates`, a copy waiting for moderation, `skip_duplicates_not_owned`), `failed` (last attempt failed), `unknown` (expired, never existed, ZIP upload, or not the caller's).
+- **`photo_id`:** the photo to record. It can differ from `expected_id` and is `null` when the caller may not see that photo (`PhotoPolicy::CAN_SEE` at query time).
+- **`message`:** on `skipped` and `failed` only. Lychee exceptions keep their message; any other failure reads `Processing failed`.
+- **Access:** an authenticated upload answers only to its uploader; a guest upload answers to anyone holding its ID. Anything else answers `unknown`, like a missing entry.
+- **Retention and store:** entries live for one day after their last write, written by `ProcessImageJob` (creation, outcome, final failure) through `App\Services\UploadStatusStore`. They use the default cache store, or the `database` store when a worker runs on a per-container cache (`file`, `array`, `apc`), so the default Docker setup works (ADR-116-01).
+
 ### API v3: Photo Asset Retrieval
 
 **GET** `/api/v3/Asset/{album_id}/{photo_id}/{size_variant}`
