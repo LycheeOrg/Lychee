@@ -13,6 +13,8 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-17 |
+| Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review): (A) restricted jobs open the file once, prove the open file is inside the root, import from a private temp copy, (B) A without the copy, re-check after the import and roll back, (C) accept the race and weaken NFR-115-06 | Open | 2026-11-18 | 2026-11-18 |
+| ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
 
 ## Question Details
 
@@ -313,3 +315,95 @@ The spec let every admin set `server_path`. The owner stated on 2026-11-16: "Onl
 
 **Next action**
 Resolved: Option A implemented in increment I17, then replaced by Option B on 2026-11-17 (owner: validate the value but ignore it for non-owners, T-115-36).
+
+### Q-115-08 · File swapped between the job's root check and the read
+
+**Status:** Open
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ (**recommended**) Option A – Open once, prove the open file is inside the root, import a private copy
+
+**Question**
+Raised in the PR #4989 review (thread on `app/Jobs/ImportImageJob.php:96`). `ImportImageJob::assertStillInsideImportRoot()` checks the file's real path (FR-115-18), then `Photo\Create` reads the file again by its path, several times (checksum, metadata, `PlacePhoto` copy). A restricted user who controls their folder (network share) can swap `a.jpg`, or one of its parent folders, for a link to a file outside the import root in that window, and retry until the timing works. The import then reads (and serves as the photo's original) a file outside the root, which NFR-115-06 rules out ("even when the file system changes between the scan and the job"). With `delete_imported`, `PlacePhoto` also deletes the source by its path after the copy, so a swapped parent folder makes Lychee delete a same-named file outside the root. Today S-115-27 only covers a swap before the check. Full-access users (`/`) and explicit `lychee:sync` paths are not affected (no root to escape).
+
+How should a restricted job make sure the file it imports, and the file it deletes, are the ones that passed the check?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Open once, prove the open file is inside the root, import a private copy
+- **Idea:** Only when the job has an import root: resolve the real path and check it (as today), open it, then check that the opened file is that real path (device and inode of the open handle equal those of the real path, re-resolved and re-checked after the open). Stream the open handle into a private temporary file and run `Photo\Create` on that copy (restricted users already always get copies, ADR-115-01). With `delete_imported`, delete the source only if its path still resolves inside the root to the same device and inode. Any mismatch → job `FAILURE`, warning TE-115-05, nothing imported, source not deleted.
+- **Spec impact:** FR-115-18 and NFR-115-06 describe the handle check and the private copy; new scenarios (swap after the check → failure; parent folder swapped before the delete → source kept); TE-115-05 reused.
+- **Pros:**
+  - ✅ Closes the window: every later read uses a file Lychee owns.
+  - ✅ Portable (no `/proc`), and costs nothing for `/` users.
+  - ✅ Also covers the source deletion.
+- **Cons:**
+  - ❌ One extra copy of each file for restricted users (disk I/O and temporary space).
+  - ❌ Largest change of the review fixes; a hard link inside the root to an outside file stays undetectable (no path check can see it).
+
+---
+
+#### 🅱️ Option B – No copy: re-check after the import and roll back
+- **Idea:** Keep reading by path, but after `Photo\Create` re-check the real path and the device and inode; on a mismatch delete the new photo and fail the job.
+- **Spec impact:** FR-115-18 gains a post-import check and a rollback.
+- **Pros:**
+  - ✅ No extra copy.
+- **Cons:**
+  - ❌ The outside file is read and stored before the rollback, and a swap-and-swap-back between the reads and the re-check is not seen.
+  - ❌ Rollback adds a failure path in the middle of the photo pipeline.
+
+---
+
+#### 🅲 Option C – Accept the race, weaken NFR-115-06
+- **Idea:** Keep the code; NFR-115-06 says the file is checked at scan time and right before the read, with a short window left open.
+- **Spec impact:** NFR-115-06 and ADR-115-01 reworded; risk noted in the how-to.
+- **Pros:**
+  - ✅ No code change.
+- **Cons:**
+  - ❌ A user who controls their folder can still read files outside it, and with `delete_imported` delete them.
+
+**Next action**
+Owner picks A, B or C; the answer goes into FR-115-18, NFR-115-06, the scenario matrix and ADR-115-01, then the PR #4989 thread is answered.
+
+### ~~Q-115-09~~ · Another user's duplicate photo during a scoped import
+
+**Status:** Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ (**recommended**) Option A – Skip and report it, as `skip_duplicates_not_owned`
+
+**Question**
+Raised in the PR #4989 review (thread on `lang/en/all_settings.php:1077`). FR-115-12 scopes album reuse and delete-missing to the intended owner, and the help text of `import_scope_to_owner` reads "an import never merges into, nor deletes, albums and photos owned by another user". Photo duplicates are not covered: `Photo\Create::handleDuplicate()` runs `ThrowUnownedDuplicate`, which only rejects another user's duplicate when `skip_duplicates_not_owned = 1`. When it is `0`, Alice's import adds Bob's photo to Alice's album (`SetParent`), and with `resync_metadata` it first rewrites Bob's photo from the file (`HydrateMetadata`, `SaveIfDirty`), which can overwrite Bob's own edits. Bob stays the owner, so Alice's later delete-missing (scoped) never removes it from her album. `ImportImageJob` does not carry the scope flag today. What should a scoped import do with another user's duplicate?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Skip and report it, as `skip_duplicates_not_owned`
+- **Idea:** `ImportMode` carries `scope_to_owner`. With it on, `ThrowUnownedDuplicate` rejects another user's duplicate whatever `skip_duplicates_not_owned` says, before any resync or `SetParent`; the job records it as skipped, as for the existing setting. With it off, today's behaviour.
+- **Spec impact:** FR-115-12 adds photo duplicates to the scope; new scenario "scoped import, duplicate owned by another user → skipped, other user's photo unchanged"; help text unchanged (it then holds).
+- **Pros:**
+  - ✅ The help text becomes true: no merge into, and no write to, another user's photo.
+  - ✅ Reuses an existing rejection path; small change.
+- **Cons:**
+  - ❌ The importer does not get that photo in their album at all.
+
+---
+
+#### 🅱️ Option B – Link it to the album, never resync it
+- **Idea:** With the scope on, another user's duplicate skips `HydrateMetadata` and `SaveIfDirty` but is still added to the importer's album.
+- **Spec impact:** FR-115-12 adds the resync exception; scenario for it; help text reworded ("never deletes or modifies").
+- **Pros:**
+  - ✅ The importer's album mirrors the folder.
+- **Cons:**
+  - ❌ Another user's photo still appears in the importer's album and is never cleaned by the scoped delete-missing.
+  - ❌ Two duplicate rules to explain.
+
+---
+
+#### 🅲 Option C – Keep today's behaviour, narrow the help text
+- **Idea:** Photo duplicates follow `skip_duplicates_not_owned` only; the help text says the scope covers album reuse and deletion.
+- **Spec impact:** help text of `import_scope_to_owner` in all languages; FR-115-12 states the limit.
+- **Pros:**
+  - ✅ No code change.
+- **Cons:**
+  - ❌ A scoped import can still rewrite another user's photo metadata.
+
+**Next action**
+Resolved: Option A (owner, 2026-11-18). Precision found while folding it into the spec: `ImportMode` only resyncs metadata when `skip_duplicates` is on, so the two effects above happen in different modes (resync then skip with `skip_duplicates` on; link into the album with it off). Option A covers both because the rejection runs first. Implementation planned as increment I18 (T-115-38, T-115-39), then the PR #4989 thread is answered.

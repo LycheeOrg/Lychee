@@ -3,8 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-11-15
 - **Related features/specs:** Feature 115 (docs/specs/4-architecture/features/115-server-import-improvements/spec.md), Feature 024 (docs/specs/4-architecture/features/024-sync-file-list/spec.md), Feature 033 (docs/specs/4-architecture/features/033-upload-trust-level/spec.md)
-- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07
-- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`)
+- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07, Q-115-09
+- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`), 2026-11-18 (Q-115-09: the owner scope also covers duplicate photos)
 
 ## Context
 
@@ -19,14 +19,14 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 3. **Symbolic links are followed only inside the import root.** `BuildTree` resolves each entry and skips links whose real path leaves the root, with a warning. A visited set of real directories skips loops and duplicate subtrees for every user. Explicit `lychee:sync` paths and `/` users have no root, so they follow every link, loop guard included.
 4. **The job checks again.** `ImportImageJob` carries the real import root and re-checks the file's real path when it runs, so a file swapped for a link between scan and job is not read.
 5. **No `import_via_symlink` for restricted users.** A stored link to a file the user controls could later be turned into a link to any readable file and served as the photo's original. Restricted users always get copies.
-6. **Imports stay within their owner's content.** With `import_scope_to_owner` (on by default) album reuse and delete-missing only consider albums and photos owned by the intended owner, for every import. Admins can turn it off to get the pre-115 behaviour.
+6. **Imports stay within their owner's content.** With `import_scope_to_owner` (on by default) album reuse and delete-missing only consider albums and photos owned by the intended owner, and a file whose duplicate is another user's photo is skipped (that photo is neither resynced nor added to the importer's album), for every import. Admins can turn it off to get the pre-115 behaviour.
 7. **Upgrade and first admin.** The migration grants `/` to the `owner_id` user. Every first-admin creation path (v7 installer, v8 admin setup, `lychee:create_user` on an empty database) grants `/`. Every other user starts at `null`.
 
 ## Consequences
 
 ### Positive
 - A restricted user can neither list, probe, import nor serve files outside their folder, including through links or file swaps.
-- Imports by several users no longer merge into or delete each other's albums and photos.
+- Imports by several users no longer merge into, modify or delete each other's albums and photos.
 - The loop guard fixes nested-album chains for today's admin import too.
 - Existing installs and new installs keep a working import for the owner with no action.
 

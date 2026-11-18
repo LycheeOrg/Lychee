@@ -228,6 +228,20 @@ _Last updated: 2026-11-16_
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
 
+### I18 – Other users' duplicates in a scoped import (Q-115-09)
+- [ ] T-115-38 – Tests for S-115-43 (FR-115-12), red first.
+  _Intent:_ `tests/ImageProcessing/Jobs/SkippedDuplicateJobTest.php`: `import_scope_to_owner = 1`, `skip_duplicates_not_owned = 0`, a photo owned by another user with the same checksum. `skip_duplicates` + `resync_metadata` → job skipped, other user's photo metadata unchanged; `skip_duplicates` off → skipped, other user's photo not in the target album; scope off → added to the target album as today.
+  _Verification commands:_
+  - `php artisan test --filter=SkippedDuplicateJobTest` (red)
+- [ ] T-115-39 – Owner scope in duplicate handling (FR-115-12, DO-115-05).
+  _Intent:_ `ImportMode` gains the scope flag (default `false`); `ImportFromServerController` and `Sync` (both `new ImportMode(...)`) set it from `import_scope_to_owner`; `DuplicateDTO::ofInit()` copies it; `ThrowUnownedDuplicate` rejects when `skip_duplicates_not_owned` or the flag is on.
+  _Verification commands:_
+  - `php artisan test --filter=SkippedDuplicateJobTest`
+  - `php artisan test --filter=SyncTest`
+  - `php artisan test --filter=ImportFromServerTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).
