@@ -81,6 +81,8 @@ return [
 			'database' => env('DB_DATABASE', database_path('database.sqlite')),
 			'prefix' => '',
 			'foreign_key_constraints' => true,
+			// Wait for the write lock instead of failing at once (web requests and queue workers share the file).
+			'busy_timeout' => env('DB_BUSY_TIMEOUT', 30000),
 		],
 
 		'mysql' => [

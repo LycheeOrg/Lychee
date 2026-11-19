@@ -15,6 +15,7 @@ We sign every official Lychee release with Sigstore cosign to protect you agains
 From the GitHub Releases page:
 - `Lychee.zip` — the application archive
 - `Lychee.zip.sigstore.json` — the cosign signature bundle for that exact archive
+- `Lychee.zip.intoto.jsonl` — the SLSA build provenance for that exact archive (releases after v7.13.0; see [Verify the build provenance](#verify-the-build-provenance))
 
 Our public verification key is published at:
 - GitHub: https://github.com/LycheeOrg/LycheeOrg.github.io/blob/master/public/lychee-cosign.pub
@@ -56,6 +57,41 @@ Tips:
 - Always download over HTTPS and from our official release page.
 
 > Note: The signature bundle contains all the data needed to verify the artifact's integrity with your local public key. Depending on your environment, cosign may also attempt online transparency log checks. Consult `cosign verify-blob --help` if your environment blocks egress.
+
+## Verify the build provenance
+
+The signature proves the maintainers published the archive. The provenance proves *how* it was built: which repository, tag, commit and GitHub Actions workflow produced it. `Lychee.zip.intoto.jsonl` holds an [in-toto](https://in-toto.io/) statement with a [SLSA v1](https://slsa.dev/provenance/v1) provenance predicate. It is signed keylessly through Sigstore: no public key is involved, the signer identity is the workflow's own certificate.
+
+Replace `v7.13.1` with the tag of the release you downloaded:
+
+```bash
+cosign verify-blob-attestation \
+	--bundle Lychee.zip.intoto.jsonl \
+	--new-bundle-format \
+	--type slsaprovenance1 \
+	--certificate-oidc-issuer https://token.actions.githubusercontent.com \
+	--certificate-identity "https://github.com/LycheeOrg/Lychee/.github/workflows/CICD.yml@refs/tags/v7.13.1" \
+	Lychee.zip
+```
+
+Expected output is "Verified OK". Any other result means the archive was not built by Lychee's release workflow from that tag: do not install it.
+
+Alternatively, with the GitHub CLI (drop `--bundle` to fetch the attestation from GitHub instead, which also works for releases older than the `.intoto.jsonl` asset). Again, replace `v7.13.1` with the tag of the release you downloaded:
+
+```bash
+gh attestation verify Lychee.zip \
+	--repo LycheeOrg/Lychee \
+	--cert-identity "https://github.com/LycheeOrg/Lychee/.github/workflows/CICD.yml@refs/tags/v7.13.1" \
+	--bundle Lychee.zip.intoto.jsonl
+```
+
+Keep `--cert-identity`: the workflow also attests builds from `master`, and without it any attestation from `LycheeOrg/Lychee` is accepted, including one from a `master` build instead of the release tag.
+
+To read the provenance itself (source commit, workflow run, build parameters):
+
+```bash
+jq -r '.dsseEnvelope.payload' Lychee.zip.intoto.jsonl | base64 -d | jq .
+```
 
 ## Why we use cosign instead of only PGP
 
@@ -102,6 +138,8 @@ steps:
 			make_latest: true
 ```
 
+The provenance is produced earlier, in the build job, by `actions/attest-build-provenance` and exported as `Lychee.zip.intoto.jsonl`. The release job runs the `cosign verify-blob-attestation` command shown above against the archive and only then publishes the provenance alongside it. The same attestation is also stored in GitHub's attestation API, which `gh attestation verify` queries.
+
 ## Troubleshooting
 
 - "no matching entries were found" or verification fails:
@@ -112,4 +150,4 @@ steps:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: November 15, 2026*

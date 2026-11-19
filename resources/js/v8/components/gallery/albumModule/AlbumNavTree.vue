@@ -1,22 +1,25 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex items-center gap-1 p-2 border-b border-default shrink-0">
-			<UButton
-				icon="lucide:chevrons-down"
-				color="neutral"
-				variant="ghost"
-				size="xs"
-				:label="$t('gallery.nav_tree.expand_all')"
-				@click="expandAll"
-			/>
-			<UButton
-				icon="lucide:chevrons-up"
-				color="neutral"
-				variant="ghost"
-				size="xs"
-				:label="$t('gallery.nav_tree.collapse_all')"
-				@click="collapseAll"
-			/>
+		<div class="flex items-center justify-between p-2 border-b border-default mb-2">
+			<div class="flex items-center gap-1 shrink-0">
+				<UButton
+					icon="lucide:chevrons-down"
+					color="neutral"
+					variant="ghost"
+					size="xs"
+					:label="$t('gallery.nav_tree.expand_all')"
+					@click="expandAll"
+				/>
+				<UButton
+					icon="lucide:chevrons-up"
+					color="neutral"
+					variant="ghost"
+					size="xs"
+					:label="$t('gallery.nav_tree.collapse_all')"
+					@click="collapseAll"
+				/>
+			</div>
+			<slot name="collapse" />
 		</div>
 
 		<div ref="scrollParentRef" class="album-nav-scroll overflow-y-auto flex-1 min-h-0" style="contain: strict">

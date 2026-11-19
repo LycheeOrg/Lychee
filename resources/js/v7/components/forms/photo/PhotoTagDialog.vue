@@ -44,7 +44,7 @@
 import { computed, ref, toRef } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

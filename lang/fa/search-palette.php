@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'جستجوی آلبوم‌ها، عکس‌ها یا رفتن به یک صفحه…',
+    'navigation' => 'رفتن به',
+    'actions' => 'اقدامات',
+    'albums' => 'آلبوم‌ها',
+    'results' => 'نتایج جستجو',
+    'empty' => 'نتیجه‌ای یافت نشد.',
+    'dark_mode' => 'رفتن به حالت تیره',
+    'light_mode' => 'رفتن به حالت روشن',
+    'language' => 'زبان',
 ];

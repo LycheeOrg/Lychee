@@ -12,7 +12,7 @@ Lychee's frontend (`resources/js/`, Vue 3 + TypeScript + Vite + Tailwind CSS v4)
 
 The user requested migrating this UI layer to Nuxt UI (`@nuxt/ui`), a component library built on Reka UI primitives and Tailwind CSS v4 that, since its v3 release, supports standalone usage in a plain Vue 3 + Vite application without requiring the full Nuxt meta-framework. This aligns with the app's existing Tailwind v4 investment and avoids a much larger, higher-risk migration to the Nuxt framework itself (which would also require SSR/routing/build-tooling changes far beyond a UI-component swap).
 
-Three architecturally significant sub-decisions needed resolution before planning could proceed (captured in [open-questions.md](../4-architecture/open-questions.md) as Q-049-01/02/03):
+Three architecturally significant sub-decisions needed resolution before planning could proceed (captured in [049-nuxt-ui-migration/open-questions.md](../4-architecture/features/049-nuxt-ui-migration/open-questions.md) as Q-049-01/02/03):
 - **Sizing:** whether to plan the full 235-file removal as one feature, split it across several features, or commit only to a foundational subset.
 - **Icons:** whether to preserve the existing PrimeIcons visual set (Iconify has a published `prime` collection mirroring PrimeIcons 1:1) or adopt Nuxt UI's default Lucide icon set as part of the migration.
 - **Interaction parity:** PrimeVue's ripple click effect and `v-focustrap` directive have no Nuxt UI/Reka UI equivalent — Reka UI traps focus internally within its own primitives instead.
@@ -74,5 +74,5 @@ None. This is a frontend UI-component-library migration with no changes to authe
 
 - Related spec sections: `docs/specs/4-architecture/features/049-nuxt-ui-migration/spec.md` (Overview, Goals, FR-049-01 through FR-049-21, NFR-049-01 through NFR-049-07)
 - Related plan: `docs/specs/4-architecture/features/049-nuxt-ui-migration/plan.md`
-- Related open questions: Q-049-01, Q-049-02, Q-049-03 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-049-01, Q-049-02, Q-049-03 ([049-nuxt-ui-migration/open-questions.md](../4-architecture/features/049-nuxt-ui-migration/open-questions.md))
 - Related ADRs: none (first ADR for this feature)

@@ -92,7 +92,7 @@ class UrlGenerator
 	 *
 	 * @codeCoverageIgnore
 	 */
-	private function getAwsUrl(string $short_path, string $storage_disk): string
+	public function getAwsUrl(string $short_path, string $storage_disk): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
 		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');

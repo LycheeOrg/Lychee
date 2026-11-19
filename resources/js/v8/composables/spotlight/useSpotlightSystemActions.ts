@@ -5,17 +5,19 @@ import type { AdminTile } from "@/v8/composables/useAdminTiles";
 import type { SpotlightItem } from "./types";
 
 /**
- * Admin tiles (filtered to the ones the current user can see) plus the dark/light mode
- * toggle - the parts of the "actions" group that aren't specific to the currently
- * open/browsed album (see useSpotlightGalleryActions for those).
+ * Admin tiles (filtered to the ones the current user can see), the dark/light mode
+ * toggle and, for logged-in users, logout - the parts of the "actions" group that aren't
+ * specific to the currently open/browsed album (see useSpotlightGalleryActions for those).
  */
 export function useSpotlightSystemActions(
 	adminTiles: AdminTile[],
 	router: Router,
 	isDark: Ref<boolean>,
-	initData: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
+	globalRights: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
 	toggleDarkMode: () => void,
 	toggleDarkModeGlobal: () => void,
+	isLoggedIn: Ref<boolean>,
+	logout: () => void,
 	close: () => void,
 ): ComputedRef<SpotlightItem[]> {
 	return computed(() => {
@@ -43,7 +45,7 @@ export function useSpotlightSystemActions(
 			kind: "nav",
 			onSelect: () => {
 				close();
-				if (initData.value?.settings.can_edit) {
+				if (globalRights.value?.settings.can_edit) {
 					toggleDarkModeGlobal();
 				} else {
 					toggleDarkMode();
@@ -51,6 +53,20 @@ export function useSpotlightSystemActions(
 			},
 		};
 
-		return [themeItem, ...fromAdmin];
+		if (!isLoggedIn.value) {
+			return [themeItem, ...fromAdmin];
+		}
+
+		const logoutItem: SpotlightItem = {
+			label: trans("left-menu.sign_out"),
+			icon: "account-logout",
+			kind: "nav",
+			onSelect: () => {
+				close();
+				logout();
+			},
+		};
+
+		return [themeItem, ...fromAdmin, logoutItem];
 	});
 }

@@ -59,18 +59,26 @@ class PhotoSearch
 	/**
 	 * Create the query manually.
 	 *
-	 * @param array<int,SearchToken> $tokens parsed search tokens from {@link SearchTokenParser}
-	 * @param Album|null             $album  optional top album used as a search base
+	 * @param array<int,SearchToken> $tokens         parsed search tokens from {@link SearchTokenParser}
+	 * @param Album|null             $album          optional top album used as a search base
+	 * @param bool                   $with_relations whether to eager-load the six relations v2's `PhotoResource`
+	 *                                               needs; the v3 Struct-of-Arrays tiers (Feature 069) project
+	 *                                               flat columns via `toBase()` and must not hydrate anything.
+	 *                                               Defaults to `true`, so v2's behaviour is unchanged.
 	 *
 	 * @return Builder<Photo>
 	 */
-	public function sqlQuery(array $tokens, ?Album $album = null): Builder
+	public function sqlQuery(array $tokens, ?Album $album = null, bool $with_relations = true): Builder
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
+		$base_query = $with_relations
+			? Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags', 'rating'])
+			: Photo::query();
+
 		$query = $this->photo_query_policy->applySearchabilityFilter(
-			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags', 'rating']),
+			query: $base_query,
 			user: $user,
 			unlocked_album_ids: $unlocked_album_ids,
 			origin: $album,

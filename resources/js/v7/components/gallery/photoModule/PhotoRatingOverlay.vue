@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { usePhotoStore } from "@/stores/PhotoState";
+import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -62,6 +62,10 @@ const displayedRating = computed(() => {
 
 // Compute if rating should be shown in photo view
 const isRatingEnabled = computed(() => {
+	// The overlay would sit on top of the native video controls and swallow seek-bar drags.
+	if (photoStore.imageViewMode === ImageViewMode.Video) {
+		return false;
+	}
 	if (photoStore.photo?.rating === null) {
 		return false;
 	}

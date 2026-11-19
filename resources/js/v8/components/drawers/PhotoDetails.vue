@@ -122,6 +122,8 @@
 			</ul>
 		</div>
 
+		<PhotoModerationHistory v-if="userStore.isAdmin" :photo-id="photoStore.photo?.id" :is-open="are_details_open" />
+
 		<!-- Exif stuff -->
 		<div v-if="photoStore.photo!.precomputed.has_exif">
 			<h2 class="text-highlighted text-base font-bold mt-4 mb-1">
@@ -170,7 +172,8 @@
 				{{ $t("gallery.photo.details.location") }}
 			</h2>
 			<MapInclude
-				v-if="props.isMapVisible"
+				v-if="props.isMapVisible && photoStore.photo!.precomputed.has_location"
+				:key="photoStore.photo!.id"
 				:latitude="photoStore.photo!.precomputed.latitude"
 				:longitude="photoStore.photo!.precomputed.longitude"
 			/>
@@ -265,13 +268,6 @@
 					</span>
 				</div>
 			</div>
-			<FaceAssignmentModal
-				v-if="faceForAssignment"
-				v-model:open="isFaceAssignmentOpen"
-				:face="faceForAssignment"
-				@assigned="onFaceUpdated"
-				@dismissed="onFaceUpdated"
-			/>
 		</div>
 
 		<LinksInclude v-if="is_details_links_enabled" />
@@ -286,7 +282,7 @@ import ColourSquare from "@/v8/components/gallery/photoModule/ColourSquare.vue";
 import PhotoRatingWidget from "@/v8/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/v8/components/gallery/photoModule/LinksInclude.vue";
-import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
+import PhotoModerationHistory from "@/v8/components/gallery/photoModule/PhotoModerationHistory.vue";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
@@ -312,7 +308,7 @@ const props = defineProps<{
 	isMapVisible: boolean;
 }>();
 
-const { are_details_open, is_full_screen } = storeToRefs(togglableStore);
+const { are_details_open, is_full_screen, is_face_assignment_visible, face_for_assignment } = storeToRefs(togglableStore);
 
 const lycheeState = useLycheeStateStore();
 const { is_details_links_enabled, is_face_recognition_enabled } = storeToRefs(lycheeState);
@@ -379,8 +375,6 @@ watch(
 );
 
 // Face circles section
-const faceForAssignment = ref<App.Http.Resources.Models.FaceResource | undefined>(undefined);
-const isFaceAssignmentOpen = ref(false);
 const ctrlHeld = ref(false);
 const facesStore = usePhotoFacesStore();
 const photoFaces = computed(() => facesStore.get(photoStore.photo?.id ?? "").faces);
@@ -412,8 +406,8 @@ onUnmounted(() => {
 });
 
 function openFaceAssignment(face: App.Http.Resources.Models.FaceResource) {
-	faceForAssignment.value = face;
-	isFaceAssignmentOpen.value = true;
+	face_for_assignment.value = face;
+	is_face_assignment_visible.value = true;
 }
 
 function removeFaceFromPhoto(faceId: string) {
@@ -436,7 +430,9 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 	FaceDetectionService.toggleDismissed(face.id)
 		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.dismissed"), life: 3000 });
-			onFaceUpdated();
+			if (photoStore.photo?.id) {
+				facesStore.invalidate(photoStore.photo.id);
+			}
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			// On error, reload to restore face
@@ -447,22 +443,11 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 		});
 }
 
-function onFaceUpdated() {
-	// Remove dismissed face from store immediately if modal was used
-	if (faceForAssignment.value) {
-		removeFaceFromPhoto(faceForAssignment.value.id);
-	}
-
-	// Refresh face payload after assignment/dismiss in the modal.
-	if (photoStore.photo?.id) {
-		facesStore.invalidate(photoStore.photo.id);
-	}
-}
-
 watch(
-	() => photoStore.photo?.id,
-	(photo_id) => {
-		if (photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, () => photoStore.photo?.face_count ?? 0],
+	([photo_id, faceCount]) => {
+		// face_count is a source too: on the SoA path it only arrives once the tier-3 details resolve.
+		if (photo_id === undefined || faceCount <= 0) {
 			return;
 		}
 

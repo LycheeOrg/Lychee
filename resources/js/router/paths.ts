@@ -4,8 +4,7 @@
  * This is the single source of truth for the app's route names/paths. Both
  * the v7 router (`@/router/routes.ts`, PrimeVue) and the v8 router
  * (`@/v8/router/routes.ts`, Nuxt UI) attach components to this same list, so
- * both bundles are reachable at identical URLs regardless of which is served
- * (see Feature 049 / ADR-0006).
+ * both bundles are reachable at identical URLs regardless of which is served.
  */
 export interface RoutePath {
 	name: string;
@@ -106,6 +105,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/nsfw-config",
 	},
 	{
+		name: "nsfw-findings",
+		path: "/admin/nsfw-findings",
+	},
+	{
 		name: "design-system",
 		path: "/admin/design",
 	},
@@ -116,6 +119,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "landing-config",
 		path: "/admin/landing-config",
+	},
+	{
+		name: "gallery-sizes",
+		path: "/admin/gallery-sizes",
 	},
 	{
 		name: "tree",
@@ -141,6 +148,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "statistics",
 		path: "/statistics",
+	},
+	{
+		name: "insights",
+		path: "/insights",
 	},
 	{
 		name: "users",
@@ -219,6 +230,10 @@ export const paths: RoutePath[] = [
 	{
 		name: "face-clusters",
 		path: "/people/clusters",
+	},
+	{
+		name: "face-quick-naming",
+		path: "/people/quick-naming",
 	},
 	{
 		name: "person",

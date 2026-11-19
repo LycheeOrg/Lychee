@@ -23,6 +23,8 @@ use App\Actions\Album\Unlock;
 use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
@@ -55,7 +57,9 @@ use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Jobs\RecomputeAlbumPhotoBucketsJob;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
+use App\Jobs\RecomputeChildAlbumBucketsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
@@ -66,6 +70,7 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Services\TitleSplitter;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,6 +82,7 @@ class AlbumController extends Controller
 	use HasVisitorIdTrait;
 
 	public const COMPACT_HEADER = 'compact';
+	public const MAP_HEADER = 'map';
 
 	/**
 	 * Create an album.
@@ -130,9 +136,16 @@ class AlbumController extends Controller
 		$album->album_sorting = $request->albumSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->is_pinned = $request->is_pinned();
+		$album->cover_id = $request->coverPhoto()?->id;
+		if ($request->publishedAtProvided()) {
+			$album->published_at = $request->publishedAt();
+		}
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 
 		if ($request->tagsProvided()) {
 			$tag_models = Tag::from($request->tags());
@@ -145,8 +158,28 @@ class AlbumController extends Controller
 			album: $album,
 			is_compact: $request->is_compact(),
 			photo: $request->photo(),
-			shall_override: true
+			shall_override: true,
+			is_map: $request->is_map_header(),
 		);
+
+		// The album's effective album sort column governs its direct
+		// children's `bucket_key` (FR-092-12): only a change of that column
+		// rewrites keys. A change of only the order or the granularity
+		// rewrites nothing, but the children listing (ordering, ids) is
+		// stale: AlbumSaved below covers $album's own tag and its parent's
+		// children listing, not $album's own children listing.
+		$child_column_changed = self::effectiveColumnChanged($album, 'album_sorting_col', 'album_sorting_order');
+		RecomputeChildAlbumBucketsJob::dispatchIf($child_column_changed, $album->id);
+		AlbumChildrenChanged::dispatchIf($album->wasChanged(['album_sorting_col', 'album_sorting_order', 'album_timeline']), [$album->id]);
+
+		// Same for the album's photos (FR-092-11). These columns live on
+		// `base_albums`, written through `$album->base_class`, whose dirty
+		// tracking is the one that matters. The job dispatches its own
+		// cache eviction once its write landed; an order or granularity
+		// change only evicts the album's cached photo listing.
+		$photo_column_changed = self::effectiveColumnChanged($album->base_class, 'sorting_col', 'sorting_order');
+		RecomputeAlbumPhotoBucketsJob::dispatchIf($photo_column_changed, $album->id);
+		AlbumPhotoSortingChanged::dispatchIf(!$photo_column_changed && $album->base_class->wasChanged(['sorting_order', 'photo_timeline']), [$album->id]);
 
 		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
@@ -173,6 +206,9 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 		$album->is_pinned = $request->is_pinned();
 		$album->is_and = $request->is_and();
 		$album->save();
@@ -207,6 +243,9 @@ class AlbumController extends Controller
 		$album->photo_sorting = $request->photoSortingCriterion();
 		$album->photo_layout = $request->photoLayout();
 		$album->photo_timeline = $request->photo_timeline();
+		if ($request->isDateScrubberEnabledProvided()) {
+			$album->is_date_scrubber_enabled = $request->is_date_scrubber_enabled();
+		}
 		$album->is_pinned = $request->is_pinned();
 		$album->is_and = $request->is_and();
 		$album->save();
@@ -288,7 +327,7 @@ class AlbumController extends Controller
 		$albums = $request->albums();
 		$parent_id = $albums->count() > 0 ? $albums->first()->parent_id : null;
 
-		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id, null));
+		return TargetAlbumResource::collect($list_albums->do($albums, $parent_id, null, editable_only: true));
 	}
 
 	/**
@@ -435,7 +474,6 @@ class AlbumController extends Controller
 
 		// Get all photos in the album and process their size variants
 		// Filter variants that need watermarking and dispatch jobs
-		/** @phpstan-ignore return.type (stupid covariance...) */
 		$album->photos->each(fn (Photo $photo) => $photo->size_variants->toCollection()
 			->filter(fn (?SizeVariant $v) => $this->shouldWatermark($v))
 			->each(fn (?SizeVariant $v) => WatermarkerJob::dispatch($v, $photo->owner_id)));
@@ -451,5 +489,22 @@ class AlbumController extends Controller
 		}
 
 		return !$size_variant->is_watermarked;
+	}
+
+	/**
+	 * Whether the last save changed the effective sort column: the column
+	 * itself, or the order switching between set and unset (an album's
+	 * sorting only applies when both are set).
+	 */
+	private static function effectiveColumnChanged(Model $model, string $column, string $order): bool
+	{
+		if ($model->wasChanged($column)) {
+			return true;
+		}
+		if (!$model->wasChanged($order)) {
+			return false;
+		}
+
+		return (($model->getPrevious()[$order] ?? null) === null) !== (($model->getAttributes()[$order] ?? null) === null);
 	}
 }

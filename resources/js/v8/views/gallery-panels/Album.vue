@@ -142,7 +142,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import UploadPanel from "@/v8/components/modals/UploadPanel.vue";
 import CameraCapture from "@/v8/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/v8/components/forms/album/AlbumCreateDialog.vue";
-import { useScrollable } from "@/composables/album/scrollable";
+import { useScrollable } from "@/v8/composables/album/scrollable";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import AlbumPanel from "@/v8/components/gallery/albumModule/AlbumPanel.vue";
@@ -170,6 +170,8 @@ import { useAlbumListStore } from "@/stores/AlbumListState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { useRating } from "@/composables/photo/useRating";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
+import { useAlbumDateScrubberState } from "@/v8/composables/album/albumDateScrubberState";
 
 const { isLTR } = useLtRorRtL();
 
@@ -241,9 +243,9 @@ async function refresh(isDelete: boolean = false) {
 	photoStore.load();
 }
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { albumId, isLoading, current_page } = storeToRefs(albumStore);
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 const { are_nsfw_visible, slideshow_timeout, is_slideshow_enabled } = storeToRefs(lycheeStore);
@@ -343,6 +345,14 @@ function goBack() {
 	}
 
 	is_album_edit_open.value = false;
+
+	// Going up to the parent (rather than drilling into a subalbum) means we're done
+	// with this album for now: forget its scroll position so a later, fresh visit
+	// starts at the top instead of resuming a possibly stale position.
+	if (albumId.value !== undefined) {
+		delete togglableStore.scroll_memory[albumId.value];
+	}
+
 	if (albumStore.modelAlbum !== undefined && albumStore.modelAlbum.parent_id !== null) {
 		router.push({ name: albumRoutes().album, params: { albumId: albumStore.modelAlbum.parent_id } });
 	} else {
@@ -375,7 +385,10 @@ function openSearch() {
 	router.push({ name: "search", params: { albumId: albumStore.album.id } });
 }
 
-defineShortcuts({
+// Feature 071 (FR-071-07): keyboard counterpart of the header's date scrubber toggle.
+const { isAvailable: isDateScrubberAvailable, toggleHidden: toggleDateScrubberHidden } = useAlbumDateScrubberState();
+
+definePanelShortcuts({
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
 			lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
@@ -394,6 +407,7 @@ defineShortcuts({
 	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous(true) : photoStore.hasNext && next(true)),
 	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next(true) : photoStore.hasPrevious && previous(true)),
 	o: () => photoStore.isLoaded && rotateOverlay(),
+	d: () => !photoStore.isLoaded && isDateScrubberAvailable.value && toggleDateScrubberHidden(),
 	escape: () => {
 		if (photoStore.isLoaded && is_slideshow_active.value) {
 			stop();
@@ -434,18 +448,13 @@ defineShortcuts({
 			return;
 		}
 
-		// Escape drops the current selection before navigating away, so that a
-		// selection surviving an in-place edit can be cleared without leaving the
-		// album.
-		if (hasSelection()) {
-			unselect();
-			return;
-		}
-
 		goBack();
 	},
 	// privileged album/photo actions
-	m: () => (photoStore.isLoaded ? albumStore.rights?.can_edit && toggleMove() : albumStore.rights?.can_move && hasSelection() && toggleMove()),
+	m: () =>
+		photoStore.isLoaded
+			? albumStore.rights?.can_move_content && toggleMove()
+			: albumStore.rights?.can_move_content && hasSelection() && toggleMove(),
 	delete: () =>
 		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
 	backspace: () =>

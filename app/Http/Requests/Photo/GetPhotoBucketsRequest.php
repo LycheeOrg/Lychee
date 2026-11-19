@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+namespace App\Http\Requests\Photo;
+
+use App\Contracts\Http\Requests\HasAbstractAlbum;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Contracts\Models\AbstractAlbum;
+use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
+use Illuminate\Support\Facades\Gate;
+
+/**
+ * Request for `GET /api/v3/Albums/{album_id}/Photos/buckets`.
+ * `album_id` is bound from the route segment via
+ * {@see self::prepareForValidation()}, mirroring
+ * {@see \App\Http\Requests\Album\GetAlbumBucketsRequest}'s pattern.
+ * Resolves via
+ * {@see \App\Factories\AlbumFactory::findAbstractAlbumOrFail()}, covering a
+ * regular {@see \App\Models\Album}, a {@see \App\Models\TagAlbum}, a
+ * {@see \App\Models\PersonAlbum}, or a {@see \App\SmartAlbums\BaseSmartAlbum}.
+ */
+class GetPhotoBucketsRequest extends BaseApiRequest implements HasAbstractAlbum
+{
+	use HasAbstractAlbumTrait;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function authorize(): bool
+	{
+		return config('features.v8') === true &&
+			Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function rules(): array
+	{
+		return [
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
+		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => $this->route(RequestAttribute::ALBUM_ID_ATTRIBUTE),
+		]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function processValidatedValues(array $values, array $files): void
+	{
+		/** @var string $album_id */
+		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE];
+		// We do not need the relations. We try to be lean.
+		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
+	}
+}

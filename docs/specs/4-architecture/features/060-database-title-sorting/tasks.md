@@ -6,7 +6,7 @@ _Last updated: 2026-08-27_
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
 > When referencing requirements, keep feature IDs (`F-`), non-goal IDs (`N-`), and scenario IDs (`S-<NNN>-`) inside the same parentheses immediately after the task title (omit categories that do not apply).
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/5-decisions/` reflect the clarified behaviour.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections (requirements/NFR/behaviour/telemetry) and, when required, ADRs under `docs/specs/6-decisions/` reflect the clarified behaviour.
 >
 > **No Eloquent model events/hooks/mutators for `title_base`/`title_index`.** Per explicit user direction, every task in I2/I2b wires an *explicit* call at the point `title` is set — never a `saving`/`creating` hook. See spec.md FR-060-03/NFR-060-07.
 
@@ -206,7 +206,7 @@ _Last updated: 2026-08-27_
 
 ## Notes / TODOs
 
-- Q-060-01 (Description scope) and Q-060-02 (splitter design) were resolved during spec drafting (2026-08-27) — see `docs/specs/4-architecture/open-questions.md`.
+- Q-060-01 (Description scope) and Q-060-02 (splitter design) were resolved during spec drafting (2026-08-27) — see `open-questions.md`.
 - Design correction (2026-08-27, same session): the original draft of I2 specified an Eloquent `saving` hook; the user explicitly rejected this ("we do not trust the hooks, we implement things directly without magic") — I2 was rewritten as 12 explicit write-site calls, backstopped by I2b's `TitleSplitIntegrityTest` instead of hook-based enforcement.
 - Design correction (2026-08-27, same session): I8 originally targeted `lang/*.json` directly; the user corrected that these are generated artifacts — the real edit surface is `lang/<locale>/*.php`, regenerated via `php artisan lang:json`.
 - If the repo's full `php artisan test` run hits the documented pre-existing process-timeout issue (Features 052/055/056 precedent), fall back to targeted `--filter` runs per touched area and note it here.

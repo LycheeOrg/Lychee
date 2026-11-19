@@ -72,6 +72,16 @@ const jsError = ref<ErrorEvent | null>(null);
 const sessionExpired = ref(false);
 
 window.addEventListener("error", function (e: ErrorEvent & { detail?: LycheeException; details?: LycheeException }) {
+	// Benign browser quirk, not a real error: Chrome dispatches this whenever a
+	// ResizeObserver callback (any of them — virtualizers, resizable panels, ...)
+	// triggers a layout change within the same frame it fired in. All
+	// notifications are still delivered, just spread across an extra frame — no
+	// functionality is lost. Surfacing it as a full-screen debug error is pure
+	// noise, so it's filtered out here rather than shown.
+	if (e.message === "ResizeObserver loop completed with undelivered notifications.") {
+		return;
+	}
+
 	console.log("error", e);
 	if (e.details !== undefined) {
 		lycheeError.value = e.details;

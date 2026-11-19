@@ -19,7 +19,7 @@ import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import AlbumService from "@/services/album-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { computed } from "vue";

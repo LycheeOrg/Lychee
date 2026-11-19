@@ -129,6 +129,38 @@ class UrlValidationTest extends AbstractTestCase
 		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
 	}
 
+	public function testForbiddenLocalIp(): void
+	{
+		$to_be_blocked = [
+			// normal ips
+			'https://127.0.0.1',
+			'https://192.168.1.1',
+			// Long ips
+			'https://2130706433',
+			'https://3232235521',
+			'https://2852039166',
+			// Hex upper
+			'https://0X7F000001',
+			'https://0X7F.0.0.1',
+			// Hex lower
+			'https://0x7f000001',
+			'https://0x7f.0.0.1',
+			// Octal
+			'https://0177.0.0.1',
+			'https://0254.16.0.1',
+			// Shortened or compressed forms of IPs
+			'https://127.1',
+			'https://0',
+			// Ipv6 format
+			'https://[::ffff:127.0.0.1]',
+		];
+
+		foreach ($to_be_blocked as $url) {
+			$dto = $this->url_validation->validate($url);
+			self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error, $url . ' should be blocked');
+		}
+	}
+
 	public function testForbiddenLocalhost(): void
 	{
 		Configs::set('import_via_url_forbidden_local_ip', '0');
@@ -200,5 +232,64 @@ class UrlValidationTest extends AbstractTestCase
 
 		self::assertNull($dto->error);
 		self::assertNull($dto->resolved_ip);
+	}
+
+	public function testForbiddenNat64ExpandedSpellingLiteral(): void
+	{
+		// 64:ff9b:0:0:0:0:7f00:1 is the NAT64 mapping of 127.0.0.1 written in expanded form.
+		$dto = $this->url_validation->validate('https://[64:ff9b:0:0:0:0:7f00:1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenNat64UppercaseLiteral(): void
+	{
+		$dto = $this->url_validation->validate('https://[64:FF9B::7F00:1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenNat64MetadataViaHostname(): void
+	{
+		// 64:ff9b::a9fe:a9fe is the NAT64 mapping of 169.254.169.254 (cloud metadata).
+		$this->url_validation = $this->makeUrlValidation(fn (string $hostname, int $type = DNS_AAAA) => match ($type) {
+			DNS_AAAA => [['ipv6' => '64:ff9b::a9fe:a9fe']],
+			default => [],
+		});
+
+		$dto = $this->url_validation->validate('https://evil.example.com/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenNat64LocalUsePrefixLiteral(): void
+	{
+		// RFC 8215 local-use NAT64 (64:ff9b:1::/48).
+		$dto = $this->url_validation->validate('https://[64:ff9b:1::7f00:1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbidden6to4PrivateLiteral(): void
+	{
+		// 6to4 (2002::/16) embedding 127.0.0.1.
+		$dto = $this->url_validation->validate('https://[2002:7f00:1::]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testForbiddenIpv4MappedLoopbackLiteral(): void
+	{
+		$dto = $this->url_validation->validate('https://[::ffff:127.0.0.1]/test.jpg');
+
+		self::assertEquals('must not resolve to a private or reserved IP address.', $dto->error);
+	}
+
+	public function testAllowedNat64PublicLiteral(): void
+	{
+		// 64:ff9b::808:808 is the NAT64 mapping of 8.8.8.8 (public) and must not be blocked.
+		$dto = $this->url_validation->validate('https://[64:ff9b::808:808]/test.jpg');
+
+		self::assertNull($dto->error);
 	}
 }

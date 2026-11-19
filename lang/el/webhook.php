@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Ρυθμίστε εξερχόμενα webhooks που ενεργοποιούνται όταν προστίθενται, μετακινούνται ή διαγράφονται φωτογραφίες.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Δεν έχουν ρυθμιστεί ακόμη webhooks.',
+    'create_first' => 'Δημιουργήστε το πρώτο σας webhook',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Όνομα',
+    'col_event' => 'Συμβάν',
+    'col_method' => 'Μέθοδος',
     'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_format' => 'Μορφή',
+    'col_enabled' => 'Ενεργό',
+    'col_actions' => 'Ενέργειες',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Προσθήκη φωτογραφίας',
+    'event_photo_move' => 'Μετακίνηση φωτογραφίας',
+    'event_photo_delete' => 'Διαγραφή φωτογραφίας',
 
     // Payload format labels
     'format_json' => 'JSON',
     'format_query_string' => 'Query String',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Δημιουργία webhook',
+    'edit' => 'Επεξεργασία',
+    'delete' => 'Διαγραφή',
+    'cancel' => 'Ακύρωση',
+    'save' => 'Αποθήκευση',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Όνομα',
+    'field_name_placeholder' => 'π.χ. Το webhook μου',
+    'field_event' => 'Συμβάν',
+    'field_method' => 'Μέθοδος HTTP',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Μορφή payload',
+    'field_enabled' => 'Ενεργό',
+    'field_secret' => 'Μυστικό',
+    'field_secret_placeholder' => 'Αφήστε κενό για να διατηρηθεί το υπάρχον μυστικό',
+    'field_secret_header' => 'Κεφαλίδα μυστικού',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Αποστολή ID φωτογραφίας',
+    'field_send_album_id' => 'Αποστολή ID άλμπουμ',
+    'field_send_title' => 'Αποστολή τίτλου',
+    'field_send_size_variants' => 'Αποστολή παραλλαγών μεγέθους',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Δημιουργία webhook',
+    'modal_edit_title' => 'Επεξεργασία webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Διαγραφή webhook',
+    'confirm_delete_message' => 'Είστε βέβαιοι ότι θέλετε να διαγράψετε το webhook ":name"; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
+    'delete_warning' => 'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Το webhook δημιουργήθηκε επιτυχώς.',
+    'updated' => 'Το webhook ενημερώθηκε επιτυχώς.',
+    'deleted' => 'Το webhook διαγράφηκε επιτυχώς.',
+    'error_load' => 'Αποτυχία φόρτωσης των webhooks.',
+    'error_save' => 'Αποτυχία αποθήκευσης του webhook.',
+    'error_delete' => 'Αποτυχία διαγραφής του webhook.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Έχει οριστεί μυστικό',
+    'no_secret' => 'Χωρίς μυστικό',
 ];

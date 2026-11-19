@@ -9,13 +9,6 @@ export type UpdateTreeData = {
 };
 
 const MaintenanceService = {
-	updateGet(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.UpdateInfo>> {
-		return axios.get(`${Constants.getApiUrl()}Maintenance::update`, { data: {} });
-	},
-	updateCheck(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.UpdateCheckInfo>> {
-		return axios.post(`${Constants.getApiUrl()}Maintenance::update`, {});
-	},
-
 	cleaningGet(path: string): Promise<AxiosResponse<App.Http.Resources.Diagnostics.CleaningState>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::cleaning`, { params: { path: path }, data: {} });
 	},
@@ -134,6 +127,15 @@ const MaintenanceService = {
 	},
 	backfillAlbumSizesDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
+	},
+	recomputeBucketsDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::recomputeBuckets`, {});
+	},
+	recomputeTakenAtRangeCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::recomputeTakenAtRange`, { data: {} });
+	},
+	recomputeTakenAtRangeDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::recomputeTakenAtRange`, {});
 	},
 	bulkScanFacesCheck(): Promise<AxiosResponse<number>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, { data: {} });

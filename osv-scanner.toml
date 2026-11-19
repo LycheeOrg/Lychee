@@ -2,3 +2,18 @@
 id = "GHSA-g7r4-m6w7-qqqr"
 reason = "We do not use the esbuild dev server."
 
+[[IgnoredVulns]]
+id ="GHSA-6j4f-fj2g-mc7p"
+reason = "This is a PHP backend, those vulnerabilities are only impacting Node backend"
+
+[[IgnoredVulns]]
+id ="GHSA-q2hr-2g5m-vwhr"
+reason = "This is a PHP backend, those vulnerabilities are only impacting Node backend"
+
+[[IgnoredVulns]]
+id ="GHSA-qhr7-859c-m2p7"
+reason = "This is a PHP backend, those vulnerabilities are only impacting Node backend"
+
+[[IgnoredVulns]]
+id ="GHSA-vfj7-8cjw-p6xm"
+reason = "This is a PHP backend, those vulnerabilities are only impacting Node backend"

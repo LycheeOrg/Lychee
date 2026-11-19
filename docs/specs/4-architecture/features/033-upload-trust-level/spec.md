@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/033-upload-trust-level/tasks.md` |
 | Roadmap entry | #1633 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 
@@ -289,6 +289,9 @@ ui_states:
 ```
 
 ## Appendix
+
+### Later features
+- [Feature 089](../089-moderation-history-nsfw-review/spec.md) records every hold and approval of a photo (`photo_moderation_events`): `Standalone\RecordUploadHold` after upload, `ModerationController::approvePhotos()` on approval (hidden photos only, one insert per chunk), and adds a History tab to the v8 Moderation page.
 
 ### Trust Level Decision Matrix
 

@@ -26,6 +26,7 @@ class AccessPermissionConstants
 	public const GRANTS_UPLOAD = 'grants_upload';
 	public const GRANTS_EDIT = 'grants_edit';
 	public const GRANTS_DELETE = 'grants_delete';
+	public const GRANTS_MOVE = 'grants_move';
 	public const PASSWORD = 'password';
 
 	// Generated columns (see database/migrations/2026_07_01_120000_deduplicate_and_constrain_access_permissions.php).

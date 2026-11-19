@@ -48,6 +48,15 @@
 								position: { top: 0, left: 0, width: filmstripLayout.mainViewer.width, height: filmstripLayout.mainViewer.height },
 							})
 						"
+						:srcset="getSrcset(albumData.photos[filmstripActiveIndex])"
+						:sizes="
+							getSizes(
+								albumData.photos[filmstripActiveIndex],
+								filmstripLayout.mainViewer.width,
+								filmstripLayout.mainViewer.height,
+								'contain',
+							)
+						"
 						:alt="albumData.photos[filmstripActiveIndex].title || 'Photo'"
 						:title="albumData.photos[filmstripActiveIndex].title || undefined"
 						class="lychee-embed__filmstrip-main-img"
@@ -119,6 +128,8 @@
 					>
 						<img
 							:src="getBestSizeVariant({ ...thumb.photo, position: thumb.position })"
+							:srcset="getSrcset(thumb.photo)"
+							:sizes="getSizes(thumb.photo, thumb.position.width, thumb.position.height, 'cover')"
 							:alt="thumb.photo.title || 'Photo'"
 							:title="thumb.photo.title || undefined"
 							loading="lazy"
@@ -157,6 +168,8 @@
 				>
 					<img
 						:src="getBestSizeVariant(photo)"
+						:srcset="getSrcset(photo)"
+						:sizes="getSizes(photo, photo.position.width, photo.position.height, 'cover')"
 						:alt="photo.title || 'Photo'"
 						:title="photo.title || undefined"
 						loading="lazy"
@@ -204,6 +217,7 @@ import { layoutGrid } from "@/embed/layouts/grid";
 import { layoutJustified } from "@/embed/layouts/justified";
 import { layoutFilmstrip, filmstripToLayoutResult } from "@/embed/layouts/filmstrip";
 import { initLayouts } from "@/embed/layouts/wasmLayouts";
+import { getSizes, getSrcset } from "@/embed/utils/srcset";
 import Lightbox from "./Lightbox.vue";
 
 interface Props {

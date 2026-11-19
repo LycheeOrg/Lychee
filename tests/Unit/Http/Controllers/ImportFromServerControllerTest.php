@@ -124,7 +124,7 @@ class ImportFromServerControllerTest extends AbstractTestCase
 	private function getMockedController(?Exec $exec = null): ImportFromServerController
 	{
 		if ($exec === null) {
-			$exec = $this->createMock(Exec::class);
+			$exec = self::createStub(Exec::class);
 			$exec->method('do')->willReturn([]);
 		}
 
@@ -204,7 +204,7 @@ class ImportFromServerControllerTest extends AbstractTestCase
 	 */
 	public function testHandleEmptyFolderException(): void
 	{
-		$exec = $this->createMock(Exec::class);
+		$exec = self::createStub(Exec::class);
 		$exec->method('do')->willThrowException(new EmptyFolderException('/test/empty/folder'));
 		$controller = $this->getMockedController($exec);
 
@@ -237,7 +237,7 @@ class ImportFromServerControllerTest extends AbstractTestCase
 	public function testHandleInvalidDirectoryException(): void
 	{
 		// Create controller with mock get_exec that throws InvalidDirectoryException
-		$exec = $this->createMock(Exec::class);
+		$exec = self::createStub(Exec::class);
 		$exec->method('do')->willThrowException(new InvalidDirectoryException());
 		$controller = $this->getMockedController($exec);
 
@@ -269,7 +269,7 @@ class ImportFromServerControllerTest extends AbstractTestCase
 	 */
 	public function testHandleUnexpectedException(): void
 	{
-		$exec = $this->createMock(Exec::class);
+		$exec = self::createStub(Exec::class);
 		$exec->method('do')->willThrowException(new UnexpectedException());
 		$controller = $this->getMockedController($exec);
 

@@ -16,10 +16,13 @@
 		:class="isNavOpen ? 'w-(--nav-bar-width)' : 'w-0'"
 	>
 		<div class="w-(--nav-bar-width) h-full flex flex-col border-e border-default">
-			<div class="flex justify-end p-2 shrink-0">
-				<UButton icon="lucide:panel-left-close" color="neutral" variant="ghost" size="sm" square @click="isNavOpen = false" />
-			</div>
-			<AlbumNavTree class="flex-1 min-h-0" />
+			<AlbumNavTree class="flex-1 min-h-0">
+				<template #collapse>
+					<!-- <div class="flex justify-end p-2 shrink-0"> -->
+					<UButton icon="lucide:panel-left-close" color="neutral" variant="ghost" size="sm" square @click="isNavOpen = false" />
+					<!-- </div> -->
+				</template>
+			</AlbumNavTree>
 		</div>
 	</div>
 
@@ -58,8 +61,8 @@ watch(
 	},
 );
 
-// A plain one-shot `onMounted` call would be orphaned by an `invalidate()` (e.g. `Albums.vue`'s
-// own mount-time `refresh()`) landing while this component's initial load is still in flight -
+// A plain one-shot `onMounted` call would be orphaned by an `invalidate()` (e.g. a move/delete
+// dialog's `refresh()`) landing while this component's initial load is still in flight -
 // the response gets discarded via the store's generation guard and nothing re-fetches it.
 // Watching keeps re-triggering `ensureLoaded()` whenever the store drops back to unloaded.
 watchEffect(() => {

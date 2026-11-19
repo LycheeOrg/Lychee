@@ -180,6 +180,114 @@ class PeopleControllerTest extends BaseApiWithDataTest
 		$this->assertUnauthorized($response);
 	}
 
+	public function testUpdateNameAsUser(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'name' => 'Alice Updated',
+		]);
+		$this->assertOk($response);
+		self::assertEquals('Alice Updated', $response->json('name'));
+	}
+
+	public function testUpdateNameOfPersonLinkedToOtherUserForbidden(): void
+	{
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'name' => 'Hacker',
+		]);
+		$this->assertForbidden($response);
+
+		$this->person1->refresh();
+		self::assertEquals('Alice', $this->person1->name);
+	}
+
+	public function testUpdateNameOfOwnLinkedPerson(): void
+	{
+		$this->person1->user_id = $this->userMayUpload1->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'name' => 'Alice Updated',
+		]);
+		$this->assertOk($response);
+		self::assertEquals('Alice Updated', $response->json('name'));
+	}
+
+	public function testUpdateNameOfLinkedPersonAsAdmin(): void
+	{
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->admin)->patchJson('Person/' . $this->person1->id, [
+			'name' => 'Alice Updated',
+		]);
+		$this->assertOk($response);
+		self::assertEquals('Alice Updated', $response->json('name'));
+	}
+
+	public function testUpdateUserIdAsAdmin(): void
+	{
+		$response = $this->actingAs($this->admin)->patchJson('Person/' . $this->person1->id, [
+			'user_id' => $this->userMayUpload1->id,
+		]);
+		$this->assertOk($response);
+		self::assertEquals($this->userMayUpload1->id, $response->json('user_id'));
+	}
+
+	public function testUpdateUserIdAsUserForbidden(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'user_id' => $this->userMayUpload1->id,
+		]);
+		$this->assertForbidden($response);
+
+		$this->person1->refresh();
+		self::assertNull($this->person1->user_id);
+	}
+
+	public function testUnlinkUserIdAsAdmin(): void
+	{
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->admin)->patchJson('Person/' . $this->person1->id, [
+			'user_id' => null,
+		]);
+		$this->assertOk($response);
+		self::assertNull($response->json('user_id'));
+	}
+
+	public function testUnlinkUserIdAsOtherUserForbidden(): void
+	{
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'user_id' => null,
+		]);
+		$this->assertForbidden($response);
+
+		$this->person1->refresh();
+		self::assertEquals($this->userMayUpload2->id, $this->person1->user_id);
+	}
+
+	public function testUnlinkUserIdAsLinkedUserForbidden(): void
+	{
+		// The linked user drops their own link through DELETE Person/{id}/claim, not PATCH.
+		$this->person1->user_id = $this->userMayUpload1->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Person/' . $this->person1->id, [
+			'user_id' => null,
+		]);
+		$this->assertForbidden($response);
+
+		$this->person1->refresh();
+		self::assertEquals($this->userMayUpload1->id, $this->person1->user_id);
+	}
+
 	// ── DESTROY ─────────────────────────────────────────────────
 
 	public function testDestroyNullifiesFaces(): void
@@ -195,6 +303,36 @@ class PeopleControllerTest extends BaseApiWithDataTest
 
 		$face->refresh();
 		self::assertNull($face->person_id);
+	}
+
+	public function testDestroyAsUser(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Person/' . $this->person1->id);
+		$this->assertNoContent($response);
+
+		self::assertNull(Person::find($this->person1->id));
+	}
+
+	public function testDestroyPersonLinkedToOtherUserForbidden(): void
+	{
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Person/' . $this->person1->id);
+		$this->assertForbidden($response);
+
+		self::assertNotNull(Person::find($this->person1->id));
+	}
+
+	public function testDestroyOwnLinkedPerson(): void
+	{
+		$this->person1->user_id = $this->userMayUpload1->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Person/' . $this->person1->id);
+		$this->assertNoContent($response);
+
+		self::assertNull(Person::find($this->person1->id));
 	}
 
 	public function testDestroyAsGuestUnauthorized(): void

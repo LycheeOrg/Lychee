@@ -35,6 +35,7 @@ use App\View\Components\Meta;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use LycheeVerify\Verify;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
 
@@ -49,6 +50,8 @@ class MetaTest extends AbstractTestCase
 
 		$this->config_manager = \Mockery::mock(ConfigManager::class);
 		request()->attributes->set('configs', $this->config_manager);
+		request()->attributes->set('verify', new Verify(config_email: '', license_key: ''));
+		$this->app->instance(ConfigManager::class, $this->config_manager);
 
 		$this->setUpDefaultConfig();
 		Storage::fake(FileSystem::DIST);
@@ -62,6 +65,8 @@ class MetaTest extends AbstractTestCase
 			->with('site_owner')->andReturn('Test Owner')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('rss_enable')->andReturn(false)->byDefault();
+		$this->config_manager->shouldReceive('getValueAsString')
+			->with('gallery_password')->andReturn('')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsString')
 			->with('site_title')->andReturn('My Gallery')->byDefault();
 		$this->config_manager->shouldReceive('getValueAsString')
@@ -80,11 +85,15 @@ class MetaTest extends AbstractTestCase
 		return new Meta();
 	}
 
-	private function makeSizeVariantMock(string $url): MockInterface&SizeVariant
+	private function makeSizeVariantMock(string $url, int $width = 800, int $height = 600): MockInterface&SizeVariant
 	{
 		$sv = \Mockery::mock(SizeVariant::class);
 		$sv->shouldReceive('offsetExists')->with('url')->andReturn(true);
 		$sv->shouldReceive('getAttribute')->with('url')->andReturn($url);
+		$sv->shouldReceive('offsetExists')->with('width')->andReturn(true);
+		$sv->shouldReceive('getAttribute')->with('width')->andReturn($width);
+		$sv->shouldReceive('offsetExists')->with('height')->andReturn(true);
+		$sv->shouldReceive('getAttribute')->with('height')->andReturn($height);
 
 		return $sv;
 	}
@@ -278,6 +287,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$photo = $this->makePhotoMock('No Description', null, $sizeVariants);
@@ -297,6 +307,7 @@ class MetaTest extends AbstractTestCase
 
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn($svSmall);
 
 		$photo = $this->makePhotoMock('Photo', 'Desc', $sizeVariants);
@@ -312,6 +323,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$photo = $this->makePhotoMock('Photo', 'Desc', $sizeVariants);
@@ -355,6 +367,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
+		$sizeVariants->shouldReceive('getSmall2x')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
 		$album = \Mockery::mock(AbstractAlbum::class);
@@ -512,12 +525,14 @@ class MetaTest extends AbstractTestCase
 
 		session(['album' => $album]);
 
+		$svHeader = $this->makeSizeVariantMock('https://example.com/header.jpg', 1024, 768);
+
 		$meta = \Mockery::mock(Meta::class)
 			->makePartial()
 			->shouldAllowMockingProtectedMethods();
 		$meta->shouldReceive('getHeaderUrl')
 			->once()
-			->andReturn('https://example.com/header.jpg');
+			->andReturn($svHeader);
 		// Mockery 1.6.14 no-ops explicit magic-method calls (__construct/__clone) unless an
 		// expectation is registered for them; passthru() makes this call run the real constructor.
 		$meta->shouldReceive('__construct')->passthru();
@@ -525,6 +540,8 @@ class MetaTest extends AbstractTestCase
 
 		self::assertSame('https://example.com/header.jpg', $meta->image_url);
 		self::assertSame('Album', $meta->page_title);
+		self::assertSame(1024, $meta->width);
+		self::assertSame(768, $meta->height);
 	}
 
 	public function testAlbumWithCoverSourceSetsImageUrl(): void
@@ -577,6 +594,20 @@ class MetaTest extends AbstractTestCase
 
 		self::assertSame('https://example.com/cover.jpg', $meta->image_url);
 		self::assertSame('Album', $meta->page_title);
+	}
+
+	public function testSvgIconIsLinkedWithV8(): void
+	{
+		config(['features.v8' => true]);
+
+		$this->blade('<x-meta />')->assertSee('img/logo4.svg', false);
+	}
+
+	public function testSvgIconIsNotLinkedWithoutV8(): void
+	{
+		config(['features.v8' => false]);
+
+		$this->blade('<x-meta />')->assertDontSee('img/logo4.svg', false);
 	}
 
 	public function testRenderReturnsView(): void

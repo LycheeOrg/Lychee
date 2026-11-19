@@ -161,24 +161,22 @@ function upload(event: Event) {
 }
 
 function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = undefined) {
-	let offset = 0;
-	let lastIdx = -1;
-	for (let i = searchIndex; i < list_upload_files.value.length; i++) {
-		if (list_upload_files.value[i].status === "waiting") {
-			offset = i;
-			break;
-		}
+	// Top up to the limit based on how many are already uploading, rather than assuming a
+	// cold start — files queued asynchronously (e.g. folder drop) trickle in one at a time,
+	// so this may be called repeatedly while some uploads are already in flight.
+	const limit = max_processing_limit ?? setup.value?.upload_processing_limit ?? 1;
+	const availableSlots = limit - counts.value.uploading;
+	if (availableSlots <= 0) {
+		return;
 	}
 
-	// Compute processing limit : min between the provided max and the number of waiting.
-	const processing_limit = Math.min(max_processing_limit ?? setup.value?.upload_processing_limit ?? 1, counts.value.waiting);
-
-	// Start uploading chunks.
-	for (let i = 0; i < processing_limit; i++) {
-		// only execute if we are waiting.
-		if (list_upload_files.value[i + offset].status === "waiting") {
-			list_upload_files.value[i + offset].status = "uploading";
-			lastIdx = i + offset;
+	let started = 0;
+	let lastIdx = -1;
+	for (let i = searchIndex; i < list_upload_files.value.length && started < availableSlots; i++) {
+		if (list_upload_files.value[i].status === "waiting") {
+			list_upload_files.value[i].status = "uploading";
+			lastIdx = i;
+			started++;
 		}
 	}
 
@@ -191,7 +189,7 @@ function uploadCompleted(index: number, status: "done" | "error" | "warning", me
 	list_upload_files.value[index].status = status;
 	list_upload_files.value[index].message = message;
 
-	uploadNext(index, 1);
+	uploadNext(index, setup.value?.upload_processing_limit);
 
 	// Only refresh if all uploads are done.
 	if (counts.value.completed === counts.value.files) {
@@ -229,7 +227,7 @@ function close() {
 watch(
 	() => list_upload_files.value.length,
 	() => {
-		if (counts.value.waiting > 0 && counts.value.uploading === 0) {
+		if (counts.value.waiting > 0) {
 			uploadNext(0, setup.value?.upload_processing_limit);
 		}
 	},

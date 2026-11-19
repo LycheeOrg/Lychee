@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/005-album-list-view/tasks.md` |
 | Roadmap entry | #005 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 Add a view toggle to the album display that allows users to switch between the current grid/card layout and a new list view. The list view displays albums in a horizontal row format (similar to Windows Explorer details view) with a thumbnail, full untruncated album name, photo count (if > 0), and sub-album count (if > 0). The toggle is available both within album detail view (AlbumHero) and on the Albums page (AlbumsHeader). List items are left-aligned in LTR mode and right-aligned in RTL mode. Albums remain fully selectable in list mode with drag-select support.

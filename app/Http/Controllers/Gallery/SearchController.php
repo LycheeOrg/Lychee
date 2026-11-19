@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
-use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
@@ -20,8 +19,6 @@ use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
-use App\Policies\AlbumPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
 
@@ -46,12 +43,12 @@ class SearchController extends Controller
 		$tokens = $request->tokens();
 		$album = $request->album();
 
-		$config_manager = resolve(ConfigManager::class);
-		$should_downgrade = $config_manager->getValueAsBool('grants_full_photo_access') === false;
-
+		// Feature 070: full-resolution access is decided per photo inside
+		// `ResultsResource::fromData()`. It used to be one request-wide boolean
+		// read off the `grants_full_photo_access` config - the seed value for
+		// newly created shares, never an authorization gate - which over-granted.
 		if (!$album instanceof Album) {
 			$album = null;
-			$should_downgrade = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, null]) === false;
 		}
 
 		$photo_sorting = $request->photoSortingCriterion() ?? new PhotoSortingCriterion(ColumnSortingType::TAKEN_AT, OrderSortingType::ASC);
@@ -59,7 +56,7 @@ class SearchController extends Controller
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
 		$photo_results = (new SortingDecorator($photo_search->sqlQuery($tokens, $album)))
 			->orderBy($photo_sorting->column, $photo_sorting->order)
-			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
+			->paginate($request->configs()->getValueAsInt('search_result_limit'));
 
 		$album_results = $album_search->queryAlbums($tokens, $album, $request->albumSortingCriterion());
 
@@ -67,7 +64,6 @@ class SearchController extends Controller
 			albums: $album_results,
 			photos: $photo_results,
 			album_id: $album?->id,
-			should_downgrade: $should_downgrade,
 		);
 	}
 }

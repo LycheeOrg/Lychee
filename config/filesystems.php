@@ -106,6 +106,7 @@ return [
 			'endpoint' => env('AWS_ENDPOINT'),
 			'visibility' => env('AWS_IMAGE_VISIBILITY', 'public'),
 			'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+			'root' => env('AWS_ROOT', ''),
 			'throw' => true,
 		],
 

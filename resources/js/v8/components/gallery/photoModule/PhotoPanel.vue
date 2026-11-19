@@ -1,7 +1,13 @@
 <template>
 	<UModal v-if="photoStore.photo" :open="true" fullscreen :dismissible="false" :close="false" :ui="{ content: 'bg-black' }">
 		<template #content>
-			<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
+			<PhotoHeader
+				@toggle-slide-show="emits('toggleSlideShow')"
+				@go-back="emits('goBack')"
+				@toggle-highlight="emits('toggleHighlight')"
+				@toggle-move="emits('toggleMove')"
+				@toggle-delete="emits('toggleDelete')"
+			/>
 			<UMain class="relative mt-(--ui-header-height)">
 				<UDashboardGroup storageKey="photo-panel" storage="local" :persistent="true" class="relative w-full h-full overflow-hidden bg-black">
 					<PhotoDetails v-if="!is_exif_disabled && !isLeftToRight" :is-map-visible="props.isMapVisible" />
@@ -10,6 +16,7 @@
 							<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
 								<PhotoBox
 									:key="photoStore.photo.id"
+									:is-zoom-enabled="true"
 									@go-back="emits('goBack')"
 									@next="emits('next')"
 									@previous="emits('previous')"
@@ -32,8 +39,8 @@
 						<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 						<PhotoRatingOverlay />
 						<Dock
-							v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
-							:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
+							v-if="isDockShown"
+							:can-edit="canEditCurrentPhoto"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"
 							@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
@@ -65,18 +72,50 @@ import { useDebounceFn } from "@vueuse/core";
 import PhotoBox from "./PhotoBox.vue";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useUserStore } from "@/stores/UserState";
 import { useLtRorRtL } from "@/utils/Helpers.js";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
+const userStore = useUserStore();
 const { isLTR } = useLtRorRtL();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled, disable_swipe_effect } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active } = storeToRefs(togglableStore);
 
 const isLeftToRight = computed(() => isLTR());
+
+/**
+ * `albumStore.rights.can_edit` is album-wide, not per-photo. That's fine for
+ * a regular Album/TagAlbum/PersonAlbum (every photo shown there is already
+ * covered by that same right), but not for a smart album: its photos are no
+ * longer guaranteed all-owned-by-viewer once `SA_override_visibility` is
+ * enabled, yet `AlbumPolicy::canEdit()` always grants smart albums edit
+ * rights regardless of which photos it actually surfaces. So the dock also
+ * requires an owner-id match (`photoStore.photo.owner_id`, only populated
+ * for smart albums - see `PhotoResource.php`) whenever the current album is
+ * a smart album.
+ */
+const canEditCurrentPhoto = computed(() => {
+	if (!albumStore.rights?.can_edit) {
+		return false;
+	}
+	if (albumStore.smartAlbum !== undefined) {
+		return photoStore.photo?.owner_id === userStore.user?.id;
+	}
+	return true;
+});
+
+/** Editors get the edit buttons; any viewer of a live photo gets its play button (FR-100-06). */
+const isDockShown = computed(
+	() =>
+		(canEditCurrentPhoto.value || photoStore.live_photo_controls !== undefined) &&
+		!is_photo_edit_open.value &&
+		!photoStore.is_zoomed &&
+		photoStore.imageViewMode !== ImageViewMode.Pdf,
+);
 
 const props = defineProps<{
 	isMapVisible: boolean;
@@ -110,6 +149,16 @@ function scrollTo(event: WheelEvent) {
 	}
 
 	if (!is_scroll_to_navigate_photos_enabled.value) {
+		return;
+	}
+
+	// FR-082-10: the wheel zooms the sphere, it never changes photo.
+	if (photoStore.isSphereView && !is_slideshow_active.value) {
+		return;
+	}
+
+	// FR-099-01: the wheel scrolls the PDF pages, it never changes photo.
+	if (photoStore.imageViewMode === ImageViewMode.Pdf) {
 		return;
 	}
 

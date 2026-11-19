@@ -13,6 +13,7 @@
 
 namespace Tests\Unit\Models;
 
+use App\Actions\Face\RecountFaceCounters;
 use App\Models\Face;
 use App\Models\Person;
 use App\Models\Photo;
@@ -25,7 +26,7 @@ use Tests\AbstractTestCase;
  *   - face_count:  non-dismissed faces assigned to this person
  *   - photo_count: distinct photos with non-dismissed faces for this person
  *
- * The FaceObserver is responsible for keeping these columns up-to-date.
+ * The write paths call RecountFaceCounters to keep these columns up-to-date.
  */
 class FaceCounterPersonTest extends AbstractTestCase
 {
@@ -76,6 +77,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 
 		$face1->is_dismissed = true;
 		$face1->save();
+		$this->recount();
 
 		$this->person->refresh();
 		// face_count decremented by 1 (dismissed face no longer counted)
@@ -92,6 +94,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 
 		$face->is_dismissed = true;
 		$face->save();
+		$this->recount();
 
 		$this->person->refresh();
 		self::assertEquals(0, $this->person->face_count);
@@ -104,13 +107,14 @@ class FaceCounterPersonTest extends AbstractTestCase
 	{
 		$face = Face::factory()->for_photo($this->photo)->for_person($this->person)->dismissed()->create();
 
-		// dismissed face should not have been counted by the observer
+		// dismissed face should not have been counted
 		$this->person->refresh();
 		self::assertEquals(0, $this->person->face_count);
 		self::assertEquals(0, $this->person->photo_count);
 
 		$face->is_dismissed = false;
 		$face->save();
+		$this->recount();
 
 		$this->person->refresh();
 		self::assertEquals(1, $this->person->face_count);
@@ -124,6 +128,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 		$face = Face::factory()->for_photo($this->photo)->for_person($this->person)->create();
 
 		$face->delete();
+		$this->recount();
 
 		$this->person->refresh();
 		self::assertEquals(0, $this->person->face_count);
@@ -143,6 +148,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 		$photo_count_before = $this->person->photo_count;
 
 		$dismissed->delete();
+		$this->recount();
 
 		$this->person->refresh();
 		self::assertEquals($face_count_before, $this->person->face_count);
@@ -160,6 +166,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 
 		$face->person_id = null;
 		$face->save();
+		$this->recount();
 
 		$this->person->refresh();
 		self::assertEquals(0, $this->person->face_count);
@@ -175,6 +182,7 @@ class FaceCounterPersonTest extends AbstractTestCase
 
 		$face->person_id = $person2->id;
 		$face->save();
+		$this->recount($person2);
 
 		$this->person->refresh();
 		self::assertEquals(0, $this->person->face_count);
@@ -183,5 +191,27 @@ class FaceCounterPersonTest extends AbstractTestCase
 		$person2->refresh();
 		self::assertEquals(1, $person2->face_count);
 		self::assertEquals(1, $person2->photo_count);
+	}
+
+	// ── recount repairs drifted counters instead of going negative ────────
+
+	public function testRecountRepairsDriftedCounters(): void
+	{
+		$face = Face::factory()->for_photo($this->photo)->for_person($this->person)->create();
+		Person::where('id', '=', $this->person->id)->update(['face_count' => 0, 'photo_count' => 0]);
+
+		$face->is_dismissed = true;
+		$face->save();
+		$this->recount();
+
+		$this->person->refresh();
+		self::assertEquals(0, $this->person->face_count);
+		self::assertEquals(0, $this->person->photo_count);
+	}
+
+	private function recount(Person ...$others): void
+	{
+		$person_ids = array_map(fn (Person $p) => $p->id, [$this->person, ...$others]);
+		(new RecountFaceCounters())->forPersons($person_ids);
 	}
 }

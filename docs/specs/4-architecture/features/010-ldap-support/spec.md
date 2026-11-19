@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/010-ldap-support/tasks.md` |
 | Roadmap entry | Feature #010 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 Add LDAP (Lightweight Directory Access Protocol) authentication support to Lychee, enabling enterprise users to authenticate against existing LDAP/Active Directory servers instead of or alongside traditional username/password authentication. This affects the application layer (authentication services), REST layer (login endpoints), and potentially the UI (login form). The feature is configured entirely through environment variables (.env), targeting power users and enterprise deployments with existing directory infrastructure.

@@ -59,7 +59,7 @@
 </template>
 <script lang="ts" setup>
 import { computed } from "vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useAlbumStore } from "@/stores/AlbumState";
 
 const modelValue = defineModel<string>({ default: "" });

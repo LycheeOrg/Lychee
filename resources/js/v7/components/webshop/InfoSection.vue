@@ -94,7 +94,7 @@ import InputText from "@/v7/components/forms/basic/InputText.vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const userStore = useUserStore();
 const router = useRouter();

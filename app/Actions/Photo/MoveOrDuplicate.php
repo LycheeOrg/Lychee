@@ -19,6 +19,7 @@ use App\Events\PhotoSaved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
+use App\Services\PhotoBucketComputer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -70,8 +71,18 @@ class MoveOrDuplicate
 				->where(PA::ALBUM_ID, '=', $to_album->id)
 				->delete();
 
+			// Each new pivot row's key, for $to_album's effective photo sort
+			// column (FR-092-03). A photo kept in its $from_album link too
+			// (the "copy" case) keeps that other row's key untouched.
+			$bucket_computer = resolve(PhotoBucketComputer::class);
+			$column = $to_album->getEffectivePhotoSorting()->column;
+
 			// Add the new links.
-			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
+			DB::table(PA::PHOTO_ALBUM)->insert($photos->map(fn (Photo $photo) => [
+				'photo_id' => $photo->id,
+				'album_id' => $to_album->id,
+				'bucket_key' => $bucket_computer->keyForPhoto($column, $photo),
+			])->all());
 
 			// Dispatch event for destination album (photos added)
 			AlbumSaved::dispatch([$to_album->id], [$to_album->parent_id]);

@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import AlbumService from "@/services/album-service";
 import { useToast } from "primevue/usetoast";
 import Dialog from "primevue/dialog";

@@ -42,6 +42,7 @@ class AccessPermissionFactory extends Factory
 			'grants_upload' => false,
 			'grants_edit' => false,
 			'grants_delete' => false,
+			'grants_move' => false,
 		];
 	}
 
@@ -109,6 +110,15 @@ class AccessPermissionFactory extends Factory
 		return $this->state(function (array $attributes) {
 			return [
 				'grants_delete' => true,
+			];
+		});
+	}
+
+	public function grants_move()
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'grants_move' => true,
 			];
 		});
 	}

@@ -36,12 +36,19 @@
 			</a>
 		</div>
 		<template v-if="is_basic_auth_enabled">
-			<UFormField :label="$t('dialogs.login.username')">
+			<UFormField :label="identifierLabel">
 				<UInput id="username" v-model="username" autocomplete="username" :autofocus="true" class="w-full" />
 			</UFormField>
 			<UFormField :label="$t('dialogs.login.password')">
 				<InputPassword id="password" v-model="password" autocomplete="current-password" @keydown.enter="login" />
 				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.login.unknown_invalid')" />
+				<UAlert
+					v-if="too_many_attempts"
+					color="error"
+					variant="soft"
+					class="mt-2"
+					:description="$t('dialogs.gallery_unlock.too_many_attempts')"
+				/>
 			</UFormField>
 			<UCheckbox v-if="!hideRememberMe" v-model="rememberMe" :label="$t('dialogs.login.remember_me')" />
 			<div class="flex items-center gap-2 mt-4">
@@ -76,18 +83,17 @@
 	</form>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import AuthService from "@/services/auth-service";
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
-import AlbumService from "@/services/album-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useUserStore } from "@/stores/UserState";
-import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useClearViewerState } from "@/composables/useClearViewerState";
 
 const emits = defineEmits<{
 	"logged-in": [];
@@ -109,26 +115,43 @@ const username = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const userStore = useUserStore();
-const albumListStore = useAlbumListStore();
+const { clearViewerState } = useClearViewerState();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
+const { is_basic_auth_enabled, is_webauthn_enabled, is_email_login_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
+const too_many_attempts = ref(false);
+
+// With `email_login_enabled` the field accepts a username or an email address.
+const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
 
 const oauths = ref<OauthProvider[] | undefined>(undefined);
 
 function login() {
+	invalidPassword.value = false;
+	too_many_attempts.value = false;
 	AuthService.login(username.value, password.value, rememberMe.value)
 		.then(() => {
 			is_login_open.value = false;
-			userStore.setUser(undefined);
 			invalidPassword.value = false;
-			AlbumService.clearCache();
-			albumListStore.invalidate();
-			emits("logged-in");
+			too_many_attempts.value = false;
+			clearViewerState();
+			// Init data depends on the user (e.g. face recognition availability).
+			// Kept out of this chain: its failures are not authentication errors.
+			// load() reports its own errors and leaves is_init false, in which case we must not
+			// continue with the guest data.
+			void lycheeStore
+				.refresh()
+				.then(() => {
+					if (lycheeStore.is_init) {
+						emits("logged-in");
+					}
+				})
+				.catch(() => {});
 		})
 		.catch((e) => {
+			too_many_attempts.value = e.response?.status === 429;
 			if (e.response && e.response.status === 401) {
 				invalidPassword.value = true;
 			}
@@ -136,6 +159,7 @@ function login() {
 }
 
 function openWebAuthn() {
+	too_many_attempts.value = false;
 	is_login_open.value = false;
 	is_webauthn_open.value = true;
 	username.value = "";

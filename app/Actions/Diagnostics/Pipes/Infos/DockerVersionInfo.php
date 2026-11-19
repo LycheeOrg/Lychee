@@ -67,6 +67,17 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	}
 
 	/**
+	 * Check if we are running one of the LycheeOrg images, whose worker runs
+	 * in its own container (docker/scripts/entrypoint.sh).
+	 *
+	 * @return bool
+	 */
+	public function isLycheeOrgImage(): bool
+	{
+		return $this->isLycheeOrg() || $this->isLycheeFrankenPHP();
+	}
+
+	/**
 	 * Check if we are running a LycheeOrg Lychee-Docker image.
 	 *
 	 * @return bool

@@ -6,14 +6,15 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'title' => 'Úlohy',
+    'no_data' => 'Zatiaľ neboli vykonané žiadne úlohy.',
+    'ready' => 'Pripravené',
+    'success' => 'Úspech',
+    'failure' => 'Zlyhanie',
+    'started' => 'Spustené',
+    'skipped' => 'Preskočené',
+    'col_date' => 'Dátum',
+    'col_status' => 'Stav',
+    'col_username' => 'Používateľ',
+    'col_job' => 'Úloha',
 ];

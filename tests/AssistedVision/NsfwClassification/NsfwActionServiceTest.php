@@ -200,6 +200,45 @@ class NsfwActionServiceTest extends BaseApiWithDataTest
 		Bus::assertNotDispatched(ApplyNsfwAlbumSensitivityJob::class);
 	}
 
+	public function testSensitiveNoAlbumSkipLeavesPhotoVisible(): void
+	{
+		Bus::fake([ApplyNsfwAlbumSensitivityJob::class]);
+
+		Photo::where('id', $this->photoUnsorted->id)->update([
+			'nsfw_status' => NsfwStatus::PENDING->value,
+			'upload_trust_level' => UserUploadTrustLevel::MONITOR->value,
+			'is_validated' => true,
+		]);
+		$this->photoUnsorted->refresh();
+
+		$this->service->applyActions($this->photoUnsorted, false, false, true);
+
+		Bus::assertNotDispatched(ApplyNsfwAlbumSensitivityJob::class);
+		$this->photoUnsorted->refresh();
+		self::assertEquals(NsfwStatus::VISIBLE, $this->photoUnsorted->nsfw_status);
+		self::assertTrue($this->photoUnsorted->is_validated);
+	}
+
+	public function testSensitiveNoAlbumModerateHoldsPhoto(): void
+	{
+		Bus::fake([ApplyNsfwAlbumSensitivityJob::class]);
+		Configs::set('ai_vision_nsfw_sensitive_no_album_action', NsfwSensitiveNoAlbumAction::MODERATE->value);
+
+		Photo::where('id', $this->photoUnsorted->id)->update([
+			'nsfw_status' => NsfwStatus::PENDING->value,
+			'upload_trust_level' => UserUploadTrustLevel::MONITOR->value,
+			'is_validated' => true,
+		]);
+		$this->photoUnsorted->refresh();
+
+		$this->service->applyActions($this->photoUnsorted, false, false, true);
+
+		Bus::assertNotDispatched(ApplyNsfwAlbumSensitivityJob::class);
+		$this->photoUnsorted->refresh();
+		self::assertEquals(NsfwStatus::REVIEW, $this->photoUnsorted->nsfw_status);
+		self::assertFalse($this->photoUnsorted->is_validated);
+	}
+
 	// ── CLEAN RESULT ────────────────────────────────────────────
 
 	public function testCleanResultSetsVisibleAndRestoresValidation(): void

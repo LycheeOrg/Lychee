@@ -34,9 +34,15 @@ final class Flow
 	/**
 	 * Returns a query builder for albums with published_at not null, ordered by published_at desc.
 	 *
+	 * @param bool $with_relations whether to eager-load covers/statistics/photos for full v2
+	 *                             hydration (`true`, the default, preserves this method's original
+	 *                             behaviour byte-for-byte) or skip them entirely for a lean,
+	 *                             album-level-only query (`false`, used by the v3 SoA listing tier,
+	 *                             Feature 068/FR-068-01)
+	 *
 	 * @return AlbumBuilder
 	 */
-	public function do(): AlbumBuilder
+	public function do(bool $with_relations = true): AlbumBuilder
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -46,16 +52,15 @@ final class Flow
 
 		/** @var Album|null $base */
 		$base = $this->getBase($flow_base);
-		$base_query = $this->getQuery($base, true);
+		$base_query = $this->getQuery($base, $with_relations);
 
+		// Without a base every NSFW ancestor counts, which the stored flag
+		// answers; below a base, NSFW albums at or above it do not count
+		// (FR-103-12). When shown, items are blurred by the same stored flag.
 		$hide_nsfw = $this->config_manager->getValueAsBool('hide_nsfw_in_flow');
-		if ($hide_nsfw) {
-			$base_query->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base?->_lft, $base?->_rgt));
-		} else {
-			// In this specific case we want to know if an album is recursive NSFW.
-			// This will be used to determine if the album should be blurred.
-			$base_query->addVirtualIsRecursiveNSFW();
-		}
+		$base_query
+			->when($hide_nsfw && $base === null, fn ($q) => $q->where('albums.is_recursive_nsfw', '=', false))
+			->when($hide_nsfw && $base !== null, fn ($q) => $q->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base->_lft, $base->_rgt)));
 
 		// Apply the security policy to the query.
 		$include_sub_albums = $this->config_manager->getValueAsBool('flow_include_sub_albums');

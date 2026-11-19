@@ -7,6 +7,7 @@
  */
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -33,9 +34,12 @@ return new class() extends Migration {
 	{
 		$query = DB::table('photos')->whereNull('title_base');
 
-		$progress_bar = new ProgressBar(new ConsoleOutput());
-		$progress_bar->setFormat("Backfilling 'photos' %current%/%max% [%bar%] %percent:3s%%");
-		$progress_bar->start($query->count());
+		$progress_bar = null;
+		if (!App::runningUnitTests()) {
+			$progress_bar = new ProgressBar(new ConsoleOutput());
+			$progress_bar->setFormat("Backfilling 'photos' %current%/%max% [%bar%] %percent:3s%%");
+			$progress_bar->start($query->count());
+		}
 
 		$query
 			->select(['id', 'title'])
@@ -55,10 +59,10 @@ return new class() extends Migration {
 				// https://github.com/mavinoo/laravelBatch
 				batch()->update($photo_instance, $values, 'id');
 
-				$progress_bar->advance($photos->count());
+				$progress_bar?->advance($photos->count());
 			});
 
-		$progress_bar->finish();
+		$progress_bar?->finish();
 	}
 
 	/**

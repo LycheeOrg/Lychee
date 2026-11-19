@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'Αναζήτηση άλμπουμ, φωτογραφιών ή μετάβαση σε σελίδα…',
+    'navigation' => 'Μετάβαση σε',
+    'actions' => 'Ενέργειες',
+    'albums' => 'Άλμπουμ',
+    'results' => 'Αποτελέσματα αναζήτησης',
+    'empty' => 'Δεν βρέθηκαν αποτελέσματα.',
+    'dark_mode' => 'Μετάβαση σε σκούρο θέμα',
+    'light_mode' => 'Μετάβαση σε φωτεινό θέμα',
+    'language' => 'Γλώσσα',
 ];

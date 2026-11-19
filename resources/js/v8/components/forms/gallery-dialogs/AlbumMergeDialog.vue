@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import SearchTargetAlbum from "@/v8/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";

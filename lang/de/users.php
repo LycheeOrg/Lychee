@@ -26,11 +26,11 @@ return [
         'upload_trust_level' => 'Vertrauensstufe zum hochladen',
         'upload_trust_level_check' => 'Prüfen - Uploads müssen erst vom Administrator genehmigt werden, bevor sie veröffentlicht werden.',
         'upload_trust_level_monitor' => 'Überwachen – Uploads sind öffentlich, es sei denn, sie werden wegen ihres Inhalts gemeldet.',
-        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
+        'upload_trust_level_trust_but_verify' => 'Vertrauen ist gut, Kontrolle ist besser – Uploads sind öffentlich; positive Prüfungsergebnisse werden automatisch genehmigt, negative Ergebnisse sind konfigurierbar.',
         'upload_trust_level_trusted' => 'Vertrauenswürdig – Uploads sind sofort öffentlich.',
         'trust_level_options' => [
             'trusted' => 'Vertrauenswürdig',
-            'trust_but_verify' => 'Trust but Verify',
+            'trust_but_verify' => 'Vertrauen ist gut, Kontrolle ist besser',
             'monitor' => 'Überwachen',
             'check' => 'Prüfen',
         ],

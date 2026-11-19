@@ -9,7 +9,6 @@
 namespace App\Actions\Photo\Pipes\Init;
 
 use App\Actions\Photo\Convert\RawToJpeg;
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\CannotConvertMediaFileException;
 use App\Exceptions\Handler;
@@ -29,7 +28,7 @@ use App\Services\Image\FileExtensionService;
  *   by the existing flow), and log a warning.
  * - If the file is NOT a RAW format: pass through unchanged.
  */
-class DetectAndStoreRaw implements InitPipe
+class DetectAndStoreRaw extends AbstractInitPipe
 {
 	/**
 	 * @param InitDTO                           $state
@@ -37,7 +36,7 @@ class DetectAndStoreRaw implements InitPipe
 	 *
 	 * @return InitDTO
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		$ext = strtolower($state->source_file->getOriginalExtension());
 		if (!str_starts_with($ext, '.')) {
@@ -68,5 +67,10 @@ class DetectAndStoreRaw implements InitPipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.detect_and_store_raw';
 	}
 }

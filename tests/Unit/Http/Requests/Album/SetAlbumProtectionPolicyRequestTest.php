@@ -26,7 +26,7 @@ class SetAlbumProtectionPolicyRequestTest extends BaseRequestTest
 	public function testAuthorization()
 	{
 		Gate::shouldReceive('check')
-			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null])
+			->with(AlbumPolicy::CAN_CHANGE_PROTECTION_POLICY, [AbstractAlbum::class, null])
 			->andReturn(true);
 
 		$request = new SetAlbumProtectionPolicyRequest();

@@ -1,5 +1,5 @@
 <template>
-	<Panel v-if="initData?.modules.is_face_recognition_warning_enabled" class="max-w-6xl mx-auto p-6 border-none">
+	<Panel v-if="rights?.modules.is_face_recognition_warning_enabled" class="max-w-6xl mx-auto p-6 border-none">
 		<h2 class="text-xl font-bold mb-4">
 			<span class="pi pi-exclamation-triangle text-warning-600 ltr:mr-2 rtl:ml-2"></span>
 			<span>{{ $t("people.face_recognition_warning.title") }}</span>
@@ -16,7 +16,7 @@
 
 		<p class="text-muted-color mb-4" v-html="$t('people.face_recognition_warning.no_liability')"></p>
 
-		<div v-if="initData?.settings.can_edit" class="flex flex-row justify-between gap-3 border-t border-surface pt-4">
+		<div v-if="rights?.settings.can_edit" class="flex flex-row justify-between gap-3 border-t border-surface pt-4">
 			<div class="flex items-center gap-2">
 				<Checkbox v-model="acknowledged" binary inputId="face-warning-ack" />
 				<label for="face-warning-ack" class="text-sm cursor-pointer">{{ $t("people.face_recognition_warning.acknowledge") }}</label>
@@ -36,25 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
-import InitService from "@/services/init-service";
 import SettingsService from "@/services/settings-service";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import Panel from "primevue/panel";
 
-const leftMenuStore = useLeftMenuStateStore();
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 
 const acknowledged = ref(false);
-
-async function load(): Promise<void> {
-	return InitService.fetchGlobalRights().then((data) => {
-		initData.value = data.data;
-	});
-}
 
 function accept() {
 	SettingsService.setConfigs({
@@ -65,15 +56,9 @@ function accept() {
 			},
 		],
 	}).then(() => {
-		if (initData.value) {
-			initData.value.modules.is_face_recognition_warning_enabled = false;
+		if (rights.value) {
+			rights.value.modules.is_face_recognition_warning_enabled = false;
 		}
 	});
 }
-
-onMounted(() => {
-	if (initData.value === undefined) {
-		load();
-	}
-});
 </script>

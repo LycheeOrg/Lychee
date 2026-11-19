@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Handler;
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * We apply watermarks on pictures at upload time.
  */
-class ApplyWatermark implements StandalonePipe
+class ApplyWatermark extends AbstractStandalonePipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
@@ -27,7 +26,7 @@ class ApplyWatermark implements StandalonePipe
 	) {
 	}
 
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Skip if user explicitly opted out
 		if ($state->apply_watermark === false) {
@@ -67,5 +66,10 @@ class ApplyWatermark implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.apply_watermark';
 	}
 }

@@ -12,8 +12,9 @@ return [
     'success' => 'Succes',
     'failure' => 'Mislukt',
     'started' => 'Gestart',
-    'col_date' => 'Date',
+    'skipped' => 'Overgeslagen',
+    'col_date' => 'Datum',
     'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'col_username' => 'Gebruiker',
+    'col_job' => 'Taak',
 ];

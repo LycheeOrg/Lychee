@@ -91,6 +91,7 @@ class Handler extends ExceptionHandler
 	public const EXCEPTION2SEVERITY = [
 		HttpHoneyPotException::class => SeverityType::NOTICE, // In theory this is a 404, but because it touches honey we don't really care.
 		PhotoResyncedException::class => SeverityType::WARNING,
+		PhotoRejectedException::class => SeverityType::WARNING,
 		PhotoSkippedException::class => SeverityType::WARNING,
 		ImportCancelledException::class => SeverityType::NOTICE,
 		ConfigurationException::class => SeverityType::NOTICE,
@@ -103,6 +104,7 @@ class Handler extends ExceptionHandler
 	protected $dontReport = [
 		TokenMismatchException::class,
 		SessionExpiredException::class,
+		GalleryPasswordRequiredException::class, // Expected for every anonymous visit to a locked gallery.
 		NoWriteAccessOnLogsExceptions::class,
 		ViteException::class,
 	];

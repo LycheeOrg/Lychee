@@ -68,5 +68,5 @@ Feature 056 introduces a v3 endpoint addressed by a plain `photo_id` + `size_var
 ## Links
 
 - Related spec sections: `docs/specs/4-architecture/features/056-api-v3-asset-retrieval/spec.md` (FR-056-02/03, NFR-056-01)
-- Related open questions: Q-056-01, Q-056-05 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-056-01, Q-056-05 ([056-api-v3-asset-retrieval/open-questions.md](../4-architecture/features/056-api-v3-asset-retrieval/open-questions.md))
 - Related ADRs: none (first v3-specific ADR)

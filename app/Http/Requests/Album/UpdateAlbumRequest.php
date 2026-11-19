@@ -13,12 +13,14 @@ use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasAlbumSortingCriterion;
 use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasCopyright;
+use App\Contracts\Http\Requests\HasDateScrubber;
 use App\Contracts\Http\Requests\HasDescription;
 use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
+use App\Contracts\Http\Requests\HasPublishedAt;
 use App\Contracts\Http\Requests\HasTags;
 use App\Contracts\Http\Requests\HasTimelineAlbum;
 use App\Contracts\Http\Requests\HasTimelinePhoto;
@@ -41,12 +43,14 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasAspectRatioTrait;
 use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
+use App\Http\Requests\Traits\HasDateScrubberTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasIsPinnedTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\Requests\Traits\HasPublishedAtTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTimelineAlbumTrait;
 use App\Http\Requests\Traits\HasTimelinePhotoTrait;
@@ -61,12 +65,13 @@ use App\Rules\RandomIDRule;
 use App\Rules\SlugRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTags
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasDateScrubber, HasIsPinned, HasTags, HasPublishedAt
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -81,10 +86,23 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasPhotoLayoutTrait;
 	use HasTimelineAlbumTrait;
 	use HasTimelinePhotoTrait;
+	use HasDateScrubberTrait;
 	use HasIsPinnedTrait;
 	use HasTagsTrait;
+	use HasPublishedAtTrait;
 
 	private bool $tags_provided = false;
+	private bool $is_map_header = false;
+	private ?Photo $cover_photo = null;
+
+	/**
+	 * The photo to use as the album's manually-selected cover, or null to
+	 * fall back to auto-selection.
+	 */
+	public function coverPhoto(): ?Photo
+	{
+		return $this->cover_photo;
+	}
 
 	/**
 	 * Whether the `tags` key was present in the request payload at all.
@@ -97,6 +115,14 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		return $this->tags_provided;
 	}
 
+	/**
+	 * Whether the album header shall be the map of its photos (Feature 086).
+	 */
+	public function is_map_header(): bool
+	{
+		return $this->is_map_header;
+	}
+
 	public function authorize(): bool
 	{
 		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $this->album]) &&
@@ -107,6 +133,15 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 					->where(PA::ALBUM_ID, $this->album->id)
 					->where(PA::PHOTO_ID, $this->photo->id)
 					->count() > 0)
+			) &&
+			(
+				$this->cover_photo === null ||
+				DB::table(PA::PHOTO_ALBUM)
+					->join('albums', 'albums.id', '=', PA::ALBUM_ID)
+					->where(PA::PHOTO_ID, $this->cover_photo->id)
+					->where('albums._lft', '>=', $this->album->_lft)
+					->where('albums._rgt', '<=', $this->album->_rgt)
+					->exists()
 			);
 	}
 
@@ -141,11 +176,24 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => ['required', 'boolean', 'declined_if:' . RequestAttribute::IS_COMPACT_ATTRIBUTE . ',true'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
+			// Feature 068 (FR-068-13): `sometimes`, not `present` - confirmed via
+			// the existing AlbumUpdateTest/AlbumUpdateFocusTest regression suite
+			// (11 failures on a `present` attempt): every *existing* caller of
+			// this endpoint (today's v8 frontend included, until T-068-24 lands)
+			// omits this brand-new key entirely, exactly the same reason
+			// `slug`/`tags` above are `sometimes` rather than `present` - a
+			// field no caller has ever been asked to send cannot retroactively
+			// become mandatory without breaking every caller that hasn't been
+			// updated yet.
+			RequestAttribute::PUBLISHED_AT_ATTRIBUTE => ['sometimes', 'nullable', 'date'],
 		];
 	}
 
@@ -174,7 +222,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			null :
 			new PhotoSortingCriterion($photo_column->toColumnSortingType(), $photo_order);
 
-		$album_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
+		$album_column = ColumnSortingAlbumType::tryFrom($values[RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE]);
 		$album_order = OrderSortingType::tryFrom($values[RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE]);
 
 		$this->album_sorting_criterion = $album_column === null ?
@@ -185,6 +233,9 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->album_timeline = TimelineAlbumGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_ALBUM]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
+		$this->is_date_scrubber_enabled_provided = array_key_exists(RequestAttribute::ALBUM_DATE_SCRUBBER, $values);
+		$date_scrubber = $values[RequestAttribute::ALBUM_DATE_SCRUBBER] ?? null;
+		$this->is_date_scrubber_enabled = $date_scrubber === null ? null : static::toBoolean($date_scrubber);
 
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 		$this->tags_provided = array_key_exists(RequestAttribute::TAGS_ATTRIBUTE, $values);
@@ -196,7 +247,18 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$slug = $values[RequestAttribute::SLUG_ATTRIBUTE] ?? null;
 		$album->slug = ($slug !== '' ? $slug : null);
 
-		if ($this->is_compact) {
+		$this->published_at_provided = array_key_exists(RequestAttribute::PUBLISHED_AT_ATTRIBUTE, $values);
+		/** @var string|null $published_at */
+		$published_at = $values[RequestAttribute::PUBLISHED_AT_ATTRIBUTE] ?? null;
+		$this->published_at = $published_at !== null ? Carbon::parse($published_at) : null;
+
+		/** @var string|null $cover_id */
+		$cover_id = $values[RequestAttribute::COVER_ID_ATTRIBUTE];
+		$this->cover_photo = $cover_id !== null ? Photo::query()->findOrFail($cover_id) : null;
+
+		$this->is_map_header = static::toBoolean($values[RequestAttribute::IS_MAP_HEADER_ATTRIBUTE]);
+
+		if ($this->is_compact || $this->is_map_header) {
 			return;
 		}
 

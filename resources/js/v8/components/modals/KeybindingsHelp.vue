@@ -1,16 +1,24 @@
 <template>
-	<UModal v-model:open="open" :dismissible="true" :ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }">
-		<template #header>
-			<h1 class="text-center text-xl font-bold w-full">{{ $t("dialogs.keybindings.header") }}</h1>
-		</template>
+	<UModal
+		v-model:open="open"
+		:dismissible="true"
+		:ui="{ content: 'max-w-xl lg:max-w-3xl xl:max-w-7xl' }"
+		:close="{
+			color: 'neutral',
+			variant: 'soft',
+			class: 'rounded-full',
+		}"
+		:title="$t('dialogs.keybindings.header')"
+	>
 		<template #body>
 			<div class="flex flex-wrap gap-4 justify-center align-top">
 				<UTable
-					v-for="(list, idx) in shortcutsList"
+					v-for="(list, idx) in visibleShortcuts"
 					:key="`list-${idx}`"
 					:data="list.shortcuts"
 					:columns="columns"
-					class="max-w-2xs w-full"
+					class="w-full"
+					:class="props.only === undefined ? 'max-w-2xs' : 'max-w-xl'"
 					:ui="{ thead: 'hidden', td: 'px-2 py-1' }"
 				>
 					<template #key-cell="{ row }">
@@ -25,10 +33,8 @@
 						</div>
 					</template>
 				</UTable>
-				<div class="w-full flex justify-center mt-4 items-center gap-2">
+				<div v-if="props.only === undefined" class="w-full flex flex-col justify-center items-center gap-2">
 					<UCheckbox v-model="doNotShowAgain" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.don_t_show_again')" />
-				</div>
-				<div class="w-full flex justify-center mb-4 items-center gap-2">
 					<UCheckbox v-model="hideHeaderButton" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.hide_header_button')" />
 				</div>
 			</div>
@@ -43,12 +49,15 @@
 <script setup lang="ts">
 import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 
 const open = defineModel<boolean>("open", { default: false });
+
+/** Show a single section (e.g. `quick_naming` from the face quick naming view, Feature 093). */
+const props = defineProps<{ only?: string }>();
 
 const toast = useAppToast();
 const doNotShowAgain = ref(false);
@@ -97,6 +106,7 @@ function closeCallback() {
 }
 const shortcutsList = ref([
 	{
+		id: "site",
 		header: trans("dialogs.keybindings.side_wide"),
 		shortcuts: [
 			{ action: trans("dialogs.keybindings.back_cancel"), key: "Esc" },
@@ -107,6 +117,7 @@ const shortcutsList = ref([
 		],
 	},
 	{
+		id: "albums",
 		header: trans("dialogs.keybindings.albums"),
 		shortcuts: [
 			{ action: trans("dialogs.keybindings.new_album"), key: "n" },
@@ -119,6 +130,7 @@ const shortcutsList = ref([
 		],
 	},
 	{
+		id: "album",
 		header: trans("dialogs.keybindings.album"),
 		shortcuts: [
 			{ action: trans("dialogs.keybindings.new_album"), key: "n" },
@@ -129,9 +141,11 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
 			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.toggle"), key: "i" },
+			{ action: trans("dialogs.keybindings.toggle_date_scrubber"), key: "d" },
 		],
 	},
 	{
+		id: "photo",
 		header: trans("dialogs.keybindings.photo"),
 		shortcuts: [
 			{ action: trans("dialogs.keybindings.previous"), key: "←" },
@@ -144,9 +158,28 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.edit"), key: "e" },
 			{ action: trans("dialogs.keybindings.show_hide_meta"), key: "i" },
 			{ action: trans("dialogs.keybindings.toggle_face_overlay"), key: "p" },
+			{ action: trans("dialogs.keybindings.toggle_sphere"), key: "v" },
+		],
+	},
+	{
+		id: "quick_naming",
+		header: trans("dialogs.keybindings.quick_naming"),
+		shortcuts: [
+			{ action: trans("dialogs.keybindings.qn_name"), key: "Enter" },
+			{ action: trans("dialogs.keybindings.qn_new_person"), key: "shift Enter" },
+			{ action: trans("dialogs.keybindings.qn_move_highlight"), key: "↑ ↓" },
+			{ action: trans("dialogs.keybindings.qn_skip"), key: "→" },
+			{ action: trans("dialogs.keybindings.qn_back"), key: "←" },
+			{ action: trans("dialogs.keybindings.qn_clear"), key: "BckSpace" },
+			{ action: trans("dialogs.keybindings.qn_discard"), key: "BckSpace Space" },
+			{ action: trans("dialogs.keybindings.qn_leave"), key: "Esc" },
 		],
 	},
 ]);
+
+const visibleShortcuts = computed(() =>
+	props.only === undefined ? shortcutsList.value.filter((l) => l.id !== "quick_naming") : shortcutsList.value.filter((l) => l.id === props.only),
+);
 
 defineShortcuts({
 	"?": () => (open.value = true),

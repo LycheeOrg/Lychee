@@ -1,0 +1,258 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+namespace App\Actions\Photo\StructOfArrays;
+
+use App\Contracts\Models\AbstractAlbum;
+use App\Eloquent\FixedQueryBuilder;
+use App\Enum\MetricsAccess;
+use App\Facades\Helpers;
+use App\Http\Resources\Models\ColourPaletteResource;
+use App\Http\Resources\Models\PanoramaResource;
+use App\Http\Resources\Models\PhotoStatisticsResource;
+use App\Http\Resources\Models\SizeVariantsResouce;
+use App\Http\Resources\V3\PhotoDetailResource;
+use App\Models\Photo;
+use App\Models\User;
+use App\Repositories\ConfigManager;
+use GrahamCampbell\Markdown\Facades\Markdown;
+use Illuminate\Database\Eloquent\Collection;
+use Spatie\LaravelData\Optional;
+
+/**
+ * Query logic for `GET /api/v3/Albums/{album_id}/Photos/details`.
+ *
+ * Unlike {@see QueryPhotoBuckets}/{@see QueryPhotoRatios}, this tier does
+ * use Eloquent hydration (with `size_variants`/`palette`/`statistics`/`tags`
+ * eager-loaded) — a deliberate, scoped exception to the
+ * other two tiers' `toBase()`-only discipline: reusing
+ * `SizeVariantsResouce`/`ColourPaletteResource`/`PhotoStatisticsResource`
+ * exactly as-is requires those classes' hydrated-`Photo`-model constructor,
+ * not raw scalars. This is safe at this tier's scale specifically: `details`
+ * is never whole-album (`photo_ids[]` is capped at 300 as input; `bucket_id`
+ * mode is uncapped but bounded implicitly by that bucket's own size, which
+ * the client already knows from tier 1) — the scale concern that rules out
+ * Eloquent hydration for the whole-album `buckets`/`ratios` tiers doesn't
+ * apply here.
+ */
+class QueryPhotoDetails
+{
+	use ResolvesPhotoSource;
+
+	public function __construct(
+		private readonly ConfigManager $config_manager,
+		private readonly ResolvesPhotoGrants $resolve_photo_grants,
+	) {
+	}
+
+	/**
+	 * @param string[]|null $photo_ids
+	 */
+	public function do(AbstractAlbum $album, ?User $user, ?string $bucket_id, ?array $photo_ids): PhotoDetailResource
+	{
+		$scheme = $this->resolveScheme($album, $this->resolveEffectiveSorting($album));
+		$query = $this->resolvePhotoQuery($album, $user, function (FixedQueryBuilder $q) use ($album, $scheme, $bucket_id, $photo_ids): void {
+			if ($bucket_id !== null) {
+				// One bucket window in SQL for every source (FR-092-07).
+				$this->applyBucketWindow($q, $album, $scheme, [$bucket_id]);
+			} else {
+				// Ids not actually in this album or not visible to the caller
+				// are silently curated away, never a 4xx.
+				$q->whereIn('photos.id', $photo_ids ?? []);
+			}
+		})->select('photos.*');
+
+		$photos = $query->with(['size_variants', 'palette', 'statistics', 'tags'])->get();
+
+		return $this->buildResource($photos, $user);
+	}
+
+	/**
+	 * Entry point for a photo source that is not an album at all — Feature
+	 * 069's search tiers, whose candidate set comes from
+	 * {@see \App\Actions\Search\StructOfArrays\SearchPhotoSource} rather than
+	 * from {@see ResolvesPhotoSource}.
+	 *
+	 * Strictly additive: {@see self::do()} is untouched, and both entry points
+	 * converge on the same {@see self::buildResource()} projection, so the two
+	 * tiers can never drift apart in shape. There is no `bucket_id` branch here
+	 * because search has no bucket tier (spec.md NG1) — the caller always scopes
+	 * by an explicit, already-capped `photo_ids[]`.
+	 *
+	 * @param FixedQueryBuilder<Photo> $query     a query already filtered to the caller's visible candidate set
+	 * @param string[]                 $photo_ids ids not in the candidate set are silently curated away, never a 4xx
+	 */
+	public function fromQuery(FixedQueryBuilder $query, ?User $user, array $photo_ids): PhotoDetailResource
+	{
+		/** @var Collection<int,Photo> $photos */
+		$photos = $query
+			->select('photos.*')
+			->whereIn('photos.id', $photo_ids)
+			->with(['size_variants', 'palette', 'statistics', 'tags'])
+			->get();
+
+		return $this->buildResource($photos, $user);
+	}
+
+	/**
+	 * @param Collection<int,Photo> $photos
+	 */
+	private function buildResource(Collection $photos, ?User $user): PhotoDetailResource
+	{
+		$include_exif = $this->config_manager->getValueAsBool('display_exif_data');
+		$gps_on = $this->config_manager->getValueAsBool('gps_coordinate_display') &&
+			($user !== null || $this->config_manager->getValueAsBool('gps_coordinate_display_public'));
+		$location_on = $this->config_manager->getValueAsBool('location_show') &&
+			($user !== null || $this->config_manager->getValueAsBool('location_show_public'));
+		$metrics_enabled = $this->config_manager->getValueAsBool('metrics_enabled');
+		$metrics_access = $this->config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
+
+		// One grouped query for the whole page, replacing a per-photo policy
+		// evaluation that lazy-loaded each containing album's
+		// `access_permissions` (6 queries for 4 photos, measured).
+		$should_downgrade_by_id = $this->resolve_photo_grants->downgradeMap($photos, $user);
+
+		$ids = [];
+		$descriptions = [];
+		$preformatted_descriptions = [];
+		$tags = [];
+		$rating_avgs = [];
+		$licenses = [];
+		$owner_ids = [];
+		$nsfw_statuses = [];
+		$checksums = [];
+		$original_checksums = [];
+		$updated_ats = [];
+		$live_photo_checksums = [];
+		$live_photo_content_ids = [];
+		$live_photo_urls = [];
+		$panoramas = [];
+		$face_counts = [];
+		$is_camera_dates = [];
+		$is_taken_at_modifieds = [];
+		$palette = [];
+		$size_variants = [];
+		$statistics = [];
+		$makes = [];
+		$models = [];
+		$lenses = [];
+		$apertures = [];
+		$shutters = [];
+		$focals = [];
+		$isos = [];
+		$durations = [];
+		$fps = [];
+		$latitudes = [];
+		$longitudes = [];
+		$altitudes = [];
+		$locations = [];
+
+		foreach ($photos as $photo) {
+			$ids[] = $photo->id;
+			$descriptions[] = $photo->description;
+			// Same conversion as `PreformattedPhotoData::$description`; the
+			// client injects this one via `v-html`, never the raw text.
+			$preformatted_descriptions[] = ($photo->description ?? '') === '' ? '' : Markdown::convert($photo->description)->getContent();
+			$tags[] = $photo->tags->pluck('name')->all();
+			$rating_avgs[] = $photo->rating_avg !== null ? (float) $photo->rating_avg : null;
+			$licenses[] = $photo->license->value;
+			$owner_ids[] = $photo->owner_id;
+			$nsfw_statuses[] = $photo->nsfw_status?->value;
+			$checksums[] = $photo->checksum;
+			$original_checksums[] = $photo->original_checksum;
+			$updated_ats[] = $photo->updated_at->toIso8601String();
+			$live_photo_checksums[] = $photo->live_photo_checksum;
+			$live_photo_content_ids[] = $photo->live_photo_content_id;
+			$live_photo_urls[] = $photo->live_photo_url;
+			$panoramas[] = PanoramaResource::fromPhoto($photo);
+			$face_counts[] = $photo->face_count;
+			// Same derivation as `PreComputedPhotoData`.
+			$is_camera_dates[] = $photo->taken_at !== null;
+			$is_taken_at_modifieds[] = $photo->taken_at !== null && ($photo->initial_taken_at === null || $photo->taken_at->notEqualTo($photo->initial_taken_at));
+
+			$palette[] = ColourPaletteResource::fromModel($photo->palette);
+			// Batched equivalent of `PhotoPolicy::canAccessFullPhoto()`, resolved
+			// for the whole page in one query by `ResolvesPhotoGrants`.
+			// `canSee()` needs no check here - every row reaching this point
+			// survived the tier's own visibility-filtered candidate query.
+			$size_variants[] = new SizeVariantsResouce($photo, $should_downgrade_by_id[$photo->id] ?? true);
+
+			// The one genuinely per-row (not per-request) gate here -
+			// `metrics_access=owner` depends on *this row's* owner_id, not
+			// a request-wide constant.
+			$can_read_metrics = $metrics_enabled && match ($metrics_access) {
+				MetricsAccess::PUBLIC => true,
+				MetricsAccess::LOGGED_IN => $user !== null,
+				MetricsAccess::OWNER => $user !== null && $photo->owner_id === $user->id,
+				MetricsAccess::ADMIN => $user?->may_administrate === true,
+				default => false,
+			};
+			$statistics[] = $can_read_metrics ? PhotoStatisticsResource::fromModel($photo->statistics) : null;
+
+			if ($include_exif) {
+				$makes[] = $photo->make;
+				$models[] = $photo->model;
+				$lenses[] = $photo->lens;
+				$apertures[] = $photo->aperture;
+				$shutters[] = $photo->shutter;
+				$focals[] = $photo->focal;
+				$isos[] = $photo->iso;
+				// Same formatting as `PreformattedPhotoData`.
+				$durations[] = Helpers::secondsToHMS(intval($photo->duration));
+				$fps[] = $photo->fps !== null && $photo->fps !== '' ? $photo->fps . ' fps' : '';
+			}
+
+			if ($gps_on) {
+				$latitudes[] = $photo->latitude;
+				$longitudes[] = $photo->longitude;
+				$altitudes[] = $photo->altitude;
+			}
+
+			if ($location_on) {
+				$locations[] = $photo->location;
+			}
+		}
+
+		return new PhotoDetailResource(
+			ids: $ids,
+			descriptions: $descriptions,
+			preformatted_descriptions: $preformatted_descriptions,
+			tags: $tags,
+			rating_avgs: $rating_avgs,
+			licenses: $licenses,
+			owner_ids: $owner_ids,
+			nsfw_statuses: $nsfw_statuses,
+			checksums: $checksums,
+			original_checksums: $original_checksums,
+			updated_ats: $updated_ats,
+			live_photo_checksums: $live_photo_checksums,
+			live_photo_content_ids: $live_photo_content_ids,
+			live_photo_urls: $live_photo_urls,
+			panoramas: $panoramas,
+			face_counts: $face_counts,
+			is_camera_dates: $is_camera_dates,
+			is_taken_at_modifieds: $is_taken_at_modifieds,
+			palette: $palette,
+			size_variants: $size_variants,
+			statistics: $statistics,
+			makes: $include_exif ? $makes : Optional::create(),
+			models: $include_exif ? $models : Optional::create(),
+			lenses: $include_exif ? $lenses : Optional::create(),
+			apertures: $include_exif ? $apertures : Optional::create(),
+			shutters: $include_exif ? $shutters : Optional::create(),
+			focals: $include_exif ? $focals : Optional::create(),
+			isos: $include_exif ? $isos : Optional::create(),
+			durations: $include_exif ? $durations : Optional::create(),
+			fps: $include_exif ? $fps : Optional::create(),
+			latitudes: $gps_on ? $latitudes : Optional::create(),
+			longitudes: $gps_on ? $longitudes : Optional::create(),
+			altitudes: $gps_on ? $altitudes : Optional::create(),
+			locations: $location_on ? $locations : Optional::create(),
+		);
+	}
+}

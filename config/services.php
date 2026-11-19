@@ -124,6 +124,14 @@ return [
 		'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/redirect'),
 	],
 
+	'kanidm' => [
+		'client_id' => env('KANIDM_CLIENT_ID'),
+		'client_secret' => env('KANIDM_CLIENT_SECRET'),
+		'redirect' => env('KANIDM_REDIRECT_URI'),
+		'base_url' => env('KANIDM_BASE_URL'),
+		'enable_pkce' => env('KANIDM_ENABLE_PKCE', true),
+	],
+
 	'mastodon' => [
 		'domain' => env('MASTODON_DOMAIN'),
 		'client_id' => env('MASTODON_ID'),
@@ -146,6 +154,15 @@ return [
 		'redirect' => env('NEXTCLOUD_REDIRECT_URI', '/auth/nextcloud/redirect'),
 		'instance_uri' => env('NEXTCLOUD_BASE_URI'),
 	],
+
+	'pocketid' => [
+		'client_id' => env('POCKETID_CLIENT_ID'),
+		'client_secret' => env('POCKETID_CLIENT_SECRET'),
+		'redirect' => env('POCKETID_REDIRECT_URI', '/auth/pocketid/redirect'),
+		'base_url' => env('POCKETID_BASE_URL'),
+		'use_pkce' => env('POCKETID_USE_PKCE', true),
+	],
+
 	'keycloak' => [
 		'client_id' => env('KEYCLOAK_CLIENT_ID'),
 		'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),

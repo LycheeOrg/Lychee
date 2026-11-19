@@ -1,5 +1,6 @@
 import { ALL } from "@/config/constants";
 import AlbumService from "@/services/album-service";
+import AlbumChildrenV3Service from "@/services/album-children-v3-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import { defineStore } from "pinia";
 import { useTogglablesStateStore } from "./ModalsState";
@@ -7,8 +8,17 @@ import { usePhotosStore } from "./PhotosState";
 import { useAlbumsStore } from "./AlbumsState";
 import { useLycheeStateStore } from "./LycheeState";
 import { useLayoutStore } from "./LayoutState";
+import { useUserStore } from "./UserState";
+import { computeBucketBoundaries, type AlbumBucketBoundary } from "@/v8/utils/albumBucketBoundaries";
+import { adaptAlbumChildTile, combineAlbumChildRights, isRegularAlbumParentOwner, DEFAULT_ALBUM_CHILD_RIGHTS } from "@/v8/utils/adaptAlbumChildTile";
+import PhotoChildrenV3Service, { type PhotoBucketResource } from "@/services/photo-children-v3-service";
+import { adaptPhotoTile, linkNeighbours, mergePhotoDetail, tileIndexById } from "@/v8/utils/adaptPhotoTile";
+import { createDetailRequests } from "@/utils/detailRequests";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
+
+/** In-flight tier-3 requests of album photos (FR-103-08). */
+const albumDetailRequests = createDetailRequests();
 
 export const useAlbumStore = defineStore("album-store", {
 	state: () => ({
@@ -45,6 +55,31 @@ export const useAlbumStore = defineStore("album-store", {
 		albums_per_page: 0,
 		albums_total: 0,
 		albums_loading: false as boolean,
+
+		// Tier 1 (buckets) + derived boundary metadata for the
+		// flag-on virtualized subalbum grid/list. Tier 2 itself isn't kept
+		// separately once adapted — albumsStore.albums (AdaptedAlbumTile[])
+		// is the actual display source.
+		bucketsV3: undefined as App.Http.Resources.V3.AlbumBucketResource | undefined,
+		boundariesV3: null as AlbumBucketBoundary[] | null,
+
+		// Tier 1 (buckets) + derived boundary metadata + raw per-tile aspect
+		// ratios for the flag-on virtualized photo grid (Feature 065) — named
+		// distinctly from the album-child fields above since one navigation
+		// can show both an album's sub-albums and its own direct photos
+		// simultaneously (FR-065-03). `photoRatiosV3` is the one piece tier 2
+		// carries that has no place on a `PhotoResource`-shaped tile itself
+		// (no such field exists on the real model) — kept as a parallel,
+		// index-aligned array instead, consumed only by
+		// `computePhotoLayout()`.
+		photoBucketsV3: undefined as PhotoBucketResource | undefined,
+		photoBoundariesV3: null as AlbumBucketBoundary[] | null,
+		photoRatiosV3: [] as number[],
+		// Ids already resolved via `loadPhotoDetails()` for the
+		// currently-browsed album — dedupes repeat fetches within one album
+		// visit; cleared on every navigation (NFR-065-09), never grows
+		// across albums.
+		photoDetailsResolvedIds: {} as Record<string, boolean>,
 
 		// Tag filter state for photos
 		active_tag_filter: null as { tag_ids: number[]; tag_logic: string } | null,
@@ -90,6 +125,12 @@ export const useAlbumStore = defineStore("album-store", {
 			this.albums_per_page = 0;
 			this.albums_total = 0;
 			this.albums_loading = false;
+			this.bucketsV3 = undefined;
+			this.boundariesV3 = null;
+			this.photoBucketsV3 = undefined;
+			this.photoBoundariesV3 = null;
+			this.photoRatiosV3 = [];
+			this.photoDetailsResolvedIds = {};
 			// Reset tag filter
 			this.active_tag_filter = null;
 			// Reset person filter and people list
@@ -304,6 +345,142 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 
 		/**
+		 * Flag-aware dispatcher for the direct-photos fetch (Feature 065,
+		 * mirrors `loadAlbumsAuto()`): v3 tier 1+2 when `isPhotoSoaActive`,
+		 * v2 `loadPhotos()` otherwise. The sole call site for a fresh
+		 * navigation, and for every tag/person filter toggle.
+		 */
+		loadPhotosAuto(): Promise<void> {
+			if (this.isPhotoSoaActive) {
+				return this.loadPhotosV3();
+			}
+			return this.loadPhotos(1, false);
+		},
+
+		/**
+		 * Fetches tier 1 (buckets) + tier 2 (ratios) together and adapts
+		 * each row into a full, `PhotoResource`-shaped tile
+		 * (`adaptPhotoTile()`), written into `photosState.photos` — the same
+		 * field the v2 path already populates, no new tile-array field
+		 * (mirrors `loadAlbumsV3()`'s own discipline). No windowed
+		 * pagination: tier 2 is whole-album-at-once, so the existing
+		 * `photos_*`-pagination fields are left at their reset defaults
+		 * (`Pagination` is hidden for this path by `AlbumPanel.vue`'s own
+		 * `isPhotoSoaActive` check, mirroring the sub-album pattern).
+		 */
+		loadPhotosV3(): Promise<void> {
+			const photosState = usePhotosStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return Promise.resolve();
+			}
+
+			const requestedAlbumId = this.albumId;
+			this.photos_loading = true;
+
+			return Promise.all([PhotoChildrenV3Service.getBuckets(requestedAlbumId), PhotoChildrenV3Service.getRatios(requestedAlbumId)])
+				.then(([bucketsResponse, ratiosResponse]) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const buckets = bucketsResponse.data;
+					const ratios = ratiosResponse.data;
+
+					this.photoBucketsV3 = buckets;
+					this.photoBoundariesV3 = computeBucketBoundaries(buckets, ratios.ids.length);
+					this.photoRatiosV3 = ratios.ratios;
+					this.photoDetailsResolvedIds = {};
+
+					const lycheeStore = useLycheeStateStore();
+					const tiles = ratios.ids.map((_, i) => adaptPhotoTile(i, ratios, requestedAlbumId, lycheeStore));
+					// next_photo_id/previous_photo_id are derived purely
+					// client-side from array order (FR-065-15), never from a
+					// backend field — neither tier ever carries one. Set on the
+					// plain tiles before the store holds them (FR-103-03).
+					linkNeighbours(tiles);
+					photosState.setPhotos(tiles, false);
+
+					this.photos_current_page = 1;
+					this.photos_last_page = 1;
+					this.photos_per_page = tiles.length;
+					this.photos_total = tiles.length;
+					this.photos_min_page = 1;
+				})
+				.catch((error) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+					console.error(error);
+				})
+				.finally(() => {
+					if (this.albumId === requestedAlbumId) {
+						this.photos_loading = false;
+					}
+				});
+		},
+
+		/**
+		 * On-demand, bounded tier-3 (`details`) fetch (G5) — called only
+		 * from the lightbox-open path (`PhotoState.ts.load()`) and the
+		 * detail-dependent edit dialogs, themselves gated on
+		 * `isPhotoSoaActive` (Q-065-05) before ever calling this. Already-
+		 * resolved ids (`photoDetailsResolvedIds`) are skipped; results are
+		 * merged directly into the matching `photosState.photos` element in
+		 * place (`mergePhotoDetail()`), so every existing reactive consumer
+		 * — `PhotoState.ts`'s lightbox getters included — picks up the
+		 * richer data with zero getter-level changes. Never called with
+		 * more than a handful of ids at a time in this feature (NFR-065-04);
+		 * defensively chunks at Feature 064's own 300-id input cap regardless.
+		 */
+		async loadPhotoDetails(ids: string[]): Promise<boolean> {
+			const photosState = usePhotosStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return true;
+			}
+
+			const requestedAlbumId = this.albumId;
+			const indexById = tileIndexById(photosState.photos);
+
+			// Ids already merged or in flight are not requested again; resolves
+			// false when a request carrying one of `ids` failed (FR-103-07/08).
+			return albumDetailRequests.load(
+				ids.filter((id) => indexById.has(id)),
+				(id) => this.photoDetailsResolvedIds[id] === true,
+				async (idsToFetch) => {
+					const CHUNK_SIZE = 300;
+					const chunks: string[][] = [];
+					for (let i = 0; i < idsToFetch.length; i += CHUNK_SIZE) {
+						chunks.push(idsToFetch.slice(i, i + CHUNK_SIZE));
+					}
+
+					const responses = await Promise.all(
+						chunks.map((chunk) => PhotoChildrenV3Service.getDetails(requestedAlbumId, { photoIds: chunk })),
+					);
+
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const indexAfter = tileIndexById(photosState.photos);
+					for (const response of responses) {
+						const detail = response.data;
+						for (let i = 0; i < detail.ids.length; i++) {
+							const index = indexAfter.get(detail.ids[i]);
+							if (index !== undefined) {
+								mergePhotoDetail(photosState.photos[index], detail, i);
+							}
+						}
+					}
+					for (const id of idsToFetch) {
+						this.photoDetailsResolvedIds[id] = true;
+					}
+				},
+			);
+		},
+
+		/**
 		 * Re-fetch the photos which are currently displayed, in place.
 		 *
 		 * Contrary to `refresh()`, the store is never `reset()`: the album head, the
@@ -320,6 +497,17 @@ export const useAlbumStore = defineStore("album-store", {
 			const photosState = usePhotosStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
+				return;
+			}
+
+			// On the SoA path (Feature 065), tier 1+2 is whole-album/unpaginated
+			// — there's no page window to re-fetch, so re-run the same
+			// dispatcher a fresh navigation uses instead (also correctly
+			// reflects a bucket-placement change, e.g. a title edit under a
+			// TITLE-sorted album, since the backend already recomputed
+			// `bucket_id` server-side by the time this re-fetch runs — G8).
+			if (this.isPhotoSoaActive) {
+				await this.loadPhotosV3();
 				return;
 			}
 
@@ -416,13 +604,149 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 
 		/**
+		 * Flag-aware dispatcher for the subalbum-children fetch: v3 tier 1+2
+		 * (+ background tier 3) when the flag is on, v2
+		 * `loadAlbums()` otherwise. The sole call site `load()` uses instead
+		 * of calling `loadAlbums(1, false)` directly.
+		 */
+		loadAlbumsAuto(): Promise<void> {
+			const lycheeStore = useLycheeStateStore();
+			if (lycheeStore.is_struct_of_array_enabled) {
+				return this.loadAlbumsV3().then(() => {
+					void this.loadAlbumsV3Rights();
+				});
+			}
+			return this.loadAlbums(1, false);
+		},
+
+		/**
+		 * Fetches tier 1 (buckets) + tier 2 (children) together and adapts
+		 * each child into an `AdaptedAlbumTile`, written into
+		 * `albumsStore.albums` — the flag-on replacement for v2's
+		 * `loadAlbums()`. No windowed pagination: tier 2
+		 * is whole-album-at-once, so the existing
+		 * `albums_*`-pagination fields are set to a single "page 1 of 1"
+		 * shape rather than needing a dedicated v3 branch in `AlbumPanel.vue`.
+		 */
+		loadAlbumsV3(): Promise<void> {
+			const albumsStore = useAlbumsStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return Promise.resolve();
+			}
+
+			const requestedAlbumId = this.albumId;
+			this.albums_loading = true;
+
+			// GetAlbumBucketsRequest resolves plain Album ids only — a
+			// TagAlbum/PersonAlbum id 404s there (mirrors
+			// loadAlbumsV3Rights()'s isRegularAlbumParent guard), which would
+			// otherwise fail the whole Promise.all and leave albumsStore.albums
+			// stale. Skip the request for those and fall back to the same
+			// non-bucketable shape bucketableV3 already renders flat.
+			const isRegularAlbumParent = this.modelAlbum !== undefined;
+			const bucketsPromise: Promise<App.Http.Resources.V3.AlbumBucketResource> = isRegularAlbumParent
+				? AlbumChildrenV3Service.getBuckets(requestedAlbumId).then((response) => response.data)
+				: Promise.resolve({ bucket_ids: [], counts: [], labels: [], bucketable: false });
+
+			return Promise.all([bucketsPromise, AlbumChildrenV3Service.getChildren(requestedAlbumId)])
+				.then(([buckets, childrenResponse]) => {
+					// Race condition guard: don't apply a response for an album
+					// the user has already navigated away from (mirrors
+					// loadAlbums()/loadPhotos()'s existing requestedAlbumId
+					// pattern, no separate mechanism needed).
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const children = childrenResponse.data;
+
+					this.bucketsV3 = buckets;
+					this.boundariesV3 = computeBucketBoundaries(buckets, children.ids.length);
+
+					const lycheeStore = useLycheeStateStore();
+					albumsStore.albums = children.ids.map((_, i) => adaptAlbumChildTile(i, children, DEFAULT_ALBUM_CHILD_RIGHTS, lycheeStore));
+
+					this.albums_current_page = 1;
+					this.albums_last_page = 1;
+					this.albums_per_page = children.ids.length;
+					this.albums_total = children.ids.length;
+				})
+				.catch((error) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+					console.error(error);
+				})
+				.finally(() => {
+					if (this.albumId === requestedAlbumId) {
+						this.albums_loading = false;
+					}
+				});
+		},
+
+		/**
+		 * Background-fetches tier 3 (rights) immediately after tier 1+2
+		 * resolve and reactively merges the combined rights into
+		 * each already-adapted child in place.
+		 */
+		loadAlbumsV3Rights(): Promise<void> {
+			const albumsStore = useAlbumsStore();
+			const userStore = useUserStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return Promise.resolve();
+			}
+
+			const requestedAlbumId = this.albumId;
+			// Captured now, before any `await` — reflects the branch load()
+			// already resolved for this navigation (modelAlbum/tagAlbum/
+			// personAlbum are set before loadAlbumsAuto() is ever called).
+			const isRegularAlbumParent = this.modelAlbum !== undefined;
+
+			return AlbumChildrenV3Service.getRights(requestedAlbumId)
+				.then((response) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+
+					const rightsV3 = response.data;
+					const indexById = new Map(rightsV3.ids.map((id, i) => [id, i]));
+
+					albumsStore.albums = albumsStore.albums.map((tile) => {
+						const i = indexById.get(tile.id);
+						if (i === undefined) {
+							return tile;
+						}
+						return {
+							...tile,
+							rights: combineAlbumChildRights(
+								i,
+								rightsV3,
+								isRegularAlbumParentOwner(rightsV3, isRegularAlbumParent, userStore.user?.id),
+								albumsStore.rootRights?.can_upload,
+							),
+						};
+					});
+				})
+				.catch((error) => {
+					if (this.albumId !== requestedAlbumId) {
+						return;
+					}
+					console.error(error);
+				});
+		},
+
+		/**
 		 * Set tag filter and reload photos.
 		 * Resets to page 1 and replaces existing photos.
 		 */
 		setTagFilter(tag_ids: number[], tag_logic: string = "OR"): Promise<void> {
 			this.active_tag_filter = { tag_ids, tag_logic };
-			// Reset to page 1 and reload with filter
-			return this.loadPhotos(1, false);
+			// A tag filter is active → isPhotoSoaActive is now false (NG4) —
+			// loadPhotosAuto() dispatches to the v2 path, exactly as calling
+			// loadPhotos(1, false) directly would have.
+			return this.loadPhotosAuto();
 		},
 
 		/**
@@ -431,8 +755,9 @@ export const useAlbumStore = defineStore("album-store", {
 		 */
 		clearTagFilter(): Promise<void> {
 			this.active_tag_filter = null;
-			// Reset to page 1 and reload without filter
-			return this.loadPhotos(1, false);
+			// isPhotoSoaActive may now be true again (flag on, regular Album,
+			// no other filter) — loadPhotosAuto() re-dispatches accordingly.
+			return this.loadPhotosAuto();
 		},
 
 		/**
@@ -457,13 +782,14 @@ export const useAlbumStore = defineStore("album-store", {
 		/** Filter photos to those containing the given person and reload. */
 		setPersonFilter(person_id: string): Promise<void> {
 			this.active_person_filter = person_id;
-			return this.loadPhotos(1, false);
+			// A person filter is active → isPhotoSoaActive is now false (NG4).
+			return this.loadPhotosAuto();
 		},
 
 		/** Clear person filter and reload all photos. */
 		clearPersonFilter(): Promise<void> {
 			this.active_person_filter = null;
-			return this.loadPhotos(1, false);
+			return this.loadPhotosAuto();
 		},
 
 		/**
@@ -559,15 +885,15 @@ export const useAlbumStore = defineStore("album-store", {
 					// Clamp startPage to a valid range (guard against bad query params)
 					const resolvedStart = startPage > 1 ? startPage : 1;
 
-					// Load the target page first so a directly linked photo can be displayed
-					// immediately. Previous pages are prepended in background afterwards.
-					await this.loadPhotos(resolvedStart, false);
-
+					// Parent type is resolved *before* the photo-loading dispatch below
+					// (moved up from its previous position after that call) since
+					// `isPhotoSoaActive` (Feature 065) needs `this.modelAlbum` to already
+					// reflect this navigation's own parent, not the previous one's.
 					const loader: Promise<void>[] = [];
 
 					if (data.data.config.is_model_album) {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
-						loader.push(this.loadAlbums(1, false));
+						loader.push(this.loadAlbumsAuto());
 					} else if (data.data.config.is_base_album) {
 						const resource = data.data.resource as Record<string, unknown>;
 						if ("is_person_album" in resource && resource.is_person_album) {
@@ -578,16 +904,28 @@ export const useAlbumStore = defineStore("album-store", {
 						// TagAlbum/PersonAlbum also expose "matching albums" (real albums
 						// carrying the tag as metadata / containing a matching face) via the
 						// same paginated /Album::albums endpoint used for real Album children.
-						loader.push(this.loadAlbums(1, false));
+						loader.push(this.loadAlbumsAuto());
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
+					}
+
+					// Load the target page first so a directly linked photo can be displayed
+					// immediately. Previous pages are prepended in background afterwards.
+					// On the SoA path (Feature 065), the whole album is loaded at once —
+					// no page concept, no deep-link page search, no background prepend.
+					if (this.isPhotoSoaActive) {
+						await this.loadPhotosV3();
+					} else {
+						await this.loadPhotos(resolvedStart, false);
 					}
 
 					// When a specific photo is expected but was not found in the initial page,
 					// search other pages sequentially (backward then forward).  This is run
 					// concurrently with album loading so the album header appears quickly.
+					// Not applicable to the SoA path — the whole album is already loaded, so a
+					// requested photoId is either already present or genuinely doesn't exist.
 					const photoFoundInInitialPage = photoId !== undefined && photosState.photos.some((p) => p.id === photoId);
-					if (photoId !== undefined && !photoFoundInInitialPage) {
+					if (!this.isPhotoSoaActive && photoId !== undefined && !photoFoundInInitialPage) {
 						loader.push(this._searchPhotoInPages(photoId, resolvedStart, requestedAlbumId));
 					}
 
@@ -595,12 +933,13 @@ export const useAlbumStore = defineStore("album-store", {
 
 					// Fire off background loading of immediately preceding pages (prepend).
 					// Only done when we are NOT searching (the sequential search already covers
-					// those pages, and running both would load them twice).
+					// those pages, and running both would load them twice) and NOT on the SoA
+					// path (nothing to prepend — the whole album is already loaded).
 					// Capped at the 5 most-recent previous pages to avoid issuing too many
 					// concurrent requests when jumping to a high page number (e.g. page 50).
 					// These are intentionally NOT awaited so the photo panel can render
 					// while earlier pages stream in, without blocking albumStore.load().
-					if (photoId === undefined || photoFoundInInitialPage) {
+					if (!this.isPhotoSoaActive && (photoId === undefined || photoFoundInInitialPage)) {
 						const backgroundPagesLimit = 5;
 						const firstBackgroundPage = Math.max(1, resolvedStart - backgroundPagesLimit);
 						for (let p = resolvedStart - 1; p >= firstBackgroundPage; p--) {
@@ -682,6 +1021,46 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		hasAlbumsPagination(state): boolean {
 			return state.albums_last_page > 0;
+		},
+		// Whether the flag-on grid/list should
+		// render sticky bucket headers, or fall back to a single flat
+		// unbucketed section (either tier 1 genuinely reports
+		// `bucketable: false`, the defensive count-mismatch fallback
+		// kicked in, or there's only one bucket — a lone label carries no
+		// information worth a header row — all collapse to the same flat
+		// rendering path).
+		bucketableV3(state): boolean {
+			return (state.bucketsV3?.bucketable ?? false) && state.boundariesV3 !== null && state.boundariesV3.length > 1;
+		},
+		/** Mirrors `bucketableV3` above, for the photo grid (Feature 065). */
+		photoBucketableV3(state): boolean {
+			return (state.photoBucketsV3?.bucketable ?? false) && state.photoBoundariesV3 !== null && state.photoBoundariesV3.length > 1;
+		},
+		/**
+		 * Centralized "is the SoA photo path active for this view" flag
+		 * (resolved via Q-065-05, Option A) — read by the fetch dispatcher
+		 * (`loadPhotosAuto()`), the render dispatcher
+		 * (`PhotoThumbPanelVirtual.vue`), the on-demand `details` fetch
+		 * (`loadPhotoDetails()`, gated at its call sites in `PhotoState.ts`
+		 * and the edit dialogs), and drag-select (`getPhotoBoxesV3()`)
+		 * instead of each independently re-deriving the same condition.
+		 * `true` for a regular `Album`, a `TagAlbum`, a `PersonAlbum`, or a
+		 * `BaseSmartAlbum` parent alike — the v3 photo-listing tier now
+		 * covers all four album types — with no active tag/person *filter*
+		 * (NG4 — filtering a regular album's photos by tag/person is a
+		 * separate, unrelated feature still served by v2 only).
+		 */
+		isPhotoSoaActive(state): boolean {
+			const lycheeStore = useLycheeStateStore();
+			return (
+				lycheeStore.is_struct_of_array_enabled &&
+				(state.modelAlbum !== undefined ||
+					state.tagAlbum !== undefined ||
+					state.personAlbum !== undefined ||
+					state.smartAlbum !== undefined) &&
+				state.active_tag_filter === null &&
+				state.active_person_filter === null
+			);
 		},
 	},
 });

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Sharing\PurgeAlbumUserThumbs;
 use App\Http\Requests\UserGroup\CreateUserGroupRequest;
 use App\Http\Requests\UserGroup\DeleteUserGroupRequest;
 use App\Http\Requests\UserGroup\ListUserGroupRequest;
@@ -55,9 +56,16 @@ class UserGroupsController extends Controller
 		return new UserGroupResource($request->user_group());
 	}
 
-	public function delete(DeleteUserGroupRequest $request): void
+	public function delete(DeleteUserGroupRequest $request, PurgeAlbumUserThumbs $purge_thumbs): void
 	{
+		// Read the members before the group (and with it every access it
+		// granted) is gone: their cached covers may have been produced by this
+		// group's permissions and would otherwise outlive it.
+		$member_ids = $request->user_group()->users()->pluck('users.id');
+
 		$request->user_group()->delete();
+
+		$purge_thumbs->forUsers($member_ids);
 	}
 
 	private function validateUniqueGroupName(string $name, ?int $exclude_id = null): void

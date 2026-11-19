@@ -24,7 +24,7 @@ return [
     'support' => 'Podpora',
     'contact' => 'Kontakt',
     'messages' => 'Zprávy',
-    'people' => 'People',
+    'people' => 'Lidé',
     'webhooks' => 'Webhooky',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Katalog velikostí',
 ];

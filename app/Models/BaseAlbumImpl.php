@@ -8,9 +8,11 @@
 
 namespace App\Models;
 
+use App\Casts\DateTimeWithTimezoneCast;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
+use App\Contracts\Models\HasUTCBasedTimes;
 use App\DTO\EffectiveAccessPermission;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
@@ -101,6 +103,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $created_at
  * @property Carbon                           $updated_at
  * @property Carbon|null                      $published_at
+ * @property string|null                      $published_at_orig_tz
  * @property string                           $title
  * @property string                           $title_base
  * @property int                              $title_index
@@ -111,6 +114,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int                              $owner_id
  * @property User                             $owner
  * @property bool                             $is_nsfw
+ * @property bool|null                        $is_date_scrubber_enabled
  * @property bool                             $is_pinned
  * @property Collection                       $shared_with
  * @property int|null                         $shared_with_count
@@ -145,7 +149,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * @mixin \Eloquent
  */
-class BaseAlbumImpl extends Model implements HasRandomID
+class BaseAlbumImpl extends Model implements HasRandomID, HasUTCBasedTimes
 {
 	/** @phpstan-use HasRandomIDAndLegacyTimeBasedID<BaseAlbumImpl> */
 	use HasRandomIDAndLegacyTimeBasedID;
@@ -183,6 +187,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'id' => null,
 		'created_at' => null,
 		'updated_at' => null,
+		'published_at' => null,
+		'published_at_orig_tz' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
 		'title_base' => '',
 		'title_index' => 0,
@@ -196,6 +202,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'is_nsfw' => false,
 		'is_pinned' => false,
 		'photo_layout' => null,
+		'is_date_scrubber_enabled' => null,
 		// 'statistics' => null,
 	];
 
@@ -206,10 +213,12 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'id' => RandomID::ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'published_at' => 'datetime',
+		'published_at' => DateTimeWithTimezoneCast::class,
+		'published_at_orig_tz' => 'string',
 		'slug' => 'string',
 		'is_nsfw' => 'boolean',
 		'is_pinned' => 'boolean',
+		'is_date_scrubber_enabled' => 'boolean',
 		'owner_id' => 'integer',
 		'photo_layout' => PhotoLayoutType::class,
 	];

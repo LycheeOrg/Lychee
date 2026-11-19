@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import AlbumService from "@/services/album-service";
+import { useAlbumListStore } from "@/stores/AlbumListState";
 import PhotoService from "@/services/photo-service";
 import { trans } from "laravel-vue-i18n";
 import { watch } from "vue";
@@ -44,6 +45,7 @@ const emits = defineEmits<{
 	updated: [];
 }>();
 
+const albumListStore = useAlbumListStore();
 const title = ref<string | undefined>(undefined);
 
 const question = computed(() => {
@@ -83,6 +85,7 @@ function executeAlbum() {
 	}
 
 	AlbumService.rename(props.album.id, title.value).then(() => {
+		albumListStore.invalidate();
 		emits("updated");
 		AlbumService.clearCache(props.album?.id);
 	});

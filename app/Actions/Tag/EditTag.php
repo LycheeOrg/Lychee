@@ -8,6 +8,7 @@
 
 namespace App\Actions\Tag;
 
+use App\Events\AlbumTagsChanged;
 use App\Models\Tag;
 
 /**
@@ -23,6 +24,10 @@ use App\Models\Tag;
  *
  * In the end we just merge the old tag into the new one.
  * If the old tag has no more relationships, we delete it.
+ *
+ * A rename to the same name up to case (`toronto` => `Toronto`) is applied to the tag itself.
+ * The unique index on `tags.name` and the case-insensitive collation of MySQL/MariaDB
+ * do not allow both spellings to exist, so this rename is visible to all users.
  */
 class EditTag
 {
@@ -30,8 +35,18 @@ class EditTag
 
 	public function do(Tag $old_tag, string $name): void
 	{
-		/** @var Tag $new_tag */
-		$new_tag = Tag::where('name', $name)->first() ?? Tag::create(['name' => $name]);
+		/** @var Tag|null $new_tag */
+		$new_tag = Tag::where('name', $name)->first();
+
+		if ($this->isSameTag($old_tag, $new_tag, $name)) {
+			$old_tag->name = $name;
+			$old_tag->save();
+			AlbumTagsChanged::dispatch([$old_tag->id]);
+
+			return;
+		}
+
+		$new_tag ??= Tag::create(['name' => $name]);
 
 		$merge = resolve(MergeTag::class);
 		$merge->do(
@@ -40,5 +55,16 @@ class EditTag
 		);
 
 		$this->cleanupUnusedTags();
+	}
+
+	/**
+	 * Whether the new name designates the tag being renamed.
+	 * On MySQL/MariaDB the lookup by name already matches the old tag (case and accents are ignored),
+	 * on PostgreSQL/SQLite it finds nothing and we compare the names ignoring case.
+	 */
+	private function isSameTag(Tag $old_tag, ?Tag $found, string $name): bool
+	{
+		return $found?->id === $old_tag->id ||
+			($found === null && mb_strtolower($old_tag->name) === mb_strtolower($name));
 	}
 }

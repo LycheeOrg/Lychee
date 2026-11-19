@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/004-album-size-statistics/tasks.md` |
 | Roadmap entry | #004 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 Refactor album size statistics from runtime calculation to pre-computed database table. Currently, [Spaces.php](app/Actions/Statistics/Spaces.php) executes expensive aggregate queries across `size_variants`, `photo_album`, and nested album trees every time size statistics are requested. This feature creates a dedicated `album_size_statistics` table storing size breakdowns per album per size variant type, enabling fast lookups for user storage quotas, album space usage, and storage analytics. The computation is event-driven: when photos/albums change, a job recomputes affected albums and propagates changes up the album tree.

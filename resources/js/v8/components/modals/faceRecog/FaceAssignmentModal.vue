@@ -40,7 +40,12 @@
 					</div>
 				</div>
 
-				<PersonInput ref="personInputRef" v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" />
+				<PersonInput
+					ref="personInputRef"
+					v-model:person-id="selectedPersonId"
+					v-model:new-person-name="newPersonName"
+					@submit="submitOnEnter"
+				/>
 			</div>
 		</template>
 		<template #footer>
@@ -77,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import FaceDetectionService from "@/services/face-detection-service";
@@ -105,6 +110,13 @@ function selectSuggestion(suggestion: App.Http.Resources.Models.FaceSuggestionRe
 	if (suggestion.person_name) {
 		personInputRef.value?.selectByName(suggestion.person_name);
 	}
+}
+
+function submitOnEnter() {
+	if (submitting.value || (!selectedPersonId.value && !newPersonName.value.trim())) {
+		return;
+	}
+	submit();
 }
 
 function submit() {
@@ -145,10 +157,4 @@ function dismiss() {
 			dismissing.value = false;
 		});
 }
-
-watch(open, (isOpen) => {
-	if (isOpen) {
-		personInputRef.value?.reset();
-	}
-});
 </script>

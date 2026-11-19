@@ -32,7 +32,7 @@ import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
 import ScrollPanel from "primevue/scrollpanel";
 import MaintenanceService from "@/services/maintenance-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { trans } from "laravel-vue-i18n";
 
 const data = ref<number | undefined>(undefined);
@@ -40,8 +40,9 @@ const loading = ref(false);
 const toast = useToast();
 
 const description = computed(() => {
+	// -1: queued mode, every album is recomputed, there is no count to show.
 	if (data.value === -1) {
-		return "";
+		return trans("maintenance.backfill-album-sizes.description_queue");
 	}
 	return sprintf(trans("maintenance.backfill-album-sizes.description"), data.value);
 });

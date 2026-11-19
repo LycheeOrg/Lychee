@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'Hľadať albumy, fotografie alebo prejsť na stránku…',
+    'navigation' => 'Prejsť na',
+    'actions' => 'Akcie',
+    'albums' => 'Albumy',
+    'results' => 'Výsledky vyhľadávania',
+    'empty' => 'Nenašli sa žiadne výsledky.',
+    'dark_mode' => 'Prepnúť na tmavý režim',
+    'light_mode' => 'Prepnúť na svetlý režim',
+    'language' => 'Jazyk',
 ];

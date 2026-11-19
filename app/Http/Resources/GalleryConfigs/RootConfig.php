@@ -15,7 +15,6 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -24,7 +23,6 @@ class RootConfig extends Data
 	public bool $is_album_timeline_enabled = false;
 	public bool $is_search_accessible = false;
 	public bool $show_keybinding_help_button = false;
-	#[LiteralTypeScriptType('App.Enum.AspectRatioType')]
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 
 	// for now we keep it here. Maybe we should move it to a separate class
@@ -38,6 +36,9 @@ class RootConfig extends Data
 	public bool $is_header_bar_gradient = false;
 
 	public SharedAlbumsVisibility $shared_albums_visibility_mode = SharedAlbumsVisibility::SHOW;
+
+	public bool $is_tag_albums_separate_category_enabled = false;
+	public bool $is_person_albums_separate_category_enabled = false;
 
 	public function __construct()
 	{
@@ -55,6 +56,9 @@ class RootConfig extends Data
 		$this->back_button_enabled = request()->configs()->getValueAsBool('back_button_enabled');
 		$this->back_button_text = request()->configs()->getValueAsString('back_button_text');
 		$this->back_button_url = request()->configs()->getValueAsString('back_button_url');
+
+		$this->is_tag_albums_separate_category_enabled = request()->configs()->getValueAsBool('TA_separate_category');
+		$this->is_person_albums_separate_category_enabled = request()->configs()->getValueAsBool('PA_separate_category');
 
 		$this->setHeaderImageUrl();
 		$this->setSharedAlbumsVisibilityMode();

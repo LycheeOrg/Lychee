@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Дополнительные ссылки',
+    'description' => 'Управляйте произвольным упорядоченным списком дополнительных ссылок, отображаемых в навигации и/или подвале целевой страницы.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Дополнительные ссылки ещё не настроены.',
+    'create_first' => 'Создайте свою первую ссылку',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Подпись',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Размещение',
+    'col_enabled' => 'Включена',
+    'col_actions' => 'Действия',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Навигация',
+    'placement_footer' => 'Подвал',
+    'placement_both' => 'Навигация и подвал',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Встроенная',
+    'built_in_cannot_delete' => 'Эту встроенную ссылку нельзя удалить. Вместо этого отключите её или переместите, как любую другую ссылку.',
+    'built_in_url_hint' => 'Это встроенная ссылка, её адрес нельзя изменить.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Создать ссылку',
+    'edit' => 'Изменить',
+    'delete' => 'Удалить',
+    'cancel' => 'Отмена',
+    'save' => 'Сохранить',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Подпись',
+    'field_label_placeholder' => 'например, Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Размещение',
+    'field_open_in_new_tab' => 'Открывать в новой вкладке',
+    'field_enabled' => 'Включена',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Создать ссылку',
+    'modal_edit_title' => 'Изменить ссылку',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Удалить ссылку',
+    'confirm_delete_message' => 'Вы уверены, что хотите удалить ссылку ":label"? Это действие нельзя отменить.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Ссылка успешно создана.',
+    'updated' => 'Ссылка успешно обновлена.',
+    'deleted' => 'Ссылка успешно удалена.',
+    'reordered' => 'Порядок ссылок успешно изменён.',
+    'error_load' => 'Не удалось загрузить ссылки.',
+    'error_save' => 'Не удалось сохранить ссылку.',
+    'error_delete' => 'Не удалось удалить ссылку.',
+    'error_reorder' => 'Не удалось изменить порядок ссылок.',
 ];

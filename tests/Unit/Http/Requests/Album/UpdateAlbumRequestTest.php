@@ -48,7 +48,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 
 	public function testAuthorization()
 	{
-		$albumMock = $this->createMock(Album::class);
+		$albumMock = self::createStub(Album::class);
 		$baseAlbumImpl = new BaseAlbumImpl();
 		$albumMock->method('__get')->willReturnCallback(function (string $key) use ($baseAlbumImpl) {
 			if ($key === 'base_class') {
@@ -63,7 +63,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $albumMock])
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($albumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);
@@ -73,9 +73,11 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 
 		$request->merge([
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => true,
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => false,
 			RequestAttribute::IS_PINNED_ATTRIBUTE => false,
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
 			RequestAttribute::HEADER_ID_ATTRIBUTE => 'ePN3Y_kA16KtZGXmxv-kdBrg',
+			RequestAttribute::COVER_ID_ATTRIBUTE => null,
 			RequestAttribute::TITLE_ATTRIBUTE => 'Test Title',
 			RequestAttribute::LICENSE_ATTRIBUTE => LicenseType::CC_BY_1_0->value,
 			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'example description',
@@ -124,11 +126,15 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::IS_MAP_HEADER_ATTRIBUTE => ['required', 'boolean', 'declined_if:' . RequestAttribute::IS_COMPACT_ATTRIBUTE . ',true'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			RequestAttribute::COVER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
+			RequestAttribute::ALBUM_DATE_SCRUBBER => ['sometimes', 'nullable', 'boolean'],
 			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->mock_verify), new SlugRule($request->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
+			RequestAttribute::PUBLISHED_AT_ATTRIBUTE => ['sometimes', 'nullable', 'date'],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 

@@ -1,20 +1,20 @@
 # How to design and customize the v8 (Nuxt UI) frontend
 
-Lychee is mid-migration from PrimeVue (v7, `resources/js/v7/`) to Nuxt UI (v8, `resources/js/v8/`), run as two parallel trees toggled by the `nuxt_ui` feature flag — see [ADR-0005](../6-decisions/ADR-0005-nuxt-ui-migration.md) and [ADR-0006](../6-decisions/ADR-0006-nuxt-ui-dual-tree-toggle.md) for why. This guide covers the parts specific to the v8/Nuxt UI tree: theming, per-component style overrides, icons, toasts/dialogs, and how to see your changes. Everything not UI-library-specific (Pinia stores, services, most composables, coding conventions like `.then()` over `async/await`) is shared with v7 and already documented in [frontend-architecture.md](../3-reference/frontend-architecture.md) and [coding-conventions.md](../3-reference/coding-conventions.md) — that content still applies to `v8/` unchanged.
+Lychee is mid-migration from PrimeVue (v7, `resources/js/v7/`) to Nuxt UI (v8, `resources/js/v8/`), run as two parallel trees toggled by the `v8` feature flag (`V8_ENABLED`; `nuxt_ui` until Feature 109, ADR-109-01) — see [ADR-0005](../6-decisions/ADR-0005-nuxt-ui-migration.md) and [ADR-0006](../6-decisions/ADR-0006-nuxt-ui-dual-tree-toggle.md) for why. This guide covers the parts specific to the v8/Nuxt UI tree: theming, per-component style overrides, icons, toasts/dialogs, and how to see your changes. Everything not UI-library-specific (Pinia stores, services, most composables, coding conventions like `.then()` over `async/await`) is shared with v7 and already documented in [frontend-architecture.md](../3-reference/frontend-architecture.md) and [coding-conventions.md](../3-reference/coding-conventions.md) — that content still applies to `v8/` unchanged.
 
 ## Seeing your changes
 
-1. Set `NUXT_UI_ENABLED=true` in `.env` (backs the `nuxt_ui` key in `config/features.php`) so `resources/views/vueapp.blade.php` serves `app-v8.ts`/`app-v8.css` instead of the v7 bundle.
-2. `npm run dev` and open the app — every route resolves to a `v8/views/**` component while the flag is on (route parity is a hard gate; see ADR-0006 item 7).
+1. Set `V8_ENABLED=true` in `.env` (backs the `v8` key in `config/features.php`) so `resources/views/vueapp.blade.php` serves `app-v8.ts`/`app-v8.css` instead of the v7 bundle; the same switch enables the v8 server features and the v3 struct-of-arrays listings v8 runs on (Feature 109, ADR-109-01).
+2. `vp dev` and open the app — every route resolves to a `v8/views/**` component while the flag is on (route parity is a hard gate; see ADR-0006 item 7).
 3. There is no automated frontend test suite (see the ADR-0005 "Operational Impact" section) — verification is manual/browser-based. Always check both light and dark mode (toggle via Settings → General → dark mode, or add/remove the `.dark` class on `<body>` directly in devtools for a quick check).
-4. Before considering a change done: `npm run check` (vue-tsc), `npm run lint`, `npm run check-formatting`, and `npm run build` — all four run in CI ([.github/workflows/js_check.yml](../../../.github/workflows/js_check.yml)) and cover both `app.ts` and `app-v8.ts`.
+4. Before considering a change done: `vp run typecheck` (vue-tsc), `vp check` (Oxfmt + Oxlint) and `vp run build` — all three run in CI ([.github/workflows/js_check.yml](../../../.github/workflows/js_check.yml)) and cover both `app.ts` and `app-v8.ts`.
 
 ## How the color theme is wired
 
 Nuxt UI expects to run inside a real Nuxt app, where its `colors.js` runtime plugin reads `appConfig.ui.colors` and injects the resolved `--ui-color-*`/`--ui-*` CSS custom properties via `useHead()`. None of that exists in a plain Vue SPA, so v8 reproduces it by hand in two places that must stay in sync:
 
 - **[vite.config.ts](../../../vite.config.ts)** — the `ui()` Vite plugin's `ui` option sets the *named* palette (`{ colors: { primary: "sky", neutral: "slate" } }`) and any other Nuxt UI `appConfig.ui` overrides. This is build-time: it's spread into a virtual `#build/app.config` module (via `defu`) that every Nuxt UI component reads through `useAppConfig()` to resolve its own `tv()` theme (colors, and any per-component slot/variant overrides — see below).
-- **[resources/js/v8/theme.ts](../../../resources/js/v8/theme.ts)** — `applyV8Theme()`, called once before `app.mount()` in `app-v8.ts`, materializes the actual `--ui-color-<name>-<shade>` CSS custom properties into a `<style>` tag at runtime, since there's no `useHead()`/Nuxt plugin to do it for us. `neutral` gets an extra light/dark *family* split (slate in light mode, zinc in dark mode) to match v7's Aura preset — that part is bespoke, Nuxt UI's own mechanism only varies shade, not family, between light/dark.
+- **[resources/js/v8/style/theme.ts](../../../resources/js/v8/style/theme.ts)** — `applyV8Theme()`, called once before `app.mount()` in `app-v8.ts`, materializes the actual `--ui-color-<name>-<shade>` CSS custom properties into a `<style>` tag at runtime, since there's no `useHead()`/Nuxt plugin to do it for us. `neutral` gets an extra light/dark *family* split (slate in light mode, zinc in dark mode) to match v7's Aura preset — that part is bespoke, Nuxt UI's own mechanism only varies shade, not family, between light/dark.
 
 **If you add or rename a named color** (`primary`, `secondary`, `success`, `info`, `warning`, `error`), update both `NAMED_COLORS` in `theme.ts` *and* the `colors` object passed to `ui()` in `vite.config.ts` — they're independent hand-maintained copies of the same intent, nothing enforces they match.
 
@@ -52,7 +52,7 @@ For a one-off override instead, pass `:ui` directly on the instance — several 
 
 ## Icons
 
-v7 used PrimeIcons (`pi pi-*` classes); v8 uses Nuxt UI's `<UIcon>` backed by Iconify, with the `prime` Iconify collection (`@iconify-json/prime`) providing a 1:1 icon-name mapping so no icons had to be redesigned as part of the migration (see ADR-0005, Q-049-02).
+v7 used PrimeIcons (`pi pi-*` classes); v8 uses Nuxt UI's `<UIcon>` backed by Iconify, with the `prime` Iconify collection (`@iconify-json/prime`) providing a 1:1 icon-name mapping so no icons had to be redesigned (see ADR-0005).
 
 - `resources/js/v8/icons.ts` registers the `prime` collection offline at startup (`registerIconCollections()`, called once in `app-v8.ts`) so icon lookups never hit the public Iconify API at runtime.
 - `primeIconToIconifyName("pi pi-home")` → `"prime:home"` converts a v7-style class string to the Iconify name `<UIcon>` expects — use this when porting a v7 component that stored icon names as PrimeIcons classes (e.g. from a store or API response) rather than hand-writing the `prime:` prefix everywhere.

@@ -20,7 +20,6 @@ class OptimizeTables extends BaseOptimizer
 	{
 		$ret = ['Optimizing tables.'];
 		$driver_name = $this->getDriverType($ret);
-		/** @var array{name:string,schema:?string,size:int,comment:?string,collation:?string,engine:?string}[] */
 		$tables = Schema::getTables();
 
 		/** @var string|null $sql */

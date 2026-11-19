@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import StatisticsService from "@/services/statistics-service";
 import Panel from "primevue/panel";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { computed, onMounted, ref } from "vue";
 import PunchCard from "./PunchCard.vue";
 import PunchCardCaption from "./PunchCardCaption.vue";

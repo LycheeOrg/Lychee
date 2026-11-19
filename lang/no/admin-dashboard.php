@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'Oppdateringsstatus',
         'update_available' => 'En nyere versjon er tilgjengelig (nåværende: :current, nyeste: :latest).',
+        'git_update_available' => 'Installasjonen din er :count commits bak master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW-gjenkjenning og moderering',
@@ -82,5 +83,8 @@ return [
         'legend_approve' => 'Bildet godtas, funnet logges.',
         'legend_mark_album' => 'Bildets album flagges som følsomt.',
         'legend_nothing' => 'Ingen handling utføres.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'NSFW-funn',
     ],
 ];

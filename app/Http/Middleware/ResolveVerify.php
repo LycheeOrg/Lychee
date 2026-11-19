@@ -9,7 +9,6 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 
@@ -17,12 +16,9 @@ class ResolveVerify
 {
 	public function handle(Request $request, \Closure $next)
 	{
-		try {
-			if (!Schema::hasTable('configs')) {
-				return $next($request);
-			}
-			// @codeCoverageIgnoreStart
-		} catch (\Throwable) {
+		// ResolveConfigs (just before) leaves `configs` unset when the
+		// instance is not installed yet: there is no license to verify.
+		if (!$request->attributes->has('configs')) {
 			return $next($request);
 		}
 

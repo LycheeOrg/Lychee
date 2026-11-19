@@ -7,13 +7,7 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
-export type AdminUpdateStatusResource = {
-	enabled: boolean;
-	update_status: number | null;
-	has_update: boolean;
-	current_version: string | null;
-	latest_version: string | null;
-};
+export type AdminUpdateStatusResource = App.Http.Resources.Models.AdminUpdateStatusResource;
 
 const AdminStatsService = {
 	getStats(force: boolean = false): Promise<AxiosResponse<App.Http.Resources.Models.AdminStatsResource>> {

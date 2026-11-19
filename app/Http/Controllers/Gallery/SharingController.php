@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\ListAlbums;
 use App\Actions\Sharing\Propagate;
+use App\Actions\Sharing\PurgeAlbumUserThumbs;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Events\AccessPermissionChanged;
@@ -102,6 +103,7 @@ class SharingController extends Controller
 			'grants_upload' => $request->permResource()->grants_upload,
 			'grants_edit' => $request->permResource()->grants_edit,
 			'grants_delete' => $request->permResource()->grants_delete,
+			'grants_move' => $request->permResource()->grants_move,
 		]);
 
 		AccessPermissionChanged::dispatch($perm->base_album_id);
@@ -179,10 +181,13 @@ class SharingController extends Controller
 	 *
 	 * @return void
 	 */
-	public function delete(DeleteSharingRequest $request): void
+	public function delete(DeleteSharingRequest $request, PurgeAlbumUserThumbs $purge_thumbs): void
 	{
-		$base_album_id = $request->perm()->base_album_id;
-		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+		$perm = $request->perm();
+		$base_album_id = $perm->base_album_id;
+		AccessPermission::query()->where('id', '=', $perm->id)->delete();
+
+		$purge_thumbs->forBaseAlbums([$base_album_id]);
 
 		AccessPermissionChanged::dispatch($base_album_id);
 	}

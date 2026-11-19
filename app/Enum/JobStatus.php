@@ -12,7 +12,9 @@ namespace App\Enum;
  * current JobStatus of Lychee.
  * 0 = ready
  * 1 = success
- * 2 = failure.
+ * 2 = failure
+ * 3 = started
+ * 4 = skipped (photo already present, see ADR-114-01).
  */
 enum JobStatus: int
 {
@@ -20,6 +22,7 @@ enum JobStatus: int
 	case SUCCESS = 1;
 	case FAILURE = 2;
 	case STARTED = 3;
+	case SKIPPED = 4;
 
 	/**
 	 * Given a JobStatus return the associated name.
@@ -33,6 +36,7 @@ enum JobStatus: int
 			self::SUCCESS => 'success',
 			self::FAILURE => 'failure',
 			self::STARTED => 'started',
+			self::SKIPPED => 'skipped',
 		};
 	}
 }

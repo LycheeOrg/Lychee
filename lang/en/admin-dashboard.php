@@ -34,6 +34,7 @@ return [
     'update' => [
         'title' => 'Update Status',
         'update_available' => 'A newer version is available (current: :current, latest: :latest).',
+        'git_update_available' => 'Your installation is :count commits behind master.',
     ],
     'nsfw_config' => [
         'title' => 'NSFW Detection & Moderation',
@@ -80,5 +81,8 @@ return [
         'legend_approve' => 'Photo is accepted, finding is logged.',
         'legend_mark_album' => 'Photo\'s album is flagged as sensitive.',
         'legend_nothing' => 'No action taken.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'NSFW findings',
     ],
 ];

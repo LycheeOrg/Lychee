@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Gruppi di utenti',
+    'explanation' => 'I gruppi di utenti ti permettono di organizzare gli utenti e gestire i permessi collettivamente.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Crea gruppo',
+    'edit' => 'Modifica',
+    'delete' => 'Elimina',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Caricamento gruppi...',
+    'empty' => 'Nessun gruppo trovato.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Aggiungi membro...',
+    'empty_group' => 'Questo gruppo è vuoto.',
+    'no_permission_members' => 'Non hai il permesso di vedere i membri di questo gruppo.',
+    'remove_success' => '%s è stato rimosso da %s.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Elimina gruppo',
+    'confirm_delete_message' => 'Vuoi davvero eliminare questo gruppo?',
+    'cancel' => 'Annulla',
+    'confirm' => 'Elimina',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Nome del gruppo',
+        'description' => 'Descrizione',
+        'users' => 'Utenti',
+        'cancel' => 'Annulla',
+        'create' => 'Crea',
+        'edit' => 'Modifica',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'Il nome del gruppo è obbligatorio.',
     ],
 ];

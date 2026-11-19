@@ -1,0 +1,58 @@
+# Feature 073 Tasks – Configurable Size-Variant Format and Quality
+
+_Status: Complete_  
+_Last updated: 2026-09-26_
+
+> Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
+> **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
+
+## Checklist
+- [x] T-073-01 – Unit tests: enum mapping and config validation (FR-073-01, FR-073-06, S-073-07, S-073-08).  
+  _Intent:_ `tests/Unit/Models/SizeVariantFormatConfigSanityTest.php`.  
+  _Verification commands:_  
+  - `php artisan test --filter=SizeVariantFormat`
+
+- [x] T-073-02 – `SizeVariantFormat` enum + migrations `add_size_variant_format_config` and `bound_compression_quality` (FR-073-01, FR-073-06, FR-073-10).  
+  _Verification commands:_  
+  - `php artisan test --filter=SizeVariantFormat`  
+  - `make phpstan`
+
+- [x] T-073-03 – Image-processing tests for extension selection (S-073-01, S-073-02, S-073-05).  
+  _Intent:_ new cases in `tests/ImageProcessing/Image/Handlers/BaseImageHandler.php` (run under GD and Imagick).
+
+- [x] T-073-04 – `BaseSizeVariantNamingStrategy::generateExtension()` honours `size_variant_format` (FR-073-02..05).  
+  _Verification commands:_  
+  - `php artisan test --filter=PhotosAddHandler`
+
+- [x] T-073-05 – Image-processing tests for encoded content (S-073-03, S-073-04, S-073-06).
+
+- [x] T-073-06 – `BaseImageHandler::resolveQuality()`/`isLossless()`; target-extension encoding + lossless in `GdHandler::save()`; lossless in `ImagickHandler::save()` (FR-073-07, FR-073-08, FR-073-09).  
+  _Verification commands:_  
+  - `php artisan test --filter=PhotosAddHandler`  
+  - `make phpstan`
+
+- [x] T-073-07 – Docs: roadmap, knowledge map, `docs/specs/3-reference/image-processing.md`.
+
+- [x] T-073-08 – Quality gate (CI): `vendor/bin/php-cs-fixer fix`, `php artisan test`, `make phpstan`; complete the drift gate in plan.md.
+
+- [x] T-073-09 – Lossless WebP guard on GD builds without `IMG_WEBP_LOSSLESS`, plus a diagnostics warning (FR-073-07, FR-073-11, S-073-09; Q-073-07).  
+  _Intent:_ tests first: `tests/Unit/Image/Handlers/GdHandlerLosslessWebpTest.php` and `tests/Unit/Actions/Diagnostics/GDSupportCheckTest.php` (red before the implementation), then `GdHandler::supportsLosslessWebp()`/`webpQuality()` and `GDSupportCheck::isLosslessWebpUnsupported()`.  
+  _Verification commands:_  
+  - `php artisan test --filter="GdHandlerLosslessWebpTest|GDSupportCheckTest"`  
+  - `make phpstan`
+
+- [x] T-073-10 – Maintainer review follow-ups (FR-073-01, FR-073-11, NFR-073-03; Q-073-08).  
+  _Intent:_ enum instead of the `'webp'` literal in `ImagickHandler` and `GDSupportCheck`; `size_variant_format` as an expert setting (plus a test assertion); new English `compression_quality` texts in every locale; removal of the unused `SizeVariantFormat::extension()`; docs aligned with the maintainer's `Schema::hasTable` guard and naming-strategy refactor.  
+  _Verification commands:_  
+  - `php artisan test --filter="SizeVariantFormat|PhotosAddHandlerGDTest|GDSupportCheckTest|GdHandlerLosslessWebpTest|LangTest|ConfigsTest"`  
+  - `make phpstan`
+
+- [x] T-073-11 – Second automated-review round (FR-073-11, S-073-09).  
+  _Intent:_ test first (`GDSupportCheckTest::testWarnsForOriginalFormat`, red before the change), then the diagnostics warning also covers `original`; skip the lossless image-processing case on GD without lossless WebP; plan increments I5–I7, S-073-09 tracking, video-placeholder exception in G3/N-073-03.  
+  _Verification commands:_  
+  - `php artisan test --filter="GDSupportCheckTest|PhotosAddHandlerGDTest|SizeVariantFormat"`  
+  - `make phpstan`
+
+## Notes / TODOs
+- The Imagick variants of the `BaseImageHandler` cases (`PhotosAddHandlerImagickTest`) are skipped when `ext-imagick` is not installed and are covered by CI on the pull request. The GD variants and all unit tests were run locally.
+- T-073-08 local results: `php-cs-fixer` clean, PHPStan `[OK] No errors`, Unit and ImageProcessing suites without regressions against the 7.9.0 baseline, `tests/Feature_v2/Settings` and `Install` green, `migrate:rollback --step=2` followed by `migrate` round-trips both migrations.

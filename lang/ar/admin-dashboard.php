@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'حالة التحديث',
         'update_available' => 'يتوفر إصدار أحدث (الحالي: :current، الأحدث: :latest).',
+        'git_update_available' => 'تثبيتك متأخر بمقدار :count من الإيداعات عن master.',
     ],
     'nsfw_config' => [
         'title' => 'الكشف عن المحتوى الحساس والإشراف عليه',
@@ -82,5 +83,8 @@ return [
         'legend_approve' => 'تُقبل الصورة، ويُسجَّل الاكتشاف.',
         'legend_mark_album' => 'يتم وضع علامة على ألبوم الصورة بأنه حساس.',
         'legend_nothing' => 'لا يُتخذ أي إجراء.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'نتائج فحص المحتوى الحساس',
     ],
 ];

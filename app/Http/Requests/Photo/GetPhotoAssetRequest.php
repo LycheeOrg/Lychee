@@ -8,7 +8,6 @@
 
 namespace App\Http\Requests\Photo;
 
-use App\Constants\PhotoAlbum;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantAssetType;
@@ -16,14 +15,16 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\ResolvesSizeVariantAssetTrait;
 use App\Models\Album;
 use App\Models\PersonAlbum;
 use App\Models\SizeVariant;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
+use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDRule;
-use App\Services\TemporaryLinkSigner;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -61,24 +62,21 @@ use Illuminate\Validation\Rules\Enum;
  * `photo_id` is taken straight from the validated route parameter with no
  * extra Photo lookup, and {@link self::sizeVariant()}'s query is narrowed to
  * only the columns {@link \App\Image\Watermarker::get_path()} and the
- * controller actually read.
+ * controller actually read. The album is loaded with its base record and
+ * access permissions only, a regular album's membership is selected by the
+ * size variant query itself, and admins skip the album entirely: they may
+ * read every photo, so `album_id` is validated but never resolved for them
+ * (Feature 102, FR-102-02).
  */
 class GetPhotoAssetRequest extends BaseApiRequest
 {
-	private const TIMESTAMP_HEADER = 'X-Timestamp';
-	private const MAC_HEADER = 'X-Mac';
+	use ResolvesSizeVariantAssetTrait;
 
-	/** Internal validation-bag keys the two headers are merged into (see prepareForValidation()). */
-	private const TIMESTAMP_ATTRIBUTE = 'temporary_link_timestamp';
-	private const MAC_ATTRIBUTE = 'temporary_link_mac';
-
-	private AbstractAlbum $album;
+	/** `null` for admins, who skip the album checks (see {@link self::skipsAlbumCheck()}). */
+	private ?AbstractAlbum $album = null;
 	private string $photo_id;
 	private SizeVariant $size_variant;
 	private SizeVariantType $size_variant_type;
-
-	private ?int $timestamp = null;
-	private ?string $mac = null;
 
 	/**
 	 * Set to true only when a required temporary-link signature is absent,
@@ -89,8 +87,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * (FR-056-05), since the inherited `Auth::check()`-based mechanism
 	 * cannot express this endpoint's required mapping.
 	 */
-	private bool $signature_check_failed = false;
-
 	public function sizeVariant(): SizeVariant
 	{
 		return $this->size_variant;
@@ -108,6 +104,11 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			$this->signature_check_failed = true;
 
 			return false;
+		}
+
+		// Admins: no album was loaded (see skipsAlbumCheck()).
+		if ($this->album === null) {
+			return true;
 		}
 
 		// The album must itself be accessible to the caller (owner, shared
@@ -135,7 +136,14 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	 * applies: TagAlbum's own hardcoded `cover_id`, and — for both — the
 	 * current viewer's cached computed thumb (`album_user_thumbs`, the
 	 * tag/person equivalent of `auto_cover_id_*`; see
-	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}).
+	 * {@link \App\Models\Extensions\CachesAlbumUserThumb}). {@link BaseSmartAlbum}
+	 * gets the same cached-computed-thumb exception (2026-09-02 amendment,
+	 * Feature 063 FR-056-08) — it has no hardcoded `cover_id` of its own, but
+	 * its cover, when resolved by `GET /Albums/smart`,
+	 * comes from this exact cache, and may have since fallen out of the
+	 * smart album's own live `smart_photo_condition` (e.g. a photo was
+	 * unstarred) before the next {@link \App\Jobs\RecomputeAlbumUserThumbsJob}
+	 * run catches up — without this exception that cover would 403 here.
 	 */
 	private function isPhotoOfAlbum(AbstractAlbum $album): bool
 	{
@@ -148,10 +156,9 @@ class GetPhotoAssetRequest extends BaseApiRequest
 				return true;
 			}
 
-			return DB::table(PhotoAlbum::PHOTO_ALBUM)
-				->where(PhotoAlbum::ALBUM_ID, $album->id)
-				->where(PhotoAlbum::PHOTO_ID, $this->photo_id)
-				->exists();
+			// Selected from `photo_album` by the size variant query (see
+			// processValidatedValues()).
+			return $this->size_variant->getAttribute(self::IS_IN_ALBUM_ATTRIBUTE) === true;
 		}
 
 		if ($album instanceof TagAlbum && $album->cover_id === $this->photo_id) {
@@ -159,6 +166,10 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		}
 
 		if (($album instanceof TagAlbum || $album instanceof PersonAlbum) && $this->isComputedAlbumThumb($album->id)) {
+			return true;
+		}
+
+		if ($album instanceof BaseSmartAlbum && $this->isComputedAlbumThumb($album->get_id())) {
 			return true;
 		}
 
@@ -201,11 +212,21 @@ class GetPhotoAssetRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			// AlbumIDRule, not RandomIDRule (2026-09-02 correction, Feature 063
+			// FR-056-08): this endpoint's own docblock already claimed
+			// AlbumFactory::findAbstractAlbumOrFail() "handle[s] regular albums,
+			// tag albums, person albums and smart albums uniformly" — true for
+			// resolution, but album_id validation was still RandomIDRule, which
+			// only accepts RandomID::ID_LENGTH-character ids. Real Album/TagAlbum/
+			// PersonAlbum ids all happen to be that length, so this went
+			// unnoticed; a SmartAlbumType value (e.g. "unsorted") never is,
+			// so every smart-album request 422'd before ever reaching
+			// isPhotoOfAlbum() — discovered only once a real caller (this
+			// feature's new BaseSmartAlbum branch) needed it to actually work.
+			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => ['required', 'string', new Enum(SizeVariantAssetType::class)],
-			self::TIMESTAMP_ATTRIBUTE => ['nullable', 'integer', 'required_with:' . self::MAC_ATTRIBUTE],
-			self::MAC_ATTRIBUTE => ['nullable', 'string', 'required_with:' . self::TIMESTAMP_ATTRIBUTE],
+			self::MAC_ATTRIBUTE => ['nullable', 'string'],
 		];
 	}
 
@@ -220,7 +241,6 @@ class GetPhotoAssetRequest extends BaseApiRequest
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => $this->route(RequestAttribute::ALBUM_ID_ATTRIBUTE),
 			RequestAttribute::PHOTO_ID_ATTRIBUTE => $this->route(RequestAttribute::PHOTO_ID_ATTRIBUTE),
 			RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE => $this->route(RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE),
-			self::TIMESTAMP_ATTRIBUTE => $this->header(self::TIMESTAMP_HEADER),
 			self::MAC_ATTRIBUTE => $this->header(self::MAC_HEADER),
 		]);
 	}
@@ -236,78 +256,26 @@ class GetPhotoAssetRequest extends BaseApiRequest
 		/** @var string $size_variant_token */
 		$size_variant_token = $values[RequestAttribute::SIZE_VARIANT_TOKEN_ATTRIBUTE];
 
-		$this->album = $this->album_factory->findAbstractAlbumOrFail($album_id, false);
+		if (!$this->skipsAlbumCheck(Auth::user())) {
+			$this->album = $this->album_factory->findAbstractAlbumForAccessCheckOrFail($album_id);
+		}
 		$this->size_variant_type = SizeVariantAssetType::from($size_variant_token)->toSizeVariantType();
 
-		// SizeVariant must stay a real model: Watermarker::get_path() and the
-		// controller rely on its enum casts (type, storage_disk). We still
-		// limit the hydrated columns to only what those two call sites read.
-		$this->size_variant = SizeVariant::query()
-			->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
-			->where('photo_id', '=', $this->photo_id)
-			->where('type', '=', $this->size_variant_type)
-			->firstOrFail();
+		$membership_album_id = $this->album instanceof Album ? $this->album->id : null;
+		$size_variant = $this->resolveSizeVariant($this->photo_id, $this->size_variant_type, $membership_album_id);
+		$this->size_variant_type = $size_variant->type;
+		$this->size_variant = $size_variant;
 
-		$this->timestamp = $values[self::TIMESTAMP_ATTRIBUTE] ?? null;
 		$this->mac = $values[self::MAC_ATTRIBUTE] ?? null;
 	}
 
 	/**
-	 * Determines whether `$user` must additionally present a valid
-	 * temporary-link signature to be authorized (ADR-0008).
-	 *
-	 * Guests are only ever authorized via a valid temporary link (FR-056-05)
-	 * — always `true`, regardless of config; {@link self::isSignatureValid()}
-	 * separately rejects them outright when the feature is globally
-	 * disabled. For authenticated users, this mirrors
-	 * {@link \App\Services\UrlGenerator::shouldNotUseSignedUrl()}'s
-	 * generation-time predicate, re-purposed for validation.
+	 * Admins may read every photo ({@link \App\Policies\BasePolicy::before()}),
+	 * so neither the album access nor the photo membership can deny them:
+	 * the album is not loaded at all (Feature 102, FR-102-02).
 	 */
-	private function signatureRequired(?User $user): bool
+	private function skipsAlbumCheck(?User $user): bool
 	{
-		if ($user === null) {
-			return true;
-		}
-
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($user->may_administrate) {
-			return $this->configs()->getValueAsBool('temporary_image_link_when_admin');
-		}
-
-		return $this->configs()->getValueAsBool('temporary_image_link_when_logged_in');
-	}
-
-	/**
-	 * Validates the temporary-link signature: the feature must be globally
-	 * enabled, both headers must be present (already guaranteed by
-	 * rules()'s both-or-neither validation, but a missing pair is still a
-	 * failure here, not a pass), the MAC must verify, and the timestamp must
-	 * be neither expired nor in the future (FR-056-04).
-	 */
-	public function isSignatureValid(): bool
-	{
-		if (!$this->configs()->getValueAsBool('temporary_image_link_enabled')) {
-			return false;
-		}
-
-		if ($this->timestamp === null || $this->mac === null) {
-			return false;
-		}
-
-		if (!(new TemporaryLinkSigner())->verify($this->timestamp, $this->mac)) {
-			return false;
-		}
-
-		$now = now()->timestamp;
-		if ($this->timestamp > $now) {
-			return false;
-		}
-
-		$life_in_seconds = $this->configs()->getValueAsInt('temporary_image_link_life_in_seconds');
-
-		return ($now - $this->timestamp) <= $life_in_seconds;
+		return $user?->may_administrate === true;
 	}
 }

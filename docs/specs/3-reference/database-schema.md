@@ -51,6 +51,8 @@ Regular photo albums with hierarchical tree structure using nested set model.
 - `is_public`: Public visibility flag
 - `is_nsfw`: NSFW content flag
 - `is_link_required`: Requires direct link flag
+- `bucket_id`: nullable string — the pre-truncated date-bucket label (`Y`/`Y-m`/`Y-m-d`, e.g. `"2024-03"`) or alphabetical `title_base` prefix an album's **own parent's** effective sort column/granularity currently produce for it (for a **root** album — no parent — the *instance-wide* `sorting_albums_col`/`sorting_albums_order`/`timeline_albums_granularity`/`title_bucket_mode`/`title_bucket_prefix_length` config plays that role instead); `NULL` when the effective sort column is `OWNER_ID` (never computed — every direct child of one album always shares that album's exact `owner_id`, so it can never bucket), or when no data is available for the resolved source (no dated photos under `min_taken_at`/`max_taken_at`, or an unparseable title under `date_prefix`-mode `title` sorting). Populated at write time by `RecomputeAlbumStatsJob`, `RecomputeChildAlbumBucketsJob` (a parent's own sort/timeline change re-buckets its *children*), `RecomputeRootAlbumBucketsJob` (an instance-wide sort/timeline/title-bucket config change re-buckets every *root* album, dispatched from `SettingsController::setConfigs()`), and the `lychee:recompute-buckets` backfill command — never computed live at read time. **`bucket_id` stays exclusively date/title-derived, for every album (root included) — it is never owner-derived, and never will be**: root's `GET /api/v3/Albums/root/buckets?scope=shared` (see `api-design.md`) groups by owner via a separate, live, read-time `GROUP BY base_albums.owner_id` that never touches this column or `AlbumBucketComputer` at all. Composite index `(parent_id, bucket_id)` lets `GET /api/v3/Albums/{album_id}/buckets` (see `api-design.md`) serve a plain, index-served `GROUP BY bucket_id` even at 7,000+ direct children.
+- `album_sorting_col`: `ColumnSortingAlbumType::OWNER_ID` is not a selectable value — it is not offered in the sort-column choices, and any surviving `owner_id` value (this column, or the `configs.sorting_albums_col` instance setting) is rewritten to `created_at`. `ColumnSortingType::OWNER_ID` (the broader, internal enum) is a separate enum and is unaffected.
 
 **Relationships:**
 - Belongs to `User` (owner)
@@ -63,7 +65,7 @@ Regular photo albums with hierarchical tree structure using nested set model.
 For detailed information about the tree structure implementation, see [Album Tree Structure](../4-architecture/album-tree-structure.md) which explains the nested set model with `_lft` and `_rgt` boundaries.
 
 #### Track
-GPS/GPX tracks belonging to an album (Feature 055 — multiple tracks per album, superseding the single `albums.track_short_path` column it replaced).
+GPS/GPX tracks belonging to an album — an album can have multiple tracks; the single `albums.track_short_path` column has been replaced.
 
 **Key Fields:**
 - `id`: Primary key (auto-increment)
@@ -106,7 +108,7 @@ Individual photos with metadata, EXIF data, and file information.
 - `is_public`: Public visibility flag
 - `is_highlighted`: Favorite flag
 - `taken_at`: Photo capture timestamp
-- `latitude`, `longitude`: GPS coordinates
+- `latitude`, `longitude`: GPS coordinates — composite index `(latitude, longitude)` (Feature 067; previously unindexed) serves the Map's bounding-box `WHERE` + grid `GROUP BY FLOOR(latitude/$cell), FLOOR(longitude/$cell)` queries (see `api-design.md`'s "API v3: Map Geo-Bucketing" section); a plain B-tree index, not a driver-specific spatial index type, chosen for portability across sqlite/mysql/mariadb/pgsql (sqlite has no spatial index without the SpatiaLite extension)
 
 **Relationships:**
 - Belongs to many `Album` through `photo_album` pivot table (many-to-many)
@@ -116,6 +118,8 @@ Individual photos with metadata, EXIF data, and file information.
 - Has many `Tag` through `photos_tags` pivot table
 - Has many `PhotoRating`
 - Has one `Statistics` (visit/download tracking)
+
+**`photo_album` pivot table (Feature 064):** composite primary key `(photo_id, album_id)`, plus a nullable `bucket_id` string column and composite index `(album_id, bucket_id)`. Deliberately placed on the **pivot row**, not on `photos` itself — unlike `albums.bucket_id` above, a photo's bucket is a property of one specific photo-in-one-specific-album edge, not of the photo alone: `photo_album` is a genuine many-to-many table (`MoveOrDuplicate::do()` supports copying one photo into a second album while it keeps its first link), so a single photo linked into two albums with different effective `sorting_col`/`photo_timeline` settings correctly carries two different `bucket_id` values, one per pivot row. Computed by `App\Services\PhotoBucketComputer` (mirrors `AlbumBucketComputer`'s `resolveGranularity()`/`compute()` shape) from the **containing album's own** `getEffectivePhotoSorting()`/`photo_timeline` (the album *is* the direct container here, unlike a sub-album's bucket, which is governed by its *parent*). Populated at write time by three triggers: a new pivot-link insert (upload, `MoveOrDuplicate::do()`'s move/copy branches, computed inline); a photo's own bucket-relevant column change (`title`/`title_base`/`taken_at`/`is_highlighted`/`rating_avg` — `App\Jobs\RecomputePhotoBucketsJob($photo_id)`, bulk-recomputing every album that photo is linked into, since each may have different settings); and a containing album's own `sorting_col`/`sorting_order`/`photo_timeline` change (`App\Jobs\RecomputeAlbumPhotoBucketsJob($album_id)`, bulk-recomputing every direct photo) — plus the `lychee:recompute-buckets` backfill command for a full-table pass. `NULL` when the effective sort column is `OWNER_ID` (excluded from photo bucketing entirely, by explicit policy — a shared album can genuinely contain photos from several owners, but ownership is not treated as a useful bucket dimension here) or when no data is available for the resolved source (no `taken_at`, or an unparseable title under `date_prefix`-mode `TITLE` sorting). `TITLE`-sorted photo bucketing uses its own, independent `photo_title_bucket_mode`/`photo_title_bucket_prefix_length` configs — never shared with albums' own `title_bucket_mode`/`title_bucket_prefix_length`. See `api-design.md`'s "API v3: Photo Listing Virtual-Scroll Backend" section for the endpoints this column serves.
 
 #### SizeVariant
 Different size versions of photos (original, medium, small, thumb).
@@ -320,7 +324,7 @@ Eager loading enforced with `Model::shouldBeStrict()`, which throws an exception
 - [Tag System](../4-architecture/tag-system.md) - Tag architecture and operations
 - [Image Processing](image-processing.md) - Size variant generation and processing pipeline
 
-## AI Vision Schema Additions (Feature 030)
+## AI Vision Schema Additions
 
 ### New Tables
 

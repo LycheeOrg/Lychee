@@ -72,7 +72,7 @@ function load(thumb: App.Http.Resources.Models.ThumbResource | undefined | null,
 	} else {
 		src.value = isNotEmpty(thumb?.thumb) ? thumb.thumb : isPasswordProtected ? getPaswwordIcon() : getNoImageIcon();
 	}
-	srcSet.value = isNotEmpty(thumb?.thumb2x) ? thumb.thumb2x : "";
+	srcSet.value = isNotEmpty(thumb?.thumb2x) ? `${thumb.thumb2x} 2x` : "";
 }
 
 load(props.thumb, props.isPasswordProtected);

@@ -329,14 +329,12 @@ class SessionOrTokenGuard extends SessionGuard
 		}
 
 		// Skip if token starts with Basic: it is not related to Lychee.
-		if (Str::startsWith('Basic', $token)) {
-			// @codeCoverageIgnoreStart
+		if (Str::startsWith($token, 'Basic')) {
 			return null;
-			// @codeCoverageIgnoreEnd
 		}
 
 		// Check if token starts with Bearer
-		$has_bearer = Str::startsWith('Bearer', $token);
+		$has_bearer = Str::startsWith($token, 'Bearer');
 		/** @var bool $config_log */
 		$config_log = config('auth.token_guard.log_warn_no_scheme_bearer');
 		/** @var bool $config_throw */
@@ -355,10 +353,8 @@ class SessionOrTokenGuard extends SessionGuard
 
 		return match (true) {
 			$authenticable !== null => $authenticable,
-			// @codeCoverageIgnoreStart
 			$has_bearer && $config_throw => throw new BadRequestHeaderException('Invalid token'),
 			$has_bearer => null,
-			// @codeCoverageIgnoreEnd
 			default => throw new BadRequestHeaderException('Invalid token'),
 		};
 	}

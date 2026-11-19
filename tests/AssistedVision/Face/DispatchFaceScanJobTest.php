@@ -92,12 +92,12 @@ class DispatchFaceScanJobTest extends AbstractTestCase
 	{
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$response = $this->createMock(Response::class);
+		$response = self::createStub(Response::class);
 		$response->method('successful')->willReturn(false);
 		$response->method('status')->willReturn(500);
 		$response->method('json')->willReturn(['error' => 'internal']);
 
-		$service = $this->createMock(FacialRecognitionService::class);
+		$service = self::createStub(FacialRecognitionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('detectFaces')->willReturn($response);
 
@@ -114,7 +114,7 @@ class DispatchFaceScanJobTest extends AbstractTestCase
 	{
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$service = $this->createMock(FacialRecognitionService::class);
+		$service = self::createStub(FacialRecognitionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('detectFaces')->willThrowException(new \RuntimeException('Connection refused'));
 
@@ -131,10 +131,10 @@ class DispatchFaceScanJobTest extends AbstractTestCase
 	{
 		$photo = Photo::factory()->owned_by($this->user)->create();
 
-		$response = $this->createMock(Response::class);
+		$response = self::createStub(Response::class);
 		$response->method('successful')->willReturn(true);
 
-		$service = $this->createMock(FacialRecognitionService::class);
+		$service = self::createStub(FacialRecognitionService::class);
 		$service->method('isConfigured')->willReturn(true);
 		$service->method('detectFaces')->willReturn($response);
 

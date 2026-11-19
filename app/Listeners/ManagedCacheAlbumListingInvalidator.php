@@ -30,9 +30,6 @@ use Illuminate\Support\Facades\DB;
  * Translates every album-listing-relevant domain event into the precise (or,
  * for a handful of genuinely rare/subtree-wide operations, coarse) cache
  * tag(s) it invalidates.
- *
- * Consolidates the tag scheme derived from Feature 053's mutation-surface
- * audit; see spec.md FR-053-22/FR-053-31 for the full mapping rationale.
  */
 class ManagedCacheAlbumListingInvalidator
 {
@@ -49,6 +46,10 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		// Feature 068 (FR-068-07): AlbumSaved fires for both the single-album
+		// edit and bulk-edit paths (BulkEditAlbumsAction::do() dispatches it
+		// too), so this one handler covers both description-save call sites.
+		$this->cache->forgetTags($this->cache_key_provider->flowDescriptionTags($event->album_ids));
 	}
 
 	public function handleAlbumDeleted(AlbumDeleted $event): void
@@ -92,6 +93,18 @@ class ManagedCacheAlbumListingInvalidator
 	{
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->base_album_id));
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+
+		// The rights endpoint's cache is keyed by
+		// the *queried parent's own* albumChildrenTag(), and
+		// can_delete_children/can_move_children/grants_* all derive from
+		// access_permissions rows on that parent (or its direct children,
+		// covered below via the grandparent's tag). A grant/share change
+		// directly on $event->base_album_id must therefore also evict that
+		// album's own children-tag, not just its parent's — the pre-061
+		// invalidation below only ever evicted the latter, since v2/v3's
+		// other album-listing endpoints have no such "rights of my own
+		// direct children" cache to depend on it.
+		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($event->base_album_id));
 
 		// The event payload only carries the id; resolve which of the three
 		// album types it is via a lightweight, non-Eloquent lookup.

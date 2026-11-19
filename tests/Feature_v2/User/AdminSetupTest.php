@@ -75,10 +75,11 @@ class AdminSetupTest extends AbstractTestCase
 		$this->assertForbidden($response);
 	}
 
-	public function testConflictWhenUsernameAlreadyTaken(): void
+	public function testForbiddenWhenOnlyNonAdminUserExists(): void
 	{
+		// Setup is a one-time step: any existing user closes it, even when no admin is left.
 		$existing = new User();
-		$existing->username = 'taken-username';
+		$existing->username = 'regular-user';
 		$existing->password = Hash::make('irrelevant');
 		$existing->may_upload = false;
 		$existing->may_edit_own_settings = false;
@@ -86,11 +87,12 @@ class AdminSetupTest extends AbstractTestCase
 		$existing->save();
 
 		$response = $this->postJson('/api/v2/Admin::Setup', [
-			'username' => 'taken-username',
+			'username' => 'intruder-admin',
 			'password' => 'password123',
 			'password_confirmation' => 'password123',
 		]);
 
-		$this->assertConflict($response);
+		$this->assertForbidden($response);
+		$this->assertDatabaseMissing('users', ['username' => 'intruder-admin']);
 	}
 }

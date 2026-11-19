@@ -34,6 +34,7 @@ return [
     'update' => [
         'title' => 'Status aktualisieren',
         'update_available' => 'Es ist eine neuere Version verfügbar (aktuell: :current, neueste: :latest).',
+        'git_update_available' => 'Ihre Installation liegt :count Commits hinter master.',
     ],
     'nsfw_config' => [
         'title' => 'Erkennung und Moderation von nicht jugendfreien Inhalten',
@@ -80,5 +81,8 @@ return [
         'legend_approve' => 'Das Foto wurde akzeptiert, der Fund wurde erfasst.',
         'legend_mark_album' => 'Das Fotoalbum ist als vertraulich gekennzeichnet.',
         'legend_nothing' => 'Es wurden keine Maßnahmen ergriffen.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'NSFW-Befunde',
     ],
 ];

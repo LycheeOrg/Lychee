@@ -17,6 +17,7 @@
 			<UCheckbox v-model="grantsDownload" @update:model-value="edit" />
 			<UCheckbox v-model="grantsUpload" @update:model-value="edit" />
 			<UCheckbox v-model="grantsEdit" @update:model-value="edit" />
+			<UCheckbox v-model="grantsMove" @update:model-value="edit" />
 			<UCheckbox v-model="grantsDelete" @update:model-value="edit" />
 			<UTooltip :text="$t('dialogs.button.delete')">
 				<UButton color="error" variant="ghost" size="xs" icon="lucide:user-minus" @click="deletePermission" />
@@ -44,6 +45,7 @@ const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
 const grantsUpload = ref(false);
 const grantsEdit = ref(false);
+const grantsMove = ref(false);
 const grantsDelete = ref(false);
 const grantsReadAccess = ref(true);
 
@@ -52,6 +54,7 @@ function load(permisison: App.Http.Resources.Models.AccessPermissionResource) {
 	grantsDownload.value = permisison.grants_download;
 	grantsUpload.value = permisison.grants_upload;
 	grantsEdit.value = permisison.grants_edit;
+	grantsMove.value = permisison.grants_move;
 	grantsDelete.value = permisison.grants_delete;
 }
 
@@ -62,6 +65,7 @@ function edit() {
 		grants_download: grantsDownload.value,
 		grants_upload: grantsUpload.value,
 		grants_edit: grantsEdit.value,
+		grants_move: grantsMove.value,
 		grants_delete: grantsDelete.value,
 	};
 	SharingService.edit(data).then((response) => {

@@ -80,5 +80,5 @@ Once route-parity coverage (FR-049-23) reached 46/46, the v7 tree was moved — 
 
 - Related spec sections: `docs/specs/4-architecture/features/049-nuxt-ui-migration/spec.md` (Overview, Goals, Non-Goals, FR-049-01/03/04/05/18, new FR-049-22/23/24, NFR-049-07)
 - Related plan: `docs/specs/4-architecture/features/049-nuxt-ui-migration/plan.md` (Increment Map — new I0 scaffolding increment, revised I1-I43 target paths, revised cutover increment)
-- Related open questions: Q-049-04 (docs/specs/4-architecture/open-questions.md)
+- Related open questions: Q-049-04 ([049-nuxt-ui-migration/open-questions.md](../4-architecture/features/049-nuxt-ui-migration/open-questions.md))
 - Related ADRs: ADR-0005 (amended by this ADR — sizing/icon/ripple decisions unchanged, implementation-mechanism decision superseded)

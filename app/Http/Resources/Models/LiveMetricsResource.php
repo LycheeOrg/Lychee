@@ -41,7 +41,7 @@ class LiveMetricsResource extends Data
 			action: $a->action,
 			photo_id: $a->photo_id,
 			album_id: $a->album_id,
-			title: $title,
+			title: htmlspecialchars(strip_tags($title)), // Titles are rendered via v-html in the metrics drawer: never ship markup.
 			url: $url,
 		);
 	}

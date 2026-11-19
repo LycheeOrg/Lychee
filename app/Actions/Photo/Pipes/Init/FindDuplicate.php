@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Image\StreamStat;
 use App\Models\Photo;
@@ -16,12 +15,12 @@ use App\Models\Photo;
 /**
  * Look for duplicates of the file in the database.
  */
-class FindDuplicate implements InitPipe
+class FindDuplicate extends AbstractInitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		$checksum = StreamStat::createFromLocalFile($state->source_file)->checksum;
 
@@ -32,6 +31,11 @@ class FindDuplicate implements InitPipe
 			->first();
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.find_duplicate';
 	}
 }
 

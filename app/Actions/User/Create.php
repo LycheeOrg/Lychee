@@ -20,6 +20,7 @@ class Create
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
+		protected readonly AssertIdentifierIsUnambiguous $assert_identifier_is_unambiguous,
 	) {
 	}
 
@@ -38,12 +39,16 @@ class Create
 		?string $note = null,
 		?UserUploadTrustLevel $upload_trust_level = null,
 	): User {
+		$username = $this->resolveUsername($username, $email);
+
 		if (User::query()->where('username', '=', $username)->count() !== 0) {
 			throw new ConflictingPropertyException('Username already exists');
 		}
 		if ($email !== null && User::query()->where('email', '=', $email)->count() !== 0) {
 			throw new ConflictingPropertyException('email already exists');
 		}
+		$this->assert_identifier_is_unambiguous->username($username);
+		$this->assert_identifier_is_unambiguous->email($email);
 		if ($quota_kb === 0) {
 			$default_bytes = $this->config_manager->getValueAsByteSize('default_user_quota');
 			$quota_kb = $default_bytes === 0 ? null : max(1, intdiv($default_bytes, 1024));
@@ -63,5 +68,32 @@ class Create
 		$user->save();
 
 		return $user;
+	}
+
+	/**
+	 * Determine the username to store.
+	 *
+	 * A username given by the caller always wins. When it is omitted, the email
+	 * address takes its place, which is what the `email_login_enabled` setting
+	 * relies on: the account can then be identified by its email alone.
+	 *
+	 * @param string  $username username given by the caller, possibly empty
+	 * @param ?string $email    email address of the new user
+	 *
+	 * @return string the username to store
+	 *
+	 * @throws InvalidPropertyException if neither a username nor an email is given
+	 */
+	private function resolveUsername(string $username, ?string $email): string
+	{
+		if ($username !== '') {
+			return $username;
+		}
+
+		if ($email !== null && $email !== '') {
+			return $email;
+		}
+
+		throw new InvalidPropertyException('Username is required when no email is given');
 	}
 }

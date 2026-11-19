@@ -8,8 +8,7 @@
 
 namespace App\Http\Resources\Root;
 
-use App\Metadata\Versions\FileVersion;
-use App\Metadata\Versions\GitHubVersion;
+use App\Actions\InstallUpdate\CheckUpdateAvailability;
 use App\Metadata\Versions\InstalledVersion;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -27,17 +26,8 @@ class VersionResource extends Data
 			$this->version = resolve(InstalledVersion::class)->getVersion()->toString();
 		}
 
-		$file_version = resolve(FileVersion::class);
-		$git_hub_version = resolve(GitHubVersion::class);
-
-		if (request()->configs()->getValueAsBool('check_for_updates')) {
-			// @codeCoverageIgnoreStart
-			$file_version->hydrate();
-			$git_hub_version->hydrate();
-			// @codeCoverageIgnoreEnd
-		}
-
-		$this->is_new_release_available = !$file_version->isUpToDate();
-		$this->is_git_update_available = !$git_hub_version->isUpToDate();
+		$availability = resolve(CheckUpdateAvailability::class)->get();
+		$this->is_new_release_available = $availability->is_new_release_available;
+		$this->is_git_update_available = $availability->is_git_update_available;
 	}
 }

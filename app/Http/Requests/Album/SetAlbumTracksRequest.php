@@ -15,6 +15,7 @@ use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Models\Album;
 use App\Rules\AlbumIDRule;
+use App\Rules\GpxFileRule;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -39,7 +40,7 @@ class SetAlbumTracksRequest extends BaseApiRequest implements HasAlbum
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 			self::FILES_ATTRIBUTE => ['required', 'array', 'min:1'],
-			self::FILES_ATTRIBUTE . '.*' => 'required|file',
+			self::FILES_ATTRIBUTE . '.*' => ['required', 'file', new GpxFileRule()],
 		];
 	}
 

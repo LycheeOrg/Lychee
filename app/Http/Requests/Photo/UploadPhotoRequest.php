@@ -108,7 +108,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE], false);
 		// Convert the File Last Modified to seconds instead of milliseconds
 		$val = $values[RequestAttribute::FILE_LAST_MODIFIED_TIME] ?? null;
 		$this->file_last_modified_time = $val !== null ? intval($val) : null;

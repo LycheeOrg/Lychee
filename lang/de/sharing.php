@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -11,9 +10,9 @@ return [
     'album_title' => 'Albumtitel',
     'username' => 'Benutzername',
     'no_data' => 'Die Freigabeliste ist leer.',
-    'filter_placeholder' => 'Search by album title...',
-    'hide_empty' => 'Hide albums without shares',
-    'screen_too_small' => 'This page requires a larger screen.',
+    'filter_placeholder' => 'Nach Albumtitel suchen...',
+    'hide_empty' => 'Alben ohne Freigaben ausblenden',
+    'screen_too_small' => 'Für diese Seite ist ein größerer Bildschirm erforderlich.',
     'share' => 'Teilen',
     'add_new_access_permission' => 'Eine neue Zugangsberechtigung hinzufügen',
     'permission_deleted' => 'Berechtigung gelöscht!',
@@ -37,6 +36,7 @@ return [
         'download' => 'Herunterladen erlauben',
         'upload' => 'Hochladen erlauben',
         'edit' => 'Gewährt das Recht zur Bearbeitung',
+        'move' => 'Erlaubt verschieben, kopieren und zusammenführen',
         'delete' => 'Gewährt das Recht zu löschen',
     ],
 ];

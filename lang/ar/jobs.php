@@ -12,8 +12,9 @@ return [
     'success' => 'نجاح',
     'failure' => 'فشل',
     'started' => 'بدأ',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'skipped' => 'تم التخطي',
+    'col_date' => 'التاريخ',
+    'col_status' => 'الحالة',
+    'col_username' => 'المستخدم',
+    'col_job' => 'المهمة',
 ];

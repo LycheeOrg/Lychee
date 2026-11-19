@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'Albüm, fotoğraf ara veya bir sayfaya git…',
+    'navigation' => 'Git',
+    'actions' => 'Eylemler',
+    'albums' => 'Albümler',
+    'results' => 'Arama sonuçları',
+    'empty' => 'Sonuç bulunamadı.',
+    'dark_mode' => 'Koyu moda geç',
+    'light_mode' => 'Açık moda geç',
+    'language' => 'Dil',
 ];

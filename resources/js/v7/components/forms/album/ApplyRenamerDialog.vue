@@ -116,7 +116,7 @@ import Checkbox from "primevue/checkbox";
 import Dialog from "primevue/dialog";
 import SelectButton from "primevue/selectbutton";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const props = defineProps<{
 	albumId?: string;

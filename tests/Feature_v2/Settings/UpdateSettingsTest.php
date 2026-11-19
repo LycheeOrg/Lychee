@@ -19,11 +19,90 @@
 namespace Tests\Feature_v2\Settings;
 
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\MapListingCacheFlushRequested;
+use App\Events\PhotoBucketsRecomputed;
+use App\Events\PhotoListingCacheFlushRequested;
+use App\Jobs\RecomputeAllAlbumBucketsJob;
+use App\Jobs\RecomputeAllPhotoBucketsJob;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UpdateSettingsTest extends BaseApiWithDataTest
 {
+	// ── Feature 092 (FR-092-13, S-092-09, S-092-10): bucket settings ──
+
+	/** @return array<string,array{0:array<string,string>,1:class-string,2:bool}> */
+	public static function bucketRecomputeConfigsProvider(): array
+	{
+		return [
+			'sorting_albums_col' => [['key' => 'sorting_albums_col', 'value' => 'created_at'], RecomputeAllAlbumBucketsJob::class, true],
+			'title_bucket_mode' => [['key' => 'title_bucket_mode', 'value' => 'date_prefix'], RecomputeAllAlbumBucketsJob::class, true],
+			'sorting_albums_order' => [['key' => 'sorting_albums_order', 'value' => 'ASC'], RecomputeAllAlbumBucketsJob::class, false],
+			'title_bucket_prefix_length' => [['key' => 'title_bucket_prefix_length', 'value' => '1'], RecomputeAllAlbumBucketsJob::class, false],
+			'sorting_photos_col' => [['key' => 'sorting_photos_col', 'value' => 'created_at'], RecomputeAllPhotoBucketsJob::class, true],
+			'photo_title_bucket_mode' => [['key' => 'photo_title_bucket_mode', 'value' => 'date_prefix'], RecomputeAllPhotoBucketsJob::class, true],
+			'photo_title_bucket_prefix_length' => [['key' => 'photo_title_bucket_prefix_length', 'value' => '1'], RecomputeAllPhotoBucketsJob::class, false],
+			'unrelated' => [['key' => 'version', 'value' => '1'], RecomputeAllPhotoBucketsJob::class, false],
+		];
+	}
+
+	/**
+	 * Only a change of the sort column or the title bucket mode rewrites
+	 * keys; order and prefix length only change the read scheme.
+	 *
+	 * @param array<string,string> $config
+	 * @param class-string         $job
+	 */
+	#[DataProvider('bucketRecomputeConfigsProvider')]
+	public function testBucketConfigDispatchesRecomputeOnlyForKeyShapingSettings(array $config, string $job, bool $expected): void
+	{
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeAllPhotoBucketsJob::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		$expected ? Queue::assertPushed($job) : Queue::assertNotPushed($job);
+	}
+
+	/**
+	 * Granularity settings (Supporter Edition) rewrite no key: the photo one
+	 * flushes every cached photo listing.
+	 */
+	public function testGranularityConfigsDispatchNoRecompute(): void
+	{
+		$this->requireSe();
+		Queue::fake([RecomputeAllAlbumBucketsJob::class, RecomputeAllPhotoBucketsJob::class]);
+		Event::fake([PhotoListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				['key' => 'timeline_albums_granularity', 'value' => 'month'],
+				['key' => 'timeline_photos_granularity', 'value' => 'hour'],
+			],
+		]);
+		$this->assertOk($response);
+
+		Queue::assertNotPushed(RecomputeAllAlbumBucketsJob::class);
+		Queue::assertNotPushed(RecomputeAllPhotoBucketsJob::class);
+		Event::assertDispatched(PhotoListingCacheFlushRequested::class);
+	}
+
+	public function testPhotoPrefixLengthFlushesPhotoListings(): void
+	{
+		Event::fake([PhotoListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [['key' => 'photo_title_bucket_prefix_length', 'value' => '2']],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(PhotoListingCacheFlushRequested::class);
+	}
+
 	public function testChangingAlbumSortingConfigDispatchesCoarseFlush(): void
 	{
 		Event::fake([AlbumListingCacheFlushRequested::class]);
@@ -56,6 +135,149 @@ class UpdateSettingsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	// ── Feature 066 (T-066-20): Timeline photo-listing coarse flush ──
+
+	/** @return array<string,array<int,array<string,string>>> */
+	public static function timelinePhotoListingCoarseFlushConfigsProvider(): array
+	{
+		return [
+			'hide_nsfw_in_timeline' => [['key' => 'hide_nsfw_in_timeline', 'value' => '1']],
+			'timeline_photos_order' => [['key' => 'timeline_photos_order', 'value' => 'created_at']],
+			'timeline_page_enabled' => [['key' => 'timeline_page_enabled', 'value' => '1']],
+			'timeline_photos_public' => [['key' => 'timeline_photos_public', 'value' => '1']],
+		];
+	}
+
+	/**
+	 * @param array<string,string> $config
+	 */
+	#[DataProvider('timelinePhotoListingCoarseFlushConfigsProvider')]
+	public function testChangingTimelineConfigDispatchesPhotoListingCoarseFlush(array $config): void
+	{
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(PhotoBucketsRecomputed::class, fn (PhotoBucketsRecomputed $event) => $event->album_ids === ['timeline']);
+	}
+
+	/**
+	 * `timeline_photos_granularity` is a level-1 (Supporter Edition) config —
+	 * kept as its own test rather than folded into the data provider above,
+	 * mirroring {@see self::testChangingTimelineGranularityConfigDispatchesJob()}.
+	 */
+	public function testChangingTimelineGranularityConfigDispatchesPhotoListingCoarseFlush(): void
+	{
+		$this->requireSe();
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'timeline_photos_granularity',
+					'value' => 'month',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(PhotoBucketsRecomputed::class, fn (PhotoBucketsRecomputed $event) => $event->album_ids === ['timeline']);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchTimelinePhotoListingCoarseFlush(): void
+	{
+		Event::fake([PhotoBucketsRecomputed::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(PhotoBucketsRecomputed::class);
+	}
+
+	// ── Feature 067 (FR-067-24): Map coarse cache flush ──────────────
+
+	/** @return array<string,array<int,array<string,string>>> */
+	public static function mapListingCoarseFlushConfigsProvider(): array
+	{
+		return [
+			'hide_nsfw_in_map' => [['key' => 'hide_nsfw_in_map', 'value' => '1']],
+			'map_include_subalbums' => [['key' => 'map_include_subalbums', 'value' => '1']],
+			'map_display' => [['key' => 'map_display', 'value' => '1']],
+			'map_display_public' => [['key' => 'map_display_public', 'value' => '1']],
+		];
+	}
+
+	/**
+	 * @param array<string,string> $config
+	 */
+	#[DataProvider('mapListingCoarseFlushConfigsProvider')]
+	public function testChangingMapConfigDispatchesCoarseFlush(array $config): void
+	{
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [$config],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(MapListingCacheFlushRequested::class);
+	}
+
+	/**
+	 * `file_name_hidden` is a level-1 (Supporter Edition) config — kept as
+	 * its own test rather than folded into the data provider above (which
+	 * runs unconditionally), mirroring
+	 * {@see self::testChangingTimelineGranularityConfigDispatchesJob()}.
+	 * CWE-200 fix: `QueryMapPhotos` blanks `titles[]` for guests based on
+	 * this key, but the map-photo cache key carries no `file_name_hidden`
+	 * dimension - a warm guest-scoped entry must be flushed on change or it
+	 * keeps leaking real titles.
+	 */
+	public function testChangingFileNameHiddenConfigDispatchesMapListingCoarseFlush(): void
+	{
+		$this->requireSe();
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'file_name_hidden',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(MapListingCacheFlushRequested::class);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchMapListingCoarseFlush(): void
+	{
+		Event::fake([MapListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(MapListingCacheFlushRequested::class);
 	}
 
 	public function testUpdateSettingsGuest(): void

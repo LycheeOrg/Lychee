@@ -12,8 +12,9 @@ return [
     'success' => 'Dokončeno',
     'failure' => 'Chyba',
     'started' => 'Spuštěno',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'skipped' => 'Přeskočeno',
+    'col_date' => 'Datum',
+    'col_status' => 'Stav',
+    'col_username' => 'Uživatel',
+    'col_job' => 'Úloha',
 ];

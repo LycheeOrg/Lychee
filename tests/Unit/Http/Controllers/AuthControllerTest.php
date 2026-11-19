@@ -13,7 +13,9 @@ use App\Exceptions\LdapConnectionException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Controllers\AuthController;
 use App\Http\Requests\Session\LoginRequest;
+use App\Models\Configs;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use App\Services\Auth\LdapService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +76,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -99,6 +102,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -106,6 +110,58 @@ class AuthControllerTest extends AbstractTestCase
 		// Verify user is authenticated
 		$this->assertTrue(Auth::check());
 		$this->assertSame('localuser', Auth::user()->username);
+	}
+
+	/**
+	 * Feature 091 – with `email_login_enabled` the email address authenticates
+	 * the account too (FR-091-03).
+	 */
+	public function testLoginWithEmailWhenEmailLoginIsEnabled(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('notice')->once();
+
+		Config::set('ldap.auth.enabled', false);
+		Configs::set('email_login_enabled', '1');
+
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('local@example.com');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
+
+		$this->controller->login($request);
+
+		self::assertTrue(Auth::check());
+		self::assertSame('localuser', Auth::user()->username);
+	}
+
+	/**
+	 * Feature 091 – without the setting, the email address is not a credential
+	 * (FR-091-02).
+	 */
+	public function testLoginWithEmailWhenEmailLoginIsDisabled(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('error')->once();
+
+		Config::set('ldap.auth.enabled', false);
+		Configs::set('email_login_enabled', '0');
+
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('local@example.com');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
+
+		$this->expectException(UnauthenticatedException::class);
+		$this->expectExceptionMessage('Unknown user or invalid password');
+
+		$this->controller->login($request);
 	}
 
 	public function testLoginFailsWithInvalidCredentials(): void
@@ -123,6 +179,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -244,6 +301,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should succeed via LDAP
 		$controller->login($request);
@@ -300,6 +358,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -354,6 +413,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -409,6 +469,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -475,6 +536,7 @@ class AuthControllerTest extends AbstractTestCase
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -502,6 +564,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 		$request->shouldReceive('rememberMe')->andReturn(false);
+		$request->shouldReceive('configs')->andReturn(resolve(ConfigManager::class));
 
 		// Login should go directly to local auth
 		$this->controller->login($request);

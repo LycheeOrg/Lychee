@@ -86,4 +86,18 @@ return [
 		'database' => env('DB_CONNECTION', 'mysql'),
 		'table' => 'failed_jobs',
 	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Worker Queues (LycheeOrg Docker images)
+	|--------------------------------------------------------------------------
+	|
+	| Comma-separated queue list given to `queue:work --queue` by the worker
+	| of the LycheeOrg images (docker/scripts/entrypoint.sh, default
+	| "high,default,low"). Only read by Diagnostics, which warns when it
+	| misses the "low" queue of the recompute jobs.
+	|
+	*/
+
+	'worker_queues' => env('QUEUE_NAMES'),
 ];

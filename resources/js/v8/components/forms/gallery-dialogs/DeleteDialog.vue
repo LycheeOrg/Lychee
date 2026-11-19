@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="visible" :dismissible="true">
+	<UModal v-model:open="visible" :dismissible="true" :content="contentProps">
 		<template #body>
 			<p class="text-center text-muted max-w-xl text-wrap">
 				{{ confirmation }}<br />
@@ -34,7 +34,7 @@ import { computed } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
@@ -53,6 +53,14 @@ const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 const photoStore = usePhotoStore();
 const albumListStore = useAlbumListStore();
+
+const contentProps = {
+	tabindex: -1,
+	onOpenAutoFocus: (event: Event) => {
+		event.preventDefault();
+		(event.currentTarget as HTMLElement | null)?.focus();
+	},
+};
 
 const visible = defineModel<boolean>("open", { default: false });
 const emits = defineEmits<{

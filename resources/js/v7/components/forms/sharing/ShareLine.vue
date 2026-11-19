@@ -65,6 +65,7 @@ function edit() {
 		grants_upload: grantsUpload.value,
 		grants_edit: grantsEdit.value,
 		grants_delete: grantsDelete.value,
+		grants_move: grantsEdit.value,
 	};
 	SharingService.edit(data).then((response) => {
 		load(response.data);

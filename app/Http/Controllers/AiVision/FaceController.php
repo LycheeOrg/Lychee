@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Actions\Face\RecountFaceCounters;
 use App\Events\PhotoPersonsChanged;
 use App\Factories\PersonFactory;
 use App\Http\Requests\Face\AssignFaceRequest;
@@ -34,7 +35,7 @@ class FaceController extends Controller
 	 *
 	 * @return FaceResource
 	 */
-	public function assign(AssignFaceRequest $request, string $id, PersonFactory $person_factory): FaceResource
+	public function assign(AssignFaceRequest $request, string $id, PersonFactory $person_factory, RecountFaceCounters $recount): FaceResource
 	{
 		$face = $request->face();
 		$old_person_id = $face->person_id;
@@ -48,6 +49,7 @@ class FaceController extends Controller
 		}
 		$face->save();
 		$affected_person_ids = array_values(array_unique(array_filter([$old_person_id, $face->person_id], fn ($id) => $id !== null)));
+		$recount->forPersons($affected_person_ids);
 		PhotoPersonsChanged::dispatch([$face->photo_id], $affected_person_ids);
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
@@ -61,15 +63,16 @@ class FaceController extends Controller
 	 *
 	 * @return FaceResource
 	 */
-	public function toggleDismissed(ToggleDismissedRequest $request, string $id): FaceResource
+	public function toggleDismissed(ToggleDismissedRequest $request, string $id, RecountFaceCounters $recount): FaceResource
 	{
 		$face = $request->face();
 		$old_person_id = $face->person_id;
-		$face->is_dismissed = !$face->is_dismissed;
+		$face->is_dismissed = self::nextDismissedState($face->is_dismissed, $request->targetDismissed());
 		if ($face->is_dismissed) {
 			$face->person_id = null;
 		}
 		$face->save();
+		$recount->forPhotos([$face->photo_id]);
 		$affected_person_ids = array_values(array_unique(array_filter([$old_person_id, $face->person_id], fn ($id) => $id !== null)));
 		PhotoPersonsChanged::dispatch([$face->photo_id], $affected_person_ids);
 
@@ -78,6 +81,14 @@ class FaceController extends Controller
 		}
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
+	}
+
+	/**
+	 * Explicit target when given (idempotent set), otherwise toggle.
+	 */
+	private static function nextDismissedState(bool $current, ?bool $target): bool
+	{
+		return $target ?? !$current;
 	}
 
 	/**
@@ -121,7 +132,7 @@ class FaceController extends Controller
 		$affected_photo_ids = Face::whereIn('id', $face_ids)->distinct()->pluck('photo_id')->all();
 		$count = Face::whereIn('id', $face_ids)->update(['person_id' => $person->id]);
 
-		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
+		// Recount denormalized counters after the bulk update.
 		$person->face_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->count();
 		$person->photo_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
 		$person->save();

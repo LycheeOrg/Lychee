@@ -8,13 +8,17 @@
 
 namespace App\Services\Cache;
 
+use App\DTO\MapViewport;
+use App\DTO\Search\SearchToken;
 use App\DTO\SortingCriterion;
+use App\Enum\AlbumListingScope;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Policies\AlbumPolicy;
 
 /**
  * Single source of truth for every {@see ManagedCacheService} key and tag
- * used by the album/tag listing cache (Feature 053).
+ * used by the album/tag listing cache.
  *
  * A producer (e.g. `AlbumRepository`, `Top`, `GetTagWithPhotosAndAlbums`)
  * and its invalidator (e.g. `ManagedCacheAlbumListingInvalidator`) must
@@ -43,6 +47,36 @@ class CacheKeyProvider
 	public function albumTags(array $album_ids): array
 	{
 		return array_map($this->albumTag(...), $album_ids);
+	}
+
+	/**
+	 * Feature 068 (FR-068-07): tags the cached Markdown-converted
+	 * `description` for one album's Flow card, evicted whenever that
+	 * album's `description` is saved.
+	 */
+	public function flowDescriptionTag(string $album_id): string
+	{
+		return "flow-description:{$album_id}";
+	}
+
+	/**
+	 * @param string[] $album_ids
+	 *
+	 * @return string[]
+	 */
+	public function flowDescriptionTags(array $album_ids): array
+	{
+		return array_map($this->flowDescriptionTag(...), $album_ids);
+	}
+
+	/**
+	 * Cache key for one album's Flow-card Markdown-converted description.
+	 * A pure function of `album_id` alone — the rendered content does not
+	 * depend on the viewer.
+	 */
+	public function flowDescriptionKey(string $album_id): string
+	{
+		return $this->flowDescriptionTag($album_id) . ':html';
 	}
 
 	/**
@@ -77,8 +111,9 @@ class CacheKeyProvider
 
 	/**
 	 * Coarse tag carried by every cached entry across all six listing
-	 * query types, in addition to its own specific tag(s); evicting it
-	 * alone is sufficient to flush the whole album-listing cache.
+	 * query types and the root and child `buckets`/`data`/`rights` tiers,
+	 * in addition to its own specific tag(s); evicting it alone is
+	 * sufficient to flush the whole album-listing cache (FR-092-13).
 	 */
 	public function albumListingGlobalTag(): string
 	{
@@ -131,7 +166,7 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Coarse tag carried by every `GET /api/v3/Albums` (Feature 057) cache
+	 * Coarse tag carried by every `GET /api/v3/Albums` cache
 	 * entry, across every user identity and flag combination; evicting it
 	 * alone flushes the entire v3 listing cache.
 	 */
@@ -142,6 +177,20 @@ class CacheKeyProvider
 
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
+
+	/**
+	 * Digest of the current session's unlocked-album ids
+	 * ({@see AlbumPolicy::getUnlockedAlbumIDs()}), for embedding in a cache
+	 * key whose underlying query depends on that session-scoped state (e.g. a
+	 * TagAlbum/PersonAlbum's "matching albums" curation) - two different
+	 * unlock states must never collide on the same key. No cryptographically
+	 * secure hash is needed here, just a fast one that is unlikely to
+	 * collide.
+	 */
+	public function unlockedAlbumsDigest(): string
+	{
+		return hash('xxh3', implode(',', AlbumPolicy::getUnlockedAlbumIDs()));
+	}
 
 	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, int $per_page, SortingCriterion $sorting): string
 	{
@@ -159,30 +208,54 @@ class CacheKeyProvider
 		return "{$album_children_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
 	}
 
-	public function tagAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
+	/**
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()} -
+	 *                                only the v3 `/Albums/tags` caller
+	 *                                passes a real digest (a locked
+	 *                                TagAlbum's `cover_ids` entry, #4704,
+	 *                                depends on it); the legacy v2 `Top`
+	 *                                caller leaves it empty since v2's own
+	 *                                {@see \App\Http\Resources\Models\ThumbAlbumResource}
+	 *                                output does not go through this key
+	 */
+	public function tagAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, string $unlocked_digest = ''): string
 	{
 		$tag_albums_listing_tag = $this->tagAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
 
-		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$tag_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}:unlocked:{$unlocked_digest}";
 	}
 
-	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
+	/**
+	 * @param ?AlbumListingScope $scope widening: `null`
+	 *                                  (v2's own `Top::get()` call, unchanged) omits the
+	 *                                  scope suffix entirely, keeping v2's cache entries
+	 *                                  byte-identical; a real scope (v3's `/Albums/persons`)
+	 *                                  appends it so `own`/`shared`/different users never
+	 *                                  collide
+	 */
+	public function personAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting, ?AlbumListingScope $scope = null): string
 	{
 		$person_albums_listing_tag = $this->personAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$person_albums_listing_tag}:{$user_tag}:sort:{$sorting->column->value}:{$sorting->order->value}{$scope_suffix}";
 	}
 
-	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order): string
+	/**
+	 * @param ?AlbumListingScope $scope           see {@see self::personAlbumsListingKey()}
+	 * @param string             $unlocked_digest see {@see self::tagAlbumsListingKey()}
+	 */
+	public function pinnedAlbumsListingKey(int|string|null $user_id, ?ColumnSortingType $column, ?OrderSortingType $order, ?AlbumListingScope $scope = null, string $unlocked_digest = ''): string
 	{
 		$pinned_albums_listing_tag = $this->pinnedAlbumsListingTag();
 		$user_tag = $this->userTag($user_id);
 		$column_value = $column?->value ?? 'null';
 		$order_value = $order?->value ?? 'null';
+		$scope_suffix = $scope !== null ? ":scope:{$scope->value}" : '';
 
-		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}";
+		return "{$pinned_albums_listing_tag}:{$user_tag}:sort:{$column_value}:{$order_value}{$scope_suffix}:unlocked:{$unlocked_digest}";
 	}
 
 	/**
@@ -222,18 +295,513 @@ class CacheKeyProvider
 	}
 
 	/**
-	 * Cache key for `GET /api/v3/Albums` (Feature 057): a pure function of
+	 * Cache key for `GET /api/v3/Albums`: a pure function of
 	 * user identity plus the exact `(with_parent_id, for_bulk_edit)` flag
 	 * combination requested, so no two distinct combinations or users ever
-	 * collide (NFR-057-04).
+	 * collide.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see AlbumPolicy::getUnlockedAlbumIDs()}) -
+	 *                                a locked album's `cover_ids` entry
+	 *                                (#4704) depends on this state, so two
+	 *                                different unlock states must never
+	 *                                collide on the same key
 	 */
-	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit): string
+	public function albumListingV3Key(int|string|null $user_id, bool $with_parent_id, bool $for_bulk_edit, string $unlocked_digest = ''): string
 	{
 		$album_listing_v3_tag = $this->albumListingV3Tag();
 		$user_tag = $this->userTag($user_id);
 		$with_parent_id_value = $with_parent_id ? '1' : '0';
 		$for_bulk_edit_value = $for_bulk_edit ? '1' : '0';
 
-		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}";
+		return "{$album_listing_v3_tag}:{$user_tag}:with_parent_id:{$with_parent_id_value}:for_bulk_edit:{$for_bulk_edit_value}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/buckets`:
+	 * a pure function of `(album_id, user identity)` — no sort-column
+	 * dimension is needed since it is implied by `album_id`
+	 * (a parent's effective sort column is a property of that album, not a per-request choice).
+	 */
+	public function albumBucketsKey(string $album_id, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:buckets:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children`, mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see \App\Policies\AlbumPolicy::getUnlockedAlbumIDs()}) -
+	 *                                for a TagAlbum/PersonAlbum this state
+	 *                                also curates the matching-albums result
+	 *                                set itself (mirrors
+	 *                                {@see \App\Repositories\AlbumRepository::getMatchingAlbumsForTagPaginated()}'s
+	 *                                own key convention); for every album
+	 *                                type it additionally governs a locked
+	 *                                child's `cover_ids` entry (#4704) — two
+	 *                                different unlock states must never
+	 *                                collide on the same key
+	 */
+	public function albumChildrenDataKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-data:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/children/rights`, mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()}
+	 */
+	public function albumChildrenRightsKey(string $album_id, int|string|null $user_id, string $unlocked_digest = ''): string
+	{
+		$album_children_tag = $this->albumChildrenTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:children-rights:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/buckets`: a pure function of
+	 * `(scope, user identity)` — `own`/`shared`/different users never
+	 * collide. Tagged with the
+	 * same {@see self::albumChildrenTag()} (passing `null`, root) already
+	 * evicted by every existing root-album-affecting handler, plus
+	 * {@see self::userTag()}.
+	 */
+	public function rootAlbumBucketsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-buckets:{$scope->value}:{$user_tag}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root`,
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::albumChildrenDataKey()} -
+	 *                                a locked root album's `cover_ids` entry
+	 *                                (#4704) depends on this state
+	 */
+	public function rootAlbumChildrenDataKey(AlbumListingScope $scope, int|string|null $user_id, string $unlocked_digest = ''): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-data:{$scope->value}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/root/rights`,
+	 * mirrors {@see self::rootAlbumBucketsKey()}.
+	 */
+	public function rootAlbumChildrenRightsKey(AlbumListingScope $scope, int|string|null $user_id): string
+	{
+		$album_children_tag = $this->albumChildrenTag(null);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$album_children_tag}:root-children-rights:{$scope->value}:{$user_tag}";
+	}
+
+	// ── Photo listing ────────────────────────────────────────────────
+
+	/**
+	 * Tag carried by every cached entry across all three photo-listing tiers
+	 * (`buckets`/`ratios`/`details`) for one album — evicting it alone
+	 * flushes every cached photo-listing response for that album, across
+	 * every user identity and `details` scope.
+	 */
+	public function photoListingTag(string $album_id): string
+	{
+		return "photo-listing:{$album_id}";
+	}
+
+	/**
+	 * Coarse tag carried by every cached photo-listing entry of every album
+	 * — sufficient alone to flush the whole photo-listing cache when an
+	 * instance-wide bucket setting changes (FR-092-13), mirroring
+	 * {@see self::albumListingGlobalTag()}.
+	 */
+	public function photoListingGlobalTag(): string
+	{
+		return 'photo-listing-global';
+	}
+
+	/**
+	 * @param string[] $album_ids
+	 *
+	 * @return string[]
+	 */
+	public function photoListingTags(array $album_ids): array
+	{
+		return array_map($this->photoListingTag(...), $album_ids);
+	}
+
+	/**
+	 * Fine-grained tag carried (in addition to {@see self::photoListingTag()})
+	 * by a bucket-windowed `ratios`/`details` cache entry - evicting it
+	 * alone flushes only that one bucket's cached entries for this album,
+	 * leaving every other cached bucket warm (FR-066-09, NFR-066-04). The
+	 * `buckets` tier itself never carries this tag (FR-066-09): it is
+	 * always whole-scope, so only the coarse tag and
+	 * {@see self::photoBucketsTierTag()} apply to it.
+	 */
+	public function photoListingBucketTag(string $album_id, string $bucket_id): string
+	{
+		return "photo-listing-bucket:{$album_id}:{$bucket_id}";
+	}
+
+	/**
+	 * Dedicated tag carried (in addition to {@see self::photoListingTag()})
+	 * only by the `buckets` tier's own whole-scope cache entry for one
+	 * album - never by a `ratios`/`details` window entry. Lets an
+	 * invalidation that only needs to refresh whole-scope bucket counts
+	 * (e.g. Timeline's per-photo eviction) evict just this tag plus the
+	 * affected fine {@see self::photoListingBucketTag()}s, without also
+	 * evicting every unrelated cached `ratios`/`details` window via the
+	 * coarse tag those entries share with `buckets` (FR-066-09, NFR-066-04).
+	 */
+	public function photoBucketsTierTag(string $album_id): string
+	{
+		return "photo-listing-buckets-tier:{$album_id}";
+	}
+
+	/**
+	 * @param string[] $bucket_ids
+	 *
+	 * @return string[]
+	 */
+	public function photoListingBucketTags(string $album_id, array $bucket_ids): array
+	{
+		return array_map(fn (string $bucket_id): string => $this->photoListingBucketTag($album_id, $bucket_id), $bucket_ids);
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/buckets`: a pure
+	 * function of `(album_id, user identity, unlocked-album state)` —
+	 * mirrors {@see self::albumBucketsKey()}.
+	 *
+	 * @param string $unlocked_digest session-scoped digest of currently-unlocked
+	 *                                album ids ({@see self::unlockedAlbumsDigest()}) -
+	 *                                every album's `photos()` (regular
+	 *                                {@see \App\Models\Album}, smart album,
+	 *                                `TagAlbum`/`PersonAlbum`, and
+	 *                                `TimelineAlbum` alike) filters through
+	 *                                {@see \App\Policies\PhotoQueryPolicy::applySearchabilityFilter()}
+	 *                                with this same state, so two sessions
+	 *                                with different unlocked albums must never
+	 *                                share a cache entry - a guest who has
+	 *                                unlocked a protected album must not leak
+	 *                                its photos to a guest who has not
+	 *                                (CWE-524)
+	 */
+	public function photoBucketsKey(string $album_id, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:buckets:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos`, mirrors
+	 * {@see self::photoBucketsKey()}.
+	 *
+	 * @param string $scope_digest    see {@see self::photoRatiosScopeDigest()} -
+	 *                                distinguishes every distinct
+	 *                                `bucket_ids[]`/`photo_ids[]` window a
+	 *                                caller could request (or the whole-scope
+	 *                                request, digest `"all"`) so two different
+	 *                                windows for the same album never collide
+	 * @param string $unlocked_digest see {@see self::photoBucketsKey()}
+	 */
+	public function photoRatiosKey(string $album_id, string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:ratios:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Digest identifying the exact `ratios` request scope
+	 * ({@see \App\Http\Requests\Photo\GetPhotoRatiosRequest}), mirroring
+	 * {@see self::photoDetailsScopeDigest()} exactly: the sorted, hashed
+	 * `bucket_ids[]` list, or the sorted, hashed `photo_ids[]` list, or a
+	 * `limit:N` marker (Feature 068, FR-068-03), or the literal `"all"`
+	 * sentinel when all three are omitted (today's whole-scope request,
+	 * NFR-066-03).
+	 *
+	 * @param string[]|null $bucket_ids
+	 * @param string[]|null $photo_ids
+	 */
+	public function photoRatiosScopeDigest(?array $bucket_ids, ?array $photo_ids, ?int $limit = null): string
+	{
+		if ($bucket_ids !== null) {
+			$ids = $bucket_ids;
+			sort($ids);
+
+			return 'buckets:' . hash('xxh3', json_encode($ids, JSON_THROW_ON_ERROR));
+		}
+
+		if ($photo_ids !== null) {
+			$ids = $photo_ids;
+			sort($ids);
+
+			return 'ids:' . hash('xxh3', json_encode($ids, JSON_THROW_ON_ERROR));
+		}
+
+		if ($limit !== null) {
+			return 'limit:' . $limit;
+		}
+
+		return 'all';
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Albums/{album_id}/Photos/details`: a pure
+	 * function of `(album_id, user identity, scope, unlocked-album state)` —
+	 * `$scope_digest` must distinguish every distinct `bucket_id`/
+	 * `photo_ids[]` combination a caller could request, so two different
+	 * detail requests for the same album never collide. See
+	 * {@see self::photoDetailsScopeDigest()}.
+	 *
+	 * @param string $unlocked_digest see {@see self::photoBucketsKey()}
+	 */
+	public function photoDetailsKey(string $album_id, string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->photoListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:details:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	// ── Search listing (Feature 069) ────────────────────────────────
+
+	/**
+	 * Coarse tag carried by every cached v3 search entry, across every tier,
+	 * term and user identity. Search is a cross-album scope with no natural
+	 * per-album partition — any photo or album mutation anywhere can change any
+	 * search result — so unlike the album/photo listing caches there is no finer
+	 * tag worth maintaining: eviction is all-or-nothing by design.
+	 */
+	public function searchListingTag(): string
+	{
+		return 'search-listing';
+	}
+
+	/**
+	 * Deterministic digest of everything that distinguishes one search from
+	 * another: the parsed token list, the optional origin album, and the sort.
+	 *
+	 * Digests the **parsed** tokens rather than the raw term, and hashes the
+	 * result, so no user-entered search text is ever written into a cache key
+	 * or a cache-event log line (spec.md Telemetry & Observability).
+	 *
+	 * @param array<int,SearchToken> $tokens
+	 */
+	public function searchScopeDigest(array $tokens, ?string $origin_id, ?string $sorting_column, ?string $sorting_order): string
+	{
+		$parts = [];
+		foreach ($tokens as $token) {
+			$parts[] = implode("\x1f", [
+				$token->modifier ?? '',
+				$token->sub_modifier ?? '',
+				$token->operator ?? '',
+				$token->value,
+				$token->is_prefix ? '1' : '0',
+			]);
+		}
+		// Token order is part of the identity: the tokens are AND-ed, so a
+		// reordering is semantically identical, but treating it as a distinct
+		// key merely costs one extra cache entry — far cheaper than sorting
+		// here and risking two genuinely different searches colliding.
+		$parts[] = 'origin:' . ($origin_id ?? '');
+		$parts[] = 'sort:' . ($sorting_column ?? '') . ':' . ($sorting_order ?? '');
+
+		return hash('sha256', implode("\x1e", $parts));
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Search/Photos`.
+	 *
+	 * @param string $unlocked_digest see {@see self::unlockedAlbumsDigest()}
+	 */
+	public function searchPhotosKey(string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->searchListingTag();
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:photos:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Search/Photos/details`. Carries an extra
+	 * digest of the requested id set, which is what distinguishes two details
+	 * requests for the same search.
+	 */
+	public function searchPhotoDetailsKey(string $scope_digest, string $ids_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->searchListingTag();
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:details:{$scope_digest}:{$ids_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Digest of a requested `photo_ids[]` set. Sorted first, so the same set
+	 * requested in a different order hits the same entry.
+	 *
+	 * @param string[] $photo_ids
+	 */
+	public function searchPhotoIdsDigest(array $photo_ids): string
+	{
+		sort($photo_ids);
+
+		return hash('sha256', implode(',', $photo_ids));
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Search/albums`.
+	 */
+	public function searchAlbumsKey(string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->searchListingTag();
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:albums:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Search/albums/rights`.
+	 */
+	public function searchAlbumRightsKey(string $scope_digest, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->searchListingTag();
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:albums-rights:{$scope_digest}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	// ── Map listing (Feature 067) ───────────────────────────────────
+
+	/**
+	 * Coarse tag carried by every cached Map (`buckets`/`Photos`/`tracks`)
+	 * entry for one scope — root (`$scope = 'root'`) or one album
+	 * (`$scope = $album_id`). Evicting it alone flushes every cached Map
+	 * response for that scope, across every user identity and viewport.
+	 */
+	public function mapListingTag(string $scope): string
+	{
+		return "map-listing:{$scope}";
+	}
+
+	/**
+	 * Coarse tag carried by every cached Map entry regardless of scope —
+	 * sufficient alone to flush the entire Map cache (FR-067-24), mirroring
+	 * {@see self::albumListingGlobalTag()}'s own precedent for the sibling
+	 * album-listing cache.
+	 */
+	public function mapListingGlobalTag(): string
+	{
+		return 'map-listing-global';
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/buckets`: a pure function of scope
+	 * (root or one album), the **snapped** viewport + zoom (NFR-067-04 —
+	 * an un-snapped raw viewport would make the cache layer pointless),
+	 * user identity, and unlocked-album state.
+	 *
+	 * @param string $scope           `'root'` or an album id
+	 * @param string $unlocked_digest see {@see self::unlockedAlbumsDigest()}
+	 */
+	public function mapBucketsKey(string $scope, MapViewport $snapped_viewport, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($scope);
+		$user_tag = $this->userTag($user_id);
+		$viewport_digest = $this->mapViewportDigest($snapped_viewport);
+
+		return "{$tag}:buckets:{$user_tag}:{$viewport_digest}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/Photos`, mirrors {@see self::mapBucketsKey()}.
+	 */
+	public function mapPhotosKey(string $scope, MapViewport $snapped_viewport, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($scope);
+		$user_tag = $this->userTag($user_id);
+		$viewport_digest = $this->mapViewportDigest($snapped_viewport);
+
+		return "{$tag}:photos:{$user_tag}:{$viewport_digest}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/tracks` — viewport-independent
+	 * (FR-067-13), unlike {@see self::mapBucketsKey()}/{@see self::mapPhotosKey()}.
+	 */
+	public function mapTracksKey(string $album_id, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+
+		return "{$tag}:tracks:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Cache key for `GET /api/v3/Map/album` (Feature 086) — viewport-independent,
+	 * like {@see self::mapTracksKey()}. `$include_sub_albums` is part of the key
+	 * so a setting change never serves the other scope.
+	 */
+	public function mapAlbumPointsKey(string $album_id, bool $include_sub_albums, int|string|null $user_id, string $unlocked_digest): string
+	{
+		$tag = $this->mapListingTag($album_id);
+		$user_tag = $this->userTag($user_id);
+		$sub_albums = $include_sub_albums ? 'with-sub-albums' : 'own';
+
+		return "{$tag}:points:{$sub_albums}:{$user_tag}:unlocked:{$unlocked_digest}";
+	}
+
+	/**
+	 * Deterministic digest of a snapped viewport's bounds + zoom, embedded
+	 * in every viewport-scoped Map cache key.
+	 */
+	private function mapViewportDigest(MapViewport $snapped_viewport): string
+	{
+		return 'z:' . $snapped_viewport->zoom .
+			':n:' . $snapped_viewport->north .
+			':s:' . $snapped_viewport->south .
+			':e:' . $snapped_viewport->east .
+			':w:' . $snapped_viewport->west;
+	}
+
+	/**
+	 * Digest identifying the exact `details` request scope
+	 * ({@see \App\Http\Requests\Photo\GetPhotoDetailsRequest}) — either the
+	 * requested `bucket_id` verbatim, or a fast hash of the sorted
+	 * `photo_ids[]` list (order-independent: the same id set requested in a
+	 * different order is still the same cached response).
+	 *
+	 * @param string[]|null $photo_ids
+	 */
+	public function photoDetailsScopeDigest(?string $bucket_id, ?array $photo_ids): string
+	{
+		if ($bucket_id !== null) {
+			return "bucket:{$bucket_id}";
+		}
+
+		$ids = $photo_ids ?? [];
+		sort($ids);
+
+		return 'ids:' . hash('xxh3', implode(',', $ids));
 	}
 }

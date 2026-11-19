@@ -6,21 +6,21 @@ return [
     | Duplicate Finder Page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Maintenance',
-    'intro' => 'On this page you will find the duplicate pictures found in your database.',
-    'found' => ' duplicates found!',
-    'invalid-search' => ' At least the checksum or title condition must be checked.',
-    'checksum-must-match' => 'Checksum must match.',
-    'title-must-match' => 'Title must match.',
-    'must-be-in-same-album' => 'Must be in the same album.',
+    'title' => 'Bakım',
+    'intro' => 'Bu sayfada veritabanınızda bulunan yinelenen resimleri görebilirsiniz.',
+    'found' => ' yinelenen öğe bulundu!',
+    'invalid-search' => ' En az sağlama toplamı veya başlık koşulu işaretlenmelidir.',
+    'checksum-must-match' => 'Sağlama toplamı eşleşmelidir.',
+    'title-must-match' => 'Başlık eşleşmelidir.',
+    'must-be-in-same-album' => 'Aynı albümde olmalıdır.',
     'columns' => [
-        'album' => 'Album',
-        'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'album' => 'Albüm',
+        'photo' => 'Fotoğraf',
+        'checksum' => 'Sağlama toplamı',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'Hiç orijinal kalmadı.',
+        'keep-one' => 'Bu gruptaki tüm yinelenenleri seçtiniz. Lütfen saklamak için en az bir yinelenen öğe seçin.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Seçilenleri sil',
 ];

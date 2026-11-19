@@ -8,6 +8,7 @@
 
 namespace App\Jobs;
 
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\Events\AlbumSaved;
 use App\Models\Album;
 use Illuminate\Bus\Queueable;
@@ -42,9 +43,7 @@ class ApplyNsfwAlbumSensitivityJob implements ShouldQueue
 		$saved_parent_ids = [];
 
 		foreach ($this->album_ids as $album_id) {
-			$album = Album::query()
-				->addVirtualIsRecursiveNSFW()
-				->find($album_id);
+			$album = Album::query()->find($album_id);
 
 			if ($album === null) {
 				continue;
@@ -62,6 +61,8 @@ class ApplyNsfwAlbumSensitivityJob implements ShouldQueue
 			$saved_parent_ids[] = $album->parent_id;
 			Log::info("ApplyNsfwAlbumSensitivityJob: marked album {$album_id} as NSFW.");
 		}
+
+		(new SyncRecursiveNsfw())->do();
 
 		AlbumSaved::dispatchIf($saved_album_ids !== [], $saved_album_ids, $saved_parent_ids);
 	}

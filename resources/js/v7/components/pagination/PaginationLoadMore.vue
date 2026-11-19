@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import Button from "primevue/button";
 import { trans } from "laravel-vue-i18n";
 

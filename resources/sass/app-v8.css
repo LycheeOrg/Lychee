@@ -12,6 +12,29 @@
 	background-image: url("/img/noise.png");
 }
 
+/* Hides the scrollbar (Firefox/IE via the property, Chrome/Safari via the pseudo-element) while keeping the element scrollable. */
+@utility no-scrollbar {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+/*
+  Nuxt UI ships a `--ui-text-toned` CSS var (and the `text-toned` utility it
+  backs) but no background equivalent — only `bg-muted`/`bg-elevated`/
+  `bg-accented`/`bg-inverted` exist (see node_modules/@nuxt/ui/dist/runtime/index.css).
+  `--ui-bg-toned` below mirrors `--ui-text-toned`'s own light/dark values
+  exactly (defined alongside this app's other `--ui-*` overrides further
+  down), so `bg-toned` reads as the same visual weight as `text-toned` when
+  used for a small fill (e.g. a marker dot) rather than text.
+*/
+@utility bg-toned {
+	background-color: var(--ui-bg-toned);
+}
+
 html {
 	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -69,7 +92,8 @@ body {
 	/*
 	  Ken-Burns-on-hover defaults, overridden inline per the
 	  `photo_ken_burns_on_hover_scale`/`_duration` settings, see
-	  PhotoThumbPanelList.vue's `kenBurnsStyle`.
+	  `useKenBurnsHover()` (resources/js/v8/composables/photo/kenBurnsHover.ts),
+	  applied by both PhotoThumbPanelList.vue and PhotoGridVirtual.vue.
 	*/
 	--photo-ken-burns-scale: 1.5;
 	--photo-ken-burns-duration: 15s;
@@ -78,7 +102,8 @@ body {
 /*
   Ken-Burns-on-hover: slowly zoom into a photo's image while hovering it, unlike
   the old whole-tile zoom this replaced - `.thumb-image` scales up inside
-  `.thumbimg`'s `overflow-hidden` clip (see PhotoThumb.vue), so the effect stays
+  `.thumbimg`'s `overflow-hidden` clip (see PhotoThumb.vue and
+  PhotoThumbVirtual.vue), so the effect stays
   inside the thumbnail's own bounds instead of growing the tile over its
   neighbours.
 
@@ -196,6 +221,8 @@ body {
 	--ui-info: var(--ui-color-info-500);
 	--ui-warning: var(--ui-color-warning-500);
 	--ui-error: var(--ui-color-error-500);
+	/* See `bg-toned`'s own doc comment above — mirrors `--ui-text-toned`'s light value (neutral-600). */
+	--ui-bg-toned: var(--ui-color-neutral-600);
 }
 .dark {
 	--ui-color-neutral-50: var(--color-zinc-50);
@@ -215,6 +242,8 @@ body {
 	--ui-info: var(--ui-color-info-400);
 	--ui-warning: var(--ui-color-warning-400);
 	--ui-error: var(--ui-color-error-400);
+	/* See `bg-toned`'s own doc comment above — mirrors `--ui-text-toned`'s dark value (neutral-300). */
+	--ui-bg-toned: var(--ui-color-neutral-300);
 }
 
 /*
@@ -277,6 +306,22 @@ body {
 	--aspect-3x2: 3 / 2;
 	--aspect-square: 1 / 1;
 	--aspect-video: 16 / 9;
+
+	/*
+	  Continues Tailwind's own default breakpoint increment (md->lg, lg->xl,
+	  xl->2xl are each +256px) up to 6xl. Previously undefined here, so every
+	  3xl:/4xl: class already written against them (AlbumThumb.vue) compiled
+	  to dead, silently-dropped utilities - see albumTileWidth.ts's matching
+	  TILE_WIDTH_FORMULA/breakpoints table, the JS-side counterpart that must
+	  stay numerically in sync with these. v8 only - resources/sass/app.css
+	  (v7) intentionally not touched, matching this codebase's established
+	  v8-only convention; v7's own identical 3xl:/4xl: classes on its
+	  AlbumThumb.vue stay dead.
+	*/
+	--breakpoint-3xl: 1792px;
+	--breakpoint-4xl: 2048px;
+	--breakpoint-5xl: 2304px;
+	--breakpoint-6xl: 2560px;
 }
 @keyframes pulseToNull {
 	50% {

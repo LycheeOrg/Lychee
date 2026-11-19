@@ -1,4 +1,4 @@
-import { computed, ref, type ComputedRef, type Ref } from "vue";
+import { computed, ref, watch, type ComputedRef, type Ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import type { AlbumStore } from "@/stores/AlbumState";
@@ -10,8 +10,10 @@ import type { LycheeStateStore } from "@/stores/LycheeState";
 import type { ToastLike } from "@/composables/toast-contract";
 import FaceDetectionService from "@/services/face-detection-service";
 import UsersService from "@/services/users-service";
+import { useUserStore } from "@/stores/UserState";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 import type { SpotlightItem } from "./types";
+import { canOfferLiveGallerySizes } from "@/v8/composables/gallerySizes/gallerySizesLive";
 
 export type SpotlightGalleryActionToggles = {
 	toggleCreateAlbum: () => void;
@@ -24,7 +26,8 @@ export type SpotlightGalleryActionToggles = {
 /**
  * The 10 context-aware album/gallery actions (create/move/edit/share/upload/tracks/
  * watermark/scan-faces/apply-renamer), gated exactly like their existing non-Spotlight
- * triggers (Hero buttons, "+" menus, AlbumEdit's own section gates).
+ * triggers (Hero buttons, "+" menus, AlbumEdit's own section gates), plus the live
+ * gallery sizes drawer (Feature 110), which has no other trigger and is mounted in App.vue.
  *
  * The dialogs these actions open only ever get mounted while the matching route is
  * active (see Album.vue/Albums.vue), so gating visibility on the route is enough - no
@@ -39,7 +42,7 @@ export function useSpotlightGalleryActions(
 	togglableStore: TogglablesStateStore,
 	lycheeStore: LycheeStateStore,
 	toast: ToastLike,
-	initData: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
+	globalRights: Ref<App.Http.Resources.Rights.GlobalRightsResource | undefined>,
 	toggles: SpotlightGalleryActionToggles,
 	close: () => void,
 ): ComputedRef<SpotlightItem[]> {
@@ -49,10 +52,25 @@ export function useSpotlightGalleryActions(
 	// Mirrors AlbumEdit.vue's own `canShare` gate exactly, since the share action opens that
 	// same drawer/section rather than its own dialog. `UsersService.count()` is cached, so this
 	// costs nothing extra once AlbumEdit.vue (or another instance of this composable) has fetched it.
+	// A guest can never share (no `can_share_with_users` right), so skip the request entirely
+	// for them - SpotlightSearch.vue mounts this composable unconditionally on every page.
+	// SpotlightSearch.vue mounts before LeftMenu's async userStore.load() resolves, so isLoggedIn
+	// must be watched rather than checked once - a one-shot check would run while still logged out.
+	const userStore = useUserStore();
 	const numUsers = ref(0);
-	UsersService.count().then((data) => {
-		numUsers.value = data.data;
-	});
+	watch(
+		() => userStore.isLoggedIn,
+		(isLoggedIn) => {
+			if (isLoggedIn) {
+				UsersService.count().then((data) => {
+					numUsers.value = data.data;
+				});
+			} else {
+				numUsers.value = 0;
+			}
+		},
+		{ immediate: true },
+	);
 
 	return computed(() => {
 		const items: SpotlightItem[] = [];
@@ -156,7 +174,7 @@ export function useSpotlightGalleryActions(
 		if (
 			insideAlbum.value &&
 			albumStore.rights?.can_edit &&
-			initData.value?.modules.is_watermarker_enabled &&
+			globalRights.value?.modules.is_watermarker_enabled &&
 			photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants))
 		) {
 			items.push({
@@ -199,7 +217,7 @@ export function useSpotlightGalleryActions(
 			});
 		}
 
-		if (insideAlbum.value && albumStore.rights?.can_edit && initData.value?.modules.is_mod_renamer_enabled) {
+		if (insideAlbum.value && albumStore.rights?.can_edit && globalRights.value?.modules.is_mod_renamer_enabled) {
 			items.push({
 				label: trans("gallery.menus.apply_renamer"),
 				icon: "lucide:pencil",
@@ -207,6 +225,19 @@ export function useSpotlightGalleryActions(
 				onSelect: () => {
 					close();
 					toggles.toggleApplyRenamer();
+				},
+			});
+		}
+
+		// Feature 110 (FR-110-13): the only way to open the live gallery sizes drawer.
+		if (canOfferLiveGallerySizes(route.name, globalRights.value?.settings.can_edit ?? false)) {
+			items.push({
+				label: trans("gallery_sizes.spotlight_action"),
+				icon: "lucide:ruler",
+				kind: "nav",
+				onSelect: () => {
+					close();
+					togglableStore.is_gallery_sizes_live_open = true;
 				},
 			});
 		}

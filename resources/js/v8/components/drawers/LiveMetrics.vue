@@ -12,7 +12,7 @@
 					class="text-sm text-highlighted mb-8"
 					v-html="$t('statistics.metrics.preview_text')"
 				></div>
-				<div v-for="item in prettifiedData" :key="item.action + item.ago" class="flex pt-2 pb-1">
+				<div v-for="item in prettifiedData" :key="`${item.action}|${item.ago}|${item.id}`" class="flex pt-2 pb-1">
 					<div class="flex flex-col w-full text-sm text-muted">
 						<router-link v-if="item.count === 1" v-slot="{ href }" :to="item.link">
 							<a :href="href" v-html="printSingular(item)"></a>
@@ -39,14 +39,23 @@
 								"
 							/>
 						</div>
-						<img v-if="item.src" :src="item.src" class="rounded w-full h-full object-cover" />
+						<Thumb
+							v-if="item.thumb !== undefined"
+							:album-id="item.thumb.albumId"
+							:photo-id="item.thumb.photoId"
+							type="thumb"
+							class="rounded w-full h-full object-cover"
+						/>
+						<img v-else-if="item.src" :src="item.src" class="rounded w-full h-full object-cover" />
 					</div>
 				</div>
+				<div v-if="isTruncated" class="text-xs text-muted pt-4">{{ $t("statistics.metrics.truncated") }}</div>
 			</div>
 		</template>
 	</USlideover>
 </template>
 <script setup lang="ts">
+import Thumb from "@/v8/components/thumbs/Thumb.vue";
 import AlbumService from "@/services/album-service";
 import MetricsService from "@/services/metrics-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -54,7 +63,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { watch } from "vue";
@@ -74,16 +83,23 @@ type LiveMetrics = {
 	title: string;
 	count: number;
 	src: string | null;
+	// v3 rows: the thumbnail is fetched through the Asset endpoint instead of `src`.
+	thumb?: { albumId: string; photoId: string | null };
 };
-const data = ref<App.Http.Resources.Models.LiveMetricsResource[] | undefined>(undefined);
 const prettifiedData = ref<LiveMetrics[] | undefined>(undefined);
+const isTruncated = ref(false);
+// Reopening the drawer starts a new load: responses of earlier loads are dropped.
+let loadId = 0;
 
 function load() {
+	const id = ++loadId;
 	if (lycheeStore.is_se_preview_enabled) {
 		// Do not load, if the preview is enabled
-		data.value = [];
 		AlbumService.getAll()
 			.then((response) => {
+				if (id !== loadId) {
+					return;
+				}
 				prettifiedData.value = (response.data.albums as App.Http.Resources.Models.ThumbAlbumResource[]).map((album) => {
 					const ago = dateToAgo(album.created_at);
 					const ret: LiveMetrics = {
@@ -111,10 +127,12 @@ function load() {
 		return;
 	}
 
-	MetricsService.get()
+	MetricsService.getV3()
 		.then((response) => {
-			data.value = response.data;
-			prettifyData();
+			if (id !== loadId) {
+				return;
+			}
+			prettifyV3(response.data);
 		})
 		.catch((error) => {
 			console.error(error);
@@ -150,10 +168,8 @@ function printPlural(data: LiveMetrics) {
 }
 
 function titlize(title: string) {
-	// Strip HTML tags from the title to prevent XSS attacks and ensure proper display
-	const tmp = document.createElement("div");
-	tmp.innerHTML = title;
-	title = tmp.textContent || tmp.innerText || "";
+	// Never parse the title as HTML (even a detached element fetches <img src> and fires onerror).
+	// Escaping is done by assigning textContent below.
 	// Truncate the title if it's too long
 	const t = title.length > 20 ? title.substring(0, 20) + "..." : title;
 
@@ -163,30 +179,44 @@ function titlize(title: string) {
 	return span.outerHTML;
 }
 
-function prettifyData() {
-	if (data.value === undefined || data.value.length === 0) {
-		return;
-	}
-
+// Each v3 row is already a group of `counts[i]` events within one minute:
+// merge the groups into relative-time buckets.
+function prettifyV3(soa: App.Http.Resources.V3.LiveMetricsListResource) {
+	isTruncated.value = soa.is_truncated;
 	const dateMetrics: Record<string, LiveMetrics> = {};
 
-	data.value.forEach((item) => {
-		const k = genKey(item);
+	soa.actions.forEach((action, i) => {
+		const ago = dateToAgo(soa.created_ats[i]);
+		const id = soa.photo_ids[i] ?? soa.album_ids[i];
+		const k = action + ago + id;
 
 		if (k in dateMetrics) {
-			dateMetrics[k].count++;
-		} else {
-			dateMetrics[k] = LiveMetricsToPretty(item, 1);
+			dateMetrics[k].count += soa.counts[i];
+			return;
 		}
+
+		dateMetrics[k] = {
+			ago: ago,
+			date: new Date(soa.created_ats[i]),
+			action: action,
+			title: soa.titles[i],
+			id: id,
+			count: soa.counts[i],
+			src: null,
+			thumb: { albumId: soa.album_ids[i], photoId: soa.thumb_photo_ids[i] },
+			link: {
+				name: "album",
+				params: {
+					albumId: soa.album_ids[i],
+					photoId: soa.photo_ids[i],
+				},
+			},
+		};
 	});
 
 	prettifiedData.value = Object.values(dateMetrics).sort((a, b) => {
 		return b.date.getTime() - a.date.getTime();
 	});
-}
-
-function genKey(item: App.Http.Resources.Models.LiveMetricsResource) {
-	return item.action + dateToAgo(item.created_at) + (item.photo_id ?? item.album_id ?? "undefined");
 }
 
 function dateToAgo(date: string) {
@@ -217,26 +247,6 @@ function dateToAgo(date: string) {
 	} else {
 		return trans("statistics.metrics.ago.seconds");
 	}
-}
-
-function LiveMetricsToPretty(data: App.Http.Resources.Models.LiveMetricsResource, count: number): LiveMetrics {
-	const ago = dateToAgo(data.created_at);
-	return {
-		ago: ago,
-		date: new Date(data.created_at),
-		action: data.action,
-		title: data.title ?? "undefined",
-		id: data.photo_id ?? data.album_id ?? "undefined",
-		count: count,
-		src: data.url,
-		link: {
-			name: "album",
-			params: {
-				albumId: data.album_id,
-				photoId: data.photo_id,
-			},
-		},
-	};
 }
 
 onMounted(() => {

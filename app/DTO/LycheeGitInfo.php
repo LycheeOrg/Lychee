@@ -8,23 +8,21 @@
 
 namespace App\DTO;
 
-use App\Metadata\Versions\GitHubVersion;
-
-class LycheeGitInfo
+/**
+ * Description of the local git checkout, shared by Diagnostics and the Maintenance update page.
+ * - info: "<branch> (<commit>)", or "<version> (<commit>)" on a detached HEAD,
+ * - extra: how far behind master we are (empty on a detached HEAD).
+ */
+final readonly class LycheeGitInfo
 {
-	public string $branch;
-	public string $commit;
-	public string $additional;
-
-	public function __construct(GitHubVersion $gvc)
-	{
-		$this->branch = $gvc->local_branch ?? '??';
-		$this->commit = $gvc->local_head ?? '??';
-		$this->additional = $gvc->getBehindTest();
+	public function __construct(
+		public string $info,
+		public string $extra,
+	) {
 	}
 
 	public function toString(): string
 	{
-		return sprintf('%s (%s) -- %s', $this->branch, $this->commit, $this->additional);
+		return $this->extra === '' ? $this->info : $this->info . ' -- ' . $this->extra;
 	}
 }

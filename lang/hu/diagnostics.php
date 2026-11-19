@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'title' => 'Diagnosztika',
+    'copy_to_clipboard' => 'Diagnosztika másolása a vágólapra',
+    'self-diagnosis' => 'Öndiagnózis',
+    'info' => 'Információ',
+    'space' => 'Tárhely',
+    'load_space' => 'Tárhelyhasználat betöltése.',
+    'configuration' => 'Konfiguráció',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Azonos tartalom',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => 'Információ',
+        'copy' => 'Diagnosztika a vágólapra másolva!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'A diagnosztika másolása csak biztonságos környezetben (HTTPS) érhető el.',
 ];

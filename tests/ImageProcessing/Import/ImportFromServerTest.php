@@ -8,6 +8,9 @@
 
 namespace Tests\ImageProcessing\Import;
 
+use App\Jobs\ImportImageJob;
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
 use Illuminate\Support\Facades\Queue;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -83,6 +86,11 @@ class ImportFromServerTest extends BaseApiWithDataTest
 
 		// Check that jobs were created
 		$this->assertGreaterThan(0, $response->json('job_count'));
-		Queue::assertCount($response->json('job_count') + 2); // +2 for the preprocessing jobs: RecomputeAlbumSizeJob and RecomputeAlbumStatsJob
+		// Creating the album already queued its RecomputeAlbumSizeJob and RecomputeAlbumStatsJob:
+		// the import's own copies (counted in job_count) are dropped while those wait.
+		Queue::assertCount($response->json('job_count'));
+		Queue::assertPushed(ImportImageJob::class, $response->json('job_count') - 2);
+		Queue::assertPushedOn('low', RecomputeAlbumSizeJob::class);
+		Queue::assertPushedOn('low', RecomputeAlbumStatsJob::class);
 	}
 }

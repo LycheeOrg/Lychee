@@ -57,7 +57,7 @@
 import { computed, ref } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import SearchTargetAlbum from "@/v8/components/forms/album/SearchTargetAlbum.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";

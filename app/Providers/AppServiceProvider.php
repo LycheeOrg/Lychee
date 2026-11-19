@@ -8,7 +8,6 @@
 
 namespace App\Providers;
 
-use App\Actions\InstallUpdate\CheckUpdate;
 use App\Assets\ArrayToTextTable;
 use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
@@ -19,29 +18,27 @@ use App\Factories\AlbumFactory;
 use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
 use App\Image\StreamStatFilter;
-use App\Metadata\Json\CommitsRequest;
 use App\Metadata\Json\UpdateRequest;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
-use App\Metadata\Versions\Remote\GitCommits;
-use App\Metadata\Versions\Remote\GitTags;
 use App\Models\Configs;
-use App\Models\Face;
-use App\Models\Photo;
-use App\Observers\FaceObserver;
-use App\Observers\PhotoObserver;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\TransactionSafeDatabaseStore;
 use App\Services\MoneyService;
+use App\Services\Telemetry\TraceService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Cache\Repository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -84,8 +81,6 @@ class AppServiceProvider extends ServiceProvider
 	public array $singletons =
 		[
 			Helpers::class => Helpers::class,
-			CheckUpdate::class => CheckUpdate::class,
-			AlbumFactory::class => AlbumFactory::class,
 			OmnipayFactory::class => OmnipayFactory::class,
 			AlbumQueryPolicy::class => AlbumQueryPolicy::class,
 			PhotoQueryPolicy::class => PhotoQueryPolicy::class,
@@ -96,14 +91,11 @@ class AppServiceProvider extends ServiceProvider
 			FileVersion::class => FileVersion::class,
 
 			// Json requests.
-			CommitsRequest::class => CommitsRequest::class,
 			UpdateRequest::class => UpdateRequest::class,
 
 			// JsonParsers
-			GitCommits::class => GitCommits::class,
-			GitTags::class => GitTags::class,
 
-			MoneyService::class => MoneyService::class,
+			TraceService::class => TraceService::class,
 		];
 
 	/**
@@ -120,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->registerStreamFilters();
 		$this->registerOctaneSettings();
 		$this->registerThrottleQueues();
-		$this->registerObservers();
+		$this->registerDatabaseCacheStore();
 	}
 
 	/**
@@ -197,6 +189,15 @@ class AppServiceProvider extends ServiceProvider
 			VerifyFactory::class,
 			DefaultVerifyFactory::class
 		);
+
+		// One instance per request: controllers are built (with their
+		// constructor dependencies) before the route middleware run, so
+		// ResolveConfigs must load the very instance those dependencies
+		// already hold.
+		$this->app->scoped(ConfigManager::class);
+		// They hold the ConfigManager, so they share its lifetime.
+		$this->app->scoped(AlbumFactory::class);
+		$this->app->scoped(MoneyService::class);
 	}
 
 	/**
@@ -464,9 +465,26 @@ class AppServiceProvider extends ServiceProvider
 		});
 	}
 
-	private function registerObservers(): void
+	/**
+	 * The `database` cache driver, built like Laravel's own but with
+	 * {@see TransactionSafeDatabaseStore}: its locks can be taken inside an open
+	 * transaction on PostgreSQL (ADR-090-01).
+	 */
+	private function registerDatabaseCacheStore(): void
 	{
-		Photo::observe(PhotoObserver::class);
-		Face::observe(FaceObserver::class);
+		Cache::extend('database', function (Application $app, array $config): Repository {
+			$store = new TransactionSafeDatabaseStore(
+				$app['db']->connection($config['connection'] ?? null),
+				$config['table'],
+				$config['prefix'] ?? $app['config']['cache.prefix'],
+				$config['lock_table'] ?? 'cache_locks',
+				$config['lock_lottery'] ?? [2, 100],
+				$config['lock_timeout'] ?? 86400,
+				$app['config']['cache.serializable_classes'] ?? null,
+			);
+			$store->setLockConnection($app['db']->connection($config['lock_connection'] ?? $config['connection'] ?? null));
+
+			return Cache::repository($store, $config);
+		});
 	}
 }

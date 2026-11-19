@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Синхронизация файлов сервера',
+    'description' => 'Синхронизируйте файлы сервера с Lychee. Фотографии будут импортированы из каталога и всех его подкаталогов. Этот процесс очень медленный, поэтому рекомендуется использовать воркеры и очереди, чтобы избежать превышения времени ожидания.',
+    'sync' => 'Синхронизировать',
+    'loading' => 'Загрузка...',
+    'selected_directory' => 'Текущий выбранный каталог:',
+    'resync_metadata' => 'Повторно синхронизировать метаданные существующих файлов.',
+    'delete_imported' => 'Удалить исходные файлы.',
+    'import_via_symlink' => 'Импортировать фотографии через символические ссылки вместо копирования файлов.',
+    'skip_duplicates' => 'Пропускать фотографии и альбомы, если они уже есть в галерее.',
+    'delete_missing_photos' => 'Удалить фотографии в альбоме, которых нет в синхронизируемом каталоге.',
+    'delete_missing_albums' => 'Удалить альбомы в родительском альбоме, которых нет в синхронизируемом каталоге.',
+    'importing_please_be_patient' => 'Импорт, пожалуйста, подождите...',
 ];
 

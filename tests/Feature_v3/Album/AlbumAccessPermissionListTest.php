@@ -112,6 +112,7 @@ class AlbumAccessPermissionListTest extends BaseApiWithDataTest
 		self::assertTrue($json['grants_uploads'][$idx]);
 		self::assertTrue($json['grants_edits'][$idx]);
 		self::assertTrue($json['grants_deletes'][$idx]);
+		self::assertTrue($json['grants_moves'][$idx]);
 	}
 
 	public function testPermissionRowFieldsMatchGroupPermission(): void
@@ -140,6 +141,7 @@ class AlbumAccessPermissionListTest extends BaseApiWithDataTest
 		self::assertNull($json['user_ids'][$idx]);
 		self::assertNull($json['group_ids'][$idx]);
 		self::assertNull($json['grants_full_photo_accesses'][$idx]);
+		self::assertNull($json['grants_moves'][$idx]);
 	}
 
 	public function testPublicOnlyPermissionIsExcludedButAlbumStillAppears(): void

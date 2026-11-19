@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -13,13 +12,15 @@ return [
         'current_password' => 'Aktuelles Passwort',
         'credentials_update' => 'Ihre Anmeldedaten werden wie folgt geändert:',
         'username' => 'Benutzername',
+        'change_password' => 'Passwort ändern',
+        'cancel_password_change' => 'Passwortänderung abbrechen',
         'new_password' => 'Neues Passwort',
         'confirm_new_password' => 'Neues Passwort bestätigen',
         'password_strength_info' => 'Die Passwortstärke ist eine Schätzung mithilfe des <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-Algorithmus</a>.',
         'email_instruction' => 'Fügen Sie unten Ihre E-Mail-Adresse ein, um E-Mail-Benachrichtigungen zu erhalten. Wenn Sie keine E-Mails mehr erhalten möchten, entfernen Sie Ihre E-Mail-Adresse einfach unten.',
         'email' => 'E-Mail',
         'change' => 'Anmeldung ändern',
-        'api_token' => 'API Token …',
+        'api_token' => 'API-Token …',
         'missing_fields' => 'Fehlende Felder',
         'ldap_managed' => 'Benutzer-Anmeldeinformationen werden über LDAP verwaltet.',
     ],

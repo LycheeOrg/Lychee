@@ -18,7 +18,7 @@ return [
     'sample_qa_label' => 'Beispiel Q&A',
     'consent_label' => 'Ich stimme der',
     'consent_privacy_link' => 'Datenschutzerklärung zu',
-    'name_required_error' => 'Name is erforderlich',
+    'name_required_error' => 'Name ist erforderlich.',
     'email_required_error' => 'Kontaktmöglichkeit ist erforderlich.',
     'message_min_length_error' => 'Die Nachricht muss mindestens 10 Zeichen lang sein.',
     'security_answer_required_error' => 'Bitte beantworten Sie die Sicherheitsfrage.',

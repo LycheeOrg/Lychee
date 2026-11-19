@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Extra länkar',
+    'description' => 'Hantera en valfri, ordnad lista med extra länkar som visas i navigeringen och/eller sidfoten på startsidan.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Inga extra länkar har konfigurerats ännu.',
+    'create_first' => 'Skapa din första länk',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Etikett',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Placering',
+    'col_enabled' => 'Aktiverad',
+    'col_actions' => 'Åtgärder',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Navigering',
+    'placement_footer' => 'Sidfot',
+    'placement_both' => 'Navigering och sidfot',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Inbyggd',
+    'built_in_cannot_delete' => 'Denna inbyggda länk kan inte raderas. Inaktivera den i stället, eller ändra dess ordning som för andra länkar.',
+    'built_in_url_hint' => 'Detta är en inbyggd länk och dess mål kan inte ändras.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Skapa länk',
+    'edit' => 'Redigera',
+    'delete' => 'Radera',
+    'cancel' => 'Avbryt',
+    'save' => 'Spara',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Etikett',
+    'field_label_placeholder' => 't.ex. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Placering',
+    'field_open_in_new_tab' => 'Öppna i ny flik',
+    'field_enabled' => 'Aktiverad',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Skapa länk',
+    'modal_edit_title' => 'Redigera länk',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Radera länk',
+    'confirm_delete_message' => 'Är du säker på att du vill radera länken ":label"? Denna åtgärd kan inte ångras.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Länken har skapats.',
+    'updated' => 'Länken har uppdaterats.',
+    'deleted' => 'Länken har raderats.',
+    'reordered' => 'Länkarnas ordning har ändrats.',
+    'error_load' => 'Det gick inte att läsa in länkar.',
+    'error_save' => 'Det gick inte att spara länken.',
+    'error_delete' => 'Det gick inte att radera länken.',
+    'error_reorder' => 'Det gick inte att ändra länkarnas ordning.',
 ];

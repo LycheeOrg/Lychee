@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Användargrupper',
+    'explanation' => 'Med användargrupper kan du organisera användare och hantera behörigheter gemensamt.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Skapa grupp',
+    'edit' => 'Redigera',
+    'delete' => 'Radera',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Läser in grupper...',
+    'empty' => 'Inga grupper hittades.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Lägg till medlem...',
+    'empty_group' => 'Denna grupp är tom.',
+    'no_permission_members' => 'Du har inte behörighet att se medlemmarna i denna grupp.',
+    'remove_success' => '%s har tagits bort från %s.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Radera grupp',
+    'confirm_delete_message' => 'Är du säker på att du vill radera denna grupp?',
+    'cancel' => 'Avbryt',
+    'confirm' => 'Radera',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Gruppnamn',
+        'description' => 'Beskrivning',
+        'users' => 'Användare',
+        'cancel' => 'Avbryt',
+        'create' => 'Skapa',
+        'edit' => 'Redigera',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'Gruppnamn krävs.',
     ],
 ];

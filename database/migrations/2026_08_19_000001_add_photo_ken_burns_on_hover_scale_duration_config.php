@@ -10,7 +10,6 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const CAT = 'Gallery';
-	public const SCALE_RANGE = 'int:0:100';
 	public const DURATION_RANGE = 'int:1:60';
 
 	public function getConfigs(): array
@@ -20,7 +19,7 @@ return new class() extends BaseConfigMigration {
 				'key' => 'photo_ken_burns_on_hover_scale',
 				'value' => '50',
 				'cat' => self::CAT,
-				'type_range' => self::SCALE_RANGE,
+				'type_range' => self::PERCENT_RANGE,
 				'is_secret' => false,
 				'description' => 'Ken Burns hover zoom amount (%)',
 				'details' => 'Range 0-100. Controls how far the image zooms in while hovering: the scale factor is (value / 100 + 1).',

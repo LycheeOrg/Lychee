@@ -17,7 +17,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class JobHistoryResource extends Data
 {
 	public string $username;
-	#[LiteralTypeScriptType("'ready'|'success'|'failure'|'started'")]
+	#[LiteralTypeScriptType("'ready'|'success'|'failure'|'started'|'skipped'")]
 	public string $status;
 	public string $created_at;
 	public string $updated_at;

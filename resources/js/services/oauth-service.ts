@@ -26,12 +26,16 @@ const OauthService = {
 				return "fa-brands fa-github";
 			case "google":
 				return "fa-brands fa-google";
+			case "kanidm":
+				return "fa-solid fa-key";
 			case "mastodon":
 				return "fa-brands fa-mastodon";
 			case "microsoft":
 				return "fa-brands fa-microsoft";
 			case "nextcloud":
 				return "fa-solid fa-cloud";
+			case "pocketid":
+				return "fa-solid fa-fingerprint";
 			case "keycloak":
 				return "fa-solid fa-key";
 		}

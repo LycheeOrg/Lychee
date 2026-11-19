@@ -22,9 +22,51 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
+	public const JXL_UNSUPPORTED = 'JPEG XL requires Imagick with JXL support';
+
 	public function __destruct()
 	{
 		$this->reset();
+	}
+
+	/**
+	 * Whether this handler can read and write JPEG XL.
+	 */
+	protected function supportsJxl(): bool
+	{
+		return false;
+	}
+
+	/**
+	 * Refuses JPEG XL files when this handler cannot process them,
+	 * so that no other format is ever written behind a `.jxl` extension.
+	 *
+	 * @throws MediaFileOperationException
+	 */
+	protected function assertCanProcess(string $extension): void
+	{
+		if (strtolower($extension) === '.jxl' && !$this->supportsJxl()) {
+			throw new MediaFileOperationException(self::JXL_UNSUPPORTED);
+		}
+	}
+
+	/**
+	 * Whether `compression_quality` requests lossless encoding (0).
+	 */
+	protected function isLossless(): bool
+	{
+		return resolve(ConfigManager::class)->getValueAsInt('compression_quality') === 0;
+	}
+
+	/**
+	 * Returns the lossy compression quality (1..100).
+	 * Lossless (0) maps to 100 for formats without a lossless mode (e.g. JPEG).
+	 */
+	protected function resolveQuality(): int
+	{
+		$quality = resolve(ConfigManager::class)->getValueAsInt('compression_quality');
+
+		return $quality === 0 ? 100 : $quality;
 	}
 
 	/**

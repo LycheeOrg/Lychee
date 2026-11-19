@@ -42,14 +42,7 @@ class VersionInfo implements DiagnosticStringPipe
 		$lychee_info_string = $this->file_version->getVersion()->toString();
 
 		if ($channel_name !== VersionChannelType::RELEASE) {
-			if ($this->github_functions->local_head !== null) {
-				$git_info = new LycheeGitInfo($this->github_functions);
-				$lychee_info_string = $git_info->toString();
-			} else {
-				// @codeCoverageIgnoreStart
-				$lychee_info_string = 'No git data found.';
-				// @codeCoverageIgnoreEnd
-			}
+			$lychee_info_string = $this->getGitInfo()?->toString() ?? 'No git data found.';
 		}
 
 		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channel_name->value . '):', $lychee_info_string);
@@ -60,20 +53,39 @@ class VersionInfo implements DiagnosticStringPipe
 	}
 
 	/**
-	 * Get channel name.
-	 *
-	 * @return VersionChannelType
+	 * Get channel name: no .git folder is a release, a detached HEAD is a tag, otherwise git.
+	 * This also hydrates the git data used by {@link VersionInfo::getGitInfo()}.
 	 */
-	public function getChannelName()
+	public function getChannelName(): VersionChannelType
 	{
-		$lychee_channel_name = VersionChannelType::RELEASE;
-
-		if (!$this->installed_version->isRelease()) {
-			$this->github_functions->hydrate(with_remote: true, use_cache: true);
-			$lychee_channel_name = $this->github_functions->isRelease() ? VersionChannelType::TAG : VersionChannelType::GIT;
+		if ($this->installed_version->isRelease()) {
+			return VersionChannelType::RELEASE;
 		}
 
-		return $lychee_channel_name;
+		$this->github_functions->hydrate(with_remote: true, use_cache: true);
+
+		return $this->github_functions->isDetached() ? VersionChannelType::TAG : VersionChannelType::GIT;
+	}
+
+	/**
+	 * Describe the local git checkout, null if no commit could be read.
+	 * Call {@link VersionInfo::getChannelName()} first.
+	 */
+	public function getGitInfo(): ?LycheeGitInfo
+	{
+		$head = $this->github_functions->local_head;
+		if ($head === null) {
+			return null;
+		}
+
+		if ($this->github_functions->isDetached()) {
+			return new LycheeGitInfo(sprintf('%s (%s)', $this->file_version->getVersion()->toString(), $head), '');
+		}
+
+		return new LycheeGitInfo(
+			sprintf('%s (%s)', $this->github_functions->local_branch, $head),
+			$this->github_functions->getBehindTest(),
+		);
 	}
 
 	/**

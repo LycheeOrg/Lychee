@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="searchStore.isSearching" />
 
-	<div class="h-svh overflow-y-hidden">
+	<div class="min-h-svh">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
 			<SearchHeader
@@ -13,27 +13,15 @@
 				@clear-scope="clearScope"
 			/>
 		</Collapse>
-		<div
-			:class="{
-				'relative flex flex-wrap content-start w-full justify-start overflow-y-auto': true,
-				'h-svh': is_full_screen,
-				'h-[calc(100vh-3.5rem)]': !is_full_screen,
-			}"
-		>
+		<!-- No `overflow-y-auto` / fixed height: results render through
+		     `PhotoGridVirtual`, whose `useWindowVirtualizer` tracks the real
+		     window scroll position — a nested scroll container desyncs its
+		     visibility calculation entirely. Exactly the pitfall `Timeline.vue`
+		     and `Flow.vue` both document. -->
+		<div class="relative flex flex-wrap content-start w-full justify-start">
 			<SearchPanel :no-data="noData" @clear="onClear" @search="onSearch" @clear-scope="clearScope" />
 			<div ref="resultsMarkerRef" aria-hidden="true" class="w-full h-0" data-search-results></div>
-			<ResultPanel
-				v-if="!isInitialSearchLoading"
-				v-model:first="searchStore.from"
-				:total="searchStore.total"
-				v-model:rows="searchStore.perPage"
-				:album-panel-config="albumPanelConfig"
-				:is-photo-timeline-enabled="configForMenu.is_photo_timeline_enabled"
-				:photo-callbacks="photoCallbacks"
-				:album-callbacks="albumCallbacks"
-				:selectors="selectors"
-				@refresh="refresh"
-			/>
+			<ResultPanel v-if="!isInitialSearchLoading" :photo-callbacks="photoCallbacks" :album-callbacks="albumCallbacks" :selectors="selectors" />
 		</div>
 	</div>
 
@@ -127,13 +115,13 @@
 	</template>
 </template>
 <script setup lang="ts">
-import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, provide, ref, watch } from "vue";
+import { MOTION_URL_LOADER } from "@/v8/composables/photo/motionUrlLoader";
 import { useRoute, useRouter } from "vue-router";
 import AlbumMergeDialog from "@/v8/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import RenameDialog from "@/v8/components/forms/gallery-dialogs/RenameDialog.vue";
@@ -174,6 +162,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { trans } from "laravel-vue-i18n";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const { isLTR } = useLtRorRtL();
 
@@ -193,6 +182,8 @@ const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const photosStore = usePhotosStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
+// Feature 100: thumbnails fetch their live photo video URL on hover.
+provide(MOTION_URL_LOADER, (ids) => searchStore.loadPhotoDetailsV3(ids).then(() => undefined));
 const layoutStore = useLayoutStore();
 
 // Pre-fill the store from a bookmarked/shared URL before children (e.g. SearchBox)
@@ -210,21 +201,8 @@ const isInitialSearchLoading = ref(hasInitialQuery);
 
 const resultsMarkerRef = ref<HTMLElement | null>(null);
 
-/**
- * Read the ?page=N query parameter from the current route.
- * Returns 1 (first page) when the param is absent or invalid.
- */
-function getStartPage(): number {
-	const p = route.query.page;
-	if (typeof p === "string") {
-		const parsed = parseInt(p, 10);
-		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
-	}
-	return 1;
-}
-
-function onSearch(terms: string, updateQuery = true, startPage = 1): Promise<void> {
-	const promise = searchStore.search(terms, startPage).then(() => {
+function onSearch(terms: string, updateQuery = true): Promise<void> {
+	const promise = searchStore.searchV3(terms).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
@@ -247,9 +225,9 @@ function onClear() {
 	}
 }
 
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { albumId } = storeToRefs(albumStore);
-// eslint-disable-next-line vue/no-dupe-keys
+// oxlint-disable-next-line vue/no-dupe-keys
 const { photoId } = storeToRefs(photoStore);
 
 // unused? Hard to say...
@@ -265,14 +243,13 @@ async function load() {
 	photoStore.load();
 }
 
-const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
+const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open, is_download_album_visible, is_download_photo_visible } =
+	storeToRefs(togglableStore);
 
 const { getParentId } = usePhotoRoute(router);
 
-const is_download_photo_visible = ref(false);
 const downloadPhotoIds = ref<string[]>([]);
 const downloadFromId = ref<string | null>(null);
-const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 
 const title = computed<string>(() => trans("gallery.search.title"));
@@ -301,7 +278,12 @@ function clearScope() {
 	}
 }
 
-const noData = computed<boolean>(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
+// Mirrors `ResultPanel.vue`: the album hits live in the search store only
+// (FR-069-20), and this instance feeds the context menu's own `selectors`, so it
+// has to resolve against the same pool the panel does.
+const searchAlbumsV3 = computed<App.Http.Resources.Models.ThumbAlbumResource[] | undefined>(() => searchStore.albumTilesV3);
+
+const noData = computed<boolean>(() => searchStore.albumTilesV3.length === 0 && photosStore.photos.length === 0);
 
 const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(() => {
 	if (albumStore.config !== undefined) {
@@ -320,11 +302,23 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		photo_layout: "justified",
 		is_album_timeline_enabled: false,
 		is_photo_timeline_enabled: false,
+		is_date_scrubber_enabled: false,
+		photo_date_scrubber_field: null,
+		album_date_scrubber_field: null,
 	};
 });
 
 async function refresh() {
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh(), searchStore.refresh()]);
+	// `albumStore.refresh()` is not just a header refresh: for a scoped search it
+	// goes through `AlbumState.load()`, which resets and repopulates the shared
+	// photos store. Run to completion *before* the search starts, or its photos
+	// can land after the search has already published its own results and
+	// silently replace them — the same ordering `onMounted()` below already
+	// relies on when it awaits `onSearch()`.
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	if (searchStore.searchTerm !== undefined) {
+		await searchStore.searchV3(searchStore.searchTerm);
+	}
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
@@ -359,6 +353,7 @@ const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPh
 	photosStore,
 	albumsStore,
 	togglableStore,
+	searchAlbumsV3,
 );
 
 const { toggleHighlight, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, albumId, toast, lycheeStore);
@@ -382,6 +377,14 @@ const photoCallbacks = {
 		// Update the album's cover_id immediately to reflect the change (toggle behavior)
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
+		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.cover_id = albumStore.modelAlbum?.cover_id ?? null;
 		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
@@ -469,14 +472,6 @@ const selectors = {
 	selectedAlbumsIds: selectedAlbumsIds,
 };
 
-const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
-	album_thumb_css_aspect_ratio: "aspect-square",
-	album_subtitle_type: lycheeStore.album_subtitle_type,
-	display_thumb_album_overlay: lycheeStore.display_thumb_album_overlay,
-	album_decoration: lycheeStore.album_decoration,
-	album_decoration_orientation: lycheeStore.album_decoration_orientation,
-}));
-
 const { setScroll } = useScrollable(togglableStore, albumId);
 
 function goBack() {
@@ -507,7 +502,7 @@ function goBack() {
 	}
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	// Album operations
 	h: () => {
 		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
@@ -526,7 +521,7 @@ defineShortcuts({
 	i: () => photoStore.isLoaded && toggleDetails(),
 
 	// Priviledged Photo operations
-	m: () => photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove(),
+	m: () => photoStore.isLoaded && albumStore.rights?.can_move_content && toggleMove(),
 	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
 	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
 	delete: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),
@@ -599,13 +594,12 @@ onMounted(async () => {
 	// shown as if it were search results. Must run *after* load(), not before, since load()
 	// is what (re)populates it.
 	if (hasInitialQuery) {
-		// Bookmarked/shared URL: run the search that the query string encodes, jumping
-		// straight to ?page=N so a direct link to a photo opens on the page it came from.
+		// Bookmarked/shared URL: run the search that the query string encodes.
 		// Awaited (unlike onSearch's usual fire-and-forget use) so photoStore.load() below
 		// sees the actual search results -- not the scoped album's own browsing data that
 		// load() incidentally populated -- and can open the requested photo straight away.
 		// isInitialSearchLoading keeps ResultPanel hidden for that same reason until then.
-		await onSearch(searchStore.searchTerm as string, true, getStartPage());
+		await onSearch(searchStore.searchTerm as string, true);
 		isInitialSearchLoading.value = false;
 		photoStore.photoId = photoId.value;
 		photoStore.load();

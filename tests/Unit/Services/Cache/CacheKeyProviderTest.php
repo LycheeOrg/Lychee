@@ -18,6 +18,9 @@
 
 namespace Tests\Unit\Services\Cache;
 
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\MapViewport;
+use App\Enum\AlbumListingScope;
 use App\Services\Cache\CacheKeyProvider;
 use Tests\AbstractTestCase;
 
@@ -72,5 +75,351 @@ class CacheKeyProviderTest extends AbstractTestCase
 		$key2 = $this->provider->albumListingV3Key('user-a', true, false);
 
 		self::assertSame($key1, $key2);
+	}
+
+	/**
+	 * @param callable(string,int|string|null):string $key_fn
+	 */
+	private function assertUniqueAcrossIdentityAndAlbumMatrix(callable $key_fn): void
+	{
+		$user_ids = [null, 'user-a', 'user-b'];
+		$album_ids = ['album-1', 'album-2'];
+
+		$keys = [];
+		foreach ($album_ids as $album_id) {
+			foreach ($user_ids as $user_id) {
+				$key = $key_fn($album_id, $user_id);
+				self::assertArrayNotHasKey($key, $keys, 'duplicate key for album_id=' . $album_id . ', user_id=' . var_export($user_id, true));
+				$keys[$key] = true;
+			}
+		}
+
+		self::assertCount(6, $keys);
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumBucketsKey($album_id, $user_id));
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumChildrenDataKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumChildrenDataKey($album_id, $user_id));
+	}
+
+	/**
+	 * Feature 061, NFR-061-05.
+	 */
+	public function testAlbumChildrenRightsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->albumChildrenRightsKey($album_id, $user_id));
+	}
+
+	/**
+	 * Fixed CodeRabbit finding on PR #4680: TagAlbum/PersonAlbum "matching
+	 * albums" results are curated by AlbumPolicy::getUnlockedAlbumIDs()
+	 * (session-scoped), so two requests differing only in that state must
+	 * never collide on the same cache key - otherwise one visitor's unlock
+	 * state could be served to another (guest callers all share a single
+	 * `user_id === null` key dimension, making this a real cross-session
+	 * disclosure risk, not just a staleness nit).
+	 */
+	public function testAlbumChildrenDataKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->albumChildrenDataKey('album1', null, 'digest-a');
+		$key_b = $this->provider->albumChildrenDataKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->albumChildrenDataKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testAlbumChildrenRightsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->albumChildrenRightsKey('album1', null, 'digest-a');
+		$key_b = $this->provider->albumChildrenRightsKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->albumChildrenRightsKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	// ── Feature 062 (FR-062-13, NFR-062-08): root/persons/pinned scope ──
+	// key uniqueness across (guest-shared, user A own, user A shared,
+	// user B own).
+
+	/**
+	 * @param callable(AlbumListingScope,int|string|null):string $key_fn
+	 */
+	private function assertUniqueAcrossScopeAndIdentityMatrix(callable $key_fn): void
+	{
+		$combinations = [
+			'guest-shared' => [AlbumListingScope::SHARED, null],
+			'user-a-own' => [AlbumListingScope::OWN, 'user-a'],
+			'user-a-shared' => [AlbumListingScope::SHARED, 'user-a'],
+			'user-b-own' => [AlbumListingScope::OWN, 'user-b'],
+		];
+
+		$keys = [];
+		foreach ($combinations as $label => [$scope, $user_id]) {
+			$key = $key_fn($scope, $user_id);
+			self::assertArrayNotHasKey($key, $keys, "duplicate key generated for {$label}");
+			$keys[$key] = $label;
+		}
+
+		self::assertCount(4, $keys);
+	}
+
+	public function testRootAlbumBucketsKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumBucketsKey($scope, $user_id)
+		);
+	}
+
+	public function testRootAlbumChildrenDataKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumChildrenDataKey($scope, $user_id)
+		);
+	}
+
+	public function testRootAlbumChildrenRightsKeyIsUniqueAcrossScopeAndIdentityMatrix(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->rootAlbumChildrenRightsKey($scope, $user_id)
+		);
+	}
+
+	public function testPersonAlbumsListingKeyIsUniqueAcrossScopeAndIdentityMatrixAndOmitsSuffixWhenScopeIsNull(): void
+	{
+		$sorting = AlbumSortingCriterion::createDefault();
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->personAlbumsListingKey($user_id, $sorting, $scope)
+		);
+
+		// v2's own Top::get() call (scope omitted) must produce the exact
+		// same key it always has — no behavioral change for v2's own cache.
+		$without_scope = $this->provider->personAlbumsListingKey(null, $sorting);
+		self::assertStringNotContainsString(':scope:', $without_scope);
+	}
+
+	public function testPinnedAlbumsListingKeyIsUniqueAcrossScopeAndIdentityMatrixAndOmitsSuffixWhenScopeIsNull(): void
+	{
+		$this->assertUniqueAcrossScopeAndIdentityMatrix(
+			fn (AlbumListingScope $scope, int|string|null $user_id) => $this->provider->pinnedAlbumsListingKey($user_id, null, null, $scope)
+		);
+
+		$without_scope = $this->provider->pinnedAlbumsListingKey(null, null, null);
+		self::assertStringNotContainsString(':scope:', $without_scope);
+	}
+
+	// ── Photo listing key uniqueness ───────────────────────────────────
+
+	/**
+	 * No two distinct (album_id, user identity) combinations may collide
+	 * for either `photoBucketsKey()` or `photoRatiosKey()`. Unlocked-album
+	 * state is held fixed here - see
+	 * `testPhotoBucketsKeyIsUniqueAcrossUnlockedDigest()` and siblings for
+	 * that dimension.
+	 */
+	public function testPhotoBucketsKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoBucketsKey($album_id, $user_id, 'digest'));
+	}
+
+	public function testPhotoRatiosKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->photoRatiosKey($album_id, 'all', $user_id, 'digest'));
+	}
+
+	/**
+	 * A full matrix of (guest, user A, user B) × 2 distinct album_ids × 3
+	 * tiers, plus 2 distinct `details` scopes for one fixed (album_id,
+	 * user) - all keys distinct.
+	 */
+	public function testPhotoListingKeysAreUniqueAcrossTiersIdentityAlbumsAndDetailsScopes(): void
+	{
+		$user_ids = [null, 'user-a', 'user-b'];
+		$album_ids = ['album-1', 'album-2'];
+
+		$keys = [];
+		foreach ($album_ids as $album_id) {
+			foreach ($user_ids as $user_id) {
+				foreach ([
+					$this->provider->photoBucketsKey($album_id, $user_id, 'digest'),
+					$this->provider->photoRatiosKey($album_id, 'all', $user_id, 'digest'),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2024', $user_id, 'digest'),
+					$this->provider->photoDetailsKey($album_id, 'bucket:2025', $user_id, 'digest'),
+				] as $key) {
+					self::assertArrayNotHasKey($key, $keys, "duplicate key: {$key}");
+					$keys[$key] = true;
+				}
+			}
+		}
+
+		self::assertCount(6 * 4, $keys);
+	}
+
+	/**
+	 * Security fix (CWE-524): every album's `photos()` - regular
+	 * {@see \App\Models\Album}, smart album, `TagAlbum`/`PersonAlbum`, and
+	 * `TimelineAlbum` alike - filters through
+	 * {@see \App\Policies\PhotoQueryPolicy::applySearchabilityFilter()}
+	 * keyed off `AlbumPolicy::getUnlockedAlbumIDs()` (session-scoped), so two
+	 * requests differing only in that state must never collide on the same
+	 * cache key - otherwise a guest who has unlocked a protected album could
+	 * populate a shared entry that leaks its photos to a guest who has not.
+	 * Mirrors `testAlbumChildrenDataKeyIsUniqueAcrossUnlockedDigest()`
+	 * (CodeRabbit finding on PR #4680) for the photo-listing tier.
+	 */
+	public function testPhotoBucketsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoBucketsKey('album1', null, 'digest-a');
+		$key_b = $this->provider->photoBucketsKey('album1', null, 'digest-b');
+		$key_empty = $this->provider->photoBucketsKey('album1', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testPhotoRatiosKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoRatiosKey('album1', 'all', null, 'digest-a');
+		$key_b = $this->provider->photoRatiosKey('album1', 'all', null, 'digest-b');
+		$key_empty = $this->provider->photoRatiosKey('album1', 'all', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testPhotoDetailsKeyIsUniqueAcrossUnlockedDigest(): void
+	{
+		$key_a = $this->provider->photoDetailsKey('album1', 'all', null, 'digest-a');
+		$key_b = $this->provider->photoDetailsKey('album1', 'all', null, 'digest-b');
+		$key_empty = $this->provider->photoDetailsKey('album1', 'all', null, '');
+
+		self::assertNotSame($key_a, $key_b);
+		self::assertNotSame($key_a, $key_empty);
+		self::assertNotSame($key_b, $key_empty);
+	}
+
+	public function testPhotoDetailsScopeDigestIsStableAcrossPhotoIdOrder(): void
+	{
+		$digest1 = $this->provider->photoDetailsScopeDigest(null, ['id-b', 'id-a']);
+		$digest2 = $this->provider->photoDetailsScopeDigest(null, ['id-a', 'id-b']);
+
+		self::assertSame($digest1, $digest2);
+	}
+
+	public function testPhotoDetailsScopeDigestDistinguishesBucketFromPhotoIdsMode(): void
+	{
+		$bucket_digest = $this->provider->photoDetailsScopeDigest('unknown', null);
+		$ids_digest = $this->provider->photoDetailsScopeDigest(null, []);
+
+		self::assertNotSame($bucket_digest, $ids_digest);
+	}
+
+	public function testPhotoListingTagIsDistinctPerAlbum(): void
+	{
+		self::assertNotSame($this->provider->photoListingTag('album-1'), $this->provider->photoListingTag('album-2'));
+	}
+
+	// ── Map listing key stability (Feature 067) ─────────────────────
+
+	/**
+	 * NFR-067-04, S-067-05: two overlapping-but-distinct raw viewports that
+	 * fall inside the same snapped grid region must produce an identical
+	 * cache key.
+	 */
+	/**
+	 * @return array{0:MapViewport,1:MapViewport}
+	 */
+	private function twoDistinctViewportsInTheSameCell(int $zoom): array
+	{
+		// Both sit well within +-1 cell of the origin (comfortably under half a
+		// cell to either side), so `snapToGrid()`'s outward rounding collapses
+		// both to the exact same `[-cell, cell]` box on every bound - while
+		// still being two distinct, overlapping viewports. Derived from
+		// `cellSizeForZoom()` rather than hardcoded degrees, so this stays
+		// correct across any future `GRID_ZOOM_OFFSET` retuning (Q-067-13).
+		$cell = MapViewport::cellSizeForZoom($zoom);
+
+		$viewport_a = new MapViewport(north: 0.6 * $cell, south: -0.6 * $cell, east: 0.6 * $cell, west: -0.6 * $cell, zoom: $zoom);
+		$viewport_b = new MapViewport(north: 0.4 * $cell, south: -0.4 * $cell, east: 0.4 * $cell, west: -0.4 * $cell, zoom: $zoom);
+
+		return [$viewport_a, $viewport_b];
+	}
+
+	public function testMapBucketsKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
+	{
+		[$viewport_a, $viewport_b] = $this->twoDistinctViewportsInTheSameCell(5);
+
+		$key_a = $this->provider->mapBucketsKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapBucketsKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertSame($key_a, $key_b);
+	}
+
+	public function testMapPhotosKeyIsStableAcrossViewportsInTheSameSnappedRegion(): void
+	{
+		[$viewport_a, $viewport_b] = $this->twoDistinctViewportsInTheSameCell(5);
+
+		$key_a = $this->provider->mapPhotosKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapPhotosKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertSame($key_a, $key_b);
+	}
+
+	public function testMapBucketsKeyDistinguishesDifferentSnappedRegions(): void
+	{
+		$viewport_a = new MapViewport(north: 10.0, south: 0.0, east: 10.0, west: 0.0, zoom: 5);
+		$viewport_b = new MapViewport(north: 40.0, south: 30.0, east: 40.0, west: 30.0, zoom: 5);
+
+		$key_a = $this->provider->mapBucketsKey('root', $viewport_a->snapToGrid(), null, 'digest');
+		$key_b = $this->provider->mapBucketsKey('root', $viewport_b->snapToGrid(), null, 'digest');
+
+		self::assertNotSame($key_a, $key_b);
+	}
+
+	public function testMapBucketsKeyIsDistinctPerScope(): void
+	{
+		$viewport = (new MapViewport(north: 10.0, south: 0.0, east: 10.0, west: 0.0, zoom: 5))->snapToGrid();
+
+		$key_root = $this->provider->mapBucketsKey('root', $viewport, null, 'digest');
+		$key_album = $this->provider->mapBucketsKey('album-1', $viewport, null, 'digest');
+
+		self::assertNotSame($key_root, $key_album);
+	}
+
+	public function testMapTracksKeyIsUniqueAcrossIdentityAndAlbumMatrix(): void
+	{
+		$this->assertUniqueAcrossIdentityAndAlbumMatrix(fn (string $album_id, int|string|null $user_id) => $this->provider->mapTracksKey($album_id, $user_id, 'digest'));
+	}
+
+	public function testMapListingTagIsDistinctPerScope(): void
+	{
+		self::assertNotSame($this->provider->mapListingTag('root'), $this->provider->mapListingTag('album-1'));
+	}
+
+	public function testMapListingGlobalTagIsStable(): void
+	{
+		self::assertSame('map-listing-global', $this->provider->mapListingGlobalTag());
+	}
+
+	public function testPhotoListingGlobalTagIsStableAndDistinctFromPerAlbumTags(): void
+	{
+		self::assertSame('photo-listing-global', $this->provider->photoListingGlobalTag());
+		self::assertNotSame($this->provider->photoListingTag('global'), $this->provider->photoListingGlobalTag());
 	}
 }

@@ -8,7 +8,7 @@
 
 		<template #right>
 			<UButton
-				v-if="initData?.settings.can_edit"
+				v-if="rights?.settings.can_edit"
 				:label="$t('admin-dashboard.refresh')"
 				icon="lucide:refresh-cw"
 				:disabled="isLoading"
@@ -21,14 +21,19 @@
 
 	<div class="admin-dashboard max-w-7xl mx-auto p-4">
 		<!-- Update Status (only for full admins) -->
-		<UCard v-if="initData?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4">
+		<UCard
+			v-if="
+				rights?.settings.can_edit && updateStatus?.enabled && (updateStatus.is_new_release_available || updateStatus.is_git_update_available)
+			"
+			class="mb-4"
+		>
 			<template #header>
 				<div class="flex items-center gap-2 font-bold text-primary-500">
 					<UIcon name="lucide:circle-arrow-up" class="text-lg" />
 					<span>{{ $t("admin-dashboard.update.title") }}</span>
 				</div>
 			</template>
-			<p class="text-sm text-muted">
+			<p v-if="updateStatus.is_new_release_available" class="text-sm text-muted">
 				{{
 					$t("admin-dashboard.update.update_available", {
 						current: updateStatus.current_version ?? "?",
@@ -36,10 +41,13 @@
 					})
 				}}
 			</p>
+			<p v-else class="text-sm text-muted">
+				{{ $t("admin-dashboard.update.git_update_available", { count: updateStatus.commits_behind?.toString() ?? "?" }) }}
+			</p>
 		</UCard>
 
 		<!-- Security Advisories (only for full admins, shown when vulnerabilities are found) -->
-		<UCard v-if="initData?.settings.can_edit && advisories.length > 0" class="mb-4">
+		<UCard v-if="rights?.settings.can_edit && advisories.length > 0" class="mb-4">
 			<template #header>
 				<div class="flex items-center gap-2 text-orange-400 font-bold">
 					<UIcon name="lucide:triangle-alert" class="text-lg" />
@@ -69,7 +77,7 @@
 		</UCard>
 
 		<!-- Stats Overview (only for full admins with settings.can_edit) -->
-		<UCard v-if="initData?.settings.can_edit" class="mb-4">
+		<UCard v-if="rights?.settings.can_edit" class="mb-4">
 			<template #header>
 				<h2 class="text-xl font-semibold">{{ $t("admin-dashboard.overview") }}</h2>
 			</template>
@@ -107,7 +115,7 @@
 
 		<div class="flex items-center justify-center gap-6 mt-6 text-sm">
 			<a
-				v-if="initData?.settings.can_edit && !lycheeStore.is_white_label_enabled"
+				v-if="rights?.settings.can_edit && !lycheeStore.is_white_label_enabled"
 				:href="`${Constants.BASE_URL}/docs/api`"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -123,9 +131,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { RouterLink } from "vue-router";
-import { storeToRefs } from "pinia";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
@@ -133,23 +140,23 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import AdminTileLink from "@/v8/components/admin/AdminTileLink.vue";
 import AdminStatTile from "@/v8/components/admin/AdminStatTile.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
+import { useGlobalRightsStore } from "@/stores/GlobalRightsState";
 import Constants from "@/services/constants";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
 import AdminStatsService, { type AdminUpdateStatusResource } from "@/services/admin-stats-service";
 import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/v8/composables/useAdminTiles";
 
 const lycheeStore = useLycheeStateStore();
-const leftMenuStore = useLeftMenuStateStore();
 const toast = useAppToast();
 
-const { initData } = storeToRefs(leftMenuStore);
+const { rights } = useGlobalRights();
 const stats = ref<App.Http.Resources.Models.AdminStatsResource | null>(null);
 const isLoading = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
 const updateStatus = ref<AdminUpdateStatusResource | null>(null);
 
-const tiles: AdminTile[] = useAdminTiles(lycheeStore, leftMenuStore);
+const tiles: AdminTile[] = useAdminTiles(lycheeStore, useGlobalRightsStore());
 
 const tileGroupLabelMap: Record<AdminTileGroup, string> = {
 	core: "admin-dashboard.tool_groups.core",
@@ -225,11 +232,19 @@ function loadUpdateStatus() {
 		});
 }
 
-onMounted(() => {
-	if (initData.value?.settings.can_edit) {
+// The rights may already be loaded, arrive later, or only on a retry: load the admin data once they allow it.
+let isAdminDataRequested = false;
+watch(
+	() => rights.value?.settings.can_edit ?? false,
+	(canEdit) => {
+		if (!canEdit || isAdminDataRequested) {
+			return;
+		}
+		isAdminDataRequested = true;
 		loadStats();
 		loadUpdateStatus();
 		loadAdvisories();
-	}
-});
+	},
+	{ immediate: true },
+);
 </script>

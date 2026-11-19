@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'サーバーのファイルを同期',
+    'description' => 'サーバーのファイルを Lychee と同期します。ディレクトリとそのすべてのサブディレクトリから写真をインポートします。この処理は非常に時間がかかるため、タイムアウトを避けるためにワーカーとキューの使用をお勧めします。',
+    'sync' => '同期',
+    'loading' => '読み込み中...',
+    'selected_directory' => '現在選択中のディレクトリ:',
+    'resync_metadata' => '既存ファイルのメタデータを再同期する。',
+    'delete_imported' => '元のファイルを削除する。',
+    'import_via_symlink' => 'ファイルをコピーせず、シンボリックリンクで写真をインポートする。',
+    'skip_duplicates' => 'ギャラリーに既に存在する写真とアルバムをスキップする。',
+    'delete_missing_photos' => '同期したディレクトリに存在しない写真をアルバムから削除する。',
+    'delete_missing_albums' => '同期したディレクトリに存在しないアルバムを親アルバムから削除する。',
+    'importing_please_be_patient' => 'インポート中です。しばらくお待ちください...',
 ];
 

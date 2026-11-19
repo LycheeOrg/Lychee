@@ -12,8 +12,9 @@ return [
     'success' => 'Успешно',
     'failure' => 'Ошибка',
     'started' => 'Запущено',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'skipped' => 'Пропущено',
+    'col_date' => 'Дата',
+    'col_status' => 'Статус',
+    'col_username' => 'Пользователь',
+    'col_job' => 'Задача',
 ];

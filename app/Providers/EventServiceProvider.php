@@ -13,9 +13,11 @@ use App\Events\AlbumChildrenChanged;
 use App\Events\AlbumComputedDataUpdated;
 use App\Events\AlbumDeleted;
 use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\AlbumPhotoSortingChanged;
 use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
+use App\Events\MapListingCacheFlushRequested;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
 use App\Events\Metrics\AlbumVisit;
@@ -26,8 +28,10 @@ use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
 use App\Events\PersonAlbumSaved;
 use App\Events\PhotoAdded;
+use App\Events\PhotoBucketsRecomputed;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoListingCacheFlushRequested;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoRatingChanged;
@@ -39,9 +43,13 @@ use App\Events\UserGroupMembershipChanged;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
+use App\Listeners\ManagedCacheMapListingInvalidator;
+use App\Listeners\ManagedCachePhotoListingInvalidator;
+use App\Listeners\ManagedCacheSearchListingInvalidator;
 use App\Listeners\ManagedCacheUserListingInvalidator;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
+use App\Listeners\PurgeAlbumUserThumbsOnMembershipChange;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
@@ -65,10 +73,12 @@ use SocialiteProviders\Authentik\AuthentikExtendSocialite;
 use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
+use SocialiteProviders\Kanidm\KanidmExtendSocialite;
 use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Microsoft\MicrosoftExtendSocialite;
 use SocialiteProviders\Nextcloud\NextcloudExtendSocialite;
+use SocialiteProviders\PocketID\PocketIDExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -89,9 +99,11 @@ class EventServiceProvider extends ServiceProvider
 			FacebookExtendSocialite::class . '@handle',
 			GitHubExtendSocialite::class . '@handle',
 			GoogleExtendSocialite::class . '@handle',
+			KanidmExtendSocialite::class . '@handle',
 			// Mastodon is provided directly.
 			MicrosoftExtendSocialite::class . '@handle',
 			NextcloudExtendSocialite::class . '@handle',
+			PocketIDExtendSocialite::class . '@handle',
 			KeycloakExtendSocialite::class . '@handle',
 		],
 	];
@@ -168,5 +180,52 @@ class EventServiceProvider extends ServiceProvider
 
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
+
+		// Cached tag/person/smart-album cover purge on access revocation
+		Event::listen(UserGroupMembershipChanged::class, PurgeAlbumUserThumbsOnMembershipChange::class . '@handle');
+
+		// Managed-cache photo-listing invalidation
+		Event::listen(PhotoSaved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoMoved::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoMoved');
+		Event::listen(PhotoDeleted::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoDeleted');
+		Event::listen(AlbumPhotoSortingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handleAlbumPhotoSortingChanged');
+		Event::listen(PhotoBucketsRecomputed::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoBucketsRecomputed');
+		Event::listen(PhotoListingCacheFlushRequested::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoListingCacheFlushRequested');
+		Event::listen(PhotoTagsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoTagsChanged');
+		Event::listen(PhotoPersonsChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoPersonsChanged');
+		Event::listen(PhotoRatingChanged::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoRatingChanged');
+		Event::listen(PhotoHighlightToggled::class, ManagedCachePhotoListingInvalidator::class . '@handlePhotoHighlightToggled');
+
+		// Managed-cache Map-listing invalidation (Feature 067)
+		Event::listen(PhotoSaved::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoMoved::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoMoved');
+		Event::listen(PhotoDeleted::class, ManagedCacheMapListingInvalidator::class . '@handlePhotoDeleted');
+		Event::listen(MapListingCacheFlushRequested::class, ManagedCacheMapListingInvalidator::class . '@handleMapListingCacheFlushRequested');
+
+		// Feature 069 - the v3 search cache carries one coarse tag only, so
+		// every result-affecting mutation evicts all of it (see the listener's
+		// own docblock for why no album-shaped partition would be safe).
+		Event::listen(PhotoSaved::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(PhotoMoved::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(PhotoDeleted::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(PhotoTagsChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(PhotoRatingChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(PhotoHighlightToggled::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		// The album half of the same cache (FR-069-23). `/Search/albums`
+		// matches on title, description and album tags, and bounds the match
+		// by the origin's `_lft`/`_rgt`, so every one of these can change
+		// which albums a stored result should have contained.
+		Event::listen(AlbumSaved::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(AlbumDeleted::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(AlbumTagsChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(AlbumChildrenChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(AlbumComputedDataUpdated::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(AlbumListingCacheFlushRequested::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		// Security-critical rather than merely stale (FR-069-24): a search
+		// entry stores an already-browsability-filtered result, and a cache
+		// hit never re-runs that filter, so a revoked grant has to be evicted
+		// or it keeps being replayed to the user who just lost access.
+		Event::listen(AccessPermissionChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
+		Event::listen(UserGroupMembershipChanged::class, ManagedCacheSearchListingInvalidator::class . '@handle');
 	}
 }

@@ -8,8 +8,6 @@
 
 namespace App\Metadata\Versions;
 
-use App\Contracts\Versions\HasIsRelease;
-use App\Contracts\Versions\HasVersion;
 use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Repositories\ConfigManager;
@@ -22,7 +20,7 @@ use Illuminate\Support\Facades\Schema;
  * - are we downloaded from release page (.git is absent)
  * - are we in dev mode (phpunit is present).
  */
-class InstalledVersion implements HasVersion, HasIsRelease
+class InstalledVersion
 {
 	private bool $is_git;
 	private bool $php_unit;
@@ -53,7 +51,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Version stored in the database (last migration applied).
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */

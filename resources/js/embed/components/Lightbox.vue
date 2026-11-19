@@ -55,6 +55,8 @@
 							<img
 								v-else-if="currentPhoto"
 								:src="getPhotoUrl(currentPhoto)"
+								:srcset="getSrcset(currentPhoto)"
+								:sizes="getViewportSizes(currentPhoto)"
 								:alt="currentPhoto.title || 'Photo'"
 								class="lychee-lightbox-image"
 								@load="handleImageLoad"
@@ -152,6 +154,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from "vue";
 import type { Photo, EmbedConfig } from "@/embed/types";
+import { getSrcset, getViewportSizes } from "@/embed/utils/srcset";
 
 interface Props {
 	photos: Photo[];

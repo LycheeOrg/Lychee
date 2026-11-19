@@ -10,6 +10,7 @@ namespace App\Actions\Photo;
 
 use App\Events\PhotoRatingChanged;
 use App\Exceptions\ConflictingPropertyException;
+use App\Jobs\RecomputePhotoBucketsJob;
 use App\Models\Photo;
 use App\Models\PhotoRating;
 use App\Models\Statistics;
@@ -108,8 +109,16 @@ class Rating
 				$photo->save();
 			});
 
+			// rating_avg is a bucket-relevant column - recompute every album
+			// this photo is linked into whenever it actually changed. Must
+			// be captured before refresh() below, which resets the model's
+			// own change tracking.
+			$rating_avg_changed = $photo->wasChanged('rating_avg');
+
 			// Reload photo with fresh statistics
 			$photo->refresh();
+
+			RecomputePhotoBucketsJob::dispatchIf($rating_avg_changed, $photo->id);
 
 			PhotoRatingChanged::dispatch($photo->id);
 

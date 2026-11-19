@@ -22,11 +22,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_control']);
+Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_control'])->withoutMiddleware(['gallery_password']);
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 /**
- * ADMIN SETUP (v8, Feature 051).
+ * ADMIN SETUP (v8).
  * Unauthenticated by necessity (there is no admin yet); guarded internally by
  * SetUpAdminRequest, which rejects once an admin user already exists.
  */
@@ -41,7 +41,9 @@ Route::get('/Contact', [Contact\ContactController::class, 'index'])->middleware(
 Route::patch('/Contact', [Contact\ContactController::class, 'update'])->middleware('support:se');
 Route::delete('/Contact', [Contact\ContactController::class, 'destroy'])->middleware('support:se');
 
-Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
+Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit'])->withoutMiddleware(['gallery_password']);
+Route::post('/Gallery::unlock', [Gallery\GalleryUnlockController::class, 'unlock'])->middleware(['throttle:10,1'])->withoutMiddleware(['gallery_password']);
+Route::get('/Gallery::getMac', [Gallery\ConfigController::class, 'getMac']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
 Route::get('/Gallery::getLayout', [Gallery\ConfigController::class, 'getGalleryLayout'])->middleware(['cache_control']);
 Route::get('/Gallery::getUploadLimits', [Gallery\ConfigController::class, 'getUploadCOnfig'])->middleware(['cache_control']);
@@ -122,32 +124,6 @@ Route::get('/Sharing::all', [Gallery\SharingController::class, 'listAll']);
 Route::get('/Sharing::albums', [Gallery\SharingController::class, 'listAlbums']);
 
 /**
- * Embed.
- * Public endpoints for embedding albums on external websites.
- * Note: These routes intentionally have minimal middleware to allow cross-origin embedding.
- * IMPORTANT: More specific routes (stream) must come before generic routes ({album_id}) to avoid conflicts.
- */
-Route::match(['GET', 'OPTIONS'], '/Embed/stream', [Gallery\EmbedController::class, 'getPublicStream'])
-	->withoutMiddleware('api')
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:900', // 15 minutes cache (longer for stream due to expensive query)
-		'throttle:30,1', // 30 requests per minute per IP (more restrictive)
-	])
-	->name('embed.stream');
-
-Route::match(['GET', 'OPTIONS'], '/Embed/{album_id}', [Gallery\EmbedController::class, 'getAlbum'])
-	->withoutMiddleware('api')
-	->middleware([
-		\Illuminate\Http\Middleware\HandleCors::class,
-		\Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'cache_control:300', // 5 minutes cache (reduced from 1 hour for more frequent updates)
-		'throttle:120,1', // 120 requests per minute per IP
-	])
-	->name('embed.album');
-
-/**
  * IMPORT.
  */
 Route::post('/Import', Admin\ImportFromServerController::class);
@@ -189,11 +165,11 @@ Route::get('/Search', [SearchController::class, 'search'])->middleware(['cache_c
 /**
  * SESSION.
  */
-Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login');
-Route::post('/Auth::logout', [AuthController::class, 'logout']);
-Route::get('/Auth::user', [AuthController::class, 'getCurrentUser']);
+Route::post('/Auth::login', [AuthController::class, 'login'])->middleware('throttle:10,60,login')->withoutMiddleware(['gallery_password']);
+Route::post('/Auth::logout', [AuthController::class, 'logout'])->withoutMiddleware(['gallery_password']);
+Route::get('/Auth::user', [AuthController::class, 'getCurrentUser'])->withoutMiddleware(['gallery_password']);
 Route::get('/Auth::rights', [AuthController::class, 'getGlobalRights']);
-Route::get('/Auth::config', [AuthController::class, 'getConfig']);
+Route::get('/Auth::config', [AuthController::class, 'getConfig'])->withoutMiddleware(['gallery_password']);
 
 /**
  * USER.
@@ -245,9 +221,11 @@ Route::post('/WebAuthn::register/options', [WebAuthn\WebAuthnRegisterController:
 Route::post('/WebAuthn::register', [WebAuthn\WebAuthnRegisterController::class, 'register'])
 	->name('webauthn.register');
 Route::post('/WebAuthn::login/options', [WebAuthn\WebAuthnLoginController::class, 'options'])
-	->name('webauthn.login.options');
+	->name('webauthn.login.options')
+	->withoutMiddleware(['gallery_password']);
 Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login'])
-	->name('webauthn.login');
+	->name('webauthn.login')
+	->withoutMiddleware(['gallery_password']);
 
 /**
  * OAUTH.
@@ -255,7 +233,7 @@ Route::post('/WebAuthn::login', [WebAuthn\WebAuthnLoginController::class, 'login
 // This route returns different results depending whether we are authenticated or not:
 // If Authenticated: list of the registrated Oauth providers
 // If not Authenticated: list of the available Oauth providers
-Route::get('/Oauth::providers', [OauthController::class, 'listProviders'])->middleware(['cache_control']);
+Route::get('/Oauth::providers', [OauthController::class, 'listProviders'])->middleware(['cache_control'])->withoutMiddleware(['gallery_password']);
 Route::get('/Oauth', [OauthController::class, 'listForUser']);
 Route::delete('/Oauth', [OauthController::class, 'clear']);
 
@@ -327,6 +305,8 @@ Route::delete('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeatur
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
 Route::get('/Moderation::photo', [Admin\ModerationController::class, 'photo']);
 Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
+Route::get('/Moderation::history', [Admin\ModerationController::class, 'history']);
+Route::get('/Moderation::photoHistory', [Admin\ModerationController::class, 'photoHistory']);
 
 /**
  * SETTINGS.
@@ -341,8 +321,6 @@ Route::post('/Settings::setJS', [Admin\SettingsController::class, 'setJS']);
 /**
  * MAINTENANCE.
  */
-Route::get('/Maintenance::update', [Admin\UpdateController::class, 'get']);
-Route::post('/Maintenance::update', [Admin\UpdateController::class, 'check']);
 Route::get('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'check']);
 Route::post('/Maintenance::cleaning', [Admin\Maintenance\Cleaning::class, 'do']);
 Route::get('/Maintenance::jobs', [Admin\Maintenance\FixJobs::class, 'check']);
@@ -373,11 +351,13 @@ Route::get('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'ch
 Route::post('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'do']);
 Route::get('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'check']);
 Route::post('/Maintenance::backfillAlbumSizes', [Admin\Maintenance\BackfillAlbumSizes::class, 'do']);
+Route::post('/Maintenance::recomputeBuckets', [Admin\Maintenance\RecomputeBuckets::class, 'do']);
+Route::get('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'check']);
+Route::post('/Maintenance::recomputeTakenAtRange', [Admin\Maintenance\RecomputeTakenAtRange::class, 'do']);
 
 /**
  * STATISTICS.
  */
-Route::get('/Statistics::userSpace', [StatisticsController::class, 'getSpacePerUser'])->middleware(['support:se']);
 Route::get('/Statistics::sizeVariantSpace', [StatisticsController::class, 'getSpacePerSizeVariantType'])->middleware(['support:se']);
 Route::get('/Statistics::albumSpace', [StatisticsController::class, 'getSpacePerAlbum'])->middleware(['support:se']);
 Route::get('/Statistics::totalAlbumSpace', [StatisticsController::class, 'getTotalSpacePerAlbum'])->middleware(['support:se']);
@@ -391,10 +371,9 @@ Route::post('/Metrics::photo', [MetricsController::class, 'photo'])->withoutMidd
 Route::post('/Metrics::favourite', [MetricsController::class, 'favourite'])->withoutMiddleware(['content_type:json']);
 
 /**
- * UPDATE.
+ * VERSION.
  */
-// Route::post('/Update::check', [AdministrationUpdateController::class, 'check']);
-Route::get('/Version', [VersionController::class, 'get']);
+Route::get('/Version', [VersionController::class, 'get'])->withoutMiddleware(['gallery_password']);
 Route::get('/ChangeLogs', [VersionController::class, 'changeLogs']);
 
 /**
@@ -450,9 +429,9 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	 * AI VISION — FACE DETECTION.
 	 */
 	Route::post('/FaceDetection/scan', [AiVision\FaceDetectionController::class, 'scan']);
-	Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth', 'gallery_password']);
 	Route::post('/FaceDetection/bulk-scan', [AiVision\FaceDetectionController::class, 'bulkScan']);
-	Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth']);
+	Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth', 'gallery_password']);
 
 	/**
 	 * AI VISION — CLUSTER REVIEW.
@@ -467,10 +446,13 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	 * AI VISION — NSFW DETECTION.
 	 */
 	Route::get('/Photo/{id}/nsfw-detections', [AiVision\PhotoNsfwDetectionsController::class, 'show']);
-	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth', 'gallery_password']);
 	// TODO: Those should require admin no ???
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);
+	Route::get('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'index'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings', [AiVision\NsfwFindingsController::class, 'destroy'])->middleware(['support:se']);
+	Route::delete('/NsfwDetection/findings/photos', [AiVision\NsfwFindingsController::class, 'destroyByPhotos'])->middleware(['support:se']);
 
 	/**
 	 * AI VISION — MAINTENANCE.

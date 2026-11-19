@@ -64,6 +64,10 @@ class AlbumListBulkEditFieldsResource extends Data
 	public array $grants_uploads;
 	/** @var string[] ISO 8601 */
 	public array $created_ats;
+	/** @var (string|null)[] earliest `taken_at` of the album and its sub-albums */
+	public array $min_taken_ats;
+	/** @var (string|null)[] latest `taken_at` of the album and its sub-albums */
+	public array $max_taken_ats;
 
 	/**
 	 * @param int[]           $owner_ids
@@ -86,6 +90,8 @@ class AlbumListBulkEditFieldsResource extends Data
 	 * @param bool[]          $grants_downloads
 	 * @param bool[]          $grants_uploads
 	 * @param string[]        $created_ats
+	 * @param (string|null)[] $min_taken_ats
+	 * @param (string|null)[] $max_taken_ats
 	 */
 	public function __construct(
 		array $owner_ids,
@@ -108,6 +114,8 @@ class AlbumListBulkEditFieldsResource extends Data
 		array $grants_downloads,
 		array $grants_uploads,
 		array $created_ats,
+		array $min_taken_ats,
+		array $max_taken_ats,
 	) {
 		$this->owner_ids = $owner_ids;
 		$this->owner_names = $owner_names;
@@ -129,5 +137,7 @@ class AlbumListBulkEditFieldsResource extends Data
 		$this->grants_downloads = $grants_downloads;
 		$this->grants_uploads = $grants_uploads;
 		$this->created_ats = $created_ats;
+		$this->min_taken_ats = $min_taken_ats;
+		$this->max_taken_ats = $max_taken_ats;
 	}
 }

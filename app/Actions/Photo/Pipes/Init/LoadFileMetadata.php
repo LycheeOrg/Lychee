@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Metadata\Extractor;
@@ -16,14 +15,14 @@ use App\Metadata\Extractor;
 /**
  * Load metadata from the file.
  */
-class LoadFileMetadata implements InitPipe
+class LoadFileMetadata extends AbstractInitPipe
 {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		if ($state->exif_info !== null) {
 			// Metadata already loaded
@@ -39,13 +38,18 @@ class LoadFileMetadata implements InitPipe
 		// Use basename of the original upload for the title, not the converted file
 		if (
 			$state->exif_info->title === null ||
-			$state->exif_info->title === ''
+				$state->exif_info->title === ''
 		) {
 			$title_source = $state->raw_source_file ?? $state->source_file;
 			$state->exif_info->title = mb_substr($title_source->getOriginalBasename(), 0, 100, 'UTF-8');
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.load_file_metadata';
 	}
 }
 

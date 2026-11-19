@@ -42,6 +42,9 @@ class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 	{
 		Config::set('app.debug', false);
 
+		$this->config_manager->expects($this->never())->method('getValueAsBool');
+		$this->facial_recognition_service->expects($this->never())->method('getConfiguration');
+
 		$data = [];
 		$result = $this->check->handle($data, fn (array $diagnostics): array => $diagnostics);
 
@@ -60,6 +63,7 @@ class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 			->method('getValueAsBool')
 			->with('ai_vision_enabled')
 			->willReturn(false);
+		$this->facial_recognition_service->expects($this->never())->method('getConfiguration');
 
 		$data = [];
 		$result = $this->check->handle($data, fn (array $diagnostics): array => $diagnostics);

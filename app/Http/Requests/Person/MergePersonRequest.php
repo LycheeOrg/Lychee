@@ -15,11 +15,13 @@ use Illuminate\Support\Facades\Gate;
 
 class MergePersonRequest extends BaseApiRequest
 {
-	private string $source_person_id;
+	private Person $source_person;
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_MERGE_PERSONS, Person::class);
+		// The source is deleted by the merge, so it must be manageable; the target only receives faces.
+		return Gate::check(AiVisionPolicy::CAN_MERGE_PERSONS, Person::class) &&
+			Gate::check(AiVisionPolicy::CAN_MANAGE_PERSON, [Person::class, $this->source_person]);
 	}
 
 	public function rules(): array
@@ -31,11 +33,11 @@ class MergePersonRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->source_person_id = $values['source_person_id'];
+		$this->source_person = Person::findOrFail($values['source_person_id']);
 	}
 
-	public function sourcePersonId(): string
+	public function sourcePerson(): Person
 	{
-		return $this->source_person_id;
+		return $this->source_person;
 	}
 }

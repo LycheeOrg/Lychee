@@ -35,7 +35,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 		$expected_key = config('services.face_recognition.api_key', '');
 		$provided_key = $this->header('X-API-Key', '');
 
-		return $expected_key !== '' && $provided_key === $expected_key;
+		return $expected_key !== '' && hash_equals($expected_key, $provided_key);
 	}
 
 	/**

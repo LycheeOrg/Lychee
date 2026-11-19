@@ -1,72 +1,63 @@
 <?php
-
-/**
+return [
+    'preview' => [
+        /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
  * Copyright (c) 2018-2026 LycheeOrg.
  */
-
-return [
-    'preview' => [
-        'title' => 'Watermark Preview',
-        'se_required' => 'The watermark module requires Lychee Supporter Edition (SE) or SE Preview to be enabled.',
-
-        'section_settings' => 'Watermark Settings',
-        'section_preview' => 'Live Preview',
-        'disclaimer' => 'This preview gives an idea of how the watermark will look. The final result on your actual photos may differ slightly.',
-
-        'watermark_photo_id' => 'Watermark Image ID',
-        'watermark_photo_id_placeholder' => '24-character photo ID',
-        'watermark_photo_id_hint' => 'Photo ID of the image used as watermark. Open a photo and copy the last 24 characters from the URL.',
-
-        'preview_photo_id' => 'Background Photo ID',
-        'preview_photo_id_placeholder' => '24-character photo ID',
-        'preview_photo_id_hint' => 'Enter a photo ID to use as background for the preview.',
-
-        'size' => 'Size (:value%)',
-        'opacity' => 'Opacity (:value%)',
+        'title' => 'Vorschau des Wasserzeichens',
+        'se_required' => 'Für das Wasserzeichen-Modul muss die Lychee Supporter Edition (SE) oder die SE-Vorschau aktiviert sein.',
+        'section_settings' => 'Einstellungen für Wasserzeichen',
+        'section_preview' => 'Live-Vorschau',
+        'disclaimer' => 'Diese Vorschau vermittelt einen Eindruck davon, wie das Wasserzeichen aussehen wird. Das Endergebnis auf Ihren tatsächlichen Fotos kann geringfügig davon abweichen.',
+        'watermark_photo_id' => 'Wasserzeichen-Bild-ID',
+        'watermark_photo_id_placeholder' => 'Ausweis mit Foto und 24 Zeichen',
+        'watermark_photo_id_hint' => 'Foto-ID des Bildes, das als Wasserzeichen verwendet wird. Öffnen Sie ein Foto und kopieren Sie die letzten 24 Zeichen aus der URL.',
+        'preview_photo_id' => 'Hintergrundfoto ID',
+        'preview_photo_id_placeholder' => '24 Zeichen Foto ID',
+        'preview_photo_id_hint' => 'Geben Sie eine Foto-ID ein, welche als Hintergrund für die Vorschau verwendet werden soll.',
+        'size' => 'Größe (:value%)',
+        'opacity' => 'Deckkraft (:value%)',
         'position' => 'Position',
         'position_options' => [
-            'top-left' => 'Top Left',
-            'top' => 'Top Center',
-            'top-right' => 'Top Right',
-            'left' => 'Middle Left',
-            'center' => 'Center',
-            'right' => 'Middle Right',
-            'bottom-left' => 'Bottom Left',
-            'bottom' => 'Bottom Center',
-            'bottom-right' => 'Bottom Right',
+            'top-left' => 'Oben links',
+            'top' => 'Oben in der Mitte',
+            'top-right' => 'Oben rechts',
+            'left' => 'Mitte links',
+            'center' => 'Mitte',
+            'right' => 'Mitte rechts',
+            'bottom-left' => 'Unten links',
+            'bottom' => 'Unten in der Mitte',
+            'bottom-right' => 'Unten rechts',
         ],
-
-        'section_shift' => 'Shift / Offset',
-        'shift_type' => 'Shift Unit',
+        'section_shift' => 'Verschiebung / Versatz',
+        'shift_type' => 'Verschiebungseinheit',
         'shift_type_options' => [
-            'relative' => 'Relative (%)',
-            'absolute' => 'Absolute (px)',
+            'relative' => 'Relativ (%)',
+            'absolute' => 'Absolut (px)',
         ],
-        'shift_type_hint' => 'Relative shifts are a percentage of the image size; absolute shifts are a fixed number of pixels.',
-        'shift_mode_use_slider' => 'Use slider',
-        'shift_mode_use_classic' => 'Use number input',
-        'shift_x' => 'Horizontal Shift (:value)',
+        'shift_type_hint' => 'Relative Verschiebungen werden als Prozentsatz der Bildgröße angegeben; absolute Verschiebungen als feste Pixelanzahl.',
+        'shift_mode_use_slider' => 'Schieberegler verwenden',
+        'shift_mode_use_classic' => 'Zahleneingabe verwenden',
+        'shift_x' => 'Horizontale Verschiebung (:value)',
         'shift_x_direction_options' => [
-            'left' => 'Left',
-            'right' => 'Right',
+            'left' => 'Links',
+            'right' => 'Richtig',
         ],
-        'shift_y' => 'Vertical Shift (:value)',
+        'shift_y' => 'Vertikale Verschiebung (:value)',
         'shift_y_direction_options' => [
-            'up' => 'Up',
-            'down' => 'Down',
+            'up' => 'Nach oben',
+            'down' => 'Nach unten',
         ],
-        'reset_to_zero' => 'Reset to 0',
-
-        'save' => 'Save Settings',
-        'saved' => 'Watermark settings saved.',
-        'save_error' => 'Failed to save watermark settings.',
-        'save_requires_se' => 'Saving watermark settings requires a full Supporter Edition (SE) license. SE Preview only allows previewing the effect.',
-
-        'no_watermark_image' => 'No watermark image configured. Enter a watermark photo ID and click "Load" to preview.',
-        'no_preview_photo' => 'Enter a background photo ID above to preview the watermark overlay.',
-        'photo_load_error' => 'Could not load photo. Make sure the ID is correct and you have access to it.',
-        'watermark_load_error' => 'Could not load watermark image. Make sure the photo ID is correct.',
+        'reset_to_zero' => 'Auf 0 zurücksetzen',
+        'save' => 'Einstellungen speichern',
+        'saved' => 'Wasserzeichen-Einstellungen gespeichert.',
+        'save_error' => 'Wasserzeichen-Einstellungen konnten nicht gespeichert werden.',
+        'save_requires_se' => 'Zum Speichern der Wasserzeichen-Einstellungen ist eine vollständige Supporter Edition (SE)-Lizenz erforderlich. Die SE-Vorschau erlaubt nur die Vorschau des Effekts.',
+        'no_watermark_image' => 'Kein Wasserzeichenbild konfiguriert. Geben Sie eine Wasserzeichen-Foto-ID ein und klicken Sie auf „Laden“, um eine Vorschau anzuzeigen.',
+        'no_preview_photo' => 'Geben Sie oben eine Hintergrundfoto-ID ein, um eine Vorschau der Wasserzeichen-Überlagerung anzuzeigen.',
+        'photo_load_error' => 'Foto konnte nicht geladen werden. Stellen Sie sicher, dass die ID korrekt ist und Sie Zugriff darauf haben.',
+        'watermark_load_error' => 'Wasserzeichenbild konnte nicht geladen werden. Stellen Sie sicher, dass die Foto-ID korrekt ist.',
     ],
 ];

@@ -7,7 +7,7 @@
 				<div v-if="sections.length > 1" class="flex relative items-start justify-between gap-8">
 					<UPageAside class="hidden sticky lg:block lg:top-0 w-52 shrink-0 py-0">
 						<AlbumExpertModeToggle v-if="albumStore.config?.is_base_album" v-model="is_expert_mode" class="mb-6" />
-						<UNavigationMenu orientation="vertical" :items="navItems" highlight :dir="isLTR() ? 'ltr' : 'rtl'" />
+						<UNavigationMenu orientation="vertical" :items="navItems" highlight :dir />
 					</UPageAside>
 					<div class="w-full min-w-0 flex flex-col gap-10">
 						<section id="album-settings-about" class="w-full flex justify-center flex-wrap items-start gap-4 scroll-mt-4">
@@ -19,7 +19,11 @@
 								:legend-label="$t('gallery.album.tabs.about')"
 							/>
 						</section>
-						<section id="album-settings-visibility" class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4">
+						<section
+							v-if="canChangeVisibility"
+							id="album-settings-visibility"
+							class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4"
+						>
 							<AlbumVisibility
 								:key="`visibility_${albumStore.album?.id}`"
 								legend-icon="lucide:eye"
@@ -73,7 +77,7 @@
 						</section>
 					</div>
 				</div>
-				<div v-else class="w-full flex justify-center flex-wrap gap-4">
+				<div v-else-if="canChangeVisibility" class="w-full flex justify-center flex-wrap gap-4">
 					<AlbumVisibility
 						:key="`visibility_${albumStore.album?.id}`"
 						legend-icon="lucide:eye"
@@ -105,7 +109,7 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
-const { isLTR } = useLtRorRtL();
+const { dir } = useLtRorRtL();
 
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
@@ -142,9 +146,12 @@ UsersService.count().then((data) => {
 
 const canShare = computed(() => albumStore.rights?.can_share_with_users && numUsers.value > 1 && albumStore.config?.is_base_album);
 const canMove = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_move);
-// Gated exactly like `canMove` (Q-055-12): hidden for smart/tag/person albums.
+// Gated exactly like `canMove`: hidden for smart/tag/person albums.
 const canTracks = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_edit);
 const trackCount = computed(() => albumStore.modelAlbum?.tracks?.length ?? 0);
+// The protection policy is a sharing decision, reserved to the owner
+// (admins for smart albums) — exactly what `can_transfer` expresses.
+const canChangeVisibility = computed(() => albumStore.rights?.can_transfer ?? false);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
 const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
@@ -159,10 +166,10 @@ const sections = computed<Section[]>(() => {
 		return [];
 	}
 
-	const items: Section[] = [
-		{ value: "about", label: trans("gallery.album.tabs.about") },
-		{ value: "visibility", label: trans("gallery.album.tabs.visibility") },
-	];
+	const items: Section[] = [{ value: "about", label: trans("gallery.album.tabs.about") }];
+	if (canChangeVisibility.value) {
+		items.push({ value: "visibility", label: trans("gallery.album.tabs.visibility") });
+	}
 	if (canMove.value) {
 		items.push({ value: "move", label: trans("gallery.album.tabs.move") });
 	}

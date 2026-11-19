@@ -1,6 +1,6 @@
 # Feature Numbering Conventions
 
-_Status: Active | Last updated: December 22, 2025_
+_Status: Active | Last updated: September 27, 2026_
 
 This document defines the numbering and naming conventions used throughout the specification system to ensure consistent, predictable identifiers across features, questions, and decisions.
 
@@ -87,7 +87,7 @@ docs/specs/4-architecture/features/
 **Rules:**
 - Question numbers are scoped to their feature
 - Each feature starts question numbering at `01`
-- Questions are tracked in `docs/specs/4-architecture/open-questions.md`
+- Questions are tracked in their feature's `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md`; there is no central log
 - Question IDs remain permanent even after resolution (for traceability)
 
 **Examples:**
@@ -99,22 +99,23 @@ docs/specs/4-architecture/features/
 
 ## Decision Record Identifiers
 
-### ADR ID Format: `ADR-NNNN`
+### ADR ID Format: `ADR-<NNN>-<YY>`
 
-**Format:** `ADR-` prefix + four-digit sequential number  
-**Examples:** `ADR-0001`, `ADR-0012`, `ADR-0100`
+**Format:** `ADR-` prefix + three-digit feature number + two-digit sequence within that feature  
+**Examples:** `ADR-069-01`, `ADR-072-01`, `ADR-072-02`
 
 **Rules:**
-- Start at `ADR-0001` for the first decision
-- Increment sequentially across all decisions (not scoped to features)
-- Zero-pad to maintain four digits
+- `<NNN>` is the feature that raised the decision; a decision spanning several features belongs to the feature that raised it
+- Each feature starts its ADR sequence at `01`; check `docs/specs/6-decisions/` for that feature's highest existing ID
+- Numbering per feature means parallel feature branches cannot collide on the same ID
 - ADR numbers are permanent and never reused
 - Superseded ADRs remain in history with status updated
+- ADRs created before this rule keep their global `ADR-XXXX` numbers (`ADR-0003` … `ADR-0011`)
 
 **File naming:**
 ```
-docs/specs/6-decisions/ADR-0001-use-nested-set-for-albums.md
-docs/specs/6-decisions/ADR-0002-adopt-spatie-data-resources.md
+docs/specs/6-decisions/ADR-069-01-v3-collection-bounding-strategies.md
+docs/specs/6-decisions/ADR-072-01-<short-slug>.md
 ```
 
 ---

@@ -1,10 +1,10 @@
 # Open Questions – Decision Card Format
 
-Status: Draft | Last updated: 2025-12-10
+Status: Draft | Last updated: 2026-09-27
 
 This document defines the standard “Decision Card” format for all medium‑ and high‑impact open questions that are presented to humans (for example in chat, design docs, or reviews).
 
-> Scope: This format is for **presentation** of a single open question (for example in chat or in a spec section). The tracking table in `docs/specs/4-architecture/open-questions.md` remains the lightweight index of questions/options; it should reference options in the same A/B/C order and preferred option as the Decision Card.
+> Scope: This format is for **presentation** of a single open question (for example in chat or in a spec section). The tracking table in the feature's own `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md` remains the lightweight index of questions/options; it should reference options in the same A/B/C order and preferred option as the Decision Card.
 
 ## 1. Decision Card Template
 
@@ -68,14 +68,15 @@ Who needs to decide what, and where/when (for example:
 ### 1.1 Rules
 
 - Always mark exactly one option as preferred in the metadata line and in its section heading, using `(**recommended**)` **immediately after the emoji**, before the option title.
-- Options must be listed in **preference order** (A is most preferred, then B, then C, etc.), consistent with `docs/specs/4-architecture/open-questions.md`.
+- Options must be listed in **preference order** (A is most preferred, then B, then C, etc.), consistent with the feature's `open-questions.md`.
 - If there are more or fewer options than A/B/C, extend or shrink the list while keeping the same pattern (🅰️, 🅱️, 🅲, 🅳, …).
 - Do **not** add extra meta sections (no TL;DR, summary, criticism, etc.) beyond what is defined in the template.
 
-## 2. Relationship to `open-questions.md`
+## 2. Relationship to the feature's `open-questions.md`
 
-- The table in `docs/specs/4-architecture/open-questions.md` remains the single scratchpad for tracking open questions, their IDs, and their options in compressed form.
+- Each feature owns its own `docs/specs/4-architecture/features/<NNN>-<feature-name>/open-questions.md` (created from [feature-open-questions-template.md](../../templates/feature-open-questions-template.md)); it is the single scratchpad for that feature's questions, their IDs, and their options in compressed form. There is no central open-questions log.
+- Question IDs (`Q-<NNN>-<YY>`) are allocated from the feature's `open-questions.md` only; do not number Decision Cards independently elsewhere (for example in a spec appendix).
 - When presenting a question to a human (for example in chat or in a spec/ADR discussion), render it as a Decision Card using this format.
-- The “Options (A preferred)” column in `open-questions.md` must:
+- The “Options (A preferred)” column in the feature's `open-questions.md` must:
   - List options in the same order and with the same labels (A/B/C/…) as the Decision Card.
   - Match the preferred option from the Decision Card (Option A is the recommended path unless a different option is explicitly marked as preferred).

@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Sunucu dosyalarınızı eşitleyin',
+    'description' => 'Sunucu dosyalarınızı Lychee ile eşitleyin. Bu işlem, bir dizinden ve tüm alt dizinlerinden fotoğrafları içe aktarır. Bu işlem çok yavaştır; zaman aşımını önlemek için çalışanlar (workers) ve kuyruklar kullanmanızı öneririz.',
+    'sync' => 'Eşitle',
+    'loading' => 'Yükleniyor...',
+    'selected_directory' => 'Şu anda seçili dizin:',
+    'resync_metadata' => 'Mevcut dosyaların meta verilerini yeniden eşitle.',
+    'delete_imported' => 'Orijinal dosyaları sil.',
+    'import_via_symlink' => 'Fotoğrafları dosyaları kopyalamak yerine sembolik bağlantı ile içe aktar.',
+    'skip_duplicates' => 'Galeride zaten mevcutsa fotoğrafları ve albümleri atla.',
+    'delete_missing_photos' => 'Albümde olup eşitlenen dizinde bulunmayan fotoğrafları sil.',
+    'delete_missing_albums' => 'Üst albümde olup eşitlenen dizinde bulunmayan albümleri sil.',
+    'importing_please_be_patient' => 'İçe aktarılıyor, lütfen bekleyin...',
 ];
 

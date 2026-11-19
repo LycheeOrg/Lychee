@@ -16,6 +16,7 @@ use App\Events\PhotoAdded;
 use App\Events\PhotoSaved;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
+use App\Services\PhotoBucketComputer;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -36,11 +37,16 @@ class SetParent implements SharedPipe
 				->where(PA::ALBUM_ID, '=', $state->album->id)
 				->delete();
 
+			// The new pivot row's key, for $state->album's effective photo
+			// sort column (FR-092-03).
+			$bucket_key = resolve(PhotoBucketComputer::class)->keyForPhoto($state->album->getEffectivePhotoSorting()->column, $state->photo);
+
 			// Insert the new link
 			DB::table(PA::PHOTO_ALBUM)
 				->insert([
 					'photo_id' => $state->photo->id,
 					'album_id' => $state->album->id,
+					'bucket_key' => $bucket_key,
 				]);
 
 			// Avoid unnecessary DB request, when we access the album of a

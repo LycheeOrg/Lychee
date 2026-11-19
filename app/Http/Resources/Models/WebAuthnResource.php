@@ -8,7 +8,7 @@
 
 namespace App\Http\Resources\Models;
 
-use Laragear\WebAuthn\Models\WebAuthnCredential;
+use App\Models\WebAuthnCredential;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 

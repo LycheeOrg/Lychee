@@ -61,7 +61,7 @@ class HeadPersonAlbumResource extends Data
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($person_album);
 		$this->rights = new AlbumRightsResource($person_album);
-		$url = $this->getHeaderUrl($person_album);
+		$url = $this->getHeaderUrl($person_album)?->url;
 		$this->preFormattedData = new PreFormattedAlbumData($person_album, $url);
 
 		if ($this->rights->can_edit) {

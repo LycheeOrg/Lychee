@@ -62,7 +62,7 @@ class PurgeOrphanFaceEmbeddingsTest extends BaseApiWithDataTest
 
 	public function testCheckReturnsZeroWhenHealthCheckFails(): void
 	{
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')
 			->willThrowException(new \App\Exceptions\ExternalComponentFailedException('Service unavailable'));
 		$this->app->instance(FacialRecognitionService::class, $mock);
@@ -76,7 +76,7 @@ class PurgeOrphanFaceEmbeddingsTest extends BaseApiWithDataTest
 	{
 		Face::factory()->for_photo($this->photo1)->count(3)->create();
 
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')->willReturn([
 			'status' => 'ok',
 			'model_loaded' => true,
@@ -93,7 +93,7 @@ class PurgeOrphanFaceEmbeddingsTest extends BaseApiWithDataTest
 	{
 		$lychee_count = Face::count();
 
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('checkHealth')->willReturn([
 			'status' => 'ok',
 			'model_loaded' => true,
@@ -122,7 +122,7 @@ class PurgeOrphanFaceEmbeddingsTest extends BaseApiWithDataTest
 
 	public function testDoReturnsZeroWhenPurgeReturnsNull(): void
 	{
-		$mock = $this->createMock(FacialRecognitionService::class);
+		$mock = self::createStub(FacialRecognitionService::class);
 		$mock->method('syncEmbeddingsBatch')->willReturn(['marked' => 0]);
 		$mock->method('purgeAbsentEmbeddings')->willReturn(null);
 		$this->app->instance(FacialRecognitionService::class, $mock);

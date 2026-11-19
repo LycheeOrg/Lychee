@@ -14,6 +14,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -52,5 +53,21 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 		$random_album_id = $this->configs()->getValueAsString('random_album_id');
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($random_album_id !== '') ? $random_album_id : null);
 		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
+	}
+
+	/**
+	 * The album whose whole tree the frame draws from in sub-album mode (FR-088-16), null otherwise.
+	 */
+	public function subAlbumRoot(): ?Album
+	{
+		return ($this->album instanceof Album && $this->configs()->getValueAsBool('mod_frame_include_subalbums')) ? $this->album : null;
+	}
+
+	/**
+	 * Whether the frame draws from several albums, so the info box may name them (FR-088-06).
+	 */
+	public function offersAlbumLine(): bool
+	{
+		return $this->album === null || $this->subAlbumRoot() !== null;
 	}
 }

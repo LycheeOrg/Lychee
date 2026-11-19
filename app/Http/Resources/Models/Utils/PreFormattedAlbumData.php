@@ -41,9 +41,12 @@ class PreFormattedAlbumData extends Data
 	public ?AlbumTitleColor $title_color = null;
 	public ?AlbumTitlePosition $title_position = null;
 	public ?HeaderFocusData $header_photo_focus = null;
+	// Feature 086 (FR-086-03): the header is the map of the album's photos; `url` is then null.
+	public bool $is_map_header = false;
 
-	public function __construct(AbstractAlbum $album, ?string $url)
+	public function __construct(AbstractAlbum $album, ?string $url, bool $is_map_header = false)
 	{
+		$this->is_map_header = $is_map_header;
 		$min_max_date_format = request()->configs()->getValueAsString('date_format_hero_min_max');
 		$create_date_format = request()->configs()->getValueAsString('date_format_hero_created_at');
 		$this->url = $url;

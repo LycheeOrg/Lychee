@@ -99,7 +99,7 @@ Learn more about editions at [lycheeorg.dev/get-supporter-edition](https://lyche
 
 **Developers & Contributors**
 - [Coding Conventions](../3-reference/coding-conventions.md) - PHP, Vue3, and testing standards
-- [Contributing Guide](../../docs/Contribute.md) - Development setup and workflow
+- [Contributing Guide](../../Contribute.md) - Development setup and workflow
 - [Architecture](../4-architecture/) - System design and feature planning
 
 **Professional Users**

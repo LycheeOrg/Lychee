@@ -18,8 +18,11 @@
 
 namespace Tests\Feature_v2;
 
+use App\Actions\InstallUpdate\CheckUpdateAvailability;
+use App\DTO\UpdateAvailability;
 use App\Http\Controllers\VersionController;
 use App\Http\Resources\Diagnostics\ChangeLogInfo;
+use App\Models\Configs;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class VersionTest extends BaseApiWithDataTest
@@ -28,6 +31,42 @@ class VersionTest extends BaseApiWithDataTest
 	{
 		$response = $this->getJson('Version');
 		$this->assertOk($response);
+	}
+
+	public function testGetWithChecksDisabledReportsNoUpdate(): void
+	{
+		Configs::set('check_for_updates', '0');
+
+		$response = $this->getJson('Version');
+		$this->assertOk($response);
+		$response->assertJson([
+			'is_new_release_available' => false,
+			'is_git_update_available' => false,
+		]);
+	}
+
+	public function testGetReportsSharedUpdateAvailability(): void
+	{
+		Configs::set('hide_version_number', '1');
+		$this->mock(CheckUpdateAvailability::class, function ($mock) {
+			$mock->shouldReceive('get')->once()->andReturn(new UpdateAvailability(
+				enabled: true,
+				is_new_release_available: false,
+				is_git_update_available: true,
+				commits_behind: 3,
+				current_version: '7.10.0',
+				latest_version: '7.10.0',
+			));
+		});
+
+		$response = $this->getJson('Version');
+		$this->assertOk($response);
+		$response->assertExactJson([
+			'version' => null,
+			'is_new_release_available' => false,
+			'is_git_update_available' => true,
+		]);
+		Configs::set('hide_version_number', '0');
 	}
 
 	public function testGetChangeLogs(): void

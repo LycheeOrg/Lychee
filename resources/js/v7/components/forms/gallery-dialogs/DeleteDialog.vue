@@ -25,7 +25,7 @@ import { computed } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";

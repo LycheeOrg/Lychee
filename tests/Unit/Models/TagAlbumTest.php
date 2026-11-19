@@ -69,6 +69,8 @@ class TagAlbumTest extends AbstractTestCase
 
 		self::assertDatabaseMissing('album_user_thumbs', ['album_id' => $tag_album->id]);
 
+		// An unsorted photo is only visible to its owner.
+		$this->actingAs($user);
 		$thumb = $tag_album->thumb;
 
 		self::assertNotNull($thumb);

@@ -51,7 +51,7 @@ import CardForm from "@/v7/components/forms/card/CardForm.vue";
 import Select from "primevue/select";
 import { useMollie } from "@/composables/checkout/useMollie";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 import { usePaypal } from "@/composables/checkout/usePaypal";
 
 const userStore = useUserStore();

@@ -1,25 +1,43 @@
 <template>
-	<div :id="`upload${index}`" class="w-full flex flex-col">
-		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
-			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted">
-				<span v-if="albumTitle" class="text-xs text-muted mr-1">{{ albumTitle }} /</span>{{ file.name }}
-			</span>
-			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
-			<span :class="statusClass">{{ statusMessage }}</span>
+	<div :id="`upload${index}`" class="w-full flex items-center gap-x-3">
+		<div ref="thumbBox" class="w-12 h-8 shrink-0 rounded overflow-hidden bg-elevated flex items-center justify-center">
+			<img v-if="thumbUrl" :src="thumbUrl" alt="" class="size-full object-cover" />
+			<UIcon v-else :name="placeholderIcon" class="size-5 text-muted" />
 		</div>
-		<span class="text-center w-full hidden group-hover:block text-error cursor-pointer" @click="controller.abort()">
-			{{ $t("dialogs.button.cancel") }}
-		</span>
-		<UProgress :model-value="progressBar" :color="progressColor" />
+		<div class="min-w-0 flex-1 flex flex-col">
+			<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
+				<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted">
+					<span v-if="albumTitle" class="text-xs text-muted mr-1">{{ albumTitle }} /</span>{{ file.name }}
+				</span>
+				<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
+				<span :class="statusClass">{{ statusMessage }}</span>
+			</div>
+			<span class="text-center w-full hidden group-hover:block text-error cursor-pointer" @click="controller.abort()">
+				{{ $t("dialogs.button.cancel") }}
+			</span>
+			<UProgress :model-value="progressBar" :color="progressColor" />
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import UploadService, { UploadData } from "@/services/upload-service";
 import { AxiosError, type AxiosProgressEvent } from "axios";
 import { trans } from "laravel-vue-i18n";
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
+import {
+	createUploadThumbnail,
+	enqueueThumbnail,
+	keepUploadThumbnail,
+	keptUploadThumbnail,
+	shouldDecode,
+	uploadListGeneration,
+	uploadPlaceholderIcon,
+} from "@/v8/utils/uploadThumbnail";
+import { hasEnded } from "@/v8/utils/uploadList";
 
 type UploadingLineProps = {
+	uid: string;
 	albumId: string | null;
 	albumTitle?: string;
 	file: File;
@@ -28,11 +46,13 @@ type UploadingLineProps = {
 	index: number;
 	applyWatermark: boolean;
 	message: string | undefined;
+	scrollRoot?: HTMLElement | null;
 };
 
 const props = withDefaults(defineProps<UploadingLineProps>(), {
 	chunkSize: 1024,
 	message: undefined,
+	scrollRoot: null,
 });
 
 const emits = defineEmits<{
@@ -54,6 +74,48 @@ const meta = ref({
 } as App.Http.Resources.Editable.UploadMetaResource);
 const controller = ref(new AbortController());
 const errorMessage = ref<string | undefined>(undefined);
+
+// Miniature (Feature 077): built once the row nears the visible part of the list,
+// then kept by uid until the list is cleared, as the row unmounts when scrolled away (Feature 087).
+const thumbBox = useTemplateRef<HTMLDivElement>("thumbBox");
+const thumbUrl = ref<string | undefined>(keptUploadThumbnail(props.uid));
+const placeholderIcon = ref(uploadPlaceholderIcon(file.value.type));
+let cancelThumbnail = () => {};
+let unmounted = false;
+
+const { stop: stopObserving } = useIntersectionObserver(
+	thumbBox,
+	([entry]) => {
+		if (!entry?.isIntersecting) {
+			return;
+		}
+		stopObserving();
+		if (shouldDecode(file.value.type)) {
+			const generation = uploadListGeneration();
+			cancelThumbnail = enqueueThumbnail(() =>
+				createUploadThumbnail(file.value).then((url) => onThumbnailReady(url, generation), onThumbnailFailed),
+			);
+		}
+	},
+	// The list scrolls inside its own box: observe against it so the margin applies there.
+	{ root: () => props.scrollRoot, rootMargin: "200px", immediate: thumbUrl.value === undefined },
+);
+
+function onThumbnailReady(url: string, generation: number) {
+	const shown = keepUploadThumbnail(props.uid, url, generation);
+	if (shown !== undefined && !unmounted) {
+		thumbUrl.value = shown;
+	}
+}
+
+function onThumbnailFailed() {
+	placeholderIcon.value = "lucide:image";
+}
+
+onUnmounted(() => {
+	unmounted = true;
+	cancelThumbnail();
+});
 
 // prettier-ignore
 const statusMessage = computed(() => {
@@ -86,7 +148,8 @@ const statusClass = computed(() => {
 	}
 });
 
-const progressBar = computed(() => (status.value === "done" ? 100 : progress.value));
+// A row mounted after its upload ended has no local progress (Feature 087).
+const progressBar = computed(() => (hasEnded(status.value) ? 100 : progress.value));
 // prettier-ignore
 const progressColor = computed<"success" | "warning" | "error" | "primary">(() => {
 	switch (status.value) {

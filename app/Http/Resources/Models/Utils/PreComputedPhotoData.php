@@ -19,6 +19,7 @@ class PreComputedPhotoData extends Data
 	public bool $is_video;
 	public bool $is_raw;
 	public bool $is_livephoto;
+	public bool $is_360;
 	public bool $is_camera_date;
 	public bool $has_exif = false;
 	public bool $has_location = false;
@@ -32,6 +33,7 @@ class PreComputedPhotoData extends Data
 		$this->is_video = $photo->isVideo();
 		$this->is_raw = $photo->isRaw();
 		$this->is_livephoto = $photo->live_photo_url !== null;
+		$this->is_360 = $photo->is_360 === true;
 		$this->is_camera_date = $photo->taken_at !== null;
 		// if taken_at is null, it is for sure not modified.
 		// if taken_at is not null, then it is modified if initial_taken_at is null or if taken_at is different from initial_taken_at.

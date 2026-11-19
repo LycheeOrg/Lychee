@@ -52,12 +52,13 @@ return new class() extends Migration {
 		DB::table('configs')->where('key', 'version')->update(['value' => '%s']);
 		try {
 			Artisan::call('cache:clear');
+			Artisan::call('view:clear');
 		} catch (\Throwable \$e) {
-			\$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache for version %s');
+			\$this->msg_section->writeln('<error>Warning:</error> Failed to clear cache/view for version %s');
 
 			return;
 		}
-		\$this->msg_section->writeln('<info>Info:</info> Cleared cache for version %s');
+		\$this->msg_section->writeln('<info>Info:</info> Cleared cache and views for version %s');
 	}
 
 	/**

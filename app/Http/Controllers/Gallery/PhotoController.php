@@ -18,9 +18,11 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Factories\IdFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
@@ -45,6 +47,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\EmbedMetadataJob;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
+use App\Jobs\RecomputePhotoBucketsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
@@ -54,6 +57,9 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\BucketKeys;
+use App\Services\MonthDayKey;
+use App\Services\Telemetry\TraceService;
 use App\Services\TitleSplitter;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -68,6 +74,11 @@ use LycheeVerify\Contract\VerifyInterface;
  */
 class PhotoController extends Controller
 {
+	public function __construct(
+		private readonly TraceService $trace,
+	) {
+	}
+
 	/**
 	 * Upload a picture.
 	 *
@@ -75,43 +86,52 @@ class PhotoController extends Controller
 	 */
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{
-		$meta = $request->meta();
-		$file = new UploadedFile($request->uploaded_file_chunk());
+		// Reset max memory usage before measuring
+		memory_reset_peak_usage();
 
-		// Set up meta data if not already present
-		$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
-		$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
+		return $this->trace->traceMethod('photo.upload', function () use ($request) {
+			$this->trace->addEventWithMemToCurrentSpan('Upload photo');
 
-		$is_last_chunk = $meta->chunk_number >= $meta->total_chunks;
+			$meta = $request->meta();
+			$file = new UploadedFile($request->uploaded_file_chunk());
 
-		$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
-		$final->append($file->read());
-		$request->completeChunkUpload($meta->uuid_name, $meta->chunk_number, $is_last_chunk);
+			// Set up meta data if not already present
+			$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
+			$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
 
-		if (!$is_last_chunk) {
-			// Not the last chunk
-			return $meta;
-		}
+			$is_last_chunk = $meta->chunk_number >= $meta->total_chunks;
 
-		// Last chunk — generate expected_id for non-zip uploads and store title/description.
-		$meta->stage = FileStatus::PROCESSING;
-		$meta->title = $request->title();
-		$meta->description = $request->description();
+			$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
+			$final->append($file->read());
+			$request->completeChunkUpload($meta->uuid_name, $meta->chunk_number, $is_last_chunk);
 
-		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		if (!$is_zip) {
-			$id_factory = resolve(IdFactory::class);
-			$meta->expected_id = $id_factory->createRandomID();
-		}
+			if (!$is_last_chunk) {
+				// Not the last chunk
+				return $meta;
+			}
 
-		return $this->process(
-			$request->verify(),
-			$request->configs(),
-			$final,
-			$request->album(),
-			$request->file_last_modified_time(),
-			$request->apply_watermark(),
-			$meta);
+			// Last chunk — generate expected_id for non-zip uploads and store title/description.
+			$meta->stage = FileStatus::PROCESSING;
+			$meta->title = $request->title();
+			$meta->description = $request->description();
+
+			$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+			if (!$is_zip) {
+				$id_factory = resolve(IdFactory::class);
+				$meta->expected_id = $id_factory->createRandomID();
+			}
+
+			$this->trace->addMemoryInfoToCurrentSpan();
+
+			return $this->process(
+				$request->verify(),
+				$request->configs(),
+				$final,
+				$request->album(),
+				$request->file_last_modified_time(),
+				$request->apply_watermark(),
+				$meta);
+		});
 	}
 
 	private function process(
@@ -123,34 +143,49 @@ class PhotoController extends Controller
 		?bool $apply_watermark,
 		UploadMetaResource $meta,
 	): UploadMetaResource {
-		$processable_file = new ProcessableJobFile(
-			$final->getOriginalExtension(),
-			$meta->file_name
-		);
-		$processable_file->write($final->read());
+		return $this->trace->traceMethod('photo.process', function () use ($verify,
+			$config_manager,
+			$final,
+			$album,
+			$file_last_modified_time,
+			$apply_watermark,
+			$meta) {
+			$processable_file = new ProcessableJobFile(
+				$final->getOriginalExtension(),
+				$meta->file_name
+			);
+			$processable_file->write($final->read());
 
-		$final->close();
-		$final->delete();
-		$processable_file->close();
-		// End of work-around
+			$final->close();
+			$final->delete();
+			$processable_file->close();
+			// End of work-around
 
-		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		$is_se = $verify->is_supporter();
+			$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+			$is_se = $verify->is_supporter();
 
-		if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
-			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
-			// We return DONE no matter what:
-			// - if we are in sync mode, this will be executed after the job
-			// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.
-			$meta->stage = FileStatus::DONE;
+			if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
+				ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
+				// We return DONE no matter what:
+				// - if we are in sync mode, this will be executed after the job
+				// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.
+				$meta->stage = FileStatus::DONE;
+
+				return $meta;
+			}
+
+			$this->trace->traceMethod('photo.dispatch', function () use ($processable_file,
+				$album,
+				$file_last_modified_time,
+				$apply_watermark, $meta): void {
+				ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
+				$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
+			});
+
+			$this->trace->addEventWithMemToCurrentSpan('End of image processing');
 
 			return $meta;
-		}
-
-		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
-		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
-
-		return $meta;
+		});
 	}
 
 	/**
@@ -170,23 +205,57 @@ class PhotoController extends Controller
 	public function update(EditPhotoRequest $request): PhotoResource
 	{
 		$photo = $request->photo();
+
+		// Captured before any mutation below: by the time PhotoSaved is
+		// dispatched (after save()), the DB row already holds the new
+		// values, so this is the only place the PREVIOUS Timeline sort date
+		// is still available - see PhotoSaved::$previous_dates.
+		$previous_dates = [
+			'created_at' => $photo->getRawOriginal('created_at'),
+			'taken_key' => $photo->getRawOriginal('taken_key'),
+		];
+
 		$photo->title = $request->title();
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
+		$photo->title_date_key = BucketKeys::titleDateKey($photo->title);
 		$photo->description = $request->description();
 		$photo->created_at = $request->uploadDate();
 
 		$existing_tags = Tag::from($request->tags());
+		$old_tag_ids = $photo->tags()->pluck('tags.id')->all();
 		$photo->tags()->sync($existing_tags->pluck('id'));
 		$photo->load('tags');
-		PhotoTagsChanged::dispatch([$photo->id]);
+		PhotoTagsChanged::dispatch([$photo->id], array_values(array_unique([...$old_tag_ids, ...$existing_tags->pluck('id')->all()])));
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
+		$photo->taken_key = BucketKeys::takenKey($photo->taken_at);
+		// FR-106-03: follows the taken date, else the upload date set above.
+		$photo->month_day_key = MonthDayKey::of($photo->taken_at, $photo->created_at);
+
+		// Feature 082: the manual 360° flag, left untouched when not sent (v7).
+		$photo->is_360 = $request->is360() ?? $photo->is_360;
 
 		$photo->save();
+
+		// title/created_at/taken_at are bucket-relevant columns - created_at
+		// is writable here via uploadDate() above - recompute every album
+		// this photo is linked into whenever any of them actually changed
+		// (FR-092-10). Explicit call site, not an Eloquent hook.
+		$bucket_relevant_changed = $photo->wasChanged(['title', 'title_base', 'title_date_key', 'created_at', 'taken_at', 'taken_key']);
+		RecomputePhotoBucketsJob::dispatchIf($bucket_relevant_changed, $photo->id);
+
+		// RecomputePhotoBucketsJob (above) only reaches real albums via their
+		// `photo_album` pivot rows - Timeline is a smart album with no such
+		// row, so its own cached buckets/ratios/details need this separate,
+		// explicit signal whenever the sort date may have moved this photo
+		// into a different Timeline bucket.
+		// is_360 is not bucket-relevant, but it is part of the cached
+		// listings (`is_360s`), which PhotoSaved also evicts.
+		PhotoSaved::dispatchIf($bucket_relevant_changed || $photo->wasChanged('is_360'), [$photo->id], [$photo->id => $previous_dates]);
 
 		EmbedMetadataJob::dispatchIf($request->configs()->getValueAsBool('embed_metadata_in_files_enabled'), $photo);
 
@@ -205,6 +274,10 @@ class PhotoController extends Controller
 		foreach ($request->photos() as $photo) {
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
+
+			// is_highlighted is a bucket-relevant column - recompute every
+			// album this photo is linked into whenever it actually changed.
+			RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged('is_highlighted'), $photo->id);
 		}
 		$photo_ids = $request->photos()->map(fn (Photo $photo) => $photo->id)->all();
 
@@ -274,6 +347,10 @@ class PhotoController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
+		if ($request->photo()->is_360 === true) {
+			throw new MediaFileUnsupportedException('360° photos cannot be rotated');
+		}
+
 		$rotate_strategy = new Rotate($request->photo(), $request->direction());
 		$photo = $rotate_strategy->do();
 
@@ -303,7 +380,12 @@ class PhotoController extends Controller
 		$title_split = TitleSplitter::split($photo->title);
 		$photo->title_base = $title_split->base;
 		$photo->title_index = $title_split->index;
+		$photo->title_date_key = BucketKeys::titleDateKey($photo->title);
 		$photo->save();
+
+		// title/title_base are bucket-relevant columns - recompute every
+		// album this photo is linked into whenever either actually changed.
+		RecomputePhotoBucketsJob::dispatchIf($photo->wasChanged(['title', 'title_base']), $photo->id);
 	}
 
 	/**
@@ -317,6 +399,12 @@ class PhotoController extends Controller
 
 		// Fetch existing tags
 		$existing_tags = Tag::from($tags);
+
+		// Captured before the mutation below - PhotoTagsChanged::$tag_ids
+		// must carry the union of old and new tag IDs (a tag removed by
+		// `shall_override` is otherwise unrecoverable once the delete below
+		// has run), mirroring PhotoPersonsChanged::$person_ids exactly.
+		$old_tag_ids = DB::table('photos_tags')->whereIn('photo_id', $photo_ids)->distinct()->pluck('tag_id')->all();
 
 		DB::transaction(function () use ($request, $existing_tags, $photo_ids): void {
 			if ($request->shall_override) {
@@ -332,7 +420,7 @@ class PhotoController extends Controller
 			});
 			DB::commit();
 		});
-		PhotoTagsChanged::dispatch($photo_ids->all());
+		PhotoTagsChanged::dispatch($photo_ids->all(), array_values(array_unique([...$old_tag_ids, ...$existing_tags->pluck('id')->all()])));
 
 		if ($request->configs()->getValueAsBool('embed_metadata_in_files_enabled')) {
 			$photos->each(fn (Photo $photo) => EmbedMetadataJob::dispatch($photo));

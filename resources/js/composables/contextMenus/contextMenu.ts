@@ -1,8 +1,10 @@
 import { useAlbumStore } from "@/stores/AlbumState";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { computed, Ref, ref } from "vue";
+import { useRouter } from "vue-router";
+import { albumHref, openInNewTab } from "@/composables/album/openAlbumInNewTab";
 
 export type Selectors = {
 	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
@@ -58,6 +60,11 @@ type MenuItem = {
 	callback?: () => void;
 };
 
+/** Whether at least one entry survives the `access` filter: gates the divider that precedes a group. */
+function hasAccessibleItem(items: MenuItem[]): boolean {
+	return items.some((item) => item.access !== false);
+}
+
 // Helpers functions to reduce.
 function canMove(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_move;
@@ -72,6 +79,8 @@ function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Mode
 }
 
 export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallbacks, albumCallbacks: AlbumCallbacks) {
+	const { rights } = useGlobalRights();
+	const router = useRouter();
 	const menu = ref();
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
@@ -99,7 +108,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStore = useLycheeStateStore();
 
@@ -115,27 +123,32 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight",
 				icon: "pi pi-flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight",
 				icon: "pi pi-flag-fill",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
-		if (selectors.album !== undefined && (selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)) {
+		if (
+			selectors.album !== undefined &&
+			selectors.album.value !== undefined &&
+			(selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)
+		) {
+			const cover_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 			menuItems.push({
-				label: "gallery.menus.set_cover",
+				label: cover_album.cover_id === selectedPhoto.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: photoCallbacks.setAsCover,
-				access: selectors.album.value?.rights.can_edit ?? false,
+				access: cover_album.rights.can_edit ?? false,
 			});
 		}
 
-		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
+		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined && selectors.album.value !== undefined) {
 			const parent_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource;
 			if (parent_album.header_id === selectedPhoto.id) {
 				menuItems.push({
@@ -155,69 +168,65 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		}
 
 		menuItems.push(
-			...[
-				{
-					label: "gallery.menus.tag",
-					icon: "pi pi-tag",
-					callback: photoCallbacks.toggleTag,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.license",
-					icon: "pi pi-id-card",
-					callback: photoCallbacks.toggleLicense,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.apply_renamer",
-					icon: "pi pi-pencil",
-					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
-				},
-				{
-					label: "gallery.menus.scan_faces",
-					icon: "pi pi-face-smile",
-					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
-				},
-				{
-					is_divider: true,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.rename",
-					icon: "pi pi-pen-to-square",
-					callback: photoCallbacks.toggleRename,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.copy_to",
-					icon: "pi pi-copy",
-					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.move",
-					icon: "pi pi-folder",
-					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.delete",
-					icon: "pi pi-trash",
-					callback: photoCallbacks.toggleDelete,
-					access:
-						albumStore.tagAlbum === undefined &&
-						albumStore.personAlbum === undefined &&
-						(selectors.album?.value?.rights.can_delete ?? false),
-				},
-				{
-					label: "gallery.menus.download",
-					icon: "pi pi-cloud-download",
-					callback: photoCallbacks.toggleDownload,
-					access: albumStore.rights?.can_download ?? false,
-				},
-			],
+			{
+				label: "gallery.menus.tag",
+				icon: "pi pi-tag",
+				callback: photoCallbacks.toggleTag,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.license",
+				icon: "pi pi-id-card",
+				callback: photoCallbacks.toggleLicense,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.apply_renamer",
+				icon: "pi pi-pencil",
+				callback: photoCallbacks.toggleApplyRenamer,
+				access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
+			},
+			{
+				label: "gallery.menus.scan_faces",
+				icon: "pi pi-face-smile",
+				callback: photoCallbacks.toggleScanFaces,
+				access: (albumStore.rights?.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
+			},
+			{
+				is_divider: true,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.rename",
+				icon: "pi pi-pen-to-square",
+				callback: photoCallbacks.toggleRename,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.copy_to",
+				icon: "pi pi-copy",
+				callback: photoCallbacks.toggleCopyTo,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.move",
+				icon: "pi pi-folder",
+				callback: photoCallbacks.toggleMove,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.delete",
+				icon: "pi pi-trash",
+				callback: photoCallbacks.toggleDelete,
+				access:
+					albumStore.tagAlbum === undefined && albumStore.personAlbum === undefined && (selectors.album?.value?.rights.can_delete ?? false),
+			},
+			{
+				label: "gallery.menus.download",
+				icon: "pi pi-cloud-download",
+				callback: photoCallbacks.toggleDownload,
+				access: albumStore.rights?.can_download ?? false,
+			},
 		);
 
 		return menuItems;
@@ -231,7 +240,6 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const albumStore = useAlbumStore();
-		const leftMenuStore = useLeftMenuStateStore();
 		const userStore = useUserStore();
 		const lycheeStore = useLycheeStateStore();
 
@@ -248,72 +256,70 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight_all",
 				icon: "pi pi-flag",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight_all",
 				icon: "pi pi-flag-fill",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
+				access: rights.value?.root_album?.can_highlight ?? false,
 			});
 		}
 
 		menuItems.push(
-			...[
-				{
-					label: "gallery.menus.tag_all",
-					icon: "pi pi-tag",
-					callback: photoCallbacks.toggleTag,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.license_all",
-					icon: "pi pi-id-card",
-					callback: photoCallbacks.toggleLicense,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.apply_renamer_all",
-					icon: "pi pi-pencil",
-					callback: photoCallbacks.toggleApplyRenamer,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
-				},
-				{
-					label: "gallery.menus.scan_faces_all",
-					icon: "pi pi-face-smile",
-					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
-				},
-				{
-					is_divider: true,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.copy_all_to",
-					icon: "pi pi-copy",
-					callback: photoCallbacks.toggleCopyTo,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.move_all",
-					icon: "pi pi-folder",
-					callback: photoCallbacks.toggleMove,
-					access: albumStore.rights?.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.delete_all",
-					icon: "pi pi-trash",
-					callback: photoCallbacks.toggleDelete,
-					access: albumStore.tagAlbum === undefined && albumStore.personAlbum === undefined && (albumStore.rights?.can_edit ?? false),
-				},
-				{
-					label: "gallery.menus.download_all",
-					icon: "pi pi-cloud-download",
-					callback: photoCallbacks.toggleDownload,
-					access: albumStore.rights?.can_download ?? false,
-				},
-			],
+			{
+				label: "gallery.menus.tag_all",
+				icon: "pi pi-tag",
+				callback: photoCallbacks.toggleTag,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.license_all",
+				icon: "pi pi-id-card",
+				callback: photoCallbacks.toggleLicense,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.apply_renamer_all",
+				icon: "pi pi-pencil",
+				callback: photoCallbacks.toggleApplyRenamer,
+				access: (albumStore.rights?.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
+			},
+			{
+				label: "gallery.menus.scan_faces_all",
+				icon: "pi pi-face-smile",
+				callback: photoCallbacks.toggleScanFaces,
+				access: (albumStore.rights?.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
+			},
+			{
+				is_divider: true,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.copy_all_to",
+				icon: "pi pi-copy",
+				callback: photoCallbacks.toggleCopyTo,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.move_all",
+				icon: "pi pi-folder",
+				callback: photoCallbacks.toggleMove,
+				access: albumStore.rights?.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.delete_all",
+				icon: "pi pi-trash",
+				callback: photoCallbacks.toggleDelete,
+				access: albumStore.tagAlbum === undefined && albumStore.personAlbum === undefined && (albumStore.rights?.can_edit ?? false),
+			},
+			{
+				label: "gallery.menus.download_all",
+				icon: "pi pi-cloud-download",
+				callback: photoCallbacks.toggleDownload,
+				access: albumStore.rights?.can_download ?? false,
+			},
 		);
 
 		return menuItems;
@@ -324,74 +330,85 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			return [];
 		}
 
-		const menuItems = [];
+		const actions: MenuItem[] = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
-		const leftMenuStore = useLeftMenuStateStore();
 		const lycheeStore = useLycheeStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
-			menuItems.push({
-				label: "gallery.menus.set_cover",
+			const parent_album = selectors.album?.value as App.Http.Resources.Models.HeadAlbumResource | undefined;
+			actions.push({
+				label: parent_album?.cover_id === selectedAlbum.thumb?.id ? "gallery.menus.remove_cover" : "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: albumCallbacks.setAsCover,
-				access: selectors.album?.value?.rights.can_edit ?? false,
+				access: parent_album?.rights.can_edit ?? false,
 			});
 		}
 
-		menuItems.push(
-			...[
-				{
-					label: "gallery.menus.rename",
-					icon: "pi pi-pen-to-square",
-					callback: albumCallbacks.toggleRename,
-					access: selectedAlbum.rights.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.apply_renamer",
-					icon: "pi pi-pencil",
-					callback: albumCallbacks.toggleApplyRenamer,
-					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
-				},
-				{
-					label: "gallery.menus.scan_faces",
-					icon: "pi pi-face-smile",
-					callback: albumCallbacks.toggleScanFaces,
-					access: (selectedAlbum.rights.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
-				},
-				{
-					label: "gallery.menus.merge",
-					icon: "pi pi-arrow-down-left-and-arrow-up-right-to-center",
-					callback: albumCallbacks.toggleMerge,
-					access: selectedAlbum.rights.can_move ?? false,
-				},
-				{
-					label: "gallery.menus.move",
-					icon: "pi pi-folder",
-					callback: albumCallbacks.toggleMove,
-					access: selectedAlbum.rights.can_move ?? false,
-				},
-				{
-					label: selectedAlbum.is_pinned ? "gallery.menus.unpin" : "gallery.menus.pin",
-					icon: "pi pi-thumbtack",
-					callback: albumCallbacks.togglePin,
-					access: selectedAlbum.rights.can_edit ?? false,
-				},
-				{
-					label: "gallery.menus.delete",
-					icon: "pi pi-trash",
-					callback: albumCallbacks.toggleDelete,
-					access: selectedAlbum.rights.can_delete ?? false,
-				},
-				{
-					label: "gallery.menus.download",
-					icon: "pi pi-cloud-download",
-					callback: albumCallbacks.toggleDownload,
-					access: selectedAlbum.rights.can_download ?? false,
-				},
-			],
+		actions.push(
+			{
+				label: "gallery.menus.rename",
+				icon: "pi pi-pen-to-square",
+				callback: albumCallbacks.toggleRename,
+				access: selectedAlbum.rights.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.apply_renamer",
+				icon: "pi pi-pencil",
+				callback: albumCallbacks.toggleApplyRenamer,
+				access: (selectedAlbum.rights.can_edit ?? false) && (rights.value?.modules.is_mod_renamer_enabled ?? false),
+			},
+			{
+				label: "gallery.menus.scan_faces",
+				icon: "pi pi-face-smile",
+				callback: albumCallbacks.toggleScanFaces,
+				access: (selectedAlbum.rights.can_edit ?? false) && (lycheeStore.is_face_recognition_enabled ?? false),
+			},
+			{
+				label: "gallery.menus.merge",
+				icon: "pi pi-arrow-down-left-and-arrow-up-right-to-center",
+				callback: albumCallbacks.toggleMerge,
+				access: selectedAlbum.rights.can_move ?? false,
+			},
+			{
+				label: "gallery.menus.move",
+				icon: "pi pi-folder",
+				callback: albumCallbacks.toggleMove,
+				access: selectedAlbum.rights.can_move ?? false,
+			},
+			{
+				label: selectedAlbum.is_pinned ? "gallery.menus.unpin" : "gallery.menus.pin",
+				icon: "pi pi-thumbtack",
+				callback: albumCallbacks.togglePin,
+				access: selectedAlbum.rights.can_edit ?? false,
+			},
+			{
+				label: "gallery.menus.delete",
+				icon: "pi pi-trash",
+				callback: albumCallbacks.toggleDelete,
+				access: selectedAlbum.rights.can_delete ?? false,
+			},
+			{
+				label: "gallery.menus.download",
+				icon: "pi pi-cloud-download",
+				callback: albumCallbacks.toggleDownload,
+				access: selectedAlbum.rights.can_download ?? false,
+			},
 		);
 
-		return menuItems;
+		function openSelectedAlbumInNewTab(): void {
+			openInNewTab(albumHref(router, selectedAlbum.id));
+		}
+
+		return [
+			{
+				label: "gallery.menus.open_in_new_tab",
+				icon: "pi pi-external-link",
+				callback: openSelectedAlbumInNewTab,
+				access: true,
+			},
+			{ is_divider: true, access: hasAccessibleItem(actions) },
+			...actions,
+		];
 	}
 
 	function albumsMenu() {

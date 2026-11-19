@@ -6,8 +6,8 @@ return [
     | Toasts
     |--------------------------------------------------------------------------
     */
-    'error' => 'Error',
-    'success' => 'Success',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'error' => 'Lỗi',
+    'success' => 'Thành công',
+    'album_updated' => 'Đã cập nhật album',
+    'update_failed' => 'Cập nhật album thất bại',
 ];

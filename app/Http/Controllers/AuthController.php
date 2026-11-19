@@ -60,17 +60,58 @@ class AuthController extends Controller
 		}
 
 		// Fallback to local authentication
-		if (Auth::attempt([
-			'username' => $username,
-			'password' => $password,
-		], $remember)) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip . ' [remember=' . ($remember ? 'true' : 'false') . ']');
+		$matched_attribute = $this->attemptLocalLogin($request, $username, $password, $remember);
+		if ($matched_attribute !== null) {
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip . ' [identifier=' . $matched_attribute . ', remember=' . ($remember ? 'true' : 'false') . ']');
 
 			return;
 		}
 
 		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has tried to log in from ' . $ip);
 		throw new UnauthenticatedException('Unknown user or invalid password');
+	}
+
+	/**
+	 * Attempt a local login with the submitted identifier.
+	 *
+	 * Which attribute the identifier addresses is decided *before* any password
+	 * is checked: the username is authoritative, so an account carrying it is
+	 * the only candidate whatever its password, and the identifier is only read
+	 * as an email address when no account carries it as a username. Deciding on
+	 * the password instead would let an identifier resolve to a different
+	 * account depending on which password was typed, and would disagree with
+	 * `WebAuthnLoginController::resolveIdentifier()`, which never sees one.
+	 *
+	 * @param LoginRequest $request    the login request
+	 * @param string       $identifier submitted username or email address
+	 * @param string       $password   submitted password
+	 * @param bool         $remember   whether the user wants to be remembered
+	 *
+	 * @return string|null the user attribute which matched, or `null` when the password did not
+	 */
+	private function attemptLocalLogin(LoginRequest $request, string $identifier, #[\SensitiveParameter] string $password, bool $remember): ?string
+	{
+		$attribute = $this->resolveIdentifierAttribute($request, $identifier);
+
+		return Auth::attempt([$attribute => $identifier, 'password' => $password], $remember) ? $attribute : null;
+	}
+
+	/**
+	 * Decide whether the submitted identifier addresses a username or an email address.
+	 *
+	 * @param LoginRequest $request    the login request
+	 * @param string       $identifier submitted username or email address
+	 *
+	 * @return string `'username'`, or `'email'` when `email_login_enabled` is
+	 *                set and no account carries the identifier as its username
+	 */
+	private function resolveIdentifierAttribute(LoginRequest $request, string $identifier): string
+	{
+		if (!$request->configs()->getValueAsBool('email_login_enabled')) {
+			return 'username';
+		}
+
+		return User::query()->where('username', '=', $identifier)->exists() ? 'username' : 'email';
 	}
 
 	/**

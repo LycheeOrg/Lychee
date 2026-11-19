@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 <meta name="mobile-web-app-status-bar-style" content="black">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="lychee-loading-indicator" content="{{ $loading_indicator_mode }}" data-url="{{ $loading_indicator_url }}">
+<meta name="lychee-client-cache" content="{{ $client_cache_enabled ? '1' : '0' }}">
 @if(Features::inactive('white_label_enabled'))
 <meta name="generator" content="Lychee v7">
 @endif
@@ -21,8 +23,13 @@
 <meta property="og:description" content="{{ $page_description }}">
 <meta property="og:image" content="{{ $image_url }}">
 <meta property="og:url" content="{{ $page_url }}">
+<meta name="twitter:card" content="summary_large_image">
+@if($width !== 0 && $height !== 0)
+<meta property="og:image:width" content="{{ $width }}"  data-dynamic="true">
+<meta property="og:image:height" content="{{ $height }}"  data-dynamic="true">
+@endif
 
-@if(Features::active('nuxt_ui'))
+@if(Features::active('v8'))
 <link rel="icon" type="image/svg+xml" href="{{ URL::asset('img/logo4.svg') }}">
 @endif
 <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">

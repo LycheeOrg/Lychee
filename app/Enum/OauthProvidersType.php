@@ -26,8 +26,10 @@ enum OauthProvidersType: string
 	case FACEBOOK = 'facebook';
 	case GITHUB = 'github';
 	case GOOGLE = 'google';
+	case KANIDM = 'kanidm';
 	case MASTODON = 'mastodon';
 	case MICROSOFT = 'microsoft';
 	case NEXTCLOUD = 'nextcloud';
+	case POCKETID = 'pocketid';
 	case KEYCLOAK = 'keycloak';
 }

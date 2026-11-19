@@ -38,6 +38,7 @@
 					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
 					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
 					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.move')"><UIcon name="lucide:folder" /></UTooltip>
 					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
@@ -46,6 +47,7 @@
 					<UCheckbox v-model="grantsDownload" />
 					<UCheckbox v-model="grantsUpload" />
 					<UCheckbox v-model="grantsEdit" />
+					<UCheckbox v-model="grantsMove" />
 					<UCheckbox v-model="grantsDelete" />
 				</div>
 			</div>
@@ -108,6 +110,7 @@ const grantsFullPhotoAccess = ref(false);
 const grantsDownload = ref(false);
 const grantsUpload = ref(false);
 const grantsEdit = ref(false);
+const grantsMove = ref(false);
 const grantsDelete = ref(false);
 const grantsReadAccess = ref(true);
 
@@ -125,6 +128,7 @@ function reset() {
 	grantsDownload.value = false;
 	grantsUpload.value = false;
 	grantsEdit.value = false;
+	grantsMove.value = false;
 	grantsDelete.value = false;
 }
 
@@ -158,6 +162,7 @@ function create() {
 		grants_full_photo_access: grantsFullPhotoAccess.value,
 		grants_upload: grantsUpload.value,
 		grants_edit: grantsEdit.value,
+		grants_move: grantsMove.value,
 		grants_delete: grantsDelete.value,
 	};
 

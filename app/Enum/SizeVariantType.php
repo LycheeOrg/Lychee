@@ -64,4 +64,24 @@ enum SizeVariantType: int
 			self::ORIGINAL => __('gallery.original'),
 		};
 	}
+
+	/**
+	 * The next-smaller thumbnail-class type to try when this one is
+	 * unavailable (no DB row at all, or its file is missing on disk) — the
+	 * single source of truth for the Feature 056 asset endpoint's fallback
+	 * chain, shared by {@see \App\Http\Requests\Photo\GetPhotoAssetRequest}
+	 * (no DB row for the originally requested type) and
+	 * {@see \App\Http\Controllers\Gallery\PhotoAssetController} (DB row
+	 * exists but the file itself is missing). `null` means there is nothing
+	 * smaller left to try.
+	 */
+	public function fallbackType(): ?self
+	{
+		return match ($this) {
+			self::SMALL2X => self::SMALL,
+			self::SMALL => self::THUMB,
+			self::THUMB2X => self::THUMB,
+			default => null,
+		};
+	}
 }

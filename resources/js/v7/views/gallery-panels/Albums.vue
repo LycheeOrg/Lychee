@@ -22,11 +22,32 @@
 
 		<!-- Smart Albums (always visible, above tabs per spec) -->
 		<AlbumThumbPanel
-			v-if="albumsStore.smartAlbums.length > 0"
+			v-if="albumsStore.smartAlbumsPanel.length > 0"
 			header="gallery.smart_albums"
 			:album="undefined"
-			:albums="albumsStore.smartAlbums"
-			:is-alone="!albumsStore.albums.length"
+			:albums="albumsStore.smartAlbumsPanel"
+			:is-alone="isVirtualPanelAlone"
+			:is-interactive="false"
+			:selected-albums="[]"
+			:is-timeline="false"
+		/>
+		<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
+		<AlbumThumbPanel
+			v-if="albumsStore.tagAlbumsPanel.length > 0"
+			header="gallery.tag_albums"
+			:album="undefined"
+			:albums="albumsStore.tagAlbumsPanel"
+			:is-alone="isVirtualPanelAlone"
+			:is-interactive="false"
+			:selected-albums="[]"
+			:is-timeline="false"
+		/>
+		<AlbumThumbPanel
+			v-if="albumsStore.personAlbumsPanel.length > 0"
+			header="gallery.person_albums"
+			:album="undefined"
+			:albums="albumsStore.personAlbumsPanel"
+			:is-alone="isVirtualPanelAlone"
 			:is-interactive="false"
 			:selected-albums="[]"
 			:is-timeline="false"
@@ -413,6 +434,15 @@ const displaySharedAlbums = computed(() => {
 const shouldShowSharedAlbums = computed(() => {
 	return displaySharedAlbums.value.length > 0;
 });
+
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-098-07).
+const isVirtualPanelAlone = computed(
+	() =>
+		albumsStore.virtualPanelCount === 1 &&
+		albumsStore.albums.length === 0 &&
+		albumsStore.pinnedAlbums.length === 0 &&
+		!shouldShowSharedAlbums.value,
+);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {

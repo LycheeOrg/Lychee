@@ -12,8 +12,10 @@ use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
+use App\Exceptions\PhotoSkippedException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\NativeLocalFile;
+use App\Jobs\Traits\HandlesSkippedPhotoTrait;
 use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Album;
 use App\Models\JobHistory;
@@ -33,6 +35,7 @@ use Illuminate\Support\Str;
 class ImportImageJob implements ShouldQueue
 {
 	use HasFailedTrait;
+	use HandlesSkippedPhotoTrait;
 	use Dispatchable;
 	use InteractsWithQueue;
 	use Queueable;
@@ -49,7 +52,7 @@ class ImportImageJob implements ShouldQueue
 		NativeLocalFile $file,
 		public int $intended_owner_id,
 		public ImportMode $import_mode,
-		public ?Album $album,
+		?Album $album,
 	) {
 		$this->file_path = $file->getPath();
 		$this->album_id = $album?->id;
@@ -67,8 +70,12 @@ class ImportImageJob implements ShouldQueue
 	 *
 	 * Here we handle the execution of the image processing.
 	 * This will create the model, reformat the image etc.
+	 *
+	 * @return Photo|null null when the photo is skipped as a duplicate on an asynchronous queue
+	 *
+	 * @throws PhotoSkippedException on the sync queue, when the photo is skipped as a duplicate
 	 */
-	public function handle(AlbumFactory $album_factory): Photo
+	public function handle(AlbumFactory $album_factory): ?Photo
 	{
 		Log::channel('jobs')->info($this->history->job);
 		$this->history->status = JobStatus::STARTED;
@@ -83,8 +90,14 @@ class ImportImageJob implements ShouldQueue
 			upload_trust_level: UserUploadTrustLevel::TRUSTED,
 		);
 
-		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id) : null;
-		$photo = $create->add($copied_file, $album);
+		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id, false) : null;
+		try {
+			$photo = $create->add($copied_file, $album);
+		} catch (PhotoSkippedException $e) {
+			$this->skipped($e, basename($this->file_path));
+
+			return null;
+		}
 
 		// Once the job has finished, set history status to 1.
 		$this->history->status = JobStatus::SUCCESS;

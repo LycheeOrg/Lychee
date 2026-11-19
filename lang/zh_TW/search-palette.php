@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => '搜尋相簿、相片或跳至頁面…',
+    'navigation' => '前往',
+    'actions' => '操作',
+    'albums' => '相簿',
+    'results' => '搜尋結果',
+    'empty' => '找不到結果。',
+    'dark_mode' => '切換至深色模式',
+    'light_mode' => '切換至淺色模式',
+    'language' => '語言',
 ];

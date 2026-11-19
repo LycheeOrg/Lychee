@@ -36,19 +36,17 @@ class PositionDataResource extends Data
 	public ?Collection $photos;
 
 	/**
-	 * @param string|null                       $album_id         the album ID; `null` for root album
-	 * @param string|null                       $title            the album title
-	 * @param Collection<int,\App\Models\Photo> $photos           the collection of photos with position data to be shown on map
-	 * @param string|null                       $track_url        the URL of the album's primary track (back-compat, FR-055-09)
-	 * @param bool                              $should_downgrade whether size variants should be downgraded
-	 * @param Collection<int,Track>             $tracks           all of the album's tracks, empty when there is no album
+	 * @param string|null                       $album_id  the album ID; `null` for root album
+	 * @param string|null                       $title     the album title
+	 * @param Collection<int,\App\Models\Photo> $photos    the collection of photos with position data to be shown on map
+	 * @param string|null                       $track_url the URL of the album's primary track (back-compat, FR-055-09)
+	 * @param Collection<int,Track>             $tracks    all of the album's tracks, empty when there is no album
 	 */
 	public function __construct(
 		?string $album_id,
 		?string $title,
 		Collection $photos,
 		?string $track_url,
-		bool $should_downgrade,
 		Collection $tracks,
 	) {
 		$this->id = $album_id;
@@ -58,7 +56,7 @@ class PositionDataResource extends Data
 		$this->photos = $this->toPhotoResources(
 			photos: $photos,
 			album_id: $album_id,
-			should_downgrade: $should_downgrade,
+			should_downgrade: $this->resolveDowngradeMap($photos),
 		);
 	}
 }

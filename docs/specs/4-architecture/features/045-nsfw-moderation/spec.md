@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/045-nsfw-moderation/tasks.md` |
 | Roadmap entry | #045 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below, and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications.
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below, and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications.
 
 ## Overview
 
@@ -532,6 +532,9 @@ config_keys:
 ```
 
 ## Appendix
+
+### Later features
+- [Feature 089](../089-moderation-history-nsfw-review/spec.md) records the holds and approvals made by the NSFW callback in the moderation history, adds a v8 findings page (`GET`/`DELETE NsfwDetection/findings`, one row per photo; dismissal deletes `nsfw_detections` rows, ADR-089-02) and fixes the no-album fallback (`ai_vision_nsfw_sensitive_no_album_action = moderate`), which the clean-result branch of `applyActions()` used to undo (FR-089-15).
 
 ### Trust-Tier × Finding-Tier Action Matrix (detailed)
 

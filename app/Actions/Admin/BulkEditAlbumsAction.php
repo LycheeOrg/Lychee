@@ -9,6 +9,7 @@
 namespace App\Actions\Admin;
 
 use App\Actions\Album\SetProtectionPolicy;
+use App\Actions\Album\SyncRecursiveNsfw;
 use App\DTO\BulkAlbumPatchData;
 use App\Events\AlbumSaved;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
@@ -72,11 +73,25 @@ class BulkEditAlbumsAction
 		if ($data->has('is_nsfw')) {
 			$base_data['is_nsfw'] = $data->is_nsfw;
 		}
+		if ($data->has('published_at')) {
+			// A raw mass update() bypasses Eloquent's custom-cast set() logic
+			// entirely (it only ever writes plain scalar values) - so
+			// DateTimeWithTimezoneCast's split into (published_at,
+			// published_at_orig_tz) must be reproduced manually here, the
+			// same way BaseAlbumImpl::fromDateTime() (inherited from
+			// UTCBasedTimes) would do it for a normal per-model save.
+			$published_at = $data->published_at;
+			$base_data['published_at'] = $published_at !== null ? (new BaseAlbumImpl())->fromDateTime($published_at) : null;
+			$base_data['published_at_orig_tz'] = $published_at?->getTimezone()->getName();
+		}
 
 		if ($base_data !== []) {
 			BaseAlbumImpl::query()
 				->whereIn('id', $album_ids)
 				->update($base_data);
+		}
+		if ($data->has('is_nsfw')) {
+			(new SyncRecursiveNsfw())->do();
 		}
 
 		// ── Group 2: albums columns ───────────────────────────────────────────

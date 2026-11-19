@@ -49,6 +49,17 @@ Each variant type has configurable dimensions and quality settings:
 ],
 ```
 
+### Output Format and Quality (Feature 073)
+
+Two settings in **Settings → Image Processing** (`size_variant_format` is shown in expert mode only) control how generated variants (`thumb`, `thumb2x`, `small`, `small2x`, `medium`, `medium2x`) are encoded:
+
+| Config | Values | Effect |
+|--------|--------|--------|
+| `size_variant_format` | `original` (default), `jpeg`, `webp`, `jxl` | `original`: thumbs are JPEG, and small/medium keep the uploaded file's format (videos and other non-photo media use JPEG). `jpeg`/`webp`/`jxl`: every generated variant uses that format. Originals, RAW files and placeholders are never affected. |
+| `compression_quality` | `0`–`100` | `1`–`100`: lossy quality. `0`: lossless WebP or JPEG XL, or maximum quality (`100`) for formats without a lossless mode. On GD, lossless WebP needs libgd ≥ 2.3.3. Otherwise saving fails with a clear error and diagnostics show a warning. |
+
+The format is resolved from the target file extension (`BaseSizeVariantNamingStrategy::generateExtension()` → `generatedExtension()`). Quality is resolved by `BaseImageHandler::resolveQuality()`/`isLossless()`. Changing either setting only affects newly generated variants: existing files keep their paths. To re-encode them, delete the variants and regenerate them with `lychee:generate_thumbs` (photos) or `lychee:video_data` (videos).
+
 ## Processing Pipeline
 
 ### Upload Flow
@@ -89,7 +100,7 @@ The photo creation process uses a pipeline with multiple stages:
 
 For detailed information about the photo processing pipeline, see [app/Actions/Photo/README.md](../../../app/Actions/Photo/README.md).
 
-## RAW Upload Pipeline (Feature 020)
+## RAW Upload Pipeline
 
 Camera RAW files (NEF, CR2, CR3, ARW, DNG, ORF, RW2, RAF, PEF, SRW, NRW, PSD, HEIC, HEIF) are handled by a **dual-variant** pipeline that preserves the unmodified source file alongside a displayable JPEG original.
 
@@ -137,7 +148,7 @@ Extracted metadata includes:
 - **GPS Coordinates**: Latitude, longitude, altitude
 - **Image Properties**: Width, height, orientation
 
-### Metadata Write-Back (Feature 059)
+### Metadata Write-Back
 
 By default, Lychee only ever *reads* EXIF/IPTC/XMP metadata from uploaded files — editing a photo's title, description, or tags, or rating a photo, only updates the database. The opt-in `embed_metadata_in_files_enabled` config (category **Image Processing**, default off) changes this: when enabled, editing title/description/tags (any user with edit rights) or rating a photo as its **owner** additionally embeds the new value into the photo's **Original** file and, when present, its preserved **RAW** camera file (see "RAW Upload Pipeline" above), via a queued `App\Jobs\EmbedMetadataJob`.
 
@@ -193,6 +204,14 @@ class SizeVariant extends Model
     public string $short_path;      // Relative file path
 }
 ```
+
+### JPEG XL (Feature 101)
+
+- `.jxl` uploads are always accepted (`image/jxl`). They are identified by their signature (bare codestream `FF 0A` or container `00 00 00 0C 4A 58 4C 20 0D 0A 87 0A`), because `exif_imagetype()` does not know JPEG XL. The original is stored unchanged; under `original`, its small/medium variants are JPEG XL too.
+- Reading and writing JPEG XL needs Imagick with ImageMagick built against libjxl (`ConfigManager::hasJxl()`). GD has no JPEG XL. Without support, loading or saving a `.jxl` file throws `MediaFileOperationException` (`BaseImageHandler::JXL_UNSUPPORTED`); no other format is ever written behind a `.jxl` extension.
+- `ImagickJxlCheck` adds a diagnostics line when JPEG XL is unsupported: info in general, error when `size_variant_format = jxl`.
+- Browsers without JPEG XL support show broken images for JPEG XL files; there is no fallback.
+- The official Docker images (`Dockerfile` and `Dockerfile-legacy`) build ImageMagick from source with libjxl into `/opt/imagemagick` and link the `imagick` extension against it (ADR-101-01). Each Dockerfile has its own `imagemagick` stage with the same pinned versions: imagick is compiled for FrankenPHP's thread-safe PHP in `Dockerfile` and for the non-thread-safe PHP-FPM in `Dockerfile-legacy`.
 
 ## Image Processing Engines
 

@@ -2,7 +2,7 @@
 	<UModal v-if="!isWebAuthnUnavailable" v-model:open="is_webauthn_open">
 		<template #body>
 			<form class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md">
-				<UFormField :label="$t('dialogs.login.username')">
+				<UFormField :label="identifierLabel">
 					<UInput id="username" v-model="username" class="w-full" />
 				</UFormField>
 			</form>
@@ -34,10 +34,9 @@ import { computed, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import WebAuthnService from "@/services/webauthn-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import AlbumService from "@/services/album-service";
 import { storeToRefs } from "pinia";
-import { useUserStore } from "@/stores/UserState";
-import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useClearViewerState } from "@/composables/useClearViewerState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useAppToast();
 const emits = defineEmits<{
@@ -45,11 +44,15 @@ const emits = defineEmits<{
 }>();
 
 const togglableStore = useTogglablesStateStore();
-const userStore = useUserStore();
-const albumListStore = useAlbumListStore();
+const { clearViewerState } = useClearViewerState();
+const lycheeStore = useLycheeStateStore();
 
 const isWebAuthnUnavailable = computed<boolean>(() => WebAuthnService.isWebAuthnUnavailable());
 const { is_webauthn_open } = storeToRefs(togglableStore);
+const { is_email_login_enabled } = storeToRefs(lycheeStore);
+
+// With `email_login_enabled` the field accepts a username or an email address.
+const identifierLabel = computed(() => trans(is_email_login_enabled.value ? "dialogs.login.username_or_email" : "dialogs.login.username"));
 
 const username = ref("");
 const userId = ref<number | null>(null);
@@ -63,10 +66,19 @@ function login() {
 				life: 3000,
 			});
 			is_webauthn_open.value = false;
-			userStore.setUser(undefined);
-			AlbumService.clearCache();
-			albumListStore.invalidate();
-			emits("logged-in");
+			clearViewerState();
+			// Init data depends on the user (e.g. face recognition availability).
+			// Kept out of this chain: its failures are not authentication errors.
+			// load() reports its own errors and leaves is_init false, in which case we must not
+			// continue with the guest data.
+			void lycheeStore
+				.refresh()
+				.then(() => {
+					if (lycheeStore.is_init) {
+						emits("logged-in");
+					}
+				})
+				.catch(() => {});
 		})
 		.catch((e) =>
 			toast.add({

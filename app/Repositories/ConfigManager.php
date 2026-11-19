@@ -187,6 +187,14 @@ class ConfigManager
 	}
 
 	/**
+	 * @return bool whether Imagick is enabled and can read and write JPEG XL
+	 */
+	public function hasJxl(): bool
+	{
+		return $this->hasImagick() && \Imagick::queryFormats('JXL') !== [];
+	}
+
+	/**
 	 * @return bool returns the Exiftool setting
 	 */
 	public function hasExiftool(): bool

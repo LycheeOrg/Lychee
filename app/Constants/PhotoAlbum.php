@@ -18,6 +18,7 @@ class PhotoAlbum
 	// Id names
 	public const PHOTO_ID = 'photo_album.photo_id';
 	public const ALBUM_ID = 'photo_album.album_id';
+	public const BUCKET_KEY = 'photo_album.bucket_key';
 
 	public static function isJoinedToPhoto(JoinClause $join): bool
 	{

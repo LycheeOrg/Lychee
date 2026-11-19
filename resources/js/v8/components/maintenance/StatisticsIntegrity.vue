@@ -21,7 +21,7 @@ import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "sprintf-js";
+import { sprintf } from "@/utils/sprintf";
 
 const data = ref<App.Http.Resources.Diagnostics.StatisticsCheckResource | undefined>(undefined);
 const loading = ref(false);

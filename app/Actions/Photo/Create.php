@@ -26,6 +26,7 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Internal\LycheeLogicException;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Exceptions\QuotaExceededException;
@@ -33,6 +34,7 @@ use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 use App\Models\User;
 use App\Services\Image\FileExtensionService;
+use App\Services\Telemetry\TraceService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
 use LycheeVerify\Contract\VerifyInterface;
@@ -41,6 +43,8 @@ class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
 	protected ImportParam $strategy_parameters;
+
+	private TraceService $trace;
 
 	public function __construct(
 		?ImportMode $import_mode,
@@ -58,6 +62,7 @@ class Create
 			preallocated_id: $preallocated_id,
 			upload_trust_level: $upload_trust_level,
 		);
+		$this->trace = app(TraceService::class);
 	}
 
 	/**
@@ -81,59 +86,63 @@ class Create
 	 */
 	public function add(NativeLocalFile $source_file, ?AbstractAlbum $album, ?int $file_last_modified_time = null): Photo
 	{
-		$this->checkQuota($source_file);
+		return $this->trace->traceMethod('photo.create.add', function () use ($source_file,
+			$album,
+			$file_last_modified_time) {
+			$this->checkQuota($source_file);
 
-		/** @var InitDTO $init_dto */
-		$init_dto = new InitDTO(
-			parameters: $this->strategy_parameters,
-			source_file: $source_file,
-			album: $album,
-			file_last_modified_time: $file_last_modified_time
-		);
+			/** @var InitDTO $init_dto */
+			$init_dto = new InitDTO(
+				parameters: $this->strategy_parameters,
+				source_file: $source_file,
+				album: $album,
+				file_last_modified_time: $file_last_modified_time
+			);
 
-		$pre_pipes = [
-			Init\DetectAndStoreRaw::class,
-			Init\AssertSupportedMedia::class,
-			Init\FetchLastModifiedTime::class,
-			Init\MayLoadFileMetadata::class,
-			Init\FindDuplicate::class,
-		];
+			$pre_pipes = [
+				Init\DetectAndStoreRaw::class,
+				Init\AssertSupportedMedia::class,
+				Init\FetchLastModifiedTime::class,
+				Init\MayLoadFileMetadata::class,
+				Init\FindDuplicate::class,
+			];
 
-		$init_dto = app(Pipeline::class)
-			->send($init_dto)
-			->through($pre_pipes)
-			->thenReturn();
+			$init_dto = app(Pipeline::class)
+				->send($init_dto)
+				->through($pre_pipes)
+				->thenReturn();
 
-		if ($init_dto->duplicate !== null) {
-			return $this->handleDuplicate($init_dto);
-		}
+			if ($init_dto->duplicate !== null) {
+				return $this->handleDuplicate($init_dto);
+			}
 
-		$post_pipes = [
-			Init\InitParentAlbum::class,
-			Init\LoadFileMetadata::class,
-			Init\FindLivePartner::class,
-		];
+			$post_pipes = [
+				Init\InitParentAlbum::class,
+				Init\LoadFileMetadata::class,
+				Init\FindLivePartner::class,
+			];
 
-		$init_dto = app(Pipeline::class)
-			->send($init_dto)
-			->through($post_pipes)
-			->thenReturn();
+			$init_dto = app(Pipeline::class)
+				->send($init_dto)
+				->through($post_pipes)
+				->thenReturn();
 
-		if ($init_dto->live_partner === null) {
-			return $this->handleStandalone($init_dto);
-		}
+			if ($init_dto->live_partner === null) {
+				return $this->handleStandalone($init_dto);
+			}
 
-		// livePartner !== null
-		$file_extension_service = app(FileExtensionService::class);
-		if ($file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
-			return $this->handleVideoLivePartner($init_dto);
-		}
+			// livePartner !== null
+			$file_extension_service = app(FileExtensionService::class);
+			if ($file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
+				return $this->handleVideoLivePartner($init_dto);
+			}
 
-		if ($file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
-			return $this->handlePhotoLivePartner($init_dto);
-		}
+			if ($file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
+				return $this->handlePhotoLivePartner($init_dto);
+			}
 
-		throw new LycheeLogicException('Pipe system for importing video failed');
+			throw new LycheeLogicException('Pipe system for importing video failed');
+		});
 	}
 
 	/**
@@ -144,6 +153,7 @@ class Create
 	 * @return Photo Photo duplicated
 	 *
 	 * @throws PhotoResyncedException
+	 * @throws PhotoRejectedException
 	 * @throws PhotoSkippedException
 	 */
 	private function handleDuplicate(InitDTO $init_dto): Photo
@@ -151,6 +161,8 @@ class Create
 		$dto = DuplicateDTO::ofInit($init_dto);
 
 		$pipes = [];
+		// Ensure that unowned duplicates are handled first.
+		$pipes[] = Duplicate\ThrowUnownedDuplicate::class;
 		if ($dto->shall_resync_metadata) {
 			$pipes[] = Shared\HydrateMetadata::class;
 			$pipes[] = Duplicate\SaveIfDirty::class;
@@ -168,7 +180,7 @@ class Create
 				->through($pipes)
 				->thenReturn()
 				->getPhoto();
-		} catch (PhotoResyncedException|PhotoSkippedException $e) {
+		} catch (PhotoResyncedException|PhotoSkippedException|PhotoRejectedException $e) {
 			// duplicate case. Just rethrow.
 			throw $e;
 		}
@@ -176,41 +188,44 @@ class Create
 
 	private function handleStandalone(InitDTO $init_dto): Photo
 	{
-		$dto = StandaloneDTO::ofInit($init_dto);
+		return $this->trace->traceMethod('photo.handle_standalone', function () use ($init_dto) {
+			$dto = StandaloneDTO::ofInit($init_dto);
 
-		$pipes = [
-			Standalone\FixTimeStamps::class,
-			Standalone\InitNamingStrategy::class,
-			Standalone\ApplyUserProvidedMetadata::class,
-			Shared\HydrateMetadata::class,
-			Shared\SetHighlighted::class,
-			Shared\SetOwnership::class,
-			Standalone\SetOriginalChecksum::class,
-			Standalone\FetchSourceImage::class,
-			Standalone\ExtractGoogleMotionPictures::class,
-			Standalone\PlacePhoto::class,
-			Standalone\PlaceGoogleMotionVideo::class,
-			Standalone\SetChecksum::class,
-			Standalone\AutoRenamer::class,
-			Shared\SetUploadValidated::class,
-			Shared\Save::class,
-			Shared\SetParent::class,
-			Shared\SaveStatistics::class,
-			Standalone\CreateOriginalSizeVariant::class,
-			Standalone\CreateRawSizeVariant::class,
-			Standalone\CreateSizeVariants::class,
-			Standalone\ApplyWatermark::class,
-			Standalone\EncodePlaceholder::class,
-			Standalone\ReplaceOriginalWithBackup::class,
-			Shared\UploadSizeVariantsToS3::class,
-			Shared\GeodecodeLocation::class,
-			Shared\ExtractColourPalette::class,
-			Shared\NotifyAlbums::class,
-			Standalone\AutoScanFacesOnUpload::class,
-			Standalone\AutoScanNsfwOnUpload::class,
-		];
+			$pipes = [
+				Standalone\FixTimeStamps::class,
+				Standalone\InitNamingStrategy::class,
+				Standalone\ApplyUserProvidedMetadata::class,
+				Shared\HydrateMetadata::class,
+				Shared\SetHighlighted::class,
+				Shared\SetOwnership::class,
+				Standalone\SetOriginalChecksum::class,
+				Standalone\FetchSourceImage::class,
+				Standalone\ExtractGoogleMotionPictures::class,
+				Standalone\PlacePhoto::class,
+				Standalone\PlaceGoogleMotionVideo::class,
+				Standalone\SetChecksum::class,
+				Standalone\AutoRenamer::class,
+				Shared\SetUploadValidated::class,
+				Shared\Save::class,
+				Shared\SetParent::class,
+				Shared\SaveStatistics::class,
+				Standalone\CreateOriginalSizeVariant::class,
+				Standalone\CreateRawSizeVariant::class,
+				Standalone\CreateSizeVariants::class,
+				Standalone\ApplyWatermark::class,
+				Standalone\EncodePlaceholder::class,
+				Standalone\ReplaceOriginalWithBackup::class,
+				Shared\UploadSizeVariantsToS3::class,
+				Shared\GeodecodeLocation::class,
+				Shared\ExtractColourPalette::class,
+				Shared\NotifyAlbums::class,
+				Standalone\AutoScanFacesOnUpload::class,
+				Standalone\AutoScanNsfwOnUpload::class,
+				Standalone\RecordUploadHold::class,
+			];
 
-		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+			return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
+		});
 	}
 
 	private function handleVideoLivePartner(InitDTO $init_dto): Photo
@@ -305,6 +320,7 @@ class Create
 			Shared\UploadSizeVariantsToS3::class,
 			Shared\GeodecodeLocation::class,
 			Shared\ExtractColourPalette::class,
+			Standalone\RecordUploadHold::class,
 		];
 		$stand_alone_dto = $this->executePipeOnDTO($stand_alone_pipes, $stand_alone_dto);
 

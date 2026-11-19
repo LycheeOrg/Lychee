@@ -112,12 +112,20 @@ class Face extends Model
 	 */
 	public function getCropUrlAttribute(): ?string
 	{
-		if ($this->crop_token === null) {
+		return self::cropUrlFromToken($this->crop_token);
+	}
+
+	/**
+	 * Build the public crop URL from a crop token, for query paths that read
+	 * raw rows (`toBase()`) instead of hydrated models.
+	 */
+	public static function cropUrlFromToken(?string $token): ?string
+	{
+		if ($token === null) {
 			return null;
 		}
-		$tok = $this->crop_token;
 
-		return 'uploads/faces/' . substr($tok, 0, 2) . '/' . substr($tok, 2, 2) . '/' . $tok . '.jpg';
+		return 'uploads/faces/' . substr($token, 0, 2) . '/' . substr($token, 2, 2) . '/' . $token . '.jpg';
 	}
 
 	/**

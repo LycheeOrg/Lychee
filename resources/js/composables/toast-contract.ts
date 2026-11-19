@@ -2,7 +2,7 @@
  * Library-agnostic toast contract shared by v7 (PrimeVue's ToastServiceMethods,
  * which already satisfies this shape structurally) and v8 (useAppToast()) -
  * lets composables that only ever call `toast.add(...)` accept either without
- * being duplicated per tree. See Feature 049 T-049-08.
+ * being duplicated per tree.
  */
 export type ToastSeverity = "success" | "info" | "warn" | "error" | "secondary";
 

@@ -15,6 +15,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\GpxFileRule;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
@@ -38,7 +39,7 @@ class SetAlbumTrackRequestTest extends BaseRequestTest
 
 		$expectedRuleMap = [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
-			SetAlbumTrackRequest::FILE_ATTRIBUTE => 'required|file',
+			SetAlbumTrackRequest::FILE_ATTRIBUTE => ['required', 'file', new GpxFileRule()],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * @see \Laragear\WebAuthn\Models\WebAuthnCredential
+ * Table created for Laragear WebAuthn, now read by \App\Models\WebAuthnCredential (Feature 107).
  */
 return new class() extends Migration {
 	/**

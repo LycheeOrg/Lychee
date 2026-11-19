@@ -8,7 +8,7 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Enum\UpdateStatus;
+use App\DTO\UpdateAvailability;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -17,32 +17,23 @@ class AdminUpdateStatusResource extends Data
 {
 	public function __construct(
 		public bool $enabled,
-		public ?int $update_status,
-		public bool $has_update,
+		public bool $is_new_release_available,
+		public bool $is_git_update_available,
+		public ?int $commits_behind,
 		public ?string $current_version,
 		public ?string $latest_version,
 	) {
 	}
 
-	public static function disabled(): self
+	public static function fromAvailability(UpdateAvailability $availability): self
 	{
 		return new self(
-			enabled: false,
-			update_status: null,
-			has_update: false,
-			current_version: null,
-			latest_version: null,
-		);
-	}
-
-	public static function fromUpdateStatus(UpdateStatus $update_status, string $current_version, string $latest_version): self
-	{
-		return new self(
-			enabled: true,
-			update_status: $update_status->value,
-			has_update: $update_status === UpdateStatus::NOT_UP_TO_DATE,
-			current_version: $current_version,
-			latest_version: $latest_version,
+			enabled: $availability->enabled,
+			is_new_release_available: $availability->is_new_release_available,
+			is_git_update_available: $availability->is_git_update_available,
+			commits_behind: $availability->commits_behind,
+			current_version: $availability->current_version,
+			latest_version: $availability->latest_version,
 		);
 	}
 }

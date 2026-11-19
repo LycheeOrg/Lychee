@@ -69,6 +69,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property LicenseType              $license
  * @property string|null              $album_sorting_col
  * @property string|null              $album_sorting_order
+ * @property string|null              $bucket_key                    Granularity-free bucket key for the parent's sort column (FR-092-04).
  * @property string|null              $cover_id
  * @property Photo|null               $cover
  * @property string|null              $header_id
@@ -83,7 +84,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $_rgt
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
- * @property bool                     $is_recursive_nsfw             /!\ This attribute is not loaded by default.
+ * @property bool                     $is_recursive_nsfw             The album or one of its ancestors is NSFW; kept by {@see \App\Actions\Album\SyncRecursiveNsfw}.
  * @property Collection<int,Tag>      $tags
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
@@ -196,6 +197,7 @@ class Album extends BaseAlbum implements Node
 		'header_photo_focus' => null,
 		'auto_cover_id_max_privilege' => null,
 		'auto_cover_id_least_privilege' => null,
+		'is_recursive_nsfw' => false,
 	];
 
 	/**
@@ -243,9 +245,12 @@ class Album extends BaseAlbum implements Node
 	 * Returns the relationship between this album and all photos incl.
 	 * photos which are recursive children of this album.
 	 */
-	public function all_photos(): HasManyPhotosRecursively
+	/**
+	 * @param bool $include_nsfw if false, photos in sensitive sub-albums are left out
+	 */
+	public function all_photos(bool $include_nsfw = true): HasManyPhotosRecursively
 	{
-		return new HasManyPhotosRecursively($this);
+		return new HasManyPhotosRecursively($this, $include_nsfw);
 	}
 
 	public function thumb(): HasAlbumThumb

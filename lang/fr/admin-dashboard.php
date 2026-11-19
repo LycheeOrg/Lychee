@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'État de la mise à jour',
         'update_available' => 'Une nouvelle version est disponible (actuelle : :current, dernière : :latest).',
+        'git_update_available' => 'Votre installation a :count commits de retard sur master.',
     ],
     'nsfw_config' => [
         'title' => 'Détection NSFW et modération',
@@ -82,5 +83,8 @@ return [
         'legend_approve' => 'La photo est acceptée, la constatation est enregistrée.',
         'legend_mark_album' => 'L’album de la photo est signalé comme sensible.',
         'legend_nothing' => 'Aucune action n’est effectuée.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'Détections NSFW',
     ],
 ];

@@ -115,10 +115,7 @@ class GetTagWithPhotosAndAlbums
 		// cached queries in this feature — a session that unlocks a
 		// password-protected album must get a fresh key, not a stale one
 		// from before the unlock (NFR-053-07).
-		//
-		// We do not need a cryptographically secure hash here,
-		// just a fast one that is unlikely to collide.
-		$unlocked_hash = hash('xxh3', implode(',', $unlocked_album_ids));
+		$unlocked_hash = $this->cache_key_provider->unlockedAlbumsDigest();
 		$key = $this->cache_key_provider->tagAlbumsKey($tag->id, $user_id, $unlocked_hash);
 
 		$albums = $this->managed_cache_service->rememberIf(

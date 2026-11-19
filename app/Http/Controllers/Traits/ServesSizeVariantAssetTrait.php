@@ -1,0 +1,160 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+namespace App\Http\Controllers\Traits;
+
+use App\Enum\SizeVariantType;
+use App\Http\Resources\V3\AssetUrlResource;
+use App\Image\Files\FlysystemFile;
+use App\Image\Watermarker;
+use App\Models\SizeVariant;
+use App\Services\UrlGenerator;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
+/**
+ * Serves a resolved size variant file: local file response, the S3 URL as
+ * JSON for S3 (Feature 113, ADR-113-01), watermarked path, and the size
+ * fallback chain when a file is missing. Shared by `GET /api/v3/Asset/...`
+ * (Feature 056) and `GET /api/v3/Faces/{face_id}/photo/{variant}`
+ * (Feature 093, ADR-093-01).
+ */
+trait ServesSizeVariantAssetTrait
+{
+	/** Seconds the browser may reuse a served file without asking again. */
+	private const ASSET_MAX_AGE = 3600;
+
+	/**
+	 * Serve `$size_variant`, falling back to smaller sizes when its file is missing.
+	 *
+	 * @return JsonResponse|mixed|BinaryFileResponse
+	 */
+	protected function serveSizeVariant(SizeVariant $size_variant, Watermarker $watermarker)
+	{
+		$response = $this->tryServe($size_variant, $watermarker);
+		if ($response !== null) {
+			return $response;
+		}
+
+		return $this->fallback($size_variant->photo_id, $size_variant->type, $watermarker);
+	}
+
+	/**
+	 * Fallback on diferent smaller sizes.
+	 *
+	 * @param string          $photo_id
+	 * @param SizeVariantType $type
+	 * @param Watermarker     $watermarker
+	 *
+	 * @return JsonResponse|mixed|BinaryFileResponse
+	 */
+	private function fallback(string $photo_id, SizeVariantType $type, Watermarker $watermarker)
+	{
+		$fallback = $type->fallbackType();
+
+		if ($fallback === null) {
+			return response()->json(['error' => 'File not found'], 404);
+		}
+
+		$size_variant = SizeVariant::where('photo_id', $photo_id)
+			->where('type', $fallback)
+			->first();
+
+		if ($size_variant === null) {
+			return $this->fallback($photo_id, $fallback, $watermarker);
+		}
+
+		$response = $this->tryServe($size_variant, $watermarker);
+		if ($response !== null) {
+			return $response;
+		}
+
+		return $this->fallback($photo_id, $fallback, $watermarker);
+	}
+
+	/**
+	 * Resolve the given size variant's own disk and serve it from there,
+	 * or return null if it isn't actually present on that disk.
+	 *
+	 * @param SizeVariant $size_variant
+	 * @param Watermarker $watermarker
+	 *
+	 * @return JsonResponse|mixed|BinaryFileResponse|null
+	 */
+	private function tryServe(SizeVariant $size_variant, Watermarker $watermarker)
+	{
+		$path = $watermarker->get_path($size_variant);
+		$disk = Storage::disk($size_variant->storage_disk->value);
+
+		/** @disregard P1013 */
+		if ($disk->getAdapter() instanceof AwsS3V3Adapter) {
+			return $this->responseS3Url($path, $size_variant->storage_disk->value);
+		}
+
+		if (!$disk->exists($path)) {
+			return null;
+		}
+
+		return $this->responseFile($disk, $path);
+	}
+
+	/**
+	 * Hand the S3 location to the client instead of redirecting to it
+	 * (Feature 113, FR-113-01, ADR-113-01): the client fetches `/Asset` by
+	 * XHR to send the MAC, and an XHR following a redirect to the bucket
+	 * needs a CORS rule there and carries Lychee's headers to it. The client
+	 * renders this URL with a plain `<img src>` instead.
+	 *
+	 * Same URL as `GET /Albums/{album_id}/Photos/urls` (FR-102-05): the
+	 * bucket URL on a public bucket, S3's presigned URL otherwise. Never
+	 * stored, since a presigned URL is minted per request.
+	 *
+	 * @param string $path         watermark-aware path on the disk
+	 * @param string $storage_disk name of the S3 disk
+	 *
+	 * @return JsonResponse
+	 */
+	private function responseS3Url(string $path, string $storage_disk): JsonResponse
+	{
+		$url = resolve(UrlGenerator::class)->getAwsUrl($path, $storage_disk);
+
+		return response()->json(new AssetUrlResource(url: $url), 200, ['Cache-Control' => 'no-store, private']);
+	}
+
+	/**
+	 * Return the damn file!
+	 *
+	 * Privately cacheable for an hour, with the file's mtime as
+	 * `Last-Modified` and an `ETag` of the served path, mtime and size, so
+	 * a URL that now selects another file (watermark) never answers `304`
+	 * for the old one; a request whose validators still match gets an empty
+	 * `304` (Feature 102, FR-102-04). Authorization already ran.
+	 *
+	 * @param FilesystemAdapter $disk
+	 * @param string            $path
+	 *
+	 * @return BinaryFileResponse
+	 */
+	private function responseFile(FilesystemAdapter $disk, string $path): BinaryFileResponse
+	{
+		$file = new FlysystemFile($disk, $path);
+
+		$response = response()->file($file->toLocalFile()->getPath());
+		$served = $response->getFile();
+		$response->setPrivate();
+		$response->setMaxAge(self::ASSET_MAX_AGE);
+		$response->setAutoLastModified();
+		$response->setEtag(hash('xxh128', $path . '|' . $served->getMTime() . '|' . $served->getSize()));
+		$response->isNotModified(request());
+
+		return $response;
+	}
+}

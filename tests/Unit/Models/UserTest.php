@@ -23,7 +23,6 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Laragear\WebAuthn\WebAuthnData;
 use Tests\AbstractTestCase;
 
 class UserTest extends AbstractTestCase
@@ -61,16 +60,27 @@ class UserTest extends AbstractTestCase
 		self::assertEquals('jdoe', $user->name);
 	}
 
-	public function testWebAuthnDataUsesEmailWhenPresent(): void
+	public function testWebAuthnUserNameUsesEmailWhenPresent(): void
 	{
 		$user = new User();
 		$user->username = 'jdoe';
 		$user->display_name = 'John Doe';
 		$user->email = 'jdoe@example.com';
 
-		$data = $user->webAuthnData();
+		self::assertSame('jdoe@example.com', $user->webAuthnUserName());
+	}
 
-		self::assertInstanceOf(WebAuthnData::class, $data);
+	/**
+	 * Feature 107, FR-107-01: without an email the name and the host identify the account.
+	 */
+	public function testWebAuthnUserNameFallsBackToNameAndHost(): void
+	{
+		$user = new User();
+		$user->username = 'jdoe';
+		$user->display_name = 'John Doe';
+		$user->email = null;
+
+		self::assertSame('John Doe#' . request()->httpHost(), $user->webAuthnUserName());
 	}
 
 	public function testDeleteWithoutOwnedContentSkipsReassignment(): void

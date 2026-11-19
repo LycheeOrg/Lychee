@@ -8,14 +8,13 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\PlaceholderEncoder;
 
-class EncodePlaceholder implements StandalonePipe
+class EncodePlaceholder extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		try {
 			$placeholder_encoder = new PlaceholderEncoder();
@@ -34,5 +33,10 @@ class EncodePlaceholder implements StandalonePipe
 		// @codeCoverageIgnoreEnd
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.encode_placeholder';
 	}
 }

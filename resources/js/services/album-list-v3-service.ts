@@ -11,7 +11,7 @@ const AlbumListV3Service = {
 		return axios.get(`${Constants.getApiUrlV3()}Albums`, { params: params, data: {} });
 	},
 
-	getAccessPermissions(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumAccessPermissionListResource>> {
+	getAccessPermissions(): Promise<AxiosResponse<App.Http.Resources.V3.AlbumAccessPermissionResource>> {
 		return axios.get(`${Constants.getApiUrlV3()}Albums::accessPermissions`, { data: {} });
 	},
 };

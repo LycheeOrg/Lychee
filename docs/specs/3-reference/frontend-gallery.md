@@ -100,14 +100,25 @@ const photos = computed(() => favourites.photos ?? [])
 **Purpose**: Instagram-style infinite scroll feed showing photos from recent albums.
 
 **Key Features:**
-- **Infinite Scroll**: Lazy-loaded content as user scrolls
+- **Infinite Scroll**: Lazy-loaded content as user scrolls (v2 path, flag off)
 - **Card-Based Layout**: Albums displayed as cards with hero images
 - **Lightbox Integration**: Full-screen photo viewer with navigation
 - **Touch Optimized**: Gesture support for mobile devices
-- **Performance Optimized**: Intersection observer for efficient loading
+- **Performance Optimized**: Intersection observer for efficient loading (v2), dynamically-measured
+  virtualization (v3, see below)
 - **Sensitive Handling**: Blur/consent system for sensitive content
 
 **Navigation:** `/flow`
+
+**v3 path (Feature 068, `is_struct_of_array_enabled` flag):** `Flow.vue` branches its entire
+template, not just the inner list, between the v2 path above and a v3 path that loads every album
+in the caller's current Flow scope in one unpaginated request (`FlowState.ts`'s `loadV3()`) and
+renders it through a dynamically-measured (`measureElement`) `useWindowVirtualizer` list — no
+"load more," no scroll-triggered fetch for album metadata. Each card (`AlbumCardV3.vue`, forked from
+`AlbumCard.vue` since the v2 card family expects pre-resolved photo URLs the SoA payload doesn't
+carry) fetches its own capped photo preview the moment it mounts, via the existing per-album `ratios`
+tier's new `limit` param, rendering thumbnails through the shared `<Thumb>` Asset-endpoint wrapper
+and showing a loading skeleton (`AlbumCardSkeletonV3.vue`) meanwhile.
 
 **Technical Details:**
 ```typescript
@@ -177,13 +188,14 @@ AlbumService.frame(albumId).then(response => {
 **Technical Details:**
 ```typescript
 // Leaflet integration
-import L from 'leaflet'
-import 'leaflet.markercluster'
-import '@lychee-org/leaflet.photo'
+import L from "leaflet";
+import "leaflet.markercluster/dist/leaflet.markercluster.js";
+import { clusterFunc } from "@/composables/photo";
 
-// Photo clustering and positioning
-photoLayer.value = L.photo.cluster().on('click', showPopup)
-map.value.fitBounds(calculatePhotoBounds())
+// Photo clustering and positioning - composables/photo.ts builds a custom
+// L.MarkerClusterGroup subclass (no external leaflet.photo package)
+photoLayer.value = clusterFunc().on("click", showPopup);
+map.value.fitBounds(calculatePhotoBounds());
 ```
 
 **Geographic Features:**
@@ -191,6 +203,8 @@ map.value.fitBounds(calculatePhotoBounds())
 - Custom photo thumbnails as markers
 - GPS track visualization
 - Responsive zoom and pan
+
+**Feature 067 (v3, SoA) path**: behind the same `is_struct_of_array_enabled` flag other v3 tiers use, `Map.vue` dispatches between the v2 behavior above (unchanged, `fetchData()`/`addContentsToMap()`) and a viewport-driven path sourced from `resources/js/stores/MapState.ts`. Leaflet's `moveend`/`zoomend` events call a debounced `requestViewport(bounds, zoom)`, which dedupes an identical/in-flight snapped-viewport request and fetches `GET /api/v3/Map/buckets` + `/Map/Photos` in parallel (`resources/js/services/map-v3-service.ts`). A bucket whose count exceeds the fixed leaf threshold (`20`) renders as a plain count-badge marker (click zooms in, never fetches members); a leaf-tier photo reuses the existing `clusterFunc()`/`.leaflet-marker-photo` template, with its marker image assigned asynchronously once `ThumbAssetService.acquire()`'s object URL resolves (no backend-supplied thumbnail URL in this tier, Q-067-12) — the same async-assignment pattern `Thumb.vue` uses. GPX tracks are fetched once per album (`MapState.ts.loadTracks()`), decoupled from pan/zoom. See `docs/specs/4-architecture/features/067-map-geo-bucketing/`. Over the cap, `bucketsV3.singleton_photos` (single-photo cells) goes through the same photo-marker path as `photosV3`, next to the count badges, so no badge ever shows `1` (FR-067-25, Q-067-20).
 
 ---
 
@@ -329,7 +343,16 @@ The album module handles all album-related UI components and interactions.
 
 ### Flow Module (`flowModule/`)
 
-The flow module implements the Instagram-style infinite scroll interface.
+The flow module implements the Instagram-style infinite scroll interface. `AlbumCard.vue`/
+`CarouselImages.vue`/`TopImages.vue`/`HeaderImage.vue` below are exclusively the v2 (flag-off)
+rendering path; `Blur.vue`/`LigtBox.vue` are shared by both paths unmodified.
+
+**`AlbumCardV3.vue`** (Feature 068, v3/SoA path)
+- Forked from `AlbumCard.vue`, not a shared edit — reads an `AdaptedFlowTile` (album-level SoA
+  fields, no nested photos) instead of a full `FlowItemResource`
+- Renders its own capped photo preview (fetched on mount via `FlowState.requestCardPhotos()`)
+  through the shared `<Thumb>` Asset-endpoint wrapper, not pre-resolved `size_variants.*.url` strings
+- Shows `AlbumCardSkeletonV3.vue` while that fetch is in flight
 
 **`AlbumCard.vue`**
 - Card-style album display for flow view
@@ -444,6 +467,39 @@ The search module provides comprehensive search functionality.
 
 ---
 
+### Timeline Module (`timelineModule/`)
+
+The timeline module implements the global Timeline's date-scrub rail (`Timeline.vue`'s own right-hand navigation), separate from the album module's per-album grid.
+
+**`TimelineDatesV3.vue`**
+- The v3 (Struct-of-Arrays) date rail — mounted only when `isTimelineSoaActive` is true; `TimelineDates.vue` (below) is the untouched v2 fallback, a deliberate fork rather than shared code.
+- A narrow, sticky flex sibling of the photo grid, not an overlay — `Timeline.vue` wraps both in one `<div class="flex">`, the same pattern `AlbumNavPanel.vue` uses alongside `AlbumPanel.vue`'s grid.
+- **At rest**, shows only year labels and month ticks:
+  - A bold year number marks the first (most recent) bucket of that year.
+  - A small dot marks a month with at least one photo; a short dash marks a "quarter" month specifically (January/April/July/October), drawn larger so the rail reads like a ruler with minor (month) and major (quarter) ticks. Months with no photos get no tick at all — the rail reflects actual data density, not a fixed calendar grid.
+  - **Spacing between ticks is proportional to real scroll distance, not calendar time.** Every tick's position is `(bucket.top / totalHeight) * railHeight`, using the same pixel layout `PhotoGridVirtual.vue` computes for the grid itself — photo count, row-packing under the active layout mode (justified/masonry/square/grid/list), photo aspect ratios, and the browser's container width all feed into it. A year with more photos (or whose photos pack into more rows) takes up proportionally more of the rail; a sparse year compresses to a sliver.
+  - A month tick that would land within 16px of a year label is dropped rather than repositioned, so every rendered tick's position stays exactly true to the real layout (an earlier attempt that pushed colliding ticks down instead caused the push to cascade across dozens of ticks per year, eventually dragging later years off the bottom of the rail entirely).
+- **Hovering** shows a fisheye lens that magnifies nearby dates into readable labels near the cursor (with a collision-cull pass so labels never overlap), plus a readout pill with the exact date and photo count. The lens is anchored to the rail's own right edge (not floating beside it), so it fully covers — rather than merely sitting next to — the resting-state ticks while active.
+- A playhead line continuously tracks the real scroll position.
+- **Drag-to-scrub**: pressing and dragging on the rail scrubs the grid continuously by real pixel offset (rAF-throttled); releasing (or a plain click) finalizes to a route-pushed, deep-linkable bucket via the existing `@load`/`goToBucket` navigation.
+- Ported from a Claude Design mockup (`Timeline Scrubber.html`) with the mockup's own hardcoded dark palette/fonts replaced by the app's semantic theme tokens (`text-primary`, `bg-toned`, etc.) so it stays correct in both light and dark mode.
+
+**`TimelineDates.vue`**
+- The v2 (legacy) date sidebar — an always-expanded, `position: fixed` list of every date that overlaps the rightmost photo column. Untouched fork, still used when the SoA flag is off.
+
+**Data flow** (`PhotoGridVirtual.vue` → `Timeline.vue` → `TimelineDatesV3.vue`):
+```typescript
+// PhotoGridVirtual.vue emits, timeline-only:
+activeBucketChanged   // bucket id currently scrolled into view
+timelineLayoutChanged // { buckets: {bucketId,top,height}[], totalHeight } — every bucket's real (or placeholder-estimated) pixel geometry
+scrollOffsetChanged   // continuous content-relative scroll position, for the playhead
+
+// exposed for the rail's drag-scrub, without a route push:
+scrollToPixelOffset(px: number)
+```
+
+---
+
 ## Component Interaction Patterns
 
 ### State Management Flow
@@ -487,7 +543,8 @@ All gallery modes support comprehensive keyboard shortcuts:
 ### Lazy Loading
 - Components use `import()` for code splitting
 - Images loaded progressively with intersection observer
-- Virtual scrolling for large photo sets
+- Virtual scrolling for large photo sets — `PhotoGridVirtual.vue` (`albumModule/Virtualized/`) windows rendering via `@tanstack/vue-virtual`, analytic (non-DOM-measured) WASM layout, behind the `is_struct_of_array_enabled` flag. Feature 065 wired the per-album photo grid this way; Feature 066 extended the same component (`source: "album"|"timeline"` prop) to the global Timeline view (`Timeline.vue`), adding incremental, bucket-windowed data fetching (`TimelineState.ts`'s v3 fields/actions) and layout-mode-correct placeholder sizing for not-yet-loaded date buckets, since a whole library — unlike one album — can't be fetched at once. See `docs/specs/4-architecture/features/066-timeline-struct-of-arrays/` and `docs/specs/4-architecture/features/065-photo-listing-struct-of-arrays-adoption/`.
+- Virtual scrolling for the Flow feed — Feature 068's v3 path uses a **separate, dynamically-measured** virtualizer (`Flow.vue`, `@tanstack/vue-virtual`'s `useWindowVirtualizer` + `measureElement`), not `PhotoGridVirtual.vue`'s analytic/WASM mode, since a Flow card's height depends on variable text/photo content rather than a packed photo layout — the first DOM-measured (`ResizeObserver`-driven) virtualizer in this codebase's v8 stack. All albums in scope are loaded in one unpaginated request up front (`FlowState.ts`'s `loadV3()`); only DOM rendering and each card's own photo-preview fetch are windowed. See `docs/specs/4-architecture/features/068-flow-soa-and-publish-scheduling/`.
 
 ### Caching Strategy
 - Thumbnail caching at multiple resolutions
@@ -514,4 +571,4 @@ All gallery modes support comprehensive keyboard shortcuts:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: September 13, 2026*

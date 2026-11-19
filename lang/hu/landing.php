@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'gallery' => 'Galéria',
+    'access_gallery' => 'Belépés a galériába',
+    'Powered_by_Lychee' => 'Működteti: Lychee',
+    'copyright' => 'A weboldalon található összes kép szerzői jogvédelem alatt áll: %1$s © %2$s',
+    'client_login' => 'Ügyfélbelépés',
+    'view_public_gallery' => 'Nyilvános galéria megtekintése',
+    'contact' => 'Kapcsolat',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => 'Rólunk',
+        'featured' => 'Legutóbbi munkák',
+        'scroll_down' => 'Görgessen lefelé',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => 'Felfedezés',
+        'explore_caption' => 'Galéria megtekintése',
+        'contact_caption' => 'Vegye fel velünk a kapcsolatot',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'Üdvözöljük újra',
     ],
 ];

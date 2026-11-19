@@ -59,6 +59,8 @@ class Move
 			}
 		}
 
+		(new SyncRecursiveNsfw())->do();
+
 		AlbumSaved::dispatchIf($moved_album_ids !== [], $moved_album_ids, [$target_album?->id]);
 		AlbumChildrenChanged::dispatchIf($old_parent_ids->isNotEmpty(), $old_parent_ids->all());
 	}

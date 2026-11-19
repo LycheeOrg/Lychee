@@ -128,7 +128,7 @@ class RenamerRule extends Model
 
 ## Related Documentation
 
-- [Using Renamer](../../2-how-to/using-renamer.md) - How-to guide for adding rules and applying patterns
+- [Using Renamer](../2-how-to/using-renamer.md) - How-to guide for adding rules and applying patterns
 - [Backend Architecture](../4-architecture/backend-architecture.md) - Overall backend structure
 
 ---

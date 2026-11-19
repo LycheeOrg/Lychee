@@ -1,10 +1,10 @@
 <template>
-	<UModal v-model:open="visible" :dismissible="true" @update:open="(v: boolean) => v && onShow()">
+	<UModal v-model:open="visible" :dismissible="true">
 		<template #header>
 			<span class="font-bold">{{ $t("people.assignment.batch_title", { count: String(faceIds.length) }) }}</span>
 		</template>
 		<template #body>
-			<PersonInput ref="personInputRef" v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" />
+			<PersonInput v-model:person-id="selectedPersonId" v-model:new-person-name="newPersonName" @submit="submitOnEnter" />
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
@@ -54,7 +54,13 @@ const toast = useAppToast();
 const selectedPersonId = ref<string | undefined>(undefined);
 const newPersonName = ref("");
 const submitting = ref(false);
-const personInputRef = ref<InstanceType<typeof PersonInput> | null>(null);
+
+function submitOnEnter() {
+	if (submitting.value || (!selectedPersonId.value && !newPersonName.value.trim())) {
+		return;
+	}
+	submit();
+}
 
 function submit() {
 	submitting.value = true;
@@ -82,9 +88,5 @@ function submit() {
 		.finally(() => {
 			submitting.value = false;
 		});
-}
-
-function onShow() {
-	personInputRef.value?.reset();
 }
 </script>

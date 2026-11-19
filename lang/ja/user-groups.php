@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'ユーザーグループ',
+    'explanation' => 'ユーザーグループを使うと、ユーザーを整理し、権限をまとめて管理できます。',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'グループを作成',
+    'edit' => '編集',
+    'delete' => '削除',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'グループを読み込み中...',
+    'empty' => 'グループが見つかりません。',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'メンバーを追加...',
+    'empty_group' => 'このグループは空です。',
+    'no_permission_members' => 'このグループのメンバーを表示する権限がありません。',
+    'remove_success' => '%s を %s から削除しました。',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'グループを削除',
+    'confirm_delete_message' => 'このグループを削除してもよろしいですか？',
+    'cancel' => 'キャンセル',
+    'confirm' => '削除',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'グループ名',
+        'description' => '説明',
+        'users' => 'ユーザー',
+        'cancel' => 'キャンセル',
+        'create' => '作成',
+        'edit' => '編集',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'グループ名は必須です。',
     ],
 ];

@@ -80,6 +80,8 @@ class Merge
 			}
 		}
 
+		(new SyncRecursiveNsfw())->do();
+
 		AlbumChildrenChanged::dispatchIf($target_gains_children, [$target_album->id]);
 
 		// Now we delete the source albums

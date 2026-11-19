@@ -1,0 +1,12 @@
+{
+	"url": "https://api.github.com/repos/LycheeOrg/Lychee/compare/a1b2c3d...master",
+	"status": "ahead",
+	"ahead_by": 42,
+	"behind_by": 0,
+	"total_commits": 42,
+	"commits": [
+		{
+			"sha": "403a083b35425ba76be2409b5ec7fc2ac3f7ddf7"
+		}
+	]
+}

@@ -8,47 +8,53 @@
 
 namespace App\Http\Controllers\WebAuthn;
 
+use App\Actions\WebAuthn\GenerateRegistrationOptions;
+use App\Actions\WebAuthn\StoreCredential;
 use App\Enum\CacheTag;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\UnauthenticatedException;
-use Illuminate\Contracts\Support\Responsable;
+use App\Exceptions\WebAuthnVerificationException;
+use App\Http\Requests\WebAuthn\RegisterCredentialRequest;
+use App\Http\Requests\WebAuthn\RegisterOptionsRequest;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Laragear\WebAuthn\Http\Requests\AttestationRequest;
-use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 
 class WebAuthnRegisterController extends Controller
 {
 	/**
-	 * Returns a challenge to be verified by the user device.
+	 * Returns a challenge to be verified by the user device (FR-107-01).
 	 *
-	 * @param AttestationRequest $request
+	 * @return array<array-key,mixed>
 	 *
-	 * @return Responsable
+	 * @throws UnauthenticatedException
 	 */
-	public function options(AttestationRequest $request): Responsable
+	public function options(RegisterOptionsRequest $request, GenerateRegistrationOptions $generate): array
 	{
-		/** @disregard P1014 */
-		$request->user = Auth::user() ?? throw new UnauthenticatedException();
-
-		return $request
-			->fastRegistration()
-			->toCreate();
+		return $generate->do($this->user());
 	}
 
 	/**
-	 * Registers a device for further WebAuthn authentication.
+	 * Registers a device for further WebAuthn authentication (FR-107-03).
 	 *
-	 * @param AttestedRequest $request
-	 *
-	 * @return void
+	 * @throws UnauthenticatedException
+	 * @throws WebAuthnVerificationException
 	 */
-	public function register(AttestedRequest $request): void
+	public function register(RegisterCredentialRequest $request, StoreCredential $store): void
 	{
-		/** @disregard P1014 */
-		$request->user = Auth::user() ?? throw new UnauthenticatedException();
-		$request->save();
+		$store->do($this->user(), $request->publicKeyCredential());
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+	}
+
+	/**
+	 * @throws UnauthenticatedException
+	 */
+	private function user(): User
+	{
+		/** @var User|null $user */
+		$user = Auth::user();
+
+		return $user ?? throw new UnauthenticatedException();
 	}
 }

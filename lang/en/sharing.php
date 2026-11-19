@@ -37,6 +37,7 @@ return [
         'download' => 'Grants download',
         'upload' => 'Grants upload',
         'edit' => 'Grants edit',
+        'move' => 'Grants move, copy and merge',
         'delete' => 'Grants delete',
     ],
 ];

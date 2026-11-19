@@ -5,7 +5,7 @@ _Last updated: 2026-05-30_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions. Update the roadmap status when all tasks are done.
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../../open-questions.md) instead of informal notes.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes.
 
 ## Checklist
 

@@ -12,6 +12,7 @@ use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Models\Tag;
+use App\Services\BucketKeys;
 
 /**
  * Hydrates meta-info of the media file from the
@@ -77,6 +78,8 @@ class HydrateMetadata implements SharedPipe
 			$state->photo->taken_at = $state->exif_info->taken_at;
 			$state->photo->initial_taken_at = $state->exif_info->taken_at;
 		}
+		// FR-092-01: assigned at every write of `taken_at`.
+		$state->photo->taken_key = BucketKeys::takenKey($state->photo->taken_at);
 		if ($state->photo->latitude === null) {
 			$state->photo->latitude = $state->exif_info->latitude;
 		}
@@ -94,6 +97,13 @@ class HydrateMetadata implements SharedPipe
 		}
 		if ($state->photo->live_photo_content_id === null) {
 			$state->photo->live_photo_content_id = $state->exif_info->live_photo_content_id;
+		}
+		if ($state->photo->is_360 === null) {
+			$state->photo->is_360 = $state->exif_info->is_360;
+			$state->photo->pano_full_width = $state->exif_info->pano_full_width;
+			$state->photo->pano_full_height = $state->exif_info->pano_full_height;
+			$state->photo->pano_crop_left = $state->exif_info->pano_crop_left;
+			$state->photo->pano_crop_top = $state->exif_info->pano_crop_top;
 		}
 
 		return $next($state);

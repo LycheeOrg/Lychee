@@ -17,9 +17,12 @@
 	<AlbumsHeader v-if="userStore.isLoaded && albumsStore.rootConfig" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
 	<UMain>
 		<div class="flex">
-			<AlbumNavPanel v-if="is_struct_of_array_enabled" />
+			<AlbumNavPanel />
 			<div class="flex-1 flex-col min-w-0">
-				<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
+				<!-- Disabled only when there is no album to right-click at all: `selectableAlbums` is the pool the
+				     selection resolves against (own, pinned and shared scopes), so a guest whose public albums arrive
+				     through the shared scope still gets the menu (Feature 097, FR-097-06). -->
+				<UContextMenu :items="menuSections" :disabled="albumsStore.selectableAlbums.length === 0" class="contents">
 					<div
 						v-if="albumsStore.rootConfig && albumsStore.rootRights"
 						id="galleryView"
@@ -27,55 +30,72 @@
 						@scroll="onScroll"
 					>
 						<SelectDrag :with-scroll="false" />
-						<!-- Smart Albums (always visible, above tabs per spec) -->
-						<AlbumThumbPanel
-							v-if="albumsStore.smartAlbums.length > 0"
-							header="gallery.smart_albums"
-							:albums="albumsStore.smartAlbums"
-							:is-alone="!albumsStore.albums.length"
-							:selected-albums="[]"
-							:is-timeline="false"
-						/>
+						<!-- Virtual album panels: the gap separates consecutive rendered panels only (FR-098-08). -->
+						<div class="flex flex-col gap-4">
+							<!-- Smart Albums (always visible, above tabs per spec) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.smartAlbumsPanel.length > 0"
+								header="gallery.smart_albums"
+								:albums="albumsStore.smartAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<!-- Tag and Person Albums, when their settings give them their own category (Feature 098) -->
+							<AlbumThumbPanel
+								v-if="albumsStore.tagAlbumsPanel.length > 0"
+								header="gallery.tag_albums"
+								:albums="albumsStore.tagAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+							<AlbumThumbPanel
+								v-if="albumsStore.personAlbumsPanel.length > 0"
+								header="gallery.person_albums"
+								:albums="albumsStore.personAlbumsPanel"
+								:is-alone="isVirtualPanelAlone"
+								:selected-albums="[]"
+								:is-timeline="false"
+							/>
+						</div>
 
 						<!-- Tabbed view for SEPARATE and SEPARATE_SHARED_ONLY modes (only when shared albums exist) -->
 						<template v-if="shouldShowTabs">
-							<UTabs v-model="activeTab" :items="tabItems" class="w-full">
+							<UTabs v-model="activeTab" :items="tabItems" class="w-full" variant="link" :dir="flippedDir">
 								<template #my-albums>
-									<template v-if="albumsStore.pinnedAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="false"
-											header="gallery.pinned_albums"
-											:albums="albumsStore.pinnedAlbums"
-											:is-alone="!displayAlbums.length"
-											:selected-albums="selectedAlbumsIds"
-											@clicked="albumSelect"
-											@contexted="contextMenuAlbumOpen"
-										/>
-									</template>
-									<template v-if="displayAlbums.length > 0">
-										<AlbumThumbPanel
-											:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
+									<ResetDir>
+										<template v-if="albumsStore.pinnedAlbums.length > 0">
+											<AlbumThumbPanel
+												:is-timeline="false"
+												header="gallery.pinned_albums"
+												:albums="albumsStore.pinnedAlbums"
+												:is-alone="!displayAlbums.length"
+												:selected-albums="selectedAlbumsIds"
+												@clicked="albumSelect"
+												@contexted="contextMenuAlbumOpen"
+											/>
+										</template>
+										<AlbumRootPanelVirtual
+											scope="own"
 											header="gallery.albums"
-											:albums="displayAlbums"
-											:is-alone="!albumsStore.pinnedAlbums.length"
 											:selected-albums="selectedAlbumsIds"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+									</ResetDir>
 								</template>
 								<template #shared>
-									<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-										<AlbumThumbPanel
-											:header="sharedAlbum.header"
-											:albums="sharedAlbum.data"
-											:is-alone="displaySharedAlbums.length === 1"
+									<ResetDir>
+										<AlbumRootPanelVirtual
+											scope="shared"
 											:selected-albums="selectedAlbumsIds"
-											:is-timeline="false"
 											@clicked="albumSelect"
+											@selected="albumSelect"
 											@contexted="contextMenuAlbumOpen"
 										/>
-									</template>
+									</ResetDir>
 								</template>
 							</UTabs>
 						</template>
@@ -93,29 +113,22 @@
 									@contexted="contextMenuAlbumOpen"
 								/>
 							</template>
-							<template v-if="displayAlbums.length > 0">
-								<AlbumThumbPanel
-									:is-timeline="albumsStore.rootConfig.is_album_timeline_enabled"
-									header="gallery.albums"
-									:albums="displayAlbums"
-									:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
-									:selected-albums="selectedAlbumsIds"
-									@clicked="albumSelect"
-									@contexted="contextMenuAlbumOpen"
-								/>
-							</template>
-							<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
-								<AlbumThumbPanel
-									v-if="shouldShowSharedAlbums"
-									:header="sharedAlbum.header"
-									:albums="sharedAlbum.data"
-									:is-alone="!displayAlbums.length"
-									:selected-albums="selectedAlbumsIds"
-									:is-timeline="false"
-									@clicked="albumSelect"
-									@contexted="contextMenuAlbumOpen"
-								/>
-							</template>
+							<AlbumRootPanelVirtual
+								scope="own"
+								header="gallery.albums"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@selected="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
+							<AlbumRootPanelVirtual
+								v-if="shouldShowSharedAlbums"
+								scope="shared"
+								:selected-albums="selectedAlbumsIds"
+								@clicked="albumSelect"
+								@selected="albumSelect"
+								@contexted="contextMenuAlbumOpen"
+							/>
 						</template>
 						<!-- </div> -->
 					</div>
@@ -173,6 +186,7 @@
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
+import AlbumRootPanelVirtual from "@/v8/components/gallery/albumModule/Virtualized/AlbumRootPanelVirtual.vue";
 import { useUserStore } from "@/stores/UserState";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/v8/components/headers/AlbumsHeader.vue";
@@ -219,7 +233,11 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import DownloadAlbum from "@/v8/components/modals/DownloadAlbum.vue";
 import { trans } from "laravel-vue-i18n";
 import type { ContextMenuItem, TabsItem } from "@nuxt/ui";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
+import { useLtRorRtL } from "@/utils/Helpers";
+import ResetDir from "@/v8/components/ResetDir.vue";
 
+const { flippedDir } = useLtRorRtL();
 const userStore = useUserStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
@@ -239,12 +257,16 @@ albumsStore.reset();
 photosStore.reset();
 photoStore.reset();
 
-async function refresh() {
+async function load() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	AlbumService.clearAlbums();
 	albumsStore.load(router);
-	albumListStore.invalidate();
 	orderManagementStore.refresh();
+}
+
+async function refresh() {
+	await load();
+	albumListStore.invalidate();
 }
 
 async function onLoggedIn() {
@@ -257,9 +279,17 @@ async function onLoggedIn() {
 const albumId = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
-const { is_login_open, is_upload_visible, list_upload_files, upload_config, is_webauthn_open, is_import_from_server_open, is_keybindings_help_open } =
-	storeToRefs(togglableStore);
-const { are_nsfw_visible, title, is_struct_of_array_enabled } = storeToRefs(lycheeStore);
+const {
+	is_login_open,
+	is_upload_visible,
+	list_upload_files,
+	upload_config,
+	is_webauthn_open,
+	is_import_from_server_open,
+	is_keybindings_help_open,
+	is_download_album_visible,
+} = storeToRefs(togglableStore);
+const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,
@@ -291,7 +321,6 @@ function togglePin() {
 	});
 }
 
-const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 
 const albumCallbacks = {
@@ -345,19 +374,22 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 	return sections.filter((s) => s.length > 0);
 });
 
-defineShortcuts({
-	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
-	f: () => togglableStore.toggleFullScreen(),
-	" ": () => unselect(),
-	m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
-	delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
-	backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
-	meta_a: () => {
-		selectEverything();
+definePanelShortcuts(
+	{
+		h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
+		f: () => togglableStore.toggleFullScreen(),
+		" ": () => unselect(),
+		m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
+		delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+		backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+		meta_a: () => {
+			selectEverything();
+		},
+		l: () => !userStore.isLoggedIn && (is_login_open.value = true),
+		k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
 	},
-	l: () => !userStore.isLoggedIn && (is_login_open.value = true),
-	k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
-});
+	{ extraModalOpen: isAdvisoriesVisible },
+);
 
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
 const root_parent_id = ref<string | null>(null);
@@ -379,36 +411,38 @@ const displayAlbums = computed(() => {
 	return albumsStore.albums;
 });
 
-// Determine which shared albums to display based on visibility mode
-const displaySharedAlbums = computed(() => {
+// Whether there are shared albums to show, respecting visibility mode. Shared
+// root data lands in `sharedAlbumsV3` (see `AlbumsState.ts`'s `load()`); guests
+// only ever have a "shared" scope, never "own", so without it they would see an
+// empty root page. "separate_shared_only" keeps only directly shared albums
+// (not public albums owned by others).
+const hasSharedAlbums = computed(() => {
 	if (sharedAlbumsVisibilityMode.value === "hide") {
-		// HIDE: don't show shared albums at all
-		return [];
+		return false;
 	}
 	if (sharedAlbumsVisibilityMode.value === "separate_shared_only") {
-		// Filter to only show directly shared albums (not public albums owned by others)
-		// An album is "directly shared" if it's not public (is_public === false)
-		return albumsStore.sharedAlbums
-			.map((group) => ({
-				...group,
-				data: group.data.filter((album) => !album.is_public),
-			}))
-			.filter((group) => group.data.length > 0);
+		return albumsStore.sharedAlbumsV3.some((album) => !album.is_public);
 	}
-	// SHOW and SEPARATE: show all shared albums grouped by owner
-	return albumsStore.sharedAlbums;
+	return albumsStore.sharedAlbumsV3.length > 0;
 });
 
 // Check if we should show shared albums section (for inline mode)
-const shouldShowSharedAlbums = computed(() => {
-	return displaySharedAlbums.value.length > 0;
-});
+const shouldShowSharedAlbums = computed(() => hasSharedAlbums.value);
+
+// A virtual album panel (smart, tag, person) hides its header only when no other panel is visible (FR-098-07).
+const isVirtualPanelAlone = computed(
+	() =>
+		albumsStore.virtualPanelCount === 1 &&
+		albumsStore.albums.length === 0 &&
+		albumsStore.pinnedAlbums.length === 0 &&
+		!shouldShowSharedAlbums.value,
+);
 
 // Check if we should show tabs (SEPARATE or SEPARATE_SHARED_ONLY mode with shared albums)
 const shouldShowTabs = computed(() => {
 	const mode = sharedAlbumsVisibilityMode.value;
 	const isSeparateMode = mode === "separate" || mode === "separate_shared_only";
-	return isSeparateMode && displaySharedAlbums.value.length > 0;
+	return isSeparateMode && hasSharedAlbums.value;
 });
 
 const { onPaste, dragEnd, dropUpload } = useMouseEvents(
@@ -429,7 +463,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-	await refresh();
+	await load();
 	setScroll();
 });
 

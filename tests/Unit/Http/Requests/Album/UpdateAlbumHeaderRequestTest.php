@@ -29,7 +29,7 @@ class UpdateAlbumHeaderRequestTest extends BaseRequestTest
 {
 	public function testAuthorization(): void
 	{
-		$albumMock = $this->createMock(Album::class);
+		$albumMock = self::createStub(Album::class);
 		$baseAlbumImpl = new BaseAlbumImpl();
 		$albumMock->method('__get')->willReturnCallback(function (string $key) use ($baseAlbumImpl) {
 			if ($key === 'base_class') {
@@ -44,7 +44,7 @@ class UpdateAlbumHeaderRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $albumMock])
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findBaseAlbumOrFail')
 			->willReturn($albumMock);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);

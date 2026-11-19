@@ -20,14 +20,14 @@ use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
 use Illuminate\Support\Facades\Schema;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use Tests\AbstractTestCase;
 
 class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 {
-	/** @var ConfigManager&MockObject */
+	/** @var ConfigManager&Stub */
 	private ConfigManager $config_manager;
-	/** @var FacialRecognitionService&MockObject */
+	/** @var FacialRecognitionService&Stub */
 	private FacialRecognitionService $facial_recognition_service;
 	private AiVisionFaceRecognitionServiceCheck $check;
 
@@ -35,8 +35,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	{
 		parent::setUp();
 
-		$this->config_manager = $this->createMock(ConfigManager::class);
-		$this->facial_recognition_service = $this->createMock(FacialRecognitionService::class);
+		$this->config_manager = self::createStub(ConfigManager::class);
+		$this->facial_recognition_service = self::createStub(FacialRecognitionService::class);
 		$this->check = new AiVisionFaceRecognitionServiceCheck($this->config_manager, $this->facial_recognition_service);
 	}
 
@@ -60,7 +60,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testSkipsWhenAiVisionDisabled(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(false);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', false]]);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -73,7 +73,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenServiceNotConfigured(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(false);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -92,7 +92,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenHealthCheckReturnsNonSuccessStatus(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -109,7 +109,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenHealthCheckReturnsInvalidFormat(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -126,7 +126,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testWarnWhenHealthCheckReturnsUnhealthyStatus(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -145,7 +145,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testNoErrorsWhenHealthCheckReturnsOk(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -160,7 +160,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testNoErrorsWhenHealthCheckReturnsHealthy(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')
@@ -177,7 +177,7 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenConnectionFails(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([['ai_vision_enabled', true]]);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
 		$this->facial_recognition_service->method('checkHealth')

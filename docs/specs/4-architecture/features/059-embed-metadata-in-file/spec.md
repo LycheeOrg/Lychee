@@ -9,7 +9,7 @@
 | Linked tasks | `docs/specs/4-architecture/features/059-embed-metadata-in-file/tasks.md` |
 | Roadmap entry | #059 |
 
-> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
+> Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [open-questions.md](open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/6-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 
 ## Overview
 
@@ -201,7 +201,7 @@ Covered under "Telemetry Events" above — log-only, no metrics/events pipeline 
 
 - Update `docs/specs/3-reference/image-processing.md` — new "Metadata Write-Back" section (config, tag-mapping table, checksum caveat), cross-referencing this feature.
 - Update `docs/specs/4-architecture/roadmap.md` — add Feature 059 to the Active Features table.
-- Update `docs/specs/4-architecture/open-questions.md` — log Q-059-01..08 (see Appendix) as resolved.
+- Update `open-questions.md` — log Q-059-01..08 (see Appendix) as resolved.
 - Update `docs/specs/_current-session.md` with a session summary entry once drafting is complete.
 
 ## Fixtures & Sample Data
@@ -276,7 +276,7 @@ ui_states:
 
 ### Resolved Decisions (Q-059-01..08)
 
-These are recorded in compressed form here and cross-referenced from `docs/specs/4-architecture/open-questions.md`; all were resolved directly from the user's own request phrasing plus grounded codebase precedent, without requiring a blocking clarification round.
+These are recorded in compressed form here and cross-referenced from `open-questions.md`; all were resolved directly from the user's own request phrasing plus grounded codebase precedent, without requiring a blocking clarification round.
 
 - **Q-059-01 (trigger scope per field):** Title/description/tags sync trigger for **any** user who already has `CAN_EDIT` on the photo (owner, admin, or shared-album editor) — the same permission the three endpoints already require today. Rating sync is restricted to the **photo owner's own rating** only. *Rationale:* the user's own request explicitly distinguishes "a user" (tags) from "the owner" (rating); this also matches the underlying permission architecture exactly — title/description/tags are already `CAN_EDIT`-gated (an editor-not-owner scenario is a real, existing case for shared albums), while rating is `CAN_SEE`-gated and *not* owner-restricted today (Feature 001, Q001-05), so an explicit additional owner check is the only way to give the file a single, meaningful "whose rating is this" answer.
 - **Q-059-02 (execution model):** Queued job (`EmbedMetadataJob`, `ShouldQueue`), not inline synchronous code in the controller. *Rationale:* mirrors the closest existing precedent (`WatermarkerJob`, also a single-size-variant file mutation dispatched from a controller action); with the default `QUEUE_CONNECTION=sync` it still runs within the request today, so there is no functional difference for the common case, but the door is open for async queues without a later refactor.

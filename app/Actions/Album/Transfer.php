@@ -39,6 +39,7 @@ class Transfer
 
 			$base_album->makeRoot();
 			$base_album->save();
+			(new SyncRecursiveNsfw())->do();
 			$base_album->fixOwnershipOfChildren();
 
 			AlbumSaved::dispatch([$base_album->id], [$base_album->parent_id]);

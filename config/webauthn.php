@@ -29,7 +29,7 @@ return [
 	*/
 
 	'challenge' => [
-		'bytes' => 16,
+		'bytes' => 32,
 		'timeout' => 60,
 		'key' => '_webauthn',
 	],

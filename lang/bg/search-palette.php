@@ -6,13 +6,13 @@ return [
     | Search Palette
     |--------------------------------------------------------------------------
     */
-    'placeholder' => 'Search albums, photos or jump to a page…',
-    'navigation' => 'Go to',
-    'actions' => 'Actions',
-    'albums' => 'Albums',
-    'results' => 'Search results',
-    'empty' => 'No results found.',
-    'dark_mode' => 'Switch to dark mode',
-    'light_mode' => 'Switch to light mode',
-    'language' => 'Language',
+    'placeholder' => 'Търсене на албуми, снимки или преход към страница…',
+    'navigation' => 'Отиди на',
+    'actions' => 'Действия',
+    'albums' => 'Албуми',
+    'results' => 'Резултати от търсенето',
+    'empty' => 'Няма намерени резултати.',
+    'dark_mode' => 'Превключи към тъмен режим',
+    'light_mode' => 'Превключи към светъл режим',
+    'language' => 'Език',
 ];

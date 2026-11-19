@@ -8,15 +8,14 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 
-class FetchSourceImage implements StandalonePipe
+class FetchSourceImage extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		try {
 			if ($state->photo->isVideo()) {
@@ -41,6 +40,11 @@ class FetchSourceImage implements StandalonePipe
 		}
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.fetch_image_source';
 	}
 }
 

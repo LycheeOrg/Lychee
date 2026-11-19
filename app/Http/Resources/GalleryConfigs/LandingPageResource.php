@@ -304,7 +304,7 @@ class LandingPageResource extends Data
 		$query = Photo::query()->with(['size_variants']);
 
 		// Apply public access filter (user=null, no unlocked albums)
-		$query = $photo_query_policy->applySearchabilityFilter($query, null, []);
+		$query = $photo_query_policy->applySearchabilityFilter($query, null, [], include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_landing_page'));
 
 		$photo = $query->inRandomOrder()->limit(1)->first();
 
@@ -378,6 +378,7 @@ class LandingPageResource extends Data
 		// Get random photo from album
 		$photo = Photo::query()
 			->with(['size_variants'])
+			->where('is_validated', true)
 			->whereHas('albums', static function ($query) use ($album): void {
 				$query->whereKey($album->id);
 			})

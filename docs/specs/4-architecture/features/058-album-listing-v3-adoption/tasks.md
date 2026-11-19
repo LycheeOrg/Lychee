@@ -6,7 +6,7 @@ _Last updated: 2026-08-22_
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
 > When referencing requirements, keep feature IDs (`F-`), non-goal IDs (`N-`), and scenario IDs (`S-058-`) inside the same parentheses immediately after the task title (omit categories that do not apply).
-> When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](../../open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections reflect the clarified behaviour.
+> When new high- or medium-impact questions arise during execution, add them to [open-questions.md](open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections reflect the clarified behaviour.
 >
 > **v8 only.** Every file this feature touches lives under `resources/js/v8/` (or the shared, non-versioned `resources/js/stores/`/`resources/js/services/`). Several tasks below name a `resources/js/v7/...` file with the same basename purely to say "leave it alone" — never edit it.
 

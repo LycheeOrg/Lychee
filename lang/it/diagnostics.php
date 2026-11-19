@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
+    'title' => 'Diagnostica',
+    'copy_to_clipboard' => 'Copia la diagnostica negli appunti',
+    'self-diagnosis' => 'Autodiagnosi',
     'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'space' => 'Spazio',
+    'load_space' => 'Carica l\'utilizzo dello spazio.',
+    'configuration' => 'Configurazione',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => 'Contenuto identico',
     'toast' => [
         'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'copy' => 'Diagnostica copiata negli appunti!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'La copia della diagnostica è disponibile solo in contesti sicuri (HTTPS).',
 ];

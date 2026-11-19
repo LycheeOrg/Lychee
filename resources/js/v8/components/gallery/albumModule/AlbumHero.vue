@@ -4,6 +4,12 @@
 		:album="albumStore.album"
 		@scroll-to-pictures="emits('scrollToPictures')"
 	/>
+	<AlbumMapHeader
+		v-else-if="albumStore.album && albumStore.album.preFormattedData.is_map_header"
+		:key="`map_header_${albumStore.album.id}`"
+		:album-id="albumStore.album.id"
+		:tracks="albumStore.modelAlbum?.tracks ?? []"
+	/>
 	<UCard
 		class="w-full"
 		v-if="albumStore.album"
@@ -179,18 +185,21 @@ import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
-import { computed, ref, watch } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import AlbumStatistics from "./AlbumStatistics.vue";
 import AlbumPeopleFilter from "./AlbumPeopleFilter.vue";
-import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useGlobalRights } from "@/composables/useGlobalRights";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import AlbumHeaderPanel from "./AlbumHeaderPanel.vue";
 import { needSizeVariantsWatermark } from "@/utils/watermarkHelpers";
 
+// Feature 086: Leaflet only loads for albums whose header is a map (NFR-086-05).
+const AlbumMapHeader = defineAsyncComponent(() => import("./AlbumMapHeader.vue"));
+
 const userStore = useUserStore();
-const leftMenu = useLeftMenuStateStore();
+const { rights } = useGlobalRights();
 const lycheeStore = useLycheeStateStore();
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
@@ -214,11 +223,11 @@ const hasCoordinates = computed(() =>
 	photosStore.photos.some((photo) => photo.precomputed.latitude !== null && photo.precomputed.longitude !== null),
 );
 
-const isRenamerEnabled = computed(() => leftMenu.initData?.modules.is_mod_renamer_enabled && albumStore.rights?.can_edit);
+const isRenamerEnabled = computed(() => rights.value?.modules.is_mod_renamer_enabled && albumStore.rights?.can_edit);
 
 const isWatermarkerEnabled = computed(
 	() =>
-		leftMenu.initData?.modules.is_watermarker_enabled &&
+		rights.value?.modules.is_watermarker_enabled &&
 		albumStore.rights?.can_edit &&
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );

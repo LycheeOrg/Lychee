@@ -27,7 +27,7 @@ class ZipRequestTest extends BaseRequestTest
 {
 	public function testAuthorization()
 	{
-		$albumMock = $this->createMock(TagAlbum::class);
+		$albumMock = self::createStub(TagAlbum::class);
 
 		$albumMockCollection = collect([$albumMock]);
 
@@ -36,7 +36,7 @@ class ZipRequestTest extends BaseRequestTest
 			->with(AlbumPolicy::CAN_DOWNLOAD, $albumMock)
 			->andReturn(true);
 
-		$mockAlbumFactory = $this->createMock(AlbumFactory::class);
+		$mockAlbumFactory = self::createStub(AlbumFactory::class);
 		$mockAlbumFactory->method('findAbstractAlbumsOrFail')
 			->willReturn($albumMockCollection);
 		$this->app->instance(AlbumFactory::class, $mockAlbumFactory);

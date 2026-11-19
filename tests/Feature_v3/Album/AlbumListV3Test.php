@@ -18,9 +18,13 @@
 
 namespace Tests\Feature_v3\Album;
 
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v3\Base\BaseApiWithDataTest;
@@ -172,6 +176,165 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		self::assertContains($locked_album->id, $response->json('ids'));
 	}
 
+	// ── browsability of ancestors (FR-057-01) ────────────────────
+
+	/**
+	 * S-057-19: a public+visible album nested under a private album is not
+	 * reachable by clicking, so it is excluded.
+	 */
+	public function testPublicAlbumUnderPrivateParentIsExcluded(): void
+	{
+		$private_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$public_child = Album::factory()->children_of($private_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+
+		$response->assertOk();
+		$ids = $response->json('ids');
+		self::assertNotContains($private_parent->id, $ids);
+		self::assertNotContains($public_child->id, $ids);
+	}
+
+	/**
+	 * S-057-20: a public+visible album nested under a link-required album is
+	 * excluded, even though the parent itself is public.
+	 */
+	public function testPublicAlbumUnderLinkRequiredParentIsExcluded(): void
+	{
+		$hidden_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->for_album($hidden_parent)->create();
+		$public_child = Album::factory()->children_of($hidden_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+
+		$response->assertOk();
+		$ids = $response->json('ids');
+		self::assertNotContains($hidden_parent->id, $ids);
+		self::assertNotContains($public_child->id, $ids);
+	}
+
+	/**
+	 * S-057-21: a public+visible album nested under a password-protected
+	 * parent is excluded until the parent is unlocked; the locked parent
+	 * itself stays listed (S-057-13).
+	 */
+	public function testPublicAlbumUnderLockedParentAppearsOnlyOnceUnlocked(): void
+	{
+		$locked_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_parent)->create();
+		$public_child = Album::factory()->children_of($locked_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		Auth::logout();
+		$response_locked = $this->getJsonV3('Albums');
+		$response_locked->assertOk();
+		self::assertContains($locked_parent->id, $response_locked->json('ids'));
+		self::assertNotContains($public_child->id, $response_locked->json('ids'));
+
+		session()->push(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, $locked_parent->id);
+		$response_unlocked = $this->getJsonV3('Albums');
+		$response_unlocked->assertOk();
+		self::assertContains($locked_parent->id, $response_unlocked->json('ids'));
+		self::assertContains($public_child->id, $response_unlocked->json('ids'));
+	}
+
+	/**
+	 * S-057-22: an authenticated non-owner gets the same ancestor check — a
+	 * public album under another user's private album is excluded.
+	 */
+	public function testNonAdminDoesNotSeePublicAlbumUnderOthersPrivateParent(): void
+	{
+		$private_parent = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$public_child = Album::factory()->children_of($private_parent)->owned_by($this->userLocked)->create();
+		AccessPermission::factory()->public()->visible()->for_album($public_child)->create();
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonV3('Albums');
+
+		$response->assertOk();
+		self::assertNotContains($public_child->id, $response->json('ids'));
+	}
+
+	// ── locked-album cover visibility (#4704) ────────────────────
+
+	/**
+	 * Mirrors {@see \Tests\Feature_v2\Album\AlbumsTest::testLockedAlbumHidesThumbByDefault()}:
+	 * a password-protected, not-yet-unlocked album must still resolve to a
+	 * `null` cover here too — `resolveCoverId()` alone (privilege priority)
+	 * is not enough, the lock state must gate it.
+	 */
+	public function testLockedAlbumHidesCoverByDefault(): void
+	{
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertNull($json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumShowsCoverWhenGlobalConfigEnabled(): void
+	{
+		Configs::set('show_cover_of_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		$photo = Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertSame($photo->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumShowsSelectedCoverWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		$selected_cover = Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		$locked_album->cover_id = $selected_cover->id;
+		$locked_album->save();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertSame($selected_cover->id, $json['cover_ids'][$idx]);
+	}
+
+	public function testLockedAlbumHidesAutoSelectedCoverEvenWhenSelectedCoverConfigEnabled(): void
+	{
+		Configs::set('show_selected_cover_on_locked_albums', true);
+
+		$locked_album = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		Photo::factory()->owned_by($this->userLocked)->in($locked_album)->create();
+		AccessPermission::factory()->public()->visible()->locked()->for_album($locked_album)->create();
+		(new RecomputeAlbumStatsJob($locked_album->id))->handle();
+
+		Auth::logout();
+		$response = $this->getJsonV3('Albums');
+		$response->assertOk();
+		$json = $response->json();
+		$idx = $this->indexOf($json['ids'], $locked_album->id);
+		self::assertNull($json['cover_ids'][$idx], 'an auto-selected cover must not leak through the manual-cover-only setting');
+	}
+
 	/**
 	 * The response is a bare SoA object with no pagination envelope
 	 * (NFR-057-02).
@@ -183,7 +346,7 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		$response->assertOk();
 		$json = $response->json();
 
-		self::assertEqualsCanonicalizing(['_lft', '_rgt', 'bulk_edit', 'cover_ids', 'ids', 'parent_ids', 'titles'], array_keys($json));
+		self::assertEqualsCanonicalizing(['_lft', '_rgt', 'bulk_edit', 'can_edits', 'cover_ids', 'ids', 'parent_ids', 'titles'], array_keys($json));
 	}
 
 	// ── cover_ids resolution (FR-057-09) ─────────────────────────
@@ -390,6 +553,63 @@ class AlbumListV3Test extends BaseApiWithDataTest
 		self::assertSame($this->userMayUpload1->id, $json['bulk_edit']['owner_ids'][$idx]);
 	}
 
+	// ── Capture range (Feature 103) ───────────────────────────────
+
+	/**
+	 * S-103-30: the range covers the photos of the album and of its sub-album.
+	 */
+	public function testAdminForBulkEditReturnsCaptureRange(): void
+	{
+		$album = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$sub_album = Album::factory()->children_of($album)->owned_by($this->userMayUpload1)->create();
+		Photo::factory()->owned_by($this->userMayUpload1)->in($album)->create(['taken_at' => Carbon::create(2023, 8, 28, 12)]);
+		Photo::factory()->owned_by($this->userMayUpload1)->in($sub_album)->create(['taken_at' => Carbon::create(2019, 6, 3, 10)]);
+		(new RecomputeAlbumStatsJob($sub_album->id))->handle();
+		(new RecomputeAlbumStatsJob($album->id))->handle();
+
+		$response = $this->actingAs($this->admin)->getJsonV3('Albums', ['for_bulk_edit' => true]);
+		$response->assertOk();
+		$json = $response->json();
+
+		$idx = $this->indexOf($json['ids'], $album->id);
+		self::assertStringStartsWith('2019-06-03', $json['bulk_edit']['min_taken_ats'][$idx]);
+		self::assertStringStartsWith('2023-08-28', $json['bulk_edit']['max_taken_ats'][$idx]);
+	}
+
+	/**
+	 * S-103-31: an album without photos has no capture range.
+	 */
+	public function testAdminForBulkEditCaptureRangeOfEmptyAlbumIsNull(): void
+	{
+		$response = $this->actingAs($this->admin)->getJsonV3('Albums', ['for_bulk_edit' => true]);
+		$response->assertOk();
+		$json = $response->json();
+
+		$idx = $this->indexOf($json['ids'], $this->album5->id);
+		self::assertNull($json['bulk_edit']['min_taken_ats'][$idx]);
+		self::assertNull($json['bulk_edit']['max_taken_ats'][$idx]);
+	}
+
+	/**
+	 * S-103-33: the capture range is read by the listing query itself.
+	 */
+	public function testCaptureRangeIsReadByTheListingQuery(): void
+	{
+		Configs::set('managed_cache_albums_enabled', '0');
+		$this->actingAs($this->admin);
+
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$this->getJsonV3('Albums', ['for_bulk_edit' => true])->assertOk();
+		$queries = array_map(fn (array $q) => str_replace(['"', '`'], '', $q['query']), DB::getQueryLog());
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		$range_queries = array_values(array_filter($queries, fn (string $sql) => str_contains($sql, 'min_taken_at')));
+		self::assertCount(1, $range_queries);
+		self::assertStringContainsString('albums._lft', $range_queries[0]);
+	}
+
 	// ── Managed cache (Feature 052/053 integration) ──────────────
 
 	/**
@@ -476,5 +696,43 @@ class AlbumListV3Test extends BaseApiWithDataTest
 
 		self::assertNotContains($new_album_id, $before_ids);
 		self::assertContains($new_album_id, $after_ids);
+	}
+
+	// ── can_edits ─────
+
+	public function testCanEditsReflectEditRightsPerAlbum(): void
+	{
+		$json = $this->actingAs($this->userMayUpload2)->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertCount(count($json['ids']), $json['can_edits']);
+		self::assertTrue($json['can_edits'][$this->indexOf($json['ids'], $this->album1->id)], 'perm1 grants edit on album1');
+		self::assertTrue($json['can_edits'][$this->indexOf($json['ids'], $this->album2->id)], 'own album');
+		self::assertFalse($json['can_edits'][$this->indexOf($json['ids'], $this->album4->id)], 'public, read-only');
+	}
+
+	public function testCanEditsAllFalseForGuest(): void
+	{
+		$json = $this->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertSame(array_fill(0, count($json['ids']), false), $json['can_edits']);
+	}
+
+	public function testCanEditsAllTrueForAdmin(): void
+	{
+		$json = $this->actingAs($this->admin)->getJsonV3('Albums')->assertOk()->json();
+
+		self::assertSame(array_fill(0, count($json['ids']), true), $json['can_edits']);
+	}
+
+	public function testCanEditsIsComputedInsideTheListingQuery(): void
+	{
+		Configs::set('managed_cache_albums_enabled', '0');
+		$this->actingAs($this->userMayUpload2);
+		$edit_queries = $this->countTableQueries(fn () => $this->getJsonV3('Albums')->assertOk(), ['edit_perm']);
+		$listing_queries = $this->countTableQueries(fn () => $this->getJsonV3('Albums')->assertOk(), ['_lft']);
+
+		// Cache off: exactly one listing query, and the edit grant lives inside it.
+		self::assertSame(1, $listing_queries);
+		self::assertSame(1, $edit_queries, 'the edit grant must be a sub-query of the listing query, not a query of its own');
 	}
 }

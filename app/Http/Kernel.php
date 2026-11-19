@@ -27,9 +27,35 @@ class Kernel extends HttpKernel
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
 		\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
-		\App\Http\Middleware\ResolveConfigs::class,
-		\App\Http\Middleware\ResolveVerify::class,
-		\App\Http\Middleware\SetLocale::class,
+	];
+
+	/**
+	 * The priority-sorted list of middleware.
+	 *
+	 * Laravel's default list, plus {@see Middleware\ReadOnlyStartSession}
+	 * right after `StartSession`, so it always runs before `AuthenticateSession`.
+	 *
+	 * The config, verification and locale middleware come first, as the
+	 * groups list them (ADR-102-02).
+	 *
+	 * @var array<int,string>
+	 */
+	protected $middlewarePriority = [
+		Middleware\ResolveConfigs::class,
+		Middleware\ResolveVerify::class,
+		Middleware\SetLocale::class,
+		\Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+		\Illuminate\Cookie\Middleware\EncryptCookies::class,
+		\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+		\Illuminate\Session\Middleware\StartSession::class,
+		Middleware\ReadOnlyStartSession::class,
+		\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+		\Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+		\Illuminate\Routing\Middleware\ThrottleRequests::class,
+		\Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+		\Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+		\Illuminate\Routing\Middleware\SubstituteBindings::class,
+		\Illuminate\Auth\Middleware\Authorize::class,
 	];
 
 	/**
@@ -39,6 +65,9 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'installation:complete',
 			'admin_user:set',
 			'accept_content_type:html',
@@ -53,6 +82,9 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -64,12 +96,23 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\DisableCSP::class,
 		],
 
+		'embed' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
+			\Illuminate\Http\Middleware\HandleCors::class,
+		],
+
 		'web-install' => [
+			\App\Http\Middleware\ResolveConfigs::class,
 			'accept_content_type:html',
 			'installation:incomplete',
 		],
 
 		'api' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			\App\Http\Middleware\ResolveVerify::class,
+			\App\Http\Middleware\SetLocale::class,
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
@@ -78,6 +121,7 @@ class Kernel extends HttpKernel
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
+			'gallery_password',
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\Latency::class,
 			\App\Http\Middleware\ResolveAlbumSlug::class,
@@ -100,6 +144,7 @@ class Kernel extends HttpKernel
 		'json_errors' => \App\Http\Middleware\EnsureJsonErrorResponses::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
+		'gallery_password' => \App\Http\Middleware\GalleryPasswordRequired::class,
 		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,

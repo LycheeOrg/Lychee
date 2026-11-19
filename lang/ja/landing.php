@@ -6,24 +6,24 @@ return [
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
+    'gallery' => 'ギャラリー',
+    'access_gallery' => 'ギャラリーへ',
     'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
-    'client_login' => 'Client Login',
-    'view_public_gallery' => 'View public gallery',
-    'contact' => 'Contact',
+    'copyright' => 'このウェブサイト上のすべての画像の著作権は %1$s に帰属します © %2$s',
+    'client_login' => 'クライアントログイン',
+    'view_public_gallery' => '公開ギャラリーを見る',
+    'contact' => 'お問い合わせ',
     'portfolio' => [
-        'about' => 'About',
-        'featured' => 'Recent Work',
-        'scroll_down' => 'Scroll down',
+        'about' => '概要',
+        'featured' => '最近の作品',
+        'scroll_down' => '下へスクロール',
     ],
     'meridian' => [
-        'explore_label' => 'Explore',
-        'explore_caption' => 'View the gallery',
-        'contact_caption' => 'Get in touch',
+        'explore_label' => '探索',
+        'explore_caption' => 'ギャラリーを見る',
+        'contact_caption' => 'お問い合わせ',
     ],
     'studio' => [
-        'welcome_back' => 'Welcome back',
+        'welcome_back' => 'おかえりなさい',
     ],
 ];

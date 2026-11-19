@@ -1,5 +1,19 @@
 <template>
-	<svg viewBox="0 0 255.4 255.4" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg" :class="{ 'lychee-loading-icon--fast': fast }">
+	<svg
+		v-if="indicator.mode === 'unbranded'"
+		viewBox="0 0 24 24"
+		width="1em"
+		height="1em"
+		xmlns="http://www.w3.org/2000/svg"
+		class="loading-ring"
+		:class="{ 'loading-ring--fast': fast }"
+		aria-hidden="true"
+	>
+		<circle class="loading-ring-track" cx="12" cy="12" r="10" fill="none" stroke-width="3" />
+		<circle class="loading-ring-arc" cx="12" cy="12" r="10" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="16 47" />
+	</svg>
+	<img v-else-if="indicator.mode === 'custom'" class="size-[1em] object-contain" :src="indicator.url" alt="" aria-hidden="true" />
+	<svg v-else viewBox="0 0 255.4 255.4" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg" :class="{ 'lychee-loading-icon--fast': fast }">
 		<path
 			class="lychee-loading-stage lychee-loading-stage--leaf"
 			fill="#179e58"
@@ -50,9 +64,31 @@
 	</svg>
 </template>
 <script setup lang="ts">
+import { readLoadingIndicator } from "@/v8/utils/loadingIndicator";
+
 withDefaults(defineProps<{ fast?: boolean }>(), { fast: false });
+
+const indicator = readLoadingIndicator();
 </script>
 <style scoped>
+.loading-ring {
+	animation: loading-ring-spin 0.9s linear infinite;
+}
+.loading-ring--fast {
+	animation-duration: 0.6s;
+}
+.loading-ring-track {
+	stroke: color-mix(in srgb, var(--ui-primary) 25%, transparent);
+}
+.loading-ring-arc {
+	stroke: var(--ui-primary);
+}
+@keyframes loading-ring-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 .lychee-loading-stage {
 	--lychee-loading-cycle: 2.5s;
 	opacity: 0;

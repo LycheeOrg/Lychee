@@ -1,2 +1,23 @@
-LYCHEE_TEST_FIXTURE_NOT_REAL_GPX_CONTENT_2_3HgSmYP2NRVlDtfy3lDdqqjXNz0stP35v01s710K4lk+ItX1iQYlZsUDmgkB6GXd6TDjhd7QTtyb
-WBAgu25vvA==
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.0" creator="Lychee test fixture" xmlns="http://www.topografix.com/GPX/1/0">
+	<name>Sample route</name>
+	<url>https://lycheeorg.dev</url>
+	<urlname>Lychee</urlname>
+	<rte>
+		<name>Sample route</name>
+		<rtept lat="46.2044" lon="6.1432">
+			<ele>375</ele>
+		</rtept>
+		<rtept lat="46.2100" lon="6.1500">
+			<ele>380</ele>
+		</rtept>
+	</rte>
+	<trk>
+		<trkseg>
+			<trkpt lat="46.2044" lon="6.1432">
+				<speed>1.2</speed>
+				<course>45.0</course>
+			</trkpt>
+		</trkseg>
+	</trk>
+</gpx>

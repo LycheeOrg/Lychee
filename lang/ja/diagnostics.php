@@ -6,18 +6,18 @@ return [
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
+    'title' => '診断',
+    'copy_to_clipboard' => '診断情報をクリップボードにコピー',
+    'self-diagnosis' => '自己診断',
+    'info' => '情報',
+    'space' => '容量',
+    'load_space' => '使用容量を読み込む。',
+    'configuration' => '設定',
     'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'identical_content' => '同一の内容',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => '情報',
+        'copy' => '診断情報をクリップボードにコピーしました！',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => '診断情報のコピーは安全なコンテキスト (HTTPS) でのみ利用できます。',
 ];

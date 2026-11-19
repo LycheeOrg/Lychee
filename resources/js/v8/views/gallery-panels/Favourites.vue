@@ -47,6 +47,7 @@ import { storeToRefs } from "pinia";
 import { ref, computed, onMounted } from "vue";
 import { Collapse } from "vue-collapsed";
 import { useRouter } from "vue-router";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 
 const isLoading = ref(true);
 const albumId = ref("favourites");
@@ -75,7 +76,7 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
 }
 
-defineShortcuts({
+definePanelShortcuts({
 	f: () => togglableStore.toggleFullScreen(),
 	escape: {
 		usingInput: true,

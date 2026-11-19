@@ -175,6 +175,48 @@ class PersonClaimTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
+	public function testMergeSourceLinkedToOtherUserForbidden(): void
+	{
+		$this->person2->user_id = $this->userMayUpload2->id;
+		$this->person2->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Person/' . $this->person1->id . '/merge', [
+			'source_person_id' => $this->person2->id,
+		]);
+		$this->assertForbidden($response);
+
+		self::assertNotNull(Person::find($this->person1->id));
+		self::assertNotNull(Person::find($this->person2->id));
+	}
+
+	public function testMergeOwnLinkedSource(): void
+	{
+		$this->person2->user_id = $this->userMayUpload1->id;
+		$this->person2->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Person/' . $this->person1->id . '/merge', [
+			'source_person_id' => $this->person2->id,
+		]);
+		$this->assertCreated($response);
+
+		self::assertNull(Person::find($this->person2->id));
+	}
+
+	public function testMergeIntoTargetLinkedToOtherUser(): void
+	{
+		// Merging into a linked Person is like assigning faces to it: allowed.
+		$this->person1->user_id = $this->userMayUpload2->id;
+		$this->person1->save();
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Person/' . $this->person1->id . '/merge', [
+			'source_person_id' => $this->person2->id,
+		]);
+		$this->assertCreated($response);
+
+		self::assertNull(Person::find($this->person2->id));
+		self::assertEquals($this->userMayUpload2->id, Person::find($this->person1->id)->user_id);
+	}
+
 	public function testMergeInvalidSourcePerson(): void
 	{
 		$response = $this->actingAs($this->admin)->postJson('Person/' . $this->person1->id . '/merge', [

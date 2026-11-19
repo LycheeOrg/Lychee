@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 /**
  * MIT License
@@ -23,6 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import { bufferToBase64Url } from "./base64url";
 
 type ResponseWithBody = Response & { body: string };
 
@@ -199,13 +201,6 @@ export default class WebAuthn {
 	}
 
 	/**
-	 * Encodes an array of bytes to a BASE64 URL string
-	 */
-	static #arrayToBase64String(arrayBuffer: ArrayBuffer | Uint8Array): string {
-		return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-	}
-
-	/**
 	 * Parses the Public Key Options received from the Server for the browser.
 	 */
 	#parseIncomingServerOptions(publicKey: any): object {
@@ -234,6 +229,9 @@ export default class WebAuthn {
 
 	/**
 	 * Parses the outgoing credentials from the browser to the server.
+	 *
+	 * Lychee (Feature 107, FR-107-10): every binary member is sent as unpadded
+	 * base64url, the WebAuthn JSON form, and a missing user handle as null.
 	 */
 	#parseOutgoingCredentials(credentials: Credential | PublicKeyCredential): {
 		response: {};
@@ -245,7 +243,7 @@ export default class WebAuthn {
 			id: credentials.id,
 			type: credentials.type,
 			// @ts-ignore
-			rawId: WebAuthn.#arrayToBase64String(credentials.rawId),
+			rawId: bufferToBase64Url(credentials.rawId),
 			response: {},
 		};
 
@@ -253,7 +251,9 @@ export default class WebAuthn {
 			// @ts-ignore
 			.filter((key) => key in credentials.response)
 			// @ts-ignore
-			.forEach((key) => (parseCredentials.response[key] = WebAuthn.#arrayToBase64String(credentials.response[key])));
+			.forEach(
+				(key) => (parseCredentials.response[key] = credentials.response[key] === null ? null : bufferToBase64Url(credentials.response[key])),
+			);
 
 		return parseCredentials;
 	}

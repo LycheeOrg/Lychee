@@ -36,12 +36,16 @@ use App\Repositories\ConfigManager;
  *
  * (*) PRIVACY_PRESERVING returns false for non-admin in the global (entity-free) context.
  *     Per-entity ownership checks are enforced at the photo/album level in the scoped policies.
+ *
+ * A Person linked to a user can only be renamed, deleted, or merged away by that user or an admin
+ * (canManagePerson). Setting or clearing the link via PATCH is admin-only.
  */
 class AiVisionPolicy extends BasePolicy
 {
 	public const CAN_VIEW_PEOPLE = 'canViewPeople';
 	public const CAN_SHOW_PERSON = 'canShowPerson';
 	public const CAN_EDIT_PERSON = 'canEditPerson';
+	public const CAN_MANAGE_PERSON = 'canManagePerson';
 	public const CAN_CLAIM_PERSON = 'canClaimPerson';
 	public const CAN_MERGE_PERSONS = 'canMergePersons';
 	public const CAN_CHANGE_PERSON_SEARCHABILITY = 'canChangePersonSearchability';
@@ -154,16 +158,17 @@ class AiVisionPolicy extends BasePolicy
 	}
 
 	/**
-	 * Check if user can manage a specific person (delete, update searchability).
-	 * Only the linked user or admin can manage.
+	 * Rename, delete, or merge away a specific Person.
+	 * Requires canEditPerson access; a Person linked to a user additionally requires that user.
+	 * Admins always pass via before().
 	 */
 	public function canManagePerson(?User $user, Person $person): bool
 	{
-		if ($user === null) {
+		if (!$this->canEditPerson($user)) {
 			return false;
 		}
 
-		return $person->user_id === $user->id;
+		return $person->user_id === null || $person->user_id === $user?->id;
 	}
 
 	/**

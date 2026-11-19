@@ -63,6 +63,16 @@ class TimelineDataTest extends AbstractTestCase
 		self::assertEquals(15, $result->day);
 	}
 
+	public function testParseDateFromTitleWithCompactDate(): void
+	{
+		$result = TimelineData::parseDateFromTitle('20231225_183000');
+
+		self::assertNotNull($result);
+		self::assertEquals(2023, $result->year);
+		self::assertEquals(12, $result->month);
+		self::assertEquals(25, $result->day);
+	}
+
 	public function testParseDateFromTitleWithInvalidFormat(): void
 	{
 		$result = TimelineData::parseDateFromTitle('December 25, 2023');
@@ -104,26 +114,15 @@ class TimelineDataTest extends AbstractTestCase
 
 	public function testParseDateFromTitleWithInvalidMonth(): void
 	{
-		// Invalid month (13) - Carbon will overflow to next year
-		$result = TimelineData::parseDateFromTitle('2023-13-01 Invalid Month');
-
-		self::assertNotNull($result);
-		// Month 13 overflows to January of 2024
-		self::assertEquals(2024, $result->year);
-		self::assertEquals(1, $result->month);
-		self::assertEquals(1, $result->day);
+		// Not a calendar date: no timeline date, like BucketKeys::titleDateKey()
+		self::assertNull(TimelineData::parseDateFromTitle('2023-13-01 Invalid Month'));
 	}
 
 	public function testParseDateFromTitleWithInvalidDay(): void
 	{
-		// Invalid day (32) - Carbon will overflow to next month
-		$result = TimelineData::parseDateFromTitle('2023-12-32 Invalid Day');
-
-		self::assertNotNull($result);
-		// Day 32 of December overflows to January 1 of 2024
-		self::assertEquals(2024, $result->year);
-		self::assertEquals(1, $result->month);
-		self::assertEquals(1, $result->day);
+		self::assertNull(TimelineData::parseDateFromTitle('2023-12-32 Invalid Day'));
+		self::assertNull(TimelineData::parseDateFromTitle('2023-02-29'));
+		self::assertNull(TimelineData::parseDateFromTitle('20231232 x'));
 	}
 
 	public function testParseDateFromTitleWithShortYear(): void

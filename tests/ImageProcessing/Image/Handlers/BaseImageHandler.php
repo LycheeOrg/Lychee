@@ -18,16 +18,24 @@
 
 namespace Tests\ImageProcessing\Image\Handlers;
 
+use App\Enum\StorageDiskType;
 use App\Facades\Helpers;
+use App\Image\Files\NativeLocalFile;
+use App\Image\Files\TemporaryLocalFile;
+use App\Image\Handlers\GdHandler;
+use App\Image\Handlers\ImagickHandler;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use function Safe\date;
 use function Safe\file_get_contents;
 use function Safe\file_put_contents;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\Traits\ProbesStoredVideo;
 use Tests\Traits\RequiresExifTool;
 use Tests\Traits\RequiresFFMpeg;
 
@@ -40,6 +48,7 @@ use Tests\Traits\RequiresFFMpeg;
  */
 abstract class BaseImageHandler extends BaseApiWithDataTest
 {
+	use ProbesStoredVideo;
 	use RequiresExifTool;
 	use RequiresFFMpeg;
 
@@ -246,6 +255,263 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertStringEndsWith('.png', $response->json('photos.0.size_variants.original.url'));
 	}
 
+	/**
+	 * Generated size variants (all but original/raw/placeholder).
+	 */
+	private const GENERATED_VARIANTS = ['thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'];
+
+	/**
+	 * Uploads a file with the given size variant format/quality and returns the photo.
+	 * `small_max_height` is lowered so that the small 400x300 PNG sample also gets a small variant.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function uploadWithFormat(string $filename, string $format, int $quality): array
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_format = $config_manager->getValueAsString('size_variant_format');
+		$init_quality = $config_manager->getValueAsString('compression_quality');
+		$init_small_height = $config_manager->getValueAsString('small_max_height');
+		try {
+			Configs::set('size_variant_format', $format);
+			Configs::set('compression_quality', $quality);
+			Configs::set('small_max_height', 100);
+
+			return $this->uploadImage($filename)->json('photos.0');
+		} finally {
+			Configs::set('size_variant_format', $init_format);
+			Configs::set('compression_quality', $init_quality);
+			Configs::set('small_max_height', $init_small_height);
+		}
+	}
+
+	/**
+	 * @param array<string,mixed> $photo
+	 *
+	 * @return array<string,string> variant name => content of the generated file
+	 */
+	private function generatedVariantFiles(array $photo): array
+	{
+		$files = [];
+		foreach (self::GENERATED_VARIANTS as $variant) {
+			if ($photo['size_variants'][$variant] !== null) {
+				$files[$variant] = file_get_contents(public_path($this->dropUrlPrefix($photo['size_variants'][$variant]['url'])));
+			}
+		}
+		self::assertArrayHasKey('thumb', $files);
+		self::assertArrayHasKey('small', $files);
+
+		return $files;
+	}
+
+	/**
+	 * S-073-01, S-073-02: default format keeps the pre-feature extensions,
+	 * and each file's content matches its extension.
+	 */
+	public function testSizeVariantFormatOriginalKeepsExtensions(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'original', 90);
+		$files = $this->generatedVariantFiles($photo);
+
+		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
+		self::assertStringEndsWith('.jpeg', $photo['size_variants']['thumb']['url']);
+		self::assertEquals("\xFF\xD8", substr($files['thumb'], 0, 2));
+		self::assertStringEndsWith('.png', $photo['size_variants']['small']['url']);
+		self::assertEquals("\x89PNG", substr($files['small'], 0, 4));
+	}
+
+	/**
+	 * S-073-05: jpeg format forces .jpeg on small/medium of a PNG original.
+	 */
+	public function testSizeVariantFormatJpegFromPng(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'jpeg', 90);
+
+		self::assertStringEndsWith('.png', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
+		}
+	}
+
+	/**
+	 * S-073-03: webp format with lossy quality writes lossy WebP for every generated variant.
+	 */
+	public function testSizeVariantFormatWebpLossy(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'webp', 80);
+
+		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			$chunks = $this->webpChunks($content);
+			self::assertContains('VP8 ', $chunks, $variant);
+			self::assertNotContains('VP8L', $chunks, $variant);
+		}
+	}
+
+	/**
+	 * Returns the FourCC codes of the top-level chunks of a WebP (RIFF) file.
+	 * `VP8 ` is lossy image data, `VP8L` lossless; an optional `VP8X` header may precede them.
+	 *
+	 * @return string[]
+	 */
+	private function webpChunks(string $content): array
+	{
+		self::assertEquals('RIFF', substr($content, 0, 4));
+		self::assertEquals('WEBP', substr($content, 8, 4));
+		$chunks = [];
+		$offset = 12;
+		while ($offset + 8 <= strlen($content)) {
+			$chunks[] = substr($content, $offset, 4);
+			$size = \Safe\unpack('V', substr($content, $offset + 4, 4))[1];
+			$offset += 8 + $size + ($size % 2);
+		}
+
+		return $chunks;
+	}
+
+	/**
+	 * S-073-04: webp format with quality 0 writes lossless WebP.
+	 */
+	public function testSizeVariantFormatWebpLossless(): void
+	{
+		if (!resolve(ConfigManager::class)->hasImagick() && !GdHandler::supportsLosslessWebp()) {
+			self::markTestSkipped('This GD build cannot encode lossless WebP (libgd < 2.3.3).');
+		}
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_PNG, 'webp', 0);
+
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertContains('VP8L', $this->webpChunks($content), $variant);
+		}
+	}
+
+	/**
+	 * S-073-06: quality 0 on a format without a lossless mode still writes a valid JPEG,
+	 * including the auto-rotated original which goes through the same save path.
+	 */
+	public function testSizeVariantFormatJpegLosslessClamps(): void
+	{
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'jpeg', 0);
+
+		self::assertEquals(2016, $photo['size_variants']['original']['width']);
+		self::assertEquals(1512, $photo['size_variants']['original']['height']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jpeg', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals("\xFF\xD8", substr($content, 0, 2), $variant);
+		}
+	}
+
+	private function requireJxl(): void
+	{
+		if (!resolve(ConfigManager::class)->hasJxl()) {
+			self::markTestSkipped('This system cannot process JPEG XL (Imagick with JXL support required).');
+		}
+	}
+
+	private function assertIsJxl(string $content, string $message = ''): void
+	{
+		self::assertTrue(
+			str_starts_with($content, FileExtensionService::JXL_SIGNATURES[0]) || str_starts_with($content, FileExtensionService::JXL_SIGNATURES[1]),
+			$message);
+	}
+
+	/**
+	 * S-101-01: a JPEG XL original is kept byte-for-byte, its variants follow `size_variant_format`.
+	 */
+	public function testJxlUploadWithWebpVariants(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_JXL, 'webp', 80);
+
+		self::assertStringEndsWith('.jxl', $photo['size_variants']['original']['url']);
+		self::assertSame(
+			file_get_contents(base_path(TestConstants::SAMPLE_FILE_JXL)),
+			file_get_contents(public_path($this->dropUrlPrefix($photo['size_variants']['original']['url']))));
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.webp', $photo['size_variants'][$variant]['url'], $variant);
+			self::assertEquals('WEBP', substr($content, 8, 4), $variant);
+		}
+	}
+
+	/**
+	 * S-101-02: under `original`, thumbs of a JPEG XL original are JPEG, small/medium JPEG XL.
+	 */
+	public function testJxlUploadWithOriginalFormat(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_JXL, 'original', 80);
+		$files = $this->generatedVariantFiles($photo);
+
+		self::assertEquals(800, $photo['size_variants']['original']['width']);
+		self::assertGreaterThan(0, $photo['size_variants']['original']['height']);
+		self::assertStringEndsWith('.jpeg', $photo['size_variants']['thumb']['url']);
+		self::assertEquals("\xFF\xD8", substr($files['thumb'], 0, 2));
+		self::assertStringEndsWith('.jxl', $photo['size_variants']['small']['url']);
+		$this->assertIsJxl($files['small']);
+	}
+
+	/**
+	 * S-101-03: `jxl` writes JPEG XL for every generated variant of a JPEG upload.
+	 */
+	public function testSizeVariantFormatJxl(): void
+	{
+		$this->requireJxl();
+		$photo = $this->uploadWithFormat(TestConstants::SAMPLE_FILE_ORIENTATION_90, 'jxl', 80);
+
+		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
+		foreach ($this->generatedVariantFiles($photo) as $variant => $content) {
+			self::assertStringEndsWith('.jxl', $photo['size_variants'][$variant]['url'], $variant);
+			$this->assertIsJxl($content, $variant);
+		}
+	}
+
+	/**
+	 * S-101-04: quality 0 encodes JPEG XL losslessly: decoded pixels equal the source.
+	 */
+	public function testSizeVariantFormatJxlLossless(): void
+	{
+		$this->requireJxl();
+		Configs::set('compression_quality', 0);
+		$handler = new ImagickHandler();
+		$handler->load(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_PNG)));
+		$target = new TemporaryLocalFile('.jxl');
+
+		try {
+			$handler->save($target);
+			$this->assertIsJxl(file_get_contents($target->getRealPath()));
+			$difference = (new \Imagick($target->getRealPath()))
+				->compareImages(new \Imagick(base_path(TestConstants::SAMPLE_FILE_PNG)), \Imagick::METRIC_ABSOLUTEERRORMETRIC);
+			self::assertEquals(0.0, $difference[1]);
+		} finally {
+			$target->delete();
+		}
+	}
+
+	/**
+	 * FR-101-05: the lossy JPEG XL quality follows `compression_quality`.
+	 */
+	public function testSizeVariantFormatJxlQuality(): void
+	{
+		$this->requireJxl();
+		$handler = new ImagickHandler();
+		$handler->load(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)));
+		$sizes = [];
+		foreach ([20, 95] as $quality) {
+			Configs::set('compression_quality', $quality);
+			$target = new TemporaryLocalFile('.jxl');
+			try {
+				$handler->save($target);
+				$sizes[$quality] = strlen(file_get_contents($target->getRealPath()));
+			} finally {
+				$target->delete();
+			}
+		}
+
+		self::assertLessThan($sizes[95], $sizes[20]);
+	}
+
 	public function testGIFUpload(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GIF);
@@ -372,6 +638,123 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		self::assertEquals(16, $photo['size_variants']['placeholder']['height']);
 		self::assertEquals(null, $photo['live_photo_url']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+	}
+
+	/**
+	 * Feature 100 (S-100-01): a Motion Photo 1.0 file declares its video in a
+	 * `Container:Directory` instead of `MicroVideoOffset`. It is detected
+	 * without exiftool, so only FFmpeg is required.
+	 */
+	public function testGoogleMotionPhotoV1Upload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE);
+		$photo = $response->json('photos.0');
+
+		$this->assertMotionVideoStored($photo);
+		// S-100-22: an H.264 clip is copied as is.
+		$stream = $this->probeStoredVideo($this->livePhotoShortPath($photo));
+		self::assertSame('h264', $stream->get('codec_name'));
+		self::assertSame(320, $stream->get('width'));
+		self::assertSame(240, $stream->get('height'));
+	}
+
+	/**
+	 * Feature 100 (S-100-03): an Ultra HDR motion photo has a gain map
+	 * between the still and the video; the video is extracted, not the gain
+	 * map.
+	 */
+	public function testGoogleMotionPhotoUltraHdrUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_ULTRAHDR_IMAGE);
+
+		$this->assertMotionVideoStored($response->json('photos.0'));
+	}
+
+	/**
+	 * Feature 100 (S-100-01, S-100-03, FX-100-03): a real Pixel 11 Pro Ultra
+	 * HDR motion photo, whose primary container item has no `Item:Length`.
+	 * The stored clip must be the HEVC video, not the gain map JPEG.
+	 */
+	public function testGoogleMotionPhotoPixelUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_PIXEL_IMAGE);
+		$photo = $response->json('photos.0');
+
+		$this->assertMotionVideoStored($photo);
+		self::assertEquals(3064, $photo['size_variants']['original']['width']);
+		self::assertEquals(4080, $photo['size_variants']['original']['height']);
+
+		$short_path = $this->livePhotoShortPath($photo);
+		$header = Storage::disk(StorageDiskType::LOCAL->value)->get($short_path);
+		self::assertSame('ftyp', substr($header, 4, 4));
+
+		// S-100-21: the Pixel clip is HEVC 1440×1080 rotated by −90°; it is
+		// stored as upright H.264 so every browser can play it.
+		$stream = $this->probeStoredVideo($short_path);
+		self::assertSame('h264', $stream->get('codec_name'));
+		self::assertSame(1080, $stream->get('width'));
+		self::assertSame(1440, $stream->get('height'));
+	}
+
+	/**
+	 * Feature 100 (S-100-07): without FFmpeg the still is imported as a plain
+	 * photo.
+	 */
+	public function testGoogleMotionPhotoWithoutFFMpegUpload(): void
+	{
+		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_V1_IMAGE);
+		$photo = $response->json('photos.0');
+
+		self::assertNull($photo['live_photo_url']);
+		self::assertEquals(TestConstants::MIME_TYPE_IMG_JPEG, $photo['type']);
+		self::assertEquals(1280, $photo['size_variants']['original']['width']);
+		self::assertEquals(850, $photo['size_variants']['original']['height']);
+	}
+
+	/**
+	 * Feature 100 (S-100-09): the legacy `MicroVideoOffset` is now read from
+	 * the XMP packet too, so exiftool is no longer needed for old files.
+	 */
+	public function testLegacyGoogleMotionPhotoWithoutExifToolUpload(): void
+	{
+		$this->assertHasFFMpegOrSkip();
+		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 0);
+
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_GMP_IMAGE);
+
+		$this->assertMotionVideoStored($response->json('photos.0'));
+	}
+
+	/**
+	 * Asserts that the motion video of `$photo` was stored as a `.mov` next
+	 * to the original, under the same file name.
+	 *
+	 * @param array<string,mixed> $photo
+	 */
+	protected function assertMotionVideoStored(array $photo): void
+	{
+		self::assertNotNull($photo['live_photo_url']);
+		self::assertStringEndsWith('.mov', $photo['live_photo_url']);
+		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_DIRNAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_DIRNAME));
+		self::assertEquals(pathinfo($photo['live_photo_url'], PATHINFO_FILENAME), pathinfo($photo['size_variants']['original']['url'], PATHINFO_FILENAME));
+
+		self::assertGreaterThan(0, Storage::disk(StorageDiskType::LOCAL->value)->size($this->livePhotoShortPath($photo)));
+	}
+
+	/**
+	 * @param array<string,mixed> $photo
+	 */
+	protected function livePhotoShortPath(array $photo): string
+	{
+		return DB::table('photos')->where('id', '=', $photo['id'])->value('live_photo_short_path');
 	}
 
 	/**

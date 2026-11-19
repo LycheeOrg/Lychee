@@ -2,9 +2,9 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/057-album-listing-v3/spec.md`
 _Status:_ Completed
-_Last updated:_ 2026-08-22
+_Last updated:_ 2026-09-29
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [open-questions.md](open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
 ## Vision & Success Criteria
 
@@ -113,6 +113,15 @@ Record here at implementation time: confirm `AlbumQueryPolicy::joinBaseAlbumOwne
    - _Commands:_ as above.
    - _Exit:_ All checklist items in tasks.md `[x]`; quality gate green.
 
+8. **I8 – Browsable-only default listing**
+   - _Goal:_ FR-057-01 — list only albums reachable by clicking from the root (Q-057-06).
+   - _Preconditions:_ I1–I7 done.
+   - _Steps:_
+     - Feature tests first: S-057-19..22 in `AlbumListV3Test`.
+     - Add `AlbumQueryPolicy::applyAncestorReachabilityFilter()` (reuses `appendUnreachableAlbumsCondition()`, strict ancestors only) and apply it after `applyVisibilityFilter()` in `AlbumListController::queryAlbums()`.
+   - _Commands:_ `php artisan test --filter=AlbumListV3Test`, `vendor/bin/php-cs-fixer fix`, `make phpstan`.
+   - _Exit:_ S-057-01..22 green.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -129,12 +138,16 @@ Record here at implementation time: confirm `AlbumQueryPolicy::joinBaseAlbumOwne
 | S-057-10 | I6 / T-057-11 | Cache invalidation on mutation. |
 | S-057-11 | I5 / T-057-10 | Cache toggles off → uncached but correct. |
 | S-057-12 | I3 / T-057-05 | Index alignment incl. root `parent_ids`. |
-| S-057-13 | I2 / T-057-03 | Password-locked-but-visible album still listed. |
+| S-057-13 | I2 / T-057-03 | Password-locked-but-visible root album still listed. |
 | S-057-14 | I5 / T-057-10 | No cross-identity/cross-mode cache leakage. |
 | S-057-15 | I2 / T-057-04 | Explicit `cover_id` set. |
 | S-057-16 | I2 / T-057-04 | Owner/admin sees `auto_cover_id_max_privilege`. |
 | S-057-17 | I2 / T-057-04 | Other viewer sees `auto_cover_id_least_privilege`. |
 | S-057-18 | I2 / T-057-04 | No cover columns set → `null`, no fallback query. |
+| S-057-19 | I8 / T-057-13 | Public album under private parent excluded. |
+| S-057-20 | I8 / T-057-13 | Public album under link-required parent excluded. |
+| S-057-21 | I8 / T-057-13 | Public album under locked parent listed only once unlocked. |
+| S-057-22 | I8 / T-057-13 | Non-admin: public album under another user's private parent excluded. |
 
 ## Analysis Gate
 
@@ -142,12 +155,12 @@ Not yet run. Per AGENTS.md, run the analysis gate checklist ([docs/specs/5-opera
 
 ## Exit Criteria
 
-- All FR-057-01..08 and NFR-057-01..06 implemented and covered by S-057-01..14.
+- All FR-057-01..08 and NFR-057-01..06 implemented and covered by S-057-01..22.
 - `make phpstan` (level 6+) clean on all new/changed files.
 - `vendor/bin/php-cs-fixer fix` clean.
 - `php artisan test` targeted runs (`AlbumListV3Test`, `AlbumQueryPolicyTest`, `CacheKeyProviderTest`, `ManagedCacheAlbumListingInvalidator`) all green.
 - `docs/specs/3-reference/api-design.md`, `docs/specs/4-architecture/knowledge-map.md`, `docs/specs/4-architecture/roadmap.md` updated.
-- Open questions Q-057-01..04 remain resolved (already recorded in spec.md Appendix).
+- Open questions Q-057-01..06 resolved (recorded in spec.md Appendix).
 
 ## Follow-ups / Backlog
 

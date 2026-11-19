@@ -13,31 +13,15 @@ use App\Actions\Statistics\Spaces;
 use App\Enum\CountType;
 use App\Http\Requests\Statistics\CountsRequest;
 use App\Http\Requests\Statistics\SpacePerAlbumRequest;
-use App\Http\Requests\Statistics\SpacePerUserRequest;
 use App\Http\Requests\Statistics\SpaceSizeVariantRequest;
 use App\Http\Resources\Statistics\Album;
 use App\Http\Resources\Statistics\CountsData;
 use App\Http\Resources\Statistics\Sizes;
-use App\Http\Resources\Statistics\UserSpace;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 
 class StatisticsController extends Controller
 {
-	/**
-	 * Fetch the used space per user.
-	 *
-	 * @return Collection<int,UserSpace>
-	 */
-	public function getSpacePerUser(SpacePerUserRequest $request, Spaces $spaces): Collection
-	{
-		$space_data = $spaces->getFullSpacePerUser(
-			owner_id: $request->ownerId()
-		);
-
-		return UserSpace::collect($space_data);
-	}
-
 	/**
 	 * Fetch the used space per SizeVariant type.
 	 *
@@ -102,7 +86,7 @@ class StatisticsController extends Controller
 	}
 
 	/**
-	 * Fetch the number of uploads/taken_at over time.
+	 * Fetch the number of uploads/taken_at over time (v7 Statistics page).
 	 *
 	 * @param Counts $counts Dependency injection
 	 */

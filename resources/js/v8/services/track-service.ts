@@ -2,9 +2,9 @@ import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "@/services/constants";
 
 /**
- * v8-only track management (FR-055-06/07/08). Forked from `album-service.ts`'s
+ * v8-only track management. Forked from `album-service.ts`'s
  * legacy `uploadTrack`/`deleteTrack` rather than editing that shared module,
- * per NFR-055-01 / the v8-migration convention of forking shared modules.
+ * per the v8-migration convention of forking shared modules.
  */
 export default {
 	uploadTracks(album_id: string, files: File[]): Promise<AxiosResponse> {

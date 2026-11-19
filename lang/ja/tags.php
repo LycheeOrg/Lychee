@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'タグ',
+    'description' => 'ここでタグを管理します。タグの名前変更、統合、削除ができます。',
+    'no_tags' => 'タグが見つかりません。',
+    'loading' => 'タグを読み込み中...',
+    'rename' => '名前を変更',
+    'merge' => '統合',
+    'delete' => '削除',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => '名前',
+    'column_photos' => '写真',
+    'column_albums' => 'アルバム',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'タグ「%s」を削除してもよろしいですか？',
+    'delete_confirm_multiple' => 'これら %d 個のタグを削除してもよろしいですか？',
+    'delete_warning' => 'この操作は元に戻せません！このタグが付いたすべての写真から、このタグが外れます。',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'タグ「%1$s」をタグ「%2$s」に統合してもよろしいですか？',
+    'merge_warning' => 'この操作は元に戻せません！統合元のタグが付いたすべての写真は、統合先のタグに移されます。',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'タグの名前を変更',
 ];

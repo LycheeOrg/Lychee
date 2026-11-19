@@ -6,14 +6,15 @@ return [
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
-    'col_date' => 'Date',
-    'col_status' => 'Status',
-    'col_username' => 'User',
-    'col_job' => 'Job',
+    'title' => 'Tác vụ',
+    'no_data' => 'Chưa có tác vụ nào được thực thi.',
+    'ready' => 'Sẵn sàng',
+    'success' => 'Thành công',
+    'failure' => 'Thất bại',
+    'started' => 'Đã bắt đầu',
+    'skipped' => 'Đã bỏ qua',
+    'col_date' => 'Ngày',
+    'col_status' => 'Trạng thái',
+    'col_username' => 'Người dùng',
+    'col_job' => 'Tác vụ',
 ];

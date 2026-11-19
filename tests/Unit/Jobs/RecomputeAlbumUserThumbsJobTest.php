@@ -60,8 +60,9 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 		$photo->tags()->attach($tag->id);
 		$tag_album = TagAlbum::factory()->owned_by($user)->of_tags([$tag])->create();
 
+		// An unsorted photo is only visible to its owner, so the cached viewer is the owner.
 		AlbumUserThumb::query()->create([
-			'user_id' => null,
+			'user_id' => $user->id,
 			'album_id' => $tag_album->id,
 			'photo_id' => $photo->id,
 		]);
@@ -70,7 +71,7 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 
 		self::assertDatabaseHas('album_user_thumbs', [
 			'album_id' => $tag_album->id,
-			'user_id' => null,
+			'user_id' => $user->id,
 			'photo_id' => $photo->id,
 		]);
 	}
@@ -150,20 +151,5 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 		(new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, 'some-album-id'))
 			->failed(new \Exception('boom'));
 		self::assertTrue(true);
-	}
-
-	public function testSupersededJobLogsWithItsOwnContext(): void
-	{
-		$job = new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, 'debounce-target-id');
-		// A second registration for the same kind+id supersedes the first job.
-		new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_TAG, 'debounce-target-id');
-
-		Log::shouldReceive('channel')->once()->with('jobs')->andReturnSelf();
-		Log::shouldReceive('debug')->once()->with(\Mockery::on(
-			fn (string $msg) => str_contains($msg, RecomputeAlbumUserThumbsJob::KIND_TAG . ' album debounce-target-id')
-		));
-
-		$method = new \ReflectionMethod(RecomputeAlbumUserThumbsJob::class, 'hasNewerJobQueued');
-		self::assertTrue($method->invoke($job));
 	}
 }

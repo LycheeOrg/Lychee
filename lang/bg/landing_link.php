@@ -13,61 +13,61 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Extra Links',
-    'description' => 'Manage an arbitrary, ordered list of extra links shown on the nav and/or footer of the landing page.',
+    'title' => 'Допълнителни връзки',
+    'description' => 'Управлявайте произволен, подреден списък с допълнителни връзки, показвани в навигацията и/или долния колонтитул на началната страница.',
 
     // Empty state
-    'no_links' => 'No extra links configured yet.',
-    'create_first' => 'Create your first link',
+    'no_links' => 'Все още няма конфигурирани допълнителни връзки.',
+    'create_first' => 'Създайте първата си връзка',
 
     // Table columns
-    'col_label' => 'Label',
+    'col_label' => 'Етикет',
     'col_url' => 'URL',
-    'col_placement' => 'Placement',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_placement' => 'Разположение',
+    'col_enabled' => 'Активна',
+    'col_actions' => 'Действия',
 
     // Placement labels
-    'placement_nav' => 'Nav',
-    'placement_footer' => 'Footer',
-    'placement_both' => 'Nav & Footer',
+    'placement_nav' => 'Навигация',
+    'placement_footer' => 'Долен колонтитул',
+    'placement_both' => 'Навигация и долен колонтитул',
 
     // Built-in links (Gallery, Contact)
-    'badge_built_in' => 'Built-in',
-    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
-    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+    'badge_built_in' => 'Вградена',
+    'built_in_cannot_delete' => 'Тази вградена връзка не може да бъде изтрита. Вместо това я деактивирайте или я пренаредете като всяка друга връзка.',
+    'built_in_url_hint' => 'Това е вградена връзка и целта ѝ не може да бъде променена.',
 
     // Buttons
-    'create' => 'Create Link',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Създай връзка',
+    'edit' => 'Редактирай',
+    'delete' => 'Изтрий',
+    'cancel' => 'Отказ',
+    'save' => 'Запази',
 
     // Form fields
-    'field_label' => 'Label',
-    'field_label_placeholder' => 'e.g. Instagram',
+    'field_label' => 'Етикет',
+    'field_label_placeholder' => 'напр. Instagram',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com',
-    'field_placement' => 'Placement',
-    'field_open_in_new_tab' => 'Open in new tab',
-    'field_enabled' => 'Enabled',
+    'field_placement' => 'Разположение',
+    'field_open_in_new_tab' => 'Отваряне в нов раздел',
+    'field_enabled' => 'Активна',
 
     // Modal titles
-    'modal_create_title' => 'Create Link',
-    'modal_edit_title' => 'Edit Link',
+    'modal_create_title' => 'Създаване на връзка',
+    'modal_edit_title' => 'Редактиране на връзка',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Link',
-    'confirm_delete_message' => 'Are you sure you want to delete the link ":label"? This action cannot be undone.',
+    'confirm_delete_header' => 'Изтриване на връзка',
+    'confirm_delete_message' => 'Сигурни ли сте, че искате да изтриете връзката ":label"? Това действие не може да бъде отменено.',
 
     // Toasts
-    'created' => 'Link created successfully.',
-    'updated' => 'Link updated successfully.',
-    'deleted' => 'Link deleted successfully.',
-    'reordered' => 'Links reordered successfully.',
-    'error_load' => 'Failed to load links.',
-    'error_save' => 'Failed to save link.',
-    'error_delete' => 'Failed to delete link.',
-    'error_reorder' => 'Failed to reorder links.',
+    'created' => 'Връзката е създадена успешно.',
+    'updated' => 'Връзката е обновена успешно.',
+    'deleted' => 'Връзката е изтрита успешно.',
+    'reordered' => 'Връзките са пренаредени успешно.',
+    'error_load' => 'Неуспешно зареждане на връзките.',
+    'error_save' => 'Неуспешно запазване на връзката.',
+    'error_delete' => 'Неуспешно изтриване на връзката.',
+    'error_reorder' => 'Неуспешно пренареждане на връзките.',
 ];

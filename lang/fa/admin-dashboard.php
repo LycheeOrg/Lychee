@@ -36,6 +36,7 @@ return [
     'update' => [
         'title' => 'وضعیت به‌روزرسانی',
         'update_available' => 'نسخهٔ جدیدتری در دسترس است (فعلی: :current، آخرین: :latest).',
+        'git_update_available' => 'نصب شما :count کامیت از master عقب است.',
     ],
     'nsfw_config' => [
         'title' => 'تشخیص محتوای نامناسب و نظارت',
@@ -82,5 +83,8 @@ return [
         'legend_approve' => 'عکس پذیرفته می‌شود و یافته ثبت می‌گردد.',
         'legend_mark_album' => 'آلبوم عکس به‌عنوان حساس علامت‌گذاری می‌شود.',
         'legend_nothing' => 'هیچ اقدامی انجام نمی‌شود.',
+    ],
+    'nsfw_findings' => [
+        'title' => 'یافته‌های NSFW',
     ],
 ];
