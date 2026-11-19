@@ -74,7 +74,7 @@
 						</tbody>
 					</table>
 					<p class="text-xs mt-2 text-muted-color">
-						{{ sprintf($t("dialogs.apply_renamer.count_changes"), preview_items.length) }}
+						{{ $t("dialogs.apply_renamer.count_changes", { count: preview_items.length.toString() }) }}
 					</p>
 				</div>
 			</div>
@@ -116,7 +116,6 @@ import Checkbox from "primevue/checkbox";
 import Dialog from "primevue/dialog";
 import SelectButton from "primevue/selectbutton";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "@/utils/sprintf";
 
 const props = defineProps<{
 	albumId?: string;
