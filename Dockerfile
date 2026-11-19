@@ -5,7 +5,7 @@ ARG NODE_ENV=production
 # ============================================================================
 # Stage 1: Composer Dependencies
 # ============================================================================
-FROM composer:2.11.2@sha256:5bcb28b8d0edc4091125f8218f9d088f998bdfc843f8fbb9a4beb4dcd8625684 AS composer
+FROM composer:2.11.2@sha256:511d2a96fce74de098b54224d59146fb8b6a7735d4e301f16c87c062e511900d AS composer
 
 WORKDIR /app
 
@@ -79,10 +79,10 @@ RUN npm run build
 # ============================================================================
 # Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-101-01).
 # Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases.
-FROM dunglas/frankenphp:1.13.5-php8-trixie@sha256:667c5fffd348d9c3c260803d75956f1d9aace7e4b7331d8893de6f101d7e0e57 AS imagemagick
+FROM dunglas/frankenphp:1.13.6-php8-trixie@sha256:17ff6554ba6de527d17aa5ec37e2a3bc3b182d7dbea9362f9a02eb5b4a1c4b95 AS imagemagick
 
-ARG IMAGEMAGICK_VERSION=7.1.2-35
-ARG IMAGEMAGICK_SHA256=40b6fefa88fe16ca5a4b3d3db5133eaebfb0157f21f98530bde8aec5dd5b0776
+ARG IMAGEMAGICK_VERSION=7.1.2-36
+ARG IMAGEMAGICK_SHA256=5ba807e38a6bcb7c3c96a166485e270c5017aaa6b166f0440dc4b2badf6e6167
 ARG IMAGICK_VERSION=3.8.1
 ARG IMAGICK_SHA256=3a3587c0a524c17d0dad9673a160b90cd776e836838474e173b549ed864352ee
 
@@ -139,7 +139,7 @@ RUN curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK
 # ============================================================================
 # Stage 4: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:1.13.5-php8-trixie@sha256:667c5fffd348d9c3c260803d75956f1d9aace7e4b7331d8893de6f101d7e0e57
+FROM dunglas/frankenphp:1.13.6-php8-trixie@sha256:17ff6554ba6de527d17aa5ec37e2a3bc3b182d7dbea9362f9a02eb5b4a1c4b95
 
 ARG USER=appuser
 
