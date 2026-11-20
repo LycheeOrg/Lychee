@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => '付款已被取消。',
         'paymentFailed' => '付款失败',
         'paymentFailedMessage' => '我们无法确认您的付款。请重试，如果问题仍然存在，请联系客服。',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

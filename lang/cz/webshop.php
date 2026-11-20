@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Platba byla zrušena.',
         'paymentFailed' => 'Platba selhala',
         'paymentFailedMessage' => 'Vaši platbu se nám nepodařilo potvrdit. Zkuste to prosím znovu, nebo kontaktujte podporu, pokud problém přetrvává.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Thanh toán đã bị hủy.',
         'paymentFailed' => 'Thanh toán thất bại',
         'paymentFailedMessage' => 'Chúng tôi không thể xác nhận khoản thanh toán của bạn. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

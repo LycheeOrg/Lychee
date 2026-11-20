@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Η πληρωμή έχει ακυρωθεί.',
         'paymentFailed' => 'Η πληρωμή απέτυχε',
         'paymentFailedMessage' => 'Δεν μπορέσαμε να επιβεβαιώσουμε την πληρωμή σας. Παρακαλούμε δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη αν το πρόβλημα παραμένει.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => '支払いはキャンセルされました。',
         'paymentFailed' => '支払いに失敗しました',
         'paymentFailedMessage' => 'お支払いを確認できませんでした。もう一度お試しいただくか、問題が解決しない場合はサポートまでお問い合わせください。',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

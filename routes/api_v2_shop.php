@@ -39,6 +39,10 @@ Route::middleware('support:pro')->group(function (): void {
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
 		Route::get('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.return');
+		// Signed server-to-server notifications from asynchronous providers.
+		// Keyed by order id — the immutable key the gateway retries
+		// deliveries to for the whole life of the order.
+		Route::post('/Notify/{provider}/{order_id}', [Shop\CheckoutController::class, 'notify'])->withoutMiddleware(['accept_content_type:json'])->name('shop.checkout.notify');
 		Route::get('/Cancel/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.cancel');
 	});
 	Route::group(['prefix' => '/Shop/Management'], function (): void {

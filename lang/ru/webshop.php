@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Платёж был отменён.',
         'paymentFailed' => 'Платёж не прошёл',
         'paymentFailedMessage' => 'Нам не удалось подтвердить ваш платёж. Пожалуйста, попробуйте ещё раз или обратитесь в поддержку, если проблема сохраняется.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

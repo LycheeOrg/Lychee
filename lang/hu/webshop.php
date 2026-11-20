@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'A fizetés megszakadt.',
         'paymentFailed' => 'Sikertelen fizetés',
         'paymentFailedMessage' => 'Nem sikerült megerősíteni a fizetését. Kérjük, próbálja újra, vagy forduljon az ügyfélszolgálathoz, ha a probléma továbbra is fennáll.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

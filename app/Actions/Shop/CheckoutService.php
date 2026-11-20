@@ -8,6 +8,7 @@
 
 namespace App\Actions\Shop;
 
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
 use App\Actions\Shop\Gateway\OrderCreatedResponse;
 use App\Actions\Shop\Gateway\PaypalGateway;
 use App\DTO\CheckoutDTO;
@@ -28,6 +29,10 @@ use Omnipay\Mollie\Message\Response\FetchTransactionResponse;
 
 /**
  * Service for handling checkout operations using Omnipay.
+ *
+ * Provider-specific asynchronous behaviour (crypto settling on-chain, ...)
+ * lives behind {@see AsyncPaymentRegistry}; this service stays
+ * provider-agnostic.
  */
 class CheckoutService
 {
@@ -36,12 +41,16 @@ class CheckoutService
 	/**
 	 * CheckoutService constructor.
 	 *
-	 * @param OmnipayFactory $omnipay_factory
-	 * @param MoneyService   $money_service
+	 * @param OmnipayFactory       $omnipay_factory
+	 * @param MoneyService         $money_service
+	 * @param AsyncPaymentRegistry $async_payments
+	 * @param OrderSettlement      $settlement
 	 */
 	public function __construct(
 		private OmnipayFactory $omnipay_factory,
 		private MoneyService $money_service,
+		private AsyncPaymentRegistry $async_payments,
+		private OrderSettlement $settlement,
 	) {
 	}
 
@@ -93,6 +102,11 @@ class CheckoutService
 					$reference = $response->getTransactionReference();
 					$metadata['transactionReference'] = $reference;
 					Session::put('metadata.' . $order->id, $metadata);
+				}
+
+				$return_metadata = $this->async_payments->forProvider($provider)?->collectReturnMetadata($response);
+				if ($return_metadata !== null) {
+					Session::put('metadata.' . $order->id, $return_metadata);
 				}
 
 				if (!$response instanceof RedirectResponseInterface) {
@@ -163,7 +177,7 @@ class CheckoutService
 	public function completePayment(Order $order, ResponseInterface $response): Order
 	{
 		$transaction_id = $response->getTransactionReference();
-		$order->markAsPaid($transaction_id);
+		$this->settlement->settle($order, $transaction_id);
 
 		return $order;
 	}
@@ -180,6 +194,11 @@ class CheckoutService
 	{
 		$metadata = Session::get('metadata.' . $order->id, []);
 		Log::info('Payment return metadata', ['metadata' => $metadata]);
+
+		$async = $this->async_payments->forProvider($provider);
+		if ($async !== null) {
+			return $async->handleReturn($order, $metadata);
+		}
 
 		$gateway = $this->omnipay_factory->create_gateway($provider);
 
@@ -232,6 +251,10 @@ class CheckoutService
 			'transactionId' => $order->transaction_id,
 			'description' => 'Order #' . $order->id,
 		];
+
+		// Asynchronous providers add their own parameters, e.g. the URL the
+		// signed payment notification must be posted to.
+		$params = array_merge($params, $this->async_payments->forProvider($order->provider)?->purchaseParameters($order) ?? []);
 
 		// Add customer details if available
 		if ($order->email !== null) {

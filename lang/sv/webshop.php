@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Betalningen har avbrutits.',
         'paymentFailed' => 'Betalningen misslyckades',
         'paymentFailedMessage' => 'Vi kunde inte bekräfta din betalning. Försök igen eller kontakta supporten om problemet kvarstår.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

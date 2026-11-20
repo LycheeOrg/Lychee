@@ -19,6 +19,8 @@
 namespace Tests\Unit\Actions\Shop;
 
 use App\Actions\Shop\CheckoutService;
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
+use App\Actions\Shop\OrderSettlement;
 use App\DTO\CheckoutDTO;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
@@ -69,7 +71,9 @@ class CheckoutServiceTest extends AbstractTestCase
 		// Create the service with mocked dependencies
 		$this->checkout_service = new CheckoutService(
 			$this->omnipay_factory_mock,
-			resolve(MoneyService::class)
+			resolve(MoneyService::class),
+			resolve(AsyncPaymentRegistry::class),
+			resolve(OrderSettlement::class)
 		);
 
 		$this->order = Order::factory()

@@ -43,4 +43,15 @@ return [
 		'clientId' => env('PAYPAL_CLIENT_ID', ''),
 		'secret' => env('PAYPAL_SECRET', ''),
 	],
+
+	/**
+	 * Payzum gateway configuration (crypto/stablecoin payments).
+	 * The webhookSecret verifies the signed payment notifications that
+	 * complete orders asynchronously.
+	 */
+	'Payzum' => [
+		'apiKey' => env('PAYZUM_API_KEY', ''),
+		'webhookSecret' => env('PAYZUM_WEBHOOK_SECRET', ''),
+		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
+	],
 ];
