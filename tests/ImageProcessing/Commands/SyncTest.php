@@ -482,6 +482,9 @@ class SyncTest extends BaseApiWithDataTest
 			->where('base_albums.title', '=', 'Example')->whereNull('albums.parent_id')->pluck('base_albums.owner_id')->all();
 		sort($owners);
 		self::assertSame([$this->admin->id, $this->userMayUpload2->id], $owners);
+		// S-115-43: the jobs carry the scope, for the duplicate check.
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_mode->shall_scope_to_owner);
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => !$job->import_mode->shall_scope_to_owner);
 	}
 
 	/** Feature 115 (S-115-44): below another user's target album, the child albums of a first import are reused. */
@@ -537,6 +540,7 @@ class SyncTest extends BaseApiWithDataTest
 
 		self::assertSame(1, DB::table('base_albums')->where('title', '=', 'Example')->count());
 		self::assertSame($bob_example->id, $this->queuedAlbumOf('a.jpg'));
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_mode->shall_scope_to_owner);
 		self::assertNull(Photo::query()->find($bob_photo->id));
 		Configs::set('import_scope_to_owner', '1');
 	}

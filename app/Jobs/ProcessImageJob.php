@@ -15,6 +15,7 @@ use App\DTO\UploadStatusEntry;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\OwnerRequiredException;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
@@ -147,7 +148,8 @@ class ProcessImageJob implements ShouldQueue
 	 *
 	 * @return Photo|null null when the photo is skipped as a duplicate on an asynchronous queue
 	 *
-	 * @throws PhotoSkippedException on the sync queue, when the photo is skipped as a duplicate
+	 * @throws PhotoSkippedException  on the sync queue, when the photo is skipped as a duplicate
+	 * @throws PhotoRejectedException on the sync queue, when the photo is another user's duplicate (Q-115-13)
 	 */
 	public function handle(AlbumFactory $album_factory, TraceService $trace): ?Photo
 	{
@@ -183,7 +185,7 @@ class ProcessImageJob implements ShouldQueue
 
 			try {
 				$photo = $create->add($copied_file, $album, $this->file_last_modified_time);
-			} catch (PhotoSkippedException $e) {
+			} catch (PhotoSkippedException|PhotoRejectedException $e) {
 				$this->recordUploadStatus(UploadStatusEntry::ofThrowable($this->uploader_id, $e));
 				$this->skipped($e, $this->original_base_name);
 

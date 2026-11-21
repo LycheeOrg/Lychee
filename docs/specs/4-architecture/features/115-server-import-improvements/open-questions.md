@@ -13,11 +13,12 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-17 |
-| Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review): (A) restricted jobs open the file once, prove the open file is inside the root, import from a private temp copy, (B) A without the copy, re-check after the import and roll back, (C) accept the race and weaken NFR-115-06 | Open | 2026-11-18 | 2026-11-18 |
+| Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review), reworked 2026-11-22 after Q-115-10/11: (A) accept the read race as Q-115-10 does, refuse `delete_imported` for restricted users, (B) accept the read race, re-check before deleting, (C) private copy for restricted copy imports, (D) accept everything | Open | 2026-11-18 | 2026-11-22 |
 | ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-10~~ | 115 | High | Symbolic link import for restricted users: (A) allowed as for full-access users, risk accepted, (B) refused (ADR-115-01 point 5 as first decided) | Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01) | 2026-11-19 | 2026-11-19 |
 | ~~Q-115-11~~ | 115 | High | Symbolic links in browse and import: (A) never followed nor listed, for every user, (B) followed only inside the import root (Q-115-01 A as first decided) | Resolved (A, owner directive 2026-11-21: FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04, ADR-115-01) | 2026-11-21 | 2026-11-21 |
 | ~~Q-115-12~~ | 115 | Medium | Delete right for delete-missing (PR #4989 review asked to require `CAN_DELETE` on the target when `delete_missing_photos`/`delete_missing_albums` is set): (A) no delete right, the import-from-server right covers the import's own deletions, (B) require the delete right | Resolved (A, owner directive 2026-11-21: FR-115-07, ADR-115-01) | 2026-11-21 | 2026-11-21 |
+| ~~Q-115-13~~ | 115 | Medium | A rejected duplicate (`PhotoRejectedException`: `skip_duplicates_not_owned`, and now scoped server imports) ends the import job as `FAILURE` with an error log and, on an async queue, a `failed_jobs` row: (A) handle it like a skip in import and upload jobs (`SKIPPED`, info log, no failed job), (B) only in `ImportImageJob`, (C) keep it a failure | Resolved (A, owner, 2026-11-22: FR-115-12, S-115-43, FR-114-01/03, S-114-09, ADR-114-01) | 2026-11-21 | 2026-11-22 |
 
 ## Question Details
 
@@ -322,53 +323,63 @@ Resolved: Option A implemented in increment I17, then replaced by Option B on 20
 
 ### Q-115-08 · File swapped between the job's root check and the read
 
-**Status:** Open
+**Status:** Open (options reworked 2026-11-22)
 **Feature:** F-115 – Server Import Improvements
-**Preferred option:** 🅰️ (**recommended**) Option A – Open once, prove the open file is inside the root, import a private copy
+**Preferred option:** 🅰️ (**recommended**) Option A – Accept the read race as Q-115-10 does, refuse `delete_imported` for restricted users
 
 **Question**
 Raised in the PR #4989 review (thread on `app/Jobs/ImportImageJob.php:96`). `ImportImageJob::assertStillInsideImportRoot()` checks the file's real path (FR-115-18), then `Photo\Create` reads the file again by its path, several times (checksum, metadata, `PlacePhoto` copy). A restricted user who controls their folder (network share) can swap `a.jpg`, or one of its parent folders, for a link to a file outside the import root in that window, and retry until the timing works. The import then reads (and serves as the photo's original) a file outside the root, which NFR-115-06 rules out ("even when the file system changes between the scan and the job"). With `delete_imported`, `PlacePhoto` also deletes the source by its path after the copy, so a swapped parent folder makes Lychee delete a same-named file outside the root. Today S-115-27 only covers a swap before the check. Full-access users (`/`) and explicit `lychee:sync` paths are not affected (no root to escape).
 
-How should a restricted job make sure the file it imports, and the file it deletes, are the ones that passed the check?
-
-> **Note 2026-11-19 (Q-115-10):** restricted users may now import via symbolic link. Option A's private copy only covers copy imports. With a link import the stored original stays a link to the user's file and is read at every serve, so a swap after the import is never caught by the job. Any option chosen here needs a decision for link imports too (for example a serve-time containment check, or accepting the risk recorded in ADR-115-01).
+**Re-assessment 2026-11-22.** The options below replace those of 2026-11-18 (in git history), written before Q-115-10 and Q-115-11.
+- **Reading:** since Q-115-10, a restricted user can already make Lychee serve any file PHP can read. They import via symbolic link, then replace their source with a link to that file (accepted risk, ADR-115-01). Winning this race gives them nothing more. Closing it for copy imports only (the former option A, private copy) leaves the link-import path open.
+- **Deleting:** this is the part nothing accepts yet. With `delete_imported`, a parent folder swapped between the check and `PlacePhoto`'s delete makes Lychee delete a file outside the root. Only files with an image or video extension are reached (`BuildTree` picks nothing else), in folders PHP can write to. That includes other users' import folders and stored originals whose path is known. A path check right before the delete narrows the window but cannot close it: PHP has no delete relative to an open folder (`unlinkat`).
+- **Former option B (re-check after the import, roll back):** dropped. It reads the outside file anyway, which link imports already allow.
 
 ---
 
-#### 🅰️ (**recommended**) Option A – Open once, prove the open file is inside the root, import a private copy
-- **Idea:** Only when the job has an import root: resolve the real path and check it (as today), open it, then check that the opened file is that real path (device and inode of the open handle equal those of the real path, re-resolved and re-checked after the open). Stream the open handle into a private temporary file and run `Photo\Create` on that copy (restricted users already always get copies, ADR-115-01). With `delete_imported`, delete the source only if its path still resolves inside the root to the same device and inode. Any mismatch → job `FAILURE`, warning TE-115-05, nothing imported, source not deleted.
-- **Spec impact:** FR-115-18 and NFR-115-06 describe the handle check and the private copy; new scenarios (swap after the check → failure; parent folder swapped before the delete → source kept); TE-115-05 reused.
+#### 🅰️ (**recommended**) Option A – Accept the read race, refuse `delete_imported` for restricted users
+- **Idea:** NFR-115-06 is narrowed to "checked at scan time and right before the read". The remaining read window is the same risk class as Q-115-10 and is recorded in ADR-115-01. A user with an import root never gets Lychee to delete their sources. `ImportFromServerRequest` refuses `delete_imported = true` (422, as the conflicting-options check does), the dialog hides the toggle, and per-user `lychee:sync` runs force it off. Full-access users (`/`) and explicit `lychee:sync` paths keep it.
+- **Spec impact:** NFR-115-06, FR-115-04/06/13/17, new scenarios (restricted `delete_imported` → 422, per-user sync never deletes sources), ADR-115-01 points 4 and 5, how-to.
 - **Pros:**
-  - ✅ Closes the window: every later read uses a file Lychee owns.
-  - ✅ Portable (no `/proc`), and costs nothing for `/` users.
-  - ✅ Narrows the source deletion window: the source is deleted only if its path still resolves to the checked file. Deleting by path stays open to a parent folder swapped between that check and the `unlink()`; closing it needs a deletion bound to the checked folder (for example `unlink()` relative to an open directory handle, which PHP does not offer), or Option C's accepted risk for the deletion only.
+  - ✅ Closes the only harm the race adds beyond Q-115-10: no delete can reach outside the root.
+  - ✅ Small, deterministic change. No extra copy, no inode bookkeeping.
 - **Cons:**
-  - ❌ One extra copy of each file for restricted users (disk I/O and temporary space).
-  - ❌ Largest change of the review fixes; a hard link inside the root to an outside file stays undetectable (no path check can see it).
+  - ❌ Restricted users lose `delete_imported` and clean their folder themselves.
+  - ❌ Undoes part of the "same options for every user" stance of Q-115-10.
 
 ---
 
-#### 🅱️ Option B – No copy: re-check after the import and roll back
-- **Idea:** Keep reading by path, but after `Photo\Create` re-check the real path and the device and inode; on a mismatch delete the new photo and fail the job.
-- **Spec impact:** FR-115-18 gains a post-import check and a rollback.
+#### 🅱️ Option B – Accept the read race, re-check before deleting
+- **Idea:** As A for reading. `delete_imported` stays available. Right before the delete, `PlacePhoto` re-resolves the source and deletes it only if its real path is still inside the root and has the device and inode of the file it read. On a mismatch, keep the source and log TE-115-05.
+- **Spec impact:** NFR-115-06, FR-115-18, a scenario (source swapped before the delete → kept), ADR-115-01.
 - **Pros:**
-  - ✅ No extra copy.
+  - ✅ Same options for every user.
+  - ✅ Stops every swap made before the re-check.
 - **Cons:**
-  - ❌ The outside file is read and stored before the rollback, and a swap-and-swap-back between the reads and the re-check is not seen.
-  - ❌ Rollback adds a failure path in the middle of the photo pipeline.
+  - ❌ A parent folder swapped between the re-check and the delete still escapes. The window is small, but the user can retry.
 
 ---
 
-#### 🅲 Option C – Accept the race, weaken NFR-115-06
-- **Idea:** Keep the code; NFR-115-06 says the file is checked at scan time and right before the read, with a short window left open.
-- **Spec impact:** NFR-115-06 and ADR-115-01 reworded; risk noted in the how-to.
+#### 🅲 Option C – Close the read race for copies: open once, private copy (former option A)
+- **Idea:** Restricted copy jobs open the file once, check that the open handle is the checked real path (device and inode), stream it into a private temporary file and import that. Deletion as in B.
+- **Spec impact:** FR-115-18, NFR-115-06, new scenarios, ADR-115-01.
+- **Pros:**
+  - ✅ Copy imports never read a swapped file.
+- **Cons:**
+  - ❌ One extra copy per file for restricted users. The largest change of the three.
+  - ❌ Buys little while link imports allow the same read (Q-115-10). The deletion window of B remains.
+
+---
+
+#### 🅳 Option D – Accept everything
+- **Idea:** No code change. NFR-115-06 is narrowed, and both the read and the delete race go into ADR-115-01 and the how-to.
 - **Pros:**
   - ✅ No code change.
 - **Cons:**
-  - ❌ A user who controls their folder can still read files outside it, and with `delete_imported` delete them.
+  - ❌ A user who controls their folder can make Lychee delete image files outside it.
 
 **Next action**
-Owner picks A, B or C; the answer goes into FR-115-18, NFR-115-06, the scenario matrix and ADR-115-01, then the PR #4989 thread is answered.
+Owner picks A, B, C or D. The answer goes into NFR-115-06, FR-115-18, the scenario matrix and ADR-115-01, and the PR #4989 thread is answered.
 
 ### ~~Q-115-09~~ · Another user's duplicate photo during a scoped import
 
@@ -499,3 +510,44 @@ Raised in the PR #4989 review (thread on `app/Http/Requests/Admin/ImportFromServ
 
 **Next action**
 Resolved: Option A, no code change. Recorded in FR-115-07 and ADR-115-01. The PR #4989 thread can stay resolved.
+
+### ~~Q-115-13~~ · Rejected duplicates end the job as a failure
+
+**Status:** Resolved (A, owner, 2026-11-22: FR-115-12, S-115-43, FR-114-01/03, S-114-09, ADR-114-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ (**recommended**) Option A – Handle a rejection like a skip, in import and upload jobs
+
+**Question**
+Found while implementing I18 (Q-115-09). `ThrowUnownedDuplicate` throws `PhotoRejectedException`, which is not a `PhotoSkippedException`. `ImportImageJob::handle()` and `HasFailedTrait::failed()` only treat `PhotoSkippedException` as a handled outcome (ADR-114-01). A rejected duplicate therefore marks the job history `FAILURE`, writes an error log line and, on an asynchronous queue, leaves a `failed_jobs` row. This is already the case for `skip_duplicates_not_owned` (uploads and imports). With `import_scope_to_owner` on by default, a server import over a folder that holds many photos other users already uploaded produces one failed job per file. The upload status (Feature 116, `UploadStatusEntry`) already reports a rejection as `SKIPPED`. How should a job end when its duplicate is rejected?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Handle a rejection like a skip, in import and upload jobs
+- **Idea:** `ImportImageJob`, `ProcessImageJob` and `HasFailedTrait` treat `PhotoRejectedException` like `PhotoSkippedException`: history `SKIPPED`, one info log line, no failed job on an asynchronous queue, rethrown on the sync queue (upload 409 unchanged).
+- **Spec impact:** FR-115-12 telemetry, S-115-43 (history `SKIPPED`); note in ADR-114-01's related features.
+- **Pros:**
+  - ✅ Job history matches the upload status (Feature 116).
+  - ✅ No failed jobs or error logs for an expected outcome.
+- **Cons:**
+  - ❌ Changes `skip_duplicates_not_owned` job outcomes too (from failure to skip), beyond Feature 115.
+
+---
+
+#### 🅱️ Option B – Only in `ImportImageJob`
+- **Idea:** Same as A for server imports only. Uploads keep failing jobs.
+- **Pros:**
+  - ✅ Stays inside Feature 115.
+- **Cons:**
+  - ❌ The same rejection ends differently for an upload and an import.
+
+---
+
+#### 🅲 Option C – Keep it a failure
+- **Idea:** No change. The spec describes the failure.
+- **Pros:**
+  - ✅ No code change.
+- **Cons:**
+  - ❌ Noisy failed jobs and error logs for scoped imports, on by default.
+
+**Next action**
+Resolved: Option A (owner, 2026-11-22), implemented in increment I22 (T-115-48, T-115-49). Feature 114's spec (FR-114-01/03, S-114-09) and ADR-114-01 amended.

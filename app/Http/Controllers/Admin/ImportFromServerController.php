@@ -182,6 +182,7 @@ class ImportFromServerController extends Controller
 			resync_metadata: $request->resync_metadata,
 			shall_rename_photo_title: $request->configs()->getValueAsBool('renamer_photo_title_enabled'),
 			shall_rename_album_title: $request->configs()->getValueAsBool('renamer_album_title_enabled'),
+			scope_to_owner: $request->configs()->getValueAsBool('import_scope_to_owner'),
 		);
 
 		return new Exec(

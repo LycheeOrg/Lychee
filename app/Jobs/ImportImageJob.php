@@ -15,6 +15,7 @@ use App\Enum\ImportPathStatus;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\ImportFileOutsideRootException;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\NativeLocalFile;
@@ -85,7 +86,8 @@ class ImportImageJob implements ShouldQueue
 	 *
 	 * @return Photo|null null when the photo is skipped as a duplicate on an asynchronous queue
 	 *
-	 * @throws PhotoSkippedException on the sync queue, when the photo is skipped as a duplicate
+	 * @throws PhotoSkippedException  on the sync queue, when the photo is skipped as a duplicate
+	 * @throws PhotoRejectedException on the sync queue, when the photo is another user's duplicate (Q-115-13)
 	 */
 	public function handle(AlbumFactory $album_factory): ?Photo
 	{
@@ -107,7 +109,7 @@ class ImportImageJob implements ShouldQueue
 		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id, false) : null;
 		try {
 			$photo = $create->add($copied_file, $album);
-		} catch (PhotoSkippedException $e) {
+		} catch (PhotoSkippedException|PhotoRejectedException $e) {
 			$this->skipped($e, basename($this->file_path));
 
 			return null;

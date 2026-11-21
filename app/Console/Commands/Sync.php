@@ -272,6 +272,7 @@ class Sync extends Command
 			resync_metadata: $resync_metadata,
 			shall_rename_photo_title: $this->config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			shall_rename_album_title: $this->config_manager->getValueAsBool('renamer_album_title_enabled'),
+			scope_to_owner: $this->config_manager->getValueAsBool('import_scope_to_owner'),
 		);
 	}
 

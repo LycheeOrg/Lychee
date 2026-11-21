@@ -9,6 +9,7 @@
 namespace App\Jobs\Traits;
 
 use App\Enum\JobStatus;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Models\JobHistory;
 use Illuminate\Queue\Jobs\SyncJob;
@@ -29,9 +30,11 @@ trait HandlesSkippedPhotoTrait
 	 * On the sync queue, or without a queue job, the exception is rethrown so that
 	 * the caller (upload 409, import report) still sees it.
 	 *
-	 * @throws PhotoSkippedException
+	 * A rejected duplicate (another user's photo) is recorded the same way (Q-115-13).
+	 *
+	 * @throws PhotoSkippedException|PhotoRejectedException
 	 */
-	protected function skipped(PhotoSkippedException $e, string $file_name): void
+	protected function skipped(PhotoSkippedException|PhotoRejectedException $e, string $file_name): void
 	{
 		$this->history->status = JobStatus::SKIPPED;
 		$this->history->save();

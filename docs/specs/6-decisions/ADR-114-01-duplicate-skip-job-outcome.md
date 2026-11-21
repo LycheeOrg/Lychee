@@ -2,8 +2,9 @@
 
 - **Status:** Accepted
 - **Date:** 2026-11-15
-- **Related features/specs:** Feature 114 (docs/specs/4-architecture/features/114-fix-skipped-job-status/spec.md)
-- **Related open questions:** Q-114-01, Q-114-02
+- **Related features/specs:** Feature 114 (docs/specs/4-architecture/features/114-fix-skipped-job-status/spec.md), Feature 115 (docs/specs/4-architecture/features/115-server-import-improvements/spec.md)
+- **Related open questions:** Q-114-01, Q-114-02, Q-115-13
+- **Amended:** 2026-11-22 (Q-115-13: a rejected duplicate is handled as a skip)
 
 ## Context
 
@@ -20,6 +21,7 @@ Laravel's `queue:work` output only knows `RUNNING`, `DONE`, `RELEASED` and `FAIL
 - A skip records the new `JobStatus::SKIPPED` (`4`, `skipped`) in `JobHistory` on every queue; `HasFailedTrait::failed()` saves `SKIPPED` for a `PhotoSkippedException` (the `sync` rethrow path) and logs nothing.
 - The skip is logged once at `info` on the `jobs` channel, without trace.
 - Lychee does not override or extend Laravel's `queue:work` command.
+- A rejected duplicate (`PhotoRejectedException`: another user's photo, with `skip_duplicates_not_owned` or a scoped server import) is handled exactly like a skip, in both jobs and in `failed()` (owner, 2026-11-22, Q-115-13). It is not a `PhotoSkippedException`, so before this amendment it ended the job as `FAILURE`.
 
 ## Consequences
 

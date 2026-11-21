@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Implemented |
-| Last updated | 2026-11-18 |
+| Last updated | 2026-11-22 (N5 lifted by Q-115-13) |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -30,7 +30,7 @@ Every single-file upload records its provisional ID and status in the cache for 
 - N2: `Photo::fromUrl`, server import, `lychee:sync`: no provisional ID.
 - N3: persistence beyond the cache (no table, no history); one day is the retention.
 - N4: changing the upload response or the `409` on `sync` for skipped duplicates.
-- N5: `JobHistory` status of `PhotoRejectedException` on asynchronous queues (still `FAILURE` with retries, Feature 114 scope).
+- ~~N5~~: `JobHistory` status of `PhotoRejectedException` on asynchronous queues. Lifted 2026-11-22 by Q-115-13 (Feature 114, FR-114-01/03): a rejection is now handled as a skip in `handle()`, so the entry becomes `skipped` at once, with no retry (S-116-08).
 - N6: front-end changes. The v7/v8 upload panels keep showing `READY` for queued files; showing final outcomes there is a follow-up feature (Q-116-04 A).
 
 ## Status Vocabulary

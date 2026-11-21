@@ -14,6 +14,7 @@ use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Models\Configs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use function Safe\symlink;
@@ -139,6 +140,21 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', null));
 		$this->assertCreated($response);
 		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id === $this->admin->id);
+	}
+
+	/** S-115-43: web import jobs carry the owner scope of `import_scope_to_owner`, for the duplicate check. */
+	public function testWebImportCarriesOwnerScope(): void
+	{
+		foreach ([['1', true], ['0', false]] as [$value, $expected]) {
+			Queue::fake();
+			Configs::set('import_scope_to_owner', $value);
+
+			$this->assertCreated($this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', null)));
+
+			Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_mode->shall_scope_to_owner === $expected);
+			Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_mode->shall_scope_to_owner !== $expected);
+		}
+		Configs::set('import_scope_to_owner', '1');
 	}
 
 	/** S-115-10: one directory outside → nothing imported. */

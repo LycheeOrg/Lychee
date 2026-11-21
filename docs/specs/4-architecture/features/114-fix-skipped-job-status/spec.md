@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Implemented |
-| Last updated | 2026-11-15 |
+| Last updated | 2026-11-22 (amended by Q-115-13) |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
 | Linked tasks | [tasks.md](tasks.md) |
@@ -29,9 +29,9 @@ With an asynchronous queue, a photo skipped as a duplicate (`PhotoSkippedExcepti
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-114-01 | On an asynchronous queue (the job runs with a queue job that is not a `SyncJob`), `ImportImageJob` and `ProcessImageJob` treat `PhotoSkippedException` and its subclasses as a terminal, non-failing outcome. | `handle()` records the skip (FR-114-03) and returns `null`: Laravel deletes the job after one attempt, `failed()` is not called, no `failed_jobs` row; `queue:work` prints `DONE`. | — | Any other exception keeps today's path (retries, `failed()`, `FAILURE`, `error` log). | One `info` line on the `jobs` channel (see Telemetry). | User report 2026-11-15; Q-114-01 B, ADR-114-01 |
+| FR-114-01 | On an asynchronous queue (the job runs with a queue job that is not a `SyncJob`), `ImportImageJob` and `ProcessImageJob` treat `PhotoSkippedException` and its subclasses, and `PhotoRejectedException` (another user's duplicate: `skip_duplicates_not_owned`, scoped server import, Q-115-13), as a terminal, non-failing outcome. | `handle()` records the skip (FR-114-03) and returns `null`: Laravel deletes the job after one attempt, `failed()` is not called, no `failed_jobs` row; `queue:work` prints `DONE`. | — | Any other exception keeps today's path (retries, `failed()`, `FAILURE`, `error` log). | One `info` line on the `jobs` channel (see Telemetry). | User report 2026-11-15; Q-114-01 B, ADR-114-01 |
 | FR-114-02 | On the `sync` queue, or when `handle()` runs without a queue job, the skip still reaches the caller. | `handle()` records the skip (FR-114-03) then rethrows: upload answers `409`; `ExecuteBatch` reports the skip in the import output. | — | — | Same `info` line; no `error` log entry, no trace. | Existing upload/import contract |
-| FR-114-03 | A skipped job records `JobStatus::SKIPPED` (`4`, name `skipped`) in its `JobHistory`, on every queue. | `handle()` saves `SKIPPED` before returning or rethrowing; `HasFailedTrait::failed()` given a `PhotoSkippedException` saves `SKIPPED` and logs nothing. | — | `failed()` given any other exception keeps `FAILURE` + `error` log. | — | Q-114-02 A |
+| FR-114-03 | A skipped job records `JobStatus::SKIPPED` (`4`, name `skipped`) in its `JobHistory`, on every queue. | `handle()` saves `SKIPPED` before returning or rethrowing; `HasFailedTrait::failed()` given a `PhotoSkippedException` or a `PhotoRejectedException` saves `SKIPPED` and logs nothing. | — | `failed()` given any other exception keeps `FAILURE` + `error` log. | — | Q-114-02 A |
 | FR-114-04 | The admin Jobs page (v7 and v8) shows `skipped` jobs with their own label and colour. | Status column shows "Skipped" in the muted colour; the status meter gets a "Skipped — n" segment. | — | — | — | Q-114-02 A |
 | FR-114-05 | The admin dashboard does not count skipped jobs as failures. | `AdminStatsService::failed_jobs_24h` counts `FAILURE` only (unchanged query), so `SKIPPED` rows are excluded. | — | — | — | Q-114-02 A |
 
@@ -72,6 +72,7 @@ Admin Jobs page (v7 and v8), status meter and list after a re-import with duplic
 | S-114-06 | `failed()` with another exception: history `FAILURE` (unchanged). `failed()` with `PhotoSkippedException`: history `SKIPPED`. |
 | S-114-07 | Admin dashboard: a `SKIPPED` history row in the last 24 h is not counted in `failed_jobs_24h`. |
 | S-114-08 | Jobs page shows `skipped` with its label and colour (v7, v8). |
+| S-114-09 | Duplicate owned by another user, rejected (`PhotoRejectedException`, Q-115-13): async `ImportImageJob` and `ProcessImageJob` as S-114-01; `sync` upload `409` and `sync` import rethrow as S-114-04/05, history `SKIPPED`. |
 
 ## Test Strategy
 - **Jobs (ImageProcessing suite):** new `tests/ImageProcessing/Jobs/SkippedDuplicateJobTest.php` runs the real jobs with `withFakeQueueInteractions()` for the async path (S-114-01…03) and `dispatchSync` / upload for the sync path (S-114-04, S-114-05).

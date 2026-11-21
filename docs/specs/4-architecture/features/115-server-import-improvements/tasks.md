@@ -229,11 +229,12 @@ _Last updated: 2026-11-16_
   - `make phpstan`
 
 ### I18 – Other users' duplicates in a scoped import (Q-115-09)
-- [ ] T-115-38 – Tests for S-115-43 (FR-115-12), red first.
+- [x] T-115-38 – Tests for S-115-43 (FR-115-12), red first.
   _Intent:_ `tests/ImageProcessing/Jobs/SkippedDuplicateJobTest.php`: `import_scope_to_owner = 1`, `skip_duplicates_not_owned = 0`, a photo owned by another user with the same checksum. `skip_duplicates` + `resync_metadata` → job skipped, other user's photo metadata unchanged; `skip_duplicates` off → skipped, other user's photo not in the target album; scope off → added to the target album as today.
   _Verification commands:_
   - `php artisan test --filter=SkippedDuplicateJobTest` (red)
-- [ ] T-115-39 – Owner scope in duplicate handling (FR-115-12, DO-115-05).
+  _Notes:_ the duplicate is rejected (`PhotoRejectedException`), as with `skip_duplicates_not_owned`, so the tests assert the rejection, the untouched metadata and the album link. Not a history `SKIPPED`: see Q-115-13. `ImportFromServerTest::testWebImportCarriesOwnerScope` and two `SyncTest` assertions check that both callers pass the flag.
+- [x] T-115-39 – Owner scope in duplicate handling (FR-115-12, DO-115-05).
   _Intent:_ `ImportMode` gains the scope flag (default `false`); `ImportFromServerController` and `Sync` (both `new ImportMode(...)`) set it from `import_scope_to_owner`; `DuplicateDTO::ofInit()` copies it; `ThrowUnownedDuplicate` rejects when `skip_duplicates_not_owned` or the flag is on.
   _Verification commands:_
   - `php artisan test --filter=SkippedDuplicateJobTest`
@@ -305,6 +306,22 @@ _Last updated: 2026-11-16_
   - `php artisan test --filter=ImportFromServerTest`
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
+
+### I22 – Rejected duplicates end the job as a skip (Q-115-13)
+- [x] T-115-48 – Tests for S-114-09 and the S-115-43 job status, red first.
+  _Intent:_ `SkippedDuplicateJobTest`: with `skip_duplicates_not_owned`, another user imports or uploads the original asynchronously → no exception, job not failed nor released, history `SKIPPED`, one `info` line, no `error`. On the sync queue, the import rethrows `PhotoRejectedException` and the upload answers 409, both with history `SKIPPED`. The scoped S-115-43 rejection records `SKIPPED`.
+  _Verification commands:_
+  - `php artisan test --filter=SkippedDuplicateJobTest` (red)
+- [x] T-115-49 – Rejection handled as a skip (FR-114-01/03, ADR-114-01).
+  _Intent:_ `ImportImageJob::handle()` and `ProcessImageJob::handle()` catch `PhotoSkippedException|PhotoRejectedException`, `HandlesSkippedPhotoTrait::skipped()` takes either, `HasFailedTrait::failed()` saves `SKIPPED` for either.
+  _Verification commands:_
+  - `php artisan test --filter=SkippedDuplicateJobTest`
+  - `php artisan test --filter=PhotoUnownedDuplicateTest`
+  - `php artisan test --filter=UploadStatusJobTest`
+  - `php artisan test --filter=UploadStatusTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+  _Notes:_ `UploadStatusJobTest::testRejectedDuplicateOfAnotherUserIsSkippedAfterLastAttempt` encoded the old outcome and was the only S-116-10 coverage. It is replaced by `testRejectedDuplicateOfAnotherUserIsSkippedAtOnce` (S-116-08) and `testFailedAttemptStaysProcessing` (S-116-10, an emptied source file). Feature 116 N5 lifted.
 
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).

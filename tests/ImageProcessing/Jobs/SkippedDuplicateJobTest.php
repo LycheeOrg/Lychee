@@ -18,9 +18,11 @@
 
 namespace Tests\ImageProcessing\Jobs;
 
+use App\Constants\PhotoAlbum as PA;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
@@ -29,7 +31,9 @@ use App\Jobs\ProcessImageJob;
 use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use function Safe\fopen;
 use Tests\Constants\TestConstants;
@@ -65,6 +69,7 @@ class SkippedDuplicateJobTest extends BaseApiWithDataTest
 	public function tearDown(): void
 	{
 		Configs::set('skip_duplicates', false);
+		Configs::set('skip_duplicates_not_owned', true);
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 		parent::tearDown();
 	}
@@ -161,6 +166,149 @@ class SkippedDuplicateJobTest extends BaseApiWithDataTest
 		self::assertNotNull($caught);
 		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
 		$this->assertSkipLogged('night.jpg', 'The photo has been skipped');
+	}
+
+	/**
+	 * S-115-43: a scoped import rejects another user's duplicate before resyncing its metadata.
+	 */
+	public function testScopedImportRejectsOthersDuplicateBeforeResync(): void
+	{
+		Configs::set('skip_duplicates_not_owned', false);
+		$original = $this->originalPhoto();
+		$original->iso = null;
+		$original->save();
+
+		$caught = $this->importAs($this->userMayUpload1, new ImportMode(skip_duplicates: true, resync_metadata: true, scope_to_owner: true));
+
+		self::assertInstanceOf(PhotoRejectedException::class, $caught);
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		self::assertNull($this->originalPhoto()->iso, 'the other user\'s photo is not resynced');
+		self::assertFalse($this->isOriginalInAlbum1());
+	}
+
+	/**
+	 * S-115-43: a scoped import does not add another user's duplicate to the target album.
+	 */
+	public function testScopedImportDoesNotLinkOthersDuplicate(): void
+	{
+		Configs::set('skip_duplicates_not_owned', false);
+
+		$caught = $this->importAs($this->userMayUpload1, new ImportMode(scope_to_owner: true));
+
+		self::assertInstanceOf(PhotoRejectedException::class, $caught);
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		self::assertFalse($this->isOriginalInAlbum1());
+	}
+
+	/**
+	 * S-115-43: without the scope, another user's duplicate is added to the target album (pre-115 behaviour).
+	 */
+	public function testUnscopedImportLinksOthersDuplicate(): void
+	{
+		Configs::set('skip_duplicates_not_owned', false);
+
+		$caught = $this->importAs($this->userMayUpload1, new ImportMode());
+
+		self::assertNull($caught);
+		self::assertTrue($this->isOriginalInAlbum1());
+	}
+
+	/**
+	 * S-114-09: async import of another user's duplicate, rejected by `skip_duplicates_not_owned`,
+	 * ends normally and records SKIPPED (Q-115-13).
+	 */
+	public function testAsyncImportRejectionCompletesWithoutFailure(): void
+	{
+		Configs::set('skip_duplicates_not_owned', true);
+		$job = new ImportImageJob(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)), $this->userMayUpload1->id, new ImportMode(), null, UserUploadTrustLevel::TRUSTED);
+		$job->withFakeQueueInteractions();
+
+		$result = app()->call([$job, 'handle']);
+
+		self::assertNull($result);
+		$job->assertNotFailed();
+		$job->assertNotReleased();
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		$this->assertSkipLogged('night.jpg', 'The photo has been rejected');
+		$this->assertNoErrorLogged();
+	}
+
+	/**
+	 * S-114-09: async web upload of another user's duplicate, rejected, ends normally and records SKIPPED.
+	 */
+	public function testAsyncUploadRejectionCompletesWithoutFailure(): void
+	{
+		Configs::set('skip_duplicates_not_owned', true);
+		$this->actingAs($this->userMayUpload1);
+		$file = new ProcessableJobFile('.jpg', 'night.jpg');
+		$file->write(fopen(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE), 'rb'));
+		$file->close();
+
+		$job = new ProcessImageJob($file, null, null);
+		$job->withFakeQueueInteractions();
+
+		$result = app()->call([$job, 'handle']);
+
+		self::assertNull($result);
+		$job->assertNotFailed();
+		$job->assertNotReleased();
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		$this->assertSkipLogged('night.jpg', 'The photo has been rejected');
+		$this->assertNoErrorLogged();
+	}
+
+	/**
+	 * S-114-09: sync import of another user's duplicate still throws to the caller and records SKIPPED.
+	 */
+	public function testSyncImportRejectionStillThrows(): void
+	{
+		Configs::set('skip_duplicates_not_owned', true);
+
+		$caught = $this->importAs($this->userMayUpload1, new ImportMode());
+
+		self::assertInstanceOf(PhotoRejectedException::class, $caught);
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		$this->assertSkipLogged('night.jpg', 'The photo has been rejected');
+	}
+
+	/**
+	 * S-114-09: sync upload of another user's duplicate still answers 409 and records SKIPPED.
+	 */
+	public function testSyncUploadRejectionStillConflicts(): void
+	{
+		Configs::set('skip_duplicates_not_owned', true);
+		$this->catchFailureSilence = [PhotoRejectedException::class];
+
+		$response = $this->actingAs($this->userMayUpload1)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, file_name: 'night.jpg');
+
+		$this->assertConflict($response);
+		$this->assertLatestHistoryStatus(JobStatus::SKIPPED);
+		$this->assertSkipLogged('night.jpg', 'The photo has been rejected');
+	}
+
+	/**
+	 * Import the original's file again as $owner into `album1`, on the sync queue.
+	 *
+	 * @return PhotoRejectedException|null the rejection, `null` when the import went through
+	 */
+	private function importAs(User $owner, ImportMode $import_mode): ?PhotoRejectedException
+	{
+		$this->catchFailureSilence = [PhotoRejectedException::class];
+		try {
+			ImportImageJob::dispatchSync(new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE)), $owner->id, $import_mode, $this->album1, UserUploadTrustLevel::TRUSTED);
+		} catch (PhotoRejectedException $e) {
+			return $e;
+		}
+
+		return null;
+	}
+
+	private function isOriginalInAlbum1(): bool
+	{
+		return DB::table(PA::PHOTO_ALBUM)
+			->where(PA::ALBUM_ID, '=', $this->album1->id)
+			->where(PA::PHOTO_ID, '=', $this->originalPhoto()->id)
+			->exists();
 	}
 
 	private function originalPhoto(): Photo
