@@ -84,9 +84,9 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson([
 			'directory' => base_path(''),
-			'is_restricted' => false,
 			'is_root_folder_album' => true,
 		]);
+		$response->assertJsonMissingPath('is_restricted');
 	}
 
 	/** S-115-05 */
@@ -100,10 +100,10 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson([
 			'directory' => $this->import_root,
-			'is_restricted' => true,
 			'is_root_folder_album' => false,
 			'import_via_symlink' => true,
 		]);
+		$response->assertJsonMissingPath('is_restricted');
 	}
 
 	/** S-115-20 */

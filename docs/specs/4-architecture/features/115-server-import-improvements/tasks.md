@@ -276,6 +276,15 @@ _Last updated: 2026-11-16_
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
 
+- [x] T-115-43 – Remove `is_restricted` from the import options (FR-115-04/17, S-115-04/05, DO-115-07, API-115-01).
+  _Intent:_ `ImportFromServerOptionsTest` asserts the field is absent (red first), field dropped from `ImportFromServerOptionsResource`, types regenerated.
+  _Verification commands:_
+  - `php artisan test --filter=ImportFromServerOptionsTest`
+  - `php artisan typescript:transform` then `vp check --fix resources/js/lychee.d.ts`
+  - `vp run typecheck`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

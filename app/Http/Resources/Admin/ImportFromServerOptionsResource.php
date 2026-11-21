@@ -21,7 +21,6 @@ class ImportFromServerOptionsResource extends Data
 	public bool $delete_missing_photos;
 	public bool $delete_missing_albums;
 	public string $directory;
-	public bool $is_restricted;
 	public bool $is_root_folder_album;
 
 	/**
@@ -32,7 +31,6 @@ class ImportFromServerOptionsResource extends Data
 	 */
 	public function __construct(?string $import_root)
 	{
-		$this->is_restricted = $import_root !== null;
 		$this->delete_imported = request()->configs()->getValueAsBool('delete_imported');
 		$this->import_via_symlink = request()->configs()->getValueAsBool('import_via_symlink');
 		$this->skip_duplicates = request()->configs()->getValueAsBool('skip_duplicates');

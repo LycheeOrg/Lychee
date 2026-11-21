@@ -320,7 +320,6 @@ declare namespace App {
 					delete_missing_photos: boolean;
 					delete_missing_albums: boolean;
 					directory: string;
-					is_restricted: boolean;
 					is_root_folder_album: boolean;
 				};
 				export type ImportFromServerResource = {
