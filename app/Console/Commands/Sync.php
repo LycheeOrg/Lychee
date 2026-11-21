@@ -145,6 +145,13 @@ class Sync extends Command
 		$files = [];
 
 		foreach ($paths as $path) {
+			// Links are never followed, named ones included (Q-115-11).
+			if (ImportPathGuard::isLink($path)) {
+				$this->error('Path is a symbolic link: ' . $path);
+
+				return null;
+			}
+
 			try {
 				$real = realpath($path);
 			} catch (FilesystemException $e) {

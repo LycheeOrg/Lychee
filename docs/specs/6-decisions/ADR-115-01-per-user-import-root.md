@@ -3,8 +3,8 @@
 - **Status:** Accepted
 - **Date:** 2026-11-15
 - **Related features/specs:** Feature 115 (docs/specs/4-architecture/features/115-server-import-improvements/spec.md), Feature 024 (docs/specs/4-architecture/features/024-sync-file-list/spec.md), Feature 033 (docs/specs/4-architecture/features/033-upload-trust-level/spec.md)
-- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07, Q-115-09, Q-115-10
-- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`), 2026-11-18 (Q-115-09: the owner scope also covers duplicate photos), 2026-11-19 (Q-115-10: restricted users may import via symbolic link)
+- **Related open questions:** Q-115-01, Q-115-02, Q-115-03, Q-115-07, Q-115-09, Q-115-10, Q-115-11
+- **Amended:** 2026-11-16 (Q-115-07: only the server owner sets `server_path`), 2026-11-18 (Q-115-09: the owner scope also covers duplicate photos), 2026-11-19 (Q-115-10: restricted users may import via symbolic link), 2026-11-21 (Q-115-11: links are never followed)
 
 ## Context
 
@@ -16,7 +16,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 
 1. **Access = `users.server_path`.** `null` disables import, `/` gives today's unrestricted access, any other absolute path is the user's **import root**. Only the server owner (the `owner_id` user) sets it: other admins neither grant, widen, narrow nor revoke it (`UserPolicy::CAN_EDIT_SERVER_PATH`, no admin bypass). `DISABLE_IMPORT_FROM_SERVER` still turns the feature off for everyone.
 2. **Containment before disk access.** For a restricted user every requested path is checked lexically against the import root, then by `realpath()` against the real import root with a trailing separator, before `is_dir()` or any read. Outside paths get one generic 403 whether they exist or not. One pure helper (`ImportPathGuard`) does this for browse, import, the tree builder, the job and the sync command.
-3. **Symbolic links are followed only inside the import root.** `BuildTree` resolves each entry and skips links whose real path leaves the root, with a warning. A visited set of real directories skips loops and duplicate subtrees for every user. Explicit `lychee:sync` paths and `/` users have no root, so they follow every link, loop guard included.
+3. **Symbolic links are never followed** (owner directive 2026-11-21, Q-115-11, replacing "followed only inside the import root"). Browse lists no link and `BuildTree` skips every link with a warning, wherever it points and for every user, explicit `lychee:sync` paths included. No loops can occur, so there is no visited set. A directory or file named explicitly that is itself a link is refused too (browse and web import 422, `lychee:sync` exit 1). Links higher up in a named path (server path, install directory) are resolved as before.
 4. **The job checks again.** `ImportImageJob` carries the real import root and re-checks the file's real path when it runs, so a file swapped for a link between scan and job is not read.
 5. **`import_via_symlink` for every user** (owner directive 2026-11-19, Q-115-10, replacing "restricted users always get copies"). Restricted users get the same option as full-access users, in the dialog and in `lychee:sync`. The containment checks still apply when the link is created.
 6. **Imports stay within their owner's content.** With `import_scope_to_owner` (on by default) album reuse and delete-missing only consider albums and photos owned by the intended owner, and a file whose duplicate is another user's photo is skipped (that photo is neither resynced nor added to the importer's album), for every import. Admins can turn it off to get the pre-115 behaviour.
@@ -27,7 +27,8 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 ### Positive
 - A restricted user can neither list, probe, import nor serve files outside their folder, including through links or file swaps.
 - Imports by several users no longer merge into, modify or delete each other's albums and photos.
-- The loop guard fixes nested-album chains for today's admin import too.
+- Skipping links also removes nested-album chains from link loops for today's admin import.
+- Installs that link folders into their import directory lose those folders from the import (behaviour change for `/` users and `lychee:sync`).
 - Existing installs and new installs keep a working import for the owner with no action.
 
 ### Negative
@@ -39,7 +40,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 
 ## Alternatives Considered
 
-- **Q-115-01 B, restricted users never follow links:** simplest rule, but also ignores harmless links inside the user's own folder.
+- **Q-115-01 B, restricted users never follow links:** first rejected because it also ignores harmless links inside the user's own folder. Q-115-11 later went further: no user follows links.
 - **Q-115-01 C, follow every link:** no change, but defeats the restriction.
 - **Q-115-02 B, everyone starts disabled:** strictest, but the feature disappears after upgrade with no explanation.
 - **Q-115-02 C, admins always have full access:** no setting for admins, but an admin can never be confined.
@@ -56,7 +57,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 ## Operational Impact
 
 - The server owner manages `server_path` per user in user management (other admins do not see the field); the how-to `import-from-server.md` documents folder layout and the `sync_users_server_paths` cron line.
-- Refusals and skipped links are logged (`import path denied`, `symlink_outside`, `import file left the import root`).
+- Refusals and skipped links are logged (`import path denied`, `symlink_skipped`, `import file left the import root`).
 - No new dependency; no measurable cost beyond one `realpath()` per entry.
 
 ## Links

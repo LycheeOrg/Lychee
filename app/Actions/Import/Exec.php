@@ -41,7 +41,7 @@ class Exec
 	 * @param bool       $delete_missing_albums whether to delete albums in the database that are not in the file system
 	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
 	 * @param bool       $should_execute_jobs   whether to dispatch the jobs at the end of the run
-	 * @param ?string    $import_root           real import root links must stay in, `null` when unrestricted (FR-115-11)
+	 * @param ?string    $import_root           real import root each job re-checks its file against, `null` when unrestricted (FR-115-18)
 	 * @param bool       $root_folder_as_album  whether the selected folder becomes an album (FR-115-09)
 	 * @param bool       $scope_to_owner        whether album reuse and deletion only consider the owner's content (FR-115-12)
 	 */

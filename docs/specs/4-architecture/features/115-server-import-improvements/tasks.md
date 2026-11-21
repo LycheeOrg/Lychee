@@ -254,6 +254,28 @@ _Last updated: 2026-11-16_
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
 
+### I20 – Links never followed (Q-115-11)
+- [x] T-115-41 – Browse and `BuildTree` skip every symbolic link (FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04).
+  _Intent:_ tests flipped first (`ImportFromServerBrowseTest::testFullAccessSeesNoLinks`, `testRestrictedAtRoot`, `ImportFromServerTest::testRestrictedImportSkipsAllLinks`, `SyncTest::testExplicitPathSkipsLinks`). `BuildTree` drops `followedRealPath()`, `$import_root`, `$visited`, skips `is_link()` entries with `symlink_skipped`. `ImportFromServerController::browse` drops `isListable()`, lists no link. ADR-115-01 point 3, how-to, knowledge map, ADR index updated.
+  _Verification commands:_
+  - `php artisan test --filter=ImportFromServerBrowseTest` (2 local-only failures: stray `tests/Frontend`, `APP_DEBUG=true`)
+  - `php artisan test --filter=ImportFromServerTest`
+  - `php artisan test --filter=SyncTest`
+  - `php artisan test --filter=ImportPathGuardTest`
+  - `php artisan test --filter=ImportImageJobTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
+- [x] T-115-42 – Refuse a named path that is itself a link (FR-115-05/06/11, S-115-21/26).
+  _Intent:_ tests first (`ImportPathGuardTest::testIsLink`, `ImportFromServerBrowseTest::testNamedLinkRefused`, `ImportFromServerTest::testImportOfNamedLinkRefused`, `SyncTest::testExplicitLinkPathRefused`). `ImportPathGuard::isLink()`, checked in `ImportFromServerController::browse()` and `__invoke()` next to `is_dir()`, and in `Sync::validatePaths()` before `realpath()`.
+  _Verification commands:_
+  - `php artisan test --filter=ImportPathGuardTest`
+  - `php artisan test --filter=ImportFromServerBrowseTest` (2 local-only failures: stray `tests/Frontend`, `APP_DEBUG=true`)
+  - `php artisan test --filter=ImportFromServerTest`
+  - `php artisan test --filter=SyncTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

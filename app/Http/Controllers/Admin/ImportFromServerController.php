@@ -12,7 +12,6 @@ use App\Actions\Import\Exec;
 use App\Actions\Import\ImportPathGuard;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
-use App\Enum\ImportPathStatus;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\InvalidOptionsException;
@@ -63,7 +62,7 @@ class ImportFromServerController extends Controller
 	public function browse(ImportFromServerBrowseRequest $request): array
 	{
 		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
-		if (!is_dir($request->directory)) {
+		if (!is_dir($request->directory) || ImportPathGuard::isLink($request->directory)) {
 			throw new InvalidDirectoryException('The specified directory is not valid: ' . $request->directory);
 		}
 
@@ -75,7 +74,8 @@ class ImportFromServerController extends Controller
 		try {
 			foreach (new \DirectoryIterator($request->directory) as $file_info) {
 				// We only import directories here. Files are imported by the Importer when parsing the directories.
-				if ($file_info->isDir() && !$file_info->isDot() && self::isListable($file_info, $import_root)) {
+				// Links are never listed, wherever they point (FR-115-05).
+				if ($file_info->isDir() && !$file_info->isDot() && !$file_info->isLink()) {
 					$dirs[] = $file_info->getFilename();
 				}
 			}
@@ -96,14 +96,6 @@ class ImportFromServerController extends Controller
 	}
 
 	/**
-	 * A link is listed to a restricted user only when it points inside their import root (FR-115-05).
-	 */
-	private static function isListable(\SplFileInfo $file_info, ?string $import_root): bool
-	{
-		return !$file_info->isLink() || ImportPathGuard::check($file_info->getPathname(), $import_root) === ImportPathStatus::INSIDE;
-	}
-
-	/**
 	 * Import photos from server directory into Lychee.
 	 *
 	 * @param ImportFromServerRequest $request Request containing import parameters
@@ -116,8 +108,8 @@ class ImportFromServerController extends Controller
 	{
 		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
 		foreach ($request->directories as $directory) {
-			if (!is_dir($directory)) {
-				throw new InvalidOptionsException('directory does not exists: ' . $directory);
+			if (!is_dir($directory) || ImportPathGuard::isLink($directory)) {
+				throw new InvalidOptionsException('directory does not exist or is a symbolic link: ' . $directory);
 			}
 		}
 

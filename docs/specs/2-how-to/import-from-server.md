@@ -21,7 +21,7 @@ The path must exist and be readable by the PHP process when it is saved.
 ## What a restricted user can do
 
 - Browse and import only inside their folder. Any other path is refused with the same answer whether it exists or not.
-- Symbolic links inside the folder are followed only when they point inside the folder; links leaving it are not listed and are skipped during the import (`symlink_outside` in the import report).
+- Symbolic links are never listed nor followed, wherever they point and for every user (`symlink_skipped` in the import report). Naming a link directly is refused too (dialog, API and `lychee:sync`). Import the real folder instead.
 - "Import via symbolic link" is offered as for full-access users. Prefer copies when the user can write to the folder (network share): they could later replace an imported file with a link to another file on the server, which Lychee would then serve as the photo's original.
 - Imported albums and photos belong to the user who imports, with the user's upload trust level (photos of a `check` user wait for validation).
 - A file replaced by a link to somewhere else between the scan and its processing is not imported (the job fails).

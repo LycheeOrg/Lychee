@@ -139,6 +139,18 @@ class ImportPathGuardTest extends AbstractTestCase
 		self::assertSame(ImportPathStatus::MISSING, ImportPathGuard::check('/does/not/exist', null));
 	}
 
+	/** Q-115-11: a link is detected however it is spelled. */
+	public function testIsLink(): void
+	{
+		self::assertTrue(ImportPathGuard::isLink($this->root . '/link-inside'));
+		self::assertTrue(ImportPathGuard::isLink($this->root . '/link-inside/'));
+		self::assertTrue(ImportPathGuard::isLink($this->root . '/link-inside/.'));
+		self::assertTrue(ImportPathGuard::isLink($this->root . '/file-outside.jpg'));
+		self::assertFalse(ImportPathGuard::isLink($this->root . '/2026'));
+		self::assertFalse(ImportPathGuard::isLink($this->root . '/link-inside/..'));
+		self::assertFalse(ImportPathGuard::isLink('/does/not/exist'));
+	}
+
 	public function testRealRoot(): void
 	{
 		self::assertNull(ImportPathGuard::realRoot(null));

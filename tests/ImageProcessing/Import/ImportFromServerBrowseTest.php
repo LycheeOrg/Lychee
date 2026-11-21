@@ -71,20 +71,20 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		self::assertEquals(['..', 'AssistedVision', 'Constants', 'Feature_v2', 'Feature_v3', 'Fixtures', 'ImageProcessing', 'Install', 'Precomputing', 'Samples', 'Support', 'Traits', 'Unit', 'Webshop', 'docker'], $this->sorted($response));
 	}
 
-	/** S-115-04: full access lists links whatever they point to. */
-	public function testFullAccessSeesAllLinks(): void
+	/** S-115-04: links are never listed, even with full access. */
+	public function testFullAccessSeesNoLinks(): void
 	{
 		$response = $this->browse($this->admin, $this->import_root);
 		$this->assertOk($response);
-		self::assertEquals(['..', '2026', 'Family', 'link-inside', 'link-outside'], $this->sorted($response));
+		self::assertEquals(['..', '2026', 'Family'], $this->sorted($response));
 	}
 
-	/** S-115-05, S-115-21, S-115-22: no `..` at the root, outside links hidden. */
+	/** S-115-05, S-115-21, S-115-22: no `..` at the root, no links. */
 	public function testRestrictedAtRoot(): void
 	{
 		$response = $this->browse($this->alice, $this->import_root);
 		$this->assertOk($response);
-		self::assertEquals(['2026', 'Family', 'link-inside'], $this->sorted($response));
+		self::assertEquals(['2026', 'Family'], $this->sorted($response));
 	}
 
 	/** S-115-05: below the root `..` is listed. */
@@ -95,10 +95,13 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		self::assertEquals(['..'], $this->sorted($response));
 	}
 
-	/** S-115-21: a link inside the root can be browsed. */
-	public function testRestrictedThroughInsideLink(): void
+	/** S-115-21: a link named explicitly is refused, for every user, however it is spelled. */
+	public function testNamedLinkRefused(): void
 	{
-		$this->assertOk($this->browse($this->alice, $this->import_root . '/link-inside'));
+		$this->assertUnprocessable($this->browse($this->alice, $this->import_root . '/link-inside'));
+		$this->assertUnprocessable($this->browse($this->admin, $this->import_root . '/link-inside'));
+		$this->assertUnprocessable($this->browse($this->admin, $this->import_root . '/link-inside/'));
+		$this->assertUnprocessable($this->browse($this->admin, $this->import_root . '/link-inside/.'));
 	}
 
 	/** S-115-06: existing and missing outside paths give the same answer. */

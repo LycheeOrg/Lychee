@@ -16,12 +16,14 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review): (A) restricted jobs open the file once, prove the open file is inside the root, import from a private temp copy, (B) A without the copy, re-check after the import and roll back, (C) accept the race and weaken NFR-115-06 | Open | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-10~~ | 115 | High | Symbolic link import for restricted users: (A) allowed as for full-access users, risk accepted, (B) refused (ADR-115-01 point 5 as first decided) | Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01) | 2026-11-19 | 2026-11-19 |
+| ~~Q-115-11~~ | 115 | High | Symbolic links in browse and import: (A) never followed nor listed, for every user, (B) followed only inside the import root (Q-115-01 A as first decided) | Resolved (A, owner directive 2026-11-21: FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04, ADR-115-01) | 2026-11-21 | 2026-11-21 |
 
 ## Question Details
 
 ### ~~Q-115-01~~ · Symbolic links
 
 **Status:** Resolved (A, owner, 2026-11-15: FR-115-04/05/06/11/17/18, NFR-115-06, ADR-115-01)
+**Superseded:** link following by Q-115-11 (2026-11-21, links never followed), `import_via_symlink` by Q-115-10 (2026-11-19)
 **Feature:** F-115 – Server Import Improvements
 **Preferred option:** 🅰️ (**recommended**) Option A – Follow links that stay inside the import root
 
@@ -439,3 +441,32 @@ ADR-115-01 point 5 refused `import_via_symlink` to restricted users (copies only
 
 **Next action**
 Resolved: Option A implemented in increment I19 (T-115-40). Q-115-08 annotated.
+
+### ~~Q-115-11~~ · Symbolic links never followed
+
+**Status:** Resolved (A, owner directive 2026-11-21: FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04, ADR-115-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ Option A – Never followed nor listed (owner directive)
+
+**Question**
+Q-115-01 A followed links whose real path stays inside the import root, with a visited set against loops. On 2026-11-21 the owner stated: "import from server should NOT follow links even if within the path. We just skip all links. (that should simplify things)".
+
+---
+
+#### 🅰️ Option A – Never followed nor listed, for every user
+- **Idea:** `BuildTree` skips every `is_link()` entry with warning `symlink_skipped`. Browse lists no link. Same for `/` users and every `lychee:sync` mode. A directory or file named explicitly that is itself a link is refused (owner follow-up 2026-11-21: "Refuse.").
+- **Spec impact:** FR-115-05, FR-115-11, NFR-115-05, NFR-115-07, S-115-21 … 26, API-115-02, TE-115-03/04, ADR-115-01 point 3, how-to.
+- **Pros:**
+  - ✅ No per-entry `realpath()`, no import root in `BuildTree`, no visited set, no loops.
+  - ✅ One rule for every user.
+- **Cons:**
+  - ❌ Behaviour change for installs that link folders into their import directory (`/` users, `lychee:sync`).
+
+---
+
+#### 🅱️ Option B – Followed only inside the import root (as first decided)
+- **Cons:**
+  - ❌ Contradicts the owner directive.
+
+**Next action**
+Resolved: Option A implemented in increment I20 (T-115-41).

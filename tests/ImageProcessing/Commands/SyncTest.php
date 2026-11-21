@@ -272,8 +272,21 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertTrue((bool) DB::table('photos')->where('id', '=', $photo_id)->value('is_validated'));
 	}
 
-	/** Feature 115 (S-115-26): an explicit CLI path follows links wherever they point. */
-	public function testExplicitPathFollowsOutsideLinks(): void
+	/** Feature 115 (S-115-26): an explicit CLI path that is a link (folder or file) is refused. */
+	public function testExplicitLinkPathRefused(): void
+	{
+		Queue::fake();
+
+		foreach ([$this->import_root . '/link-inside/', $this->import_root . '/file-outside.jpg'] as $path) {
+			$this->artisan(self::COMMAND, ['--owner_id' => $this->admin->id, 'paths' => [$path]])
+				->expectsOutputToContain('Path is a symbolic link')
+				->assertExitCode(1);
+		}
+		Queue::assertNothingPushed();
+	}
+
+	/** Feature 115 (S-115-26): an explicit CLI path skips links too. */
+	public function testExplicitPathSkipsLinks(): void
 	{
 		Queue::fake();
 
@@ -286,7 +299,7 @@ class SyncTest extends BaseApiWithDataTest
 
 		$files = Queue::pushed(ImportImageJob::class)->map(fn (ImportImageJob $job) => basename($job->file_path))->all();
 		sort($files);
-		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg', 'file-outside.jpg', 'secret.jpg'], $files);
+		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $files);
 		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_root === null);
 	}
 

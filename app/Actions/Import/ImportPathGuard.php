@@ -98,6 +98,15 @@ final class ImportPathGuard
 	}
 
 	/**
+	 * Whether $path itself is a symbolic link, however it is spelled (`link/`, `link/.`).
+	 * Import from server never follows links, named ones included (Q-115-11).
+	 */
+	public static function isLink(string $path): bool
+	{
+		return is_link(self::normalise($path));
+	}
+
+	/**
 	 * Real path of $path, or `null` when it does not exist.
 	 */
 	public static function resolve(string $path): ?string

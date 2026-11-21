@@ -223,17 +223,17 @@ class ImportFromServerTest extends BaseApiWithDataTest
 	}
 
 	/** S-115-21, S-115-22, S-115-23, S-115-25: restricted import of the whole root. */
-	public function testRestrictedImportSkipsOutsideLinksAndDuplicates(): void
+	public function testRestrictedImportSkipsAllLinks(): void
 	{
 		Queue::fake();
-		symlink($this->import_root . '/2026', $this->import_root . '/link-inside-2');
+		symlink($this->import_root . '/a.jpg', $this->import_root . '/alias.jpg');
 		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
 
 		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root, $this->album1->id));
 		$this->assertCreated($response);
 
-		// b.jpg is reachable three times (2026, link-inside, link-inside-2) and imported once.
-		// secret.jpg (outside, through link-outside and file-outside.jpg) is never queued.
+		// Links are skipped wherever they point: alias.jpg and link-inside (inside),
+		// link-outside and file-outside.jpg (outside).
 		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $this->queuedFiles());
 		$alice_album_id = DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('albums.parent_id', '=', $this->album1->id)->where('base_albums.title', '=', 'alice')->value('albums.id');
@@ -241,18 +241,18 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		self::assertSame(['2026', 'Family'], $this->childAlbumTitles($alice_album_id));
 	}
 
-	/** S-115-21: a link inside the root can itself be imported. */
-	public function testRestrictedImportOfInsideLink(): void
+	/** S-115-21: a link named explicitly is refused, for every user. */
+	public function testImportOfNamedLinkRefused(): void
 	{
 		Queue::fake();
 		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
 
-		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/link-inside', $this->album1->id));
-		$this->assertCreated($response);
-		self::assertSame(['b.jpg'], $this->queuedFiles());
+		$this->assertUnprocessable($this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/link-inside', $this->album1->id)));
+		$this->assertUnprocessable($this->actingAs($this->admin)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/link-inside/', $this->album5->id)));
+		Queue::assertNothingPushed();
 	}
 
-	/** S-115-24: a loop is followed once, for every user. */
+	/** S-115-24: a looping link is skipped like any link, for every user. */
 	public function testLoopImportedOnce(): void
 	{
 		Queue::fake();
