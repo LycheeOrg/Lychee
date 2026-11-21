@@ -48,6 +48,20 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		return $content;
 	}
 
+	/**
+	 * Drops the debug-mode `trace` entries, at every level of
+	 * `previous_exception`: they hold the line of the test that made the call.
+	 */
+	private function withoutTrace(mixed $body): mixed
+	{
+		if (!is_array($body)) {
+			return $body;
+		}
+		unset($body['trace']);
+
+		return array_map(fn (mixed $value) => $this->withoutTrace($value), $body);
+	}
+
 	public function testBrowseEndpointAsGuest(): void
 	{
 		$response = $this->getJsonWithData('/Import::browse', ['directory' => 'tests']);
@@ -111,7 +125,7 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		$missing = $this->browse($this->alice, '/does/not/exist');
 		$this->assertForbidden($existing);
 		$this->assertForbidden($missing);
-		self::assertSame($existing->json(), $missing->json());
+		self::assertSame($this->withoutTrace($existing->json()), $this->withoutTrace($missing->json()));
 	}
 
 	/** S-115-07 */
