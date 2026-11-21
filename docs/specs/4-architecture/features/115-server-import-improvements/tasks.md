@@ -285,6 +285,27 @@ _Last updated: 2026-11-16_
   - `vendor/bin/php-cs-fixer fix`
   - `make phpstan`
 
+### I21 – PR #4989 review fixes, round 2
+- [x] T-115-44 – Docs: FR-115-07/11/12, S-115-42/44/45, ADR-115-01, Q-115-12 logged and resolved, Q-115-08 option A deletion wording, how-to explicit-path and `.lycheeignore` wording.
+  _Intent:_ spec and decisions first, before the tests.
+- [x] T-115-45 – Tests for S-115-44, S-115-45, S-115-42 (invalid value) and the hardened `SyncTest` assertions, red first.
+  _Intent:_ `SyncTest::testOwnerScopeReusesChildrenOfOthersTarget` (S-115-44) and `SyncTest::testLinkedIgnoreFileNotRead` (S-115-45) red. `queuedAlbumOf()` fails when no job matches. `testNoPathSyncsEveryUser` checks the root of every Alice job, `testExplicitPathSkipsLinks` the root of every job. `ServerPathTest`: a non-owner admin who creates or edits with an invalid `server_path` → 422, the edited user's path unchanged.
+  _Verification commands:_
+  - `php artisan test --filter=SyncTest` (the two new cases red)
+  - `php artisan test --filter=ServerPathTest`
+- [x] T-115-46 – Album reuse by the parent's owner (FR-115-12, S-115-44).
+  _Intent:_ `CreateNonExistingAlbums::findOrCreateAlbum()` filters below a parent by `$parent_album->owner_id`, at the root by the intended owner.
+  _Verification commands:_
+  - `php artisan test --filter=SyncTest`
+  - `php artisan test --filter=ImportFromServerTest`
+- [x] T-115-47 – `.lycheeignore` link not read (FR-115-11, S-115-45).
+  _Intent:_ `BuildTree::readLocalIgnoreList()` skips a link with `symlink_skipped` before `is_readable()`/`file()`.
+  _Verification commands:_
+  - `php artisan test --filter=SyncTest`
+  - `php artisan test --filter=ImportFromServerTest`
+  - `vendor/bin/php-cs-fixer fix`
+  - `make phpstan`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

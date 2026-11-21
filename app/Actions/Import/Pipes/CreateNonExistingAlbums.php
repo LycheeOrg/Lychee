@@ -109,7 +109,8 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where(fn ($q) => $q->where('base_albums.title', $title)
 					->orWhere('base_albums.title', $old_title))
 				->where('albums.parent_id', $parent_album->id)
-				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $this->state->intended_owner_id))
+				// A child gets its parent's owner (Album\Create), so that is the owner to reuse (FR-115-12).
+				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $parent_album->owner_id))
 				->first();
 		} else {
 			// Check for root-level albums with this title

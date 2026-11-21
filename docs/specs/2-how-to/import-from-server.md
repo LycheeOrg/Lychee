@@ -21,7 +21,7 @@ The path must exist and be readable by the PHP process when it is saved.
 ## What a restricted user can do
 
 - Browse and import only inside their folder. Any other path is refused with the same answer whether it exists or not.
-- Symbolic links are never listed nor followed, wherever they point and for every user (`symlink_skipped` in the import report). Naming a link directly is refused too (dialog, API and `lychee:sync`). Import the real folder instead.
+- Symbolic links are never listed nor followed, wherever they point and for every user (`symlink_skipped` in the import report). Naming a link directly is refused too (dialog, API and `lychee:sync`). Import the real folder instead. A `.lycheeignore` that is a link is not read either: the folder is then imported without its ignore list.
 - "Import via symbolic link" is offered as for full-access users. Prefer copies when the user can write to the folder (network share): they could later replace an imported file with a link to another file on the server, which Lychee would then serve as the photo's original.
 - Imported albums and photos belong to the user who imports, with the user's upload trust level (photos of a `check` user wait for validation).
 - A file replaced by a link to somewhere else between the scan and its processing is not imported (the job fails).
@@ -52,4 +52,4 @@ With no path, `lychee:sync` syncs, in user id order, the folder of every user wh
 
 - `--owner_id=<id>` limits the run to that user (error when that user cannot be synced).
 - `--album_id` needs a path: it is refused when no path is given.
-- With paths, `lychee:sync` behaves as before; `--owner_id` defaults to the first admin. Explicit paths are not restricted (shell access is already full access) and follow every link.
+- With paths, `lychee:sync` behaves as before; `--owner_id` defaults to the first admin. Explicit paths are not restricted (shell access is already full access), but links inside them are skipped as for every import, and a path that is itself a link is refused.

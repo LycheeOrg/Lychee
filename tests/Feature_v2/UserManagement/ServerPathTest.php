@@ -213,6 +213,30 @@ class ServerPathTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * S-115-42: another admin's value is ignored only once valid: an invalid one is refused and nothing is saved.
+	 */
+	public function testOtherAdminInvalidServerPathRefused(): void
+	{
+		$other_admin = $this->otherAdmin();
+		$this->userMayUpload1->server_path = $this->base . '/alice';
+		$this->userMayUpload1->save();
+		// Exists, so only the forbidden sequence can make the rule fail.
+		mkdir($this->base . '/a..b');
+
+		foreach ([$this->base . '/missing', $this->base . '/a..b'] as $server_path) {
+			$response = $this->create($server_path, true, $other_admin);
+			$this->assertUnprocessable($response);
+			$response->assertJsonValidationErrors('server_path');
+			self::assertNull(User::query()->where('username', '=', 'alice')->first());
+
+			$response = $this->edit($server_path, true, $other_admin);
+			$this->assertUnprocessable($response);
+			$response->assertJsonValidationErrors('server_path');
+			self::assertSame($this->base . '/alice', $this->userMayUpload1->fresh()->server_path);
+		}
+	}
+
+	/**
 	 * S-115-42: without the key, another admin still creates and edits users.
 	 */
 	public function testOtherAdminSavesWithoutServerPath(): void

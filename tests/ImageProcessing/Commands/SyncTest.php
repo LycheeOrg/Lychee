@@ -28,7 +28,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use function Safe\exec;
+use function Safe\file_put_contents;
 use function Safe\mkdir;
+use function Safe\symlink;
 use function Safe\unlink;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\CreatesImportTree;
@@ -300,7 +302,26 @@ class SyncTest extends BaseApiWithDataTest
 		$files = Queue::pushed(ImportImageJob::class)->map(fn (ImportImageJob $job) => basename($job->file_path))->all();
 		sort($files);
 		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $files);
-		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_root === null);
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->import_root !== null);
+	}
+
+	/** Feature 115 (S-115-45): a `.lycheeignore` that is a link is not read, so its patterns do not apply. */
+	public function testLinkedIgnoreFileNotRead(): void
+	{
+		Queue::fake();
+		file_put_contents($this->import_base . '/outside/ignore', "*.jpg\n");
+		symlink($this->import_base . '/outside/ignore', $this->import_root . '/.lycheeignore');
+
+		$this->artisan(self::COMMAND, [
+			'--import_via_symlink' => '0',
+			'--delete_imported' => '0',
+			'--owner_id' => $this->admin->id,
+			'paths' => [$this->import_root],
+		])->assertSuccessful();
+
+		$files = Queue::pushed(ImportImageJob::class)->map(fn (ImportImageJob $job) => basename($job->file_path))->all();
+		sort($files);
+		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $files);
 	}
 
 	/**
@@ -341,9 +362,24 @@ class SyncTest extends BaseApiWithDataTest
 			->where('base_albums.title', '=', $title)->where('albums.parent_id', '=', $parent_id)->value('albums.id');
 	}
 
+	/**
+	 * Album of the job queued for $basename, `null` for Unsorted. Fails when no such job was queued.
+	 */
 	private function queuedAlbumOf(string $basename): ?string
 	{
-		return Queue::pushed(ImportImageJob::class)->first(fn (ImportImageJob $job) => basename($job->file_path) === $basename)?->album_id;
+		$job = Queue::pushed(ImportImageJob::class)->first(fn (ImportImageJob $job) => basename($job->file_path) === $basename);
+		self::assertInstanceOf(ImportImageJob::class, $job, $basename . ' was not queued');
+
+		return $job->album_id;
+	}
+
+	/**
+	 * Number of albums titled $title directly under $parent_id.
+	 */
+	private function countAlbums(string $title, string $parent_id): int
+	{
+		return DB::table('albums')->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.title', '=', $title)->where('albums.parent_id', '=', $parent_id)->count();
 	}
 
 	/** Feature 115 (S-115-14): the selected folder becomes an album (default). */
@@ -448,6 +484,23 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertSame([$this->admin->id, $this->userMayUpload2->id], $owners);
 	}
 
+	/** Feature 115 (S-115-44): below another user's target album, the child albums of a first import are reused. */
+	public function testOwnerScopeReusesChildrenOfOthersTarget(): void
+	{
+		Queue::fake();
+		$example = $this->createExampleTree();
+
+		// `album1` belongs to `userMayUpload1`, the import to the admin.
+		$this->sync($example, $this->album1->id);
+		$this->sync($example, $this->album1->id);
+
+		self::assertSame(1, $this->countAlbums('Example', $this->album1->id));
+		$example_id = $this->albumId('Example', $this->album1->id);
+		self::assertNotNull($example_id);
+		self::assertSame($this->album1->owner_id, (int) DB::table('base_albums')->where('id', '=', $example_id)->value('owner_id'));
+		self::assertSame(1, $this->countAlbums('Keep', $example_id));
+	}
+
 	/** Feature 115 (S-115-30): delete-missing in a shared target leaves other owners' content. */
 	public function testOwnerScopeDeleteMissingLeavesOthersContent(): void
 	{
@@ -547,7 +600,7 @@ class SyncTest extends BaseApiWithDataTest
 		self::assertSame([$alice->id, $bob->id], array_keys($per_owner));
 		self::assertSame(['a.jpg', 'b.jpg', 'c.jpg'], $per_owner[$alice->id]);
 		self::assertSame(['e.jpg'], $per_owner[$bob->id]);
-		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id !== $alice->id || $job->import_root === $this->import_root);
+		Queue::assertNotPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id === $alice->id && $job->import_root !== $this->import_root);
 		self::assertNotNull($this->albumId('alice', null));
 		Configs::set('sync_users_server_paths', '0');
 	}

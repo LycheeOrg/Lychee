@@ -17,6 +17,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-10~~ | 115 | High | Symbolic link import for restricted users: (A) allowed as for full-access users, risk accepted, (B) refused (ADR-115-01 point 5 as first decided) | Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01) | 2026-11-19 | 2026-11-19 |
 | ~~Q-115-11~~ | 115 | High | Symbolic links in browse and import: (A) never followed nor listed, for every user, (B) followed only inside the import root (Q-115-01 A as first decided) | Resolved (A, owner directive 2026-11-21: FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04, ADR-115-01) | 2026-11-21 | 2026-11-21 |
+| ~~Q-115-12~~ | 115 | Medium | Delete right for delete-missing (PR #4989 review asked to require `CAN_DELETE` on the target when `delete_missing_photos`/`delete_missing_albums` is set): (A) no delete right, the import-from-server right covers the import's own deletions, (B) require the delete right | Resolved (A, owner directive 2026-11-21: FR-115-07, ADR-115-01) | 2026-11-21 | 2026-11-21 |
 
 ## Question Details
 
@@ -340,7 +341,7 @@ How should a restricted job make sure the file it imports, and the file it delet
 - **Pros:**
   - ✅ Closes the window: every later read uses a file Lychee owns.
   - ✅ Portable (no `/proc`), and costs nothing for `/` users.
-  - ✅ Also covers the source deletion.
+  - ✅ Narrows the source deletion window: the source is deleted only if its path still resolves to the checked file. Deleting by path stays open to a parent folder swapped between that check and the `unlink()`; closing it needs a deletion bound to the checked folder (for example `unlink()` relative to an open directory handle, which PHP does not offer), or Option C's accepted risk for the deletion only.
 - **Cons:**
   - ❌ One extra copy of each file for restricted users (disk I/O and temporary space).
   - ❌ Largest change of the review fixes; a hard link inside the root to an outside file stays undetectable (no path check can see it).
@@ -470,3 +471,31 @@ Q-115-01 A followed links whose real path stays inside the import root, with a v
 
 **Next action**
 Resolved: Option A implemented in increment I20 (T-115-41).
+
+### ~~Q-115-12~~ · Delete right for delete-missing
+
+**Status:** Resolved (A, owner directive 2026-11-21: FR-115-07, ADR-115-01)
+**Feature:** F-115 – Server Import Improvements
+**Preferred option:** 🅰️ Option A – No delete right (owner directive)
+
+**Question**
+Raised in the PR #4989 review (thread on `app/Http/Requests/Admin/ImportFromServerRequest.php:47`, resolved on GitHub without a reply). `ImportFromServerRequest::authorize()` checks the import-from-server right and the upload right on the target album, not the delete right, although `delete_missing_photos` and `delete_missing_albums` delete content of the target. On 2026-11-21 the owner stated: "from the moment you allow import from server all permissions such as delete are ignored for the server actions point of view."
+
+---
+
+#### 🅰️ Option A – No delete right, the import-from-server right covers the import's deletions
+- **Idea:** Keep `authorize()` as it is. FR-115-07 states that delete-missing needs no delete right. FR-115-12 (owner scope) still limits what is deleted.
+- **Spec impact:** FR-115-07, ADR-115-01 point 6.
+- **Pros:**
+  - ✅ One right decides what an import may do. No code change.
+- **Cons:**
+  - ❌ A user with upload rights on a shared album can delete its missing photos and sub-albums through a server import. With the scope on, only the ones they own.
+
+---
+
+#### 🅱️ Option B – Require the delete right
+- **Cons:**
+  - ❌ Contradicts the owner directive.
+
+**Next action**
+Resolved: Option A, no code change. Recorded in FR-115-07 and ADR-115-01. The PR #4989 thread can stay resolved.
