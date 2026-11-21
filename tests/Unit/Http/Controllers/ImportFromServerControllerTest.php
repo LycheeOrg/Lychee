@@ -193,7 +193,7 @@ class ImportFromServerControllerTest extends AbstractTestCase
 		]);
 
 		$this->expectException(InvalidOptionsException::class);
-		$this->expectExceptionMessage('directory does not exists: ' . $nonExistentDir);
+		$this->expectExceptionMessage('directory does not exist or is a symbolic link: ' . $nonExistentDir);
 
 		// Act
 		(new ImportFromServerController())->__invoke($request);
