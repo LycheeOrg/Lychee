@@ -25,8 +25,7 @@ The path must exist and be readable by the PHP process when it is saved.
 - "Import via symbolic link" is offered as for full-access users. Prefer copies when the user can write to the folder (network share): they could later replace an imported file with a link to another file on the server, which Lychee would then serve as the photo's original.
 - Imported albums and photos belong to the user who imports, with the user's upload trust level (photos of a `check` user wait for validation).
 - A file replaced by a link to somewhere else between the scan and its processing is not imported (the job fails).
-
-Folders reached twice (link loops, two links to one folder) are imported once, for every user.
+- Known limit: a swap timed after that last check is not caught. A user who can write to their folder and retries can then have Lychee read a file outside it, or, with "Delete imported files", delete an image or video file outside it in a folder PHP can write to. Only give an import folder to users you trust with this.
 
 ## Settings (category "Import")
 

@@ -323,6 +323,10 @@ _Last updated: 2026-11-16_
   - `make phpstan`
   _Notes:_ `UploadStatusJobTest::testRejectedDuplicateOfAnotherUserIsSkippedAfterLastAttempt` encoded the old outcome and was the only S-116-10 coverage. It is replaced by `testRejectedDuplicateOfAnotherUserIsSkippedAtOnce` (S-116-08) and `testFailedAttemptStaysProcessing` (S-116-10, an emptied source file). Feature 116 N5 lifted.
 
+### I23 – Race after the job's check accepted (Q-115-08 D)
+- [x] T-115-50 – Docs only: NFR-115-06, FR-115-18, ADR-115-01 (point 4, consequences, security), how-to known limit, Q-115-08 resolved.
+  _Intent:_ record the owner's decision. No code or test change: S-115-27 still covers a swap before the job's check.
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

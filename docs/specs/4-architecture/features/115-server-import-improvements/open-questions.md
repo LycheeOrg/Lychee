@@ -13,7 +13,7 @@ Open questions for [Feature 115](spec.md). Log every high- and medium-impact que
 | ~~Q-115-05~~ | 115 | Medium | `import_root_folder_as_album = 0`: (A) root images at gallery root go to Unsorted, target album stands for the folder for delete-missing (never at gallery root), (B) Unsorted, delete-missing never at target level, (C) root images skipped, delete-missing as A | Resolved (A + delete-missing never deletes Unsorted photos, owner, 2026-11-15: FR-115-09, FR-115-10, FR-115-17) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-06~~ | 115 | Medium | `lychee:sync` with no path: (A) users with a restricted path and upload rights, explicit `--owner_id` narrows to one user, `--album_id` refused, (B) same users, always all, both options refused | Resolved (A, owner, 2026-11-15: FR-115-13) | 2026-11-15 | 2026-11-15 |
 | ~~Q-115-07~~ | 115 | High | Who may set a user's `server_path`: (A) server owner only, 403 for any other admin sending the field, field hidden from them, (B) owner only, the field silently ignored for other admins, (C) every admin (as first specified) | Resolved (B, owner directive 2026-11-17, replacing A of 2026-11-16: FR-115-02/16/19, S-115-42, ADR-115-01) | 2026-11-16 | 2026-11-17 |
-| Q-115-08 | 115 | High | File swapped between the job's root check and the read (PR #4989 review), reworked 2026-11-22 after Q-115-10/11: (A) accept the read race as Q-115-10 does, refuse `delete_imported` for restricted users, (B) accept the read race, re-check before deleting, (C) private copy for restricted copy imports, (D) accept everything | Open | 2026-11-18 | 2026-11-22 |
+| ~~Q-115-08~~ | 115 | High | File swapped between the job's root check and the read (PR #4989 review), reworked 2026-11-22 after Q-115-10/11: (A) accept the read race as Q-115-10 does, refuse `delete_imported` for restricted users, (B) accept the read race, re-check before deleting, (C) private copy for restricted copy imports, (D) accept everything | Resolved (D, owner, 2026-11-22: NFR-115-06, FR-115-18, ADR-115-01, how-to) | 2026-11-18 | 2026-11-22 |
 | ~~Q-115-09~~ | 115 | Medium | Duplicate photo owned by another user during an import with `import_scope_to_owner = 1` (PR #4989 review): (A) skip and report it, as `skip_duplicates_not_owned`, (B) link it to the album but never resync its metadata, (C) keep today's behaviour and narrow the setting's help text | Resolved (A, owner, 2026-11-18: FR-115-12, S-115-43, DO-115-05, ADR-115-01) | 2026-11-18 | 2026-11-18 |
 | ~~Q-115-10~~ | 115 | High | Symbolic link import for restricted users: (A) allowed as for full-access users, risk accepted, (B) refused (ADR-115-01 point 5 as first decided) | Resolved (A, owner directive 2026-11-19: FR-115-04/06/13, S-115-05/28/41, ADR-115-01) | 2026-11-19 | 2026-11-19 |
 | ~~Q-115-11~~ | 115 | High | Symbolic links in browse and import: (A) never followed nor listed, for every user, (B) followed only inside the import root (Q-115-01 A as first decided) | Resolved (A, owner directive 2026-11-21: FR-115-05/11, NFR-115-05/07, S-115-21 … 26, TE-115-03/04, ADR-115-01) | 2026-11-21 | 2026-11-21 |
@@ -321,9 +321,9 @@ The spec let every admin set `server_path`. The owner stated on 2026-11-16: "Onl
 **Next action**
 Resolved: Option A implemented in increment I17, then replaced by Option B on 2026-11-17 (owner: validate the value but ignore it for non-owners, T-115-36).
 
-### Q-115-08 · File swapped between the job's root check and the read
+### ~~Q-115-08~~ · File swapped between the job's root check and the read
 
-**Status:** Open (options reworked 2026-11-22)
+**Status:** Resolved (D, owner, 2026-11-22: NFR-115-06, FR-115-18, ADR-115-01, how-to)
 **Feature:** F-115 – Server Import Improvements
 **Preferred option:** 🅰️ (**recommended**) Option A – Accept the read race as Q-115-10 does, refuse `delete_imported` for restricted users
 
@@ -379,7 +379,7 @@ Raised in the PR #4989 review (thread on `app/Jobs/ImportImageJob.php:96`). `Imp
   - ❌ A user who controls their folder can make Lychee delete image files outside it.
 
 **Next action**
-Owner picks A, B, C or D. The answer goes into NFR-115-06, FR-115-18, the scenario matrix and ADR-115-01, and the PR #4989 thread is answered.
+Resolved: Option D (owner, 2026-11-22), no code change. NFR-115-06 narrowed to the two checks, FR-115-18 states the window, both races recorded as accepted risks in ADR-115-01 and the how-to. The scenario matrix is unchanged (S-115-27 still covers a swap before the job's check). The PR #4989 thread can then be answered.
 
 ### ~~Q-115-09~~ · Another user's duplicate photo during a scoped import
 
