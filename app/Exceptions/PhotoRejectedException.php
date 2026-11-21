@@ -19,8 +19,16 @@ class PhotoRejectedException extends BaseLycheeException
 {
 	public const DEFAULT_MESSAGE = 'The photo has been rejected';
 
-	public function __construct(string $message = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
-	{
+	/**
+	 * @param string          $message
+	 * @param \Throwable|null $previous
+	 * @param string|null     $photo_id the existing photo the upload duplicates (Feature 116)
+	 */
+	public function __construct(
+		string $message = self::DEFAULT_MESSAGE,
+		?\Throwable $previous = null,
+		public readonly ?string $photo_id = null,
+	) {
 		parent::__construct(Response::HTTP_CONFLICT, $message, $previous);
 	}
 }

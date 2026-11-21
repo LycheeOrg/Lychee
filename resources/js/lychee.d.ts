@@ -262,6 +262,7 @@ declare namespace App {
 			| "last_capture";
 		export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 		export type TitleBucketMode = "date_prefix" | "alphabetical";
+		export type UploadStatus = "processing" | "completed" | "duplicate" | "skipped" | "failed" | "unknown";
 		export type UserGroupRole = "member" | "admin";
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
 		export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
@@ -1522,6 +1523,12 @@ declare namespace App {
 					id: number;
 					name: string;
 					url: string;
+				};
+				export type UploadStatusResource = {
+					expected_id: string;
+					status: App.Enum.UploadStatus;
+					photo_id: string | null;
+					message: string | null;
 				};
 				export type UserGroupResource = {
 					id: number;

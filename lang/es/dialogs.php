@@ -326,7 +326,7 @@ return [
         'no_changes' => 'No se han detectado cambios.',
         'original' => 'Original',
         'new_title' => 'Nuevo título',
-        'count_changes' => ':Se cambiará el nombre de [n.º] elemento(s).',
+        'count_changes' => 'Se cambiará el nombre de :count elemento(s).',
         'back' => 'Atrás',
         'apply' => 'Solicitar',
         'success' => '¡Las reglas de renombrado se han aplicado correctamente!',
