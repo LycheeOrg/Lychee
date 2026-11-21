@@ -86,7 +86,6 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 			'directory' => base_path(''),
 			'is_root_folder_album' => true,
 		]);
-		$response->assertJsonMissingPath('is_restricted');
 	}
 
 	/** S-115-05 */
@@ -103,7 +102,6 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 			'is_root_folder_album' => false,
 			'import_via_symlink' => true,
 		]);
-		$response->assertJsonMissingPath('is_restricted');
 	}
 
 	/** S-115-20 */

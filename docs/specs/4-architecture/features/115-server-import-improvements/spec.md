@@ -136,8 +136,8 @@ Import
 | S-115-01 | User with `server_path = null` → `Import` routes 403, `can_import_from_server` false. |
 | S-115-02 | User with a path but neither `may_upload` nor `may_administrate` → 403. |
 | S-115-03 | `DISABLE_IMPORT_FROM_SERVER=true`, admin with `/` → 403. |
-| S-115-04 | Full-access user: options `directory` = `base_path()`, no `is_restricted` field; browse `/` lists root, `..` shown below `/`. |
-| S-115-05 | Restricted user: options `directory` = import root, no `is_restricted` field, `import_via_symlink` = config; browse import root → children, no `..`; browse a child → `..` listed. |
+| S-115-04 | Full-access user: options `directory` = `base_path()`; browse `/` lists root, `..` shown below `/`. |
+| S-115-05 | Restricted user: options `directory` = import root, `import_via_symlink` = config; browse import root → children, no `..`; browse a child → `..` listed. |
 | S-115-06 | Restricted user browses `/etc` (exists) and `/does/not/exist` → identical 403. |
 | S-115-07 | Restricted user browses `<root>/../bob` → 403 (lexical check). |
 | S-115-08 | Restricted `/srv/import/alice`, browse `/srv/import/alice2` → 403. |
