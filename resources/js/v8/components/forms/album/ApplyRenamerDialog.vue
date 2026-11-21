@@ -113,7 +113,7 @@
 						</tbody>
 					</table>
 					<p class="text-xs mt-2 text-muted">
-						{{ sprintf($t("dialogs.apply_renamer.count_changes"), preview_items.length) }}
+						{{ $t("dialogs.apply_renamer.count_changes", { count: preview_items.length.toString() }) }}
 					</p>
 				</div>
 			</div>
@@ -152,7 +152,6 @@ import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { trans } from "laravel-vue-i18n";
-import { sprintf } from "@/utils/sprintf";
 
 const props = defineProps<{
 	albumId?: string;
