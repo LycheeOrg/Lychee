@@ -536,6 +536,9 @@ return [
         'use_admin_dashboard' => 'Usar el panel de administración en lugar de enlaces en el menú izquierdo',
         'video_thumbnail_frame_mode' => 'Fotograma usado para la miniatura del vídeo',
         'video_thumbnail_frame_seconds' => 'Momento del fotograma (en segundos) usado para las miniaturas de vídeo',
+        'import_root_folder_as_album' => 'Importar la carpeta seleccionada como un álbum',
+        'import_scope_to_owner' => 'Reutilizar y eliminar solo los álbumes y fotos del propio importador',
+        'sync_users_server_paths' => 'lychee:sync sin ruta sincroniza la carpeta de importación de cada usuario',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1068,6 +1071,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'First: siempre el primer fotograma (0 s), que puede ser negro en algunos vídeos. Middle: el fotograma de la mitad del vídeo, o 0 s si se desconoce la duración. Custom: el número fijo de segundos indicado abajo.',
         'video_thumbnail_frame_seconds' => 'Solo se usa cuando "Fotograma usado para la miniatura del vídeo" está configurado como custom.',
+        'import_root_folder_as_album' => 'Si está desactivado, el contenido de la carpeta seleccionada va directamente al álbum de destino (o a Sin clasificar en la raíz de la galería) y sus subcarpetas se convierten en álbumes directamente bajo el destino.',
+        'import_scope_to_owner' => 'Si está activado, una importación nunca fusiona ni elimina álbumes y fotos de otro usuario.',
+        'sync_users_server_paths' => 'Los usuarios restringidos a una ruta de importación del servidor se sincronizan uno tras otro, en su propio nombre, en la raíz de la galería.',
     ],
     'category_name' => [
         'config' => 'Conceptos básicos',
@@ -1099,6 +1105,7 @@ return [
         'AI Vision' => 'Visión artificial',
         'Theme Colors' => 'Colores del tema',
         'contact' => 'Contacto',
+        'import' => 'Importación',
     ],
     'category_description' => [
         'config' => '',
@@ -1130,5 +1137,6 @@ return [
         'AI Vision' => 'Funciones basadas en inteligencia artificial, como el reconocimiento facial y la detección de contenido no apto para el trabajo (NSFW). Requiere un servicio externo complementario de AI Vision.',
         'Theme Colors' => 'Personaliza los colores secundario, semánticos y neutro usados en la interfaz v8. Cada color elegido genera una paleta completa, del mismo modo que el color de acento de arriba.',
         'contact' => 'Este módulo permite gestionar los mensajes de contacto enviados por los usuarios a través del formulario de contacto del sitio web.',
+        'import' => 'Ajustes para importar fotos desde una carpeta del servidor y desde una URL.',
     ],
 ];

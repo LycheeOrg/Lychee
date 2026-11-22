@@ -9,6 +9,7 @@
 namespace App\Jobs\Traits;
 
 use App\Enum\JobStatus;
+use App\Exceptions\PhotoRejectedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Models\JobHistory;
 use Illuminate\Support\Facades\Log;
@@ -23,8 +24,8 @@ trait HasFailedTrait
 	 */
 	public function failed(\Throwable $th): void
 	{
-		if ($th instanceof PhotoSkippedException) {
-			// Sync queue: handle() recorded the skip and rethrew it for the caller (ADR-114-01).
+		if ($th instanceof PhotoSkippedException || $th instanceof PhotoRejectedException) {
+			// Sync queue: handle() recorded the skip (or rejection, Q-115-13) and rethrew it for the caller (ADR-114-01).
 			$this->history->status = JobStatus::SKIPPED;
 			$this->history->save();
 

@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Utilizador atualizado',
     'change_saved' => 'Alteração guardada!',
     'create_edit' => [
+        'server_path' => 'Caminho de importação do servidor',
+        'server_path_hint' => 'Vazio: importação do servidor desativada. "/": todo o servidor. Caso contrário: apenas esta pasta e o seu conteúdo.',
         'upload_rights' => 'O utilizador pode carregar conteúdo.',
         'edit_rights' => 'O utilizador pode modificar o seu perfil (nome de utilizador, palavra-passe).',
         'admin_rights' => 'O utilizador tem direitos de administrador.',

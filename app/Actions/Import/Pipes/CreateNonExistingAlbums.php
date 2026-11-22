@@ -33,9 +33,29 @@ class CreateNonExistingAlbums implements ImportPipe
 		$this->report(ImportEventReport::createNotice('Create Albums', null, 'Creating non-existing albums...'));
 		$this->state = $state;
 
-		$this->processNode($state->root_folder, $state->parent_album);
+		if ($state->root_folder_as_album) {
+			$this->processNode($state->root_folder, $state->parent_album);
+		} else {
+			$this->processRootAsTarget($state->root_folder, $state->parent_album);
+		}
 
 		return $next($state);
+	}
+
+	/**
+	 * The selected folder is not an album: the target (album, or gallery root) takes its place (FR-115-09).
+	 *
+	 * @param FolderNode $node   root node of the tree
+	 * @param Album|null $target selected album, `null` for the gallery root (images then go to Unsorted)
+	 *
+	 * @return void
+	 */
+	private function processRootAsTarget(FolderNode $node, ?Album $target): void
+	{
+		$node->album = $target;
+		foreach ($node->children as $child) {
+			$this->processNode($child, $target);
+		}
 	}
 
 	/**
@@ -89,6 +109,8 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where(fn ($q) => $q->where('base_albums.title', $title)
 					->orWhere('base_albums.title', $old_title))
 				->where('albums.parent_id', $parent_album->id)
+				// A child gets its parent's owner (Album\Create), so that is the owner to reuse (FR-115-12).
+				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $parent_album->owner_id))
 				->first();
 		} else {
 			// Check for root-level albums with this title
@@ -98,6 +120,7 @@ class CreateNonExistingAlbums implements ImportPipe
 				->where(fn ($q) => $q->where('base_albums.title', $title)
 					->orWhere('base_albums.title', $old_title))
 				->whereNull('albums.parent_id')
+				->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $this->state->intended_owner_id))
 				->first();
 		}
 

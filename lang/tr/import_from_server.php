@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Albümde olup eşitlenen dizinde bulunmayan fotoğrafları sil.',
     'delete_missing_albums' => 'Üst albümde olup eşitlenen dizinde bulunmayan albümleri sil.',
     'importing_please_be_patient' => 'İçe aktarılıyor, lütfen bekleyin...',
+    'root_folder_content_hint' => 'Seçilen klasörün içeriği doğrudan hedef albüme gider. Eksik fotoğrafları ve albümleri silme işlemi bu durumda hedef albüme uygulanır.',
 ];
 

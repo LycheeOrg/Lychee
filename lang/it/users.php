@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Utente aggiornato',
     'change_saved' => 'Modifica salvata!',
     'create_edit' => [
+        'server_path' => 'Percorso di importazione dal server',
+        'server_path_hint' => 'Vuoto: importazione dal server disattivata. «/»: tutto il server. Altrimenti: solo questa cartella e le sottocartelle.',
         'upload_rights' => 'L\'utente può caricare contenuti.',
         'edit_rights' => 'L\'utente può modificare il proprio profilo (nome utente, password).',
         'admin_rights' => 'L\'utente ha i diritti di amministratore.',

@@ -21,6 +21,7 @@ namespace Tests\Feature_v3\Photo;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\ImportMode;
 use App\Enum\SmartAlbumType;
+use App\Enum\UserUploadTrustLevel;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Jobs\ImportImageJob;
@@ -118,7 +119,7 @@ class UploadAlbumHydrationTest extends BaseApiWithDataTest
 		$this->actingAs($this->userMayUpload1);
 		$file = new NativeLocalFile(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE));
 
-		dispatch_sync(new ImportImageJob($file, $this->userMayUpload1->id, new ImportMode(), $this->album1));
+		dispatch_sync(new ImportImageJob($file, $this->userMayUpload1->id, new ImportMode(), $this->album1, UserUploadTrustLevel::TRUSTED));
 
 		$this->assertAlbum1NotHydrated($covers_before);
 	}

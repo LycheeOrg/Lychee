@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Odstranit fotografie v albu, které nejsou přítomny v synchronizovaném adresáři.',
     'delete_missing_albums' => 'Odstranit alba v nadřazeném albu, která nejsou přítomna v synchronizovaném adresáři.',
     'importing_please_be_patient' => 'Probíhá import, prosím vyčkejte...',
+    'root_folder_content_hint' => 'Obsah vybrané složky jde přímo do cílového alba. Mazání chybějících fotek a alb se pak týká cílového alba.',
 ];
 

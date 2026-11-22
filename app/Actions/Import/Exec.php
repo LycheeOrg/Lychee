@@ -12,11 +12,13 @@ use App\Actions\Import\Pipes\HasReporterTrait;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
+use App\Enum\UserUploadTrustLevel;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
+use App\Models\User;
 use App\Services\Image\FileExtensionService;
 use Illuminate\Pipeline\Pipeline;
 use Safe\Exceptions\InfoException;
@@ -30,12 +32,18 @@ class Exec
 {
 	use HasReporterTrait;
 
+	private ?UserUploadTrustLevel $upload_trust_level = null;
+
 	/**
 	 * @param ImportMode $import_mode           the import mode
 	 * @param int        $intended_owner_id     the intended owner ID for the imported photos and albums
 	 * @param bool       $delete_missing_photos whether to delete photos in the database that are not in the file system
 	 * @param bool       $delete_missing_albums whether to delete albums in the database that are not in the file system
 	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
+	 * @param bool       $should_execute_jobs   whether to dispatch the jobs at the end of the run
+	 * @param ?string    $import_root           real import root each job re-checks its file against, `null` when unrestricted (FR-115-18)
+	 * @param bool       $root_folder_as_album  whether the selected folder becomes an album (FR-115-09)
+	 * @param bool       $scope_to_owner        whether album reuse and deletion only consider the owner's content (FR-115-12)
 	 */
 	public function __construct(
 		private ImportMode $import_mode,
@@ -44,6 +52,9 @@ class Exec
 		private bool $delete_missing_albums = false,
 		private bool $is_dry_run = false,
 		private bool $should_execute_jobs = false,
+		private ?string $import_root = null,
+		private bool $root_folder_as_album = true,
+		private bool $scope_to_owner = true,
 	) {
 	}
 
@@ -67,10 +78,14 @@ class Exec
 				import_mode: $this->import_mode,
 				parent_album: $parent_album,
 				path: $path,
+				upload_trust_level: $this->uploadTrustLevel(),
 				delete_missing_photos: $this->delete_missing_photos,
 				delete_missing_albums: $this->delete_missing_albums,
 				is_dry_run: $this->is_dry_run,
 				should_execute_jobs: $this->should_execute_jobs,
+				import_root: $this->import_root,
+				root_folder_as_album: $this->root_folder_as_album,
+				scope_to_owner: $this->scope_to_owner,
 			);
 
 			try {
@@ -131,7 +146,7 @@ class Exec
 			}
 
 			$file = new NativeLocalFile($file_path);
-			$job_bus[] = new ImportImageJob($file, $this->intended_owner_id, $this->import_mode, $parent_album);
+			$job_bus[] = new ImportImageJob($file, $this->intended_owner_id, $this->import_mode, $parent_album, $this->uploadTrustLevel(), $this->import_root);
 			$this->report(ImportEventReport::createDebug('queued', $file_path, 'Queued file for import'));
 		}
 
@@ -147,5 +162,19 @@ class Exec
 		}
 
 		return $job_bus;
+	}
+
+	/**
+	 * Trust level of the imported photos, resolved once per run with the rule
+	 * uploads use: admins are trusted, others get their own level (FR-115-08).
+	 */
+	private function uploadTrustLevel(): UserUploadTrustLevel
+	{
+		if ($this->upload_trust_level === null) {
+			$owner = User::query()->findOrFail($this->intended_owner_id);
+			$this->upload_trust_level = $owner->may_administrate ? UserUploadTrustLevel::TRUSTED : $owner->upload_trust_level;
+		}
+
+		return $this->upload_trust_level;
 	}
 }

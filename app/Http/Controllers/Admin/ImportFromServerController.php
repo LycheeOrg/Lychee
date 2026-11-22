@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Import\Exec;
+use App\Actions\Import\ImportPathGuard;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\Exceptions\EmptyFolderException;
@@ -22,13 +23,31 @@ use App\Http\Resources\Admin\ImportDirectoryResource;
 use App\Http\Resources\Admin\ImportFromServerOptionsResource;
 use App\Http\Resources\Admin\ImportFromServerResource;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ImportFromServerController extends Controller
 {
+	/**
+	 * @throws InvalidOptionsException when the import root of a restricted user is gone
+	 */
 	public function options(ImportFromServerOptionsRequest $request): ImportFromServerOptionsResource
 	{
-		return new ImportFromServerOptionsResource();
+		$import_root = $request->importRoot();
+		if (!self::isAvailable($import_root)) {
+			Log::warning('import root unavailable', ['user_id' => Auth::id(), 'server_path' => $import_root]);
+			throw new InvalidOptionsException('Import directory is not available');
+		}
+
+		return new ImportFromServerOptionsResource($import_root);
+	}
+
+	/**
+	 * Full access (`null`) is always available; a restricted root must be a readable directory.
+	 */
+	private static function isAvailable(?string $import_root): bool
+	{
+		return $import_root === null || (is_dir($import_root) && is_readable($import_root));
 	}
 
 	/**
@@ -43,18 +62,20 @@ class ImportFromServerController extends Controller
 	public function browse(ImportFromServerBrowseRequest $request): array
 	{
 		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
-		if (!is_dir($request->directory)) {
+		if (!is_dir($request->directory) || ImportPathGuard::isLink($request->directory)) {
 			throw new InvalidDirectoryException('The specified directory is not valid: ' . $request->directory);
 		}
 
+		$import_root = $request->importRoot();
 		$dirs = [];
-		if ($request->directory !== '/') {
+		if (!self::isTop($request->directory, $import_root)) {
 			$dirs[] = '..';
 		}
 		try {
 			foreach (new \DirectoryIterator($request->directory) as $file_info) {
 				// We only import directories here. Files are imported by the Importer when parsing the directories.
-				if ($file_info->isDir() && !$file_info->isDot()) {
+				// Links are never listed, wherever they point (FR-115-05).
+				if ($file_info->isDir() && !$file_info->isDot() && !$file_info->isLink()) {
 					$dirs[] = $file_info->getFilename();
 				}
 			}
@@ -64,6 +85,14 @@ class ImportFromServerController extends Controller
 		}
 
 		return $dirs;
+	}
+
+	/**
+	 * Whether $directory is the top of what the user may browse (no `..` entry).
+	 */
+	private static function isTop(string $directory, ?string $import_root): bool
+	{
+		return $directory === '/' || ($import_root !== null && ImportPathGuard::resolve($directory) === $import_root);
 	}
 
 	/**
@@ -79,8 +108,8 @@ class ImportFromServerController extends Controller
 	{
 		// This is CHECKED after the validation of the request to avoid revealing part of the file system to unauthorized users.
 		foreach ($request->directories as $directory) {
-			if (!is_dir($directory)) {
-				throw new InvalidOptionsException('directory does not exists: ' . $directory);
+			if (!is_dir($directory) || ImportPathGuard::isLink($directory)) {
+				throw new InvalidOptionsException('directory does not exist or is a symbolic link: ' . $directory);
 			}
 		}
 
@@ -153,15 +182,19 @@ class ImportFromServerController extends Controller
 			resync_metadata: $request->resync_metadata,
 			shall_rename_photo_title: $request->configs()->getValueAsBool('renamer_photo_title_enabled'),
 			shall_rename_album_title: $request->configs()->getValueAsBool('renamer_album_title_enabled'),
+			scope_to_owner: $request->configs()->getValueAsBool('import_scope_to_owner'),
 		);
 
 		return new Exec(
 			import_mode: $import_mode,
-			intended_owner_id: $request->configs()->getValueAsInt('owner_id'),
+			intended_owner_id: intval(Auth::id()),
 			delete_missing_photos: $request->delete_missing_photos,
 			delete_missing_albums: $request->delete_missing_albums,
 			is_dry_run: false,
 			should_execute_jobs: false,
+			import_root: $request->importRoot(),
+			root_folder_as_album: $request->configs()->getValueAsBool('import_root_folder_as_album'),
+			scope_to_owner: $request->configs()->getValueAsBool('import_scope_to_owner'),
 		);
 	}
 }

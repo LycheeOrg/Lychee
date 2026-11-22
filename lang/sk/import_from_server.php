@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Odstrániť fotografie v albume, ktoré sa nenachádzajú v synchronizovanom adresári.',
     'delete_missing_albums' => 'Odstrániť albumy v nadradenom albume, ktoré sa nenachádzajú v synchronizovanom adresári.',
     'importing_please_be_patient' => 'Importuje sa, buďte trpezliví...',
+    'root_folder_content_hint' => 'Obsah vybraného priečinka ide priamo do cieľového albumu. Mazanie chýbajúcich fotiek a albumov sa potom týka cieľového albumu.',
 ];
 

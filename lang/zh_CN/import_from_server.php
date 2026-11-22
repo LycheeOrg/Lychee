@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => '删除相册中不存在于同步目录中的照片。',
     'delete_missing_albums' => '删除父相册中不存在于同步目录中的相册。',
     'importing_please_be_patient' => '正在导入，请耐心等待…',
+    'root_folder_content_hint' => '所选文件夹的内容会直接进入目标相册。此时删除缺失的照片和相册将作用于目标相册。',
 ];
 
