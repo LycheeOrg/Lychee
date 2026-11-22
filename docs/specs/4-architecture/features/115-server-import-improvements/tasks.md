@@ -327,6 +327,14 @@ _Last updated: 2026-11-16_
 - [x] T-115-50 – Docs only: NFR-115-06, FR-115-18, ADR-115-01 (point 4, consequences, security), how-to known limit, Q-115-08 resolved.
   _Intent:_ record the owner's decision. No code or test change: S-115-27 still covers a swap before the job's check.
 
+### I24 – Post-merge docs alignment
+- [x] T-115-51 – `import_scope_to_owner` label and help text in the 23 locales, knowledge map (Features 114/115/116), spec status and first goal, ADR-115-01 cost lines, ADR index (ADR-113-01, ADR-114-01, ADR-116-01 rows, ADR-115-01 summary), `settings_dependencies.md`.
+  _Intent:_ the help text promised that an import never deletes another user's content. Since FR-115-12 records the subtree deletion, and album reuse below another user's album follows that album's owner, it no longer held. The French label and details were also swapped.
+  _Verification commands:_
+  - `php artisan test --filter=LangTest`
+  - `php artisan test --filter=ConfigTranslationKeysTest`
+  - `vendor/bin/php-cs-fixer fix`
+
 ## Notes / TODOs
 - Test fixtures create symbolic links in temp directories; compare real paths (macOS `/private/var`).
 - Never run two test commands at once (shared SQLite database).

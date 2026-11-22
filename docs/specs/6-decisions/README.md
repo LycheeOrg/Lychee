@@ -30,7 +30,11 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-101-01](ADR-101-01-docker-imagemagick-jxl.md) | Accepted | Docker image ships ImageMagick 7 built against libjxl (pinned, source-built unless a trixie package with JXL exists); JXL smoke test in the Docker workflow |
 | [ADR-103-01](ADR-103-01-stored-recursive-nsfw-flag.md) | Accepted | Stored recursive NSFW flag on albums (`albums.is_recursive_nsfw`), written explicitly; no-origin sensitivity checks read it |
 | [ADR-110-01](ADR-110-01-album-tile-min-width.md) | Accepted | v8 album tiles sized by a minimum CSS px width (`album_thumb_min_width`), covers chosen by screen density (`Thumb.vue` FR-102-06 rule) |
+| [ADR-113-01](ADR-113-01-s3-asset-url-response.md) | Accepted | S3 size variants answer `200` JSON `{ url }` (`AssetUrlResource`, `no-store`) instead of a redirect, so the browser never preflights the bucket; v8 `Thumb` retries `/Asset` once |
+| [ADR-114-01](ADR-114-01-duplicate-skip-job-outcome.md) | Accepted | Duplicate skips, and since Q-115-13 rejected duplicates, end `ImportImageJob`/`ProcessImageJob` as a handled outcome (`JobStatus::SKIPPED`, one `info` line, no failed job); rethrown on the `sync` queue |
 | [ADR-115-01](ADR-115-01-per-user-import-root.md) | Accepted | Import from server confined to a per-user import root (`users.server_path`): containment before disk access, links never followed, job re-check, owner-scoped album reuse and delete-missing, `/` for the owner and first admin |
+| [ADR-116-01](ADR-116-01-upload-status-cache.md) | Accepted | Upload outcomes kept 24 h in a shared cache (`upload-status:<provisional id>`, `database` store when the queue is async and the default driver is per-container), readable only by the uploader through `GET /api/v2/Photo::uploadStatus` |
+| [ADR-117-01](ADR-117-01-sitemap-gating-and-caching.md) | Accepted | `GET /sitemap.xml` answers 404 while disabled, `login_required` is on or a gallery password is set; guest view only; rows cached under a dedicated `sitemapTag()` flushed by the album-listing invalidator, `Cache-Control: public, max-age=3600`, session-less route group |
 
 ## Templates
 

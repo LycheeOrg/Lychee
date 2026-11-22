@@ -50,6 +50,7 @@ class ManagedCacheAlbumListingInvalidator
 		// edit and bulk-edit paths (BulkEditAlbumsAction::do() dispatches it
 		// too), so this one handler covers both description-save call sites.
 		$this->cache->forgetTags($this->cache_key_provider->flowDescriptionTags($event->album_ids));
+		$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 	}
 
 	public function handleAlbumDeleted(AlbumDeleted $event): void
@@ -58,12 +59,14 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 	}
 
 	public function handleAlbumChildrenChanged(AlbumChildrenChanged $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumChildrenTags($event->parent_ids));
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 	}
 
 	public function handleTagAlbumSaved(TagAlbumSaved $event): void
@@ -87,6 +90,7 @@ class ManagedCacheAlbumListingInvalidator
 		$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 	}
 
 	public function handleAccessPermissionChanged(AccessPermissionChanged $event): void
@@ -113,6 +117,7 @@ class ManagedCacheAlbumListingInvalidator
 			$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($album->parent_id));
 			$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
 			$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
+			$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 
 			return;
 		}
@@ -132,6 +137,8 @@ class ManagedCacheAlbumListingInvalidator
 	{
 		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->album_id));
 		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
+		// Feature 117: the sitemap's <lastmod> reads max_taken_at.
+		$this->cache->forgetTag($this->cache_key_provider->sitemapTag());
 	}
 
 	public function handleAlbumListingCacheFlushRequested(AlbumListingCacheFlushRequested $event): void
