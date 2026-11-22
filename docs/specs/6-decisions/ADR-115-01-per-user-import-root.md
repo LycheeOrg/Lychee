@@ -32,7 +32,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 - Existing installs and new installs keep a working import for the owner with no action.
 
 ### Negative
-- One `realpath()` per tree entry.
+- One `realpath()` per directory in the tree (reserved-folder check) and one `is_link()` per entry.
 - Accepted risk (Q-115-10): after a symbolic link import, a restricted user who can write to their import root (network share) can replace the source file with a link to any file the PHP process can read. Lychee then serves that file as the photo's original. Copies are not affected.
 - Accepted risk (Q-115-08): a restricted user who controls their folder can swap a file, or one of its parent folders, for a link after the job's check and retry until the timing works. Lychee then imports and serves a file outside the root, or with `delete_imported` deletes one. Only files with an image or video extension are deleted (`BuildTree` picks nothing else), in folders PHP can write to, such as other users' import folders or stored originals whose path is known. Closing the read side alone gives nothing while link imports allow the same read (Q-115-10). The delete side cannot be closed in PHP, which has no delete relative to an open folder (`unlinkat`).
 - With the owner scope on, an admin syncing into a same-title album owned by someone else gets a new album, where pre-115 Lychee merged.
@@ -59,7 +59,7 @@ Feature 115 opens import to other users, each confined to a folder, often one th
 
 - The server owner manages `server_path` per user in user management (other admins do not see the field); the how-to `import-from-server.md` documents folder layout and the `sync_users_server_paths` cron line.
 - Refusals and skipped links are logged (`import path denied`, `symlink_skipped`, `import file left the import root`).
-- No new dependency; no measurable cost beyond one `realpath()` per entry.
+- No new dependency; no measurable cost beyond one `realpath()` per directory and one `is_link()` per entry.
 
 ## Links
 

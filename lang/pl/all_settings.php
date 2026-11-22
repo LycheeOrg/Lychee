@@ -542,7 +542,7 @@ return [
         'video_thumbnail_frame_mode' => 'Klatka używana do miniatury wideo',
         'video_thumbnail_frame_seconds' => 'Moment klatki (w sekundach) używanej do miniatur wideo',
         'import_root_folder_as_album' => 'Importuj wybrany folder jako album',
-        'import_scope_to_owner' => 'Ponownie używaj i usuwaj tylko własne albumy i zdjęcia importującego',
+        'import_scope_to_owner' => 'Ogranicz import do własnych albumów i zdjęć importującego',
         'sync_users_server_paths' => 'lychee:sync bez ścieżki synchronizuje folder importu każdego użytkownika',
     ],
     'details' => [
@@ -1080,7 +1080,7 @@ return [
         'video_thumbnail_frame_mode' => 'Pierwsza: zawsze pierwsza klatka (0 s), która w niektórych filmach może być czarna. Środkowa: klatka z połowy filmu, a gdy czas trwania jest nieznany – 0 s. Własna: stała liczba sekund ustawiona poniżej.',
         'video_thumbnail_frame_seconds' => 'Używane tylko wtedy, gdy opcja "Klatka używana jako miniatura filmu" jest ustawiona na własną.',
         'import_root_folder_as_album' => 'Po wyłączeniu zawartość wybranego folderu trafia bezpośrednio do albumu docelowego (lub do Nieposortowanych w katalogu głównym galerii), a jego podfoldery stają się albumami bezpośrednio pod celem.',
-        'import_scope_to_owner' => 'Po włączeniu import nigdy nie scala ani nie usuwa albumów i zdjęć innego użytkownika.',
+        'import_scope_to_owner' => 'Po włączeniu zdjęcie należące już do innego użytkownika jest pomijane, istniejący album jest ponownie używany tylko wtedy, gdy należy do importującego lub, wewnątrz innego albumu, do właściciela tego albumu, a gdy brakuje ich w katalogu, usuwane są tylko własne albumy i zdjęcia importującego. Usunięty album nadal zabiera ze sobą wszystkie swoje podalbumy.',
         'sync_users_server_paths' => 'Użytkownicy ograniczeni do ścieżki importu na serwerze są synchronizowani jeden po drugim, we własnym imieniu, do katalogu głównego galerii.',
     ],
 

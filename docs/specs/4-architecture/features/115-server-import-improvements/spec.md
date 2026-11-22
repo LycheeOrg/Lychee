@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft (Q-115-01 … 06 resolved 2026-11-15, Q-115-07 resolved 2026-11-16, Q-115-09 resolved 2026-11-18, Q-115-10 resolved 2026-11-19, Q-115-11 and Q-115-12 resolved 2026-11-21, Q-115-08 and Q-115-13 resolved 2026-11-22, plan and tasks written) |
+| Status | Implemented (PR #4989, merged 2026-11-22). Q-115-01 … 13 resolved, manual checks S-115-41/42 pending |
 | Last updated | 2026-11-22 |
 | Owners | ildyria |
 | Linked plan | [plan.md](plan.md) |
@@ -18,7 +18,7 @@ Affected layers: `users` table and `User` model, `Actions\User\Create`/`Save` an
 
 ## Goals
 - The server owner (the `owner_id` user) grants import from server per user with `server_path`; disabled (`null`) by default, `/` for the existing owner and for the first admin of a new install. Other admins cannot change it.
-- A user with a restricted `server_path` browses and imports only inside it; nothing outside it is listed, disclosed or imported, through symbolic links included.
+- A user with a restricted `server_path` browses and imports only inside it; nothing outside it is listed, disclosed or imported, through symbolic links included. Two accepted risks remain (ADR-115-01): a link import whose source the user later replaces (Q-115-10), and a file swapped after the job's check (Q-115-08).
 - `server_path = /` keeps today's unrestricted browsing, starting at Lychee's working directory.
 - Imports never merge into or delete another user's albums and photos (setting, on by default).
 - Imported photos carry the trust level of the user who owns them, on the web and on the CLI.

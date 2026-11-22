@@ -542,7 +542,7 @@ return [
         'video_thumbnail_frame_mode' => 'Fotograma a usar para a miniatura do vídeo',
         'video_thumbnail_frame_seconds' => 'Momento do fotograma (em segundos) usado para as miniaturas de vídeo',
         'import_root_folder_as_album' => 'Importar a pasta selecionada como um álbum',
-        'import_scope_to_owner' => 'Reutilizar e eliminar apenas os álbuns e fotos do próprio importador',
+        'import_scope_to_owner' => 'Limitar as importações aos álbuns e fotos do próprio importador',
         'sync_users_server_paths' => 'lychee:sync sem caminho sincroniza a pasta de importação de cada utilizador',
     ],
     'details' => [
@@ -1080,7 +1080,7 @@ return [
         'video_thumbnail_frame_mode' => 'Primeiro: sempre o primeiro fotograma (0s), que pode ser preto em alguns vídeos. Meio: o fotograma a meio do vídeo, recorrendo a 0s se a duração for desconhecida. Personalizado: o número fixo de segundos definido abaixo.',
         'video_thumbnail_frame_seconds' => 'Usado apenas quando "Fotograma a usar para a miniatura do vídeo" está definido como personalizado.',
         'import_root_folder_as_album' => 'Se desativado, o conteúdo da pasta selecionada vai diretamente para o álbum de destino (ou para Não ordenadas na raiz da galeria) e as suas subpastas tornam-se álbuns diretamente sob o destino.',
-        'import_scope_to_owner' => 'Se ativado, uma importação nunca junta nem elimina álbuns e fotos de outro utilizador.',
+        'import_scope_to_owner' => 'Se ativado, uma foto que já pertence a outro utilizador é ignorada, um álbum existente só é reutilizado se pertencer ao importador ou, dentro de outro álbum, ao dono desse álbum, e quando faltam no diretório só são eliminados os álbuns e fotos do próprio importador. Um álbum eliminado leva consigo todos os seus subálbuns.',
         'sync_users_server_paths' => 'Os utilizadores restritos a um caminho de importação do servidor são sincronizados um após o outro, em seu próprio nome, na raiz da galeria.',
     ],
 

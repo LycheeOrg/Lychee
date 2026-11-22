@@ -542,7 +542,7 @@ return [
         'video_thumbnail_frame_mode' => 'Fotogramma da usare per la miniatura del video',
         'video_thumbnail_frame_seconds' => 'Istante del fotogramma (in secondi) usato per le miniature dei video',
         'import_root_folder_as_album' => 'Importa la cartella selezionata come album',
-        'import_scope_to_owner' => 'Riutilizza ed elimina solo gli album e le foto di chi importa',
+        'import_scope_to_owner' => 'Limita le importazioni agli album e alle foto di chi importa',
         'sync_users_server_paths' => 'lychee:sync senza percorso sincronizza la cartella di importazione di ogni utente',
     ],
     'details' => [
@@ -1080,7 +1080,7 @@ return [
         'video_thumbnail_frame_mode' => 'Primo: sempre il primissimo fotogramma (0 s), che in alcuni video può essere nero. Centrale: il fotogramma a metà del video, con ripiego su 0 s se la durata è sconosciuta. Personalizzato: il numero fisso di secondi impostato qui sotto.',
         'video_thumbnail_frame_seconds' => 'Usato solo quando "Fotogramma da usare per la miniatura del video" è impostato su personalizzato.',
         'import_root_folder_as_album' => 'Se disattivato, il contenuto della cartella selezionata va direttamente nell’album di destinazione (o in Non ordinate alla radice della galleria) e le sue sottocartelle diventano album direttamente sotto la destinazione.',
-        'import_scope_to_owner' => 'Se attivato, un’importazione non unisce né elimina mai album e foto di un altro utente.',
+        'import_scope_to_owner' => 'Se attivato, una foto che appartiene già a un altro utente viene saltata, un album esistente viene riutilizzato solo se appartiene a chi importa o, all’interno di un altro album, al proprietario di quell’album, e quando mancano dalla cartella vengono eliminati solo album e foto di chi importa. Un album eliminato porta comunque con sé tutti i suoi sottoalbum.',
         'sync_users_server_paths' => 'Gli utenti limitati a un percorso di importazione del server vengono sincronizzati uno dopo l’altro, a loro nome, nella radice della galleria.',
     ],
 

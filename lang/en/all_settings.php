@@ -542,7 +542,7 @@ return [
         'video_thumbnail_frame_mode' => 'Frame to use for the video thumbnail',
         'video_thumbnail_frame_seconds' => 'Timing frame (in seconds) used for video thumbnails',
         'import_root_folder_as_album' => 'Import the selected folder as an album',
-        'import_scope_to_owner' => 'Only reuse and delete the importer\'s own albums and photos',
+        'import_scope_to_owner' => 'Keep imports to the importer\'s own albums and photos',
         'sync_users_server_paths' => 'lychee:sync with no path syncs the import folder of every user',
     ],
     'details' => [
@@ -1080,7 +1080,7 @@ return [
         'video_thumbnail_frame_mode' => 'First: always the very first frame (0s), which can be black on some videos. Middle: the frame halfway through the video, falling back to 0s if the duration is unknown. Custom: the fixed number of seconds set below.',
         'video_thumbnail_frame_seconds' => 'Only used when "Frame to use for the video thumbnail" is set to custom.',
         'import_root_folder_as_album' => 'When disabled, the content of the selected folder goes straight into the target album (or Unsorted at the gallery root) and its sub-folders become albums directly under the target.',
-        'import_scope_to_owner' => 'When enabled, an import never merges into, nor deletes, albums and photos owned by another user.',
+        'import_scope_to_owner' => 'When enabled, a photo that already belongs to another user is skipped, an existing album is only reused when it belongs to the importer or, inside another album, to that album\'s owner, and only the importer\'s own albums and photos are deleted when they are missing from the folder. A deleted album still takes all its sub-albums with it.',
         'sync_users_server_paths' => 'Users restricted to a server import path are synced one after the other, as themselves, into the gallery root.',
     ],
 

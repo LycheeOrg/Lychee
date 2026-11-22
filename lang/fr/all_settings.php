@@ -540,7 +540,7 @@ return [
         'video_thumbnail_frame_mode' => 'Première : toujours la toute première image (0 s), qui peut être noire sur certaines vidéos. Milieu : l’image située à mi-parcours de la vidéo, avec repli sur 0 s si la durée est inconnue. Personnalisée : le nombre fixe de secondes défini ci-dessous.',
         'video_thumbnail_frame_seconds' => 'Utilisé uniquement lorsque "Image utilisée pour la vignette vidéo" est défini sur custom.',
         'import_root_folder_as_album' => 'Si désactivé, le contenu du dossier sélectionné va directement dans l’album cible (ou dans Non classées à la racine de la galerie) et ses sous-dossiers deviennent des albums directement sous la cible.',
-        'import_scope_to_owner' => 'Si activé, un import ne fusionne jamais avec, ni ne supprime, les albums et photos d’un autre utilisateur.',
+        'import_scope_to_owner' => 'Limiter les imports aux albums et photos de l’importateur',
         'sync_users_server_paths' => 'Les utilisateurs limités à un chemin d’import serveur sont synchronisés l’un après l’autre, en leur nom, à la racine de la galerie.',
     ],
     'documentation' => [
@@ -1078,7 +1078,7 @@ return [
         'video_thumbnail_frame_mode' => 'Image utilisée pour la vignette vidéo',
         'video_thumbnail_frame_seconds' => 'Instant de l’image (en secondes) utilisée pour les vignettes vidéo',
         'import_root_folder_as_album' => 'Importer le dossier sélectionné comme un album',
-        'import_scope_to_owner' => 'Ne réutiliser et ne supprimer que les albums et photos de l’importateur',
+        'import_scope_to_owner' => 'Si activé, une photo appartenant déjà à un autre utilisateur est ignorée, un album existant n’est réutilisé que s’il appartient à l’importateur ou, à l’intérieur d’un autre album, au propriétaire de cet album, et seuls les albums et photos de l’importateur sont supprimés lorsqu’ils manquent dans le dossier. Un album supprimé emporte néanmoins tous ses sous-albums.',
         'sync_users_server_paths' => 'lychee:sync sans chemin synchronise le dossier d’import de chaque utilisateur',
     ],
     'category_name' => [

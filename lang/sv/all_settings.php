@@ -542,7 +542,7 @@ return [
         'video_thumbnail_frame_mode' => 'Bildruta som används för videominiatyren',
         'video_thumbnail_frame_seconds' => 'Tidpunkt (i sekunder) för bildrutan som används till videominiatyrer',
         'import_root_folder_as_album' => 'Importera den valda mappen som ett album',
-        'import_scope_to_owner' => 'Återanvänd och radera bara importörens egna album och foton',
+        'import_scope_to_owner' => 'Begränsa importer till importörens egna album och foton',
         'sync_users_server_paths' => 'lychee:sync utan sökväg synkroniserar varje användares importmapp',
     ],
     'details' => [
@@ -1080,7 +1080,7 @@ return [
         'video_thumbnail_frame_mode' => 'Första: alltid den allra första bildrutan (0s), som kan vara svart i vissa videor. Mitten: bildrutan halvvägs in i videon, med 0s som reserv om längden är okänd. Anpassad: det fasta antal sekunder som anges nedan.',
         'video_thumbnail_frame_seconds' => 'Används endast när "Bildruta för videominiatyren" är inställd på anpassad.',
         'import_root_folder_as_album' => 'När inaktiverat hamnar den valda mappens innehåll direkt i målalbumet (eller i Osorterade i gallerirotens nivå) och dess undermappar blir album direkt under målet.',
-        'import_scope_to_owner' => 'När aktiverat slår en import aldrig ihop med, eller raderar, album och foton som ägs av en annan användare.',
+        'import_scope_to_owner' => 'När aktiverat hoppas ett foto som redan tillhör en annan användare över, ett befintligt album återanvänds bara om det tillhör importören eller, inuti ett annat album, det albumets ägare, och bara importörens egna album och foton raderas när de saknas i katalogen. Ett raderat album tar ändå med sig alla sina underalbum.',
         'sync_users_server_paths' => 'Användare som är begränsade till en importsökväg på servern synkroniseras en efter en, som sig själva, till galleriets rot.',
     ],
 

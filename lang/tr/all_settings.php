@@ -541,7 +541,7 @@ return [
         'video_thumbnail_frame_mode' => 'Video küçük resmi için kullanılacak kare',
         'video_thumbnail_frame_seconds' => 'Video küçük resimleri için kullanılan karenin zamanı (saniye)',
         'import_root_folder_as_album' => 'Seçilen klasörü albüm olarak içe aktar',
-        'import_scope_to_owner' => 'Yalnızca içe aktaranın kendi albümlerini ve fotoğraflarını yeniden kullan ve sil',
+        'import_scope_to_owner' => 'İçe aktarmaları içe aktaranın kendi albümleri ve fotoğraflarıyla sınırla',
         'sync_users_server_paths' => 'Yol belirtilmeyen lychee:sync her kullanıcının içe aktarma klasörünü eşitler',
     ],
     'details' => [
@@ -1079,7 +1079,7 @@ return [
         'video_thumbnail_frame_mode' => 'İlk: her zaman en baştaki kare (0 sn); bazı videolarda siyah olabilir. Orta: videonun ortasındaki kare; süre bilinmiyorsa 0 sn\'ye geri döner. Özel: aşağıda ayarlanan sabit saniye sayısı.',
         'video_thumbnail_frame_seconds' => 'Yalnızca "Video küçük resmi için kullanılacak kare" özel olarak ayarlandığında kullanılır.',
         'import_root_folder_as_album' => 'Devre dışıyken seçilen klasörün içeriği doğrudan hedef albüme (veya galeri kökünde Sıralanmamış’a) gider ve alt klasörleri doğrudan hedefin altında albüm olur.',
-        'import_scope_to_owner' => 'Etkinken bir içe aktarma başka bir kullanıcının albümleri ve fotoğraflarıyla asla birleşmez ve onları silmez.',
+        'import_scope_to_owner' => 'Etkinken başka bir kullanıcıya ait bir fotoğraf atlanır, mevcut bir albüm yalnızca içe aktarana veya başka bir albümün içindeyse o albümün sahibine aitse yeniden kullanılır ve dizinde bulunmadıklarında yalnızca içe aktaranın kendi albümleri ve fotoğrafları silinir. Silinen bir albüm yine de tüm alt albümlerini de beraberinde götürür.',
         'sync_users_server_paths' => 'Sunucuda bir içe aktarma yoluyla sınırlandırılmış kullanıcılar, kendi adlarına, sırayla galeri köküne eşitlenir.',
     ],
     'category_name' => [

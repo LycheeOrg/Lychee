@@ -289,6 +289,7 @@ empty rather than approximated.
 | `album_header_size` | `album_enhanced_display_enabled` | Applied to both header styles. |
 | `timeline_albums_root_enabled` | `timeline_albums_enabled` | The root listing reads only the root key. |
 | `skip_duplicates_early`, `skip_duplicates_not_owned` | `skip_duplicates` | Evaluated on their own code paths (`ImportPhotos`, `ThrowUnownedDuplicate`) regardless of `skip_duplicates`. |
+| `import_scope_to_owner` | `skip_duplicates_not_owned` | Separate switch, for server imports only (web and `lychee:sync`). When on, it rejects another user's duplicate whatever `skip_duplicates_not_owned` says (`ImportMode::$shall_scope_to_owner` → `ThrowUnownedDuplicate`). Uploads, zip and URL imports read only `skip_duplicates_not_owned` (FR-115-12). |
 | `enable_unrated` … `enable_my_best_pictures` | `rating_enabled` | `SmartAlbumType::is_enabled()` does not consult it. |
 | `show_selected_cover_on_locked_albums` | `show_cover_of_locked_albums` | Takes effect on its own, as its description states. |
 | `nsfw_warning_admin` | `nsfw_warning` | Alternative switch for logged-in users, not a refinement. |
