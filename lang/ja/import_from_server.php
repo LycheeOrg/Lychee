@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => '同期したディレクトリに存在しない写真をアルバムから削除する。',
     'delete_missing_albums' => '同期したディレクトリに存在しないアルバムを親アルバムから削除する。',
     'importing_please_be_patient' => 'インポート中です。しばらくお待ちください...',
+    'root_folder_content_hint' => '選択したフォルダーの内容は対象アルバムに直接入ります。見つからない写真とアルバムの削除は対象アルバムに適用されます。',
 ];
 

@@ -19,7 +19,9 @@ class ThrowUnownedDuplicate implements DuplicatePipe
 	{
 		$config_manager = resolve(ConfigManager::class);
 		$skip_duplicates_not_owned = $config_manager->getValueAsBool('skip_duplicates_not_owned');
-		if ($skip_duplicates_not_owned && $state->photo->owner_id !== $state->intended_owner_id) {
+		// A scoped server import never touches another user's photo (FR-115-12).
+		$must_reject = $skip_duplicates_not_owned || $state->shall_scope_to_owner;
+		if ($must_reject && $state->photo->owner_id !== $state->intended_owner_id) {
 			throw new PhotoRejectedException(photo_id: $state->photo->id);
 		}
 

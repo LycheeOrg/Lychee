@@ -9,17 +9,21 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
+use App\Actions\Import\ImportPathGuard;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
 use App\DTO\SyncDTO;
+use App\Enum\SyncUserEligibility;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;
+use App\Models\User;
 use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Safe\Exceptions\FilesystemException;
 use function Safe\realpath;
@@ -32,14 +36,16 @@ class Sync extends Command
 	 *
 	 * The placeholder %s will be filled by the constructor with the default
 	 * value from the user configuration.
+	 * With no path, the folder of every user restricted to a server path is synced
+	 * (Feature 115, FR-115-13, behind `sync_users_server_paths`).
 	 *
 	 * @var string
 	 */
 	protected $signature =
 		'lychee:sync ' .
-		'{paths* : Files or directories to sync} ' . // string[]
+		'{paths?* : Files or directories to sync (none: the folder of every user with a server path)} ' . // string[]
 		'{--album_id= : Album ID to import to} ' . // string or null
-		'{--owner_id=%d : Owner ID of imported photos} ' . // string
+		'{--owner_id= : Owner ID of imported photos (default: first admin; with no path: only this user)} ' . // string or null
 		'{--resync_metadata=1 : Re-sync metadata of existing files} ' . // bool
 		'{--delete_imported=%s : Delete the original files} ' . // string
 		'{--import_via_symlink=%s : Import photos via symlink instead of copying the files} ' . // string
@@ -64,7 +70,6 @@ class Sync extends Command
 
 			$this->signature = sprintf(
 				$this->signature,
-				DB::table('users')->where('may_administrate', true)->first()?->id ?? 1,
 				$this->config_manager->getValueAsString('delete_imported'),
 				$this->config_manager->getValueAsString('import_via_symlink'),
 				$this->config_manager->getValueAsString('skip_duplicates'),
@@ -76,7 +81,7 @@ class Sync extends Command
 			// Catching this exception is necessary as artisan package:discover
 			// is called after each composer installation/update and artisan
 			// tries to instantiate every command.
-			$this->signature = sprintf($this->signature, 1, '0', '0', '0', '0', '0', '1');
+			$this->signature = sprintf($this->signature, '0', '0', '0', '0', '0', '1');
 		}
 		parent::__construct();
 	}
@@ -92,6 +97,10 @@ class Sync extends Command
 	{
 		$this->line('');
 		try {
+			if ($this->hasNoPath()) {
+				return $this->syncUsers();
+			}
+
 			$paths = $this->validatePaths();
 			if ($paths === null) {
 				return 1;
@@ -136,6 +145,13 @@ class Sync extends Command
 		$files = [];
 
 		foreach ($paths as $path) {
+			// Links are never followed, named ones included (Q-115-11).
+			if (ImportPathGuard::isLink($path)) {
+				$this->error('Path is a symbolic link: ' . $path);
+
+				return null;
+			}
+
 			try {
 				$real = realpath($path);
 			} catch (FilesystemException $e) {
@@ -179,7 +195,9 @@ class Sync extends Command
 	 */
 	private function validateOwnerId(): int|false
 	{
-		$owner_id = (int) $this->option('owner_id');
+		$owner_id = $this->option('owner_id') === null
+			? intval(DB::table('users')->where('may_administrate', true)->orderBy('id')->value('id') ?? 1)
+			: intval($this->option('owner_id'));
 		if (!DB::table('users')->where('id', $owner_id)->exists()) {
 			$this->error('Invalid owner ID provided.');
 
@@ -254,6 +272,7 @@ class Sync extends Command
 			resync_metadata: $resync_metadata,
 			shall_rename_photo_title: $this->config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			shall_rename_album_title: $this->config_manager->getValueAsBool('renamer_album_title_enabled'),
+			scope_to_owner: $this->config_manager->getValueAsBool('import_scope_to_owner'),
 		);
 	}
 
@@ -327,6 +346,8 @@ class Sync extends Command
 			delete_missing_albums: $delete_missing_albums,
 			is_dry_run: $dry_run,
 			should_execute_jobs: true,
+			root_folder_as_album: $this->config_manager->getValueAsBool('import_root_folder_as_album'),
+			scope_to_owner: $this->config_manager->getValueAsBool('import_scope_to_owner'),
 		);
 
 		if (count($paths->directories) > 0) {
@@ -358,5 +379,123 @@ class Sync extends Command
 	private function yes_no(bool $value): string
 	{
 		return $value ? '<fg=#0f0>Yes</>' : '<fg=#f00>No</>';
+	}
+
+	private function hasNoPath(): bool
+	{
+		$paths = $this->argument('paths');
+
+		return is_array($paths) && count($paths) === 0;
+	}
+
+	/**
+	 * Sync the folder of every user restricted to a server path, as that user, into the gallery root (FR-115-13).
+	 *
+	 * @return int 0 when every eligible user was synced, 1 otherwise
+	 */
+	private function syncUsers(): int
+	{
+		$error = $this->checkUsersSyncArguments();
+		if ($error !== null) {
+			$this->error($error);
+
+			return 1;
+		}
+
+		$import_mode = $this->validateImportSettings();
+		if ($import_mode === null) {
+			return 1;
+		}
+
+		$users = $this->usersToSync();
+		if ($users === null) {
+			return 1;
+		}
+
+		$dry_run = $this->option('dry_run') === '1';
+		$delete_missing_photos = $this->validateDeleteMissingPhotos($dry_run);
+		$delete_missing_albums = $this->validateDeleteMissingAlbum($dry_run);
+
+		$status = 0;
+		foreach ($users as $user) {
+			$status = max($status, $this->syncUser($user, $import_mode, $delete_missing_photos, $delete_missing_albums, $dry_run));
+		}
+
+		return $status;
+	}
+
+	/**
+	 * Error message when the arguments do not allow a sync with no path, `null` otherwise.
+	 */
+	private function checkUsersSyncArguments(): ?string
+	{
+		return match (true) {
+			!$this->config_manager->getValueAsBool('sync_users_server_paths') => 'No path given. Pass paths, or enable sync_users_server_paths.',
+			$this->option('album_id') !== null => '--album_id needs a path: with no path every user is synced into the gallery root.',
+			default => null,
+		};
+	}
+
+	/**
+	 * Users whose folder is synced: the `--owner_id` user (who must be eligible), or every user with a server path, in id order.
+	 *
+	 * @return Collection<int,User>|null `null` when the `--owner_id` user cannot be synced
+	 */
+	private function usersToSync(): ?Collection
+	{
+		if ($this->option('owner_id') === null) {
+			return User::query()->whereNotNull('server_path')->orderBy('id')->get();
+		}
+
+		/** @var User|null $user */
+		$user = User::query()->find(intval($this->option('owner_id')));
+		$eligibility = $user === null ? SyncUserEligibility::NO_PATH : SyncUserEligibility::of($user);
+		if ($eligibility !== SyncUserEligibility::ELIGIBLE) {
+			$this->error('User ' . strval($this->option('owner_id')) . ' cannot be synced: ' . $eligibility->value . '.');
+
+			return null;
+		}
+
+		return collect([$user]);
+	}
+
+	/**
+	 * Sync one user's folder. Prints one line per user.
+	 *
+	 * @return int 0 when synced or skipped, 1 when the folder could not be synced
+	 */
+	private function syncUser(User $user, ImportMode $import_mode, bool $delete_missing_photos, bool $delete_missing_albums, bool $dry_run): int
+	{
+		$prefix = sprintf('User %d (%s) %s: ', $user->id, $user->username, $user->server_path);
+		$eligibility = SyncUserEligibility::of($user);
+		if ($eligibility !== SyncUserEligibility::ELIGIBLE) {
+			$this->line($prefix . 'skipped: ' . $eligibility->value);
+
+			return 0;
+		}
+
+		$import_root = strval(ImportPathGuard::realRoot($user->server_path));
+		$exec = new Exec(
+			import_mode: $import_mode,
+			intended_owner_id: $user->id,
+			delete_missing_photos: $delete_missing_photos,
+			delete_missing_albums: $delete_missing_albums,
+			is_dry_run: $dry_run,
+			should_execute_jobs: true,
+			import_root: $import_root,
+			root_folder_as_album: $this->config_manager->getValueAsBool('import_root_folder_as_album'),
+			scope_to_owner: $this->config_manager->getValueAsBool('import_scope_to_owner'),
+		);
+
+		try {
+			$jobs = $exec->do($import_root, null);
+			$this->line($prefix . count($jobs) . ' jobs');
+
+			return 0;
+		} catch (EmptyFolderException|InvalidDirectoryException $e) {
+			$this->warn($prefix . 'not synced: ' . $e->getMessage());
+
+			return 1;
+		}
 	}
 }

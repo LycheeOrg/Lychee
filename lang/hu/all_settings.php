@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Adminisztrátori irányítópult használata a bal oldali menü hivatkozásai helyett',
         'video_thumbnail_frame_mode' => 'A videóminiatűrhöz használt képkocka',
         'video_thumbnail_frame_seconds' => 'A videóminiatűrökhöz használt képkocka időpontja (másodpercben)',
+        'import_root_folder_as_album' => 'A kiválasztott mappa importálása albumként',
+        'import_scope_to_owner' => 'Csak az importáló saját albumait és fotóit használja újra és törölje',
+        'sync_users_server_paths' => 'A lychee:sync útvonal nélkül minden felhasználó importmappáját szinkronizálja',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Első: mindig a legelső képkocka (0 mp), amely egyes videóknál fekete lehet. Középső: a videó felénél lévő képkocka; ha a hossz ismeretlen, 0 mp-re esik vissza. Egyéni: az alább megadott fix másodperc.',
         'video_thumbnail_frame_seconds' => 'Csak akkor használatos, ha a "Videó bélyegképéhez használt képkocka" egyénire van állítva.',
+        'import_root_folder_as_album' => 'Kikapcsolva a kiválasztott mappa tartalma közvetlenül a célalbumba kerül (vagy a galéria gyökerében a Rendezetlenek közé), almappái pedig közvetlenül a cél alatti albumok lesznek.',
+        'import_scope_to_owner' => 'Bekapcsolva az importálás soha nem olvaszt össze és nem töröl más felhasználóhoz tartozó albumokat és fotókat.',
+        'sync_users_server_paths' => 'A szerveren importútvonalra korlátozott felhasználók egymás után, saját nevükben szinkronizálódnak a galéria gyökerébe.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Témaszínek',
         'contact' => 'Kapcsolat',
+        'import' => 'Importálás',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'MI-alapú funkciók, beleértve az arcfelismerést és az NSFW tartalom észlelését. Külső AI Vision sidecar szolgáltatást igényel.',
         'Theme Colors' => 'A v8 felületen használt másodlagos, szemantikus és semleges színek testreszabása. Minden kiválasztott szín egy teljes palettát hoz létre, ugyanúgy, ahogy a fenti kiemelőszín.',
         'contact' => 'Ez a modul lehetővé teszi a felhasználók által a weboldal kapcsolatfelvételi űrlapján küldött üzenetek kezelését.',
+        'import' => 'Fotók importálásának beállításai a szerver egy mappájából és URL-ről.',
     ],
 ];

@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Slett bilder i albumet som ikke finnes i den synkroniserte mappen.',
     'delete_missing_albums' => 'Slett album i foreldrealbumet som ikke finnes i den synkroniserte mappen.',
     'importing_please_be_patient' => 'Importerer, vennligst vær tålmodig…',
+    'root_folder_content_hint' => 'Innholdet i den valgte mappen havner rett i målalbumet. Sletting av manglende bilder og album gjelder da målalbumet.',
 ];
 

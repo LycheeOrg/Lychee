@@ -115,7 +115,7 @@ class BuildTree implements ImportPipe
 	 *
 	 * @param string $path
 	 *
-	 * @return string
+	 * @return string the path without trailing `/`
 	 *
 	 * @throws ReservedDirectoryException
 	 * @throws InvalidDirectoryException
@@ -164,6 +164,12 @@ class BuildTree implements ImportPipe
 
 			// Skip ignored files
 			if ($this->checkAgainstIgnoreList($filename, $ignore_list)) {
+				continue;
+			}
+
+			// Links are never followed, wherever they point (FR-115-11).
+			if (is_link($file)) {
+				$this->report(ImportEventReport::createWarning('symlink_skipped', $file, 'Skipped: symbolic link'));
 				continue;
 			}
 
@@ -242,11 +248,20 @@ class BuildTree implements ImportPipe
 	 */
 	private function readLocalIgnoreList(string $path): array
 	{
-		if (is_readable($path . '/.lycheeignore')) {
+		$ignore_file = $path . '/.lycheeignore';
+
+		// Links are never followed, the ignore file included (FR-115-11).
+		if (is_link($ignore_file)) {
+			$this->report(ImportEventReport::createWarning('symlink_skipped', $ignore_file, 'Skipped: symbolic link'));
+
+			return [];
+		}
+
+		if (is_readable($ignore_file)) {
 			try {
-				$result = file($path . '/.lycheeignore');
+				$result = file($ignore_file);
 			} catch (\Throwable) {
-				throw new FileOperationException('Could not read ' . $path . '/.lycheeignore');
+				throw new FileOperationException('Could not read ' . $ignore_file);
 			}
 
 			$result = array_map('trim', $result);

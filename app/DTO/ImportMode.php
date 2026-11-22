@@ -19,6 +19,7 @@ final readonly class ImportMode
 	public readonly bool $shall_resync_metadata;
 	public readonly bool $shall_rename_photo_title;
 	public readonly bool $shall_rename_album_title;
+	public readonly bool $shall_scope_to_owner;
 
 	public function __construct(
 		bool $delete_imported = false,
@@ -27,6 +28,7 @@ final readonly class ImportMode
 		bool $resync_metadata = false,
 		bool $shall_rename_photo_title = true,
 		bool $shall_rename_album_title = true,
+		bool $scope_to_owner = false,
 	) {
 		$this->shall_delete_imported = $delete_imported;
 		$this->shall_skip_duplicates = $skip_duplicates;
@@ -37,5 +39,7 @@ final readonly class ImportMode
 
 		$this->shall_rename_photo_title = $shall_rename_photo_title;
 		$this->shall_rename_album_title = $shall_rename_album_title;
+		// Server imports only: another user's duplicate is rejected (FR-115-12).
+		$this->shall_scope_to_owner = $scope_to_owner;
 	}
 }

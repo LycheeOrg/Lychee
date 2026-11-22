@@ -116,6 +116,7 @@ class DeleteMissingAlbums implements ImportPipe
 			->select(['albums.id', 'base_albums.title'])
 			->where('parent_id', $node->album->id)
 			->whereNotIn('title', $existing_folders)
+			->when($this->state->scope_to_owner, fn ($q) => $q->where('base_albums.owner_id', '=', $this->state->intended_owner_id))
 			->toBase()
 			->get();
 	}

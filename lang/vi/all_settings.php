@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Dùng bảng điều khiển quản trị thay vì các liên kết trong menu bên trái',
         'video_thumbnail_frame_mode' => 'Khung hình dùng cho ảnh thu nhỏ của video',
         'video_thumbnail_frame_seconds' => 'Thời điểm khung hình (tính bằng giây) dùng cho ảnh thu nhỏ của video',
+        'import_root_folder_as_album' => 'Nhập thư mục đã chọn thành một album',
+        'import_scope_to_owner' => 'Chỉ dùng lại và xóa album, ảnh của chính người nhập',
+        'sync_users_server_paths' => 'lychee:sync không có đường dẫn sẽ đồng bộ thư mục nhập của mọi người dùng',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Đầu tiên: luôn là khung hình đầu tiên (0s), có thể bị đen ở một số video. Giữa: khung hình ở giữa video, quay về 0s nếu không biết thời lượng. Tùy chỉnh: số giây cố định được đặt bên dưới.',
         'video_thumbnail_frame_seconds' => 'Chỉ dùng khi "Khung hình dùng cho ảnh thu nhỏ video" được đặt thành tùy chỉnh.',
+        'import_root_folder_as_album' => 'Khi tắt, nội dung của thư mục đã chọn được đưa thẳng vào album đích (hoặc vào Chưa phân loại ở gốc thư viện) và các thư mục con trở thành album ngay dưới đích.',
+        'import_scope_to_owner' => 'Khi bật, việc nhập không bao giờ gộp vào hoặc xóa album và ảnh thuộc về người dùng khác.',
+        'sync_users_server_paths' => 'Người dùng bị giới hạn trong một đường dẫn nhập trên máy chủ được đồng bộ lần lượt, dưới tên của chính họ, vào gốc thư viện.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Màu giao diện',
         'contact' => 'Liên hệ',
+        'import' => 'Nhập',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'Các tính năng dùng AI bao gồm nhận diện khuôn mặt và phát hiện nội dung NSFW. Yêu cầu dịch vụ sidecar AI Vision bên ngoài.',
         'Theme Colors' => 'Tùy chỉnh các màu phụ, màu ngữ nghĩa và màu trung tính dùng trong giao diện v8. Mỗi màu được chọn sẽ tạo ra một bảng màu đầy đủ, giống như cách màu nhấn ở trên.',
         'contact' => 'Mô-đun này cho phép bạn quản lý các tin nhắn liên hệ do người dùng gửi qua biểu mẫu liên hệ trên trang web.',
+        'import' => 'Cài đặt nhập ảnh từ một thư mục trên máy chủ và từ một URL.',
     ],
 ];

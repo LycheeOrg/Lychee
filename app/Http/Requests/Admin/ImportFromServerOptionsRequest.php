@@ -10,11 +10,14 @@ namespace App\Http\Requests\Admin;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\AbstractEmptyRequest;
+use App\Http\Requests\Traits\HasImportRootTrait;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerOptionsRequest extends AbstractEmptyRequest
 {
+	use HasImportRootTrait;
+
 	public function authorize(): bool
 	{
 		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);

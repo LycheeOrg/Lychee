@@ -27,6 +27,8 @@ class DuplicateDTO implements PhotoDTO
 	public function __construct(
 		public readonly bool $shall_resync_metadata,
 		public readonly bool $shall_skip_duplicates,
+		// Whether another user's duplicate is rejected whatever `skip_duplicates_not_owned` says (FR-115-12).
+		public readonly bool $shall_scope_to_owner,
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
 
@@ -50,6 +52,7 @@ class DuplicateDTO implements PhotoDTO
 		return new DuplicateDTO(
 			shall_resync_metadata: $init_dto->import_mode->shall_resync_metadata,
 			shall_skip_duplicates: $init_dto->import_mode->shall_skip_duplicates,
+			shall_scope_to_owner: $init_dto->import_mode->shall_scope_to_owner,
 			intended_owner_id: $init_dto->intended_owner_id,
 			is_highlighted: $init_dto->is_highlighted,
 			exif_info: $init_dto->exif_info,

@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Eliminar las fotos del álbum que no estén presentes en el directorio sincronizado.',
     'delete_missing_albums' => 'Eliminar los álbumes del álbum principal que no estén presentes en el directorio sincronizado.',
     'importing_please_be_patient' => 'Importando, ten paciencia...',
+    'root_folder_content_hint' => 'El contenido de la carpeta seleccionada va directamente al álbum de destino. La eliminación de fotos y álbumes ausentes se aplica entonces al álbum de destino.',
 ];
 

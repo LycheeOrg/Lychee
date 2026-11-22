@@ -538,6 +538,9 @@ return [
         'use_admin_dashboard' => 'Použít administrátorský panel místo odkazů v levém menu',
         'video_thumbnail_frame_mode' => 'Snímek použitý pro miniaturu videa',
         'video_thumbnail_frame_seconds' => 'Časová pozice snímku (v sekundách) použitá pro miniatury videí',
+        'import_root_folder_as_album' => 'Importovat vybranou složku jako album',
+        'import_scope_to_owner' => 'Znovu používat a mazat pouze vlastní alba a fotky importujícího',
+        'sync_users_server_paths' => 'lychee:sync bez cesty synchronizuje importní složku každého uživatele',
     ],
     'details' => [
         'contact_form_enabled' => '',
@@ -1070,6 +1073,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'První: vždy úplně první snímek (0 s), který může být u některých videí černý. Střední: snímek v polovině videa, při neznámé délce se použije 0 s. Vlastní: pevný počet sekund nastavený níže.',
         'video_thumbnail_frame_seconds' => 'Použije se pouze tehdy, je-li volba "Snímek pro miniaturu videa" nastavena na vlastní.',
+        'import_root_folder_as_album' => 'Pokud je vypnuto, obsah vybrané složky jde přímo do cílového alba (nebo do Neroztříděných v kořeni galerie) a její podsložky se stanou alby přímo pod cílem.',
+        'import_scope_to_owner' => 'Pokud je zapnuto, import nikdy nesloučí ani nesmaže alba a fotky jiného uživatele.',
+        'sync_users_server_paths' => 'Uživatelé omezení na importní cestu na serveru jsou synchronizováni jeden po druhém, svým jménem, do kořene galerie.',
     ],
 
     'category_name' => [
@@ -1102,6 +1108,7 @@ return [
         'AI Vision' => 'AI Vision',
         'Theme Colors' => 'Barvy motivu',
         'contact' => 'Kontakt',
+        'import' => 'Import',
     ],
 
     'category_description' => [
@@ -1134,5 +1141,6 @@ return [
         'AI Vision' => 'Funkce využívající AI, včetně rozpoznávání obličejů a detekce obsahu NSFW. Vyžaduje externí doplňkovou službu AI Vision.',
         'Theme Colors' => 'Upravte sekundární, sémantické a neutrální barvy používané v rozhraní v8. Každá vybraná barva vygeneruje celou paletu, stejně jako barva zvýraznění výše.',
         'contact' => 'Tento modul umožňuje spravovat zprávy, které uživatelé odeslali prostřednictvím kontaktního formuláře na webu.',
+        'import' => 'Nastavení importu fotek ze složky na serveru a z URL.',
     ],
 ];

@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Xóa các ảnh trong album không có trong thư mục được đồng bộ.',
     'delete_missing_albums' => 'Xóa các album trong album cha không có trong thư mục được đồng bộ.',
     'importing_please_be_patient' => 'Đang nhập, vui lòng chờ...',
+    'root_folder_content_hint' => 'Nội dung của thư mục đã chọn được đưa thẳng vào album đích. Việc xóa ảnh và album bị thiếu khi đó áp dụng cho album đích.',
 ];
 

@@ -29,6 +29,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Services\UploadStatusStore;
+use function Safe\file_put_contents;
 use function Safe\fopen;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -152,28 +153,46 @@ class UploadStatusJobTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * S-116-08 and S-116-10: a duplicate of another user's photo is rejected; between attempts
-	 * the entry stays `processing`, after the last one it is `skipped` with the other photo's ID.
+	 * S-116-08: a duplicate of another user's photo is rejected and handled as a skip in `handle()`
+	 * (Q-115-13, FR-114-01): no retry, the entry is `skipped` at once with the other photo's ID.
 	 */
-	public function testRejectedDuplicateOfAnotherUserIsSkippedAfterLastAttempt(): void
+	public function testRejectedDuplicateOfAnotherUserIsSkippedAtOnce(): void
 	{
 		Configs::set('skip_duplicates_not_owned', true);
 		$original_id = $this->uploadOriginal($this->album2, $this->userMayUpload2->id);
 		$this->actingAs($this->userMayUpload1);
 		$job = $this->makeJob($this->album1);
 
+		$result = app()->call([$job, 'handle']);
+
+		self::assertNull($result);
+		$job->assertNotFailed();
+		$job->assertNotReleased();
+		$this->assertEntry(UploadStatus::SKIPPED, $original_id, PhotoRejectedException::DEFAULT_MESSAGE);
+	}
+
+	/**
+	 * S-116-10: an attempt that fails with an error other than a skip leaves the entry `processing`
+	 * until the last attempt calls `failed()`.
+	 */
+	public function testFailedAttemptStaysProcessing(): void
+	{
+		$this->actingAs($this->userMayUpload1);
+		$job = $this->makeJob($this->album1);
+		// An empty source cannot be processed.
+		file_put_contents($job->file_path, '');
+
 		$caught = null;
 		try {
 			app()->call([$job, 'handle']);
-		} catch (PhotoRejectedException $e) {
+		} catch (\Throwable $e) {
 			$caught = $e;
 		}
+
 		self::assertNotNull($caught);
+		self::assertNotInstanceOf(PhotoSkippedException::class, $caught);
+		self::assertNotInstanceOf(PhotoRejectedException::class, $caught);
 		$this->assertEntry(UploadStatus::PROCESSING, null, null);
-
-		$job->failed($caught);
-
-		$this->assertEntry(UploadStatus::SKIPPED, $original_id, PhotoRejectedException::DEFAULT_MESSAGE);
 	}
 
 	/**

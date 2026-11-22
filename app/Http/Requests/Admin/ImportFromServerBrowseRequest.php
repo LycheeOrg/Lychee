@@ -10,16 +10,29 @@ namespace App\Http\Requests\Admin;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\HasImportRootTrait;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
 class ImportFromServerBrowseRequest extends BaseApiRequest
 {
+	use HasImportRootTrait;
+
 	public string $directory;
 
 	public function authorize(): bool
 	{
-		return Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
+		if (!Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class])) {
+			return false;
+		}
+
+		if (!$this->allowsPath($this->directory)) {
+			return false;
+		}
+
+		$this->directory = $this->effectivePath($this->directory);
+
+		return true;
 	}
 
 	/**

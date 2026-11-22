@@ -536,6 +536,9 @@ return [
         'use_admin_dashboard' => '',
         'video_thumbnail_frame_mode' => 'Première : toujours la toute première image (0 s), qui peut être noire sur certaines vidéos. Milieu : l’image située à mi-parcours de la vidéo, avec repli sur 0 s si la durée est inconnue. Personnalisée : le nombre fixe de secondes défini ci-dessous.',
         'video_thumbnail_frame_seconds' => 'Utilisé uniquement lorsque "Image utilisée pour la vignette vidéo" est défini sur custom.',
+        'import_root_folder_as_album' => 'Si désactivé, le contenu du dossier sélectionné va directement dans l’album cible (ou dans Non classées à la racine de la galerie) et ses sous-dossiers deviennent des albums directement sous la cible.',
+        'import_scope_to_owner' => 'Si activé, un import ne fusionne jamais avec, ni ne supprime, les albums et photos d’un autre utilisateur.',
+        'sync_users_server_paths' => 'Les utilisateurs limités à un chemin d’import serveur sont synchronisés l’un après l’autre, en leur nom, à la racine de la galerie.',
     ],
     'documentation' => [
         'contact_form_enabled' => 'Activer le formulaire de contact sur le site',
@@ -1068,6 +1071,9 @@ return [
         'use_admin_dashboard' => 'Utiliser le tableau de bord d’administration au lieu des liens dans le menu de gauche',
         'video_thumbnail_frame_mode' => 'Image utilisée pour la vignette vidéo',
         'video_thumbnail_frame_seconds' => 'Instant de l’image (en secondes) utilisée pour les vignettes vidéo',
+        'import_root_folder_as_album' => 'Importer le dossier sélectionné comme un album',
+        'import_scope_to_owner' => 'Ne réutiliser et ne supprimer que les albums et photos de l’importateur',
+        'sync_users_server_paths' => 'lychee:sync sans chemin synchronise le dossier d’import de chaque utilisateur',
     ],
     'category_name' => [
         'config' => 'Les bases',
@@ -1099,6 +1105,7 @@ return [
         'AI Vision' => 'Vision IA',
         'Theme Colors' => 'Couleurs du thème',
         'contact' => 'Contact',
+        'import' => 'Import',
     ],
     'category_description' => [
         'config' => '',
@@ -1131,5 +1138,6 @@ return [
         'AI Vision' => 'Fonctionnalités basées sur l’IA, incluant la reconnaissance faciale et la détection de contenu NSFW. Nécessite un service annexe (sidecar) AI Vision externe.',
         'Theme Colors' => 'Personnalisez les couleurs secondaire, sémantiques et neutre utilisées dans l’interface v8. Chaque couleur choisie génère une palette complète, de la même manière que la couleur d’accentuation ci-dessus.',
         'contact' => 'Ce module vous permet de gérer les messages de contact envoyés par les utilisateurs via le formulaire de contact du site.',
+        'import' => 'Paramètres de l’import de photos depuis un dossier du serveur et depuis une URL.',
     ],
 ];

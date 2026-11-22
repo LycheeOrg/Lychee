@@ -21,6 +21,7 @@ namespace Tests\Install;
 use App\Http\Middleware\AdminUserStatus;
 use App\Http\Middleware\InstallationStatus;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 
 class AdminTest extends AbstractTestCase
@@ -63,6 +64,8 @@ class AdminTest extends AbstractTestCase
 		]);
 		$this->assertOk($response);
 		// $response->assertViewIs('install.setup-success');
+		// Feature 115 (FR-115-14): the first admin may import from the whole server.
+		self::assertSame('/', DB::table('users')->where('username', '=', 'admin')->value('server_path'));
 
 		$response = $this->withoutMiddleware([InstallationStatus::class, AdminUserStatus::class])->post('install/admin', [
 			'username' => 'admin',

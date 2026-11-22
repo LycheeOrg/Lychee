@@ -138,7 +138,7 @@ class ImportPhotos implements ImportPipe
 	private function importSingleImage(string $image_path, ?Album $album, int $progress): void
 	{
 		$file = new NativeLocalFile($image_path);
-		$this->state->job_bus[] = new ImportImageJob($file, $this->state->intended_owner_id, $this->state->import_mode, $album);
+		$this->state->job_bus[] = new ImportImageJob($file, $this->state->intended_owner_id, $this->state->import_mode, $album, $this->state->upload_trust_level, $this->state->import_root);
 		$this->report(ImportEventReport::createDebug('imported', $image_path, 'Created Import job for photo: ' . $progress . '%'));
 	}
 

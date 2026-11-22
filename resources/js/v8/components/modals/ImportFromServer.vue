@@ -26,6 +26,10 @@
 						{{ dir }}
 					</div>
 				</div>
+				<p v-if="!importState.options.is_root_folder_album" class="mt-3 text-sm text-muted flex gap-1.5 items-start">
+					<UIcon name="lucide:info" class="shrink-0 mt-0.5" />
+					{{ $t("import_from_server.root_folder_content_hint") }}
+				</p>
 				<div class="flex flex-col gap-2 mt-4">
 					<form>
 						<USwitch v-model="importState.options.delete_imported" color="error" :ui="{ label: 'text-sm' }">

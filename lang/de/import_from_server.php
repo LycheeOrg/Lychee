@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Fotos im Album löschen, die im synchronisierten Verzeichnis nicht vorhanden sind.',
     'delete_missing_albums' => 'Alben im übergeordneten Album löschen, die im synchronisierten Verzeichnis nicht vorhanden sind.',
     'importing_please_be_patient' => 'Import läuft, bitte haben Sie etwas Geduld …',
+    'root_folder_content_hint' => 'Der Inhalt des ausgewählten Ordners landet direkt im Zielalbum. Das Löschen fehlender Fotos und Alben gilt dann für das Zielalbum.',
 ];
 

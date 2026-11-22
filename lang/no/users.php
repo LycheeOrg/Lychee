@@ -21,6 +21,8 @@ return [
     'user_updated' => 'Brukeren ble oppdatert',
     'change_saved' => 'Endringen er lagret!',
     'create_edit' => [
+        'server_path' => 'Importsti på serveren',
+        'server_path_hint' => 'Tom: import fra serveren deaktivert. "/": hele serveren. Ellers: bare denne mappen og det som ligger under.',
         'upload_rights' => 'Brukeren kan laste opp innhold.',
         'edit_rights' => 'Brukeren kan endre profilen sin (brukernavn, passord).',
         'admin_rights' => 'Brukeren har administratorrettigheter.',

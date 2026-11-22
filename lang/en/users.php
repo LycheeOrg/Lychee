@@ -21,6 +21,8 @@ return [
     'user_updated' => 'User updated',
     'change_saved' => 'Change saved!',
     'create_edit' => [
+        'server_path' => 'Server import path',
+        'server_path_hint' => 'Empty: import from server disabled. "/": the whole server. Otherwise: only this folder and below.',
         'upload_rights' => 'User can upload content.',
         'edit_rights' => 'User can modify their profile (username, password).',
         'admin_rights' => 'User has admin rights.',

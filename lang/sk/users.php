@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Používateľ aktualizovaný',
     'change_saved' => 'Zmena uložená!',
     'create_edit' => [
+        'server_path' => 'Cesta na import zo servera',
+        'server_path_hint' => 'Prázdne: import zo servera vypnutý. „/“: celý server. Inak: iba tento priečinok a jeho obsah.',
         'upload_rights' => 'Používateľ môže nahrávať obsah.',
         'edit_rights' => 'Používateľ môže upravovať svoj profil (používateľské meno, heslo).',
         'admin_rights' => 'Používateľ má administrátorské práva.',

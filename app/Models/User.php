@@ -54,6 +54,7 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $remember_token
  * @property UserSharedAlbumsVisibility                            $shared_albums_visibility
  * @property UserUploadTrustLevel                                  $upload_trust_level
+ * @property string|null                                           $server_path
  * @property Collection<int,BaseAlbumImpl>                         $albums
  * @property Collection<int,OauthCredential>                       $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -126,6 +127,16 @@ class User extends Authenticatable
 	];
 
 	protected $hidden = [];
+
+	/**
+	 * Default values of attributes not set on a new instance.
+	 * `server_path` is `null` (import from server disabled, Feature 115).
+	 *
+	 * @var array<string,mixed>
+	 */
+	protected $attributes = [
+		'server_path' => null,
+	];
 
 	/**
 	 * We always want to load the user groups when loading a user.

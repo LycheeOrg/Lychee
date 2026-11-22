@@ -18,5 +18,6 @@ return [
     'delete_missing_photos' => 'Usuń z albumu zdjęcia, których nie ma w synchronizowanym katalogu.',
     'delete_missing_albums' => 'Usuń z albumu nadrzędnego albumy, których nie ma w synchronizowanym katalogu.',
     'importing_please_be_patient' => 'Importowanie, prosimy o cierpliwość...',
+    'root_folder_content_hint' => 'Zawartość wybranego folderu trafia bezpośrednio do albumu docelowego. Usuwanie brakujących zdjęć i albumów dotyczy wtedy albumu docelowego.',
 ];
 

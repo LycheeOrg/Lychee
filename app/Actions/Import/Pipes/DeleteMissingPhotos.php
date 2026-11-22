@@ -47,12 +47,8 @@ class DeleteMissingPhotos implements ImportPipe
 
 	private function processNode(FolderNode $node): void
 	{
-		// Skip if no album is associated with this node
-		if ($node->album === null) {
-			return;
-		}
-
-		// Process photos for this node
+		// A node without album (gallery root, FR-115-10) is skipped, its children are not:
+		// photos without album (Unsorted) are never deleted.
 		$this->deleteMissingPhotos($node);
 
 		// Process each child node
@@ -125,6 +121,7 @@ class DeleteMissingPhotos implements ImportPipe
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, $node->album->id)
 			->whereNotIn('photos.title', $existing_files)
+			->when($this->state->scope_to_owner, fn ($q) => $q->where('photos.owner_id', '=', $this->state->intended_owner_id))
 			->get();
 	}
 

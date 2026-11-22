@@ -22,6 +22,8 @@ return [
     'user_updated' => 'Gebruiker bijgewerkt',
     'change_saved' => 'Wijziging opgeslagen!',
     'create_edit' => [
+        'server_path' => 'Server-importpad',
+        'server_path_hint' => 'Leeg: importeren vanaf de server uitgeschakeld. "/": de hele server. Anders: alleen deze map en wat eronder valt.',
         'upload_rights' => 'Gebruiker kan inhoud uploaden.',
         'edit_rights' => 'Gebruiker kan zijn profiel wijzigen (gebruikersnaam, wachtwoord).',
         'admin_rights' => 'Gebruiker heeft beheerdersrechten.',
