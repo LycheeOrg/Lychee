@@ -103,6 +103,10 @@ class GhostbusterTest extends BaseApiWithDataTest
 		])
 			->assertSuccessful();
 
+		// On `sync` the FileDeleterJobs run when the command exits (FR-112-04):
+		// the `artisan` binary terminates the app, `$this->artisan()` does not.
+		$this->app->terminate();
+
 		// Ensure that photo, size variants and all other size variants are gone
 		self::assertEquals(
 			0,
