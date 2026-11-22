@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => 'Frame voor de videominiatuur',
         'video_thumbnail_frame_seconds' => 'Tijdstip van het frame (in seconden) voor videominiaturen',
         'import_root_folder_as_album' => 'De geselecteerde map als album importeren',
-        'import_scope_to_owner' => 'Alleen eigen albums en foto’s van de importeur hergebruiken en verwijderen',
+        'import_scope_to_owner' => 'Imports beperken tot de eigen albums en foto’s van de importeur',
         'sync_users_server_paths' => 'lychee:sync zonder pad synchroniseert de importmap van elke gebruiker',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => 'Eerste: altijd het allereerste frame (0s), dat bij sommige video\'s zwart kan zijn. Midden: het frame halverwege de video, met terugval naar 0s als de duur onbekend is. Aangepast: het vaste aantal seconden dat hieronder is ingesteld.',
         'video_thumbnail_frame_seconds' => 'Wordt alleen gebruikt wanneer "Frame voor de videominiatuur" is ingesteld op aangepast.',
         'import_root_folder_as_album' => 'Indien uitgeschakeld gaat de inhoud van de geselecteerde map direct naar het doelalbum (of naar Ongesorteerd in de hoofdmap van de galerij) en worden de submappen albums direct onder het doel.',
-        'import_scope_to_owner' => 'Indien ingeschakeld voegt een import nooit samen met albums en foto’s van een andere gebruiker en verwijdert deze ook niet.',
+        'import_scope_to_owner' => 'Indien ingeschakeld wordt een foto die al van een andere gebruiker is overgeslagen, wordt een bestaand album alleen hergebruikt als het van de importeur is of, binnen een ander album, van de eigenaar van dat album, en worden alleen eigen albums en foto’s van de importeur verwijderd wanneer ze in de map ontbreken. Een verwijderd album neemt wel al zijn subalbums mee.',
         'sync_users_server_paths' => 'Gebruikers die beperkt zijn tot een server-importpad worden na elkaar, als zichzelf, naar de hoofdmap van de galerij gesynchroniseerd.',
     ],
 

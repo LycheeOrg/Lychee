@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => 'Khung hình dùng cho ảnh thu nhỏ của video',
         'video_thumbnail_frame_seconds' => 'Thời điểm khung hình (tính bằng giây) dùng cho ảnh thu nhỏ của video',
         'import_root_folder_as_album' => 'Nhập thư mục đã chọn thành một album',
-        'import_scope_to_owner' => 'Chỉ dùng lại và xóa album, ảnh của chính người nhập',
+        'import_scope_to_owner' => 'Giới hạn việc nhập trong album và ảnh của chính người nhập',
         'sync_users_server_paths' => 'lychee:sync không có đường dẫn sẽ đồng bộ thư mục nhập của mọi người dùng',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => 'Đầu tiên: luôn là khung hình đầu tiên (0s), có thể bị đen ở một số video. Giữa: khung hình ở giữa video, quay về 0s nếu không biết thời lượng. Tùy chỉnh: số giây cố định được đặt bên dưới.',
         'video_thumbnail_frame_seconds' => 'Chỉ dùng khi "Khung hình dùng cho ảnh thu nhỏ video" được đặt thành tùy chỉnh.',
         'import_root_folder_as_album' => 'Khi tắt, nội dung của thư mục đã chọn được đưa thẳng vào album đích (hoặc vào Chưa phân loại ở gốc thư viện) và các thư mục con trở thành album ngay dưới đích.',
-        'import_scope_to_owner' => 'Khi bật, việc nhập không bao giờ gộp vào hoặc xóa album và ảnh thuộc về người dùng khác.',
+        'import_scope_to_owner' => 'Khi bật, ảnh đã thuộc về người dùng khác sẽ bị bỏ qua, album hiện có chỉ được dùng lại nếu thuộc về người nhập hoặc, bên trong một album khác, thuộc về chủ của album đó, và khi không còn trong thư mục thì chỉ album và ảnh của chính người nhập bị xóa. Album bị xóa vẫn kéo theo toàn bộ album con của nó.',
         'sync_users_server_paths' => 'Người dùng bị giới hạn trong một đường dẫn nhập trên máy chủ được đồng bộ lần lượt, dưới tên của chính họ, vào gốc thư viện.',
     ],
 

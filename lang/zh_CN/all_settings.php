@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => '用于视频缩略图的帧',
         'video_thumbnail_frame_seconds' => '用于视频缩略图的帧时间点（秒）',
         'import_root_folder_as_album' => '将所选文件夹导入为相册',
-        'import_scope_to_owner' => '仅重用和删除导入者自己的相册和照片',
+        'import_scope_to_owner' => '将导入限制在导入者自己的相册和照片内',
         'sync_users_server_paths' => '不带路径的 lychee:sync 会同步每个用户的导入文件夹',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => '第一帧：始终使用最开始的帧（0 秒），某些视频中可能为黑屏。中间：使用视频中间位置的帧，如果时长未知则回退到 0 秒。自定义：使用下方设置的固定秒数。',
         'video_thumbnail_frame_seconds' => '仅在 "Frame to use for the video thumbnail" 设置为自定义时使用。',
         'import_root_folder_as_album' => '禁用时，所选文件夹的内容会直接进入目标相册（在图库根目录时进入未分类），其子文件夹会成为目标下的直接子相册。',
-        'import_scope_to_owner' => '启用时，导入绝不会合并到或删除其他用户的相册和照片。',
+        'import_scope_to_owner' => '启用时，已属于其他用户的照片会被跳过；现有相册仅在属于导入者（或在另一个相册内属于该相册的所有者）时才会被重用；目录中缺失时，只会删除导入者自己的相册和照片。被删除的相册仍会连同其所有子相册一起删除。',
         'sync_users_server_paths' => '被限制在服务器导入路径中的用户会以其本人身份依次同步到图库根目录。',
     ],
 

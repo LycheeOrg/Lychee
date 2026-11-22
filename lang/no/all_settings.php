@@ -537,7 +537,7 @@ return [
         'video_thumbnail_frame_mode' => 'Bilderute som brukes for videominiatyren',
         'video_thumbnail_frame_seconds' => 'Tidspunkt (i sekunder) for bilderuten som brukes til videominiatyrer',
         'import_root_folder_as_album' => 'Importer den valgte mappen som et album',
-        'import_scope_to_owner' => 'Gjenbruk og slett bare importørens egne album og bilder',
+        'import_scope_to_owner' => 'Begrens importer til importørens egne album og bilder',
         'sync_users_server_paths' => 'lychee:sync uten sti synkroniserer importmappen til hver bruker',
     ],
     'details' => [
@@ -1072,7 +1072,7 @@ return [
         'video_thumbnail_frame_mode' => 'First: alltid den aller første bilderuten (0 s), som kan være svart i noen videoer. Middle: bilderuten midt i videoen, med 0 s som reserve hvis varigheten er ukjent. Custom: det faste antallet sekunder angitt nedenfor.',
         'video_thumbnail_frame_seconds' => 'Brukes kun når "Bilderute som brukes for videominiatyren" er satt til custom.',
         'import_root_folder_as_album' => 'Når deaktivert havner innholdet i den valgte mappen rett i målalbumet (eller i Usortert i galleriets rot), og undermappene blir album rett under målet.',
-        'import_scope_to_owner' => 'Når aktivert slår en import aldri sammen med, eller sletter, album og bilder som eies av en annen bruker.',
+        'import_scope_to_owner' => 'Når aktivert hoppes et bilde som allerede tilhører en annen bruker over, et eksisterende album gjenbrukes bare hvis det tilhører importøren eller, inne i et annet album, eieren av det albumet, og bare importørens egne album og bilder slettes når de mangler i mappen. Et slettet album tar likevel med seg alle underalbumene sine.',
         'sync_users_server_paths' => 'Brukere som er begrenset til en importsti på serveren synkroniseres én etter én, som seg selv, til galleriets rot.',
     ],
     'category_name' => [

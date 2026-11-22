@@ -537,7 +537,7 @@ return [
         'video_thumbnail_frame_mode' => 'Fotograma usado para la miniatura del vídeo',
         'video_thumbnail_frame_seconds' => 'Momento del fotograma (en segundos) usado para las miniaturas de vídeo',
         'import_root_folder_as_album' => 'Importar la carpeta seleccionada como un álbum',
-        'import_scope_to_owner' => 'Reutilizar y eliminar solo los álbumes y fotos del propio importador',
+        'import_scope_to_owner' => 'Limitar las importaciones a los álbumes y fotos del propio importador',
         'sync_users_server_paths' => 'lychee:sync sin ruta sincroniza la carpeta de importación de cada usuario',
     ],
     'details' => [
@@ -1072,7 +1072,7 @@ return [
         'video_thumbnail_frame_mode' => 'First: siempre el primer fotograma (0 s), que puede ser negro en algunos vídeos. Middle: el fotograma de la mitad del vídeo, o 0 s si se desconoce la duración. Custom: el número fijo de segundos indicado abajo.',
         'video_thumbnail_frame_seconds' => 'Solo se usa cuando "Fotograma usado para la miniatura del vídeo" está configurado como custom.',
         'import_root_folder_as_album' => 'Si está desactivado, el contenido de la carpeta seleccionada va directamente al álbum de destino (o a Sin clasificar en la raíz de la galería) y sus subcarpetas se convierten en álbumes directamente bajo el destino.',
-        'import_scope_to_owner' => 'Si está activado, una importación nunca fusiona ni elimina álbumes y fotos de otro usuario.',
+        'import_scope_to_owner' => 'Si está activado, una foto que ya pertenece a otro usuario se omite, un álbum existente solo se reutiliza si pertenece al importador o, dentro de otro álbum, al propietario de ese álbum, y cuando faltan en el directorio solo se eliminan los álbumes y fotos del propio importador. Un álbum eliminado se lleva igualmente todos sus subálbumes.',
         'sync_users_server_paths' => 'Los usuarios restringidos a una ruta de importación del servidor se sincronizan uno tras otro, en su propio nombre, en la raíz de la galería.',
     ],
     'category_name' => [

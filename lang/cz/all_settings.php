@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => 'Snímek použitý pro miniaturu videa',
         'video_thumbnail_frame_seconds' => 'Časová pozice snímku (v sekundách) použitá pro miniatury videí',
         'import_root_folder_as_album' => 'Importovat vybranou složku jako album',
-        'import_scope_to_owner' => 'Znovu používat a mazat pouze vlastní alba a fotky importujícího',
+        'import_scope_to_owner' => 'Omezit import na vlastní alba a fotky importujícího',
         'sync_users_server_paths' => 'lychee:sync bez cesty synchronizuje importní složku každého uživatele',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => 'První: vždy úplně první snímek (0 s), který může být u některých videí černý. Střední: snímek v polovině videa, při neznámé délce se použije 0 s. Vlastní: pevný počet sekund nastavený níže.',
         'video_thumbnail_frame_seconds' => 'Použije se pouze tehdy, je-li volba "Snímek pro miniaturu videa" nastavena na vlastní.',
         'import_root_folder_as_album' => 'Pokud je vypnuto, obsah vybrané složky jde přímo do cílového alba (nebo do Neroztříděných v kořeni galerie) a její podsložky se stanou alby přímo pod cílem.',
-        'import_scope_to_owner' => 'Pokud je zapnuto, import nikdy nesloučí ani nesmaže alba a fotky jiného uživatele.',
+        'import_scope_to_owner' => 'Pokud je zapnuto, fotka, která už patří jinému uživateli, se přeskočí, existující album se znovu použije jen tehdy, když patří importujícímu, nebo uvnitř jiného alba vlastníkovi tohoto alba, a když v adresáři chybí, smažou se jen vlastní alba a fotky importujícího. Smazané album s sebou přesto vezme všechna svá podalba.',
         'sync_users_server_paths' => 'Uživatelé omezení na importní cestu na serveru jsou synchronizováni jeden po druhém, svým jménem, do kořene galerie.',
     ],
 

@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => 'A videóminiatűrhöz használt képkocka',
         'video_thumbnail_frame_seconds' => 'A videóminiatűrökhöz használt képkocka időpontja (másodpercben)',
         'import_root_folder_as_album' => 'A kiválasztott mappa importálása albumként',
-        'import_scope_to_owner' => 'Csak az importáló saját albumait és fotóit használja újra és törölje',
+        'import_scope_to_owner' => 'Az importálás korlátozása az importáló saját albumaira és fotóira',
         'sync_users_server_paths' => 'A lychee:sync útvonal nélkül minden felhasználó importmappáját szinkronizálja',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => 'Első: mindig a legelső képkocka (0 mp), amely egyes videóknál fekete lehet. Középső: a videó felénél lévő képkocka; ha a hossz ismeretlen, 0 mp-re esik vissza. Egyéni: az alább megadott fix másodperc.',
         'video_thumbnail_frame_seconds' => 'Csak akkor használatos, ha a "Videó bélyegképéhez használt képkocka" egyénire van állítva.',
         'import_root_folder_as_album' => 'Kikapcsolva a kiválasztott mappa tartalma közvetlenül a célalbumba kerül (vagy a galéria gyökerében a Rendezetlenek közé), almappái pedig közvetlenül a cél alatti albumok lesznek.',
-        'import_scope_to_owner' => 'Bekapcsolva az importálás soha nem olvaszt össze és nem töröl más felhasználóhoz tartozó albumokat és fotókat.',
+        'import_scope_to_owner' => 'Bekapcsolva a már más felhasználóhoz tartozó fotó kimarad, egy meglévő album csak akkor kerül újrafelhasználásra, ha az importálóé, vagy egy másik albumon belül annak az albumnak a tulajdonosáé, és ha hiányoznak a könyvtárból, csak az importáló saját albumai és fotói törlődnek. Egy törölt album ettől függetlenül minden alalbumát magával viszi.',
         'sync_users_server_paths' => 'A szerveren importútvonalra korlátozott felhasználók egymás után, saját nevükben szinkronizálódnak a galéria gyökerébe.',
     ],
 

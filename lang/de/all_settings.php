@@ -537,7 +537,7 @@ return [
         'video_thumbnail_frame_mode' => 'Für das Video-Vorschaubild verwendetes Einzelbild',
         'video_thumbnail_frame_seconds' => 'Zeitpunkt des Einzelbilds (in Sekunden) für Video-Vorschaubilder',
         'import_root_folder_as_album' => 'Ausgewählten Ordner als Album importieren',
-        'import_scope_to_owner' => 'Nur eigene Alben und Fotos des Importierenden wiederverwenden und löschen',
+        'import_scope_to_owner' => 'Importe auf eigene Alben und Fotos des Importierenden beschränken',
         'sync_users_server_paths' => 'lychee:sync ohne Pfad synchronisiert den Importordner jedes Benutzers',
     ],
     'details' => [
@@ -1072,7 +1072,7 @@ return [
         'video_thumbnail_frame_mode' => 'First: immer das allererste Einzelbild (0s), das bei manchen Videos schwarz sein kann. Middle: das Einzelbild in der Mitte des Videos, mit Rückfall auf 0s, wenn die Dauer unbekannt ist. Custom: die unten festgelegte Anzahl an Sekunden.',
         'video_thumbnail_frame_seconds' => 'Wird nur verwendet, wenn "Für das Video-Vorschaubild verwendetes Einzelbild" auf custom gesetzt ist.',
         'import_root_folder_as_album' => 'Wenn deaktiviert, landet der Inhalt des ausgewählten Ordners direkt im Zielalbum (oder in „Unsortiert“ im Galeriestamm) und seine Unterordner werden Alben direkt unter dem Ziel.',
-        'import_scope_to_owner' => 'Wenn aktiviert, führt ein Import niemals Alben und Fotos eines anderen Benutzers zusammen und löscht sie auch nicht.',
+        'import_scope_to_owner' => 'Wenn aktiviert, wird ein Foto, das bereits einem anderen Benutzer gehört, übersprungen, ein vorhandenes Album wird nur wiederverwendet, wenn es dem Importierenden gehört oder, innerhalb eines anderen Albums, dessen Besitzer, und wenn sie im Verzeichnis fehlen, werden nur eigene Alben und Fotos des Importierenden gelöscht. Ein gelöschtes Album nimmt trotzdem alle seine Unteralben mit.',
         'sync_users_server_paths' => 'Benutzer mit einem eingeschränkten Server-Importpfad werden nacheinander, in ihrem eigenen Namen, in den Galeriestamm synchronisiert.',
     ],
     'category_name' => [

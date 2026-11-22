@@ -539,7 +539,7 @@ return [
         'video_thumbnail_frame_mode' => '影片縮圖使用的影格',
         'video_thumbnail_frame_seconds' => '影片縮圖使用的影格時間點（秒）',
         'import_root_folder_as_album' => '將所選資料夾匯入為相簿',
-        'import_scope_to_owner' => '僅重複使用和刪除匯入者自己的相簿和照片',
+        'import_scope_to_owner' => '將匯入限制在匯入者自己的相簿和照片內',
         'sync_users_server_paths' => '不帶路徑的 lychee:sync 會同步每位使用者的匯入資料夾',
     ],
     'details' => [
@@ -1074,7 +1074,7 @@ return [
         'video_thumbnail_frame_mode' => '第一格：一律使用最開頭的影格（0 秒），某些影片可能是黑畫面。中間：使用影片中間點的影格，若無法得知影片長度則改用 0 秒。自訂：使用下方設定的固定秒數。',
         'video_thumbnail_frame_seconds' => '僅在 "Frame to use for the video thumbnail" 設為自訂時使用。',
         'import_root_folder_as_album' => '停用時，所選資料夾的內容會直接進入目標相簿（在圖庫根目錄時進入未分類），其子資料夾會成為目標下的直接子相簿。',
-        'import_scope_to_owner' => '啟用時，匯入絕不會合併到或刪除其他使用者的相簿和照片。',
+        'import_scope_to_owner' => '啟用時，已屬於其他使用者的照片會被略過；現有相簿僅在屬於匯入者（或在另一個相簿內屬於該相簿的擁有者）時才會被重複使用；目錄中缺少時，只會刪除匯入者自己的相簿和照片。被刪除的相簿仍會連同其所有子相簿一起刪除。',
         'sync_users_server_paths' => '被限制在伺服器匯入路徑中的使用者會以其本人身分依序同步到圖庫根目錄。',
     ],
 
