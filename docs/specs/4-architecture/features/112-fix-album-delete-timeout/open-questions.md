@@ -15,6 +15,7 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-07~~ | 112 | Medium | With a `photo.delete` webhook on `sync`, one inline HTTP call per deleted photo still runs before the DB delete | Resolved (A, owner 2026-11-15, spec FR-112-12, S-112-21) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-08~~ | 112 | High | `SizeVariant\Delete` keeps sold variants attached, so rotating a photo with a sold variant breaks `unique(photo_id, type)` | Resolved (A, owner 2026-11-15, spec FR-112-10, S-112-15, S-112-20) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-09~~ | 112 | Medium | Repair sold variants already detached from photos that still exist by the old instance-wide update | Resolved (A, owner 2026-11-15, spec FR-112-13, DO-112-05, S-112-22) | 2026-11-15 | 2026-11-15 |
+| ~~Q-112-10~~ | 112 | Medium | On `sync`, after-response jobs (delete webhooks, file deletions) are lost when the PHP worker is killed after the response; the spec does not say what is guaranteed | Resolved (A, owner 2026-11-22, spec FR-112-04, FR-112-12, Non-Goals, Documentation Deliverables) | 2026-11-22 | 2026-11-22 |
 
 ## Question Details
 
@@ -324,4 +325,41 @@ Only stop the damage (FR-112-10) and mention it in the release note.
 
 Pros: smallest change.
 Cons: photos already damaged stay broken.
+
+### Q-112-10 – After-response jobs lost when the worker is killed on `sync`
+
+**Context (2026-11-22, CodeRabbit review on PR #4997).** On `sync`, FR-112-04 and FR-112-12 run the post-commit jobs and the `photo.delete` `WebhookDispatchJob`s after the response. Laravel keeps them as in-memory terminating callbacks (`Dispatcher::dispatchAfterResponse()`) and runs them in registration order. The webhook jobs are registered before `executeDelete()`, so they run first, then the file, person-stats, face-embedding and thumb jobs. Nothing is persisted. If the worker stops before the list is done (FPM `request_terminate_timeout`, OOM kill, restart), the rest is lost, and the caller has already received success. The review's example: 4000 photos with one delete webhook at 20 ms per call need about 80 s, more than a 60 s limit. Lychee's Docker image sets `max_execution_time=3000`, but custom FPM setups can be tighter.
+
+What a lost tail means, by job:
+- `WebhookDispatchJob`: the receiver never hears about some deleted photos. Feature 031 already makes delivery best effort: `tries = 1`, and a failed call is logged and dropped (Q-031-04 A). Today on `sync` the same timeout hits before the DB delete. Some webhooks have then been sent for photos that are not deleted.
+- `FileDeleterJob`: files stay on disk without DB rows. `lychee:ghostbuster` removes them.
+- `RecomputePersonStatsJob`: person counts stay stale until the next recompute.
+- `DeleteFaceEmbeddingsJob`: the facial-recognition service keeps the embeddings of deleted faces.
+- `RecomputeAlbumUserThumbsJob`: no effect. The FK cascade drops the thumb rows of deleted photos, and the thumb is recomputed on the next read.
+
+**Question.** What does the spec guarantee for after-response work on `sync` when the worker stops early?
+
+**Resolution (2026-11-22).** Option A. Encoded in [spec.md](spec.md) FR-112-04 and FR-112-12 (failure paths), Non-Goals (no guaranteed delivery on `sync`) and Documentation Deliverables (release note: use an async queue to get every delete webhook). No webhook doc exists in this repository, so the release note carries the advice. No ADR: it applies Feature 031's existing best-effort contract to one more path.
+
+#### Option A – Best effort on `sync`, stated in the spec (recommended)
+
+- FR-112-04 and FR-112-12 failure path: on `sync`, after-response work is best effort. If the worker stops early, the remaining jobs are lost and not retried. Some delete webhooks are never sent, files stay orphaned until `lychee:ghostbuster` runs, and person stats and face embeddings stay stale. This matches Feature 031's no-retry delivery contract.
+- Release note and webhook docs: installs that need every delete webhook use an async queue, where each job is stored when it is dispatched.
+
+Pros: no new mechanism, and it matches the existing webhook contract. The request no longer times out, which is the goal of this feature. Webhooks run before the other deferred jobs, so they are the first to be sent.
+Cons: on `sync`, a killed worker drops the rest of the list without a log line, and the receiver cannot tell.
+
+#### Option B – Durable outbox for delete webhooks
+
+Write one row per (photo, webhook) to a new outbox table inside the delete transaction. Drain it after the response, and drain rows left behind from the scheduler.
+
+Pros: every delete webhook is eventually sent, even after a crash.
+Cons: needs a new table, a migration, a drain command and a running scheduler, which many `sync` installs do not have. It makes one event at-least-once while the others stay best effort (against Q-031-04 A). It is large enough to be its own feature.
+
+#### Option C – Keep delete webhooks inline on `sync` (reverts Q-112-07 A)
+
+Webhooks run before the DB delete, as today. Only the file, person, face and thumb jobs move after the response.
+
+Pros: a killed request leaves the photos in place, so the user can retry.
+Cons: a 4000-photo delete with a delete webhook still times out on `sync`, which is the problem Q-112-07 fixed. The webhooks already sent announce deletes that did not happen.
 

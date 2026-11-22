@@ -1,7 +1,7 @@
 # Feature 112 Tasks – Fix Album Delete Timeout
 
-_Status: Planned (analysis gate passed 2026-11-15)_  
-_Last updated: 2026-11-15_
+_Status: Planned (analysis gate passed 2026-11-22)_  
+_Last updated: 2026-11-22_
 
 ## Checklist
 
@@ -44,14 +44,16 @@ _Last updated: 2026-11-15_
   _Verification:_ `php artisan test --filter=DeleteTest`, `--filter=PhotoRotateTest`, shop order tests (`OrderItemDisplayTest` and the `tests/Webshop` classes touching order items).
 
 ### I5b – Repair migration
-- [ ] T-112-20 – Migration `2026_11_15_000001_relink_detached_sold_size_variants.php` (DO-112-05): candidates `size_variants.photo_id IS NULL` referenced by an `order_items` row with `photo_id IS NOT NULL`; per (photo, type) without a current variant, re-link the highest id; others left detached; chunks of 500; counts logged; `down()` no-op. No test (owner rule): run `php artisan migrate` on the dev DB and check S-112-22 (FR-112-13).  
-  _Verification:_ dev DB run with logged counts; a second run re-links nothing; `make phpstan`.
+- [ ] T-112-20 – Migration `2026_11_15_000001_relink_detached_sold_size_variants.php` (DO-112-05): candidates `size_variants.photo_id IS NULL` referenced by an `order_items` row with `photo_id IS NOT NULL`; per (photo, type) without a current variant, re-link the highest id; others left detached; chunks of 500; counts logged; `down()` no-op. No test (owner rule). Check S-112-22 on the dev DB in two steps (FR-112-13):
+  1. Idempotence dry run. A second `php artisan migrate` skips a recorded migration, so call `up()` directly. The migration is DML only, so one transaction holds it. Open `php artisan tinker` and run `DB::beginTransaction()`. Build the fixture: an `order_items` row pointing at a variant of a surviving photo, with that variant set to `photo_id = NULL`; a second one the same way, then give its photo a new variant of that type. Run `$m = require base_path('database/migrations/<file>'); $m->up();`, record `id, photo_id` of both fixture variants, run `$m->up()` again, record them again, then `DB::rollBack()`. Expected: after run 1 the first fixture is re-linked and the second stays detached. Run 2 logs 0 re-linked and leaves both rows as they were. The rollback leaves the data and the `migrations` table untouched.
+  2. Real run: `php artisan migrate`, then check the logged counts. Never use `migrate:rollback`, `migrate:fresh`, `migrate:reset` or `db:wipe` to repeat it.  
+  _Verification:_ both steps give the expected results; `make phpstan`.
 
 ### I6 – Bounded permission checks
-- [ ] T-112-11 – Failing `DeletePolicyBindLimitTest` (Feature_v2): 1200 photo ids and 1200 album ids, owner → allowed, one foreign id in the last chunk → denied, delete grant on every parent → allowed, ≤1000 bindings per query (FR-112-11, S-112-16).  
+- [ ] T-112-11 – Failing `DeletePolicyBindLimitTest` (Feature_v2): 1200 photo ids and 1200 album ids, owner → allowed, one foreign id in the last chunk → denied, delete grant on every parent → allowed, a non-owner in 600 groups (bulk-inserted) with the grant through one group → allowed, ≤1000 bindings per query (FR-112-11, S-112-16).  
   _Verification:_ `php artisan test --filter=DeletePolicyBindLimitTest` (red).
 
-- [ ] T-112-12 – Chunk `PhotoPolicy::canDeleteById()` and the `AlbumPolicy` grant helpers (`hasGrantOnParentsById()`, `hasGrantOnAllById()`, `countGrantedById()`): counts summed against the de-duplicated input (FR-112-11).  
+- [ ] T-112-12 – Chunk `PhotoPolicy::canDeleteById()` and the `AlbumPolicy` grant helpers (`hasGrantOnParentsById()`, `hasGrantOnAllById()`, `countGrantedById()`): counts summed against the de-duplicated input. `countGrantedById()` matches groups through a `users_user_groups` subquery that binds the user id only (FR-112-11).  
   _Verification:_ `php artisan test --filter=DeletePolicyBindLimitTest`, `--filter=DeleteAlbumsRequestTest`, existing photo/album delete and move suites.
 
 ### I7 – Bounded photo-side delete
@@ -73,7 +75,7 @@ _Last updated: 2026-11-15_
   _Verification:_ `php artisan test --filter=ManagedCacheAlbumListingInvalidatorTest`.
 
 ### I10 – Docs and quality gate
-- [ ] T-112-18 – Knowledge map, roadmap, drift gate; `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit.
+- [ ] T-112-18 – Knowledge map, roadmap, drift gate; release-note lines from the spec's Documentation Deliverables in the PR description, including the best-effort caveat on `sync` (Q-112-10 A); `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit.
 
 ## Notes / TODOs
 Run test classes one at a time (shared SQLite DB).

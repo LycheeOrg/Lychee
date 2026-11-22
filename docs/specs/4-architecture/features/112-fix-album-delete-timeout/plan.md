@@ -1,6 +1,6 @@
 # Feature Plan 112 – Fix Album Delete Timeout
 
-Linked specification: [spec.md](spec.md). Tasks: [tasks.md](tasks.md). Status: planned, analysis gate passed. Updated: 2026-11-15.
+Linked specification: [spec.md](spec.md). Tasks: [tasks.md](tasks.md). Status: planned, analysis gate passed. Updated: 2026-11-22.
 
 ## Vision & Success Criteria
 Deleting a 4000-photo album or a 4000-photo selection returns once the DB transaction commits. File deletion runs in bounded jobs (≤500 paths). On `sync`, the jobs the delete code starts (files, person stats, face embeddings, thumbs) and the delete webhooks run after the response. A multi-photo delete dispatches each thumb-refresh job once and fires `PhotoWillBeDeleted` only for `photo.delete` webhooks. No query of a delete request, permission checks included, binds more than 1000 parameters. Sold size variants are kept with NULL-safe SQL and detached in every delete path, so rotating a photo with a sale works. A migration re-links the sold variants the old update detached from photos that still exist.
@@ -14,6 +14,7 @@ Deleting a 4000-photo album or a 4000-photo selection returns once the DB transa
 - Q-112-07 A (owner 2026-11-15): `WebhookListener` hands its delete webhook jobs to `DispatchAfterDelete` (FR-112-12).
 - Q-112-08 A (owner 2026-11-15): `SizeVariant\Delete` detaches sold variants like the force delete does, so `Rotate` works for photos with sales (FR-112-10).
 - Q-112-09 A (owner 2026-11-15): a data migration re-links sold variants detached from photos that still exist (FR-112-13).
+- Q-112-10 A (owner 2026-11-22): after-response work on `sync`, delete webhooks included, is best effort. A worker killed mid-way loses the rest of the jobs. The release note points installs that need every delete webhook to an async queue (FR-112-04, FR-112-12).
 - Non-goals per spec: no queued DB delete, no `photo.delete` webhooks on album delete, no payload change, no protection for free-text `download_link` targets, no fix for files shared by same-checksum duplicates (docblock corrected only), no change to FK re-enabling in `AlbumsToBeDeletedDTO`.
 
 ## Dependencies & Interfaces
@@ -33,7 +34,7 @@ Deleting a 4000-photo album or a 4000-photo selection returns once the DB transa
 - Each after-response job runs inside `rescue(report: true)`: a failing batch is reported and the others still run. This is framework behaviour (`Dispatcher::dispatchAfterResponse()`), read in the vendor code and not re-tested here.
 - On `sync`, person counts and smart/tag/person thumbs are refreshed a moment after the response; a read issued right after it can still see the old values (accepted, Q-112-06 A).
 - HTTP feature tests call the kernel's `terminate()` inside the request helper, so after-response jobs run before the test's assertions. Unit tests that call an action directly do not terminate the app; they observe deferred jobs only through `Bus::fake` (`assertDispatched` also counts after-response dispatches). No existing direct-call test asserts deleted files or these jobs.
-- With `sync`, file I/O after the response still counts against FPM's `request_terminate_timeout`. Accepted (Q-112-01 A cons).
+- With `sync`, file I/O after the response still counts against FPM's `request_terminate_timeout`. Accepted (Q-112-01 A cons). The same holds for every after-response job. If the worker is killed, the rest of the in-memory list is lost: unsent delete webhooks, orphaned files (`lychee:ghostbuster`), stale person stats and face embeddings. Accepted as best effort (Q-112-10 A). Webhooks run first because they are dispatched before the DB delete.
 - `album_user_thumbs` rows pointing at a deleted photo are cascaded away; that viewer's thumb is recomputed lazily on next read, as today.
 - FR-112-11 changes the `AlbumPolicy` helpers that the move-by-id checks share. Their results must stay identical; existing move and delete request tests guard it.
 - FR-112-10 changes shop data behaviour: sold variants of photos that are not deleted keep their `photo_id` (today they lose it), and `SizeVariant\Delete` detaches sold variants instead of keeping them on the photo (Q-112-08 A). After a rotate, the buyer downloads the pre-rotation file.
@@ -85,12 +86,26 @@ S-112-01/02/19 → T-112-01/02. S-112-03/04/18 → T-112-03/04 (thumb part of S-
 5. Working agreements: PASS. No dependency, no fallback. The migration follows the owner rule (no migration test, run on the dev DB, never `migrate:fresh`).
 6. Tooling: PASS. Commands updated below.
 
+2026-11-22 (CodeRabbit review on PR #4997): REOPENED. Q-112-10 is open: on `sync`, deferred jobs, delete webhooks included, are lost if the worker is killed after the response, and the spec states no guarantee. Two lightweight corrections applied without a decision:
+- `countGrantedById()` bound every group id of the user, so a user in about 500 or more groups broke the 1000-parameter bound. It now matches groups through a `users_user_groups` subquery (FR-112-11, S-112-16, T-112-11/12).
+- `php artisan migrate` cannot show idempotence, because it skips a recorded migration. The procedure now calls `up()` twice on a fixture inside a rolled-back transaction, then runs the real migration (S-112-22, T-112-20, Commands).
+
+Gate blocked until Q-112-10 is answered.
+
+2026-11-22 (after Q-112-10 A): PASS.
+1. Spec completeness: PASS. Q-112-10 A is folded into the FR-112-04 and FR-112-12 failure paths, the Non-Goals and the release note. The two review corrections are in FR-112-11, S-112-16 and S-112-22. No UI impact.
+2. Open questions: PASS. No `Open` row. No ADR: Q-112-10 applies Feature 031's best-effort webhook contract (Q-031-04 A) to the deferred path.
+3. Plan alignment: PASS. Scope, assumptions and commands updated.
+4. Tasks coverage: PASS. The group case is in T-112-11/12 and the idempotence dry run in T-112-20. The best-effort loss is framework behaviour (in-memory terminating callbacks), not re-tested, like the existing FR-112-04 failure path. T-112-18 now drafts the release-note lines.
+5. Working agreements: PASS. No dependency, no fallback, no new mechanism.
+6. Tooling: PASS. Commands updated.
+
 ## Implementation Drift Gate
 Pending.
 
 ## Commands
 - One at a time (shared SQLite DB): `php artisan test --filter=FileDeleterJobTest`, `--filter=AlbumDeleteTrackTest`, `--filter=DeleteAfterResponseTest`, `--filter=AlbumUserThumbTargetsTest`, `--filter=RecomputeAlbumUserThumbsJobTest`, `--filter=PhotoDeleteFanOutTest`, `--filter=ManagedCacheAlbumListingInvalidatorTest`, `--filter=WebhookListenerTest`, `--filter=DeleteTest` (photo, size-variant and album unit tests), `--filter=DeletePolicyBindLimitTest`, `--filter=DeleteAlbumsRequestTest`, `--filter=DeleteBindLimitTest`, `--filter=PhotoRotateTest`, the `album_user_thumbs` suites (`--filter=SharingTest`, `--filter=PeopleControllerTest`, `--filter=FaceDismissTest`, `--filter=AlbumCategoryV3Test`, `--filter=UserGroupTest`), plus the existing photo/album delete and move suites and the shop order tests.
-- FR-112-13: `php artisan migrate` on the dev DB, then check the logged counts (never `migrate:fresh`, `migrate:reset` or `db:wipe`).
+- FR-112-13: first the idempotence dry run in `php artisan tinker` (`up()` twice on a fixture inside `DB::beginTransaction()` … `DB::rollBack()`, see T-112-20), then `php artisan migrate` on the dev DB and check the logged counts (never `migrate:rollback`, `migrate:fresh`, `migrate:reset` or `db:wipe`).
 - `vendor/bin/php-cs-fixer fix`, `make phpstan`.
 
 ## Exit Criteria
@@ -99,3 +114,4 @@ All tasks `[x]`, scoped tests green, php-cs-fixer and phpstan clean, roadmap and
 ## Intent & Tool Usage
 - 2026-11-08: Owner asked to read the pulled open questions, then answered "1: A 2: A, however RecomputeAlbumUserThumbsJobs should only be figured once". Owner then asked whether any `whereIn` takes an uncontrolled number of ids and stated that more than 1000 parameters fails on MySQL (Q-112-03). Read `Photo\Delete`, `PhotosToBeDeletedDTO`, `Album\Delete`, `SizeVariant\Delete`, `FileDeleterJob`, `RecomputeAlbumUserThumbsJob`, the three `PhotoWillBeDeleted` listeners and `EventServiceProvider` to place the change.
 - 2026-11-15: Owner asked for a review of the feature (improvements, clarifications, ambiguities). Read the delete actions, both delete DTOs, `PurchasableService`, `PhotoPolicy`/`AlbumPolicy` delete checks, the delete requests, the shop fulfilment code (`OrderCompletedListener`, `OrderService`, `markAsDelivered`), the `order_items` / `size_variants` migrations, Laravel's `Dispatcher::dispatchAfterResponse()` and `Application::terminate()`. Checked on SQLite that `NOT IN (…, NULL)` and `NOT IN (SELECT …)` return no row while `NOT EXISTS` does. Owner asked whether URL-delivered order items affect `size_variant_id` (yes: permanently NULL, Q-112-04 context corrected), then answered "4: A 5: A", then "A" for Q-112-06. Checked in vendor code that `MakesHttpRequests::call()` terminates the kernel (after-response jobs run in HTTP tests) and that `BusFake::assertDispatched()` counts after-response dispatches. Analysis gate re-run: PASS after adding S-112-19. Owner asked to analyze again: found delete webhooks still inline, sold variants kept attached breaking `Rotate` on `unique(photo_id, type)`, and rows detached by the old update (Q-112-07..09), plus six small corrections. Checked that size-variant file names are random per photo and regeneration (no path reuse when deferring), that delete-flow listeners and jobs bind no id list, and that `DeleteBulkAlbumRequest` checks only the admin flag. Owner answered "7: A 8: A 9: A". Gate: PASS.
+- 2026-11-22: Owner asked to check the review comments on PR #4997 (`gh api …/pulls/4997/comments`, 3 CodeRabbit comments). Read `AlbumPolicy::countGrantedById()` (binds `$user->user_groups->pluck('id')`), `PhotoPolicy::canDeleteById()` (binds no group id itself), `User::user_groups()` (pivot `users_user_groups`), `WebhookDispatchJob` (`tries = 1`, Q-031-04 A), `Dispatcher::dispatchAfterResponse()` and `Application::terminate()` (FIFO terminating callbacks, nothing persisted), `lychee:ghostbuster`. Logged Q-112-10 (webhook and job loss after the response). Applied the group-subquery and idempotence-procedure corrections. No reply posted on the PR. Owner answered "A" for Q-112-10. Gate: PASS.
