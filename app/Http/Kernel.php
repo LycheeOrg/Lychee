@@ -103,6 +103,12 @@ class Kernel extends HttpKernel
 			\Illuminate\Http\Middleware\HandleCors::class,
 		],
 
+		// Feature 117 (ADR-117-01): session-less, any Accept header.
+		'sitemap' => [
+			\App\Http\Middleware\ResolveConfigs::class,
+			'installation:complete',
+		],
+
 		'web-install' => [
 			\App\Http\Middleware\ResolveConfigs::class,
 			'accept_content_type:html',
