@@ -404,6 +404,72 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->assertNotEvicted('k:global');
 	}
 
+	// ── Sitemap (Feature 117, NFR-117-02, ADR-117-01) ───────────
+
+	/**
+	 * Every change to a regular album's existence, place, permissions or
+	 * computed data can change the guest-browsable set, so it evicts the sitemap entry.
+	 */
+	public function testSitemapEntryIsEvictedByEveryBrowsabilityRelevantEvent(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$key = $this->cache_key_provider->sitemapKey(false, true);
+		$tags = [$this->cache_key_provider->sitemapTag(), $this->cache_key_provider->albumListingGlobalTag()];
+
+		$events = [
+			'AlbumSaved' => fn () => $this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id])),
+			'AlbumDeleted' => fn () => $this->listener->handleAlbumDeleted(new AlbumDeleted(null)),
+			'AlbumChildrenChanged' => fn () => $this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged([null])),
+			'AccessPermissionChanged' => fn () => $this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($album->id)),
+			'AlbumComputedDataUpdated' => fn () => $this->listener->handleAlbumComputedDataUpdated(new AlbumComputedDataUpdated($album->id)),
+			'BaseAlbumRemoved' => fn () => $this->listener->handleBaseAlbumRemoved(new BaseAlbumRemoved([$album->id])),
+			'AlbumListingCacheFlushRequested' => fn () => $this->listener->handleAlbumListingCacheFlushRequested(new AlbumListingCacheFlushRequested()),
+		];
+
+		foreach ($events as $name => $dispatch) {
+			$this->seedCache($key, $tags);
+			$dispatch();
+			self::assertNull(Cache::get($key), "expected [$name] to evict the sitemap entry");
+		}
+	}
+
+	/**
+	 * Tag albums, person albums and tags are not in the sitemap (FR-117-11).
+	 */
+	public function testSitemapEntryIsNotEvictedByUnrelatedEvents(): void
+	{
+		$user = User::factory()->create();
+		$tag_album = TagAlbum::factory()->owned_by($user)->create();
+		$person_album = new PersonAlbum();
+		$person_album->title = 'Test';
+		$person_album->owner_id = $user->id;
+		$person_album->is_and = true;
+		$person_album->save();
+		$key = $this->cache_key_provider->sitemapKey(true, false);
+		$this->seedCache($key, [$this->cache_key_provider->sitemapTag(), $this->cache_key_provider->albumListingGlobalTag()]);
+
+		$this->listener->handleTagAlbumSaved(new TagAlbumSaved([$tag_album->id]));
+		$this->listener->handlePersonAlbumSaved(new PersonAlbumSaved($person_album));
+		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($tag_album->id));
+		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($person_album->id));
+		$this->listener->handleAlbumTagsChanged(new AlbumTagsChanged([1]));
+
+		$this->assertNotEvicted($key);
+	}
+
+	public function testSitemapKeysDifferPerSettingPair(): void
+	{
+		$keys = [
+			$this->cache_key_provider->sitemapKey(false, false),
+			$this->cache_key_provider->sitemapKey(false, true),
+			$this->cache_key_provider->sitemapKey(true, false),
+			$this->cache_key_provider->sitemapKey(true, true),
+		];
+
+		self::assertCount(4, array_unique($keys));
+	}
+
 	// ── AlbumTagsChanged ────────────────────────────────────────
 
 	public function testAlbumTagsChangedEvictsEachTagId(): void

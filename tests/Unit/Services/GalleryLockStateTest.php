@@ -87,6 +87,19 @@ class GalleryLockStateTest extends AbstractTestCase
 		self::assertTrue($this->gallery_lock->isLocked(self::STORED_HASH, false, '{"f":"abc","exp":"soon"}', self::NOW));
 	}
 
+	/**
+	 * Feature 117 (FR-117-09): the sitemap is served only when enabled and
+	 * neither a login nor a gallery password stands between a guest and the root.
+	 */
+	public function testSitemapAllowedOnlyWhenEnabledAndGalleryOpen(): void
+	{
+		self::assertTrue($this->gallery_lock->isSitemapAllowed(true, false, false));
+		self::assertFalse($this->gallery_lock->isSitemapAllowed(false, false, false));
+		self::assertFalse($this->gallery_lock->isSitemapAllowed(true, true, false));
+		self::assertFalse($this->gallery_lock->isSitemapAllowed(true, false, true));
+		self::assertFalse($this->gallery_lock->isSitemapAllowed(false, true, true));
+	}
+
 	public function testFingerprintIsKeyedHmacSha3(): void
 	{
 		$expected = hash_hmac('sha3-256', self::STORED_HASH, (string) config('app.key'));

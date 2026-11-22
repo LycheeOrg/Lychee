@@ -60,6 +60,28 @@ final class GalleryLockState
 	}
 
 	/**
+	 * The sitemap is served only while a guest can browse the gallery root
+	 * (Feature 117, FR-117-09, ADR-117-01).
+	 */
+	public function isSitemapEnabled(): bool
+	{
+		return $this->isSitemapAllowed(
+			$this->configs->getValueAsBool('sitemap_enable'),
+			$this->configs->getValueAsBool('login_required'),
+			$this->isPasswordSet(),
+		);
+	}
+
+	/**
+	 * Pure sitemap predicate. `login_required_root_only` needs no argument:
+	 * it only applies while `login_required` is on, which already rules the sitemap out.
+	 */
+	public function isSitemapAllowed(bool $sitemap_enabled, bool $login_required, bool $is_password_set): bool
+	{
+		return $sitemap_enabled && !$login_required && !$is_password_set;
+	}
+
+	/**
 	 * Whether the current request is locked out by the gallery password.
 	 */
 	public function isLockedForRequest(Request $request): bool

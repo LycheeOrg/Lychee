@@ -175,6 +175,15 @@ class CacheKeyProvider
 		return 'album-listing-v3';
 	}
 
+	/**
+	 * Tag of the sitemap's album rows (Feature 117, ADR-117-01). Flushed by
+	 * every change that can alter what a guest can browse among regular albums.
+	 */
+	public function sitemapTag(): string
+	{
+		return 'sitemap';
+	}
+
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
 
@@ -190,6 +199,15 @@ class CacheKeyProvider
 	public function unlockedAlbumsDigest(): string
 	{
 		return hash('xxh3', implode(',', AlbumPolicy::getUnlockedAlbumIDs()));
+	}
+
+	/**
+	 * Sitemap rows for one pair of settings (`sitemap_root_only`, `hide_nsfw_in_sitemap`).
+	 * The rows are computed as a guest, so no user part.
+	 */
+	public function sitemapKey(bool $root_only, bool $hide_nsfw): string
+	{
+		return $this->sitemapTag() . ':root_only:' . ($root_only ? '1' : '0') . ':hide_nsfw:' . ($hide_nsfw ? '1' : '0');
 	}
 
 	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, int $per_page, SortingCriterion $sorting): string
