@@ -9,6 +9,7 @@
 namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\QueryLimits;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FacePermissionMode;
 use App\Enum\MetricsAccess;
@@ -596,24 +597,26 @@ class AlbumPolicy extends BasePolicy
 	 * needs the upload privilege) or has a parent on which a user or group
 	 * permission carries $grant. Albums without parent: owner only.
 	 *
-	 * Two queries, whatever the number of albums.
+	 * Two queries per chunk of {@link QueryLimits::ID_CHUNK_SIZE} albums.
 	 *
 	 * @param array<int,string> $album_ids
 	 */
 	private function hasGrantOnParentsById(User $user, array $album_ids, string $grant): bool
 	{
-		$album_ids = $this->uniquify($album_ids);
+		$album_ids = array_values($this->uniquify($album_ids));
 
 		if ($album_ids === []) {
 			return $user->may_upload;
 		}
 
-		$rows = BaseAlbumImpl::query()
-			->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
-			->whereIn('base_albums.id', $album_ids)
-			->select(['base_albums.id', 'base_albums.owner_id', 'albums.parent_id'])
-			->toBase()
-			->get();
+		$rows = collect(array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE))->flatMap(
+			fn (array $chunk) => BaseAlbumImpl::query()
+				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
+				->whereIn('base_albums.id', $chunk)
+				->select(['base_albums.id', 'base_albums.owner_id', 'albums.parent_id'])
+				->toBase()
+				->get()
+		);
 
 		if ($rows->count() !== count($album_ids)) {
 			return false;
@@ -637,24 +640,26 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * True when every designated album is either owned by the user (who then
 	 * needs the upload privilege) or carries $grant in a user or group
-	 * permission. Two queries, whatever the number of albums.
+	 * permission. Two queries per chunk of {@link QueryLimits::ID_CHUNK_SIZE} albums.
 	 *
 	 * @param array<int,string> $album_ids
 	 */
 	private function hasGrantOnAllById(User $user, array $album_ids, string $grant): bool
 	{
-		$album_ids = $this->uniquify($album_ids);
+		$album_ids = array_values($this->uniquify($album_ids));
 
 		if ($album_ids === []) {
 			return $user->may_upload;
 		}
 
-		/** @var array<int,string> $owned_ids */
-		$owned_ids = BaseAlbumImpl::query()
-			->whereIn('id', $album_ids)
-			->where('owner_id', '=', $user->id)
-			->pluck('id')
-			->all();
+		$owned_ids = [];
+		foreach (array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$owned_ids = array_merge($owned_ids, BaseAlbumImpl::query()
+				->whereIn('id', $chunk)
+				->where('owner_id', '=', $user->id)
+				->pluck('id')
+				->all());
+		}
 
 		if ($owned_ids !== [] && !$user->may_upload) {
 			return false;
@@ -669,18 +674,32 @@ class AlbumPolicy extends BasePolicy
 	 * Number of the designated albums on which a user or group permission of
 	 * $user carries $grant.
 	 *
+	 * Albums are counted per chunk of {@link QueryLimits::ID_CHUNK_SIZE}: the
+	 * chunks do not overlap and each counts distinct albums, so the sum stays
+	 * right when one album matches several groups. Groups are matched through
+	 * a subquery that binds the user id only, whatever the number of groups
+	 * of the user (FR-112-11).
+	 *
 	 * @param array<int,string> $album_ids
 	 */
 	private function countGrantedById(User $user, array $album_ids, string $grant): int
 	{
-		return AccessPermission::query()
-			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
-			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
-					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
-			)
-			->where($grant, '=', true)
-			->distinct()
-			->count(APC::BASE_ALBUM_ID);
+		$count = 0;
+		foreach (array_chunk(array_values(array_unique($album_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$count += AccessPermission::query()
+				->whereIn(APC::BASE_ALBUM_ID, $chunk)
+				->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
+						->orWhereIn(APC::USER_GROUP_ID, fn ($groups) => $groups
+							->select('user_group_id')
+							->from('users_user_groups')
+							->where('user_id', '=', $user->id))
+				)
+				->where($grant, '=', true)
+				->distinct()
+				->count(APC::BASE_ALBUM_ID);
+		}
+
+		return $count;
 	}
 
 	/**

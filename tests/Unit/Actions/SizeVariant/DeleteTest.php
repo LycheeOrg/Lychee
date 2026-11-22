@@ -19,12 +19,14 @@
 namespace Tests\Unit\Actions\SizeVariant;
 
 use App\Actions\SizeVariant\Delete;
+use App\Jobs\FileDeleterJob;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Bus;
 use Tests\AbstractTestCase;
 
 class DeleteTest extends AbstractTestCase
@@ -265,6 +267,52 @@ class DeleteTest extends AbstractTestCase
 		// Verify all size variants from photo B are deleted
 		foreach ($size_variants_b->pluck('id') as $sv_id) {
 			$this->assertDatabaseMissing('size_variants', ['id' => $sv_id]);
+		}
+	}
+
+	/**
+	 * S-112-15: with an order item delivered by URL (NULL size_variant_id)
+	 * present, unsold variants lose rows and files; the sold variant keeps its
+	 * row and file and is detached from its photo.
+	 *
+	 * @return void
+	 */
+	public function testDeleteWithUrlDeliveredOrderItemDetachesOnlySoldVariant(): void
+	{
+		Bus::fake();
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		$size_variants = SizeVariant::where('photo_id', $photo->id)->get();
+		self::assertGreaterThanOrEqual(2, $size_variants->count());
+		$sold = $size_variants->first();
+		$unsold = $size_variants->reject(fn (SizeVariant $sv) => $sv->id === $sold->id);
+
+		$order = Order::factory()->create(['user_id' => $user->id]);
+		OrderItem::factory()->create([
+			'order_id' => $order->id,
+			'photo_id' => $photo->id,
+			'size_variant_id' => $sold->id,
+			'title' => $photo->title,
+		]);
+		OrderItem::factory()->create([
+			'order_id' => $order->id,
+			'photo_id' => $photo->id,
+			'size_variant_id' => null,
+			'download_link' => 'https://example.com/print.zip',
+			'title' => $photo->title,
+		]);
+
+		(new Delete())->do($size_variants->pluck('id')->all());
+
+		$this->assertDatabaseHas('size_variants', ['id' => $sold->id, 'photo_id' => null]);
+		$queued = Bus::dispatched(FileDeleterJob::class)
+			->concat(Bus::dispatchedAfterResponse(FileDeleterJob::class))
+			->flatMap(fn (FileDeleterJob $job) => $job->file_list)
+			->all();
+		self::assertNotContains($sold->short_path, $queued);
+		foreach ($unsold as $sv) {
+			$this->assertDatabaseMissing('size_variants', ['id' => $sv->id]);
+			self::assertContains($sv->short_path, $queued);
 		}
 	}
 }

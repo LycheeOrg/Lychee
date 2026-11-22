@@ -19,6 +19,7 @@
 namespace Tests\Unit\Actions\Photo;
 
 use App\Actions\Photo\Delete;
+use App\Jobs\FileDeleterJob;
 use App\Models\Album;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -26,6 +27,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Bus;
 use Tests\AbstractTestCase;
 
 class DeleteTest extends AbstractTestCase
@@ -267,5 +269,89 @@ class DeleteTest extends AbstractTestCase
 		foreach ($other_size_variant_ids as $sv_id) {
 			$this->assertDatabaseMissing('size_variants', ['id' => $sv_id]);
 		}
+	}
+
+	/**
+	 * S-112-13: an order item delivered by URL (NULL size_variant_id) protects
+	 * nothing: the deleted photo loses its rows and its files are queued.
+	 *
+	 * @return void
+	 */
+	public function testDeletePhotoWithUrlDeliveredOrderItemQueuesItsFiles(): void
+	{
+		Bus::fake();
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$photo->albums()->attach($album->id);
+		$paths = SizeVariant::where('photo_id', $photo->id)->pluck('short_path')->all();
+		self::assertNotEmpty($paths);
+
+		$order = Order::factory()->create(['user_id' => $user->id]);
+		OrderItem::factory()->create([
+			'order_id' => $order->id,
+			'photo_id' => $photo->id,
+			'size_variant_id' => null,
+			'download_link' => 'https://example.com/print.zip',
+			'title' => $photo->title,
+		]);
+
+		(new Delete())->do([$photo->id], $album->id);
+
+		$this->assertDatabaseMissing('photos', ['id' => $photo->id]);
+		$this->assertDatabaseMissing('size_variants', ['photo_id' => $photo->id]);
+		$queued = $this->queuedPaths();
+		foreach ($paths as $path) {
+			self::assertContains($path, $queued);
+		}
+	}
+
+	/**
+	 * S-112-14: the sold variant of a photo that is not deleted keeps its
+	 * photo_id. The deleted photo's sold variant keeps its row (photo_id NULL)
+	 * and its file is not queued.
+	 *
+	 * @return void
+	 */
+	public function testDeletePhotoOnlyDetachesSoldVariantsOfTheDeletedPhoto(): void
+	{
+		Bus::fake();
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$kept_photo = Photo::factory()->owned_by($user)->create();
+		$kept_photo->albums()->attach($album->id);
+		$deleted_photo = Photo::factory()->owned_by($user)->create();
+		$deleted_photo->albums()->attach($album->id);
+
+		$kept_sold = SizeVariant::where('photo_id', $kept_photo->id)->firstOrFail();
+		$deleted_sold = SizeVariant::where('photo_id', $deleted_photo->id)->firstOrFail();
+		$order = Order::factory()->create(['user_id' => $user->id]);
+		foreach ([$kept_sold, $deleted_sold] as $sold) {
+			OrderItem::factory()->create([
+				'order_id' => $order->id,
+				'photo_id' => $sold->photo_id,
+				'size_variant_id' => $sold->id,
+				'title' => 'sold',
+			]);
+		}
+
+		(new Delete())->do([$deleted_photo->id], $album->id);
+
+		$this->assertDatabaseHas('size_variants', ['id' => $kept_sold->id, 'photo_id' => $kept_photo->id]);
+		$this->assertDatabaseHas('size_variants', ['id' => $deleted_sold->id, 'photo_id' => null]);
+		self::assertNotContains($deleted_sold->short_path, $this->queuedPaths());
+	}
+
+	/**
+	 * Paths of every FileDeleterJob dispatched (inline or after the response).
+	 *
+	 * @return string[]
+	 */
+	private function queuedPaths(): array
+	{
+		return Bus::dispatched(FileDeleterJob::class)
+			->concat(Bus::dispatchedAfterResponse(FileDeleterJob::class))
+			->flatMap(fn (FileDeleterJob $job) => $job->file_list)
+			->all();
 	}
 }

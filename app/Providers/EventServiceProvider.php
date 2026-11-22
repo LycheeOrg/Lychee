@@ -148,7 +148,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
 
 		Event::listen(PhotoSaved::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoSaved');
-		Event::listen(PhotoWillBeDeleted::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoWillBeDeleted');
 		Event::listen(PhotoMoved::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoMoved');
 		Event::listen(PhotoHighlightToggled::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoHighlightToggled');
 		Event::listen(PhotoRatingChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoRatingChanged');
@@ -176,7 +175,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoPersonsChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoPersonsChanged');
 		Event::listen(PhotoMoved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoMoved');
 		Event::listen(PhotoSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoSaved');
-		Event::listen(PhotoWillBeDeleted::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoWillBeDeleted');
 
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');

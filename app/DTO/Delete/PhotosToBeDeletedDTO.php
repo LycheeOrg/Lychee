@@ -8,6 +8,8 @@
 
 namespace App\DTO\Delete;
 
+use App\Actions\SizeVariant\Delete as SizeVariantDelete;
+use App\Constants\QueryLimits;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumListingCacheFlushRequested;
@@ -20,19 +22,13 @@ use App\Models\Album;
 use App\Models\Person;
 use App\Models\SizeVariant;
 use App\Models\TagAlbum;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class PhotosToBeDeletedDTO
 {
-	/**
-	 * Maximum number of IDs to pass in a single whereIn() clause.
-	 * MySQL's prepared-statement placeholder limit is 65 535; staying at 1 000
-	 * keeps every query well within that bound regardless of query complexity.
-	 */
-	private const CHUNK_SIZE = 500;
-
 	/**
 	 * Container for all Albums and associated Tracks to be deleted.
 	 *
@@ -90,8 +86,8 @@ final class PhotosToBeDeletedDTO
 		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
 		// Both photo and album ID arrays can be large, so we chunk each independently
 		// and run all cross-product combinations within the same transaction.
-		collect($this->soft_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($photo_chunk): void {
-			collect($this->album_ids)->chunk(self::CHUNK_SIZE)->each(function ($album_chunk) use ($photo_chunk): void {
+		collect($this->soft_delete_photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($photo_chunk): void {
+			collect($this->album_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($album_chunk) use ($photo_chunk): void {
 				DB::table('photo_album')
 					->whereIn('photo_id', $photo_chunk->all())
 					->whereIn('album_id', $album_chunk->all())
@@ -120,7 +116,7 @@ final class PhotosToBeDeletedDTO
 		// originated from, anywhere in the instance.
 		$affected_album_ids = [];
 		$affected_tag_album_ids = [];
-		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk) use (&$affected_album_ids, &$affected_tag_album_ids): void {
+		collect($this->force_delete_photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($chunk) use (&$affected_album_ids, &$affected_tag_album_ids): void {
 			$affected_album_ids = array_merge(
 				$affected_album_ids,
 				DB::table('albums')
@@ -137,34 +133,32 @@ final class PhotosToBeDeletedDTO
 			DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 		});
 
-		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->pluck('parent_id', 'id');
-		AlbumSaved::dispatchIf($affected_albums->isNotEmpty(), $affected_albums->keys()->all(), $affected_albums->values()->all());
-		$affected_tag_album_ids_verified = TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->pluck('id')->all();
+		// Re-read in chunks (FR-112-09): album id => parent id, existing tag album ids.
+		$affected_albums = [];
+		foreach (array_chunk(array_values(array_unique($affected_album_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$affected_albums += Album::query()->whereIn('id', $chunk)->pluck('parent_id', 'id')->all();
+		}
+		AlbumSaved::dispatchIf($affected_albums !== [], array_keys($affected_albums), array_values($affected_albums));
+		$affected_tag_album_ids_verified = [];
+		foreach (array_chunk(array_values(array_unique($affected_tag_album_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$affected_tag_album_ids_verified = array_merge($affected_tag_album_ids_verified, TagAlbum::query()->whereIn('id', $chunk)->pluck('id')->all());
+		}
 		TagAlbumSaved::dispatchIf($affected_tag_album_ids_verified !== [], $affected_tag_album_ids_verified);
-
-		// Maybe consider doing multiple queries for the different storage types.
-		$exclude_size_variants_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
 
 		// Collect size variants to be deleted
 		// ! Risk of memory exhaustion if too many photos are deleted at once !
-		$size_variants_local = $this->collectSizeVariantPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::LOCAL, $exclude_size_variants_ids);
-		$short_paths_local = $size_variants_local->pluck('short_path')->all();
-		$short_path_watermarked_local = $size_variants_local->pluck('short_path_watermarked')->filter()->all();
-
-		$size_variants_s3 = $this->collectSizeVariantPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::S3, $exclude_size_variants_ids);
-		$short_paths_s3 = $size_variants_s3->pluck('short_path')->all();
-		$short_path_watermarked_s3 = $size_variants_s3->pluck('short_path_watermarked')->filter()->all();
-
-		$live_photo_short_paths_local = $this->collectLivePhotoPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::LOCAL)->pluck('live_photo_short_path')->all();
-		$live_photo_short_paths_s3 = $this->collectLivePhotoPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::S3)->pluck('live_photo_short_path')->all();
-
+		// All kinds of files of one disk (variants, watermarked variants, live
+		// photos) are merged, then split into bounded jobs (FR-112-03).
 		$jobs = [];
-		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_paths_local);
-		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_path_watermarked_local);
-		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $live_photo_short_paths_local);
-		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_paths_s3);
-		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_path_watermarked_s3);
-		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $live_photo_short_paths_s3);
+		foreach (StorageDiskType::cases() as $disk) {
+			$size_variants = $this->collectSizeVariantPathsByPhotoID($this->force_delete_photo_ids, $disk);
+			$paths = array_merge(
+				$size_variants->pluck('short_path')->filter()->all(),
+				$size_variants->pluck('short_path_watermarked')->filter()->all(),
+				$this->collectLivePhotoPathsByPhotoID($this->force_delete_photo_ids, $disk)->pluck('live_photo_short_path')->all(),
+			);
+			array_push($jobs, ...FileDeleterJob::batches($disk, $paths));
+		}
 
 		$affected_person_ids = $this->collectPersonAffected($this->force_delete_photo_ids);
 		if ($affected_person_ids !== []) {
@@ -180,10 +174,13 @@ final class PhotosToBeDeletedDTO
 		// Now delete DB records.
 		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
 
-		// Those we are keeping.
-		DB::table('size_variants')->whereIn('id', $exclude_size_variants_ids)->update(['photo_id' => null]);
-		// Those we delete
-		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+		collect($this->force_delete_photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($chunk): void {
+			// Sold variants of these photos are kept, detached from the photo (FR-112-10).
+			DB::table('size_variants')
+				->whereIn('photo_id', $chunk->all())
+				->whereExists(fn (Builder $query) => SizeVariantDelete::orderItemOf($query, 'size_variants.id'))
+				->update(['photo_id' => null]);
+			// The other variants are deleted.
 			DB::table('size_variants')->whereIn('photo_id', $chunk->all())->delete();
 			DB::table('statistics')->whereIn('photo_id', $chunk->all())->delete();
 			DB::table('palettes')->whereIn('photo_id', $chunk->all())->delete();
@@ -210,7 +207,7 @@ final class PhotosToBeDeletedDTO
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		$affected_person_ids = collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+		$affected_person_ids = collect($photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->reduce(
 			function (array $carry, Collection $chunk): array {
 				return array_merge(
 					$carry,
@@ -244,7 +241,7 @@ final class PhotosToBeDeletedDTO
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		$face_ids = collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+		$face_ids = collect($photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->reduce(
 			function (array $carry, Collection $chunk): array {
 				return array_merge(
 					$carry,
@@ -264,30 +261,30 @@ final class PhotosToBeDeletedDTO
 	 * Collects all short paths of size variants which shall be deleted from
 	 * disk.
 	 *
-	 * Size variants which belong to a photo which has a duplicate that is
-	 * not going to be deleted are skipped.
+	 * Sold size variants (referenced by an order item) are skipped: their
+	 * file is kept for the buyer. Files shared with a same-checksum duplicate
+	 * that is not deleted are NOT skipped.
 	 *
-	 * @param array<int,string> $photo_ids                 the photo IDs
-	 * @param StorageDiskType   $storage_disk              the storage disk to filter for (null = all)
-	 * @param array<int,string> $exclude_size_variants_ids size variant IDs to be excluded
+	 * @param array<int,string> $photo_ids    the photo IDs
+	 * @param StorageDiskType   $storage_disk the storage disk to filter for
 	 *
 	 * @return Collection<int,object{short_path:string,short_path_watermarked:string|null}> the short paths of the size variants to be deleted
 	 */
-	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk, array $exclude_size_variants_ids): Collection
+	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk): Collection
 	{
 		if (count($photo_ids) === 0) {
 			return collect([]);
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->flatMap(
+		return collect($photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->flatMap(
 			fn (Collection $chunk) => SizeVariant::query()
 				->from('size_variants as sv')
 				->select(['sv.short_path', 'sv.short_path_watermarked'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->whereIn('p.id', $chunk->all())
 				->where('sv.storage_disk', '=', $storage_disk->value)
-				->whereNotIn('sv.id', $exclude_size_variants_ids)
+				->whereNotExists(fn (Builder $query) => SizeVariantDelete::orderItemOf($query, 'sv.id'))
 				->toBase()
 				->get()
 		);
@@ -297,11 +294,11 @@ final class PhotosToBeDeletedDTO
 	 * Collects all short paths of live photos which shall be deleted from
 	 * disk.
 	 *
-	 * Live photos which have a duplicate that is not going to be deleted are
-	 * skipped.
+	 * Files shared with a same-checksum duplicate that is not deleted are
+	 * NOT skipped.
 	 *
 	 * @param array<int,string> $photo_ids    the photo IDs
-	 * @param StorageDiskType   $storage_disk the storage disk to filter for (null = all)
+	 * @param StorageDiskType   $storage_disk the storage disk to filter for
 	 *
 	 * @return Collection<int,object{live_photo_short_path:string}> the live photo short paths to be deleted
 	 */
@@ -312,7 +309,7 @@ final class PhotosToBeDeletedDTO
 		}
 
 		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
-		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->flatMap(
+		return collect($photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->flatMap(
 			fn (Collection $chunk) => DB::table('photos', 'p')
 				->select(['p.live_photo_short_path'])
 				->join('size_variants as sv', function (JoinClause $join): void {

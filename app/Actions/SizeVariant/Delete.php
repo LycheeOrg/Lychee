@@ -8,12 +8,15 @@
 
 namespace App\Actions\SizeVariant;
 
+use App\Actions\Shared\DispatchAfterDelete;
+use App\Constants\QueryLimits;
 use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Jobs\FileDeleterJob;
 use App\Models\SizeVariant;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -62,44 +65,13 @@ class Delete
 		}
 
 		try {
-			// Maybe consider doing multiple queries for the different storage types.
-			$exclude_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
-
-			$ids_to_delete = array_diff($sv_ids, $exclude_ids);
-
-			// Maybe consider doing multiple queries for the different storage types.
-			$size_variants_local = SizeVariant::query()
-				->from('size_variants as sv')
-				->select(['sv.short_path', 'sv.short_path_watermarked'])
-				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->where('sv.storage_disk', '=', StorageDiskType::LOCAL->value)
-				->whereIn('sv.id', $ids_to_delete)
-				->toBase()
-				->get();
-
-			$size_variants_s3 = SizeVariant::query()
-				->from('size_variants as sv')
-				->select(['sv.short_path', 'sv.short_path_watermarked'])
-				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->where('sv.storage_disk', '=', StorageDiskType::S3->value)
-				->whereIn('sv.id', $ids_to_delete)
-				->toBase()
-				->get();
-
 			$jobs = [];
-			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path')->filter()->all());
-			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path_watermarked')->filter()->all());
-			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path')->filter()->all());
-			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path_watermarked')->filter()->all());
-
-			SizeVariant::query()
-				->whereIn('id', $sv_ids)
-				->whereNotIn('id', $exclude_ids)
-				->delete();
-
-			foreach ($jobs as $job) {
-				dispatch($job);
+			foreach (array_chunk(array_values(array_unique($sv_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+				array_push($jobs, ...$this->deleteChunk($chunk));
 			}
+
+			// After the response on `sync` (FR-112-04).
+			DispatchAfterDelete::dispatch($jobs);
 
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
@@ -108,5 +80,67 @@ class Delete
 			throw LycheeAssertionError::createFromUnexpectedException($e);
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Deletes one chunk of size variants and returns the jobs deleting their files.
+	 *
+	 * Sold variants (referenced by an order item) keep their row and their
+	 * file but are detached from their photo, so that the photo can get a new
+	 * variant of that type (FR-112-10).
+	 *
+	 * @param int[] $sv_ids
+	 *
+	 * @return list<FileDeleterJob>
+	 */
+	private function deleteChunk(array $sv_ids): array
+	{
+		// Variants and watermarked variants of one disk are merged, then
+		// split into bounded jobs (FR-112-03).
+		$jobs = [];
+		foreach (StorageDiskType::cases() as $disk) {
+			$size_variants = SizeVariant::query()
+				->from('size_variants as sv')
+				->select(['sv.short_path', 'sv.short_path_watermarked'])
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->where('sv.storage_disk', '=', $disk->value)
+				->whereIn('sv.id', $sv_ids)
+				->whereNotExists(fn (Builder $query) => self::orderItemOf($query, 'sv.id'))
+				->toBase()
+				->get();
+			$paths = array_merge(
+				$size_variants->pluck('short_path')->filter()->all(),
+				$size_variants->pluck('short_path_watermarked')->filter()->all(),
+			);
+			array_push($jobs, ...FileDeleterJob::batches($disk, $paths));
+		}
+
+		DB::table('size_variants')
+			->whereIn('id', $sv_ids)
+			->whereExists(fn (Builder $query) => self::orderItemOf($query, 'size_variants.id'))
+			->update(['photo_id' => null]);
+
+		DB::table('size_variants')
+			->whereIn('id', $sv_ids)
+			->whereNotExists(fn (Builder $query) => self::orderItemOf($query, 'size_variants.id'))
+			->delete();
+
+		return $jobs;
+	}
+
+	/**
+	 * Subquery matching the order items that reference a size variant.
+	 *
+	 * NULL-safe, unlike `NOT IN (list of order_items.size_variant_id)`:
+	 * order items delivered by URL have no size variant (FR-112-10).
+	 *
+	 * @param Builder $query
+	 * @param string  $size_variant_id_column qualified size variant id column of the outer query
+	 */
+	public static function orderItemOf(Builder $query, string $size_variant_id_column): Builder
+	{
+		return $query->select(DB::raw(1))
+			->from('order_items as oi')
+			->whereColumn('oi.size_variant_id', '=', $size_variant_id_column);
 	}
 }

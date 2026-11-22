@@ -21,7 +21,12 @@ namespace Tests\Unit\Jobs;
 use App\Enum\StorageDiskType;
 use App\Exceptions\MediaFileOperationException;
 use App\Jobs\FileDeleterJob;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\FilesystemAdapter as FlysystemAdapter;
+use Mockery;
+use Psr\Log\LoggerInterface;
 use Tests\AbstractTestCase;
 
 class FileDeleterJobTest extends AbstractTestCase
@@ -70,5 +75,88 @@ class FileDeleterJobTest extends AbstractTestCase
 		} finally {
 			chmod($root, 0700);
 		}
+	}
+
+	/**
+	 * S-112-01: one summary line per job, no line per file (FR-112-01).
+	 */
+	public function testLogsOneSummaryLinePerJob(): void
+	{
+		Storage::fake(StorageDiskType::LOCAL->value);
+		Storage::disk(StorageDiskType::LOCAL->value)->put('a.jpg', 'data');
+		Storage::disk(StorageDiskType::LOCAL->value)->put('b.jpg', 'data');
+		Storage::disk(StorageDiskType::LOCAL->value)->put('c.jpg', 'data');
+
+		$channel = \Mockery::spy(LoggerInterface::class);
+		Log::shouldReceive('channel')->with('jobs')->andReturn($channel);
+
+		(new FileDeleterJob(StorageDiskType::LOCAL, ['a.jpg', 'b.jpg', 'c.jpg']))->handle();
+
+		Storage::disk(StorageDiskType::LOCAL->value)->assertMissing(['a.jpg', 'b.jpg', 'c.jpg']);
+		$channel->shouldHaveReceived('debug')->once();
+		$channel->shouldHaveReceived('debug')->with('Processed 3 paths on images.');
+	}
+
+	/**
+	 * S-112-02: batches of at most 500 paths, none for an empty list (FR-112-03).
+	 */
+	public function testBatchesSplitsPathsIntoJobsOfAtMost500(): void
+	{
+		$paths = array_map(fn (int $i) => 'p/' . $i . '.jpg', range(1, 1201));
+
+		$jobs = FileDeleterJob::batches(StorageDiskType::S3, $paths);
+
+		self::assertCount(3, $jobs);
+		self::assertSame([500, 500, 201], array_map(fn (FileDeleterJob $job) => count($job->file_list), $jobs));
+		self::assertSame($paths, array_merge(...array_map(fn (FileDeleterJob $job) => $job->file_list, $jobs)));
+		foreach ($jobs as $job) {
+			self::assertSame(StorageDiskType::S3, $job->storage_type);
+		}
+		self::assertSame([], FileDeleterJob::batches(StorageDiskType::LOCAL, []));
+	}
+
+	/**
+	 * S-112-19: on a non-local disk, one delete() per path and no exists() (FR-112-02).
+	 */
+	public function testDeletesOnNonLocalDiskWithoutExistsCheck(): void
+	{
+		$disk = $this->mockNonLocalDisk();
+		$disk->shouldReceive('delete')->with('a.jpg')->once()->andReturn(true);
+		$disk->shouldReceive('delete')->with('b.jpg')->once()->andReturn(true);
+
+		(new FileDeleterJob(StorageDiskType::S3, ['a.jpg', 'b.jpg']))->handle();
+
+		$disk->shouldNotHaveReceived('exists');
+	}
+
+	/**
+	 * S-112-19: a failed delete() on a non-local disk: every path is still tried, then the job throws (FR-112-02).
+	 */
+	public function testThrowsAfterTryingEveryPathWhenNonLocalDeletionFails(): void
+	{
+		$disk = $this->mockNonLocalDisk();
+		$disk->shouldReceive('delete')->with('a.jpg')->once()->andReturn(false);
+		$disk->shouldReceive('delete')->with('b.jpg')->once()->andReturn(true);
+
+		$this->assertThrows(
+			fn () => (new FileDeleterJob(StorageDiskType::S3, ['a.jpg', 'b.jpg']))->handle(),
+			MediaFileOperationException::class
+		);
+
+		$disk->shouldNotHaveReceived('exists');
+	}
+
+	/**
+	 * Registers a mocked S3 disk whose adapter is not the local one.
+	 *
+	 * @return FilesystemAdapter&Mockery\MockInterface
+	 */
+	private function mockNonLocalDisk(): FilesystemAdapter
+	{
+		$disk = \Mockery::spy(FilesystemAdapter::class);
+		$disk->shouldReceive('getAdapter')->andReturn(\Mockery::mock(FlysystemAdapter::class));
+		Storage::set(StorageDiskType::S3->value, $disk);
+
+		return $disk;
 	}
 }
