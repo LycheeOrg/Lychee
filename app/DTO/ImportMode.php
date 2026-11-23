@@ -20,6 +20,7 @@ final readonly class ImportMode
 	public readonly bool $shall_rename_photo_title;
 	public readonly bool $shall_rename_album_title;
 	public readonly bool $shall_scope_to_owner;
+	public readonly bool $is_guest_upload;
 
 	public function __construct(
 		bool $delete_imported = false,
@@ -29,6 +30,7 @@ final readonly class ImportMode
 		bool $shall_rename_photo_title = true,
 		bool $shall_rename_album_title = true,
 		bool $scope_to_owner = false,
+		bool $guest_upload = false,
 	) {
 		$this->shall_delete_imported = $delete_imported;
 		$this->shall_skip_duplicates = $skip_duplicates;
@@ -41,5 +43,7 @@ final readonly class ImportMode
 		$this->shall_rename_album_title = $shall_rename_album_title;
 		// Server imports only: another user's duplicate is rejected (FR-115-12).
 		$this->shall_scope_to_owner = $scope_to_owner;
+		// Guest uploads only: the guest owns no photo, so every duplicate is rejected (GHSA-9m66-3ccm-jfxg).
+		$this->is_guest_upload = $guest_upload;
 	}
 }
