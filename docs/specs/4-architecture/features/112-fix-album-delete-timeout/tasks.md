@@ -1,7 +1,7 @@
 # Feature 112 Tasks – Fix Album Delete Timeout
 
 _Status: Implemented (analysis and drift gates passed 2026-11-22)_  
-_Last updated: 2026-11-22_
+_Last updated: 2026-11-23_
 
 ## Checklist
 
@@ -78,6 +78,21 @@ _Last updated: 2026-11-22_
 ### I10 – Docs and quality gate
 - [x] T-112-18 – Knowledge map, roadmap, drift gate; release-note lines from the spec's Documentation Deliverables in the PR description, including the best-effort caveat on `sync` (Q-112-10 A); `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit.  
   _Result:_ release-note lines drafted in the plan (Release Note); php-cs-fixer (3 files reformatted), phpstan clean; commit command handed to the owner.
+
+### I11 – PR review round 2 (2026-11-23)
+- [x] T-112-21 – `GhostbusterTest::testRemoveZombiePhotos` terminates the app after the command, as the `artisan` binary does, so the deferred `FileDeleterJob`s run (FR-112-04).  
+  _Verification:_ `php artisan test --filter=GhostbusterTest`.
+
+- [x] T-112-22 – Failing S-112-23 in `DeleteBindLimitTest` (second chunk's `size_variants` delete throws from `DB::listen`), then one `DB::transaction` around the chunks of `SizeVariant\Delete::do()`. `DeleteBindLimitTest` checks every requested id in chunks of 500 (FR-112-10, S-112-23).  
+  _Verification:_ `php artisan test --filter=DeleteBindLimitTest` (red: 0 of 706 rows left, then green), `--filter='Tests\\Unit\\Actions\\SizeVariant\\DeleteTest'`, `--filter=PhotoRotateTest`, `--filter=DeleteAfterResponseTest`.
+
+- [x] T-112-23 – Docs: an async queue does not retry a failed webhook call (open-questions Q-112-10, plan, spec FR-112-12 and release note), `lychee:ghostbuster` walks the active upload disk only (spec FR-112-04, plan, knowledge map), the FR-112-13 command uses `migrate --path` and a scratch script (plan Commands).  
+  _Verification:_ re-read against the cited lines.
+
+- [x] T-112-24 – Q-112-11 C: FR-112-10 failure path and Non-Goals state that a sale committed during the delete of the same variant can lose its file (no code change).  
+  _Verification:_ re-read spec and open-questions.
+- [x] T-112-25 – Q-112-12 A: FR-112-09 failure path and Non-Goals state that the classification is not atomic with a concurrent move (no code change).  
+  _Verification:_ re-read spec and open-questions.
 
 ## Notes / TODOs
 Run test classes one at a time (shared SQLite DB).

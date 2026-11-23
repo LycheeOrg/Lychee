@@ -65,10 +65,16 @@ class Delete
 		}
 
 		try {
-			$jobs = [];
-			foreach (array_chunk(array_values(array_unique($sv_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
-				array_push($jobs, ...$this->deleteChunk($chunk));
-			}
+			// One transaction for every chunk: a failing chunk rolls back the
+			// earlier ones, whose file jobs are never dispatched (FR-112-10).
+			$jobs = DB::transaction(function () use ($sv_ids): array {
+				$jobs = [];
+				foreach (array_chunk(array_values(array_unique($sv_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+					array_push($jobs, ...$this->deleteChunk($chunk));
+				}
+
+				return $jobs;
+			});
 
 			// After the response on `sync` (FR-112-04).
 			DispatchAfterDelete::dispatch($jobs);

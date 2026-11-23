@@ -16,6 +16,8 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-08~~ | 112 | High | `SizeVariant\Delete` keeps sold variants attached, so rotating a photo with a sold variant breaks `unique(photo_id, type)` | Resolved (A, owner 2026-11-15, spec FR-112-10, S-112-15, S-112-20) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-09~~ | 112 | Medium | Repair sold variants already detached from photos that still exist by the old instance-wide update | Resolved (A, owner 2026-11-15, spec FR-112-13, DO-112-05, S-112-22) | 2026-11-15 | 2026-11-15 |
 | ~~Q-112-10~~ | 112 | Medium | On `sync`, after-response jobs (delete webhooks, file deletions) are lost when the PHP worker is killed after the response; the spec does not say what is guaranteed | Resolved (A, owner 2026-11-22, spec FR-112-04, FR-112-12, Non-Goals, Documentation Deliverables) | 2026-11-22 | 2026-11-22 |
+| ~~Q-112-11~~ | 112 | High | A sale committed during a delete can get its file deleted: the sold-variant path query and the detach/delete statements read `order_items` separately | Resolved (C, owner 2026-11-23, spec FR-112-10 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
+| ~~Q-112-12~~ | 112 | Medium | `Album\Delete::findAllPhotosToDelete()` reads link counts in one statement per album chunk: a concurrent move between chunks can classify a photo that has just entered a surviving album as fully deletable | Resolved (A, owner 2026-11-23, spec FR-112-09 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
 
 ## Question Details
 
@@ -332,19 +334,19 @@ Cons: photos already damaged stay broken.
 
 What a lost tail means, by job:
 - `WebhookDispatchJob`: the receiver never hears about some deleted photos. Feature 031 already makes delivery best effort: `tries = 1`, and a failed call is logged and dropped (Q-031-04 A). Today on `sync` the same timeout hits before the DB delete. Some webhooks have then been sent for photos that are not deleted.
-- `FileDeleterJob`: files stay on disk without DB rows. `lychee:ghostbuster` removes them.
+- `FileDeleterJob`: files stay on disk without DB rows. `lychee:ghostbuster` removes those on the active upload disk. On an S3 install it does not walk the local disk, where track files always live: those are removed by hand.
 - `RecomputePersonStatsJob`: person counts stay stale until the next recompute.
 - `DeleteFaceEmbeddingsJob`: the facial-recognition service keeps the embeddings of deleted faces.
 - `RecomputeAlbumUserThumbsJob`: no effect. The FK cascade drops the thumb rows of deleted photos, and the thumb is recomputed on the next read.
 
 **Question.** What does the spec guarantee for after-response work on `sync` when the worker stops early?
 
-**Resolution (2026-11-22).** Option A. Encoded in [spec.md](spec.md) FR-112-04 and FR-112-12 (failure paths), Non-Goals (no guaranteed delivery on `sync`) and Documentation Deliverables (release note: use an async queue to get every delete webhook). No webhook doc exists in this repository, so the release note carries the advice. No ADR: it applies Feature 031's existing best-effort contract to one more path.
+**Resolution (2026-11-22).** Option A. Encoded in [spec.md](spec.md) FR-112-04 and FR-112-12 (failure paths), Non-Goals (no guaranteed delivery on `sync`) and Documentation Deliverables (release note: an async queue stores each job when it is dispatched, so a stopped worker drops none). No webhook doc exists in this repository, so the release note carries the advice. No ADR: it applies Feature 031's existing best-effort contract to one more path. Wording corrected 2026-11-23 (CodeRabbit, PR #4997): an async queue does not deliver every delete webhook either, because a failed call is not retried (`tries = 1`), and `lychee:ghostbuster` only walks the active upload disk.
 
 #### Option A – Best effort on `sync`, stated in the spec (recommended)
 
-- FR-112-04 and FR-112-12 failure path: on `sync`, after-response work is best effort. If the worker stops early, the remaining jobs are lost and not retried. Some delete webhooks are never sent, files stay orphaned until `lychee:ghostbuster` runs, and person stats and face embeddings stay stale. This matches Feature 031's no-retry delivery contract.
-- Release note and webhook docs: installs that need every delete webhook use an async queue, where each job is stored when it is dispatched.
+- FR-112-04 and FR-112-12 failure path: on `sync`, after-response work is best effort. If the worker stops early, the remaining jobs are lost and not retried. Some delete webhooks are never sent, files stay orphaned until `lychee:ghostbuster` runs (active upload disk only, on an S3 install it does not walk the local disk, where track files always live: those are removed by hand), and person stats and face embeddings stay stale. This matches Feature 031's no-retry delivery contract.
+- Release note and webhook docs: installs that do not want a stopped worker to drop delete webhooks use an async queue, where each job is stored when it is dispatched. A failed call is still not retried (`tries = 1`), so delivery stays best effort.
 
 Pros: no new mechanism, and it matches the existing webhook contract. The request no longer times out, which is the goal of this feature. Webhooks run before the other deferred jobs, so they are the first to be sent.
 Cons: on `sync`, a killed worker drops the rest of the list without a log line, and the receiver cannot tell.
@@ -363,3 +365,68 @@ Webhooks run before the DB delete, as today. Only the file, person, face and thu
 Pros: a killed request leaves the photos in place, so the user can retry.
 Cons: a 4000-photo delete with a delete webhook still times out on `sync`, which is the problem Q-112-07 fixed. The webhooks already sent announce deletes that did not happen.
 
+### Q-112-11 – A sale committed during a delete loses its file
+
+**Context (2026-11-23, CodeRabbit review on PR #4997, commit `83900d328`).** FR-112-10 keeps sold variants' files. Two paths pick the file paths with a plain read that skips sold variants (`NOT EXISTS` on `order_items`), then detach or delete the rows in later statements that check `order_items` again:
+- `SizeVariant\Delete::deleteChunk()` (used by `Rotate`, `SizeVariants::deleteAll()`, `SizeVariant::delete()`): no transaction at all.
+- `PhotosToBeDeletedDTO::forceDelete()`: inside `executeDelete()`'s transaction, but on MySQL (`REPEATABLE READ`) the plain `SELECT` reads the transaction snapshot while the `UPDATE … WHERE EXISTS` reads the latest committed rows.
+
+An `order_items` row that starts referencing the variant between the two (order created or fulfilled at that moment) makes the row survive, detached, while its path is already in a `FileDeleterJob`. The buyer then has an order item pointing at a variant whose file is gone. `order_items.size_variant_id` has a foreign key to `size_variants.id` (migration `2025_11_23_111052`). Master had the same gap (path list, then delete). It needs a sale and a delete of the same photo or variant within milliseconds.
+
+**Question.** Should the delete paths guarantee FR-112-10 against a concurrent sale?
+
+**Resolution (2026-11-23).** Option C. Encoded in [spec.md](spec.md) FR-112-10 (failure path) and Non-Goals. No code change, no lock. No ADR: it records a limit that master already has.
+
+#### Option A – Locking read on the candidate variants (recommended)
+
+Run the path query of both paths with `lockForUpdate()`, inside a transaction (`SizeVariant\Delete::do()` gets one, see the review fix that wraps its chunks). A locking read sees the latest committed `order_items`, so the path list and the detach agree. A sale that starts after the lock must check the foreign key on the locked row, so it waits until the delete commits. It then finds the row deleted (the sale fails, which is right for a deleted photo) or detached (the sale succeeds, the file is kept).
+
+Pros: two one-line changes plus the transaction. No new table or job. Works the same on MySQL and PostgreSQL. SQLite has no row locks but a single writer, so a concurrent sale cannot commit in the gap there either.
+Cons: a checkout touching those variants waits for the delete transaction (milliseconds per chunk). On PostgreSQL `FOR UPDATE` also locks the joined `photos` rows, which the same transaction deletes or keeps anyway. Not testable on the SQLite test DB: verified by review, recorded in the spec.
+
+#### Option B – Drop the paths of survivors after the delete
+
+Keep the plain read. After the detach and delete, re-read which of the collected variant ids still exist (in chunks of 500) and remove their paths from the jobs. A row our `DELETE` did not remove was sold in between.
+
+Pros: no locks, works on every isolation level.
+Cons: one more query per 500 variants (a photo has up to 8, so `forceDelete()` needs the variant ids, not only the photo ids). The ids must be carried from path collection to the jobs. More code than Option A.
+
+#### Option C – Accept and document
+
+State in FR-112-10 that a sale committed while the same variant is being deleted can lose its file.
+
+Pros: no change.
+Cons: a paying buyer can lose the file, which FR-112-10 exists to prevent.
+
+### Q-112-12 – Concurrent move during the album-delete classification
+
+**Context (2026-11-23, CodeRabbit review on PR #4997, commit `83900d328`).** `Album\Delete::findAllPhotosToDelete()` reads, for each chunk of 500 deleted album ids, the photo's links into the chunk (summed) and the photo's total links (overwritten). Nothing holds a transaction or a lock across the chunks. Example: photo P is in deleted albums A1 (chunk 1) and A2 (chunk 2). After chunk 1 (1 link, total 2), the owner moves P from A1 to surviving album S. Chunk 2 reads 1 more link (sum 2) and a total of 2 (A2, S). P is classified as only in the deleted albums, force-deleted, and its new link to S is removed.
+
+Not new to this feature:
+- Master read the in-album counts and the totals in two statements without a transaction: a move between them gives the same result. Chunking turns 2 statements into 2 per 500 albums, and the case needs the photo in at least two deleted albums in different chunks (a subtree of more than 500 albums).
+- The gap between the classification and `executeDelete()` remains: a photo moved after the classification is force-deleted with any chunking, on master too. `Photo\Delete::do()` has the same gap.
+
+**Question.** Should this feature close the race between an album delete and a concurrent move of one of its photos?
+
+**Resolution (2026-11-23).** Option A. Encoded in [spec.md](spec.md) FR-112-09 (failure path) and Non-Goals. No code change. No ADR: it records a limit that master already has. Option B stays available as its own feature.
+
+#### Option A – Accept and document as a known limit (recommended)
+
+Add to FR-112-09's failure path: the classification is not atomic with a concurrent move or copy of the same photo. A photo moved out of the deleted subtree while the delete runs can still be deleted (as on master). No code change.
+
+Pros: no change in this PR. The race needs the same photo to be moved during the delete of its album subtree, both usually done by the same owner.
+Cons: the race stays, and its loss (a photo deleted) is not recoverable.
+
+#### Option B – Decide inside the delete transaction (follow-up feature)
+
+Inside `executeDelete()`'s transaction: remove the links of the collected photos to the deleted albums (album chunks), then force-delete only the photos with no remaining `photo_album` row, read with `lockForUpdate()`. The counting goes away. A move that commits after the check fails on the `photo_album.photo_id` foreign key of the deleted photo.
+
+Pros: closes the race, including the classification-to-delete gap. Removes the summed counts.
+Cons: reshapes `findAllPhotosToDelete()` and the `PhotosToBeDeletedDTO` contract. `Photo\Delete::do()` should follow for consistency. Large for a review fix: better as its own feature.
+
+#### Option C – One snapshot for the chunk reads
+
+Wrap the chunk loop in a transaction at `REPEATABLE READ` or higher.
+
+Pros: small.
+Cons: PostgreSQL defaults to `READ COMMITTED` (one snapshot per statement) and rejects `FOR UPDATE` with `GROUP BY`. The classification-to-delete gap stays. Not portable, does not close the race.
