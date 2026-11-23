@@ -80,7 +80,7 @@ RUN npm run build
 # Debian's ImageMagick is built without JPEG XL, so we build our own (ADR-101-01).
 # Same build as ./Dockerfile, but imagick is compiled for the non-thread-safe PHP of PHP-FPM.
 # Bump IMAGEMAGICK_VERSION/IMAGEMAGICK_SHA256 on ImageMagick security releases, in both Dockerfiles.
-FROM php:8.5-fpm-trixie@sha256:a3ee9e7110c71909696d49593219e7866d8f9846840eb3dd269fe8aee66b6efa AS imagemagick
+FROM php:8.5-fpm-trixie@sha256:7fd2766bd3bb6efcfb49591e4bf014e123c18f01149093bd508525c6bdf0cf9f AS imagemagick
 
 ARG IMAGEMAGICK_VERSION=7.1.2-36
 ARG IMAGEMAGICK_SHA256=5ba807e38a6bcb7c3c96a166485e270c5017aaa6b166f0440dc4b2badf6e6167
@@ -141,7 +141,7 @@ RUN curl -fsSL -o /build/imagick.tgz "https://pecl.php.net/get/imagick-${IMAGICK
 # Stage 4: Production nginx + PHP-FPM Image
 # ============================================================================
 # Official PHP image: Sury does not publish every PHP patch release for arm64.
-FROM php:8.5-fpm-trixie@sha256:a3ee9e7110c71909696d49593219e7866d8f9846840eb3dd269fe8aee66b6efa AS base
+FROM php:8.5-fpm-trixie@sha256:7fd2766bd3bb6efcfb49591e4bf014e123c18f01149093bd508525c6bdf0cf9f AS base
 
 LABEL maintainer="lycheeorg"
 LABEL org.opencontainers.image.title="Lychee"
