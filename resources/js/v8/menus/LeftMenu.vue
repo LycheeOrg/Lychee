@@ -6,7 +6,7 @@
 			content: 'max-w-xs',
 		}"
 	>
-		<template #header>
+		<template #header="{ close }">
 			<div v-if="user?.id === null">
 				<RouterLink :to="{ name: 'login' }" class="flex items-center gap-2 text-muted hover:text-primary">
 					<PiMiniIcon icon="lucide:log-in" class="w-4 h-4" />
@@ -21,6 +21,16 @@
 					{{ $t("left-menu.back_to_gallery") }}
 				</RouterLink>
 			</div>
+			<!-- Overriding `#header` drops USlideover's built-in close button. Below `sm` the
+			     slideover leaves next to no overlay to tap, so give narrow screens an explicit way out. -->
+			<UButton
+				icon="lucide:x"
+				color="neutral"
+				variant="ghost"
+				class="ms-auto sm:hidden cursor-pointer"
+				:aria-label="$t('dialogs.button.close')"
+				@click="close"
+			/>
 		</template>
 		<template #body>
 			<UNavigationMenu v-if="rights" orientation="vertical" :items="items" :dir="dir">
