@@ -18,6 +18,7 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-10~~ | 112 | Medium | On `sync`, after-response jobs (delete webhooks, file deletions) are lost when the PHP worker is killed after the response; the spec does not say what is guaranteed | Resolved (A, owner 2026-11-22, spec FR-112-04, FR-112-12, Non-Goals, Documentation Deliverables) | 2026-11-22 | 2026-11-22 |
 | ~~Q-112-11~~ | 112 | High | A sale committed during a delete can get its file deleted: the sold-variant path query and the detach/delete statements read `order_items` separately | Resolved (C, owner 2026-11-23, spec FR-112-10 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
 | ~~Q-112-12~~ | 112 | Medium | `Album\Delete::findAllPhotosToDelete()` reads link counts in one statement per album chunk: a concurrent move between chunks can classify a photo that has just entered a surviving album as fully deletable | Resolved (A, owner 2026-11-23, spec FR-112-09 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
+| Q-112-13 | 112 | High | Album delete on an HDD-backed DB hits Octane's 30 s wall-clock limit inside the DB transaction, before any job this feature defers; raising the limit is not a fix | Open | 2026-11-23 | 2026-11-23 |
 
 ## Question Details
 
@@ -430,3 +431,40 @@ Wrap the chunk loop in a transaction at `REPEATABLE READ` or higher.
 
 Pros: small.
 Cons: PostgreSQL defaults to `READ COMMITTED` (one snapshot per statement) and rejects `FOR UPDATE` with `GROUP BY`. The classification-to-delete gap stays. Not portable, does not close the race.
+
+### Q-112-13 – Album delete times out in the DB transaction on a slow disk
+
+**Context (2026-11-23).** New report from a production container running master: `Maximum execution time of 30 seconds exceeded` while `PhotosToBeDeletedDTO::forceDelete()` runs `DELETE FROM size_variants WHERE photo_id IN (…)` (master line 187), inside `executeDelete()`'s transaction, called from `Album\Delete::do()` line 105. No file, person-stats or face-embedding job had been dispatched yet. Same DB engine as the dev setup, but the server's DB is on an HDD (dev: SSD). The shop is not used (`order_items` empty). The container cannot easily be inspected.
+
+**Evidence.**
+
+- The 30 s is not the image's `php.ini` value (`max_execution_time=3000`). It is Octane's `max_execution_time` (`config/octane.php`, `LYCHEE_MAX_EXECUTION_TIME`, default 30), which `vendor/laravel/octane/bin/frankenphp-worker.php` applies with `set_time_limit()`.
+- FrankenPHP is a thread-safe PHP build: there the limit counts wall-clock time, so time spent waiting for the DB counts (under PHP-FPM on Linux it does not).
+- Octane's `Worker::handle()` sends the response and then calls `terminate()` in the same handler call. On `sync`, the after-response jobs of FR-112-04 therefore most likely run under the same 30 s budget. FR-112-04's failure path names FPM `request_terminate_timeout` but not this limit.
+- Q-112-01 measured 0.3 s of SQL for 4000 photos on SQLite/SSD. Photo ids are random strings, so the rows a delete touches sit on index pages spread across the tables: on an HDD most of them are random reads. The DB-phase cost grows with the number of photos, so any limit is reached by a large enough album.
+- Also inside the transaction, before the deletes: `AlbumSaved` for albums whose explicit cover/header is deleted. On `sync` each `RecomputeAlbumStatsJob` runs inline and propagates to the root.
+- The Docker compose files default to `QUEUE_CONNECTION=database` with a `lychee_worker` container (`queue:work --timeout=3600`, CLI, no PHP time limit). `.env.example` and plain installs default to `sync`. Whether the reporting server runs a worker is unknown.
+- Owner (2026-11-23): raising the execution time is not the solution.
+
+**Question.** How should the album and photo deletes stay within the request limit when the DB phase itself is slow?
+
+#### Option A – Queue the whole delete on async connections (recommended)
+
+The `DELETE` endpoints validate and authorize, then dispatch one delete job (ids plus the acting user) and return. The job runs today's `Album\Delete::do()` / `Photo\Delete::do()` in the worker. On `sync` the delete stays inline, as today.
+
+Pros: fixes the default Docker setup (worker present) whatever the album size or disk speed. Small change in the actions, which already work from ids. Matches the compose file's advice ("use database/redis queue with a worker for long operations").
+Cons: on `sync` nothing changes: a slow disk still times out. The album or photos stay visible until the worker runs, and a failure is no longer reported to the caller. Lifts the Non-Goal taken in Q-112-01 (Option B there).
+
+#### Option B – Bounded, resumable delete across requests
+
+Each `DELETE` call removes at most a bounded slice of photos (count or time budget) in its own transaction and returns how much is left. The frontend repeats the call, with progress, until the albums themselves are deleted.
+
+Pros: works on every queue connection, `sync` included, without a worker. Each request is bounded whatever the disk. Errors still reach the caller.
+Cons: REST contract change (response body, repeated calls), frontend loop and progress UI, and every other caller (admin bulk edit, API clients) must loop. If the user leaves midway, the album stays with fewer photos: consistent, and finished by deleting again. Largest change.
+
+#### Option C – Measure on throttled I/O, then trim the transaction
+
+Reproduce locally with MySQL on throttled disk I/O (cgroup read/write IOPS limit, small buffer pool) and bulk fixtures, time each statement of the DB phase, then remove the dominant cost (for example, run the `AlbumSaved` stats recompute after the commit).
+
+Pros: smallest code change. Tells which statement dominates, which A and B do not need but would benefit from.
+Cons: the cost still grows with photo count: a larger album on the same disk times out again. Throttled I/O only approximates an HDD. No fix until measured.
