@@ -29,6 +29,8 @@ class DuplicateDTO implements PhotoDTO
 		public readonly bool $shall_skip_duplicates,
 		// Whether another user's duplicate is rejected whatever `skip_duplicates_not_owned` says (FR-115-12).
 		public readonly bool $shall_scope_to_owner,
+		// Whether the upload comes from a guest, who owns no photo (GHSA-9m66-3ccm-jfxg).
+		public readonly bool $is_guest_upload,
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
 
@@ -53,6 +55,7 @@ class DuplicateDTO implements PhotoDTO
 			shall_resync_metadata: $init_dto->import_mode->shall_resync_metadata,
 			shall_skip_duplicates: $init_dto->import_mode->shall_skip_duplicates,
 			shall_scope_to_owner: $init_dto->import_mode->shall_scope_to_owner,
+			is_guest_upload: $init_dto->import_mode->is_guest_upload,
 			intended_owner_id: $init_dto->intended_owner_id,
 			is_highlighted: $init_dto->is_highlighted,
 			exif_info: $init_dto->exif_info,

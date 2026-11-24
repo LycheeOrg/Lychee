@@ -170,6 +170,7 @@ class ProcessImageJob implements ShouldQueue
 					delete_imported: true,
 					skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
 					shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
+					guest_upload: $this->uploader_id === null,
 				),
 				intended_owner_id: $this->user_id,
 				upload_trust_level: $this->upload_trust_level,
