@@ -26,6 +26,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Testing\TestResponse;
+use Mockery\LegacyMockInterface;
 use function Safe\copy;
 use Safe\Exceptions\InfoException;
 use function Safe\json_decode;
@@ -60,6 +61,23 @@ abstract class AbstractTestCase extends BaseTestCase
 		}
 
 		parent::setUp();
+	}
+
+	/**
+	 * Laravel v13.43.0 disconnects every database connection on teardown,
+	 * which calls `getConnections()` on the `DB` facade mock created by
+	 * `DB::shouldReceive()` and makes the test fail.
+	 * Mirrors the upstream guard from laravel/framework#62600.
+	 *
+	 * TODO: Remove this override once laravel/framework ships #62600.
+	 */
+	protected function disconnectDatabaseConnections(): void
+	{
+		if ($this->app->resolved('db') && $this->app->make('db') instanceof LegacyMockInterface) {
+			return;
+		}
+
+		parent::disconnectDatabaseConnections();
 	}
 
 	/**
