@@ -20,6 +20,7 @@
 							:rows="2"
 							class="w-full"
 						/>
+						<DescriptionCounter :value="descriptionForInput" />
 					</UFormField>
 
 					<!-- Mode -->
@@ -137,6 +138,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import RenamerService, { type CreateRenamerRuleRequest, type UpdateRenamerRuleRequest } from "@/services/renamer-service";

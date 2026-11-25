@@ -20,6 +20,7 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
 use App\Rules\BooleanRequireSupportRule;
+use App\Rules\DescriptionRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
 
@@ -47,7 +48,7 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 		return [
 			'album_ids' => ['required', 'array', 'min:1', 'max:1000'],
 			'album_ids.*' => ['required', 'string'],
-			'description' => ['sometimes', 'nullable', 'string', 'max:1048576'],
+			'description' => ['sometimes', 'nullable', new DescriptionRule()],
 			'copyright' => ['sometimes', 'nullable', 'string', 'max:255'],
 			'license' => ['sometimes', 'nullable', new Enum(LicenseType::class)],
 			'photo_layout' => ['sometimes', 'nullable', new Enum(PhotoLayoutType::class)],

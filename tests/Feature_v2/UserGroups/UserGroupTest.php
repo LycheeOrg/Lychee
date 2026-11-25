@@ -9,6 +9,7 @@
 namespace Tests\Feature_v2\UserGroups;
 
 use App\Models\AlbumUserThumb;
+use Illuminate\Support\Facades\Config;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UserGroupTest extends BaseApiWithDataTest
@@ -48,6 +49,35 @@ class UserGroupTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->postJson('/UserGroups', ['name' => 'Test Group']);
 		$this->assertCreated($response);
 		self::assertEquals('Test Group', $response->json('name'));
+	}
+
+	public function testCreateGroupDescriptionLongerThan255(): void
+	{
+		Config::set('features.description-max-length', 1000);
+		$description = str_repeat('a', 300);
+		$response = $this->actingAs($this->admin)->postJson('/UserGroups', ['name' => 'Test Group', 'description' => $description]);
+		$this->assertCreated($response);
+		self::assertSame($description, $response->json('description'));
+	}
+
+	public function testCreateGroupDescriptionOverLimit(): void
+	{
+		Config::set('features.description-max-length', 10);
+		$response = $this->actingAs($this->admin)->postJson('/UserGroups', ['name' => 'Test Group', 'description' => str_repeat('a', 11)]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
+	}
+
+	public function testUpdateGroupDescriptionOverLimit(): void
+	{
+		Config::set('features.description-max-length', 10);
+		$response = $this->actingAs($this->userWithGroupAdmin)->patchJson('/UserGroups', [
+			'group_id' => $this->group1->id,
+			'name' => 'Updated Name',
+			'description' => str_repeat('a', 11),
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
 	}
 
 	/**

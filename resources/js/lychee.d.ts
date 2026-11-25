@@ -806,6 +806,7 @@ declare namespace App {
 					is_public_visible_flag_enabled: boolean;
 					is_password_flag_enabled: boolean;
 					is_sensitive_flag_enabled: boolean;
+					description_max_length: number;
 				};
 				export type LandingFeaturedContentResource = {
 					item_type: App.Enum.LandingFeaturedItemType;
