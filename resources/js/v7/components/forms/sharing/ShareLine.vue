@@ -15,9 +15,9 @@
 			<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
 			<Checkbox v-model="grantsFullPhotoAccess" :binary="true" @update:model-value="edit" />
 			<Checkbox v-model="grantsDownload" :binary="true" @update:model-value="edit" />
-			<Checkbox v-model="grantsUpload" :binary="true" @update:model-value="edit" />
-			<Checkbox v-model="grantsEdit" :binary="true" @update:model-value="edit" />
-			<Checkbox v-model="grantsDelete" :binary="true" @update:model-value="edit" />
+			<Checkbox v-model="grantsUpload" :binary="true" :disabled="lockUpload(grantsUpload)" @update:model-value="edit" />
+			<Checkbox v-model="grantsEdit" :binary="true" :disabled="lockEdit(grantsEdit)" @update:model-value="edit" />
+			<Checkbox v-model="grantsDelete" :binary="true" :disabled="lockEdit(grantsDelete)" @update:model-value="edit" />
 		</div>
 		<Button class="border-0 bg-transparent text-danger-600 hover:bg-danger-700 hover:text-white w-1/6" @click="deletePermission">
 			<i class="pi pi-user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
@@ -26,11 +26,14 @@
 </template>
 
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import { ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import SharingService from "@/services/sharing-service";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const props = defineProps<{
 	withAlbum: boolean;

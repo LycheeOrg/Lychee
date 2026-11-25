@@ -26,6 +26,8 @@
 							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
 								<span v-tooltip.top="$t('users.upload_rights')" class="w-full text-center"><i class="pi pi-upload" /></span>
+								<span v-tooltip.top="$t('users.share_rights')" class="w-full text-center"><i class="pi pi-share-alt" /></span>
+								<span v-tooltip.top="$t('users.content_rights')" class="w-full text-center"><i class="pi pi-pencil" /></span>
 								<span v-tooltip.top="$t('users.edit_rights')" class="w-full text-center">
 									<i class="pi pi-lock-open" />
 								</span>
@@ -59,6 +61,14 @@
 						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-upload"></i>
 							<span>{{ $t("users.upload_rights") }}</span>
+						</li>
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-share-alt"></i>
+							<span>{{ $t("users.share_rights") }}</span>
+						</li>
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-pencil"></i>
+							<span>{{ $t("users.content_rights") }}</span>
 						</li>
 						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-lock-open"></i>

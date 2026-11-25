@@ -39,6 +39,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	use HasNoteTrait;
 
 	protected bool $may_upload = false;
+	protected bool $may_share = false;
+	protected bool $may_edit = false;
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
 	protected UserUploadTrustLevel $upload_trust_level = UserUploadTrustLevel::TRUSTED;
@@ -61,6 +63,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_SHARE_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_EDIT_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE => ['sometimes', new Enum(UserUploadTrustLevel::class)],
@@ -79,6 +83,8 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->may_share = static::toBoolean($values[RequestAttribute::MAY_SHARE_ATTRIBUTE]);
+		$this->may_edit = static::toBoolean($values[RequestAttribute::MAY_EDIT_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		$this->may_administrate = static::toBoolean($values[RequestAttribute::MAY_ADMINISTRATE] ?? false);
 		if (array_key_exists(RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE, $values)) {
@@ -99,6 +105,16 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	public function mayUpload(): bool
 	{
 		return $this->may_upload;
+	}
+
+	public function mayShare(): bool
+	{
+		return $this->may_share;
+	}
+
+	public function mayEdit(): bool
+	{
+		return $this->may_edit;
 	}
 
 	public function mayEditOwnSettings(): bool

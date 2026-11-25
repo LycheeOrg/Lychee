@@ -1541,6 +1541,8 @@ declare namespace App {
 					username: string;
 					may_administrate: boolean;
 					may_upload: boolean;
+					may_share: boolean;
+					may_edit: boolean;
 					may_edit_own_settings: boolean;
 					is_owner: boolean;
 					upload_trust_level: App.Enum.UserUploadTrustLevel;
@@ -1746,6 +1748,7 @@ declare namespace App {
 				export type RootAlbumRightsResource = {
 					can_edit: boolean;
 					can_upload: boolean;
+					can_share_with_users: boolean;
 					can_see_live_metrics: boolean;
 					can_import_from_server: boolean;
 					can_highlight: boolean;

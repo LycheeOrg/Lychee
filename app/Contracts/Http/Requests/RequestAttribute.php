@@ -118,6 +118,8 @@ class RequestAttribute
 	public const TAG_ID = 'tag_id';
 	public const TAGS_ATTRIBUTE = 'tags';
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
+	public const MAY_SHARE_ATTRIBUTE = 'may_share';
+	public const MAY_EDIT_ATTRIBUTE = 'may_edit';
 	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
 	public const MAY_ADMINISTRATE = 'may_administrate';
 	public const UPLOAD_TRUST_LEVEL_ATTRIBUTE = 'upload_trust_level';

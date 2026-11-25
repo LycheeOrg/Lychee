@@ -613,7 +613,7 @@ class AlbumQueryPolicy
 	 *
 	 * SQL equivalent of {@link AlbumPolicy::canEdit()} for regular albums:
 	 *  - the user is an admin, or
-	 *  - the user owns the album and has the upload privilege, or
+	 *  - the user owns the album and has the edit right (`may_edit`, Feature 118), or
 	 *  - a user, group or public permission on the album grants edit.
 	 *
 	 * Only sub-queries on `albums.id` are used, so the condition does not
@@ -636,7 +636,7 @@ class AlbumQueryPolicy
 
 		$query->where(fn ($q) => $q
 			->when(
-				$user->may_upload,
+				$user->may_edit,
 				fn ($q1) => $q1->orWhereIn('albums.id', fn ($q2) => $q2->select('id')->from('base_albums')->where('owner_id', '=', $user->id))
 			)
 			->orWhereExists(fn ($q3) => $this->editGrantQuery($q3, $user, 'albums.id'))

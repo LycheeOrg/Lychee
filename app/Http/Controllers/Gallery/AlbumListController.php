@@ -190,7 +190,7 @@ class AlbumListController extends Controller
 			return true;
 		}
 
-		return ($user->may_upload && (int) $row->owner_id === $user->id) || $row->edit_grant !== null;
+		return ($user->may_edit && (int) $row->owner_id === $user->id) || $row->edit_grant !== null;
 	}
 
 	/**

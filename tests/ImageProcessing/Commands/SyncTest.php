@@ -662,7 +662,7 @@ class SyncTest extends BaseApiWithDataTest
 		Configs::set('sync_users_server_paths', '0');
 	}
 
-	/** Feature 115 (S-115-37): users who may not upload are skipped, and refused when named. */
+	/** Feature 118 (S-118-10, amends S-115-37): users without upload rights are synced, a server path is enough (FR-118-14). */
 	public function testNoPathUserWithoutUploadRight(): void
 	{
 		Queue::fake();
@@ -672,11 +672,11 @@ class SyncTest extends BaseApiWithDataTest
 		$bob->save();
 
 		$this->artisan(self::COMMAND)
-			->expectsOutputToContain('skipped: may not import')
+			->doesntExpectOutputToContain('skipped: may not import')
 			->assertExitCode(0);
-		self::assertSame([$alice->id], array_keys($this->queuedPerOwner()));
+		self::assertSame([$alice->id, $bob->id], array_keys($this->queuedPerOwner()));
 
-		$this->artisan(self::COMMAND, ['--owner_id' => $bob->id])->assertExitCode(1);
+		$this->artisan(self::COMMAND, ['--owner_id' => $bob->id])->assertExitCode(0);
 		$this->artisan(self::COMMAND, ['--owner_id' => $this->admin->id])->assertExitCode(1);
 		Configs::set('sync_users_server_paths', '0');
 	}

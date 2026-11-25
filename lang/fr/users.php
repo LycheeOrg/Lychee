@@ -12,6 +12,8 @@ return [
     'legend' => 'Légende',
     'upload_rights' => 'Si cette option est cochée, l’utilisateur peut téléverser du contenu.',
     'edit_rights' => 'Si cette option est cochée, l’utilisateur peut modifier son profil (nom d’utilisateur, mot de passe).',
+    'share_rights' => 'Si cette option est cochée, l’utilisateur peut partager ses albums avec d’autres utilisateurs et les rendre publics.',
+    'content_rights' => 'Si cette option est cochée, l’utilisateur peut modifier, déplacer et supprimer son propre contenu.',
     'upload_trust_level' => 'Niveau de confiance des téléversements — détermine si les téléversements deviennent immédiatement publics.',
 
     'quota' => 'Si défini, l’utilisateur dispose d’un quota d’espace pour les photos (en Ko).',
@@ -24,6 +26,8 @@ return [
         'server_path_hint' => 'Vide : import depuis le serveur désactivé. « / » : tout le serveur. Sinon : uniquement ce dossier et ses sous-dossiers.',
         'upload_rights' => 'L’utilisateur peut téléverser du contenu.',
         'edit_rights' => 'L’utilisateur peut modifier son nom d’utilisateur et son mot de passe.',
+        'share_rights' => 'L’utilisateur peut partager ses albums.',
+        'content_rights' => 'L’utilisateur peut modifier, déplacer et supprimer son propre contenu.',
         'admin_rights' => 'L’utilisateur peut administrer Lychee.',
         'upload_trust_level' => 'Niveau de confiance des téléversements',
         'upload_trust_level_check' => 'Vérifier – les téléversements nécessitent l’approbation d’un administrateur avant de devenir publics.',

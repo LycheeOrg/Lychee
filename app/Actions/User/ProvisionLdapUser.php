@@ -110,6 +110,8 @@ class ProvisionLdapUser
 
 		// Default permissions for LDAP users
 		$user->may_upload = true;
+		$user->may_share = true;
+		$user->may_edit = true;
 		$user->may_edit_own_settings = true;
 		$user->may_administrate = false; // Will be set by syncAdminStatus
 

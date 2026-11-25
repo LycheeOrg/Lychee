@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Quando selecionado, o utilizador pode carregar conteúdo.',
     'edit_rights' => 'Quando selecionado, o utilizador pode modificar o seu perfil (nome de utilizador, palavra-passe).',
+    'share_rights' => 'Quando selecionado, o utilizador pode partilhar os seus álbuns com outros utilizadores e torná-los públicos.',
+    'content_rights' => 'Quando selecionado, o utilizador pode editar, mover e eliminar o seu próprio conteúdo.',
     'upload_trust_level' => 'Nível de confiança de carregamento — controla se os carregamentos ficam imediatamente públicos.',
 
     'quota' => 'Quando definido, o utilizador tem uma quota de espaço para imagens (em kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Vazio: importação do servidor desativada. "/": todo o servidor. Caso contrário: apenas esta pasta e o seu conteúdo.',
         'upload_rights' => 'O utilizador pode carregar conteúdo.',
         'edit_rights' => 'O utilizador pode modificar o seu perfil (nome de utilizador, palavra-passe).',
+        'share_rights' => 'O utilizador pode partilhar os seus álbuns.',
+        'content_rights' => 'O utilizador pode editar, mover e eliminar o seu próprio conteúdo.',
         'admin_rights' => 'O utilizador tem direitos de administrador.',
         'upload_trust_level' => 'Nível de confiança de carregamento',
         'upload_trust_level_check' => 'Verificar – os carregamentos requerem aprovação de um administrador antes de ficarem públicos.',

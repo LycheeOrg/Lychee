@@ -29,6 +29,7 @@ use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\Cache\TransactionSafeDatabaseStore;
 use App\Services\MoneyService;
+use App\Services\OwnedPhotoCheck;
 use App\Services\Telemetry\TraceService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Cache\Repository;
@@ -198,6 +199,7 @@ class AppServiceProvider extends ServiceProvider
 		// They hold the ConfigManager, so they share its lifetime.
 		$this->app->scoped(AlbumFactory::class);
 		$this->app->scoped(MoneyService::class);
+		$this->app->scoped(OwnedPhotoCheck::class);
 	}
 
 	/**

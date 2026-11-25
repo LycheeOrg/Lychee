@@ -287,7 +287,7 @@ export function useLeftMenu(
 				label: "sharing.title",
 				icon: "cloud",
 				route: "/sharing",
-				access: rights.value.root_album.can_upload ?? false,
+				access: rights.value.root_album.can_share_with_users ?? false,
 			},
 			{
 				label: "insights.title",

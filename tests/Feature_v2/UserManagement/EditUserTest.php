@@ -31,6 +31,8 @@ class EditUserTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
+			'may_share' => $this->userMayUpload1->may_share,
+			'may_edit' => $this->userMayUpload1->may_edit,
 			'may_edit_own_settings' => $this->userMayUpload1->may_edit_own_settings,
 		]);
 		$this->assertUnauthorized($response);
@@ -39,6 +41,8 @@ class EditUserTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => $this->userMayUpload1->may_upload,
+			'may_share' => $this->userMayUpload1->may_share,
+			'may_edit' => $this->userMayUpload1->may_edit,
 			'may_edit_own_settings' => $this->userMayUpload1->may_edit_own_settings,
 		]);
 		$this->assertForbidden($response);
@@ -50,6 +54,8 @@ class EditUserTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => 'anotherUsername',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => false,
 		]);
 		$this->assertNoContent($response);
@@ -62,6 +68,8 @@ class EditUserTest extends BaseApiWithDataTest
 				'username' => 'anotherUsername',
 				'may_administrate' => false,
 				'may_upload' => false,
+				'may_share' => false,
+				'may_edit' => false,
 				'may_edit_own_settings' => false,
 			],
 		);

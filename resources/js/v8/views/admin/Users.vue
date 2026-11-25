@@ -16,6 +16,14 @@
 					<span>{{ $t("users.upload_rights") }}</span>
 				</li>
 				<li class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:share-2" class="text-lg" />
+					<span>{{ $t("users.share_rights") }}</span>
+				</li>
+				<li class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:pencil" class="text-lg" />
+					<span>{{ $t("users.content_rights") }}</span>
+				</li>
+				<li class="text-sm flex items-start gap-x-4">
 					<UIcon name="lucide:lock-open" class="text-xl" />
 					<span>{{ $t("users.edit_rights") }}</span>
 				</li>
@@ -75,6 +83,30 @@
 				<UIcon
 					:name="row.original.may_upload ? 'lucide:check' : 'lucide:x'"
 					:class="row.original.may_upload ? 'text-success' : 'text-muted opacity-30'"
+				/>
+			</template>
+
+			<template #may_share-header>
+				<UTooltip :text="$t('users.share_rights')">
+					<UIcon name="lucide:share-2" />
+				</UTooltip>
+			</template>
+			<template #may_share-cell="{ row }">
+				<UIcon
+					:name="row.original.may_share ? 'lucide:check' : 'lucide:x'"
+					:class="row.original.may_share ? 'text-success' : 'text-muted opacity-30'"
+				/>
+			</template>
+
+			<template #may_edit-header>
+				<UTooltip :text="$t('users.content_rights')">
+					<UIcon name="lucide:pencil" />
+				</UTooltip>
+			</template>
+			<template #may_edit-cell="{ row }">
+				<UIcon
+					:name="row.original.may_edit ? 'lucide:check' : 'lucide:x'"
+					:class="row.original.may_edit ? 'text-success' : 'text-muted opacity-30'"
 				/>
 			</template>
 
@@ -222,6 +254,8 @@ const columns = computed<TableColumn<User>[]>(() => {
 	const cols: TableColumn<User>[] = [
 		{ accessorKey: "username", header: trans("users.username") },
 		{ id: "may_upload" },
+		{ id: "may_share" },
+		{ id: "may_edit" },
 		{ id: "may_edit_own_settings" },
 		{ id: "upload_trust_level" },
 	];

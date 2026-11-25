@@ -15,10 +15,10 @@
 			<UCheckbox v-model="grantsReadAccess" disabled />
 			<UCheckbox v-model="grantsFullPhotoAccess" @update:model-value="edit" />
 			<UCheckbox v-model="grantsDownload" @update:model-value="edit" />
-			<UCheckbox v-model="grantsUpload" @update:model-value="edit" />
-			<UCheckbox v-model="grantsEdit" @update:model-value="edit" />
-			<UCheckbox v-model="grantsMove" @update:model-value="edit" />
-			<UCheckbox v-model="grantsDelete" @update:model-value="edit" />
+			<UCheckbox v-model="grantsUpload" :disabled="lockUpload(grantsUpload)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsEdit" :disabled="lockEdit(grantsEdit)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsMove" :disabled="lockEdit(grantsMove)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsDelete" :disabled="lockEdit(grantsDelete)" @update:model-value="edit" />
 			<UTooltip :text="$t('dialogs.button.delete')">
 				<UButton color="error" variant="ghost" size="xs" icon="lucide:user-minus" @click="deletePermission" />
 			</UTooltip>
@@ -27,9 +27,12 @@
 </template>
 
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import { ref, watch } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import SharingService from "@/services/sharing-service";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const props = defineProps<{
 	withAlbum: boolean;

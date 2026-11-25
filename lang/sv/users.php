@@ -14,6 +14,8 @@ return [
     'legend' => 'Förklaring',
     'upload_rights' => 'När markerat kan användaren ladda upp innehåll.',
     'edit_rights' => 'När markerat kan användaren ändra sin profil (användarnamn, lösenord).',
+    'share_rights' => 'När vald kan användaren dela sina album med andra användare och göra dem offentliga.',
+    'content_rights' => 'När vald kan användaren redigera, flytta och ta bort sitt eget innehåll.',
     'upload_trust_level' => 'Förtroendenivå för uppladdning — styr om uppladdningar blir offentliga direkt.',
 
     'quota' => 'När angivet har användaren en lagringskvot för bilder (i kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Tom: import från servern inaktiverad. "/": hela servern. Annars: bara den här mappen och det som ligger under.',
         'upload_rights' => 'Användaren kan ladda upp innehåll.',
         'edit_rights' => 'Användaren kan ändra sin profil (användarnamn, lösenord).',
+        'share_rights' => 'Användaren kan dela sina album.',
+        'content_rights' => 'Användaren kan redigera, flytta och ta bort sitt eget innehåll.',
         'admin_rights' => 'Användaren har administratörsrättigheter.',
         'upload_trust_level' => 'Förtroendenivå för uppladdning',
         'upload_trust_level_check' => 'Kontrollera – uppladdningar måste godkännas av en administratör innan de blir offentliga.',

@@ -42,6 +42,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'username' => 'trust_test_user_check',
 			'password' => 'Pa$$w0rd123!',
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => true,
 			'upload_trust_level' => 'check',
 		]);
@@ -58,6 +60,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'username' => 'trust_test_user_default',
 			'password' => 'Pa$$w0rd123!',
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => true,
 		]);
 		$this->assertCreated($response);
@@ -77,6 +81,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => true,
 			'upload_trust_level' => 'check',
 		]);
@@ -100,6 +106,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => true,
 			// No upload_trust_level field → should preserve existing
 		]);
@@ -119,6 +127,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'username' => 'should_not_create',
 			'password' => 'Pa$$w0rd123!',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => true,
 		]);
 		$this->assertForbidden($response);
@@ -130,6 +140,8 @@ class UserTrustLevelTest extends BaseApiWithDataTest
 			'username' => 'should_not_create',
 			'password' => 'Pa$$w0rd123!',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => true,
 		]);
 		$this->assertUnauthorized($response);

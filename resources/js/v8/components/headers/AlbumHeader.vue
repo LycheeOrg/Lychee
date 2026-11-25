@@ -79,7 +79,7 @@
 				<UDropdownMenu v-if="albumStore.rights?.can_upload" :items="addMenuSections">
 					<UButton icon="lucide:plus" color="neutral" variant="ghost" />
 				</UDropdownMenu>
-				<template v-if="albumStore.rights?.can_edit">
+				<template v-if="albumStore.hasAlbumSettings">
 					<UButton
 						icon="lucide:settings"
 						color="neutral"

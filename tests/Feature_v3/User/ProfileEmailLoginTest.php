@@ -101,6 +101,8 @@ class ProfileEmailLoginTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => 'taken@example.com',
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => true,
 		]);
 		$this->assertConflict($response);

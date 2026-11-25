@@ -55,7 +55,7 @@
 						<ToggleSwitch
 							v-model="grants_upload"
 							input-id="pp_dialog_upload_check"
-							:disabled="!is_se_enabled"
+							:disabled="!is_se_enabled || lockUpload(grants_upload)"
 							class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
 							style="
 								--p-toggleswitch-checked-background: var(--p-red-800);
@@ -133,6 +133,7 @@
 	</Card>
 </template>
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import { ref } from "vue";
 import Card from "primevue/card";
 import ToggleSwitch from "primevue/toggleswitch";
@@ -146,6 +147,9 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/v7/components/icons/SETag.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
+
+// The public upload grant needs the owner's own upload right (Feature 118, FR-118-07).
+const { lockUpload } = useHeldGrants();
 
 const albumStore = useAlbumStore();
 

@@ -23,6 +23,7 @@ use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
+use App\Services\OwnedPhotoCheck;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\TimelineAlbum;
 use Illuminate\Support\Facades\Session;
@@ -51,6 +52,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE = 'canShare';
 	public const CAN_SHARE_WITH_USERS = 'canShareWithUsers';
 	public const CAN_IMPORT_FROM_SERVER = 'canImportFromServer';
+	public const CAN_IMPORT_INTO = 'canImportInto';
 	public const CAN_SHARE_ID = 'canShareById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_MAKE_PURCHASABLE = 'canMakePurchasable';
@@ -80,6 +82,9 @@ class AlbumPolicy extends BasePolicy
 	 * albums.
 	 * Hence, the method is only provided for them.
 	 *
+	 * Smart albums that require upload rights are also shown to users who
+	 * own at least one photo (Feature 118, FR-118-16).
+	 *
 	 * @param User|null      $user
 	 * @param BaseSmartAlbum $smart_album
 	 *
@@ -87,13 +92,19 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canSee(?User $user, BaseSmartAlbum $smart_album): bool
 	{
+		// if $user is null then we require that the album is public.
+		if ($user?->may_upload === true || $smart_album->public_permissions() !== null) {
+			return true;
+		}
+
+		if ($user === null) {
+			return false;
+		}
+
 		// We do not require upload rights for all albums
 		$require_upload_rights = SmartAlbumType::from($smart_album->get_id())->require_upload_rights();
 
-		return ($user?->may_upload === true) ||
-			($user?->may_upload === false && !$require_upload_rights) ||
-			// if $user is null then we require that the album is public.
-			$smart_album->public_permissions() !== null;
+		return !$require_upload_rights || app(OwnedPhotoCheck::class)->ownsAnyPhoto($user);
 	}
 
 	/**
@@ -160,7 +171,7 @@ class AlbumPolicy extends BasePolicy
 	 * Checks whether the current user can access {@see TimelineAlbum} -
 	 * reproduces {@see \App\Http\Requests\Timeline\IdOrDatedTimelineRequest::authorize()}'s
 	 * exact predicate, which is unrelated to (and deliberately does not
-	 * reuse) the `may_upload`-based {@see self::canSee()} rule every other
+	 * reuse) the upload-or-ownership {@see self::canSee()} rule every other
 	 * built-in smart album goes through: an authenticated user always may,
 	 * a guest only if `timeline_photos_public` is on - either way gated by
 	 * the instance-wide `timeline_page_enabled` switch.
@@ -243,6 +254,9 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Check if user is allowed to upload in current albumn.
 	 *
+	 * The owner needs the upload right too (Feature 118, FR-118-13);
+	 * an upload grant works for its recipient whatever their own rights.
+	 *
 	 * @param User               $user
 	 * @param AbstractAlbum|null $abstract_album
 	 *
@@ -257,9 +271,38 @@ class AlbumPolicy extends BasePolicy
 			return $user?->may_upload ?? false;
 		}
 
-		return $this->isOwner($user, $abstract_album) ||
-			$abstract_album->current_user_permissions()?->grants_upload === true ||
-			$abstract_album->public_permissions()?->grants_upload === true;
+		return ($this->isOwner($user, $abstract_album) && $user?->may_upload === true) ||
+			$this->hasUploadGrant($abstract_album);
+	}
+
+	/**
+	 * Check whether the user may import from server into the given album
+	 * (Feature 118, FR-118-15): their own album or one carrying an upload
+	 * grant. The root is allowed: the albums created are the user's.
+	 * Unlike {@see self::canUpload()}, the owner needs no upload right:
+	 * the server path is the grant (FR-118-14).
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $abstract_album
+	 *
+	 * @return bool
+	 */
+	public function canImportInto(User $user, ?AbstractAlbum $abstract_album = null): bool
+	{
+		if (!$abstract_album instanceof BaseAlbum) {
+			return $abstract_album === null;
+		}
+
+		return $this->isOwner($user, $abstract_album) || $this->hasUploadGrant($abstract_album);
+	}
+
+	/**
+	 * A user, group or public permission on the album grants upload.
+	 */
+	private function hasUploadGrant(BaseAlbum $album): bool
+	{
+		return $album->current_user_permissions()?->grants_upload === true ||
+			$album->public_permissions()?->grants_upload === true;
 	}
 
 	/**
@@ -272,7 +315,7 @@ class AlbumPolicy extends BasePolicy
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin
-	 *  - the user has the upload privilege and is the owner of the album
+	 *  - the user has the edit right (`may_edit`, Feature 118) and is the owner of the album
 	 *
 	 * Note about built-in smart albums:
 	 * The built-in smart albums (highlighted, public, recent, unsorted) do not
@@ -290,11 +333,11 @@ class AlbumPolicy extends BasePolicy
 	{
 		// The root album and smart albums get a pass
 		if ($album === null || $album instanceof BaseSmartAlbum) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if ($album instanceof BaseAlbum) {
-			return ($this->isOwner($user, $album) && $user->may_upload) ||
+			return ($this->isOwner($user, $album) && $user->may_edit) ||
 				$album->current_user_permissions()?->grants_edit === true ||
 				$album->public_permissions()?->grants_edit === true;
 		}
@@ -308,11 +351,11 @@ class AlbumPolicy extends BasePolicy
 	 * This does not allow moving the album itself, see {@link AlbumPolicy::canMoveAlbum()}.
 	 *
 	 * Separate from {@link AlbumPolicy::canEdit()}: the content is movable if
-	 *  - the user is the owner of the album and has the upload privilege, or
+	 *  - the user is the owner of the album and has the edit right, or
 	 *  - a user or group permission on the album grants move.
 	 *
 	 * Public permissions never grant move.
-	 * The root album and smart albums follow the upload privilege, like canEdit.
+	 * The root album and smart albums follow the edit right, like canEdit.
 	 *
 	 * @param User               $user
 	 * @param AbstractAlbum|null $album the album; `null` designates the root album
@@ -322,11 +365,11 @@ class AlbumPolicy extends BasePolicy
 	public function canMove(User $user, AbstractAlbum|null $album): bool
 	{
 		if ($album === null || $album instanceof BaseSmartAlbum) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if ($album instanceof BaseAlbum) {
-			return ($this->isOwner($user, $album) && $user->may_upload) ||
+			return ($this->isOwner($user, $album) && $user->may_edit) ||
 				$album->current_user_permissions()?->grants_move === true;
 		}
 
@@ -338,7 +381,7 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * Like {@link AlbumPolicy::canDelete()}, this is decided by the parent:
 	 * an album is part of its parent's content, so moving it requires
-	 *  - the user to own the album and have the upload privilege, or
+	 *  - the user to own the album and have the edit right, or
 	 *  - a user or group permission on the parent granting move.
 	 *
 	 * A root album has no parent: only its owner may move it.
@@ -355,7 +398,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($this->isOwner($user, $abstract_album)) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if ($abstract_album->parent_id === null) {
@@ -384,15 +427,15 @@ class AlbumPolicy extends BasePolicy
 	public function canDelete(User $user, ?AbstractAlbum $abstract_album = null): bool
 	{
 		if ($abstract_album instanceof BaseSmartAlbum) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if (!$abstract_album instanceof Album) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if ($this->isOwner($user, $abstract_album)) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if (
@@ -413,6 +456,9 @@ class AlbumPolicy extends BasePolicy
 	/**
 	 * Check if user is allowed to USE transfer in current album.
 	 *
+	 * Handing an album over gives another user access to it:
+	 * owner with the share right (Feature 118, FR-118-04).
+	 *
 	 * @param User               $user
 	 * @param AbstractAlbum|null $base_album
 	 *
@@ -426,7 +472,7 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		return $this->isOwner($user, $base_album);
+		return $user->may_share && $this->isOwner($user, $base_album);
 	}
 
 	/**
@@ -434,8 +480,9 @@ class AlbumPolicy extends BasePolicy
 	 * public visibility, link requirement, password, NSFW flag and the grants
 	 * of the public share.
 	 *
-	 * This is a sharing decision, so it is reserved to the owner, like sharing
-	 * with users. Smart albums have no owner: only admins (via `before()`).
+	 * This is a sharing decision, so it is reserved to the owner with the
+	 * share right, like sharing with users (Feature 118, FR-118-03).
+	 * Smart albums have no owner: only admins (via `before()`).
 	 *
 	 * @param User               $user
 	 * @param AbstractAlbum|null $abstract_album
@@ -448,7 +495,7 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		return $this->isOwner($user, $abstract_album);
+		return $user->may_share && $this->isOwner($user, $abstract_album);
 	}
 
 	/**
@@ -502,7 +549,7 @@ class AlbumPolicy extends BasePolicy
 		$num_albums = count($album_ids);
 
 		if ($num_albums === 0) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if (
@@ -511,7 +558,7 @@ class AlbumPolicy extends BasePolicy
 			->where('owner_id', '=', $user->id)
 			->count() === $num_albums
 		) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		if ($this->countGrantedById($user, $album_ids, APC::GRANTS_EDIT) === $num_albums) {
@@ -526,7 +573,7 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * An album is part of its parent's content, so, like
 	 * {@link AlbumPolicy::canDelete()}, each album is deletable if
-	 *  - the user owns it and has the upload privilege, or
+	 *  - the user owns it and has the edit right, or
 	 *  - a user or group permission on its parent grants delete.
 	 *
 	 * An album without parent (root, tag, person album) can only be deleted
@@ -593,7 +640,7 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * True when every designated album is either owned by the user (who then
-	 * needs the upload privilege) or has a parent on which a user or group
+	 * needs the edit right) or has a parent on which a user or group
 	 * permission carries $grant. Albums without parent: owner only.
 	 *
 	 * Two queries, whatever the number of albums.
@@ -605,7 +652,7 @@ class AlbumPolicy extends BasePolicy
 		$album_ids = $this->uniquify($album_ids);
 
 		if ($album_ids === []) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		$rows = BaseAlbumImpl::query()
@@ -620,7 +667,7 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		$foreign = $rows->filter(fn ($row) => (int) $row->owner_id !== $user->id);
-		if ($foreign->count() < $rows->count() && !$user->may_upload) {
+		if ($foreign->count() < $rows->count() && !$user->may_edit) {
 			return false;
 		}
 
@@ -636,7 +683,7 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * True when every designated album is either owned by the user (who then
-	 * needs the upload privilege) or carries $grant in a user or group
+	 * needs the edit right) or carries $grant in a user or group
 	 * permission. Two queries, whatever the number of albums.
 	 *
 	 * @param array<int,string> $album_ids
@@ -646,7 +693,7 @@ class AlbumPolicy extends BasePolicy
 		$album_ids = $this->uniquify($album_ids);
 
 		if ($album_ids === []) {
-			return $user->may_upload;
+			return $user->may_edit;
 		}
 
 		/** @var array<int,string> $owned_ids */
@@ -656,7 +703,7 @@ class AlbumPolicy extends BasePolicy
 			->pluck('id')
 			->all();
 
-		if ($owned_ids !== [] && !$user->may_upload) {
+		if ($owned_ids !== [] && !$user->may_edit) {
 			return false;
 		}
 
@@ -717,14 +764,15 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canShareWithUsers(User $user, AbstractAlbum|BaseAlbumImpl|null $abstract_album): bool
 	{
-		if ($user->may_upload !== true) {
+		if ($user->may_share !== true) {
 			return false;
 		}
 
-		// If this is null, this means that we are looking at the list.
+		// If this is null, this means that we are looking at the list: it holds
+		// the user's own shares, possibly none. No album query, so that the root
+		// rights stay query-free (Feature 062, Feature 118 FR-118-05).
 		if ($abstract_album === null) {
-			// We need to be at least owner of an album to be able to share anything.
-			return BaseAlbumImpl::query()->where('owner_id', '=', $user->id)->toBase()->count() > 0;
+			return true;
 		}
 
 		if (!$abstract_album instanceof BaseAlbum && !$abstract_album instanceof BaseAlbumImpl) {
@@ -736,7 +784,7 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * Check if user can share selected albums with other users.
-	 * Only owner can share.
+	 * Only an owner with the share right can share (Feature 118, FR-118-02).
 	 *
 	 * @param User              $user
 	 * @param array<int,string> $album_ids
@@ -747,7 +795,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canShareById(User $user, array $album_ids): bool
 	{
-		if (!$user->may_upload) {
+		if (!$user->may_share) {
 			return false;
 		}
 
@@ -789,10 +837,11 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
-	 * Check whether user can import from server (Feature 115, FR-115-03).
+	 * Check whether user can import from server (Feature 115, FR-115-03,
+	 * amended by Feature 118, FR-118-14).
 	 *
-	 * The feature must not be disabled in the .env config, the user must have
-	 * a server path and be allowed to upload (or administrate).
+	 * The feature must not be disabled in the .env config and the user must
+	 * have a server path: set by the server owner only, it is the grant.
 	 *
 	 * @param User $user
 	 *
@@ -801,8 +850,7 @@ class AlbumPolicy extends BasePolicy
 	public function canImportFromServer(User $user): bool
 	{
 		return config('features.disable-import-from-server', true) === false &&
-			$user->server_path !== null &&
-			($user->may_administrate || $user->may_upload);
+			$user->server_path !== null;
 	}
 
 	// The following methods are not to be called by Gate.

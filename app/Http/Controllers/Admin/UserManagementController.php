@@ -40,7 +40,7 @@ class UserManagementController extends Controller
 	public function list(ManagmentListUsersRequest $request, Spaces $spaces): Collection
 	{
 		/** @var Collection<int,User> $users */
-		$users = User::select(['id', 'username', 'may_administrate', 'may_upload', 'may_edit_own_settings', 'quota_kb', 'description', 'note', 'upload_trust_level', 'server_path'])->orderBy('id', 'asc')->get();
+		$users = User::select(['id', 'username', 'may_administrate', 'may_upload', 'may_share', 'may_edit', 'may_edit_own_settings', 'quota_kb', 'description', 'note', 'upload_trust_level', 'server_path'])->orderBy('id', 'asc')->get();
 		$spaces_per_user = $spaces->getFullSpacePerUser();
 		$zipped = $users->zip($spaces_per_user);
 
@@ -64,6 +64,8 @@ class UserManagementController extends Controller
 			note: $request->note(),
 			upload_trust_level: $request->uploadTrustLevel(),
 			server_path: $request->serverPath(),
+			may_share: $request->mayShare(),
+			may_edit: $request->mayEdit(),
 		);
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);
@@ -100,6 +102,8 @@ class UserManagementController extends Controller
 			note: $request->note(),
 			upload_trust_level: $request->uploadTrustLevel(),
 			server_path: $request->serverPath(),
+			may_share: $request->mayShare(),
+			may_edit: $request->mayEdit(),
 		);
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USERS);

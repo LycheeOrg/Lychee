@@ -46,6 +46,8 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $email
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
+ * @property bool                                                  $may_share
+ * @property bool                                                  $may_edit
  * @property bool                                                  $may_edit_own_settings
  * @property int                                                   $quota_kb
  * @property string|null                                           $description
@@ -120,6 +122,8 @@ class User extends Authenticatable
 		'is_ldap' => 'boolean',
 		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
+		'may_share' => 'boolean',
+		'may_edit' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
 		'quota_kb' => 'integer',
 		'shared_albums_visibility' => UserSharedAlbumsVisibility::class,

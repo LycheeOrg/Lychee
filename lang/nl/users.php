@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Wanneer geselecteerd, kan de gebruiker inhoud uploaden.',
     'edit_rights' => 'Wanneer geselecteerd, kan de gebruiker zijn profiel wijzigen (gebruikersnaam, wachtwoord).',
+    'share_rights' => 'Indien geselecteerd, kan de gebruiker zijn albums met andere gebruikers delen en openbaar maken.',
+    'content_rights' => 'Indien geselecteerd, kan de gebruiker zijn eigen content bewerken, verplaatsen en verwijderen.',
     'upload_trust_level' => 'Vertrouwensniveau voor uploads — bepaalt of geüploade inhoud direct openbaar is.',
 
     'quota' => 'Wanneer ingesteld, heeft de gebruiker een ruimtequotum voor foto’s (in kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Leeg: importeren vanaf de server uitgeschakeld. "/": de hele server. Anders: alleen deze map en wat eronder valt.',
         'upload_rights' => 'Gebruiker kan inhoud uploaden.',
         'edit_rights' => 'Gebruiker kan zijn profiel wijzigen (gebruikersnaam, wachtwoord).',
+        'share_rights' => 'Gebruiker kan zijn albums delen.',
+        'content_rights' => 'Gebruiker kan eigen content bewerken, verplaatsen en verwijderen.',
         'admin_rights' => 'Gebruiker heeft beheerdersrechten.',
         'upload_trust_level' => 'Vertrouwensniveau voor uploads',
         'upload_trust_level_check' => 'Controle – geüploade inhoud vereist goedkeuring van een beheerder voordat deze openbaar wordt.',
