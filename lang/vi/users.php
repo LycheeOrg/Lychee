@@ -14,6 +14,8 @@ return [
     'legend' => 'Chú thích',
     'upload_rights' => 'Khi được chọn, người dùng có thể tải lên nội dung.',
     'edit_rights' => 'Khi được chọn, người dùng có thể sửa hồ sơ của mình (tên người dùng, mật khẩu).',
+    'share_rights' => 'Khi được chọn, người dùng có thể chia sẻ album của mình với người dùng khác và công khai chúng.',
+    'content_rights' => 'Khi được chọn, người dùng có thể chỉnh sửa, di chuyển và xóa nội dung của mình.',
     'upload_trust_level' => 'Mức tin cậy tải lên — kiểm soát việc ảnh tải lên có được công khai ngay hay không.',
 
     'quota' => 'Khi được đặt, người dùng có hạn ngạch dung lượng cho ảnh (tính bằng kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Để trống: tắt nhập từ máy chủ. "/": toàn bộ máy chủ. Nếu không: chỉ thư mục này và các thư mục con.',
         'upload_rights' => 'Người dùng có thể tải lên nội dung.',
         'edit_rights' => 'Người dùng có thể sửa hồ sơ của mình (tên người dùng, mật khẩu).',
+        'share_rights' => 'Người dùng có thể chia sẻ album của mình.',
+        'content_rights' => 'Người dùng có thể chỉnh sửa, di chuyển và xóa nội dung của mình.',
         'admin_rights' => 'Người dùng có quyền quản trị.',
         'upload_trust_level' => 'Mức tin cậy tải lên',
         'upload_trust_level_check' => 'Kiểm tra – ảnh tải lên cần quản trị viên phê duyệt trước khi được công khai.',

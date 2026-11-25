@@ -91,7 +91,9 @@ class Oauth
 			email: $user->getEmail(),
 			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
 			may_upload: $this->config_manager->getValueAsBool('grant_new_user_upload_rights'),
-			may_edit_own_settings: $this->config_manager->getValueAsBool('grant_new_user_modification_rights'));
+			may_edit_own_settings: $this->config_manager->getValueAsBool('grant_new_user_modification_rights'),
+			may_share: $this->config_manager->getValueAsBool('grant_new_user_share_rights'),
+			may_edit: $this->config_manager->getValueAsBool('grant_new_user_edit_rights'));
 
 		Auth::login($new_user);
 

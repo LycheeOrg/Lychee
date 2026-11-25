@@ -995,6 +995,22 @@ export const useAlbumStore = defineStore("album-store", {
 		rights(state): App.Http.Resources.Rights.AlbumRightsResource | undefined {
 			return (state.modelAlbum || state.tagAlbum || state.personAlbum || state.smartAlbum)?.rights ?? undefined;
 		},
+		/**
+		 * The album settings drawer opens when at least one of its sections is
+		 * available (Feature 118, FR-118-06): an owner who may share but not edit
+		 * still reaches visibility, sharing and transfer.
+		 */
+		hasAlbumSettings(): boolean {
+			const rights = this.rights;
+			return (
+				rights?.can_edit === true ||
+				rights?.can_transfer === true ||
+				rights?.can_share_with_users === true ||
+				rights?.can_move === true ||
+				rights?.can_delete === true ||
+				rights?.can_make_purchasable === true
+			);
+		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;
 		},

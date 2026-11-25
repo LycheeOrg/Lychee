@@ -30,10 +30,10 @@
 					<UCheckbox v-model="grantsReadAccess" disabled />
 					<UCheckbox v-model="grantsFullPhotoAccess" />
 					<UCheckbox v-model="grantsDownload" />
-					<UCheckbox v-model="grantsUpload" />
-					<UCheckbox v-model="grantsEdit" />
-					<UCheckbox v-model="grantsMove" />
-					<UCheckbox v-model="grantsDelete" />
+					<UCheckbox v-model="grantsUpload" :disabled="lockUpload(grantsUpload)" />
+					<UCheckbox v-model="grantsEdit" :disabled="lockEdit(grantsEdit)" />
+					<UCheckbox v-model="grantsMove" :disabled="lockEdit(grantsMove)" />
+					<UCheckbox v-model="grantsDelete" :disabled="lockEdit(grantsDelete)" />
 				</div>
 			</div>
 		</template>
@@ -57,12 +57,15 @@
 	</UModal>
 </template>
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import SharingService from "@/services/sharing-service";
 import { trans } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { ref } from "vue";
 import SearchTargetUser from "./SearchTargetUser.vue";
 import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const props = defineProps<{
 	// Only `.id` is ever read below — kept minimal (rather than the full

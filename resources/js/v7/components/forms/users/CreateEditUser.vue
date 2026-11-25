@@ -15,6 +15,14 @@
 					<label for="mayUpload" class="ltr:ml-2 rtl:mr-2 cursor-pointer3">{{ $t("users.create_edit.upload_rights") }}</label>
 				</div>
 				<div class="w-full items-center text-muted-color">
+					<Checkbox v-model="shareRights" input-id="mayShare" :binary="true" :disabled="may_upload" />
+					<label for="mayShare" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.share_rights") }}</label>
+				</div>
+				<div class="w-full items-center text-muted-color">
+					<Checkbox v-model="contentRights" input-id="mayEditContent" :binary="true" :disabled="may_upload" />
+					<label for="mayEditContent" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.content_rights") }}</label>
+				</div>
+				<div class="w-full items-center text-muted-color">
 					<Checkbox v-model="may_edit_own_settings" input-id="mayEdit" :binary="true" />
 					<label for="mayEdit" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
 				</div>
@@ -152,6 +160,23 @@ const password = ref<string | undefined>(undefined);
 const may_edit_own_settings = ref(props.user?.may_edit_own_settings ?? false);
 const may_administrate = ref(props.user?.may_administrate ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
+const may_share = ref(props.user?.may_share ?? false);
+const may_edit = ref(props.user?.may_edit ?? false);
+
+// Upload implies share and edit (Feature 118, FR-118-22): while upload is ticked both
+// show ticked and locked; unticking upload shows their own values again.
+const shareRights = computed<boolean>({
+	get: () => may_upload.value || may_share.value,
+	set: (v) => {
+		may_share.value = v;
+	},
+});
+const contentRights = computed<boolean>({
+	get: () => may_upload.value || may_edit.value,
+	set: (v) => {
+		may_edit.value = v;
+	},
+});
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
 const upload_trust_level = ref<App.Enum.UserUploadTrustLevel>(props.user?.upload_trust_level ?? "trusted");
@@ -190,6 +215,8 @@ function createUser() {
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
+		may_share: may_share.value,
+		may_edit: may_edit.value,
 		upload_trust_level: upload_trust_level.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
@@ -200,6 +227,8 @@ function createUser() {
 			visible.value = false;
 			password.value = undefined;
 			may_upload.value = false;
+			may_share.value = false;
+			may_edit.value = false;
 			may_administrate.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
@@ -229,6 +258,8 @@ function editUser() {
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
+		may_share: may_share.value,
+		may_edit: may_edit.value,
 		upload_trust_level: upload_trust_level.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
@@ -239,6 +270,8 @@ function editUser() {
 			visible.value = false;
 			password.value = undefined;
 			may_upload.value = false;
+			may_share.value = false;
+			may_edit.value = false;
 			may_administrate.value = false;
 			may_edit_own_settings.value = false;
 			username.value = undefined;
@@ -261,6 +294,8 @@ watch(
 		may_edit_own_settings.value = newUser?.may_edit_own_settings ?? false;
 		may_administrate.value = newUser?.may_administrate ?? false;
 		may_upload.value = newUser?.may_upload ?? false;
+		may_share.value = newUser?.may_share ?? false;
+		may_edit.value = newUser?.may_edit ?? false;
 		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
 		quota_kb.value = newUser?.quota_kb?.toString() ?? "0";
 		upload_trust_level.value = newUser?.upload_trust_level ?? "trusted";

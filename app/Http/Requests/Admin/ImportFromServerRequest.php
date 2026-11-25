@@ -43,8 +43,8 @@ class ImportFromServerRequest extends BaseApiRequest implements HasAbstractAlbum
 			return false;
 		}
 
-		// FR-115-07: the requester needs the upload right on the target album.
-		if ($this->album !== null && !Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, $this->album])) {
+		// FR-115-07, amended by FR-118-15: the target album must be the requester's or carry an upload grant.
+		if ($this->album !== null && !Gate::check(AlbumPolicy::CAN_IMPORT_INTO, [AbstractAlbum::class, $this->album])) {
 			return false;
 		}
 

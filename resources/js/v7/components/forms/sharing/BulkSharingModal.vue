@@ -79,9 +79,9 @@
 					<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
 					<Checkbox v-model="grantsFullPhotoAccess" :binary="true" />
 					<Checkbox v-model="grantsDownload" :binary="true" />
-					<Checkbox v-model="grantsUpload" :binary="true" />
-					<Checkbox v-model="grantsEdit" :binary="true" />
-					<Checkbox v-model="grantsDelete" :binary="true" />
+					<Checkbox v-model="grantsUpload" :binary="true" :disabled="lockUpload(grantsUpload)" />
+					<Checkbox v-model="grantsEdit" :binary="true" :disabled="lockEdit(grantsEdit)" />
+					<Checkbox v-model="grantsDelete" :binary="true" :disabled="lockEdit(grantsDelete)" />
 				</div>
 
 				<div class="flex justify-center w-full">
@@ -102,6 +102,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import Dialog from "primevue/dialog";
 import { ref } from "vue";
 import { onMounted } from "vue";
@@ -114,6 +115,8 @@ import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { UserOrGroup, useUsersAndGroupStore } from "@/stores/UsersAndGroupsState";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const visible = defineModel("visible", { default: false });
 const lycheeStore = useLycheeStateStore();

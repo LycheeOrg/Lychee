@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Pokud povoleno, uživatel může nahrávat obsah.',
     'edit_rights' => 'Pokud vybráno, uživatel může měnit svůj profil (přihlašovací jméno, heslo).',
+    'share_rights' => 'Je-li vybráno, uživatel může sdílet svá alba s ostatními uživateli a zveřejňovat je.',
+    'content_rights' => 'Je-li vybráno, uživatel může upravovat, přesouvat a mazat vlastní obsah.',
     'upload_trust_level' => 'Úroveň důvěryhodnosti při nahrávání — určuje, jestli je nahraný obsah okamžitě zveřejněný.',
 
     'quota' => 'Pokud nastaveno, určuje limit objemu nahraných fotografií (v kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Prázdné: import ze serveru vypnut. „/“: celý server. Jinak: pouze tato složka a její obsah.',
         'upload_rights' => 'Uživatel může nahrávat obsah.',
         'edit_rights' => 'Uživatel může měnit svůj profil (přihlašovací jméno, heslo).',
+        'share_rights' => 'Uživatel může sdílet svá alba.',
+        'content_rights' => 'Uživatel může upravovat, přesouvat a mazat vlastní obsah.',
         'admin_rights' => 'Uživatel má práva administrátora.',
         'upload_trust_level' => 'Úroveň důvěry při nahrávání',
         'upload_trust_level_check' => 'Kontrola – nahraný obsah vyžaduje schválení administrátora.',

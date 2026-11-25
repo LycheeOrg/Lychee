@@ -43,4 +43,22 @@ class CreateUserCommandTest extends AbstractTestCase
 		self::assertTrue($second->may_administrate);
 		self::assertNull($second->server_path);
 	}
+
+	/**
+	 * Feature 118: FR-118-21, S-118-13.
+	 */
+	public function testShareAndEditOptions(): void
+	{
+		$this->artisan('lychee:create_user', ['username' => 'first', 'password' => 'password'])->assertExitCode(0);
+		$this->artisan('lychee:create_user', ['username' => 'sharer', 'password' => 'password', '--may-share' => true])->assertExitCode(0);
+		$this->artisan('lychee:create_user', ['username' => 'editor', 'password' => 'password', '--may-edit' => true])->assertExitCode(0);
+		$this->artisan('lychee:create_user', ['username' => 'uploader', 'password' => 'password', '--may-upload' => true])->assertExitCode(0);
+		$this->artisan('lychee:create_user', ['username' => 'nobody', 'password' => 'password'])->assertExitCode(0);
+
+		$rights = fn (string $name) => User::query()->where('username', '=', $name)->firstOrFail()->only(['may_upload', 'may_share', 'may_edit']);
+		self::assertSame(['may_upload' => false, 'may_share' => true, 'may_edit' => false], $rights('sharer'));
+		self::assertSame(['may_upload' => false, 'may_share' => false, 'may_edit' => true], $rights('editor'));
+		self::assertSame(['may_upload' => true, 'may_share' => true, 'may_edit' => true], $rights('uploader'));
+		self::assertSame(['may_upload' => false, 'may_share' => false, 'may_edit' => false], $rights('nobody'));
+	}
 }

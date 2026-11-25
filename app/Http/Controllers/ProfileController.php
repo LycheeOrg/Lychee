@@ -46,6 +46,8 @@ class ProfileController extends Controller
 			may_upload: $request->configs()->getValueAsBool('grant_new_user_upload_rights'),
 			may_edit_own_settings: $request->configs()->getValueAsBool('grant_new_user_modification_rights'),
 			quota_kb: 0,
+			may_share: $request->configs()->getValueAsBool('grant_new_user_share_rights'),
+			may_edit: $request->configs()->getValueAsBool('grant_new_user_edit_rights'),
 		);
 
 		// Log in the user directly after registration

@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\SmartAlbums;
 
 use App\Models\Configs;
+use App\Models\User;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class OverridePermissionsTest extends BaseApiWithDataTest
@@ -27,6 +28,9 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 	{
 		Configs::set('SA_override_visibility', true);
 		Configs::set('hide_nsfw_in_smart_albums', false);
+		// A viewer without upload rights who owns no photo: owning one would
+		// show the upload-gated smart albums anyway (Feature 118, FR-118-16).
+		$viewer = User::factory()->create();
 
 		$smart_albums = ['highlighted', 'recent', 'on_this_day', 'unsorted'];
 		foreach ($smart_albums as $album_id) {
@@ -42,7 +46,7 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 			$this->assertCreated($response);
 		}
 
-		$response = $this->actingAs($this->userNoUpload)->getJson('Albums');
+		$response = $this->actingAs($viewer)->getJson('Albums');
 		$this->assertOk($response);
 		$response->assertJson(['smart_albums' => [
 			['id' => 'unsorted', 'title' => 'Unsorted'],
@@ -64,7 +68,7 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 			$this->assertCreated($response);
 		}
 
-		$response = $this->actingAs($this->userNoUpload)->getJson('Albums');
+		$response = $this->actingAs($viewer)->getJson('Albums');
 		$this->assertOk($response);
 		$response->assertJsonCount(3, 'smart_albums');
 	}

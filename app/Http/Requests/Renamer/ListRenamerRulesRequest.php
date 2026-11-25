@@ -26,7 +26,7 @@ class ListRenamerRulesRequest extends BaseApiRequest
 	{
 		$user = Auth::user();
 
-		return $user !== null && ($user->may_administrate || $user->may_upload);
+		return $user !== null && ($user->may_administrate || $user->may_edit);
 	}
 
 	/**

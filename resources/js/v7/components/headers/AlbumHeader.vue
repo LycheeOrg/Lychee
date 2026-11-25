@@ -76,7 +76,7 @@
 					@click="emits('openSearch')"
 				/>
 				<Button v-if="albumStore.rights?.can_upload" icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" />
-				<template v-if="albumStore.rights?.can_edit">
+				<template v-if="albumStore.hasAlbumSettings">
 					<Button
 						:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
 						severity="secondary"

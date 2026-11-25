@@ -28,7 +28,7 @@ class Save
 	 * @param User        $user
 	 * @param string      $username
 	 * @param string|null $password              see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
-	 * @param bool        $may_upload
+	 * @param bool        $may_upload            implies $may_share and $may_edit (FR-118-22)
 	 * @param bool        $may_edit_own_settings
 	 *
 	 * @return void
@@ -46,6 +46,8 @@ class Save
 		?string $note = null,
 		?UserUploadTrustLevel $upload_trust_level = null,
 		?string $server_path = null,
+		bool $may_share = false,
+		bool $may_edit = false,
 	): void {
 		if (User::query()
 			->where('username', '=', $username)
@@ -63,6 +65,9 @@ class Save
 
 		$user->username = $username;
 		$user->may_upload = $may_upload;
+		// Upload implies share and edit (FR-118-22).
+		$user->may_share = $may_share || $may_upload;
+		$user->may_edit = $may_edit || $may_upload;
 		$user->may_edit_own_settings = $may_edit_own_settings;
 		$user->may_administrate = $may_administrate;
 		$user->note = $note;

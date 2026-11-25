@@ -8,17 +8,22 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Http\Requests\HasAbstractAlbum;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
+use App\Http\Requests\Traits\HasHeldGrantsTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Models\AccessPermission;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\BooleanRequireSupportRule;
+use App\Rules\HeldGrantRule;
 use App\Rules\PasswordRule;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +33,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 {
 	use HasAbstractAlbumTrait;
 	use HasPasswordTrait;
+	use HasHeldGrantsTrait;
 
 	protected bool $is_password_provided;
 	protected AlbumProtectionPolicy $album_protection_policy;
@@ -58,8 +64,33 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			RequestAttribute::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
-			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify()), new HeldGrantRule($this->holdsUploadGrant(), $this->publicUploadAlreadyGranted())],
 		];
+	}
+
+	/**
+	 * Whether the album's public permission already grants upload, so that
+	 * resending it is keeping it, not handing it out (Q-118-09).
+	 * It counts only for the album's owner: anyone else gets the same answer
+	 * whatever the stored grant. No query when the held right decides.
+	 */
+	private function publicUploadAlreadyGranted(): bool
+	{
+		/** @var User|null $user */
+		$user = Auth::user();
+		$album_id = $this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE);
+		if ($user === null || $this->holdsUploadGrant() || !is_string($album_id)) {
+			return false;
+		}
+
+		return AccessPermission::query()
+			->join('base_albums', 'base_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID)
+			->where(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, '=', $album_id)
+			->where('base_albums.owner_id', '=', $user->id)
+			->whereNull(APC::ACCESS_PERMISSIONS . '.' . APC::USER_ID)
+			->whereNull(APC::ACCESS_PERMISSIONS . '.' . APC::USER_GROUP_ID)
+			->where(APC::ACCESS_PERMISSIONS . '.' . APC::GRANTS_UPLOAD, '=', true)
+			->exists();
 	}
 
 	/**

@@ -14,6 +14,8 @@ return [
     'legend' => 'Jelmagyarázat',
     'upload_rights' => 'Ha be van jelölve, a felhasználó tartalmat tölthet fel.',
     'edit_rights' => 'Ha be van jelölve, a felhasználó módosíthatja a profilját (felhasználónév, jelszó).',
+    'share_rights' => 'Ha be van jelölve, a felhasználó megoszthatja az albumait más felhasználókkal, és nyilvánossá teheti őket.',
+    'content_rights' => 'Ha be van jelölve, a felhasználó szerkesztheti, áthelyezheti és törölheti a saját tartalmát.',
     'upload_trust_level' => 'Feltöltési bizalmi szint – meghatározza, hogy a feltöltések azonnal nyilvánosak-e.',
 
     'quota' => 'Ha be van állítva, a felhasználónak tárhelykvótája van a képekhez (kB-ban).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Üres: a szerverről importálás ki van kapcsolva. „/”: a teljes szerver. Egyébként: csak ez a mappa és ami alatta van.',
         'upload_rights' => 'A felhasználó tartalmat tölthet fel.',
         'edit_rights' => 'A felhasználó módosíthatja a profilját (felhasználónév, jelszó).',
+        'share_rights' => 'A felhasználó megoszthatja az albumait.',
+        'content_rights' => 'A felhasználó szerkesztheti, áthelyezheti és törölheti a saját tartalmát.',
         'admin_rights' => 'A felhasználó rendszergazdai jogokkal rendelkezik.',
         'upload_trust_level' => 'Feltöltési bizalmi szint',
         'upload_trust_level_check' => 'Ellenőrzés – a feltöltések nyilvánossá válásához rendszergazdai jóváhagyás szükséges.',

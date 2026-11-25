@@ -21,6 +21,7 @@ class RootAlbumRightsResource extends Data
 {
 	public bool $can_edit;
 	public bool $can_upload;
+	public bool $can_share_with_users;
 	public bool $can_see_live_metrics;
 	public bool $can_import_from_server;
 	public bool $can_highlight;
@@ -29,6 +30,7 @@ class RootAlbumRightsResource extends Data
 	{
 		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]);
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
+		$this->can_share_with_users = Gate::check(AlbumPolicy::CAN_SHARE_WITH_USERS, [AbstractAlbum::class, null]);
 		$this->can_see_live_metrics = Gate::check(MetricsPolicy::CAN_SEE_LIVE, LiveMetrics::class);
 		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 		$this->can_highlight = Gate::check(AlbumPolicy::CAN_HIGHLIGHT, [AbstractAlbum::class, null]);

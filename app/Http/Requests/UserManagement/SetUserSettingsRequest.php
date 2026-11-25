@@ -43,6 +43,8 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	use HasNoteTrait;
 
 	protected bool $may_upload = false;
+	protected bool $may_share = false;
+	protected bool $may_edit = false;
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
 	protected ?UserUploadTrustLevel $upload_trust_level = null;
@@ -66,6 +68,8 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule(), 'min:1'],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_SHARE_ATTRIBUTE => 'present|boolean',
+			RequestAttribute::MAY_EDIT_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE => ['sometimes', new Enum(UserUploadTrustLevel::class)],
@@ -90,6 +94,8 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 			$this->password = null;
 		}
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
+		$this->may_share = static::toBoolean($values[RequestAttribute::MAY_SHARE_ATTRIBUTE]);
+		$this->may_edit = static::toBoolean($values[RequestAttribute::MAY_EDIT_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		$this->may_administrate = static::toBoolean($values[RequestAttribute::MAY_ADMINISTRATE] ?? false);
 		$this->upload_trust_level = isset($values[RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE])
@@ -111,6 +117,16 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function mayUpload(): bool
 	{
 		return $this->may_upload;
+	}
+
+	public function mayShare(): bool
+	{
+		return $this->may_share;
+	}
+
+	public function mayEdit(): bool
+	{
+		return $this->may_edit;
 	}
 
 	public function mayEditOwnSettings(): bool

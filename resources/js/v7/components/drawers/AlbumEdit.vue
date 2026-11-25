@@ -5,6 +5,7 @@
 			class="sm:mt-7 sm:px-7 mb-4 text-sm w-full xl:w-1/6 xl:px-9 max-xl:w-full max-xl:flex max-xl:justify-center"
 		>
 			<li
+				v-if="hasAboutTab"
 				:class="{
 					'px-2 pt-3 pb-4 cursor-pointer font-bold text-center transition-colors ease-in-out select-none': true,
 					'xl:border-l-2': isLTR(),
@@ -70,8 +71,8 @@
 			</li>
 		</ul>
 		<div v-if="activeTab === 0" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
-			<AlbumProperties v-if="albumStore.config?.is_base_album" :key="`properties_${albumStore.album?.id}`" />
-			<AlbumVisibility :key="`visibility_${albumStore.album?.id}`" />
+			<AlbumProperties v-if="canEditProperties" :key="`properties_${albumStore.album?.id}`" />
+			<AlbumVisibility v-if="canChangeVisibility" :key="`visibility_${albumStore.album?.id}`" />
 		</div>
 		<!-- @if($this->flags->is_base_album)  -->
 		<div v-if="activeTab === 1 && canShare" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
@@ -114,7 +115,6 @@ const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const { is_album_edit_open } = storeToRefs(togglableStore);
 
-const activeTab = ref(0);
 const numUsers = ref(0);
 
 UsersService.count().then((data) => {
@@ -126,9 +126,30 @@ const canMove = computed(() => albumStore.config?.is_model_album && albumStore.r
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
 const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
+// An owner with the share right but no edit right sees visibility, sharing and transfer only (Feature 118, FR-118-06).
+const canEditProperties = computed(() => albumStore.config?.is_base_album === true && albumStore.rights?.can_edit === true);
+// The protection policy is a sharing decision: the same rule as transfer.
+const canChangeVisibility = computed(() => albumStore.rights?.can_transfer ?? false);
+const hasAboutTab = computed(() => canEditProperties.value || canChangeVisibility.value);
+
+// First tab the user may see: the "About" tab is gone for users who may neither edit nor share.
+function firstTab(): number {
+	if (hasAboutTab.value) {
+		return 0;
+	}
+	if (canShare.value) {
+		return 1;
+	}
+	if (canMove.value) {
+		return 2;
+	}
+	return canManagePurchase.value ? 4 : 3;
+}
+
+const activeTab = ref(firstTab());
 
 function close() {
-	activeTab.value = 0;
+	activeTab.value = firstTab();
 	is_album_edit_open.value = false;
 }
 </script>

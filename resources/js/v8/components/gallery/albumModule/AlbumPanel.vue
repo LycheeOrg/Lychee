@@ -19,7 +19,7 @@
 					<UContextMenu :items="menuSections" :disabled="noData" class="contents">
 						<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start select-none">
 							<SelectDrag :with-scroll="true" />
-							<AlbumEdit v-if="albumStore.rights?.can_edit" />
+							<AlbumEdit v-if="albumStore.hasAlbumSettings" />
 							<div
 								v-if="noData"
 								class="flex w-full flex-col h-[calc(100svh-12rem)] items-center justify-center text-xl text-muted gap-8"

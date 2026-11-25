@@ -21,7 +21,7 @@ enum SyncUserEligibility: string
 	case NO_PATH = 'no path';
 	/** `server_path` is `/`: there is no folder of their own to sync. */
 	case FULL_ACCESS = 'full access';
-	/** Feature disabled, or the user may neither upload nor administrate. */
+	/** Feature disabled (Feature 118, FR-118-14: a server path no longer needs upload rights). */
 	case NOT_ALLOWED = 'may not import';
 
 	public static function of(User $user): self

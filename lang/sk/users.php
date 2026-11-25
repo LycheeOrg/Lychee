@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Ak je zaškrtnuté, používateľ môže nahrávať obsah.',
     'edit_rights' => 'Ak je zaškrtnuté, používateľ môže upravovať svoj profil (používateľské meno, heslo).',
+    'share_rights' => 'Ak je vybraté, používateľ môže zdieľať svoje albumy s ostatnými používateľmi a zverejňovať ich.',
+    'content_rights' => 'Ak je vybraté, používateľ môže upravovať, presúvať a mazať vlastný obsah.',
     'upload_trust_level' => 'Úroveň dôvery pri nahrávaní — určuje, či sú nahrané súbory hneď verejné.',
 
     'quota' => 'Ak je nastavené, používateľ má kvótu úložiska pre obrázky (v kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Prázdne: import zo servera vypnutý. „/“: celý server. Inak: iba tento priečinok a jeho obsah.',
         'upload_rights' => 'Používateľ môže nahrávať obsah.',
         'edit_rights' => 'Používateľ môže upravovať svoj profil (používateľské meno, heslo).',
+        'share_rights' => 'Používateľ môže zdieľať svoje albumy.',
+        'content_rights' => 'Používateľ môže upravovať, presúvať a mazať vlastný obsah.',
         'admin_rights' => 'Používateľ má administrátorské práva.',
         'upload_trust_level' => 'Úroveň dôvery pri nahrávaní',
         'upload_trust_level_check' => 'Kontrola – nahrané súbory pred zverejnením vyžadujú schválenie administrátorom.',

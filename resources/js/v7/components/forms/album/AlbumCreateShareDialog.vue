@@ -30,9 +30,9 @@
 						<Checkbox v-model="grantsReadAccess" :binary="true" disabled />
 						<Checkbox v-model="grantsFullPhotoAccess" :binary="true" />
 						<Checkbox v-model="grantsDownload" :binary="true" />
-						<Checkbox v-model="grantsUpload" :binary="true" />
-						<Checkbox v-model="grantsEdit" :binary="true" />
-						<Checkbox v-model="grantsDelete" :binary="true" />
+						<Checkbox v-model="grantsUpload" :binary="true" :disabled="lockUpload(grantsUpload)" />
+						<Checkbox v-model="grantsEdit" :binary="true" :disabled="lockEdit(grantsEdit)" />
+						<Checkbox v-model="grantsDelete" :binary="true" :disabled="lockEdit(grantsDelete)" />
 					</div>
 				</div>
 				<div class="flex items-center mt-9 w-full">
@@ -52,6 +52,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import SharingService from "@/services/sharing-service";
 import { trans } from "laravel-vue-i18n";
 import Dialog from "primevue/dialog";
@@ -61,6 +62,8 @@ import SearchTargetUser from "./SearchTargetUser.vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const props = defineProps<{
 	album:

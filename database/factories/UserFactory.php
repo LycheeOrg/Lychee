@@ -42,6 +42,8 @@ class UserFactory extends Factory
 			'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
 			'may_administrate' => false,
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'email' => $this->faker->unique()->email(),
 			'token' => null,
 			'is_ldap' => false,
@@ -67,7 +69,7 @@ class UserFactory extends Factory
 	}
 
 	/**
-	 * Indicate that the user has upload rights.
+	 * Indicate that the user has upload rights, hence share and edit rights (FR-118-22).
 	 *
 	 * @return Factory
 	 */
@@ -76,6 +78,36 @@ class UserFactory extends Factory
 		return $this->state(function (array $attributes) {
 			return [
 				'may_upload' => true,
+				'may_share' => true,
+				'may_edit' => true,
+			];
+		});
+	}
+
+	/**
+	 * Indicate that the user may share their albums (Feature 118).
+	 *
+	 * @return Factory
+	 */
+	public function may_share(): Factory
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'may_share' => true,
+			];
+		});
+	}
+
+	/**
+	 * Indicate that the user may edit their own content (Feature 118).
+	 *
+	 * @return Factory
+	 */
+	public function may_edit(): Factory
+	{
+		return $this->state(function (array $attributes) {
+			return [
+				'may_edit' => true,
 			];
 		});
 	}

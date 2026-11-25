@@ -28,6 +28,8 @@ class CreateUser extends Command
 		'{password : password of the new user} ' .
 		'{--may-edit-own-settings : user can edit own settings}  ' .
 		'{--may-upload : user may upload} ' .
+		'{--may-share : user may share their albums} ' .
+		'{--may-edit : user may edit, move and delete their own content} ' .
 		'{--may-administrate : user is an admin} ';
 
 	/**
@@ -70,7 +72,10 @@ class CreateUser extends Command
 			password: $password,
 			may_upload: $may_upload,
 			may_edit_own_settings: $may_edit_own_settings,
-			server_path: $is_first_user ? '/' : null);
+			server_path: $is_first_user ? '/' : null,
+			// Upload implies both (FR-118-22), enforced by Create.
+			may_share: $this->option('may-share') === true,
+			may_edit: $this->option('may-edit') === true);
 		$user->may_administrate = $may_administrate;
 		$user->save();
 

@@ -12,9 +12,11 @@ use App\Enum\UserUploadTrustLevel;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use function Safe\symlink;
@@ -187,6 +189,48 @@ class ImportFromServerTest extends BaseApiWithDataTest
 		$alice = $this->restrictTo($this->userMayUpload1, $this->import_root);
 		$response = $this->actingAs($alice)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album2->id));
 		$this->assertForbidden($response);
+	}
+
+	/**
+	 * A user with a server path but without upload rights (FR-118-14).
+	 */
+	private function restrictedWithoutUpload(): User
+	{
+		$bob = $this->restrictTo($this->userNoUpload, $this->import_root);
+		$bob->may_upload = false;
+		$bob->save();
+
+		return $bob->fresh();
+	}
+
+	/** S-118-09: a server path is enough to import into one's own album or the root. */
+	public function testImportWithoutUploadRightIntoOwnAlbumAndRoot(): void
+	{
+		Queue::fake();
+		$bob = $this->restrictedWithoutUpload();
+
+		$this->assertOk($this->actingAs($bob)->getJson('/Import'));
+
+		$response = $this->actingAs($bob)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album3->id));
+		$this->assertCreated($response);
+
+		$response = $this->actingAs($bob)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', null));
+		$this->assertCreated($response);
+		Queue::assertPushed(ImportImageJob::class, fn (ImportImageJob $job) => $job->intended_owner_id === $bob->id);
+	}
+
+	/** S-118-09: the target must be owned or carry an upload grant (FR-118-15). */
+	public function testImportWithoutUploadRightIntoForeignAlbum(): void
+	{
+		Queue::fake();
+		$bob = $this->restrictedWithoutUpload();
+
+		$response = $this->actingAs($bob)->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album2->id));
+		$this->assertForbidden($response);
+
+		AccessPermission::factory()->for_user($bob)->for_album($this->album2)->visible()->grants_upload()->create();
+		$response = $this->actingAs($bob->fresh())->postJson('/Import', $this->getDefaultPayload($this->import_root . '/2026', $this->album2->id));
+		$this->assertCreated($response);
 	}
 
 	/** S-115-28 */
