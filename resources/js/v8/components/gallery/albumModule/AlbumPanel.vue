@@ -612,9 +612,9 @@ const albumCallbacks = {
 			);
 	},
 	scrollToPaginatorTop: () => {
-		if (photoPanel.value) {
-			photoPanel.value.$el.scrollIntoView({ behavior: "smooth" });
-		}
+		// v8 always runs the SoA path, so the virtualized panel is the one mounted unless a tag filter is active.
+		const panel = photoPanelVirtualRef.value ?? photoPanel.value;
+		panel?.$el.scrollIntoView({ behavior: "smooth" });
 	},
 };
 
