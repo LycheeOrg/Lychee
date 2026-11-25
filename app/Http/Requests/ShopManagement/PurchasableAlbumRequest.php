@@ -20,6 +20,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Models\Album;
+use App\Rules\DescriptionRule;
 use App\Rules\RandomIDRule;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
@@ -60,7 +61,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 		return [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'present|nullable|string|max:1000',
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', 'nullable', new DescriptionRule()],
 			RequestAttribute::NOTE_ATTRIBUTE => 'present|nullable|string|max:1000',
 			RequestAttribute::PRICES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.size_variant_type' => ['required', new Enum(PurchasableSizeVariantType::class)],

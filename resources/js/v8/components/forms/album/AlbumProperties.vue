@@ -20,6 +20,7 @@
 			</div>
 			<UFormField :label="$t('gallery.album.properties.description')">
 				<UTextarea id="description" v-model="descriptionForInput" class="w-full" :rows="6" />
+				<DescriptionCounter :value="descriptionForInput" />
 			</UFormField>
 			<div class="flex gap-4 flex-wrap">
 				<UFormField :label="$t('gallery.album.properties.photo_ordering')">
@@ -210,6 +211,7 @@
 </template>
 <script setup lang="ts">
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import Constants from "@/services/constants";
 import { computed, onMounted, ref, watch, nextTick } from "vue";
 import { useDebounceFn } from "@vueuse/core";

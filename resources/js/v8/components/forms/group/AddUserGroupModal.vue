@@ -12,6 +12,7 @@
 					</UFormField>
 					<UFormField :label="$t('user-groups.create.description')">
 						<UTextarea id="description" v-model="descriptionForInput" :rows="3" class="w-full" />
+						<DescriptionCounter :value="descriptionForInput" />
 					</UFormField>
 					<UFormField v-if="groupId === undefined" :label="$t('user-groups.create.users')">
 						<USelectMenu id="users" v-model="users" :items="props.userList" multiple label-key="username" class="w-full" />
@@ -49,6 +50,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { UserGroupService } from "@/services/user-group-service";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import { Ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 

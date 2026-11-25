@@ -19,6 +19,7 @@
 namespace Tests\Webshop\Purchasables;
 
 use App\Models\Purchasable;
+use Illuminate\Support\Facades\Config;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequirePro;
 
@@ -337,6 +338,51 @@ class ShopManagementControllerTest extends BaseApiWithDataTest
 		]);
 
 		$this->assertUnauthorized($response);
+	}
+
+	/**
+	 * The purchasable description follows DescriptionRule (DESCRIPTION_MAX_LENGTH).
+	 *
+	 * @return void
+	 */
+	public function testPurchasableDescriptionOverLimit(): void
+	{
+		Config::set('features.description-max-length', 10);
+		$prices = [['size_variant_type' => 'medium', 'license_type' => 'personal', 'price' => 1999]];
+		$description = str_repeat('a', 11);
+
+		$response = $this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Photo', [
+			'photo_ids' => [$this->photo1->id],
+			'album_id' => $this->album1->id,
+			'description' => $description,
+			'note' => null,
+			'prices' => $prices,
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
+
+		$response = $this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Album', [
+			'album_ids' => [$this->album1->id],
+			'description' => $description,
+			'note' => null,
+			'applies_to_subalbums' => false,
+			'prices' => $prices,
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
+
+		$purchasable = Purchasable::factory()->create([
+			'photo_id' => $this->photo1->id,
+			'album_id' => $this->album1->id,
+		]);
+		$response = $this->actingAs($this->admin)->putJson('Shop/Management/Purchasable/Price', [
+			'purchasable_id' => $purchasable->id,
+			'description' => $description,
+			'note' => null,
+			'prices' => $prices,
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
 	}
 
 	/**

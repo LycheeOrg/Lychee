@@ -16,6 +16,7 @@ use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasNameTrait;
 use App\Models\UserGroup;
 use App\Policies\UserGroupPolicy;
+use App\Rules\DescriptionRule;
 use App\Rules\StringRequireSupportRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -36,7 +37,7 @@ class CreateUserGroupRequest extends BaseApiRequest implements HasDescription, H
 	{
 		return [
 			RequestAttribute::NAME_ATTRIBUTE => ['required', 'string', 'max:255'],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify())],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', new DescriptionRule(), new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

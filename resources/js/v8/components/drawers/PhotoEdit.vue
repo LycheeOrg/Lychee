@@ -7,7 +7,10 @@
 					<UInput id="title" v-model="title" :color="!title ? 'error' : undefined" />
 
 					<label for="description" class="font-bold mt-4 md:mt-0">{{ $t("gallery.photo.edit.set_description") }}</label>
-					<UTextarea id="description" v-model="descriptionForInput" class="w-full h-48" :rows="5" />
+					<div class="flex flex-col gap-1">
+						<UTextarea id="description" v-model="descriptionForInput" class="w-full h-48" :rows="5" />
+						<DescriptionCounter :value="descriptionForInput" />
+					</div>
 
 					<label for="tags" class="font-bold h-11 mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_tags") }}</label>
 					<TagsInput id="tags" v-model="tags" :add="true" :placeholder="$t('gallery.photo.edit.no_tags')" />
@@ -86,6 +89,7 @@ import { sprintf } from "@/utils/sprintf";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import TagsInput from "@/v8/components/forms/basic/TagsInput.vue";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import TagsService from "@/services/tags-service";
 import AlbumService from "@/services/album-service";
 import { usePhotoStore } from "@/stores/PhotoState";

@@ -18,6 +18,7 @@ use App\Enum\PurchasableSizeVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Models\Purchasable;
+use App\Rules\DescriptionRule;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
@@ -56,7 +57,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 	{
 		return [
 			RequestAttribute::PURCHASABLE_ID_ATTRIBUTE => 'required|integer|exists:purchasables,id',
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'present|nullable|string|max:1000',
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', 'nullable', new DescriptionRule()],
 			RequestAttribute::NOTE_ATTRIBUTE => 'present|nullable|string|max:1000',
 			RequestAttribute::PRICES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.size_variant_type' => ['required', new Enum(PurchasableSizeVariantType::class)],

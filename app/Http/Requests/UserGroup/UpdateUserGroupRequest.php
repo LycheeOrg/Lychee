@@ -18,6 +18,7 @@ use App\Http\Requests\Traits\HasNameTrait;
 use App\Http\Requests\Traits\HasUserGroupTrait;
 use App\Models\UserGroup;
 use App\Policies\UserGroupPolicy;
+use App\Rules\DescriptionRule;
 use App\Rules\StringRequireSupportRule;
 use Illuminate\Support\Facades\Gate;
 
@@ -40,7 +41,7 @@ class UpdateUserGroupRequest extends BaseApiRequest implements HasUserGroup, Has
 		return [
 			RequestAttribute::GROUP_ID => ['required', 'int'],
 			RequestAttribute::NAME_ATTRIBUTE => ['required', 'string', 'max:255'],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify())],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', new DescriptionRule(), new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

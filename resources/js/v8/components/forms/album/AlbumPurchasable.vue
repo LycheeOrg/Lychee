@@ -6,7 +6,10 @@
 		<div v-if="albumPurchasable !== undefined" class="flex flex-col gap-4">
 			<template v-if="albumPurchasable === null">
 				<p class="font-bold text-muted text-lg text-center">{{ $t("webshop.albumPurchasable.notPurchasableYet") }}</p>
-				<UTextarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" class="w-full" />
+				<div class="flex flex-col gap-1">
+					<UTextarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" class="w-full" />
+					<DescriptionCounter :value="description" />
+				</div>
 				<UTextarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" class="w-full" />
 				<PricesInput :prices="prices" />
 				<PrintSizePricesInput v-model="printSizes" />
@@ -37,7 +40,10 @@
 				<p v-if="!canSubmit" class="text-error text-sm text-center">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</p>
 			</template>
 			<template v-else>
-				<UTextarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" class="w-full" />
+				<div class="flex flex-col gap-1">
+					<UTextarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" class="w-full" />
+					<DescriptionCounter :value="description" />
+				</div>
 				<UTextarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" class="w-full" />
 				<PricesInput :prices="prices" />
 				<PrintSizePricesInput v-model="printSizes" />
@@ -57,6 +63,7 @@
 </template>
 <script setup lang="ts">
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import ShopManagementService, { Price, PrintSizeAssignment, PixelSizeAssignment } from "@/services/shop-management-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { onMounted, ref, computed } from "vue";
