@@ -20,6 +20,11 @@ if (!function_exists('renv')) {
 $aws_csp_origin = renv('AWS_URL') === '' ? []
 	: [str_replace((string) parse_url(renv('AWS_URL'), PHP_URL_PATH), '', renv('AWS_URL'))];
 
+// Webshop payment providers: their sources are only allowed once they are configured.
+$with_paypal = (string) env('PAYPAL_CLIENT_ID', '') !== '';
+$with_mollie = (string) env('MOLLIE_API_KEY', '') !== '';
+$with_stripe = (string) env('STRIPE_API_KEY', '') !== '';
+
 return [
 	/**
 	 * Server.
@@ -54,8 +59,10 @@ return [
 	 * @see https://msdn.microsoft.com/en-us/library/jj542450(v=vs.85).aspx
 	 *
 	 * Available Value: 'noopen'
+	 *
+	 * Not sent: only Internet Explorer 8 ever read it.
 	 */
-	'x-download-options' => 'noopen',
+	'x-download-options' => '',
 
 	/**
 	 * X-Frame-Options.
@@ -94,8 +101,10 @@ return [
 	 * @deprecated The X-XSS-Protection is no longer recommended for use; please use Content-Security-Policy (CSP) instead.
 	 *
 	 * Available Value: '1', '0', '1; mode=block'
+	 *
+	 * Not sent: current browsers have no XSS auditor, the Content-Security-Policy covers it.
 	 */
-	'x-xss-protection' => '1; mode=block',
+	'x-xss-protection' => '',
 
 	/**
 	 * Referrer-Policy.
@@ -113,8 +122,10 @@ return [
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy
 	 *
 	 * Available Value: 'unsafe-none', 'require-corp', 'credentialless'
+	 *
+	 * Not sent: 'unsafe-none' is what browsers apply without the header.
 	 */
-	'cross-origin-embedder-policy' => 'unsafe-none',
+	'cross-origin-embedder-policy' => '',
 
 	/**
 	 * Cross-Origin-Opener-Policy.
@@ -122,8 +133,10 @@ return [
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
 	 *
 	 * Available Value: 'unsafe-none', 'same-origin-allow-popups', 'same-origin'
+	 *
+	 * Not sent: 'unsafe-none' is what browsers apply without the header.
 	 */
-	'cross-origin-opener-policy' => 'unsafe-none',
+	'cross-origin-opener-policy' => '',
 
 	/**
 	 * Cross-Origin-Resource-Policy.
@@ -204,315 +217,33 @@ return [
 	],
 
 	/**
-	 * Feature Policy.
+	 * Permissions Policy.
 	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
 	 *
 	 * 'none', '*' and 'self allow' are mutually exclusive,
 	 * the priority is 'none' > '*' > 'self allow'.
+	 *
+	 * Only list the features whose allowlist differs from the browser default.
+	 * A feature left out keeps its default, which is 'self' for nearly all of them:
+	 * that covers what Lychee uses (camera capture, fullscreen, WebAuthn, clipboard).
 	 */
 	'permissions-policy' => [
 		'enable' => true,
 
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/accelerometer
-		'accelerometer' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/ambient-light-sensor
-		'ambient-light-sensor' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/attribution-reporting
-		'attribution-reporting' => [
-			'none' => false,
-			'*' => true,
-			'self' => false,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/autoplay
-		'autoplay' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/bluetooth
-		'bluetooth' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/browsing-topics
-		'browsing-topics' => [
-			'none' => false,
-			'*' => true,
-			'self' => false,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/camera
-		'camera' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/compute-pressure
-		'compute-pressure' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/compute-pressure
-		'cross-origin-isolated' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/display-capture
-		'display-capture' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/document-domain
-		'document-domain' => [
-			'none' => false,
-			'*' => true,
-			'self' => false,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/encrypted-media
-		'encrypted-media' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/fullscreen
-		'fullscreen' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/gamepad
-		'gamepad' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/geolocation
 		'geolocation' => [
-			'none' => false,
+			'none' => true,
 			'*' => false,
 			'self' => false,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/gyroscope
-		'gyroscope' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/hid
-		'hid' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/identity-credentials-get
-		'identity-credentials-get' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/idle-detection
-		'idle-detection' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/local-fonts
-		'local-fonts' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/magnetometer
-		'magnetometer' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/microphone
-		'microphone' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
 			'origins' => [],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/midi
 		'midi' => [
-			'none' => false,
+			'none' => true,
 			'*' => false,
 			'self' => false,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/otp-credentials
-		'otp-credentials' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/payment
-		'payment' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => env('APP_URL', '') !== '' && ($host = parse_url(env('APP_URL'), PHP_URL_HOST)) !== null ? [$host] : [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/picture-in-picture
-		'picture-in-picture' => [
-			'none' => false,
-			'*' => true,
-			'self' => false,
-			'origins' => [
-				// 'url',
-			],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/publickey-credentials-create
-		'publickey-credentials-create' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/publickey-credentials-get
-		'publickey-credentials-get' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/screen-wake-lock
-		'screen-wake-lock' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/serial
-		'serial' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/speaker-selection
-		'speaker-selection' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/storage-access
-		'storage-access' => [
-			'none' => false,
-			'*' => true,
-			'self' => false,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/usb
-		'usb' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/web-share
-		'web-share' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/window-management
-		'window-management' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
-			'origins' => [],
-		],
-
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/xr-spatial-tracking
-		'xr-spatial-tracking' => [
-			'none' => false,
-			'*' => false,
-			'self' => true,
 			'origins' => [],
 		],
 	],
@@ -563,11 +294,7 @@ return [
 		'connect-src' => [
 			'self' => true,
 			'allow' => array_merge(
-				[
-					'https://lycheeorg.dev/update.json',
-					'https://www.sandbox.paypal.com',
-					'https://www.paypal.com',
-				],
+				$with_paypal ? ['https://www.sandbox.paypal.com', 'https://www.paypal.com'] : [],
 				explode(',', (string) env('SECURITY_HEADER_CSP_CONNECT_SRC', ''))
 			),
 		],
@@ -603,21 +330,18 @@ return [
 		'img-src' => [
 			'self' => true,
 			// Allow OpenStreetMap tile images to be fetched from the different provides
+			// (one source per App\Enum\MapProviders layer, its {s} subdomains as a wildcard)
 			// Allow image to be directly encoded at the img source parameter
 			'allow' => array_merge(
 				[
 					'https://tile.openstreetmap.org/',
 					'https://tile.openstreetmap.de/',
-					'https://a.tile.openstreetmap.fr/osmfr/',
-					'https://b.tile.openstreetmap.fr/osmfr/',
-					'https://c.tile.openstreetmap.fr/osmfr/',
-					'https://a.osm.rrze.fau.de/osmhd/',
-					'https://b.osm.rrze.fau.de/osmhd/',
-					'https://c.osm.rrze.fau.de/osmhd/',
-					'https://www.paypalobjects.com',
+					'https://*.tile.openstreetmap.fr/osmfr/',
+					'https://*.osm.rrze.fau.de/osmhd/',
 					'data:', // required by openstreetmap
 					'blob:', // required for "live" photos
 				],
+				$with_paypal ? ['https://www.paypalobjects.com'] : [],
 				// Add the S3 URL to the list of allowed image sources
 				$aws_csp_origin,
 				explode(',', (string) env('SECURITY_HEADER_CSP_IMG_SRC', ''))
@@ -711,15 +435,14 @@ return [
 			'self' => true,
 
 			// https://www.chromestatus.com/feature/5792234276388864
-			'report-sample' => true,
+			// Only useful with a report-uri or report-to endpoint.
+			'report-sample' => false,
 
 			'allow' => array_merge(
-				[
-					'https://www.dropbox.com/static/api/1/dropins.js',
-					'https://js.mollie.com',
-					'https://js.stripe.com',
-					'https://www.paypal.com/sdk/js',
-				],
+				['https://www.dropbox.com/static/api/1/dropins.js'],
+				$with_mollie ? ['https://js.mollie.com'] : [],
+				$with_stripe ? ['https://js.stripe.com'] : [],
+				$with_paypal ? ['https://www.paypal.com/sdk/js'] : [],
 				explode(',', (string) env('SECURITY_HEADER_SCRIPT_SRC_ALLOW', ''))
 			),
 
@@ -730,72 +453,31 @@ return [
 
 			/* followings are only work for `script` and `style` related directives */
 			// We need this one for PayPal SDK sadly.
-			'unsafe-inline' => env('PAYPAL_CLIENT_ID', '') !== '',
+			'unsafe-inline' => $with_paypal,
 
 			'unsafe-eval' => false,
 
+			// The photo layouts run in WebAssembly.
 			'wasm-unsafe-eval' => true,
 
 			// https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
-			'unsafe-hashes' => true,
+			// Lychee has no inline event handlers left to allow by hash.
+			'unsafe-hashes' => false,
 
 			// Enable `strict-dynamic` will *ignore* `self`, `unsafe-inline`,
 			// `allow` and `schemes`. You can find more information from:
 			// https://www.w3.org/TR/CSP3/#strict-dynamic-usage
 			'strict-dynamic' => false,
 
-			// Those should be removed if we drop v4 legacy support completely.
+			// Hashes of the inline scripts Lychee still serves.
+			// Recompute them when those scripts change (Tests\Unit\Config\SecureHeadersConfigTest checks they match).
+			// Dropped with PayPal: browsers ignore 'unsafe-inline' as soon as a hash is listed.
 			'hashes' => [
-				'sha256' => env('PAYPAL_CLIENT_ID', '') !== '' ? [] : [
-					// 'sha256-hash-value-with-base64-encode',
-
-					// lychee.startDrag(event)
-					'FdKE+KVp/tkYM5hwGXGeKZ1EmS4DJ8kbnsKo5YymNrc=',
-
-					// lychee.endDrag(event)
-					'bY67+0U7yUmtjaisfHv+mZXHsAptKwcV1a4EacCUL5M=',
-
-					// lychee.overDrag(event)
-					'fwPcZ6SFcvBLfJYjzlBRZfKzcidwsD4GPcmkVECbSKM=',
-
-					// lychee.leaveDrag(event)
-					'FCPseLYJ4+r0Mbp93zyaq/x4zQEEPLgEectDgkA/V3A=',
-
-					// lychee.finishDrag(event)
-					'T0Fzr5h5zkZyE3QOpQ9anSTcWp19WQ14eO86qdlSdvA=',
-
-					// upload.check()
-					'CL4mGy9ZhHM+PkLDZsWVuM25kEFBv3FXlmWe/O9Unmc=',
-
-					/**
-					 * const hashMatch = document.location.hash.replace("#", "").split("/");
-					 * const albumID = hashMatch[0] ?? '';
-					 * const photoID = hashMatch[1] ?? '';
-					 * const elem = document.getElementById('redirectData');
-					 * const gallery = elem.dataset.gallery;
-					 * const base = elem.dataset.redirect;.
-					 *
-					 * if (photoID !== '') {
-					 * window.location = gallery + '/' + albumID + '/' + photoID;
-					 * } else if (albumID !== '') {
-					 * window.location = gallery + '/' + albumID;
-					 * } else {
-					 * window.location = base;
-					 * }
-					 */
+				'sha256' => $with_paypal ? [] : [
+					// resources/views/vueapp.blade.php: legacy v4 #album/photo redirect (LEGACY_V4_REDIRECT)
 					'/YUD5b5Ze0TEXHUw/Vl3MbJXEKRQ1Hg6jBoeNlyFnec=',
 
-					/**
-					 * document.addEventListener("DOMContentLoaded", function(event) {
-					 * document.querySelector("form").addEventListener("submit", function(e){
-					 * document.querySelector("form").hidden = true;
-					 * var text = document.createElement("div");
-					 * text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
-					 * document.querySelector(".form").appendChild(text);
-					 * // e.preventDefault();    //stop form from submitting
-					 * });
-					 * });.
-					 */
+					// resources/views/update/error.blade.php: migration form
 					'hHvKTS0wUaMuiFMar2j4TbjYjlLQMR/c5b0bA9DLi6g=',
 				],
 

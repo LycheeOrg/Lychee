@@ -97,6 +97,7 @@ class Kernel extends HttpKernel
 		],
 
 		'embed' => [
+			\App\Http\Middleware\ApiSecureHeaders::class,
 			\App\Http\Middleware\ResolveConfigs::class,
 			\App\Http\Middleware\ResolveVerify::class,
 			\App\Http\Middleware\SetLocale::class,
@@ -116,6 +117,7 @@ class Kernel extends HttpKernel
 		],
 
 		'api' => [
+			\App\Http\Middleware\ApiSecureHeaders::class,
 			\App\Http\Middleware\ResolveConfigs::class,
 			\App\Http\Middleware\ResolveVerify::class,
 			\App\Http\Middleware\SetLocale::class,
