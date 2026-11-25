@@ -15,12 +15,20 @@ import LandingPortfolio from "@/v8/views/landing/LandingPortfolio.vue";
 import LandingMeridian from "@/v8/views/landing/LandingMeridian.vue";
 import LandingStudio from "@/v8/views/landing/LandingStudio.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
+import { definePanelShortcuts } from "@/v8/composables/usePanelShortcuts";
 import { trans } from "laravel-vue-i18n";
 
 const toast = useAppToast();
 
 const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
+
+// Registered here rather than in the layout components: those are also rendered by the admin
+// LandingConfig live preview, where `g` must not navigate away. Inputs (e.g. Studio's login
+// form) and open modals (e.g. WebAuthn) are skipped by definePanelShortcuts / defineShortcuts.
+definePanelShortcuts({
+	g: () => router.push({ name: "home" }),
+});
 
 InitService.fetchLandingData()
 	.then((data) => {

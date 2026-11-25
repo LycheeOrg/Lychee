@@ -106,9 +106,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
+import { onKeyStroke } from "@vueuse/core";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/v7/components/footers/LandingFooter.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 
 const { isLTR } = useLtRorRtL();
 
@@ -116,6 +118,8 @@ const introVisible = ref(true);
 
 const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
+
+onKeyStroke("g", () => !shouldIgnoreKeystroke() && router.push({ name: "home" }));
 
 InitService.fetchLandingData().then((data) => {
 	if (data.data.landing_page_enable === false) {
