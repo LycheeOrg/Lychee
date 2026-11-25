@@ -52,6 +52,10 @@ const grantsMove = ref(false);
 const grantsDelete = ref(false);
 const grantsReadAccess = ref(true);
 
+// Last values the server accepted: restored when a save is refused,
+// so that the checkboxes never show a change that was not saved.
+let saved = props.perm;
+
 function load(permisison: App.Http.Resources.Models.AccessPermissionResource) {
 	grantsFullPhotoAccess.value = permisison.grants_full_photo_access;
 	grantsDownload.value = permisison.grants_download;
@@ -71,10 +75,13 @@ function edit() {
 		grants_move: grantsMove.value,
 		grants_delete: grantsDelete.value,
 	};
-	SharingService.edit(data).then((response) => {
-		load(response.data);
-		toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });
-	});
+	SharingService.edit(data)
+		.then((response) => {
+			saved = response.data;
+			load(saved);
+			toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });
+		})
+		.catch(() => load(saved));
 }
 
 load(props.perm);
@@ -89,6 +96,7 @@ const deletePermission = () => {
 watch(
 	() => props.perm,
 	(newVal) => {
+		saved = newVal;
 		load(newVal);
 	},
 );

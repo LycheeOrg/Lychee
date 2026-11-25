@@ -183,6 +183,27 @@ _Last updated: 2026-11-25_
   - `vendor/bin/php-cs-fixer fix`  
   - `make phpstan`
 
+### I10 – Grants already given (Q-118-09)
+- [x] T-118-25 – Failing tests for resent grants (FR-118-07, S-118-22).  
+  _Intent:_ `HeldGrantRuleTest`: `true` accepted when already granted, refused otherwise. `HeldGrantTest`: sharer who lost `may_upload`/`may_edit` edits another grant on a share carrying the lacked grant → 200, grant kept; unticks it → 200; switches on another lacked grant → 422; non-owner → same 422 whatever the stored grant; album with public `grants_upload`, owner without `may_upload`, changes NSFW → 201.  
+  _Verification commands:_  
+  - `php artisan test --filter=HeldGrantRuleTest` (red)  
+  - `php artisan test --filter=HeldGrantTest` (red)
+
+- [x] T-118-26 – Rule and requests read the stored grant (FR-118-07, DO-118-07).  
+  _Intent:_ `HeldGrantRule(bool $held, bool $already_granted = false)`; `EditSharingRequest` loads the permission once in `rules()` and reuses it; `SetAlbumProtectionPolicyRequest` checks the owned album's public upload grant only when the sharer lacks `may_upload`.  
+  _Verification commands:_  
+  - `php artisan test --filter=HeldGrantRuleTest`  
+  - `php artisan test --filter=HeldGrantTest`  
+  - `php artisan test --filter=SharingTest`  
+  - `make phpstan`
+
+- [x] T-118-27 – Share line reloads on a failed save (S-118-22).  
+  _Intent:_ v7 and v8 `ShareLine.vue` keep the last saved permission and restore it when `SharingService.edit` fails.  
+  _Verification commands:_  
+  - `vp check --fix <changed paths>`  
+  - `vp run typecheck`
+
 ## Notes / TODOs
 - Tooling: `vp check --fix` over the whole tree rewrites `<\/script>` in both `EmbedCodeDialog.vue` files and breaks them (pre-existing autofix hazard). Run it with the changed paths only.
 - Pre-existing, unrelated: `AlbumRootV3Test::testSortingColumnChangeRecomputesOwnScopeBuckets…` and `testRecomputeJobInvalidatesRootCacheRewarmed…` fail with or without Feature 118 changes (bucket `2023` instead of `2024`, checked 2026-11-25 by stashing the feature's code). Same for `TimelineAlbumTest::testBucketsGroupsByYear…` and `PhotoBucketsV3Test::testCacheInvalidatedOnAlbumPhotoSortingChange` (checked the same way). Likely local timezone.

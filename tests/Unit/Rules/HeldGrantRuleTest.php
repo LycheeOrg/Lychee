@@ -26,10 +26,10 @@ use Tests\AbstractTestCase;
  */
 class HeldGrantRuleTest extends AbstractTestCase
 {
-	private function fails(bool $held, mixed $value): bool
+	private function fails(bool $held, mixed $value, bool $already_granted = false): bool
 	{
 		$failed = false;
-		(new HeldGrantRule($held))->validate('grants_upload', $value, function () use (&$failed): void { $failed = true; });
+		(new HeldGrantRule($held, $already_granted))->validate('grants_upload', $value, function () use (&$failed): void { $failed = true; });
 
 		return $failed;
 	}
@@ -53,5 +53,21 @@ class HeldGrantRuleTest extends AbstractTestCase
 		self::assertFalse($this->fails(false, false));
 		self::assertFalse($this->fails(false, '0'));
 		self::assertFalse($this->fails(false, 'false'));
+	}
+
+	/**
+	 * Q-118-09: keeping a grant given earlier is not handing it out.
+	 */
+	public function testLackedGrantAcceptsTrueWhenAlreadyGranted(): void
+	{
+		self::assertFalse($this->fails(false, true, true));
+		self::assertFalse($this->fails(false, '1', true));
+		self::assertFalse($this->fails(false, false, true));
+	}
+
+	public function testHeldGrantIgnoresStoredValue(): void
+	{
+		self::assertFalse($this->fails(true, true, false));
+		self::assertFalse($this->fails(true, true, true));
 	}
 }

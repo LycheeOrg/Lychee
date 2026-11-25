@@ -15,12 +15,15 @@ use Illuminate\Contracts\Validation\ValidationRule;
  *
  * `$held` is whether the current user holds the matching right
  * (`may_upload` for `grants_upload`, `may_edit` for edit, move and delete).
- * Giving the grant (`true`) without it fails; `false` always passes.
+ * `$already_granted` is whether the grant is already given on the stored
+ * permission: resending it unchanged is keeping, not handing out (Q-118-09).
+ * Switching the grant on (`true`) without either fails; `false` always passes.
  */
 final class HeldGrantRule implements ValidationRule
 {
 	public function __construct(
 		private bool $held,
+		private bool $already_granted = false,
 	) {
 	}
 
@@ -29,7 +32,7 @@ final class HeldGrantRule implements ValidationRule
 	 */
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
-		if ($this->held || filter_var($value, FILTER_VALIDATE_BOOLEAN) === false) {
+		if ($this->held || $this->already_granted || filter_var($value, FILTER_VALIDATE_BOOLEAN) === false) {
 			return;
 		}
 

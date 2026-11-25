@@ -85,6 +85,9 @@ Commands rerun: the 30 scoped test classes in the final run (357 tests green), `
    - _Commands:_ `vp check --fix`, `vp run typecheck`, `php artisan test --filter=LangTest`.
 9. **I9 – Docs and drift gate**
    - _Steps:_ knowledge map, roadmap, drift gate report.
+10. **I10 – Grants already given** (FR-118-07, Q-118-09; S-118-22)
+   - _Steps:_ `HeldGrantTest` and `HeldGrantRuleTest` cases for resent grants (red); `HeldGrantRule` `$already_granted`; `EditSharingRequest` reads the stored permission once for validation and processing; `SetAlbumProtectionPolicyRequest` reads the owned album's public upload grant only when the sharer lacks `may_upload`; v7/v8 share line reloads on a failed save.
+   - _Commands:_ `php artisan test --filter='HeldGrantRuleTest|HeldGrantTest|SharingTest'`, `make phpstan`, `vp check --fix <changed paths>`, `vp run typecheck`.
 
 ## Scenario Tracking
 
@@ -103,6 +106,7 @@ Commands rerun: the 30 scoped test classes in the final run (357 tests green), `
 | S-118-19 | I4 / T-118-09, 10 | `EditRightTest` |
 | S-118-20 | I1 / T-118-01, 02 | `UserRightsInvariantTest` |
 | S-118-21 | I8 / T-118-21, 22 | manual |
+| S-118-22 | I10 / T-118-25 … 27 | `HeldGrantTest` |
 
 ## Analysis Gate
 2026-11-25, agent. Result: **pass**.
@@ -127,3 +131,4 @@ Note: the task list is long (24 tasks); I4 and I7 are the largest and stay withi
 - 2026-11-24: owner asked to separate functionality tied to `may_upload` (discussion #4982). Inventory by grep over `app/` and `resources/js`; Q-118-01 … 05 logged and answered (B, D, A, A, B).
 - 2026-11-25: Q-118-06 … 08 answered (A, A, A); owner directive: `may_upload` implies `may_share` and `may_edit`, enforced on write, no priority logic in checks. Local adjustments: flag named `may_edit`; renamer rules under `may_edit`; grant checkboxes disabled rather than hidden; `lychee:update_user` untouched.
 - 2026-11-25 (T-118-05): `AlbumRootConfigV3Test::testRunsNoAlbumOrPhotoQuery` caught the album count in `canShareWithUsers(null)` once it fed the root rights. The no-album branch now reads `may_share` alone; FR-118-05 and S-118-02 updated (low impact: the Sharing page shows an empty list instead of 403 for a sharer without albums).
+- 2026-11-25 (I10): PR #5013 review (CodeRabbit) showed that the share line and the visibility form resend every grant, so a grant given before the sharer lost the right blocked any other change with a 422. Logged Q-118-09, owner chose A: the rule only refuses switching a grant on. The stored value counts only for the album's owner, so refused requests do not reveal other users' grants. Share lines also reload the stored values when a save fails, so a refused change does not stay ticked.

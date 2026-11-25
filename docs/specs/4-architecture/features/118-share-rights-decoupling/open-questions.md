@@ -14,6 +14,7 @@ Open questions for [Feature 118](spec.md). Log every high- and medium-impact que
 | ~~Q-118-06~~ | 118 | Medium | Transfer and the user picker under `may_share`: (A) transfer needs `may_share`, picker = `may_share`, (B) transfer stays owner-only, picker = `may_share` or owns an album | Resolved (A, owner 2026-11-25, spec FR-118-04, ADR-118-01) | 2026-11-24 | 2026-11-25 |
 | ~~Q-118-07~~ | 118 | High | Handing out grants one does not hold (`grants_upload` without `may_upload`, `grants_edit`/`move`/`delete` without `may_edit`): (A) refused, (B) recipient must hold the right, (C) allowed | Resolved (A, owner 2026-11-25, spec FR-118-07, ADR-118-01) | 2026-11-24 | 2026-11-25 |
 | ~~Q-118-08~~ | 118 | Medium | Single-photo edits by the owner need no flag today, batch edits need `may_upload`: (A) both need `may_edit`, (B) owner always edits own photos' metadata, (C) unchanged | Resolved (A, owner 2026-11-25, spec FR-118-10, ADR-118-01) | 2026-11-24 | 2026-11-25 |
+| ~~Q-118-09~~ | 118 | High | A grant already given is resent unchanged after the sharer lost the matching right, and the held-grant rule refuses the whole edit (PR #5013 review): (A) the rule only refuses turning a grant on, (B) clients send only changed fields, (C) keep, the sharer must remove the grant first | Resolved (A, owner 2026-11-25, spec FR-118-07, S-118-22, ADR-118-01) | 2026-11-25 | 2026-11-25 |
 
 ## Question Details
 
@@ -140,3 +141,21 @@ Owner selected A on 2026-11-25. The v7/v8 checkboxes for grants the sharer lacks
 - Cons: the inconsistency stays and becomes visible: the same edit works on one photo and is refused on two.
 
 Owner selected A on 2026-11-25. Normative outcome: spec FR-118-10, ADR-118-01.
+
+### ~~Q-118-09~~ — Unchanged grants resent after the sharer lost the right
+
+**Context.** PR #5013 review (CodeRabbit, `resources/js/v7/components/forms/sharing/ShareLine.vue`). The share line (v7, v8) sends every grant on each change. The visibility form (v7, v8) sends the public `grants_upload` on each change. `HeldGrantRule` refuses a `true` value whenever the sharer lacks the matching right, whether that grant is new or was stored before the right was revoked. Example: Alice, with `may_upload`, gives Bob `grants_upload`. The admin unticks Alice's upload right but keeps sharing. Alice then ticks download on Bob's line: 422 on `grants_upload`, nothing saved, and the checkbox shows the new value until reload. Same for an album whose public upload grant was set earlier: any change to its visibility, NSFW flag or download is refused. FR-118-07 says grants already given stay when a right is revoked. Today they stay in the database, but they block every other edit on that share.
+
+**Option A (recommended): the rule only refuses turning a grant on.** `HeldGrantRule` takes the stored value. `true` passes when the sharer holds the right or the stored grant is already `true`. `EditSharingRequest` reads the stored permission by `perm_id`, `SetAlbumProtectionPolicyRequest` reads the album's public permission. `AddSharingRequest` has nothing stored and keeps refusing.
+- Pros: matches "hands out only the grants they hold": keeping is not handing out. Works for every client, no API change. Unticking still works.
+- Cons: `rules()` of the two requests loads the permission or album before validation (one extra query, done again in `processValidatedValues`).
+
+**Option B: clients send only changed fields.** The grant fields become `sometimes` on edit, and the server merges them onto the stored permission.
+- Pros: the rule stays as it is.
+- Cons: changes the REST contract of `PATCH /Sharing` and `Album::updateProtectionPolicy`. Four Vue components change. Any other client that sends the full payload still fails.
+
+**Option C: keep.** The sharer has to untick the grant they no longer hold before changing anything else on that share.
+- Pros: no change.
+- Cons: the failure is silent in the UI (the checkbox keeps its new value) and goes against FR-118-07.
+
+Owner selected A on 2026-11-25. Normative outcome: spec FR-118-07, S-118-22, DO-118-07, ADR-118-01.

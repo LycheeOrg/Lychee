@@ -25,7 +25,8 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
  * Feature 118: a sharer hands out only the grants they hold
- * (FR-118-07, S-118-17, S-118-18).
+ * (FR-118-07, S-118-17, S-118-18), and keeps the ones given before
+ * losing the right (Q-118-09, S-118-22).
  */
 class HeldGrantTest extends BaseApiWithDataTest
 {
@@ -225,5 +226,116 @@ class HeldGrantTest extends BaseApiWithDataTest
 		$copy = AccessPermission::query()->where('base_album_id', '=', $child->id)->where('user_id', '=', $this->userMayUpload2->id)->firstOrFail();
 		self::assertTrue($copy->grants_upload);
 		self::assertTrue($copy->grants_edit);
+	}
+
+	/**
+	 * A share carrying every grant the sharer has since lost.
+	 */
+	private function shareWithLostGrants(): AccessPermission
+	{
+		return AccessPermission::factory()->for_user($this->userMayUpload2)->for_album($this->sharer_album)
+			->grants_upload()->grants_edit()->grants_move()->grants_delete()->create();
+	}
+
+	public function testResendingGrantsAlreadyGivenIsAccepted(): void
+	{
+		$perm = $this->shareWithLostGrants();
+
+		$response = $this->actingAs($this->sharer)->patchJson('Sharing', $this->editPayload($perm->id, [
+			'grants_download' => false,
+			'grants_upload' => true,
+			'grants_edit' => true,
+			'grants_move' => true,
+			'grants_delete' => true,
+		]));
+		$this->assertOk($response);
+
+		$perm = $perm->fresh();
+		self::assertFalse($perm->grants_download);
+		self::assertTrue($perm->grants_upload);
+		self::assertTrue($perm->grants_edit);
+		self::assertTrue($perm->grants_move);
+		self::assertTrue($perm->grants_delete);
+	}
+
+	public function testUntickingAGrantAlreadyGivenIsAccepted(): void
+	{
+		$perm = $this->shareWithLostGrants();
+
+		$response = $this->actingAs($this->sharer)->patchJson('Sharing', $this->editPayload($perm->id, [
+			'grants_upload' => false,
+			'grants_edit' => true,
+			'grants_move' => true,
+			'grants_delete' => true,
+		]));
+		$this->assertOk($response);
+		self::assertFalse($perm->fresh()->grants_upload);
+		self::assertTrue($perm->fresh()->grants_edit);
+	}
+
+	public function testSwitchingOnALackedGrantNextToAGivenOneIsRefused(): void
+	{
+		$perm = AccessPermission::factory()->for_user($this->userMayUpload2)->for_album($this->sharer_album)->grants_upload()->create();
+
+		$response = $this->actingAs($this->sharer)->patchJson('Sharing', $this->editPayload($perm->id, [
+			'grants_upload' => true,
+			'grants_edit' => true,
+		]));
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['grants_edit']);
+		$response->assertJsonMissingValidationErrors(['grants_upload']);
+		self::assertFalse($perm->fresh()->grants_edit);
+	}
+
+	public function testNonOwnerGetsTheSameRefusalWhateverTheStoredGrant(): void
+	{
+		$other_sharer = User::factory()->may_share()->create();
+		$given = $this->shareWithLostGrants();
+		$not_given = AccessPermission::factory()->for_user($this->userNoUpload)->for_album($this->sharer_album)->create();
+
+		foreach ([$given, $not_given] as $perm) {
+			$response = $this->actingAs($other_sharer)->patchJson('Sharing', $this->editPayload($perm->id, ['grants_upload' => true]));
+			$this->assertUnprocessable($response);
+			$response->assertJsonValidationErrors(['grants_upload']);
+		}
+	}
+
+	public function testVisibilityChangeKeepsPublicUploadGrantAlreadyGiven(): void
+	{
+		$this->requireSe();
+		$public = AccessPermission::factory()->public()->for_album($this->sharer_album)->grants_upload()->create();
+
+		$payload = [
+			'album_id' => $this->sharer_album->id,
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => true,
+			'grants_download' => false,
+			'grants_upload' => true,
+			'grants_full_photo_access' => false,
+		];
+		$response = $this->actingAs($this->sharer)->postJson('Album::updateProtectionPolicy', $payload);
+		$this->assertCreated($response);
+		self::assertTrue($this->sharer_album->fresh()->is_nsfw);
+		self::assertTrue($public->fresh()->grants_upload);
+	}
+
+	public function testVisibilityNonOwnerGetsTheSameRefusalWhateverTheStoredGrant(): void
+	{
+		$this->requireSe();
+		AccessPermission::factory()->public()->for_album($this->sharer_album)->grants_upload()->create();
+		$other_sharer = User::factory()->may_share()->create();
+
+		$response = $this->actingAs($other_sharer)->postJson('Album::updateProtectionPolicy', [
+			'album_id' => $this->sharer_album->id,
+			'is_public' => true,
+			'is_link_required' => false,
+			'is_nsfw' => false,
+			'grants_download' => false,
+			'grants_upload' => true,
+			'grants_full_photo_access' => false,
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['grants_upload']);
 	}
 }
