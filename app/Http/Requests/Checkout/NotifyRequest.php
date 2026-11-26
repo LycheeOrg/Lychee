@@ -83,7 +83,15 @@ class NotifyRequest extends BaseApiRequest implements HasBasket
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$order = Order::find($values[RequestAttribute::ORDER_ID_ATTRIBUTE]);
+		// The order id arrives as an arbitrary URL segment. Reject anything that
+		// is not a positive integer before querying: PostgreSQL raises
+		// `invalid input syntax for type bigint` on such a comparison and aborts
+		// the surrounding transaction, while SQLite and MariaDB silently return
+		// no row. Rejecting it here keeps the answer a 404 on every engine.
+		$order_id = $values[RequestAttribute::ORDER_ID_ATTRIBUTE];
+		$order = is_string($order_id) && filter_var($order_id, FILTER_VALIDATE_INT) !== false && intval($order_id) > 0
+			? Order::find(intval($order_id))
+			: null;
 		if ($order === null) {
 			throw new ModelNotFoundException('Order not found.');
 		}
