@@ -19524,5 +19524,5 @@
     "platform-overrides": {
         "php": "8.4.24"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.9.0"
 }
