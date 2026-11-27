@@ -27,25 +27,18 @@
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="getPlaceholderIcon()"
 		/>
-		<!--  This is a video file: put html5 player. Mounted with its URL, and again for another one:
-		      a <video> does not reload when its <source> changes (FR-103-07). -->
-		<video
+		<!--  This is a video file: Video.js player. Mounted with its URL, and again for another one:
+		      a <video> does not reload when its source changes (FR-103-07). -->
+		<VideoView
 			v-if="viewMode == ImageViewMode.Video && isMediaReady"
 			:key="photoStore.photo.size_variants.original?.url ?? ''"
-			id="image"
-			ref="videoElement"
-			width="auto"
-			height="auto"
-			controls
-			class="absolute m-auto w-auto h-auto"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
-			autobuffer
+			:src="photoStore.photo.size_variants.original?.url ?? ''"
+			:width="photoStore.photo.size_variants.original?.width ?? 0"
+			:height="photoStore.photo.size_variants.original?.height ?? 0"
 			:autoplay="lycheeStore.can_autoplay"
 			:loop="lycheeStore.is_video_loop_enabled"
-		>
-			<source :src="photoStore.photo.size_variants.original?.url ?? ''" />
-			Your browser does not support the video tag.
-		</video>
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
+		/>
 		<!-- This is a raw file: put a place holder -->
 		<embed
 			v-if="viewMode == ImageViewMode.Pdf && isMediaReady"
@@ -229,9 +222,10 @@ const { isLTR } = useLtRorRtL();
 
 // Lazy chunk: only fetched when a 360° photo is shown (NFR-082-02).
 const SphereView = defineAsyncComponent(() => import("./SphereView.vue"));
+// Lazy chunk: Video.js is only fetched when a video is shown.
+const VideoView = defineAsyncComponent(() => import("./VideoView.vue"));
 
 const containerEl = ref<HTMLElement | null>(null);
-const videoElement = ref<HTMLVideoElement | null>(null);
 const livePhotoEl = ref<HTMLElement | null>(null);
 const togglableStore = useTogglablesStateStore();
 

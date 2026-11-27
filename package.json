@@ -45,6 +45,7 @@
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.5",
 		"@tanstack/vue-virtual": "^3.13.52",
+		"@videojs/html": "^10.7.0",
 		"@vitejs/plugin-vue": "^6.0.10",
 		"@vueuse/components": "^15.0.0",
 		"@vueuse/core": "^15.0.0",
