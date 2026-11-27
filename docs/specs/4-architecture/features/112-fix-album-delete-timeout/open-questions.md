@@ -18,7 +18,7 @@ Open questions for [Feature 112](spec.md). Log every high- and medium-impact que
 | ~~Q-112-10~~ | 112 | Medium | On `sync`, after-response jobs (delete webhooks, file deletions) are lost when the PHP worker is killed after the response; the spec does not say what is guaranteed | Resolved (A, owner 2026-11-22, spec FR-112-04, FR-112-12, Non-Goals, Documentation Deliverables) | 2026-11-22 | 2026-11-22 |
 | ~~Q-112-11~~ | 112 | High | A sale committed during a delete can get its file deleted: the sold-variant path query and the detach/delete statements read `order_items` separately | Resolved (C, owner 2026-11-23, spec FR-112-10 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
 | ~~Q-112-12~~ | 112 | Medium | `Album\Delete::findAllPhotosToDelete()` reads link counts in one statement per album chunk: a concurrent move between chunks can classify a photo that has just entered a surviving album as fully deletable | Resolved (A, owner 2026-11-23, spec FR-112-09 failure path, Non-Goals) | 2026-11-23 | 2026-11-23 |
-| Q-112-13 | 112 | High | Album delete on an HDD-backed DB hits Octane's 30 s wall-clock limit inside the DB transaction, before any job this feature defers; raising the limit is not a fix | Open | 2026-11-23 | 2026-11-23 |
+| ~~Q-112-13~~ | 112 | High | Album delete on an HDD-backed DB hits Octane's 30 s wall-clock limit inside the DB transaction, before any job this feature defers; raising the limit is not a fix | Resolved for this feature (Option C as FR-112-14, owner go-ahead 2026-11-27; the end state, Options A/B, goes to a follow-up feature) | 2026-11-23 | 2026-11-27 |
 
 ## Question Details
 
@@ -446,25 +446,77 @@ Cons: PostgreSQL defaults to `READ COMMITTED` (one snapshot per statement) and r
 - The Docker compose files default to `QUEUE_CONNECTION=database` with a `lychee_worker` container (`queue:work --timeout=3600`, CLI, no PHP time limit). `.env.example` and plain installs default to `sync`. Whether the reporting server runs a worker is unknown.
 - Owner (2026-11-23): raising the execution time is not the solution.
 
+**Evidence (2026-11-27, server `warning.log`, `DB_LOG_SQL=true`, queries ≥ 100 ms, master).** About 7000 photos (14 chunks of 500):
+
+- 21:33:53 tree check 0.44 s; 21:33:54–55 photo classification 1.5 s (two `photo_album` queries).
+- 21:33:57–21:34:16: `collectSizeVariantPathsByPhotoID()` for disk `images`, 14 queries of 0.6–4.1 s (about 1 s each, about 20 s in all).
+- 21:34:16–21:34:22: the same 14 chunks for disk `s3`, about 1 s each. The log stops after 9 of them, near the 30 s limit. The live-photo queries and the deletes had not run yet.
+- `select … from size_variants where photo_id = ? and type in (?, ?)` takes 100–126 ms for a single photo. Its `EXPLAIN` on the server (2026-11-27) is fine: `range` on `size_variants_photo_id_type_unique`, `key_len` 101 (`char(24)` utf8mb4 + nullable flag + `int` type: both columns, no charset conversion), 2 rows. So these are cold page reads from the HDD, not a missing index.
+- The `s3` pass reads the same photo ids right after the `images` pass and is just as slow, so the pages read by one pass are gone by the next. Cause: the pages of 7000 photos do not fit in the InnoDB buffer pool (128 MB on the server, see below). `photos.id` is a random string, so each photo of a chunk sits on its own page of `photos`, and its size variants on another page of `size_variants`.
+- Master and this branch read the same rows in four passes over all the photos (variant paths and live-photo paths, once per disk), then again in the deletes. With a buffer pool smaller than one pass, every pass reads from the disk again.
+- The bindings end in `NOT IN (NULL, NULL, 447420)`: `order_items` has 3 rows (the shop is not used), two with a NULL `size_variant_id`. On master every path query therefore returns no row, and the files of deleted photos are never deleted on this instance (Q-112-04, fixed by FR-112-10).
+- The server's schemas (`SHOW CREATE TABLE`, 2026-11-27) match the migrations: `photos.id` and `size_variants.photo_id` are both `char(24)` utf8mb4_unicode_ci, so the join compares index to index. The int display widths suggest MariaDB.
+- `photos` has 16 secondary indexes and `size_variants` 3. Deleting a chunk of 500 photos changes about 500 × 17 + 3500 × 4 ≈ 22 500 index entries, on pages spread by the random ids. MariaDB has no change buffer since 11.0 (off by default since 10.5.15 / 10.6.7), so each such page that is not in memory is read from the disk during the delete. This cost is in the deletes, not in the read passes.
+- Server `innodb_buffer_pool_size`: 128 MB, the default (owner, 2026-11-27). The dev copy (MariaDB 11.8.6, assumed close to the server: 534 029 size variants against the server's `AUTO_INCREMENT` of 619 700) has `photos` at 123 MB (82 811 rows) and `size_variants` at 271 MB. One pass over 7000 random photos touches about half the pages of both tables, about 200 MB, so it does not fit in the buffer pool and every pass reads from the disk again. One chunk of 500 photos fits.
+- Not known yet: how long the live-photo passes and the deletes take on the server (not reached before the limit).
+
 **Question.** How should the album and photo deletes stay within the request limit when the DB phase itself is slow?
 
-#### Option A – Queue the whole delete on async connections (recommended)
+**Resolution (2026-11-27).** For this feature: Option C, the first step of every option, encoded in [spec.md](spec.md) FR-112-14, NFR-112-05, S-112-24/25, Overview and Non-Goals (owner: "let's refocus on the solution", after the proposal to add Option C to this branch). The end state, Option A (the owner's trash album, recommended) or Option B (deletion flag), is not decided here: it goes to a follow-up feature, listed in the roadmap backlog, whose own open questions will carry it. No ADR: FR-112-14 restructures one method without changing its contract.
 
-The `DELETE` endpoints validate and authorize, then dispatch one delete job (ids plus the acting user) and return. The job runs today's `Album\Delete::do()` / `Photo\Delete::do()` in the worker. On `sync` the delete stays inline, as today.
+Options reordered on 2026-11-27. First after the server log: the measuring step of the former Option C is done. Then after the owner proposed a deletion flag on `base_albums` (now Option B) and moving the photos into a trash album (now Option A): the per-chunk restructure is Option C, queuing is Option D and the resumable delete is Option E. A variant that moved the albums themselves into a trash album (a misreading of the owner's proposal) was dropped: it rewrites the tree on each delete, needs the moved permissions removed, and leaves photo-selection deletes per photo.
 
-Pros: fixes the default Docker setup (worker present) whatever the album size or disk speed. Small change in the actions, which already work from ids. Matches the compose file's advice ("use database/redis queue with a worker for long operations").
-Cons: on `sync` nothing changes: a slow disk still times out. The album or photos stay visible until the worker runs, and a failure is no longer reported to the caller. Lifts the Non-Goal taken in Q-112-01 (Option B there).
+Facts for the flag (2026-11-27): the container runs no scheduler (`entrypoint.sh` has only `web` and `worker` modes, and `routes/console.php` schedules nothing). About 100 files read albums: 72 through the `Album` models (about 40 of them use `AlbumQueryPolicy`) and 28 through raw `DB::table('albums' | 'base_albums')`.
 
-#### Option B – Bounded, resumable delete across requests
+#### Option A – Move the photos into a trash album, delete the albums at once, purge the trash in the background (recommended)
+
+The owner's proposal (2026-11-27). One hidden system album, the trash, holds every photo waiting for deletion.
+
+- Album delete request: classify the photos as today (only in the deleted subtree: to delete; also elsewhere: detach). Each photo to delete gets one link to the trash and loses its links to the deleted albums. The detached photos lose their links to the deleted albums. The album rows are deleted as today (cost per album). The request dispatches the purge and returns.
+- Photo delete request: the same move for the selected photos (their links replaced by one trash link), bounded the same way.
+- Cost: the request writes only `photo_album` and the album rows. On the dev copy `photo_album` is 42 MB, against about 394 MB for `photos` and `size_variants`, so it mostly stays in the buffer pool. `photos` and `size_variants`, where the time goes on the server, are only touched by the purge. The request still grows with the number of photos, but over the link table only: on the server the classification of 7000 photos took about 1.5 s, and the link move should be of the same order (not measured).
+- Albums are really deleted in the request: no flag and no filter on album read paths.
+- Hiding: the trash is private, so the access policies already hide its photos from everyone except their owner and admins. Each photo keeps one link (to the trash), so Unsorted (photos without a link) does not show them. For owners and admins, smart albums, search, timeline, map, tag and person albums still list them unless `PhotoQueryPolicy` excludes the trash. Its searchability and visibility filters are shared by those paths (22 files). Direct access to a trashed photo by id is refused in `PhotoPolicy`. Photo reads outside the policy (raw reads in 14 files, plus model queries) need an audit.
+- The trash album: created by a migration, owned by the admin, hidden from album listings and the tree, and protected: no upload, move, share, rename or delete, and no stats or size recompute. It is filled by direct `photo_album` writes, so no `AlbumSaved` fires, but the listeners must still skip it.
+- Purge: Option C's per-chunk structure over the trash's photos, one transaction per chunk, never photo by photo (one log flush per photo on an HDD, and the per-photo fan-out fixed in Q-112-02). The trash content is the durable to-do list: a killed worker or request loses nothing, and the next run continues.
+- Where the purge runs: in the worker on async connections. On `sync` (no worker and no scheduler in the container) after the response, under the Octane limit, plus an artisan command and an admin Maintenance entry ("empty trash") for whatever is left.
+- A table of queued photo ids instead of an album would avoid the system album. But the photos would then have no link: Unsorted and every other "no album" path would need a filter, and non-owners would no longer be hidden for free.
+- Delivery: Option C first, in this feature. The trash as a new feature, with the schema and data change approved first (escalation policy).
+
+Pros: albums disappear for real at once. The heavy tables leave the request, for album and photo deletes alike. The deletion runs in the background and survives a killed worker. Only the photo side needs a filter, mostly in one shared policy. A base for a later "restore from trash".
+Cons: a system album to hide and protect wherever albums are listed or targeted. Owners' and admins' photo listings must exclude the trash (a missed path shows a deleted photo to its owner). The request still grows with the number of photos, on the link table. Owner counts (for example storage used) include trashed photos until they are purged.
+
+#### Option B – Flag the albums on `base_albums`, then purge them in the background
+
+The owner's proposal (2026-11-27): the deletion flag is a column on `base_albums`, and the deletion itself runs in the background. The request authorizes, flags the selected albums and their whole subtree, dispatches the purge and returns. The purge runs Option C's per-chunk structure, one transaction per chunk. It classifies the photos when it runs, so a photo moved out of a flagged album in the meantime survives. Albums are deleted after their photos. The purge is idempotent: a stopped run leaves flagged albums behind, and the next run continues them.
+
+- Column: one nullable timestamp on `base_albums` (for example `deleted_at`) rather than a boolean, so the purge takes the oldest first and a stuck purge shows by its age. Tag and person albums share it. Their delete is already a few row deletes, so they can also stay deleted at once.
+- Subtree: one `UPDATE base_albums` joined to `albums` on the `_lft`/`_rgt` range of each selected album. The cost depends on the number of albums, not of photos. Flagging only the selected albums would make every album read look up its ancestors.
+- Hiding: `Album` and `TagAlbum` load `base_albums` as an eager-loaded relation (`base_class`), not through a join. A global scope therefore adds `NOT EXISTS (flagged base_albums row with the same id)` to each album query, a primary-key lookup. A join would clash with the policies' own joins on `base_albums`. Laravel's `SoftDeletes` does not fit, since it expects the column on the model's own table. The nestedset soft-delete support is not used either: `Album` overrides `deleteDescendants()` as a no-op and routes `delete()` to `Album\Delete`. Still to filter by hand: the album joins in `AlbumQueryPolicy` and `PhotoQueryPolicy` (query-builder joins), and the 28 raw `albums` / `base_albums` reads (9 read only `base_albums` and filter on the column directly). Uploading into, moving into and sharing a flagged album are refused.
+- Photos that are only in flagged albums stay visible to their owner (smart albums, search, timeline, map, tag and person albums) until the purge reaches them. Flagging the photos too would hide them at once, but that `UPDATE` reads every photo page, the same cost as one of today's passes, so the request would grow with the number of photos again.
+- Where the purge runs: in the worker on async connections. On `sync` there is no worker and no scheduler, so it runs after the response, under the same Octane limit. What it finished is kept (each chunk commits), and the rest needs a way to resume: an artisan command and an admin Maintenance entry that purge whatever is still flagged.
+- Delivery: two steps. Option C first, in this feature, since the purge needs it and it helps every install now. The flag and the purge as a new feature, with the schema change approved first (escalation policy).
+
+Pros: the deletion runs in the background, and the request cost depends on the number of albums only, on every disk and queue connection. Albums disappear at once. A killed worker or request loses no deletion: the flag stays and the purge resumes. No more single transaction over the whole delete.
+Cons: the largest change: a migration, a global scope plus the policy joins and raw reads to filter (a missed one shows a deleted album), and writes into flagged albums refused. Photos can stay visible to their owner until the purge reaches them. On `sync` a large purge still needs a manual or later resume.
+
+#### Option C – Read each chunk once
+
+Restructure `PhotosToBeDeletedDTO::forceDelete()` so that each chunk of 500 photos is handled from start to end before the next one: covers and headers reset, one path query for every disk and kind (`storage_disk`, the variant paths, `live_photo_short_path` and a sold flag in the select list, split in PHP), the person and face lookups, the sold-variant detach and the row deletes. A chunk's pages are then read from the disk once and stay in the buffer pool for every statement of that chunk.
+
+Pros: about one disk read per page instead of four passes plus the deletes, whatever the buffer pool size. Helps every install and every queue connection. No REST or schema change. Option A's purge reuses it.
+Cons: the deletes still change about 17 index entries per photo and 4 per size variant, on random pages: Option C removes the extra read passes, not that cost. The cost still grows with the number of photos, so a large enough album on the same disk still reaches 30 s. The gain on this server is an estimate until measured again with `DB_LOG_SQL` (the two measured passes took about 1 s per chunk each).
+
+#### Option D – Option C plus queuing the whole delete on async connections
+
+The `DELETE` endpoints validate and authorize, then dispatch one delete job (ids plus the acting user) and return. The job runs `Album\Delete::do()` / `Photo\Delete::do()` in the worker. On `sync` the delete stays inline, with Option C's gain.
+
+Pros: with a worker (the Docker compose default), no request limit applies at all, whatever the album size or disk speed. No schema change.
+Cons: on `sync` only Option C's gain. The album or photos stay visible until the worker runs, and a failure is no longer reported to the caller. A worker killed during the job loses that deletion (one transaction, nothing persisted). Lifts the Non-Goal taken in Q-112-01 (Option B there).
+
+#### Option E – Bounded, resumable delete across requests
 
 Each `DELETE` call removes at most a bounded slice of photos (count or time budget) in its own transaction and returns how much is left. The frontend repeats the call, with progress, until the albums themselves are deleted.
 
 Pros: works on every queue connection, `sync` included, without a worker. Each request is bounded whatever the disk. Errors still reach the caller.
-Cons: REST contract change (response body, repeated calls), frontend loop and progress UI, and every other caller (admin bulk edit, API clients) must loop. If the user leaves midway, the album stays with fewer photos: consistent, and finished by deleting again. Largest change.
-
-#### Option C – Measure on throttled I/O, then trim the transaction
-
-Reproduce locally with MySQL on throttled disk I/O (cgroup read/write IOPS limit, small buffer pool) and bulk fixtures, time each statement of the DB phase, then remove the dominant cost (for example, run the `AlbumSaved` stats recompute after the commit).
-
-Pros: smallest code change. Tells which statement dominates, which A and B do not need but would benefit from.
-Cons: the cost still grows with photo count: a larger album on the same disk times out again. Throttled I/O only approximates an HDD. No fix until measured.
+Cons: REST contract change (response body, repeated calls), frontend loop and progress UI, and every other caller (admin bulk edit, API clients) must loop. If the user leaves midway, the album stays with fewer photos: consistent, and finished by deleting again.

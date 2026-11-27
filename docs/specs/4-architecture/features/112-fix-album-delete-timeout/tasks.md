@@ -1,7 +1,7 @@
 # Feature 112 Tasks – Fix Album Delete Timeout
 
-_Status: Implemented (analysis and drift gates passed 2026-11-22)_  
-_Last updated: 2026-11-23_
+_Status: Implemented (I12 analysis and drift gates passed 2026-11-27)_  
+_Last updated: 2026-11-27_
 
 ## Checklist
 
@@ -93,6 +93,18 @@ _Last updated: 2026-11-23_
   _Verification:_ re-read spec and open-questions.
 - [x] T-112-25 – Q-112-12 A: FR-112-09 failure path and Non-Goals state that the classification is not atomic with a concurrent move (no code change).  
   _Verification:_ re-read spec and open-questions.
+
+### I12 – Read each chunk once (2026-11-27, Q-112-13)
+- [x] T-112-26 – `tests/Unit/DTO/PhotosToBeDeletedDTOTest.php` with 502 bulk photos (two chunks): S-112-24 (per-disk paths of variants, watermarked variants and live photos, sold ORIGINAL kept with `photo_id` NULL and not queued while its live file is, ≤500 paths per job; green on the old code, it pins the behaviour) and S-112-25 (query log: 2 `SELECT`s on `size_variants`, 2 on `faces`, every photo-row statement of chunk 1 before chunk 2; red on the old code) (FR-112-14, NFR-112-05).  
+  _Verification:_ `php artisan test --filter=PhotosToBeDeletedDTOTest` (S-112-24 green, S-112-25 red).
+  _Result 2026-11-27:_ S-112-24 green, S-112-25 red (`SELECTs reading size_variants`: 8, expected 2).
+
+- [x] T-112-27 – `PhotosToBeDeletedDTO::forceDelete()` per chunk: covers and headers reset first as today, then per chunk one path query (every disk and kind, sold flag in the select list), one face query, the sold-variant detach and the row deletes; jobs built after the last chunk. The four whole-set collectors go (FR-112-14).  
+  _Verification:_ `php artisan test --filter=PhotosToBeDeletedDTOTest`, then one at a time `--filter=DeleteBindLimitTest`, `--filter=DeleteAfterResponseTest`, `--filter=PhotoDeleteFanOutTest`, `--filter=AlbumDeleteTrackTest`, `--filter=DeleteTest`, `--filter=GhostbusterTest`, `--filter=NsfwActionServiceTest`, `--filter=SyncTest`; `vendor/bin/php-cs-fixer fix`, `make phpstan`.  
+  _Result 2026-11-27:_ PhotosToBeDeletedDTOTest 3 (a face case added: dismissed faces' persons are not recounted; checked by removing the filter, which turns it red), DeleteBindLimitTest 5, DeleteAfterResponseTest 4, PhotoDeleteFanOutTest 10, AlbumDeleteTrackTest 2, `DeleteTest` filter 41, GhostbusterTest 2, NsfwActionServiceTest 14, SyncTest 51, DeleteFaceEmbeddingsJobTest 5, DestroyDismissedFacesTest 11, RecomputePersonStatsJobTest 3, PeopleControllerTest 29, FaceDismissTest 12: all green. php-cs-fixer: 0 files fixed. phpstan: no errors.
+
+- [x] T-112-28 – Docs: knowledge map (`forceDelete()` per chunk), drift gate entry for I12, roadmap row. Ask the owner for a second `DB_LOG_SQL` run on the server once deployed (the measured gain goes into Q-112-13's follow-up).  
+  _Verification:_ re-read spec, plan, tasks and knowledge map against the code.
 
 ## Notes / TODOs
 Run test classes one at a time (shared SQLite DB).
