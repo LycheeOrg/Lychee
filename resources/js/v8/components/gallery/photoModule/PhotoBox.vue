@@ -217,6 +217,7 @@ import {
 	type Rect,
 	type TapRecord,
 } from "@/v8/utils/panZoom";
+import { isOnPlayerControls } from "@/v8/utils/videoPlayer";
 
 const { isLTR } = useLtRorRtL();
 
@@ -665,11 +666,17 @@ function isPageZoomed(): boolean {
 	return typeof window !== "undefined" && window.visualViewport !== null && window.visualViewport.scale > 1.01;
 }
 
+// A drag that starts on the video controls (scrubbing the time or volume slider) belongs to them.
+let isSwipeOnPlayerControls = false;
+
 useSwipe(containerEl, {
+	onSwipeStart(e: TouchEvent) {
+		isSwipeOnPlayerControls = isOnPlayerControls(e.composedPath());
+	},
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
 		// FR-082-10: in the sphere a drag looks around, never navigates.
-		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked()) {
+		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked() || isSwipeOnPlayerControls) {
 			return;
 		}
 		if (direction === "left" && isLTR()) {
