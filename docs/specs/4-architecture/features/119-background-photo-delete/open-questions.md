@@ -8,7 +8,7 @@ Open questions for [Feature 119](spec.md). Log every high- and medium-impact que
 |-------------|---------|----------|---------|--------|--------|---------|
 | ~~Q-119-01~~ | 119 | High | Where the photos waiting for deletion are held: a trash table, a system trash album, or a flag on `photos` | Resolved (A, owner 2026-11-27, spec FR-119-01/03, DO-119-01/02, ADR-119-01) | 2026-11-27 | 2026-11-27 |
 | ~~Q-119-02~~ | 119 | Medium | Which delete paths go through the trash: album and photo deletes, or album deletes only | Resolved (A, owner 2026-11-27, spec FR-119-02) | 2026-11-27 | 2026-11-27 |
-| ~~Q-119-03~~ | 119 | High | How the purge runs and resumes on `sync`, where the container has no worker and no scheduler | Resolved (A, Maintenance front-end in v8 only, owner 2026-11-27, spec FR-119-05/08, UI mock-up, API-119-01/02, CLI-119-01) | 2026-11-27 | 2026-11-27 |
+| ~~Q-119-03~~ | 119 | High | How the purge runs and resumes on `sync`, where the container has no worker and no scheduler | Resolved (A, owner 2026-11-27, spec FR-119-05/08, UI mock-up, API-119-01/02, CLI-119-01) | 2026-11-27 | 2026-11-28 |
 | ~~Q-119-04~~ | 119 | Medium | When trashed photos are purged: as soon as possible, or after a retention period | Resolved (A, owner 2026-11-27, spec FR-119-07, Non-Goals) | 2026-11-27 | 2026-11-27 |
 | ~~Q-119-05~~ | 119 | Medium | When the delete side effects run (webhooks, covers, thumbs, person stats): when the photo is trashed or when it is purged | Resolved (A, owner 2026-11-27, spec FR-119-06) | 2026-11-27 | 2026-11-27 |
 | ~~Q-119-06~~ | 119 | Medium | A photo delete from a smart, tag or person album removes no link, so photos that are in a regular album survive it (today's behaviour, inherited by the trash) | Resolved (C, owner 2026-11-28: deleting from Unsorted keeps working; spec FR-119-02, FR-119-09, S-119-17/18) | 2026-11-27 | 2026-11-28 |
@@ -78,7 +78,7 @@ Cons: three behaviours instead of one. The import's inline delete still pays the
 
 **Question.** How does the purge run, and how does it finish on `sync`?
 
-**Resolution (2026-11-27).** Option A, owner "3: A - maintenance front-end: only v8". Purge job after each delete (10 s budget on `sync`), Maintenance task with a v8 card only, `lychee:purge-trash` (spec FR-119-05, FR-119-08, UI mock-up, NFR-119-03). The default `maintenance_processing_limit` (5000) is too large for one request on a slow disk, so the Maintenance task also stops after 10 s.
+**Resolution (2026-11-27).** Option A, owner 2026-11-27. Purge job after each delete (10 s budget on `sync`), Maintenance task with a card in v8 and v7, `lychee:purge-trash` (spec FR-119-05, FR-119-08, UI mock-up, NFR-119-03). The default `maintenance_processing_limit` (5000) is too large for one request on a slow disk, so the Maintenance task also stops after 10 s.
 
 #### Option A – Purge job after each delete, plus a Maintenance task and an artisan command (recommended)
 

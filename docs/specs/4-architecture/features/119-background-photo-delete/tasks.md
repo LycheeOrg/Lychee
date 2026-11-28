@@ -71,6 +71,11 @@ _Last updated: 2026-11-28_
 - [x] T-119-20 – `DeleteModerationRequest` (admin only, `photo_ids` 1–500), `ModerationController::delete` on `Trash::everywhere()` with the FR-119-06 side effects and `PurgeTrashJob`, route `DELETE /api/v2/Moderation`; `ModerationService.delete(photo_ids)` and both `admin/Moderation.vue` pages on it (FR-119-10, API-119-03).  
   _Verification:_ `php artisan test --filter=ModerationDeleteTest`, `--filter=ModerationHistoryListTest`, `--filter=OpenApiTest`, `vp check --fix` on the changed files, `vp run typecheck`.
 
+### I7c – v7 Maintenance card
+- [x] T-119-21 – `v7/components/maintenance/MaintenancePurgeTrash.vue` (UI-119-01..03, as the v7 `MaintenanceMissingPalettes.vue`, count reloaded after a purge), registered in `v7/views/admin/Maintenance.vue` next to `MaintenanceMissingPalettes`. Service calls and `maintenance.purge-trash` keys from T-119-14 (FR-119-08).  
+  _Verification:_ `vp check --fix` on the changed files, `vp run typecheck`.  
+  _Result 2026-11-28:_ `vp check --fix` on the 2 files clean, `vp run typecheck` clean. Not checked by hand in a browser yet.
+
 ### I8 – Docs and quality gate
 - [x] T-119-15 – Knowledge map, roadmap, release note in the plan, drift gate; `vendor/bin/php-cs-fixer fix`, `make phpstan`; commit command for the owner.  
   _Verification:_ re-read spec, plan, tasks, ADR-119-01 against the code; all commands clean.

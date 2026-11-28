@@ -11,13 +11,13 @@ Album and photo deletes remove the photo rows inside the HTTP request. On a prod
 
 `photo_album` is many-to-many: a photo is deleted only when its last album link goes (owner rule). Photos without any album link are already invisible to other users (`PhotoQueryPolicy`), but not to their owner or to admins.
 
-Affected modules: delete actions (`Album\Delete`, `Photo\Delete`), `PhotosToBeDeletedDTO`, the `Photo` model, raw `photos` reads, jobs, admin Maintenance (REST and v8), artisan commands, one migration.
+Affected modules: delete actions (`Album\Delete`, `Photo\Delete`), `PhotosToBeDeletedDTO`, the `Photo` model, raw `photos` reads, jobs, admin Maintenance (REST, v8 and v7), artisan commands, one migration.
 
 ## Decision
 
 - A delete removes the album links it targets and inserts the photos left without any link into a new table `trashed_photos` (`photo_id` primary key, foreign key to `photos` with `ON DELETE CASCADE`, `trashed_at`). Album rows are deleted in the same transaction. Every album and photo delete path does this (Q-119-02 A).
 - A global Eloquent scope on `Photo` (`NotTrashedScope`) hides trashed photos from every model query, for owners and admins too. Raw `photos` reads that list or serve photos apply the same `NOT EXISTS` condition. The trash action and the purge read without the scope.
-- A purge deletes trashed photos in batches of 100, oldest first, each batch in its own transaction, through `PhotosToBeDeletedDTO`. Before deleting, it takes out of the trash any photo that has an album link again. It runs as `PurgeTrashJob` after every delete that trashed photos (worker on async connections, 30 minutes per run before it dispatches itself again; after the response on `sync`, with a 10 s budget in HTTP requests), and can be resumed from an admin Maintenance task (v8) and `php artisan lychee:purge-trash` (Q-119-03 A).
+- A purge deletes trashed photos in batches of 100, oldest first, each batch in its own transaction, through `PhotosToBeDeletedDTO`. Before deleting, it takes out of the trash any photo that has an album link again. It runs as `PurgeTrashJob` after every delete that trashed photos (worker on async connections, 30 minutes per run before it dispatches itself again; after the response on `sync`, with a 10 s budget in HTTP requests), and can be resumed from an admin Maintenance task (v8 and v7) and `php artisan lychee:purge-trash` (Q-119-03 A).
 - No retention, no restore (Q-119-04 A). Side effects users see (webhooks, covers, thumbs, caches) run when the photos are trashed. Those that need the rows gone (files, person stats, face embeddings) run in the purge (Q-119-05 A).
 
 ## Consequences
