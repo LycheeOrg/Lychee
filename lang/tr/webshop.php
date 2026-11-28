@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'Ödeme iptal edildi.',
         'paymentFailed' => 'Ödeme başarısız oldu',
         'paymentFailedMessage' => 'Ödemenizi doğrulayamadık. Lütfen tekrar deneyin veya sorun devam ederse destek ekibiyle iletişime geçin.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

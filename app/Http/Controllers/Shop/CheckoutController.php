@@ -9,18 +9,21 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
+use App\Actions\Shop\Gateway\Async\AsyncPaymentRegistry;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Events\OrderCompleted;
 use App\Http\Requests\Checkout\CancelRequest;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
+use App\Http\Requests\Checkout\NotifyRequest;
 use App\Http\Requests\Checkout\OfflineRequest;
 use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\URL;
 
@@ -29,10 +32,12 @@ class CheckoutController extends Controller
 	/**
 	 * Constructor.
 	 *
-	 * @param CheckoutService $checkout_service The checkout service
+	 * @param CheckoutService      $checkout_service The checkout service
+	 * @param AsyncPaymentRegistry $async_payments   Providers settling asynchronously
 	 */
 	public function __construct(
 		private CheckoutService $checkout_service,
+		private AsyncPaymentRegistry $async_payments,
 	) {
 	}
 
@@ -157,7 +162,10 @@ class CheckoutController extends Controller
 		$message = 'Payment failed or was not completed.';
 
 		if ($success) {
-			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+			// wasChanged: only fulfil when THIS request completed the order —
+			// asynchronous providers may have completed it from the payment
+			// notification already, which also dispatched the event.
+			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled') && $order->wasChanged('status'), $order->id);
 			$complete_url = URL::route('shop.checkout.complete');
 			$redirect_url = null;
 			$message = 'Payment completed successfully.';
@@ -173,11 +181,52 @@ class CheckoutController extends Controller
 			);
 		}
 
+		if (!$success && $order->status === PaymentStatusType::PROCESSING && $this->async_payments->isAsync($order->provider)) {
+			// Asynchronous providers (crypto): the payment is still confirming
+			// on-chain and the signed notification will complete the order.
+			// The checkout page renders the real order status. Synchronous
+			// providers never take this branch — for them a return without
+			// success is a failure.
+			return redirect()->route('shop.checkout.complete');
+		}
+
 		if (!$success) {
 			return redirect()->route('shop.checkout.failed');
 		}
 
 		return redirect()->route('shop.checkout.complete');
+	}
+
+	/**
+	 * Handle a server-to-server payment notification from an asynchronous
+	 * provider.
+	 *
+	 * The notification signature is verified by the provider's strategy
+	 * before any field is read; see AsyncPaymentGateway::handleNotification().
+	 *
+	 * @param NotifyRequest $request  The request carrying the signed notification
+	 * @param string        $provider The payment provider from the url
+	 * @param string        $order_id The order id from the url
+	 *
+	 * @return Response Empty acknowledgement; the gateway stops retrying on 2xx
+	 */
+	public function notify(NotifyRequest $request, string $provider, string $order_id): Response
+	{
+		$gateway = $this->async_payments->forProvider($request->provider_type());
+		if ($gateway === null) {
+			abort(404);
+		}
+
+		/** @disregard P1013 */
+		$order = $gateway->handleNotification($request->basket(), $request);
+
+		// wasChanged: fulfil once. A redelivered notification for an order that
+		// is already completed must not dispatch the event a second time.
+		if ($order->status === PaymentStatusType::COMPLETED && $order->wasChanged('status')) {
+			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+		}
+
+		return response()->noContent();
 	}
 
 	/**

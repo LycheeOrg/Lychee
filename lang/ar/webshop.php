@@ -285,5 +285,7 @@ return [
         'paymentCancelledMessage' => 'تم إلغاء الدفع.',
         'paymentFailed' => 'فشل الدفع',
         'paymentFailedMessage' => 'لم نتمكن من تأكيد دفعتك. يرجى المحاولة مرة أخرى أو التواصل مع الدعم إذا استمرت المشكلة.',
+        'payment_processing' => 'Payment being confirmed',
+        'payment_processing_message' => 'Your payment is being confirmed by the payment provider. The order will complete automatically once the payment is confirmed — you can safely close this page.',
     ],
 ];

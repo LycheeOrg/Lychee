@@ -14,6 +14,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\ProviderConfigurationNotFoundException;
 use Omnipay\Common\GatewayInterface;
 use Omnipay\Omnipay;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
 
 class OmnipayFactory
 {
@@ -36,6 +37,25 @@ class OmnipayFactory
 		$gateway = $this->initialize_gateway($gateway, $provider);
 
 		return $gateway;
+	}
+
+	/**
+	 * Create a payment gateway instance bound to a specific HTTP request.
+	 *
+	 * Used to verify incoming payment notifications: the driver reads the raw
+	 * body and headers of that request to check its signature, so it must be
+	 * the request being handled and not Omnipay's default built from globals.
+	 *
+	 * @param OmnipayProviderType $provider
+	 * @param HttpRequest         $http_request
+	 *
+	 * @return GatewayInterface
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function create_notification_gateway(OmnipayProviderType $provider, HttpRequest $http_request): GatewayInterface
+	{
+		return $this->initialize_gateway(Omnipay::create($provider->value, null, $http_request), $provider);
 	}
 
 	/**
