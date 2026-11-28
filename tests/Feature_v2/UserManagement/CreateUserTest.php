@@ -31,6 +31,8 @@ class CreateUserTest extends BaseApiWithDataTest
 			'username' => 'username',
 			'password' => 'password',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => false,
 		]);
 		$this->assertUnauthorized($response);
@@ -39,6 +41,8 @@ class CreateUserTest extends BaseApiWithDataTest
 			'username' => 'username',
 			'password' => 'password',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => false,
 		]);
 		$this->assertForbidden($response);
@@ -50,6 +54,8 @@ class CreateUserTest extends BaseApiWithDataTest
 			'username' => $this->userMayUpload1->username,
 			'password' => 'password',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => false,
 		]);
 		$this->assertConflict($response);
@@ -58,6 +64,8 @@ class CreateUserTest extends BaseApiWithDataTest
 			'username' => 'newUsername',
 			'password' => 'password',
 			'may_upload' => false,
+			'may_share' => false,
+			'may_edit' => false,
 			'may_edit_own_settings' => false,
 		]);
 		$this->assertCreated($response);
@@ -69,6 +77,8 @@ class CreateUserTest extends BaseApiWithDataTest
 				'username' => 'newUsername',
 				'may_administrate' => false,
 				'may_upload' => false,
+				'may_share' => false,
+				'may_edit' => false,
 				'may_edit_own_settings' => false,
 			]);
 	}

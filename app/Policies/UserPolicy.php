@@ -57,9 +57,12 @@ class UserPolicy extends BasePolicy
 		return false;
 	}
 
+	/**
+	 * Listing users is needed to share or transfer an album (Feature 118, FR-118-04).
+	 */
 	public function canList(User $user): bool
 	{
-		return $user->may_upload;
+		return $user->may_share;
 	}
 
 	/**

@@ -117,7 +117,8 @@ class PhotoPolicy extends BasePolicy
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin
-	 *  - the user is the owner of the photo
+	 *  - the user is the owner of the photo and has the edit right (Feature 118, FR-118-10)
+	 *  - an album containing the photo is editable
 	 *
 	 * @param Photo $photo
 	 *
@@ -129,7 +130,7 @@ class PhotoPolicy extends BasePolicy
 			return false;
 		}
 
-		if ($this->isOwner($user, $photo)) {
+		if ($this->isOwner($user, $photo) && $user->may_edit) {
 			return true;
 		}
 
@@ -139,7 +140,7 @@ class PhotoPolicy extends BasePolicy
 	/**
 	 * Checks whether the photo may be moved or copied by the current user.
 	 *
-	 * A photo is movable if the user owns it and has the upload privilege,
+	 * A photo is movable if the user owns it and has the edit right,
 	 * or if any album containing it is movable (see {@link AlbumPolicy::canMove()}).
 	 *
 	 * @param User  $user
@@ -152,7 +153,7 @@ class PhotoPolicy extends BasePolicy
 		if ($photo->is_validated !== true) {
 			return false;
 		}
-		if ($this->isOwner($user, $photo) && $user->may_upload) {
+		if ($this->isOwner($user, $photo) && $user->may_edit) {
 			return true;
 		}
 
@@ -162,8 +163,8 @@ class PhotoPolicy extends BasePolicy
 	/**
 	 * Aggregate counterpart of {@link PhotoPolicy::canMove()} for a batch of
 	 * photos: every photo is validated and either owned
-	 * by the user (with the upload privilege) or contained in an album whose
-	 * content the user may move (owned with the upload privilege, or a user or
+	 * by the user (with the edit right) or contained in an album whose
+	 * content the user may move (owned with the edit right, or a user or
 	 * group permission granting move). Three queries, whatever the batch size.
 	 *
 	 * @param User     $user
@@ -182,11 +183,11 @@ class PhotoPolicy extends BasePolicy
 
 		/** @var string[] $foreign_ids */
 		$foreign_ids = $rows
-			->filter(fn ($row) => !($user->may_upload && (int) $row->owner_id === $user->id))
+			->filter(fn ($row) => !($user->may_edit && (int) $row->owner_id === $user->id))
 			->pluck('id')->all();
 
 		return $foreign_ids === [] ||
-			$this->countPhotosWithAlbumGrant($user, $foreign_ids, APC::GRANTS_MOVE, owned_album_counts: $user->may_upload, public_counts: false) === count($foreign_ids);
+			$this->countPhotosWithAlbumGrant($user, $foreign_ids, APC::GRANTS_MOVE, owned_album_counts: $user->may_edit, public_counts: false) === count($foreign_ids);
 	}
 
 	/**
@@ -292,7 +293,7 @@ class PhotoPolicy extends BasePolicy
 		}
 
 		if (
-			$user->may_upload &&
+			$user->may_edit &&
 			Photo::query()
 			->whereIn('id', $photo_ids)
 			->where('owner_id', $user->id)
@@ -364,7 +365,10 @@ class PhotoPolicy extends BasePolicy
 		// Bounded queries: at most one chunk of ids each (FR-112-11).
 		$chunks = array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE);
 
-		if ($user->may_upload && $this->countOwnedById($user, $chunks) === count($photo_ids)) {
+		if (
+			$user->may_edit &&
+			$this->countOwnedById($user, $chunks) === count($photo_ids)
+		) {
 			return true;
 		}
 

@@ -306,4 +306,15 @@ return [
 	 | from the server.
 	 */
 	'client-cache' => (bool) env('CLIENT_CACHE_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Description max length
+	 |--------------------------------------------------------------------------
+	 |
+	 | We default to 1000, but this can be overridden by setting DESCRIPTION_MAX_LENGTH in the .env file.
+	 | For mysql/mariadb, we recommend to not exceed 16 000 characters.
+	 | Pgsql and sqlite have no such limitations.
+	 */
+	'description-max-length' => (int) env('DESCRIPTION_MAX_LENGTH', 1000),
 ];

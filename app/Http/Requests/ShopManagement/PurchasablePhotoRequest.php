@@ -25,6 +25,7 @@ use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Rules\DescriptionRule;
 use App\Rules\RandomIDRule;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +68,7 @@ class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAl
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'present|nullable|string|max:1000',
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['present', 'nullable', new DescriptionRule()],
 			RequestAttribute::NOTE_ATTRIBUTE => 'present|nullable|string|max:1000',
 			RequestAttribute::PRICES_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.size_variant_type' => ['required', new Enum(PurchasableSizeVariantType::class)],

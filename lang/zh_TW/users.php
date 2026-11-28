@@ -14,6 +14,8 @@ return [
     'legend' => '圖例',
     'upload_rights' => '勾選後，使用者可以上傳內容。',
     'edit_rights' => '勾選後，使用者可以修改個人資料（使用者名稱、密碼）。',
+    'share_rights' => '選取後，使用者可與其他使用者分享自己的相簿並將其設為公開。',
+    'content_rights' => '選取後，使用者可編輯、移動和刪除自己的內容。',
     'upload_trust_level' => '上傳信任等級 — 控制上傳內容是否立即公開。',
 
     'quota' => '設定後，使用者的相片將有空間配額限制（單位 kB）。',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => '留空：停用從伺服器匯入。「/」：整個伺服器。否則：僅限此資料夾及其子資料夾。',
         'upload_rights' => '使用者可以上傳內容。',
         'edit_rights' => '使用者可以修改個人資料（使用者名稱、密碼）。',
+        'share_rights' => '使用者可分享自己的相簿。',
+        'content_rights' => '使用者可編輯、移動和刪除自己的內容。',
         'admin_rights' => '使用者具有管理員權限。',
         'upload_trust_level' => '上傳信任等級',
         'upload_trust_level_check' => '檢查 – 上傳內容需經管理員核准才會公開。',

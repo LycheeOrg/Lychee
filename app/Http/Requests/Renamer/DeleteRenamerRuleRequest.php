@@ -27,7 +27,7 @@ class DeleteRenamerRuleRequest extends BaseApiRequest
 	{
 		$user = Auth::user();
 
-		if ($user === null || (!$user->may_administrate && !$user->may_upload)) {
+		if ($user === null || (!$user->may_administrate && !$user->may_edit)) {
 			return false;
 		}
 

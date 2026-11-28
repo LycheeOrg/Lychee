@@ -185,6 +185,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_public_visible_flag_enabled: true,
 		is_password_flag_enabled: true,
 		is_sensitive_flag_enabled: true,
+
+		// Description limit enforced by DescriptionRule.
+		description_max_length: 1000,
 	}),
 	actions: {
 		/**
@@ -374,6 +377,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_public_visible_flag_enabled = data.is_public_visible_flag_enabled;
 					this.is_password_flag_enabled = data.is_password_flag_enabled;
 					this.is_sensitive_flag_enabled = data.is_sensitive_flag_enabled;
+
+					this.description_max_length = data.description_max_length;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

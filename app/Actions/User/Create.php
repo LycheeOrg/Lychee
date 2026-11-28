@@ -39,6 +39,8 @@ class Create
 		?string $note = null,
 		?UserUploadTrustLevel $upload_trust_level = null,
 		?string $server_path = null,
+		bool $may_share = false,
+		bool $may_edit = false,
 	): User {
 		$username = $this->resolveUsername($username, $email);
 
@@ -56,6 +58,9 @@ class Create
 		}
 		$user = new User();
 		$user->may_upload = $may_upload;
+		// Upload implies share and edit (FR-118-22).
+		$user->may_share = $may_share || $may_upload;
+		$user->may_edit = $may_edit || $may_upload;
 		$user->may_edit_own_settings = $may_edit_own_settings;
 		$user->may_administrate = $may_administrate;
 		$user->username = $username;

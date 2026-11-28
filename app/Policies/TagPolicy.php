@@ -24,7 +24,7 @@ class TagPolicy extends BasePolicy
 	}
 
 	/**
-	 * Users with upload rights are allowed to delete, edit, merge their own tags.
+	 * Users with the edit right are allowed to delete, edit, merge their own tags (Feature 118, FR-118-12).
 	 *
 	 * @param User $user
 	 *
@@ -32,6 +32,6 @@ class TagPolicy extends BasePolicy
 	 */
 	public function canEdit(User $user): bool
 	{
-		return $user->may_upload;
+		return $user->may_edit;
 	}
 }

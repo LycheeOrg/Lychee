@@ -12,6 +12,15 @@ final class DescriptionRule extends StringRule
 {
 	public function __construct()
 	{
-		parent::__construct(true, 1000);
+		parent::__construct(true, self::maxLength());
+	}
+
+	/**
+	 * Maximum length of a description, as counted by {@see StringRule::passes()}.
+	 * Also sent to the front end through `InitConfig::$description_max_length`.
+	 */
+	public static function maxLength(): int
+	{
+		return intval(config('features.description-max-length', 1000));
 	}
 }

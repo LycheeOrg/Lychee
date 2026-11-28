@@ -5,6 +5,8 @@ type UserManagementCreateRequest = {
 	username: string;
 	password: string | null | undefined;
 	may_upload: boolean;
+	may_share: boolean;
+	may_edit: boolean;
 	may_administrate: boolean;
 	may_edit_own_settings: boolean;
 	upload_trust_level?: App.Enum.UserUploadTrustLevel;

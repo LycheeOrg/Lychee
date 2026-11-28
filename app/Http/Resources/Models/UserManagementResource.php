@@ -20,6 +20,8 @@ class UserManagementResource extends Data
 	public string $username;
 	public bool $may_administrate;
 	public bool $may_upload;
+	public bool $may_share;
+	public bool $may_edit;
 	public bool $may_edit_own_settings;
 	public bool $is_owner;
 
@@ -45,6 +47,8 @@ class UserManagementResource extends Data
 		$this->is_owner = $user->may_administrate && $user->id === request()->configs()->getValueAsInt('owner_id');
 		$this->may_administrate = $user->may_administrate;
 		$this->may_upload = $user->may_upload || $user->may_administrate;
+		$this->may_share = $user->may_share || $user->may_administrate;
+		$this->may_edit = $user->may_edit || $user->may_administrate;
 		$this->may_edit_own_settings = $user->may_edit_own_settings || $user->may_administrate;
 		$this->upload_trust_level = $user->upload_trust_level;
 		$this->server_path = $user->server_path;

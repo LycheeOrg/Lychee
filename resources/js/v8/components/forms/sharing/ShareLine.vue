@@ -15,10 +15,10 @@
 			<UCheckbox v-model="grantsReadAccess" disabled />
 			<UCheckbox v-model="grantsFullPhotoAccess" @update:model-value="edit" />
 			<UCheckbox v-model="grantsDownload" @update:model-value="edit" />
-			<UCheckbox v-model="grantsUpload" @update:model-value="edit" />
-			<UCheckbox v-model="grantsEdit" @update:model-value="edit" />
-			<UCheckbox v-model="grantsMove" @update:model-value="edit" />
-			<UCheckbox v-model="grantsDelete" @update:model-value="edit" />
+			<UCheckbox v-model="grantsUpload" :disabled="lockUpload(grantsUpload)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsEdit" :disabled="lockEdit(grantsEdit)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsMove" :disabled="lockEdit(grantsMove)" @update:model-value="edit" />
+			<UCheckbox v-model="grantsDelete" :disabled="lockEdit(grantsDelete)" @update:model-value="edit" />
 			<UTooltip :text="$t('dialogs.button.delete')">
 				<UButton color="error" variant="ghost" size="xs" icon="lucide:user-minus" @click="deletePermission" />
 			</UTooltip>
@@ -27,9 +27,12 @@
 </template>
 
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import { ref, watch } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import SharingService from "@/services/sharing-service";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const props = defineProps<{
 	withAlbum: boolean;
@@ -48,6 +51,10 @@ const grantsEdit = ref(false);
 const grantsMove = ref(false);
 const grantsDelete = ref(false);
 const grantsReadAccess = ref(true);
+
+// Last values the server accepted: restored when a save is refused,
+// so that the checkboxes never show a change that was not saved.
+let saved = props.perm;
 
 function load(permisison: App.Http.Resources.Models.AccessPermissionResource) {
 	grantsFullPhotoAccess.value = permisison.grants_full_photo_access;
@@ -68,10 +75,13 @@ function edit() {
 		grants_move: grantsMove.value,
 		grants_delete: grantsDelete.value,
 	};
-	SharingService.edit(data).then((response) => {
-		load(response.data);
-		toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });
-	});
+	SharingService.edit(data)
+		.then((response) => {
+			saved = response.data;
+			load(saved);
+			toast.add({ severity: "success", summary: "Success", detail: "Permission updated", life: 1000 });
+		})
+		.catch(() => load(saved));
 }
 
 load(props.perm);
@@ -86,6 +96,7 @@ const deletePermission = () => {
 watch(
 	() => props.perm,
 	(newVal) => {
+		saved = newVal;
 		load(newVal);
 	},
 );

@@ -4,13 +4,17 @@
 			<div class="w-full max-w-6xl mx-auto">
 				<!-- Mobile fallback: the aside (where this same toggle lives on desktop) is hidden below `lg`. -->
 				<AlbumExpertModeToggle v-if="albumStore.config?.is_base_album" v-model="is_expert_mode" class="mb-6 lg:hidden" />
-				<div v-if="sections.length > 1" class="flex relative items-start justify-between gap-8">
+				<div v-if="sections.length > 0" class="flex relative items-start justify-between gap-8">
 					<UPageAside class="hidden sticky lg:block lg:top-0 w-52 shrink-0 py-0">
 						<AlbumExpertModeToggle v-if="albumStore.config?.is_base_album" v-model="is_expert_mode" class="mb-6" />
 						<UNavigationMenu orientation="vertical" :items="navItems" highlight :dir />
 					</UPageAside>
 					<div class="w-full min-w-0 flex flex-col gap-10">
-						<section id="album-settings-about" class="w-full flex justify-center flex-wrap items-start gap-4 scroll-mt-4">
+						<section
+							v-if="canEditProperties"
+							id="album-settings-about"
+							class="w-full flex justify-center flex-wrap items-start gap-4 scroll-mt-4"
+						>
 							<AlbumProperties
 								v-if="albumStore.config?.is_base_album"
 								:key="`properties_${albumStore.album?.id}`"
@@ -155,6 +159,8 @@ const canChangeVisibility = computed(() => albumStore.rights?.can_transfer ?? fa
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
 const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
+// An owner with the share right but no edit right sees no properties (Feature 118, FR-118-06).
+const canEditProperties = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_edit);
 
 type SectionId = "about" | "visibility" | "share" | "move" | "tracks" | "shop" | "danger";
 type Section = { value: SectionId; label: string; class?: string };
@@ -166,7 +172,10 @@ const sections = computed<Section[]>(() => {
 		return [];
 	}
 
-	const items: Section[] = [{ value: "about", label: trans("gallery.album.tabs.about") }];
+	const items: Section[] = [];
+	if (canEditProperties.value) {
+		items.push({ value: "about", label: trans("gallery.album.tabs.about") });
+	}
 	if (canChangeVisibility.value) {
 		items.push({ value: "visibility", label: trans("gallery.album.tabs.visibility") });
 	}
@@ -190,7 +199,7 @@ const sections = computed<Section[]>(() => {
 });
 
 // Section currently scrolled into view, tracked via a scroll listener below.
-const activeSection = ref<SectionId>("about");
+const activeSection = ref<SectionId>(sections.value[0]?.value ?? "about");
 
 const navItems = computed<NavigationMenuItem[]>(() =>
 	sections.value.map((s) => ({

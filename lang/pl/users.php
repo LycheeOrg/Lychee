@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Po wybraniu tej opcji użytkownik może przesyłać zawartość.',
     'edit_rights' => 'Po wybraniu tej opcji użytkownik może zmodyfikować swój profil (nazwa użytkownika, hasło).',
+    'share_rights' => 'Po zaznaczeniu użytkownik może udostępniać swoje albumy innym użytkownikom i ustawiać je jako publiczne.',
+    'content_rights' => 'Po zaznaczeniu użytkownik może edytować, przenosić i usuwać własne treści.',
     'upload_trust_level' => 'Poziom zaufania przesyłania — określa, czy przesłane pliki są od razu publiczne.',
 
     'quota' => 'Po ustawieniu użytkownik ma limit miejsca na zdjęcia (w kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Puste: import z serwera wyłączony. „/”: cały serwer. W przeciwnym razie: tylko ten folder i jego zawartość.',
         'upload_rights' => 'Użytkownik może przesyłać treści.',
         'edit_rights' => 'Użytkownik może modyfikować swój profil (nazwa użytkownika, hasło).',
+        'share_rights' => 'Użytkownik może udostępniać swoje albumy.',
+        'content_rights' => 'Użytkownik może edytować, przenosić i usuwać własne treści.',
         'admin_rights' => 'Użytkownik ma uprawnienia administratora.',
         'upload_trust_level' => 'Poziom zaufania przesyłania',
         'upload_trust_level_check' => 'Sprawdzanie – przesłane pliki wymagają zatwierdzenia przez administratora, zanim staną się publiczne.',

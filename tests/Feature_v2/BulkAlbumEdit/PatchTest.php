@@ -17,6 +17,7 @@ use App\Events\AlbumSaved;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -117,6 +118,17 @@ class PatchTest extends BaseApiWithDataTest
 
 		$this->album1->refresh();
 		$this->assertSame('New description from bulk edit', $this->album1->description);
+	}
+
+	public function testPatchDescriptionOverLimitReturns422(): void
+	{
+		Config::set('features.description-max-length', 10);
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id],
+			'description' => str_repeat('a', 11),
+		]);
+		$this->assertUnprocessable($response);
+		$response->assertJsonValidationErrors(['description']);
 	}
 
 	public function testPatchCopyrightUpdatesBaseAlbum(): void

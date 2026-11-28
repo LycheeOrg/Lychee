@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Se selezionato, l\'utente può caricare contenuti.',
     'edit_rights' => 'Se selezionato, l\'utente può modificare il proprio profilo (nome utente, password).',
+    'share_rights' => 'Se selezionato, l\'utente può condividere i propri album con altri utenti e renderli pubblici.',
+    'content_rights' => 'Se selezionato, l\'utente può modificare, spostare ed eliminare i propri contenuti.',
     'upload_trust_level' => 'Livello di fiducia per il caricamento — determina se i caricamenti sono subito pubblici.',
 
     'quota' => 'Se impostato, l\'utente ha una quota di spazio per le immagini (in kB).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Vuoto: importazione dal server disattivata. «/»: tutto il server. Altrimenti: solo questa cartella e le sottocartelle.',
         'upload_rights' => 'L\'utente può caricare contenuti.',
         'edit_rights' => 'L\'utente può modificare il proprio profilo (nome utente, password).',
+        'share_rights' => 'L\'utente può condividere i propri album.',
+        'content_rights' => 'L\'utente può modificare, spostare ed eliminare i propri contenuti.',
         'admin_rights' => 'L\'utente ha i diritti di amministratore.',
         'upload_trust_level' => 'Livello di fiducia per il caricamento',
         'upload_trust_level_check' => 'Verifica – i caricamenti richiedono l\'approvazione di un amministratore prima di diventare pubblici.',

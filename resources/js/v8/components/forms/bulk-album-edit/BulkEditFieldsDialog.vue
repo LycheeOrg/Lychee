@@ -19,6 +19,7 @@
 								size="sm"
 								@update:model-value="(v: string | undefined) => onTextChange(field.key, v ?? null)"
 							/>
+							<DescriptionCounter v-if="field.key === 'description'" :value="editTextValues[field.key]" />
 						</UFormField>
 					</div>
 
@@ -158,6 +159,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
+import DescriptionCounter from "@/v8/components/forms/basic/DescriptionCounter.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import BulkAlbumEditService from "@/services/bulk-album-edit-service";
 import {

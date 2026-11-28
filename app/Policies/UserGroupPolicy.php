@@ -55,7 +55,8 @@ class UserGroupPolicy extends BasePolicy
 	 */
 	public function canList(User $user): bool
 	{
-		return $user->may_upload ||
+		// Listing groups is needed to share an album (Feature 118, FR-118-04).
+		return $user->may_share ||
 			// Check if user belongs to a group and is admin.
 			$user->user_groups()->wherePivot('role', 'admin')->exists();
 	}

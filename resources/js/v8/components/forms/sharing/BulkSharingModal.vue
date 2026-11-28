@@ -45,10 +45,10 @@
 					<UCheckbox v-model="grantsReadAccess" disabled />
 					<UCheckbox v-model="grantsFullPhotoAccess" />
 					<UCheckbox v-model="grantsDownload" />
-					<UCheckbox v-model="grantsUpload" />
-					<UCheckbox v-model="grantsEdit" />
-					<UCheckbox v-model="grantsMove" />
-					<UCheckbox v-model="grantsDelete" />
+					<UCheckbox v-model="grantsUpload" :disabled="lockUpload(grantsUpload)" />
+					<UCheckbox v-model="grantsEdit" :disabled="lockEdit(grantsEdit)" />
+					<UCheckbox v-model="grantsMove" :disabled="lockEdit(grantsMove)" />
+					<UCheckbox v-model="grantsDelete" :disabled="lockEdit(grantsDelete)" />
 				</div>
 			</div>
 		</template>
@@ -72,6 +72,7 @@
 	</UModal>
 </template>
 <script setup lang="ts">
+import { useHeldGrants } from "@/composables/useHeldGrants";
 import { computed, ref } from "vue";
 import { onMounted } from "vue";
 import SharingService from "@/services/sharing-service";
@@ -81,6 +82,8 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { UserOrGroup, useUsersAndGroupStore } from "@/stores/UsersAndGroupsState";
 import type { SelectMenuItem } from "@nuxt/ui";
+
+const { lockUpload, lockEdit } = useHeldGrants();
 
 const visible = defineModel("visible", { default: false });
 const lycheeStore = useLycheeStateStore();

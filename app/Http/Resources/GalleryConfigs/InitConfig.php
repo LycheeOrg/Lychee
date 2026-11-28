@@ -26,6 +26,7 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\VisibilityType;
 use App\Providers\AuthServiceProvider;
+use App\Rules\DescriptionRule;
 use App\Services\GalleryLockState;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
@@ -226,6 +227,9 @@ class InitConfig extends Data
 	public bool $is_password_flag_enabled;
 	public bool $is_sensitive_flag_enabled;
 
+	// Limit enforced by DescriptionRule, shown by the v8 description counter.
+	public int $description_max_length;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -402,6 +406,8 @@ class InitConfig extends Data
 		$this->is_public_visible_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('public_visible_flag_enabled');
 		$this->is_password_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('password_flag_enabled');
 		$this->is_sensitive_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('sensitive_flag_enabled');
+
+		$this->description_max_length = DescriptionRule::maxLength();
 
 		$this->set_supporter_properties();
 	}

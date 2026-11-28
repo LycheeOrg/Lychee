@@ -16,6 +16,14 @@
 					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
 				</div>
 				<div class="w-full text-center">
+					<i v-if="props.user.may_share" class="pi pi-check text-create-600"></i>
+					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
+				</div>
+				<div class="w-full text-center">
+					<i v-if="props.user.may_edit" class="pi pi-check text-create-600"></i>
+					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
+				</div>
+				<div class="w-full text-center">
 					<i v-if="props.user.may_edit_own_settings" class="pi pi-check text-create-600"></i>
 					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
 				</div>

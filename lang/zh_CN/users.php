@@ -14,6 +14,8 @@ return [
     'legend' => '图例',
     'upload_rights' => '选中后，用户可以上传内容。',
     'edit_rights' => '选中后，用户可以修改其个人资料（用户名、密码）。',
+    'share_rights' => '选中后，用户可以与其他用户分享自己的相册并将其设为公开。',
+    'content_rights' => '选中后，用户可以编辑、移动和删除自己的内容。',
     'upload_trust_level' => '上传信任级别 — 控制上传内容是否立即公开。',
 
     'quota' => '设置后，用户将有照片空间配额限制（以 kB 为单位）。',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => '留空：禁用从服务器导入。“/”：整个服务器。否则：仅限此文件夹及其子文件夹。',
         'upload_rights' => '用户可以上传内容。',
         'edit_rights' => '用户可以修改其个人资料（用户名、密码）。',
+        'share_rights' => '用户可以分享自己的相册。',
+        'content_rights' => '用户可以编辑、移动和删除自己的内容。',
         'admin_rights' => '用户拥有管理员权限。',
         'upload_trust_level' => '上传信任级别',
         'upload_trust_level_check' => '检查 – 上传内容需经管理员批准后才会公开。',

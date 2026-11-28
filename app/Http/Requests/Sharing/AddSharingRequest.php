@@ -17,10 +17,12 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAccessPermissionResourceTrait;
 use App\Http\Requests\Traits\HasAlbumIdsTrait;
+use App\Http\Requests\Traits\HasHeldGrantsTrait;
 use App\Http\Requests\Traits\HasUserGroupIdsTrait;
 use App\Http\Requests\Traits\HasUserIdsTrait;
 use App\Http\Resources\Models\AccessPermissionResource;
 use App\Policies\AlbumPolicy;
+use App\Rules\HeldGrantRule;
 use App\Rules\IntegerIDRule;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -37,6 +39,7 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 	use HasUserIdsTrait;
 	use HasUserGroupIdsTrait;
 	use HasAccessPermissionResourceTrait;
+	use HasHeldGrantsTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -60,10 +63,10 @@ class AddSharingRequest extends BaseApiRequest implements HasAlbumIds, HasUserId
 			RequestAttribute::USER_GROUP_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => ['required', 'boolean'],
-			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean'],
-			RequestAttribute::GRANTS_EDIT_ATTRIBUTE => ['required', 'boolean'],
-			RequestAttribute::GRANTS_DELETE_ATTRIBUTE => ['required', 'boolean'],
-			RequestAttribute::GRANTS_MOVE_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new HeldGrantRule($this->holdsUploadGrant())],
+			RequestAttribute::GRANTS_EDIT_ATTRIBUTE => ['required', 'boolean', new HeldGrantRule($this->holdsEditGrants())],
+			RequestAttribute::GRANTS_DELETE_ATTRIBUTE => ['required', 'boolean', new HeldGrantRule($this->holdsEditGrants())],
+			RequestAttribute::GRANTS_MOVE_ATTRIBUTE => ['required', 'boolean', new HeldGrantRule($this->holdsEditGrants())],
 		];
 	}
 

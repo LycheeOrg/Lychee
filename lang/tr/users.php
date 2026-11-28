@@ -14,6 +14,8 @@ return [
     'legend' => 'Açıklama',
     'upload_rights' => 'Seçildiğinde kullanıcı içerik yükleyebilir.',
     'edit_rights' => 'Seçildiğinde kullanıcı profilini (kullanıcı adı, parola) değiştirebilir.',
+    'share_rights' => 'Seçildiğinde kullanıcı albümlerini diğer kullanıcılarla paylaşabilir ve herkese açık yapabilir.',
+    'content_rights' => 'Seçildiğinde kullanıcı kendi içeriğini düzenleyebilir, taşıyabilir ve silebilir.',
     'upload_trust_level' => 'Yükleme güven düzeyi — yüklemelerin hemen herkese açık olup olmayacağını belirler.',
 
     'quota' => 'Ayarlandığında kullanıcının resimler için bir alan kotası olur (kB cinsinden).',
@@ -26,6 +28,8 @@ return [
         'server_path_hint' => 'Boş: sunucudan içe aktarma kapalı. "/": tüm sunucu. Aksi halde: yalnızca bu klasör ve altındakiler.',
         'upload_rights' => 'Kullanıcı içerik yükleyebilir.',
         'edit_rights' => 'Kullanıcı profilini (kullanıcı adı, parola) değiştirebilir.',
+        'share_rights' => 'Kullanıcı albümlerini paylaşabilir.',
+        'content_rights' => 'Kullanıcı kendi içeriğini düzenleyebilir, taşıyabilir ve silebilir.',
         'admin_rights' => 'Kullanıcının yönetici hakları var.',
         'upload_trust_level' => 'Yükleme güven düzeyi',
         'upload_trust_level_check' => 'Denetle – yüklemeler herkese açık olmadan önce yönetici onayı gerektirir.',

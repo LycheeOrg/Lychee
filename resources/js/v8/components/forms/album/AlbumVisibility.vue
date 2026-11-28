@@ -39,7 +39,7 @@
 				<USwitch
 					v-if="is_se_enabled || is_se_preview_enabled"
 					v-model="grants_upload"
-					:disabled="!is_se_enabled"
+					:disabled="!is_se_enabled || lockUpload(grants_upload)"
 					class="my-4"
 					color="error"
 					:ui="{ label: grants_upload ? 'font-bold text-error' : 'font-bold' }"
@@ -104,11 +104,15 @@ import { storeToRefs } from "pinia";
 import SETag from "@/v8/components/icons/SETag.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumListStore } from "@/stores/AlbumListState";
+import { useHeldGrants } from "@/composables/useHeldGrants";
 
 defineProps<{
 	legendIcon: string;
 	legendLabel: string;
 }>();
+
+// The public upload grant needs the owner's own upload right (Feature 118, FR-118-07).
+const { lockUpload } = useHeldGrants();
 
 const albumStore = useAlbumStore();
 const albumListStore = useAlbumListStore();

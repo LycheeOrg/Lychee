@@ -52,6 +52,8 @@ class ServerPathTest extends BaseApiWithDataTest
 			'username' => $username,
 			'password' => 'password',
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => false,
 		];
 		if ($send) {
@@ -67,6 +69,8 @@ class ServerPathTest extends BaseApiWithDataTest
 			'id' => $this->userMayUpload1->id,
 			'username' => $this->userMayUpload1->username,
 			'may_upload' => true,
+			'may_share' => true,
+			'may_edit' => true,
 			'may_edit_own_settings' => false,
 		];
 		if ($send) {

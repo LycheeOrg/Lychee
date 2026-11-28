@@ -59,15 +59,15 @@ class ImportFromServerOptionsTest extends BaseApiWithDataTest
 		$this->assertForbidden($this->actingAs($this->admin->fresh())->getJson('/Import'));
 	}
 
-	/** S-115-02: a path but no upload right. */
-	public function testNoUploadRightForbidden(): void
+	/** S-118-09 (amends S-115-02): a path is enough, no upload right needed (FR-118-14). */
+	public function testNoUploadRightAllowed(): void
 	{
 		$user = User::factory()->create();
 		$user->server_path = $this->import_root;
 		$user->may_upload = false;
 		$user->save();
 
-		$this->assertForbidden($this->actingAs($user->fresh())->getJson('/Import'));
+		$this->assertOk($this->actingAs($user->fresh())->getJson('/Import'));
 	}
 
 	/** S-115-03: the .env switch still wins for admins. */
