@@ -100,6 +100,7 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\ResolveConfigs::class,
 			\App\Http\Middleware\ResolveVerify::class,
 			\App\Http\Middleware\SetLocale::class,
+			\App\Http\Middleware\ApiSecureHeaders::class,
 			\Illuminate\Http\Middleware\HandleCors::class,
 		],
 
@@ -119,6 +120,7 @@ class Kernel extends HttpKernel
 			\App\Http\Middleware\ResolveConfigs::class,
 			\App\Http\Middleware\ResolveVerify::class,
 			\App\Http\Middleware\SetLocale::class,
+			\App\Http\Middleware\ApiSecureHeaders::class,
 			'accept_content_type:json',
 			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
