@@ -19,6 +19,7 @@
 namespace Tests\Unit\Actions\Album;
 
 use App\Actions\Album\Delete;
+use App\Actions\Photo\PurgeTrash;
 use App\Events\AlbumDeleted;
 use App\Events\BaseAlbumRemoved;
 use App\Models\Album;
@@ -104,6 +105,8 @@ class DeleteTest extends AbstractTestCase
 		// Execute deletion
 		$delete_action = new Delete();
 		$delete_action->do([$album_x->id]);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		// Verify X album is deleted
 		$this->assertDatabaseMissing('albums', ['id' => $album_x->id]);

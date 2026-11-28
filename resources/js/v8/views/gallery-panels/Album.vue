@@ -38,6 +38,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
+		:can-delete="albumStore.canDeletePhotos"
 		@toggle-delete="toggleDelete"
 		@updated="refresh()"
 		@go-back="goBack"
@@ -455,10 +456,9 @@ definePanelShortcuts({
 		photoStore.isLoaded
 			? albumStore.rights?.can_move_content && toggleMove()
 			: albumStore.rights?.can_move_content && hasSelection() && toggleMove(),
-	delete: () =>
-		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
-	backspace: () =>
-		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
+	// Photo delete only where the server accepts it (Feature 119, FR-119-09).
+	delete: () => albumStore.canDeletePhotos && (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
+	backspace: () => albumStore.canDeletePhotos && (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
 	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && toggleEdit(),
 	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
 	"0": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0),

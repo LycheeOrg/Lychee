@@ -58,6 +58,11 @@ return [
         'description' => '%d پالت گمشده یافت شد.',
         'button' => 'ایجاد موارد گمشده',
     ],
+    'purge-trash' => [
+        'title' => 'حذف‌های در انتظار',
+        'description' => '%d عکس پنهان شده و در انتظار حذف است.<br/>معادل اجرای: php artisan lychee:purge-trash',
+        'button' => 'پاک‌سازی',
+    ],
     'statistics-check' => [
         'title' => 'بررسی صحت آمار',
         'missing_photos' => '%d آمار عکس گمشده است.',

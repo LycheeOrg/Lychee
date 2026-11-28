@@ -9,6 +9,7 @@
 namespace App\Actions\Insights;
 
 use App\DTO\Insights\InsightsScope;
+use App\Models\Scopes\NotTrashedScope;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +27,8 @@ final class InsightsScopeQuery
 	 */
 	public static function photos(Builder $query, InsightsScope $scope): Builder
 	{
+		// Photos waiting in the trash are not counted (Feature 119, FR-119-03).
+		NotTrashedScope::exclude($query, 'photos.id');
 		if ($scope->isAlbum()) {
 			return $query->whereExists(fn (Builder $exists) => $exists
 				->select(DB::raw(1))

@@ -58,6 +58,11 @@ return [
         'description' => '找到 %d 個缺少的調色盤。',
         'button' => '建立缺少項目',
     ],
+    'purge-trash' => [
+        'title' => '待刪除',
+        'description' => '%d 張照片已隱藏，等待刪除。<br/>等同於執行：php artisan lychee:purge-trash',
+        'button' => '清除',
+    ],
     'statistics-check' => [
         'title' => '統計資料完整性檢查',
         'missing_photos' => '缺少 %d 筆照片統計資料。',

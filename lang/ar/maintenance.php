@@ -58,6 +58,11 @@ return [
         'description' => 'تم العثور على %d لوحة ألوان مفقودة.',
         'button' => 'إنشاء المفقود',
     ],
+    'purge-trash' => [
+        'title' => 'عمليات حذف معلقة',
+        'description' => '%d صورة مخفية وفي انتظار الحذف.<br/>مماثل لتشغيل: php artisan lychee:purge-trash',
+        'button' => 'تنظيف',
+    ],
     'statistics-check' => [
         'title' => 'فحص سلامة الإحصائيات',
         'missing_photos' => 'إحصائيات %d صورة مفقودة.',

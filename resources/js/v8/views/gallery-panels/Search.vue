@@ -36,7 +36,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
-		@toggle-delete="toggleDelete"
+		:can-delete="false"
 		@updated="refresh()"
 		@go-back="goBack"
 		@next="() => next(true)"
@@ -467,6 +467,8 @@ const selectors = {
 	selectedPhoto: selectedPhoto,
 	selectedPhotos: selectedPhotos,
 	selectedPhotosIds: selectedPhotosIds,
+	// Results come from many albums: the server would refuse a photo delete (Feature 119).
+	canDeletePhotos: ref(false),
 	selectedAlbum: selectedAlbum,
 	selectedAlbums: selectedAlbums,
 	selectedAlbumsIds: selectedAlbumsIds,
@@ -524,8 +526,6 @@ definePanelShortcuts({
 	m: () => photoStore.isLoaded && albumStore.rights?.can_move_content && toggleMove(),
 	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
 	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
-	delete: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),
-	backspace: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),
 
 	// on key stroke escape:
 	// 1. stop an active slideshow

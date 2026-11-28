@@ -306,6 +306,7 @@ Route::delete('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeatur
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
 Route::get('/Moderation::photo', [Admin\ModerationController::class, 'photo']);
 Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
+Route::delete('/Moderation', [Admin\ModerationController::class, 'delete']);
 Route::get('/Moderation::history', [Admin\ModerationController::class, 'history']);
 Route::get('/Moderation::photoHistory', [Admin\ModerationController::class, 'photoHistory']);
 
@@ -342,6 +343,8 @@ Route::get('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsChe
 Route::post('/Maintenance::statisticsIntegrity', [Admin\Maintenance\StatisticsCheck::class, 'do']);
 Route::get('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'check']);
 Route::post('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'do']);
+Route::get('/Maintenance::purgeTrash', [Admin\Maintenance\PurgeTrash::class, 'check']);
+Route::post('/Maintenance::purgeTrash', [Admin\Maintenance\PurgeTrash::class, 'do']);
 Route::get('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'check']);
 Route::post('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'do']);
 Route::get('/Maintenance::fulfillOrders', [Admin\Maintenance\FulfillOrders::class, 'check']);

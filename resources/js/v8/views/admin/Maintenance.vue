@@ -27,6 +27,7 @@
 		<MaintenanceRecomputeBuckets />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
+		<MaintenancePurgeTrash />
 		<StatisticsIntegrity />
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
@@ -53,6 +54,7 @@ import MaintenanceFlushCache from "@/v8/components/maintenance/MaintenanceFlushC
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import StatisticsIntegrity from "@/v8/components/maintenance/StatisticsIntegrity.vue";
 import MaintenanceMissingPalettes from "@/v8/components/maintenance/MaintenanceMissingPalettes.vue";
+import MaintenancePurgeTrash from "@/v8/components/maintenance/MaintenancePurgeTrash.vue";
 import MaintenanceOldOrders from "@/v8/components/maintenance/MaintenanceOldOrders.vue";
 import MaintenanceFulfillOrders from "@/v8/components/maintenance/MaintenanceFulfillOrders.vue";
 import MaintenanceFulfillPrecompute from "@/v8/components/maintenance/MaintenanceFulfillPrecompute.vue";

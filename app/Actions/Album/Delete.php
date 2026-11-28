@@ -8,22 +8,23 @@
 
 namespace App\Actions\Album;
 
+use App\Actions\Photo\Trash;
 use App\Actions\Shared\DispatchAfterDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PersonAlbumPersons;
-use App\Constants\PhotoAlbum as PA;
 use App\Constants\QueryLimits;
 use App\DTO\Delete\AlbumsToBeDeletedDTO;
-use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumDeleted;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\BaseAlbumRemoved;
 use App\Exceptions\CorruptedTreeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Jobs\CheckTreeState;
 use App\Jobs\FileDeleterJob;
+use App\Jobs\PurgeTrashJob;
 use App\Models\Album;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
@@ -105,24 +106,30 @@ class Delete
 				array_push($this->jobs, ...FileDeleterJob::batches(StorageDiskType::from($disk), $group->pluck('file_name')->all()));
 			});
 
-		$photos_to_be_deleted = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
+		// The photos lose their links to the deleted albums, those left without
+		// any link go to the trash, and the albums are deleted, in one
+		// transaction (Feature 119, FR-119-01). A purge deletes the trashed
+		// photos later.
+		$had_photos = $this->hasLinkedPhotos($albums_to_delete->album_ids);
+		$trashed = DB::transaction(function () use ($albums_to_delete): array {
+			$trashed = resolve(Trash::class)->fromAlbums($albums_to_delete->album_ids);
+			$albums_to_delete->executeDelete();
 
-		// Nuke the photos.
-		$jobs = $photos_to_be_deleted->executeDelete();
+			return $trashed;
+		});
 
-		// Nuke the albums.
-		$albums_to_delete->executeDelete();
-
-		foreach ($jobs as $job) {
-			$this->jobs[] = $job;
-		}
+		// Links were removed by raw writes, bypassing the photo-level model events.
+		AlbumListingCacheFlushRequested::dispatchIf($had_photos);
 
 		// Dispatch events for parent albums to trigger recomputation
 		foreach ($albums_to_delete->parent_ids as $parent_id) {
 			AlbumDeleted::dispatch($parent_id);
 		}
 
-		// File, person-stats and face-embedding jobs: after the response on `sync` (FR-112-04).
+		// Track files and the purge: after the response on `sync` (FR-112-04, FR-119-05).
+		if ($trashed !== []) {
+			$this->jobs[] = new PurgeTrashJob();
+		}
 		DispatchAfterDelete::dispatch($this->jobs);
 	}
 
@@ -183,6 +190,22 @@ class Delete
 	}
 
 	/**
+	 * Whether any photo is linked to the albums, queried in chunks.
+	 *
+	 * @param string[] $album_ids
+	 */
+	private function hasLinkedPhotos(array $album_ids): bool
+	{
+		foreach (array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			if (DB::table('photo_album')->whereIn('album_id', $chunk)->exists()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Ids of $table among $ids, queried in chunks.
 	 *
 	 * @param string[] $ids
@@ -197,70 +220,6 @@ class Delete
 		}
 
 		return $found;
-	}
-
-	/**
-	 * We fetch all the photos that actually need to be deleted.
-	 *
-	 * @param string[] $album_ids that are being deleted
-	 *
-	 * @return PhotosToBeDeletedDTO of photo IDs that can be deleted fully
-	 */
-	public function findAllPhotosToDelete(array $album_ids): PhotosToBeDeletedDTO
-	{
-		$album_ids = array_values(array_unique($album_ids));
-
-		// photo id => number of its links into the deleted albums, summed over
-		// the album chunks (the chunks do not overlap), and photo id => number
-		// of all its links. Both are keyed by photo id (FR-112-09).
-		// ! RISK OF MEMOY EXHAUSTION !
-		$links_in_deleted_albums = [];
-		$links_total = [];
-		foreach (array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
-			/** @var Collection<int,object{photo_id:string,album_count:int}> $in_chunk */
-			$in_chunk = DB::table(PA::PHOTO_ALBUM)
-				->whereIn(PA::ALBUM_ID, $chunk)
-				->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
-				->groupBy(PA::PHOTO_ID)
-				->get();
-			foreach ($in_chunk as $row) {
-				$links_in_deleted_albums[$row->photo_id] = ($links_in_deleted_albums[$row->photo_id] ?? 0) + intval($row->album_count);
-			}
-
-			// Total links of the photos of this chunk. A subquery instead of
-			// whereIn($photo_ids) keeps the bindings to the album chunk.
-			/** @var Collection<int,object{photo_id:string,album_count:int}> $totals */
-			$totals = DB::table(PA::PHOTO_ALBUM)
-				->whereIn(PA::PHOTO_ID, function ($query) use ($chunk): void {
-					$query->select(PA::PHOTO_ID)
-						->from(PA::PHOTO_ALBUM)
-						->whereIn(PA::ALBUM_ID, $chunk);
-				})
-				->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
-				->groupBy(PA::PHOTO_ID)
-				->get();
-			foreach ($totals as $row) {
-				$links_total[$row->photo_id] = intval($row->album_count);
-			}
-		}
-
-		// Photos which are only in the deleted albums can be deleted fully,
-		// the others are only detached from them.
-		$photos_to_delete_fully = [];
-		$photos_to_detach = [];
-		foreach ($links_in_deleted_albums as $photo_id => $count) {
-			if (($links_total[$photo_id] ?? 0) === $count) {
-				$photos_to_delete_fully[] = strval($photo_id);
-			} else {
-				$photos_to_detach[] = strval($photo_id);
-			}
-		}
-
-		return new PhotosToBeDeletedDTO(
-			force_delete_photo_ids: $photos_to_delete_fully,
-			soft_delete_photo_ids: $photos_to_detach,
-			album_ids: $album_ids,
-		);
 	}
 
 	/**

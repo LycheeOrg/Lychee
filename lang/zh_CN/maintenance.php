@@ -58,6 +58,11 @@ return [
         'description' => '发现 %d 个缺失的调色板。',
         'button' => '创建缺失项',
     ],
+    'purge-trash' => [
+        'title' => '待删除',
+        'description' => '%d 张照片已隐藏，等待删除。<br/>等同于运行：php artisan lychee:purge-trash',
+        'button' => '清除',
+    ],
     'statistics-check' => [
         'title' => '统计数据完整性检查',
         'missing_photos' => '缺失 %d 条照片统计数据。',

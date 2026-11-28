@@ -13,14 +13,10 @@ use App\Constants\QueryLimits;
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumListingCacheFlushRequested;
-use App\Events\AlbumSaved;
-use App\Events\TagAlbumSaved;
 use App\Jobs\DeleteFaceEmbeddingsJob;
 use App\Jobs\FileDeleterJob;
 use App\Jobs\RecomputePersonStatsJob;
-use App\Models\Album;
 use App\Models\Person;
-use App\Models\TagAlbum;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -28,18 +24,17 @@ use Illuminate\Support\Facades\DB;
 final class PhotosToBeDeletedDTO
 {
 	/**
-	 * Container for all Albums and associated Tracks to be deleted.
+	 * Photos to delete with their rows and files. Since Feature 119 only the
+	 * purge ({@see \App\Actions\Photo\PurgeTrash}) deletes photo rows: the
+	 * delete actions put photos into the trash, after removing their album
+	 * links ({@see \App\Actions\Photo\Trash}).
 	 *
-	 * @param string[] $force_delete_photo_ids the photo IDs to be force deleted => removed from storage etc
-	 * @param string[] $soft_delete_photo_ids  the photos IDs to be soft deleted => only the link between the album and IDs to be removed
-	 * @param string[] $album_ids              the IDs of all albums to be deleted (including descendants)
+	 * @param string[] $force_delete_photo_ids the photo IDs to be deleted => removed from storage etc
 	 *
 	 * @return void
 	 */
 	public function __construct(
 		public array $force_delete_photo_ids,
-		public array $soft_delete_photo_ids,
-		public array $album_ids,
 	) {
 	}
 
@@ -55,43 +50,17 @@ final class PhotosToBeDeletedDTO
 		$jobs = [];
 
 		DB::transaction(function () use (&$jobs): void {
-			$this->softDelete();
 			$jobs = $this->forceDelete();
 		});
 
-		// Both softDelete() (detach) and forceDelete() (hard delete) remove
-		// `photo_album` rows via raw DB writes, bypassing every photo-level
-		// model event. The TagAlbum/PersonAlbum "matching albums" cache (see
-		// AlbumRepository::getMatchingAlbumsForPersonPaginated()) depends on
-		// those events to know a photo's containing albums changed. A coarse
-		// flush is cheap and correctness-safe for this rare, bulk operation.
-		AlbumListingCacheFlushRequested::dispatchIf($this->soft_delete_photo_ids !== [] || $this->force_delete_photo_ids !== []);
+		// forceDelete() removes rows via raw DB writes, bypassing every
+		// photo-level model event. The TagAlbum/PersonAlbum "matching albums"
+		// cache (see AlbumRepository::getMatchingAlbumsForPersonPaginated())
+		// depends on those events. A coarse flush is cheap and
+		// correctness-safe for this rare, bulk operation.
+		AlbumListingCacheFlushRequested::dispatchIf($this->force_delete_photo_ids !== []);
 
 		return $jobs;
-	}
-
-	/**
-	 * Soft delete = just remove the links between photos and albums.
-	 *
-	 * @return void
-	 */
-	private function softDelete(): void
-	{
-		if (count($this->soft_delete_photo_ids) === 0) {
-			return;
-		}
-
-		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
-		// Both photo and album ID arrays can be large, so we chunk each independently
-		// and run all cross-product combinations within the same transaction.
-		collect($this->soft_delete_photo_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($photo_chunk): void {
-			collect($this->album_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->each(function ($album_chunk) use ($photo_chunk): void {
-				DB::table('photo_album')
-					->whereIn('photo_id', $photo_chunk->all())
-					->whereIn('album_id', $album_chunk->all())
-					->delete();
-			});
-		});
 	}
 
 	/**
@@ -112,8 +81,6 @@ final class PhotosToBeDeletedDTO
 			return [];
 		}
 
-		$this->resetCoversAndHeaders();
-
 		// ! Risk of memory exhaustion if too many photos are deleted at once !
 		$paths = [];
 		$person_ids = [];
@@ -129,50 +96,6 @@ final class PhotosToBeDeletedDTO
 		}
 
 		return self::jobsFor($paths, array_values(array_unique($person_ids)), $face_ids);
-	}
-
-	/**
-	 * Reset headers and covers pointing to the photos to be force-deleted.
-	 *
-	 * First capture which albums/tag albums are *currently* referencing any
-	 * of those photos as their cover/header — this may be a *different* album
-	 * than the one the deletion request originated from, anywhere in the
-	 * instance.
-	 *
-	 * @return void
-	 */
-	private function resetCoversAndHeaders(): void
-	{
-		$affected_album_ids = [];
-		$affected_tag_album_ids = [];
-		foreach (array_chunk(array_values($this->force_delete_photo_ids), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
-			$affected_album_ids = array_merge(
-				$affected_album_ids,
-				DB::table('albums')
-					->where(fn ($q) => $q->whereIn('header_id', $chunk)->orWhereIn('cover_id', $chunk))
-					->pluck('id')->all()
-			);
-			$affected_tag_album_ids = array_merge(
-				$affected_tag_album_ids,
-				DB::table('tag_albums')->whereIn('cover_id', $chunk)->pluck('id')->all()
-			);
-
-			DB::table('albums')->whereIn('header_id', $chunk)->update(['header_id' => null]);
-			DB::table('albums')->whereIn('cover_id', $chunk)->update(['cover_id' => null]);
-			DB::table('tag_albums')->whereIn('cover_id', $chunk)->update(['cover_id' => null]);
-		}
-
-		// Re-read in chunks (FR-112-09): album id => parent id, existing tag album ids.
-		$affected_albums = [];
-		foreach (array_chunk(array_values(array_unique($affected_album_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
-			$affected_albums += Album::query()->whereIn('id', $chunk)->pluck('parent_id', 'id')->all();
-		}
-		AlbumSaved::dispatchIf($affected_albums !== [], array_keys($affected_albums), array_values($affected_albums));
-		$affected_tag_album_ids_verified = [];
-		foreach (array_chunk(array_values(array_unique($affected_tag_album_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
-			$affected_tag_album_ids_verified = array_merge($affected_tag_album_ids_verified, TagAlbum::query()->whereIn('id', $chunk)->pluck('id')->all());
-		}
-		TagAlbumSaved::dispatchIf($affected_tag_album_ids_verified !== [], $affected_tag_album_ids_verified);
 	}
 
 	/**

@@ -8,12 +8,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Photo\Delete;
 use App\Constants\PhotoAlbum;
 use App\Enum\ModerationEvent;
 use App\Enum\ModerationSource;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Http\Requests\Moderation\ApproveModerationRequest;
+use App\Http\Requests\Moderation\DeleteModerationRequest;
 use App\Http\Requests\Moderation\GetModerationPhotoHistoryRequest;
 use App\Http\Requests\Moderation\GetModerationPhotoRequest;
 use App\Http\Requests\Moderation\ListModerationHistoryRequest;
@@ -96,6 +98,8 @@ class ModerationController extends Controller
 	{
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,PhotoModerationEvent> $paginated */
 		$paginated = PhotoModerationEvent::query()
+			// Events of photos waiting in the trash are hidden with them (Feature 119, FR-119-03).
+			->whereHas('photo')
 			->with(['photo.size_variants', 'photo.owner', 'user'])
 			->orderBy('id', 'desc')
 			->paginate($request->per_page);
@@ -141,6 +145,22 @@ class ModerationController extends Controller
 		$admin_id = $request->user()->id;
 
 		collect($ids)->chunk(100)->each(fn ($chunk) => $this->approvePhotos($chunk, $config_manager, $moderation_history, $admin_id));
+
+		return response()->noContent();
+	}
+
+	/**
+	 * Delete the photos without naming an album: every album link is removed
+	 * and they go to the trash, purged in the background (Feature 119,
+	 * FR-119-10).
+	 *
+	 * @param DeleteModerationRequest $request
+	 *
+	 * @return Response
+	 */
+	public function delete(DeleteModerationRequest $request): Response
+	{
+		(new Delete())->deleteEverywhere($request->photoIds());
 
 		return response()->noContent();
 	}

@@ -10,6 +10,7 @@ namespace App\Http\Requests\Traits;
 
 use App\Constants\PhotoAlbum;
 use App\Enum\SizeVariantType;
+use App\Models\Scopes\NotTrashedScope;
 use App\Models\SizeVariant;
 use App\Models\User;
 use App\Services\TemporaryLinkSigner;
@@ -72,6 +73,8 @@ trait ResolvesSizeVariantAssetTrait
 			->select(['id', 'photo_id', 'type', 'short_path', 'short_path_watermarked', 'storage_disk'])
 			->where('photo_id', '=', $photo_id)
 			->whereIn('type', $chain);
+		// The files of a photo waiting in the trash are not served (Feature 119, FR-119-03).
+		NotTrashedScope::exclude($query->getQuery(), 'size_variants.photo_id');
 
 		if ($membership_album_id !== null) {
 			$membership = DB::table(PhotoAlbum::PHOTO_ALBUM)

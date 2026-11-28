@@ -10,6 +10,7 @@ namespace App\Actions\Statistics;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
+use App\Models\Scopes\NotTrashedScope;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -130,6 +131,8 @@ final class Spaces
 			->select('size_variants.type', 'size_variants.filesize')
 			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'size_variants.photo_id')
 			->whereNull(PA::ALBUM_ID)
+			// Photos waiting in the trash are not counted (Feature 119, FR-119-03).
+			->whereNotExists(fn ($trashed) => $trashed->select(DB::raw(1))->from(NotTrashedScope::TABLE)->whereColumn(NotTrashedScope::TABLE . '.photo_id', '=', 'size_variants.photo_id'))
 			->when($owner_id !== null,
 				fn ($query) => $query->joinSub(
 					query: DB::table('photos')

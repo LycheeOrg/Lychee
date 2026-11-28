@@ -7,7 +7,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { createPinia, setActivePinia } from "pinia";
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 
 const { resolve } = vi.hoisted(() => ({
 	resolve: vi.fn((to: { name: string; params: { albumId: string } }) => ({ href: `/resolved/${to.name}/${to.params.albumId}` })),
@@ -78,5 +78,50 @@ describe("single-album context menu (v8)", () => {
 		const labels = menuFor([album("a1", true), album("a2", true)]).map((item) => item.label);
 		expect(labels).not.toContain("gallery.menus.open_in_new_tab");
 		expect(labels[0]).toBe("gallery.menus.merge_all");
+	});
+});
+
+// Feature 119 (FR-119-09, S-119-19): photo delete is offered only where the
+// server accepts it: a regular album or Unsorted, with the delete right.
+describe("photo delete in the context menu (v8)", () => {
+	type Photo = App.Http.Resources.Models.PhotoResource;
+	const photo = { id: "photo-1", is_highlighted: false, is_validated: true } as unknown as Photo;
+	const can_delete = { can_edit: true, can_move_content: true, can_delete: true, can_download: true };
+
+	function photoMenuLabels(selectors: { canDeletePhotos?: Ref<boolean> } = {}): string[] {
+		const { Menu } = useContextMenu(
+			{
+				selectedPhoto: ref(photo),
+				selectedPhotos: ref([photo]),
+				selectedPhotosIds: ref([photo.id]),
+				...selectors,
+			},
+			{} as PhotoCallbacks,
+			{} as AlbumCallbacks,
+		);
+		return Menu.value.map((item) => item.label as string);
+	}
+
+	it("offers delete in a regular album and in Unsorted", async () => {
+		const { useAlbumStore } = await import("@/stores/AlbumState");
+		const albumStore = useAlbumStore();
+		albumStore.$patch({ modelAlbum: { id: "album-1", rights: can_delete } as never });
+		expect(photoMenuLabels()).toContain("gallery.menus.delete");
+
+		albumStore.$patch({ modelAlbum: undefined, smartAlbum: { id: "unsorted", rights: can_delete } as never });
+		expect(photoMenuLabels()).toContain("gallery.menus.delete");
+	});
+
+	it("hides delete in another smart album, a tag album and views without an album", async () => {
+		const { useAlbumStore } = await import("@/stores/AlbumState");
+		const albumStore = useAlbumStore();
+		albumStore.$patch({ smartAlbum: { id: "recent", rights: can_delete } as never });
+		expect(photoMenuLabels()).not.toContain("gallery.menus.delete");
+
+		albumStore.$patch({ smartAlbum: undefined, tagAlbum: { id: "tag-1", rights: can_delete } as never });
+		expect(photoMenuLabels()).not.toContain("gallery.menus.delete");
+
+		albumStore.$patch({ tagAlbum: undefined, modelAlbum: { id: "album-1", rights: can_delete } as never });
+		expect(photoMenuLabels({ canDeletePhotos: ref(false) })).not.toContain("gallery.menus.delete");
 	});
 });

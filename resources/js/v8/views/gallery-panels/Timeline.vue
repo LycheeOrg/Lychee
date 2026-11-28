@@ -94,7 +94,7 @@
 				@set-album-header="setAlbumHeader"
 				@toggle-highlight="toggleHighlight"
 				@toggle-move="toggleMove"
-				@toggle-delete="toggleDelete"
+				:can-delete="false"
 				@go-back="goBack"
 				@next="() => next(true)"
 				@previous="() => previous(true)"
@@ -445,6 +445,8 @@ const { Menu } = useContextMenu(
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
 		selectedPhotosIds: selectedPhotosIds,
+		// No album here: the server would refuse a photo delete (Feature 119).
+		canDeletePhotos: ref(false),
 	},
 	photoCallbacks,
 	EmptyAlbumCallbacks,
@@ -516,9 +518,6 @@ definePanelShortcuts({
 	o: () => photoStore.isLoaded && rotateOverlay(),
 	" ": () => photoStore.isLoaded && slideshow(),
 	i: () => photoStore.isLoaded && toggleDetails(),
-
-	delete: () => photoStore.isLoaded && toggleDelete(),
-	backspace: () => photoStore.isLoaded && toggleDelete(),
 
 	// on key stroke escape:
 	// 1. stop an active slideshow

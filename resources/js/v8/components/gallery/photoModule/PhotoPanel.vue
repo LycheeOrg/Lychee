@@ -2,6 +2,7 @@
 	<UModal v-if="photoStore.photo" :open="true" fullscreen :dismissible="false" :close="false" :ui="{ content: 'bg-black' }">
 		<template #content>
 			<PhotoHeader
+				:can-delete="props.canDelete !== false"
 				@toggle-slide-show="emits('toggleSlideShow')"
 				@go-back="emits('goBack')"
 				@toggle-highlight="emits('toggleHighlight')"
@@ -42,6 +43,7 @@
 						<Dock
 							v-if="isDockShown"
 							:can-edit="canEditCurrentPhoto"
+							:can-delete="props.canDelete !== false"
 							@toggle-highlight="emits('toggleHighlight')"
 							@set-album-header="emits('setAlbumHeader')"
 							@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
@@ -120,6 +122,8 @@ const isDockShown = computed(
 
 const props = defineProps<{
 	isMapVisible: boolean;
+	/** False where photos cannot be deleted (views without an album, Feature 119). */
+	canDelete?: boolean;
 }>();
 
 const emits = defineEmits<{

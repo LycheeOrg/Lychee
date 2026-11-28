@@ -58,6 +58,11 @@ return [
         'description' => '%d eksik palet bulundu.',
         'button' => 'Eksikleri oluştur',
     ],
+    'purge-trash' => [
+        'title' => 'Bekleyen silmeler',
+        'description' => '%d fotoğraf gizlendi ve silinmeyi bekliyor.<br/>Şu komutla aynı: php artisan lychee:purge-trash',
+        'button' => 'Temizle',
+    ],
     'statistics-check' => [
         'title' => 'İstatistik Bütünlüğü Denetimi',
         'missing_photos' => '%d fotoğraf istatistiği eksik.',

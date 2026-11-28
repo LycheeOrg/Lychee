@@ -58,6 +58,11 @@ return [
         'description' => 'Найдено отсутствующих палитр: %d.',
         'button' => 'Создать отсутствующие',
     ],
+    'purge-trash' => [
+        'title' => 'Ожидающие удаления',
+        'description' => 'Фотографий скрыто и ожидает удаления: %d.<br/>Аналогично команде: php artisan lychee:purge-trash',
+        'button' => 'Очистить',
+    ],
     'statistics-check' => [
         'title' => 'Проверка целостности статистики',
         'missing_photos' => 'Для %d фото нет статистики.',

@@ -168,11 +168,7 @@ class PhotosToBeDeletedDTOTest extends AbstractTestCase
 
 	private function dto(): PhotosToBeDeletedDTO
 	{
-		return new PhotosToBeDeletedDTO(
-			force_delete_photo_ids: $this->photo_ids,
-			soft_delete_photo_ids: [],
-			album_ids: [],
-		);
+		return new PhotosToBeDeletedDTO(force_delete_photo_ids: $this->photo_ids);
 	}
 
 	private function createFixture(): void

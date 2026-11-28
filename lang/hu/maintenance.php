@@ -58,6 +58,11 @@ return [
         'description' => '%d hiányzó paletta található.',
         'button' => 'Hiányzók létrehozása',
     ],
+    'purge-trash' => [
+        'title' => 'Függőben lévő törlések',
+        'description' => '%d fénykép el van rejtve, és törlésre vár.<br/>Megegyezik ezzel: php artisan lychee:purge-trash',
+        'button' => 'Törlés',
+    ],
     'statistics-check' => [
         'title' => 'Statisztikák integritásának ellenőrzése',
         'missing_photos' => '%d fénykép statisztikája hiányzik.',

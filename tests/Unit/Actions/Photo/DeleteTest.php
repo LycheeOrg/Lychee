@@ -19,6 +19,7 @@
 namespace Tests\Unit\Actions\Photo;
 
 use App\Actions\Photo\Delete;
+use App\Actions\Photo\PurgeTrash;
 use App\Jobs\FileDeleterJob;
 use App\Models\Album;
 use App\Models\Order;
@@ -81,6 +82,8 @@ class DeleteTest extends AbstractTestCase
 		// Execute deletion of photos A and B from album X
 		$delete_action = new Delete();
 		$delete_action->do([$photo_a->id, $photo_b->id], $album_x->id);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		// Verify X album still exists
 		$this->assertDatabaseHas('albums', ['id' => $album_x->id]);
@@ -166,6 +169,8 @@ class DeleteTest extends AbstractTestCase
 		// Execute deletion of photo A from album X
 		$delete_action = new Delete();
 		$delete_action->do([$photo_a->id], $album_x->id);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		// Verify photo A is deleted
 		$this->assertDatabaseMissing('photos', ['id' => $photo_a->id]);
@@ -245,6 +250,8 @@ class DeleteTest extends AbstractTestCase
 		// Execute deletion of photo A from album X
 		$delete_action = new Delete();
 		$delete_action->do([$photo_a->id], $album_x->id);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		// Verify photo A is deleted
 		$this->assertDatabaseMissing('photos', ['id' => $photo_a->id]);
@@ -297,6 +304,8 @@ class DeleteTest extends AbstractTestCase
 		]);
 
 		(new Delete())->do([$photo->id], $album->id);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		$this->assertDatabaseMissing('photos', ['id' => $photo->id]);
 		$this->assertDatabaseMissing('size_variants', ['photo_id' => $photo->id]);
@@ -336,6 +345,8 @@ class DeleteTest extends AbstractTestCase
 		}
 
 		(new Delete())->do([$deleted_photo->id], $album->id);
+		// Feature 119: the delete trashes the photos, the purge deletes them.
+		(new PurgeTrash())->run();
 
 		$this->assertDatabaseHas('size_variants', ['id' => $kept_sold->id, 'photo_id' => $kept_photo->id]);
 		$this->assertDatabaseHas('size_variants', ['id' => $deleted_sold->id, 'photo_id' => null]);

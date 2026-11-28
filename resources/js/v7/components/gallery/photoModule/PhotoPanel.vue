@@ -29,6 +29,7 @@
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<PhotoRatingOverlay />
 			<Dock
+				:can-delete="props.canDelete !== false"
 				v-if="isDockShown"
 				:can-edit="canEditCurrentPhoto"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
@@ -95,6 +96,8 @@ const isDockShown = computed(() => (canEditCurrentPhoto.value || photoStore.live
 
 const props = defineProps<{
 	isMapVisible: boolean;
+	/** False where photos cannot be deleted (views without an album, Feature 119). */
+	canDelete?: boolean;
 }>();
 
 const emits = defineEmits<{

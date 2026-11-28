@@ -16,7 +16,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
-		@toggle-delete="toggleDelete"
+		:can-delete="false"
 		@updated="refresh"
 		@go-back="goBack"
 		@next="() => next(true)"
@@ -233,13 +233,11 @@ onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && i
 
 // Privileges Photos view operations
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleMove());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleDelete());
 
 // Priviledged Photo operations
 // onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
 // onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
 // onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleHighlight());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus

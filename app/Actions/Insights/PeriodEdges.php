@@ -9,6 +9,7 @@
 namespace App\Actions\Insights;
 
 use App\DTO\Insights\InsightsPeriod;
+use App\Models\Scopes\NotTrashedScope;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -38,7 +39,7 @@ final class PeriodEdges
 
 		$last = '';
 		do {
-			$page = DB::table('photos')
+			$page = NotTrashedScope::exclude(DB::table('photos'), 'photos.id')
 				->where('photos.id', '>', $last)
 				->whereBetween('photos.taken_at', $window)
 				->whereNotBetween('photos.taken_at', $core)

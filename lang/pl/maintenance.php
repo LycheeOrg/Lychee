@@ -59,6 +59,11 @@ return [
         'description' => 'Znaleziono brakujące palety: %d.',
         'button' => 'Utwórz brakujące',
     ],
+    'purge-trash' => [
+        'title' => 'Oczekujące usunięcia',
+        'description' => '%d zdjęć jest ukrytych i czeka na usunięcie.<br/>Odpowiada poleceniu: php artisan lychee:purge-trash',
+        'button' => 'Wyczyść',
+    ],
     'statistics-check' => [
         'title' => 'Sprawdzanie integralności statystyk',
         'missing_photos' => 'Brakujące statystyki zdjęć: %d.',

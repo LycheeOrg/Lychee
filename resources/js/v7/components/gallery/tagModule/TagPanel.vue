@@ -159,6 +159,8 @@ const {
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
 		selectedPhotosIds: selectedPhotosIds,
+		// No album here: the server would refuse a photo delete (Feature 119).
+		canDeletePhotos: ref(false),
 	},
 	photoCallbacks,
 	albumCallbacks,

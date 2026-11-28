@@ -58,6 +58,11 @@ return [
         'description' => '%d palettes manquantes trouvées.',
         'button' => 'Créer les palettes manquantes',
     ],
+    'purge-trash' => [
+        'title' => 'Suppressions en attente',
+        'description' => '%d photos sont masquées et en attente de suppression.<br/>Équivaut à : php artisan lychee:purge-trash',
+        'button' => 'Purger',
+    ],
     'statistics-check' => [
         'title' => 'Check de l’intégrité des Statistiques',
         'missing_photos' => '%d statistiques de photos manquantes.',
