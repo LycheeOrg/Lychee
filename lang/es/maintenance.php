@@ -57,6 +57,11 @@ return [
         'description' => 'Se encontraron %d paletas faltantes.',
         'button' => 'Crear faltantes',
     ],
+    'purge-trash' => [
+        'title' => 'Eliminaciones pendientes',
+        'description' => '%d fotos están ocultas y pendientes de eliminación.<br/>Equivale a ejecutar: php artisan lychee:purge-trash',
+        'button' => 'Purgar',
+    ],
     'statistics-check' => [
         'title' => 'Comprobación de integridad de las estadísticas',
         'missing_photos' => 'Faltan %d estadísticas de fotos.',

@@ -32,6 +32,7 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Models\Scopes\NotTrashedScope;
 use App\Relations\HasManySizeVariants;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
@@ -206,6 +207,15 @@ class Photo extends Model implements HasUTCBasedTimes
 		'owner_id',
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
+
+	/**
+	 * Photos waiting in the trash are hidden from every model query
+	 * (Feature 119, FR-119-03).
+	 */
+	protected static function booted(): void
+	{
+		static::addGlobalScope(new NotTrashedScope());
+	}
 
 	public function newEloquentBuilder($query): PhotoBuilder
 	{

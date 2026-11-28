@@ -38,6 +38,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
+		:can-delete="albumStore.canDeletePhotos"
 		@toggle-delete="toggleDelete"
 		@updated="refresh()"
 		@go-back="goBack"
@@ -400,7 +401,7 @@ onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && i
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_move && hasSelection() && toggleMove());
 onKeyStroke(
 	["Delete", "Backspace"],
-	() => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
+	() => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.canDeletePhotos && hasSelection() && toggleDelete(),
 );
 
 // Priviledged Photo operations

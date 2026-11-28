@@ -1011,6 +1011,21 @@ export const useAlbumStore = defineStore("album-store", {
 				rights?.can_make_purchasable === true
 			);
 		},
+		/**
+		 * Whether photos can be deleted from the album shown (Feature 119,
+		 * FR-119-09): a regular album or Unsorted, with the delete right.
+		 * Other smart albums, tag albums and person albums hold no linked
+		 * photo, so the server refuses such a delete.
+		 */
+		canDeletePhotos(state): boolean {
+			if (state.tagAlbum !== undefined || state.personAlbum !== undefined) {
+				return false;
+			}
+			if (state.smartAlbum !== undefined) {
+				return state.smartAlbum.id === "unsorted" && state.smartAlbum.rights.can_delete;
+			}
+			return state.modelAlbum?.rights.can_delete ?? false;
+		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;
 		},

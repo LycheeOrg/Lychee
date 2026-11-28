@@ -94,13 +94,7 @@
 					<template #actions-cell="{ row }">
 						<div class="flex gap-1">
 							<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(row.original.photo_id)" />
-							<UButton
-								icon="lucide:trash"
-								color="error"
-								variant="ghost"
-								size="sm"
-								@click="deleteSingle(row.original.photo_id, row.original.album_id)"
-							/>
+							<UButton icon="lucide:trash" color="error" variant="ghost" size="sm" @click="deleteSingle(row.original.photo_id)" />
 						</div>
 					</template>
 
@@ -134,7 +128,6 @@ import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PhotoBox from "@/v8/components/gallery/photoModule/PhotoBox.vue";
 import ModerationHistoryTable from "@/v8/components/admin/moderation/ModerationHistoryTable.vue";
 import ModerationService from "@/services/moderation-service";
-import PhotoService from "@/services/photo-service";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
@@ -228,8 +221,8 @@ function approveSingle(photoId: string) {
 		});
 }
 
-function deleteSingle(photoId: string, albumId: string | null) {
-	PhotoService.delete([photoId], albumId ?? "unsorted")
+function deleteSingle(photoId: string) {
+	ModerationService.delete([photoId])
 		.then(() => {
 			removeFromList([photoId]);
 		})
@@ -252,9 +245,7 @@ function approveSelected() {
 
 function deleteSelected() {
 	const ids = Array.from(selectedIds.value);
-	const photo = photos.value.find((p) => ids.includes(p.photo_id));
-	const albumId = photo?.album_id ?? "unsorted";
-	PhotoService.delete(ids, albumId)
+	ModerationService.delete(ids)
 		.then(() => {
 			removeFromList(ids);
 		})

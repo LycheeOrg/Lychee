@@ -12,6 +12,7 @@ use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
+use App\Models\Scopes\NotTrashedScope;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +106,8 @@ class DuplicateFinder
 		bool $must_have_same_checksum,
 		bool $must_have_same_title,
 	): Builder {
-		return DB::table('photos', 'p1')->select('p1.id')
+		// Neither side of a pair may be a photo waiting in the trash (Feature 119).
+		$query = DB::table('photos', 'p1')->select('p1.id')
 			->joinSub(DB::table(PA::PHOTO_ALBUM), 'pa1', 'pa1.photo_id', '=', 'p1.id', 'left')
 			->join(
 				'photos as p2',
@@ -115,5 +117,8 @@ class DuplicateFinder
 					->when($must_have_same_checksum, fn ($q) => $q->on('p1.checksum', '=', 'p2.checksum'))
 					->when($must_be_within_same_album, fn ($q) => $q->on('pa1.album_id', '=', 'pa2.album_id'))
 			);
+		NotTrashedScope::exclude($query, 'p1.id');
+
+		return NotTrashedScope::exclude($query, 'p2.id');
 	}
 }

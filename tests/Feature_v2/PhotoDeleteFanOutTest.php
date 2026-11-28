@@ -18,11 +18,11 @@ use App\Events\PhotoWillBeDeleted;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
 use App\Jobs\WebhookDispatchJob;
 use App\Listeners\WebhookListener;
+use App\Models\Photo;
 use App\Models\Webhook;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -88,7 +88,8 @@ class PhotoDeleteFanOutTest extends BaseApiWithDataTest
 		Queue::before(function (JobProcessing $event) use (&$runs, $deleted_ids): void {
 			$job = unserialize($event->job->payload()['data']['command']);
 			if ($job instanceof RecomputeAlbumUserThumbsJob) {
-				$runs[] = [$job->album_kind, $job->album_id, DB::table('photos')->whereIn('id', $deleted_ids)->count()];
+				// Feature 119: "gone" means hidden (trashed) for every photo query.
+				$runs[] = [$job->album_kind, $job->album_id, Photo::query()->whereIn('id', $deleted_ids)->count()];
 			}
 		});
 
@@ -194,7 +195,8 @@ class PhotoDeleteFanOutTest extends BaseApiWithDataTest
 			'from_id' => $this->album1->id,
 		]);
 		$this->assertNoContent($response);
-		$this->assertDatabaseMissing('photos', ['id' => $this->photo1->id]);
-		$this->assertDatabaseMissing('photos', ['id' => $this->photo1b->id]);
+		// Feature 119: the photos are trashed (hidden), the purge deletes their rows.
+		self::assertFalse(Photo::query()->whereKey($this->photo1->id)->exists());
+		self::assertFalse(Photo::query()->whereKey($this->photo1b->id)->exists());
 	}
 }

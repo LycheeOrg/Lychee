@@ -110,7 +110,7 @@
 							@click="emits('toggleMove')"
 						/>
 					</UTooltip>
-					<UTooltip :text="$t('gallery.photo.actions.delete')">
+					<UTooltip v-if="props.canDelete" :text="$t('gallery.photo.actions.delete')">
 						<UButton
 							variant="ghost"
 							icon="lucide:trash-2"
@@ -141,6 +141,11 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useUserStore } from "@/stores/UserState";
 import { useGlobalRights } from "@/composables/useGlobalRights";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
+
+const props = defineProps<{
+	/** Delete button shown (Feature 119: hidden where the server would refuse a photo delete). */
+	canDelete: boolean;
+}>();
 
 const emits = defineEmits<{
 	toggleDetails: [];

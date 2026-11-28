@@ -40,7 +40,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
-		@toggle-delete="toggleDelete"
+		:can-delete="false"
 		@updated="refresh()"
 		@go-back="goBack"
 		@next="() => next(true)"
@@ -454,6 +454,8 @@ const selectors = {
 	selectedPhoto: selectedPhoto,
 	selectedPhotos: selectedPhotos,
 	selectedPhotosIds: selectedPhotosIds,
+	// Results come from many albums: the server would refuse a photo delete (Feature 119).
+	canDeletePhotos: ref(false),
 	selectedAlbum: selectedAlbum,
 	selectedAlbums: selectedAlbums,
 	selectedAlbumsIds: selectedAlbumsIds,
@@ -533,7 +535,6 @@ onKeyStroke(
 		(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
 		toggleHighlight(),
 );
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus

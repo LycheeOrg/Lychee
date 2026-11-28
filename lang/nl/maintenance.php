@@ -58,6 +58,11 @@ return [
         'description' => '%d ontbrekende paletten gevonden.',
         'button' => 'Ontbrekende aanmaken',
     ],
+    'purge-trash' => [
+        'title' => 'Wachtende verwijderingen',
+        'description' => '%d foto\'s zijn verborgen en wachten op verwijdering.<br/>Gelijk aan het uitvoeren van: php artisan lychee:purge-trash',
+        'button' => 'Opschonen',
+    ],
     'statistics-check' => [
         'title' => 'Controle op statistische integriteit',
         'missing_photos' => '%d fotostatistieken ontbreken.',

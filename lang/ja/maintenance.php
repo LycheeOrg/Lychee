@@ -58,6 +58,11 @@ return [
         'description' => '存在しないパレットが %d 個見つかりました。',
         'button' => '不足分を作成',
     ],
+    'purge-trash' => [
+        'title' => '削除待ち',
+        'description' => '%d 枚の写真が非表示になり、削除を待っています。<br/>次のコマンドと同等です: php artisan lychee:purge-trash',
+        'button' => '削除する',
+    ],
     'statistics-check' => [
         'title' => '統計の整合性チェック',
         'missing_photos' => '%d 件の写真統計が欠落しています。',

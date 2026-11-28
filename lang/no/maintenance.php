@@ -58,6 +58,11 @@ return [
         'description' => 'Fant %d manglende paletter.',
         'button' => 'Opprett manglende',
     ],
+    'purge-trash' => [
+        'title' => 'Ventende slettinger',
+        'description' => '%d bilder er skjult og venter på sletting.<br/>Samme som å kjøre: php artisan lychee:purge-trash',
+        'button' => 'Tøm',
+    ],
     'statistics-check' => [
         'title' => 'Statistikk integritetskontroll',
         'missing_photos' => '%d fotostatistikk mangler.',

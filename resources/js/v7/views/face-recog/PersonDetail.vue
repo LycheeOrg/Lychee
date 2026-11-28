@@ -171,7 +171,7 @@
 			@set-album-header="() => {}"
 			@toggle-highlight="() => {}"
 			@toggle-move="() => {}"
-			@toggle-delete="() => {}"
+			:can-delete="false"
 			@updated="() => {}"
 		/>
 	</div>

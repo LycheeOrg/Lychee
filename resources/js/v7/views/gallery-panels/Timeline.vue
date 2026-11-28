@@ -46,7 +46,7 @@
 			@set-album-header="setAlbumHeader"
 			@toggle-highlight="toggleHighlight"
 			@toggle-move="toggleMove"
-			@toggle-delete="toggleDelete"
+			:can-delete="false"
 			@go-back="goBack"
 			@next="() => next(true)"
 			@previous="() => previous(true)"
@@ -402,6 +402,8 @@ const {
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
 		selectedPhotosIds: selectedPhotosIds,
+		// No album here: the server would refuse a photo delete (Feature 119).
+		canDeletePhotos: ref(false),
 	},
 	photoCallbacks,
 	EmptyAlbumCallbacks,
@@ -455,7 +457,6 @@ onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && i
 // onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
 // onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
 // onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleHighlight());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
 
 // on key stroke escape:
 // 1. lose focus

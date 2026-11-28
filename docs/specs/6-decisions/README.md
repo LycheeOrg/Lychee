@@ -36,6 +36,7 @@ Numbering convention: new ADRs use `ADR-<NNN>-<YY>`, where `<NNN>` is the featur
 | [ADR-116-01](ADR-116-01-upload-status-cache.md) | Accepted | Upload outcomes kept 24 h in a shared cache (`upload-status:<provisional id>`, `database` store when the queue is async and the default driver is per-container), readable only by the uploader through `GET /api/v2/Photo::uploadStatus` |
 | [ADR-117-01](ADR-117-01-sitemap-gating-and-caching.md) | Accepted | `GET /sitemap.xml` answers 404 while disabled, `login_required` is on or a gallery password is set; guest view only; rows cached under a dedicated `sitemapTag()` flushed by the album-listing invalidator, `Cache-Control: public, max-age=3600`, session-less route group |
 | [ADR-118-01](ADR-118-01-split-user-rights.md) | Accepted | User rights split into `may_upload`, `may_share`, `may_edit`; upload implies the other two, enforced when users are written so each policy reads one flag; owner branches need their flag; sharers give only grants they hold; import from server needs `server_path` alone |
+| [ADR-119-01](ADR-119-01-photo-trash-and-background-purge.md) | Accepted | Deletes remove the targeted album links and move the photos left without a link into `trashed_photos`, albums deleted at once; a global `Photo` scope hides trashed photos from owners and admins too; a purge deletes them in batches of 100 (job after each delete, 10 s budget on `sync`, v8 Maintenance task, `lychee:purge-trash`); no retention |
 
 ## Templates
 

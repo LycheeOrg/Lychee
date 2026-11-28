@@ -57,6 +57,11 @@ return [
         'description' => '%d fehlende Paletten gefunden.',
         'button' => 'Fehlendes erstellen',
     ],
+    'purge-trash' => [
+        'title' => 'Ausstehende Löschungen',
+        'description' => '%d Fotos sind ausgeblendet und warten auf das Löschen.<br/>Entspricht dem Befehl: php artisan lychee:purge-trash',
+        'button' => 'Bereinigen',
+    ],
     'statistics-check' => [
         'title' => 'Integritätsprüfung der Statistik',
         'missing_photos' => '%d Fotostatistiken fehlen.',

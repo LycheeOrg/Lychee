@@ -58,6 +58,11 @@ return [
         'description' => 'Tìm thấy %d bảng màu bị thiếu.',
         'button' => 'Tạo phần thiếu',
     ],
+    'purge-trash' => [
+        'title' => 'Đang chờ xóa',
+        'description' => '%d ảnh đã bị ẩn và đang chờ xóa.<br/>Tương đương với: php artisan lychee:purge-trash',
+        'button' => 'Dọn dẹp',
+    ],
     'statistics-check' => [
         'title' => 'Kiểm tra tính toàn vẹn thống kê',
         'missing_photos' => 'Thiếu %d thống kê ảnh.',

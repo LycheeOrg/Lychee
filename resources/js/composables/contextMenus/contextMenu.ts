@@ -16,6 +16,8 @@ export type Selectors = {
 		| undefined
 	>;
 	selectedPhotosIds?: Ref<string[]>;
+	/** False where photos cannot be deleted (views without an album, Feature 119); defaults to the album store's rule. */
+	canDeletePhotos?: Ref<boolean>;
 	selectedPhoto?: Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 	selectedPhotos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
 	selectedAlbumsIds?: Ref<string[]>;
@@ -82,6 +84,11 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	const { rights } = useGlobalRights();
 	const router = useRouter();
 	const menu = ref();
+	// Feature 119 (FR-119-09): photo delete only where the server accepts it.
+	function canDeletePhotos(): boolean {
+		return selectors.canDeletePhotos?.value ?? useAlbumStore().canDeletePhotos;
+	}
+
 	const Menu = computed<MenuItem[]>(() => {
 		let menu: MenuItem[] = [];
 		if (selectors.selectedPhoto !== undefined && selectors.selectedPhoto.value !== undefined) {
@@ -218,8 +225,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.delete",
 				icon: "pi pi-trash",
 				callback: photoCallbacks.toggleDelete,
-				access:
-					albumStore.tagAlbum === undefined && albumStore.personAlbum === undefined && (selectors.album?.value?.rights.can_delete ?? false),
+				access: canDeletePhotos(),
 			},
 			{
 				label: "gallery.menus.download",
@@ -312,7 +318,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.delete_all",
 				icon: "pi pi-trash",
 				callback: photoCallbacks.toggleDelete,
-				access: albumStore.tagAlbum === undefined && albumStore.personAlbum === undefined && (albumStore.rights?.can_edit ?? false),
+				access: canDeletePhotos(),
 			},
 			{
 				label: "gallery.menus.download_all",

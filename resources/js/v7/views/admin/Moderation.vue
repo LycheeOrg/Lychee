@@ -116,7 +116,7 @@
 								rounded
 								size="small"
 								class="border-none"
-								@click="deleteSingle(photo.photo_id, photo.album_id)"
+								@click="deleteSingle(photo.photo_id)"
 							/>
 						</div>
 					</td>
@@ -147,7 +147,6 @@ import { useToast } from "primevue/usetoast";
 import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
 import PhotoBox from "@/v7/components/gallery/photoModule/PhotoBox.vue";
 import ModerationService from "@/services/moderation-service";
-import PhotoService from "@/services/photo-service";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
 
@@ -215,8 +214,8 @@ function approveSingle(photoId: string) {
 		});
 }
 
-function deleteSingle(photoId: string, albumId: string | null) {
-	PhotoService.delete([photoId], albumId ?? "unsorted")
+function deleteSingle(photoId: string) {
+	ModerationService.delete([photoId])
 		.then(() => {
 			removeFromList([photoId]);
 		})
@@ -239,9 +238,7 @@ function approveSelected() {
 
 function deleteSelected() {
 	const ids = Array.from(selectedIds.value);
-	const photo = photos.value.find((p) => ids.includes(p.photo_id));
-	const albumId = photo?.album_id ?? "unsorted";
-	PhotoService.delete(ids, albumId)
+	ModerationService.delete(ids)
 		.then(() => {
 			removeFromList(ids);
 		})

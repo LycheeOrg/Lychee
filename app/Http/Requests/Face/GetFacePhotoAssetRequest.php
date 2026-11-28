@@ -14,6 +14,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\ResolvesSizeVariantAssetTrait;
 use App\Models\Face;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
 use App\Rules\RandomIDRule;
@@ -121,6 +122,10 @@ class GetFacePhotoAssetRequest extends BaseApiRequest
 		$photo_id = Face::query()->whereKey($face_id)->value('photo_id');
 		if ($photo_id === null) {
 			throw (new ModelNotFoundException())->setModel(Face::class);
+		}
+		// A photo waiting in the trash is gone for every caller (Feature 119, FR-119-03).
+		if (!Photo::query()->whereKey($photo_id)->exists()) {
+			throw (new ModelNotFoundException())->setModel(Photo::class);
 		}
 		$this->photo_id = $photo_id;
 

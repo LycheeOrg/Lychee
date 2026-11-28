@@ -88,7 +88,7 @@
 						@click="emits('toggleMove')"
 					/>
 				</UTooltip>
-				<UTooltip :text="$t('gallery.photo.actions.delete')">
+				<UTooltip v-if="props.canDelete" :text="$t('gallery.photo.actions.delete')">
 					<DockButton
 						icon="trash"
 						:aria-label="$t('gallery.photo.actions.delete')"
@@ -180,6 +180,8 @@ function scanFaces() {
 const props = defineProps<{
 	/** Edit buttons; without them the dock holds only the live button (FR-100-06). */
 	canEdit: boolean;
+	/** Delete button shown (Feature 119: hidden where the server would refuse a photo delete). */
+	canDelete: boolean;
 }>();
 
 const emits = defineEmits<{

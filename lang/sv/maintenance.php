@@ -58,6 +58,11 @@ return [
         'description' => 'Hittade %d saknade paletter.',
         'button' => 'Skapa saknade',
     ],
+    'purge-trash' => [
+        'title' => 'Väntande borttagningar',
+        'description' => '%d foton är dolda och väntar på att tas bort.<br/>Samma som att köra: php artisan lychee:purge-trash',
+        'button' => 'Rensa',
+    ],
     'statistics-check' => [
         'title' => 'Integritetskontroll av statistik',
         'missing_photos' => '%d fotostatistikposter saknas.',

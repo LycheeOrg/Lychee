@@ -87,6 +87,7 @@
 					@click="emits('toggleMove')"
 				/>
 				<DockButton
+					v-if="props.canDelete"
 					v-tooltip.bottom="$t('gallery.photo.actions.delete')"
 					:aria-label="$t('gallery.photo.actions.delete')"
 					icon="trash"
@@ -126,6 +127,8 @@ const props = defineProps<{
 	isNarrowMenu: boolean;
 	/** Edit buttons; without them the dock holds only the live button (FR-100-06). */
 	canEdit: boolean;
+	/** Delete button shown (Feature 119: hidden where the server would refuse a photo delete). */
+	canDelete: boolean;
 }>();
 
 const isWatermarkerEnabled = computed(

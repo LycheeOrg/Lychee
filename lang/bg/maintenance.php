@@ -58,6 +58,11 @@ return [
         'description' => 'Намерени са %d липсващи палитри.',
         'button' => 'Създай липсващите',
     ],
+    'purge-trash' => [
+        'title' => 'Чакащи изтривания',
+        'description' => '%d снимки са скрити и чакат изтриване.<br/>Същото като: php artisan lychee:purge-trash',
+        'button' => 'Изчисти',
+    ],
     'statistics-check' => [
         'title' => 'Проверка на целостта на статистиката',
         'missing_photos' => 'Липсва статистика за %d снимки.',

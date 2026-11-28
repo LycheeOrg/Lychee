@@ -51,6 +51,13 @@ const MaintenanceService = {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::missingPalettes`, {});
 	},
 
+	purgeTrashCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::purgeTrash`, { data: {} });
+	},
+	purgeTrashDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::purgeTrash`, {});
+	},
+
 	optimizeDo(): Promise<AxiosResponse<string[]>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::optimize`, {});
 	},

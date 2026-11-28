@@ -8,6 +8,7 @@
 
 namespace App\Actions\Statistics;
 
+use App\Models\Scopes\NotTrashedScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ final class Counts
 		$max_date_object = Carbon::now()->subDays($max_date);
 		$min_date_object = Carbon::now()->subDays($min_date);
 
-		return DB::table('photos')->selectRaw(' DATE(created_at) date, count(*) uploads')
+		return NotTrashedScope::exclude(DB::table('photos'), 'photos.id')->selectRaw(' DATE(created_at) date, count(*) uploads')
 			->where('created_at', '>', $min_date_object)
 			->where('created_at', '<=', $max_date_object)
 			->when($owner_id !== null, function ($query, $owner_id) {
@@ -58,7 +59,7 @@ final class Counts
 		$max_date_object = Carbon::now()->subDays($max_date);
 		$min_date_object = Carbon::now()->subDays($min_date);
 
-		return DB::table('photos')->selectRaw(' DATE(taken_at) date, count(*) uploads')
+		return NotTrashedScope::exclude(DB::table('photos'), 'photos.id')->selectRaw(' DATE(taken_at) date, count(*) uploads')
 			->where('taken_at', '>', $min_date_object)
 			->where('taken_at', '<=', $max_date_object)
 			->when($owner_id !== null, function ($query, $owner_id) {
@@ -78,7 +79,7 @@ final class Counts
 	 */
 	public function getMinCreatedAt(?int $owner_id = null): string
 	{
-		return DB::table('photos')
+		return NotTrashedScope::exclude(DB::table('photos'), 'photos.id')
 			->select(DB::raw('min(created_at) as min_created_at'))
 			->when($owner_id !== null, function ($query, $owner_id) {
 				return $query->where('owner_id', $owner_id);
@@ -95,7 +96,7 @@ final class Counts
 	 */
 	public function getMinTakenAt(?int $owner_id = null): string
 	{
-		return DB::table('photos')
+		return NotTrashedScope::exclude(DB::table('photos'), 'photos.id')
 			->select(DB::raw('min(taken_at) as min_taken_at'))
 			->whereNotNull('taken_at')
 			->when($owner_id !== null, function ($query, $owner_id) {

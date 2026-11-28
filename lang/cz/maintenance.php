@@ -58,6 +58,11 @@ return [
         'description' => 'Nalezeno %d chybějících palet.',
         'button' => 'Vytvořit chybějící',
     ],
+    'purge-trash' => [
+        'title' => 'Čekající mazání',
+        'description' => '%d fotografií je skryto a čeká na smazání.<br/>Odpovídá příkazu: php artisan lychee:purge-trash',
+        'button' => 'Vyčistit',
+    ],
     'statistics-check' => [
         'title' => 'Kontrola integrity statistik',
         'missing_photos' => 'Chybí statistiky pro %d fotografií.',

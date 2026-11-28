@@ -58,6 +58,11 @@ return [
         'description' => 'Found %d missing palettes.',
         'button' => 'Create missing',
     ],
+    'purge-trash' => [
+        'title' => 'Pending deletions',
+        'description' => '%d photos are hidden and waiting to be deleted.<br/>Same as running: php artisan lychee:purge-trash',
+        'button' => 'Purge',
+    ],
     'statistics-check' => [
         'title' => 'Statistics integrity Check',
         'missing_photos' => '%d photo statistics missing.',

@@ -16,7 +16,7 @@
 		@set-album-header="setAlbumHeader"
 		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
-		@toggle-delete="toggleDelete"
+		:can-delete="false"
 		@updated="refresh"
 		@go-back="goBack"
 		@next="() => next(true)"
@@ -213,8 +213,6 @@ definePanelShortcuts({
 
 	// Privileges Photos view operations
 	m: () => !photoStore.isLoaded && hasSelection() && toggleMove(),
-	delete: () => (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
-	backspace: () => (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
 
 	// on key stroke escape:
 	// 1. stop an active slideshow

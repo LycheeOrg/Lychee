@@ -14,17 +14,17 @@ use App\Actions\Shop\PurchasableService;
 use App\Assets\Features;
 use App\Constants\PhotoAlbum as PA;
 use App\Constants\QueryLimits;
-use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\PhotoWebhookEvent;
 use App\Enum\SizeVariantType;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoWillBeDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\ModelDBException;
+use App\Jobs\PurgeTrashJob;
 use App\Models\SizeVariant;
 use App\Models\Webhook;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Deletes the photos with the designated IDs **efficiently**.
@@ -52,32 +52,23 @@ readonly class Delete
 {
 	private PurchasableService $purchasable_service;
 	private AlbumUserThumbTargets $thumb_targets;
+	private Trash $trash;
 
 	public function __construct(
 	) {
 		$this->purchasable_service = resolve(PurchasableService::class);
 		$this->thumb_targets = resolve(AlbumUserThumbTargets::class);
+		$this->trash = resolve(Trash::class);
 	}
 
 	/**
-	 * Deletes the designated photos from the DB.
+	 * Deletes the designated photos from the album `$from_id`.
 	 *
-	 * The method only deletes the records for photos, their size variants.
-	 * The method does not delete the associated files from physical storage.
-	 * Instead, the method returns an object in which all these files have
-	 * been collected.
-	 * This object can (and must) be used to eventually delete the files,
-	 * however doing so can be deferred.
-	 *
-	 * The method allows deleting individual photos designated by
-	 * `$photoIDs` or photos of entire albums designated by `$albumIDs`.
-	 * The latter is more efficient, if albums shall be deleted, because
-	 * it results in more succinct SQL queries.
-	 * Both parameters can be used simultaneously and result in a merged
-	 * deletion of the joined set of photos.
-	 *
-	 * Note that this methods does not assume the recursion within albums ids.
-	 * If albums_ids has children, photos within those children will not be deleted.
+	 * The photos lose their link to `$from_id`. Those left without any album
+	 * link go to the trash and are hidden at once; a purge deletes their rows
+	 * and files later (Feature 119, FR-119-02). With Unsorted no link is
+	 * removed and the photos without an album are trashed. The request has
+	 * checked that every photo is in `$from_id` (FR-119-09).
 	 *
 	 * @param string[]    $photo_ids the photo IDs
 	 * @param string|null $from_id   the ID of the album from which the photos are deleted
@@ -89,63 +80,15 @@ readonly class Delete
 		if ($from_id === null) {
 			throw new LycheeLogicException('The $from_id must be provided with the $photo_ids.');
 		}
-		if (count($photo_ids) === 0) {
+		$photo_ids = array_values(array_unique($photo_ids));
+		if ($photo_ids === []) {
 			return;
 		}
 
-		// Every query below binds at most one chunk of ids (FR-112-09).
-		$chunks = array_chunk(array_values(array_unique($photo_ids)), QueryLimits::ID_CHUNK_SIZE);
-
-		// First find out which photos do not have an album.
-		// Those will be deleted.
-		$unsorted_photo_ids = $this->collect($chunks, fn (array $chunk) => DB::table('photos')
-			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->whereIn('photos.id', $chunk)
-			->whereNull(PA::ALBUM_ID)
-			->select(['photos.id'])->pluck('id')->all());
-
-		// Next we find all photos which are in albums.
-		$photo_ids = $this->collect($chunks, fn (array $chunk) => DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, $chunk)
-			->distinct()
-			->select([PA::PHOTO_ID])->pluck('photo_id')->all());
-
-		// Now we need to figure out those who are in other albums.
-		$photo_ids_in_other_albums = $this->collect(array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE), fn (array $chunk) => DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, $chunk)
-			->where(PA::ALBUM_ID, '!=', $from_id)
-			->distinct()
-			->select([PA::PHOTO_ID])->pluck('photo_id')->all());
-
-		// Substract those from the list of photos to be deleted the photos which
-		// are still in other albums.
-		$delete_photo_ids = array_diff($photo_ids, $photo_ids_in_other_albums);
-
-		// Finally, add the unsorted photos to be deleted.
-		$delete_photo_ids = array_values(array_merge($delete_photo_ids, $unsorted_photo_ids));
-
 		$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, [$from_id]);
+		$trashed = $this->trash->fromAlbum($photo_ids, $from_id);
 
-		// Resolve the cached album thumbs to refresh once for the whole request,
-		// while the tags, faces and cached thumbs of the photos still exist (FR-112-07).
-		$thumb_targets = $this->thumb_targets->resolve($delete_photo_ids);
-
-		// Fire PhotoWillBeDeleted for each photo that will be hard-deleted,
-		// BEFORE executeDelete() removes the records from the database.
-		$this->dispatchWillBeDeletedEvents($delete_photo_ids, $from_id);
-
-		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
-			force_delete_photo_ids: $delete_photo_ids,
-			soft_delete_photo_ids: $photo_ids,
-			album_ids: [$from_id],
-		);
-		$jobs = $photos_to_be_deleted->executeDelete();
-
-		// Dispatch events for affected albums to trigger recomputation
-		PhotoDeleted::dispatch($from_id);
-
-		// File, person-stats, face-embedding and thumb jobs: after the response on `sync` (FR-112-04).
-		DispatchAfterDelete::dispatch([...$jobs, ...$this->thumb_targets->jobs($thumb_targets)]);
+		$this->afterTrash($trashed, [$from_id], fn (string $photo_id): string => $from_id);
 	}
 
 	/**
@@ -158,29 +101,65 @@ readonly class Delete
 	 */
 	public function forceDeletePhoto(string $photo_id): void
 	{
-		$album_ids = DB::table('photo_album')
-			->where('photo_id', $photo_id)
-			->pluck('album_id')
-			->all();
+		$this->deleteEverywhere([$photo_id]);
+	}
 
-		$this->purchasable_service->deleteMulitplePhotoPurchasables([$photo_id], $album_ids);
+	/**
+	 * Deletes the photos themselves: every album link is removed and they
+	 * go to the trash (NSFW block action, Moderation; FR-119-02, FR-119-10).
+	 *
+	 * @param string[] $photo_ids
+	 *
+	 * @throws ModelDBException
+	 */
+	public function deleteEverywhere(array $photo_ids): void
+	{
+		$photo_ids = array_values(array_unique($photo_ids));
+		if ($photo_ids === []) {
+			return;
+		}
 
-		$thumb_targets = $this->thumb_targets->resolve([$photo_id]);
+		// photo id => one of its albums, for the webhook payload (as before: the first one).
+		$album_of = [];
+		foreach (array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			foreach (DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $chunk)->orderBy(PA::ALBUM_ID)->get([PA::PHOTO_ID, PA::ALBUM_ID]) as $link) {
+				$album_of[$link->photo_id] ??= $link->album_id;
+			}
+		}
+		$album_ids = array_values(array_unique($album_of));
 
-		$this->dispatchWillBeDeletedEvents([$photo_id], $album_ids[0] ?? '');
+		$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, $album_ids);
+		$trashed = $this->trash->everywhere($photo_ids);
 
-		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
-			force_delete_photo_ids: [$photo_id],
-			soft_delete_photo_ids: [],
-			album_ids: [],
-		);
-		$jobs = $photos_to_be_deleted->executeDelete();
+		$this->afterTrash($trashed, $album_ids, fn (string $photo_id): string => $album_of[$photo_id] ?? '');
+	}
 
+	/**
+	 * Side effects of a delete once the photos are in the trash (FR-119-06).
+	 * Their rows, tags and faces stay until the purge, so the thumb targets
+	 * and the webhook payloads are computed from the trashed ids now.
+	 *
+	 * @param string[]                $trashed   photo ids put into the trash
+	 * @param string[]                $album_ids albums that lost links
+	 * @param \Closure(string):string $album_of  album id reported to webhooks for a photo
+	 */
+	private function afterTrash(array $trashed, array $album_ids, \Closure $album_of): void
+	{
+		$thumb_targets = $this->thumb_targets->resolve($trashed);
+		$this->dispatchWillBeDeletedEvents($trashed, $album_of);
+
+		// Links were removed by raw writes, bypassing the photo-level model events.
+		AlbumListingCacheFlushRequested::dispatch();
 		foreach ($album_ids as $album_id) {
 			PhotoDeleted::dispatch($album_id);
 		}
 
-		DispatchAfterDelete::dispatch([...$jobs, ...$this->thumb_targets->jobs($thumb_targets)]);
+		// Thumb jobs and the purge: after the response on `sync` (FR-112-04, FR-119-05).
+		$jobs = $this->thumb_targets->jobs($thumb_targets);
+		if ($trashed !== []) {
+			$jobs[] = new PurgeTrashJob();
+		}
+		DispatchAfterDelete::dispatch($jobs);
 	}
 
 	/**
@@ -189,13 +168,14 @@ readonly class Delete
 	 * The event only feeds `photo.delete` webhooks: without an enabled one,
 	 * nothing is loaded and no event is fired (FR-112-06).
 	 *
-	 * Uses a lean DB query (no full Eloquent hydration) to load photo title
-	 * and size variant URLs before the records are removed.
+	 * Uses a lean DB query (no full Eloquent hydration, so trashed photos are
+	 * read) to load photo title and size variant URLs before the purge
+	 * removes the records.
 	 *
-	 * @param string[] $photo_ids IDs of photos to be hard-deleted
-	 * @param string   $album_id  the album they are being deleted from
+	 * @param string[]                $photo_ids IDs of the photos put into the trash
+	 * @param \Closure(string):string $album_of  the album a photo is reported as deleted from
 	 */
-	private function dispatchWillBeDeletedEvents(array $photo_ids, string $album_id): void
+	private function dispatchWillBeDeletedEvents(array $photo_ids, \Closure $album_of): void
 	{
 		if ($photo_ids === [] || !$this->hasDeleteWebhook()) {
 			return;
@@ -228,30 +208,12 @@ readonly class Delete
 
 				PhotoWillBeDeleted::dispatch(
 					$photo->id,
-					$album_id,
+					$album_of($photo->id),
 					$photo->title,
 					$variants,
 				);
 			}
 		}
-	}
-
-	/**
-	 * Run $query on each chunk and merge the results, without duplicates.
-	 *
-	 * @param array<int,array<int,string>>                  $chunks
-	 * @param \Closure(array<int,string>):array<int,string> $query
-	 *
-	 * @return array<int,string>
-	 */
-	private function collect(array $chunks, \Closure $query): array
-	{
-		$ids = [];
-		foreach ($chunks as $chunk) {
-			$ids = array_merge($ids, $query($chunk));
-		}
-
-		return array_values(array_unique($ids));
 	}
 
 	/**

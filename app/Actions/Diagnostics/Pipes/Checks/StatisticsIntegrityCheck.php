@@ -11,6 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
+use App\Models\Scopes\NotTrashedScope;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
@@ -54,7 +55,7 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 		$num_albums = DB::table('base_albums')->leftJoin('statistics', 'base_albums.id', '=', 'statistics.album_id')
 				->whereNull('statistics.id')
 				->count();
-		$num_photos = DB::table('photos')->leftJoin('statistics', 'photos.id', '=', 'statistics.photo_id')
+		$num_photos = NotTrashedScope::exclude(DB::table('photos'), 'photos.id')->leftJoin('statistics', 'photos.id', '=', 'statistics.photo_id')
 			->whereNull('statistics.id')
 			->count();
 
