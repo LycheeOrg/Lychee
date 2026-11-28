@@ -1,6 +1,8 @@
 <template>
 	<div class="absolute inset-0 m-auto flex items-center justify-center" style="container-type: size">
-		<video-player class="contents" @keydown="onKeydown">
+		<!-- A click in the player is its own: on #imageview it would cycle the overlay.
+		     Pointer events still bubble, Video.js closes its menus from the document. -->
+		<video-player class="contents" @keydown="onKeydown" @click.stop>
 			<video-skin class="block" :style="skinStyle">
 				<video :src="props.src" playsinline preload="auto" :autoplay="props.autoplay" :loop="props.loop" @loadedmetadata="onLoadedMetadata">
 					Your browser does not support the video tag.

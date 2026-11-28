@@ -62,8 +62,14 @@
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="getPlaceholderIcon()"
 		/>
-		<!-- Zoom layer (Feature 078): the image and the boxes drawn on it are panned and zoomed together. -->
-		<div class="absolute inset-0 flex items-center justify-center select-none" :style="layerStyle">
+		<!-- Zoom layer (Feature 078): the image and the boxes drawn on it are panned and zoomed together.
+		     It lies over the video player, the PDF and the live photo, so it only takes the pointer when it
+		     holds the picture: they need it for their controls, scrolling and LIVE badge. -->
+		<div
+			class="absolute inset-0 flex items-center justify-center select-none"
+			:class="{ 'pointer-events-none': !isImageMode }"
+			:style="layerStyle"
+		>
 			<!-- This is a normal image: medium or original -->
 			<img
 				v-if="viewMode == ImageViewMode.Medium && isMediaReady"
