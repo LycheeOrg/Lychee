@@ -8,7 +8,8 @@
 				@toggle-move="emits('toggleMove')"
 				@toggle-delete="emits('toggleDelete')"
 			/>
-			<UMain class="relative mt-(--ui-header-height)">
+			<!-- In full screen the header only fades out over the photo: its height is given back. -->
+			<UMain class="relative" :class="is_full_screen ? 'min-h-dvh' : 'mt-(--ui-header-height)'">
 				<UDashboardGroup storageKey="photo-panel" storage="local" :persistent="true" class="relative w-full h-full overflow-hidden bg-black">
 					<PhotoDetails v-if="!is_exif_disabled && !isLeftToRight" :is-map-visible="props.isMapVisible" />
 					<div class="w-0 flex-auto relative">
@@ -83,7 +84,7 @@ const userStore = useUserStore();
 const { isLTR } = useLtRorRtL();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled, disable_swipe_effect } = storeToRefs(lycheeStore);
-const { is_photo_edit_open, is_slideshow_active } = storeToRefs(togglableStore);
+const { is_photo_edit_open, is_slideshow_active, is_full_screen } = storeToRefs(togglableStore);
 
 const isLeftToRight = computed(() => isLTR());
 
