@@ -204,6 +204,8 @@ function leafletGlobalPlugin(): Plugin {
 	};
 }
 
+const VIDEOJS_ELEMENTS = new Set(["video-player", "video-skin"]);
+
 const laravelPlugin = laravel({
 	input: ["resources/sass/app.css", "resources/js/app.ts", "resources/sass/app-v8.css", "resources/js/app-v8.ts"],
 	refresh: true,
@@ -294,7 +296,13 @@ const baseConfig = {
 				main: { base: "min-h-[calc(100dvh-var(--ui-header-height))]" },
 			},
 		}),
-		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
+		vue({
+			template: {
+				transformAssetUrls: { base: null, includeAbsolute: false },
+				// Video.js 10 custom elements of the v8 video player; only the tags our templates use.
+				compilerOptions: { isCustomElement: (tag) => VIDEOJS_ELEMENTS.has(tag) },
+			},
+		}),
 		i18n(),
 	],
 	server: {

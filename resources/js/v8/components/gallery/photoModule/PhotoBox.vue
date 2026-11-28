@@ -27,25 +27,18 @@
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="getPlaceholderIcon()"
 		/>
-		<!--  This is a video file: put html5 player. Mounted with its URL, and again for another one:
-		      a <video> does not reload when its <source> changes (FR-103-07). -->
-		<video
+		<!--  This is a video file: Video.js player. Mounted with its URL, and again for another one:
+		      a <video> does not reload when its source changes (FR-103-07). -->
+		<VideoView
 			v-if="viewMode == ImageViewMode.Video && isMediaReady"
 			:key="photoStore.photo.size_variants.original?.url ?? ''"
-			id="image"
-			ref="videoElement"
-			width="auto"
-			height="auto"
-			controls
-			class="absolute m-auto w-auto h-auto"
-			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
-			autobuffer
+			:src="photoStore.photo.size_variants.original?.url ?? ''"
+			:width="photoStore.photo.size_variants.original?.width ?? 0"
+			:height="photoStore.photo.size_variants.original?.height ?? 0"
 			:autoplay="lycheeStore.can_autoplay"
 			:loop="lycheeStore.is_video_loop_enabled"
-		>
-			<source :src="photoStore.photo.size_variants.original?.url ?? ''" />
-			Your browser does not support the video tag.
-		</video>
+			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
+		/>
 		<!-- This is a raw file: put a place holder -->
 		<embed
 			v-if="viewMode == ImageViewMode.Pdf && isMediaReady"
@@ -69,8 +62,14 @@
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="getPlaceholderIcon()"
 		/>
-		<!-- Zoom layer (Feature 078): the image and the boxes drawn on it are panned and zoomed together. -->
-		<div class="absolute inset-0 flex items-center justify-center select-none" :style="layerStyle">
+		<!-- Zoom layer (Feature 078): the image and the boxes drawn on it are panned and zoomed together.
+		     It lies over the video player, the PDF and the live photo, so it only takes the pointer when it
+		     holds the picture: they need it for their controls, scrolling and LIVE badge. -->
+		<div
+			class="absolute inset-0 flex items-center justify-center select-none"
+			:class="{ 'pointer-events-none': !isImageMode }"
+			:style="layerStyle"
+		>
 			<!-- This is a normal image: medium or original -->
 			<img
 				v-if="viewMode == ImageViewMode.Medium && isMediaReady"
@@ -224,14 +223,16 @@ import {
 	type Rect,
 	type TapRecord,
 } from "@/v8/utils/panZoom";
+import { isOnPlayerControls } from "@/v8/utils/videoPlayer";
 
 const { isLTR } = useLtRorRtL();
 
 // Lazy chunk: only fetched when a 360° photo is shown (NFR-082-02).
 const SphereView = defineAsyncComponent(() => import("./SphereView.vue"));
+// Lazy chunk: Video.js is only fetched when a video is shown.
+const VideoView = defineAsyncComponent(() => import("./VideoView.vue"));
 
 const containerEl = ref<HTMLElement | null>(null);
-const videoElement = ref<HTMLVideoElement | null>(null);
 const livePhotoEl = ref<HTMLElement | null>(null);
 const togglableStore = useTogglablesStateStore();
 
@@ -671,11 +672,17 @@ function isPageZoomed(): boolean {
 	return typeof window !== "undefined" && window.visualViewport !== null && window.visualViewport.scale > 1.01;
 }
 
+// A drag that starts on the video controls (scrubbing the time or volume slider) belongs to them.
+let isSwipeOnPlayerControls = false;
+
 useSwipe(containerEl, {
+	onSwipeStart(e: TouchEvent) {
+		isSwipeOnPlayerControls = isOnPlayerControls(e.composedPath());
+	},
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
 		// FR-082-10: in the sphere a drag looks around, never navigates.
-		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked()) {
+		if (viewMode.value === ImageViewMode.Sphere || isPageZoomed() || panZoom.isSwipeBlocked() || isSwipeOnPlayerControls) {
 			return;
 		}
 		if (direction === "left" && isLTR()) {
