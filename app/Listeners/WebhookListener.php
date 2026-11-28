@@ -8,6 +8,7 @@
 
 namespace App\Listeners;
 
+use App\Actions\Shared\DispatchAfterDelete;
 use App\Assets\Features;
 use App\Enum\PhotoWebhookEvent;
 use App\Events\PhotoAdded;
@@ -66,6 +67,8 @@ class WebhookListener
 	 * Handle the PhotoWillBeDeleted event (photo.delete webhooks).
 	 *
 	 * Uses the snapshot carried by the event — no DB load needed.
+	 * The jobs go through {@link DispatchAfterDelete}: on `sync` the calls
+	 * are sent after the response, best effort (FR-112-12).
 	 */
 	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
 	{
@@ -82,6 +85,7 @@ class WebhookListener
 			return;
 		}
 
+		$jobs = [];
 		foreach ($webhooks as $webhook) {
 			$payload = $this->builder->build(
 				webhook: $webhook,
@@ -90,8 +94,9 @@ class WebhookListener
 				title: $event->title,
 				size_variants: $event->size_variants,
 			);
-			WebhookDispatchJob::dispatch($webhook, $payload);
+			$jobs[] = new WebhookDispatchJob($webhook, $payload);
 		}
+		DispatchAfterDelete::dispatch($jobs);
 	}
 
 	/**

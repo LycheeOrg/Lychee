@@ -32,18 +32,22 @@ use App\Events\PersonAlbumSaved;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoSaved;
-use App\Events\PhotoWillBeDeleted;
 use App\Events\TagAlbumSaved;
 use App\Listeners\ManagedCacheAlbumListingInvalidator;
 use App\Models\Album;
+use App\Models\Face;
+use App\Models\Person;
 use App\Models\PersonAlbum;
+use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 
 class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
@@ -87,6 +91,34 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	private function assertNotEvicted(string $key): void
 	{
 		self::assertNotNull(Cache::get($key), "expected key [$key] to still be cached");
+	}
+
+	// ── PhotoSaved, many photos ─────────────────────────────────
+
+	/**
+	 * S-112-17: 1200 photo ids, the person is found in the last chunk, and no
+	 * query binds more than 1000 parameters (FR-112-09).
+	 */
+	public function testPhotoSavedWith1200PhotoIdsEvictsPersonTagWithinBindLimit(): void
+	{
+		$user = User::factory()->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		$person = Person::factory()->create();
+		Face::factory()->for_photo($photo)->for_person($person)->create();
+
+		$this->seedCache('k:person', [$this->cache_key_provider->albumPersonTag($person->id)]);
+		$photo_ids = array_map(fn (int $i) => sprintf('missing-photo-%011d', $i), range(1, 1199));
+		$photo_ids[] = $photo->id;
+
+		$max_bindings = 0;
+		DB::listen(function (QueryExecuted $query) use (&$max_bindings): void {
+			$max_bindings = max($max_bindings, count($query->bindings));
+		});
+
+		$this->listener->handlePhotoSaved(new PhotoSaved($photo_ids));
+
+		self::assertLessThanOrEqual(1000, $max_bindings);
+		$this->assertEvicted('k:person');
 	}
 
 	// ── AlbumSaved ──────────────────────────────────────────────
@@ -615,7 +647,6 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 			'PhotoPersonsChanged' => fn () => $this->listener->handlePhotoPersonsChanged(new PhotoPersonsChanged(['some-photo-id'], [])),
 			'PhotoMoved' => fn () => $this->listener->handlePhotoMoved(new PhotoMoved(['some-photo-id'], 'from-album-id', 'to-album-id')),
 			'PhotoSaved' => fn () => $this->listener->handlePhotoSaved(new PhotoSaved(['some-photo-id'])),
-			'PhotoWillBeDeleted' => fn () => $this->listener->handlePhotoWillBeDeleted(new PhotoWillBeDeleted('some-photo-id', $album->id, 'title', [])),
 		];
 
 		foreach ($cases as $event_name => $trigger) {

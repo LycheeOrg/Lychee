@@ -11,6 +11,7 @@ namespace App\Policies;
 use App\Assets\DbBool;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
+use App\Constants\QueryLimits;
 use App\Enum\FacePermissionMode;
 use App\Enum\MetricsAccess;
 use App\Enum\PhotoHighlightVisibilityType;
@@ -360,37 +361,79 @@ class PhotoPolicy extends BasePolicy
 	public function canDeleteById(User $user, array $photo_ids): bool
 	{
 		// Make IDs unique as otherwise count will fail.
-		$photo_ids = array_unique($photo_ids);
+		$photo_ids = array_values(array_unique($photo_ids));
+		// Bounded queries: at most one chunk of ids each (FR-112-11).
+		$chunks = array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE);
 
 		if (
 			$user->may_edit &&
-			Photo::query()
-			->whereIn('id', $photo_ids)
-			->where('owner_id', $user->id)
-			->count() === count($photo_ids)
+			$this->countOwnedById($user, $chunks) === count($photo_ids)
 		) {
 			return true;
 		}
 
 		// If there are any photos which are not in albums at this point, we fail.
-		if (
-			Photo::query()
-			->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
-			->whereNull('album_id')
-			->whereIn('photos.id', $photo_ids)
-			->count() > 0
-		) {
+		if ($this->hasPhotoWithoutAlbum($chunks)) {
 			return false;
 		}
 
-		$parent_ids = DB::table(PA::PHOTO_ALBUM)
-			->select(PA::ALBUM_ID)
-			->whereIn(PA::PHOTO_ID, $photo_ids)
-			->groupBy(PA::ALBUM_ID)
-			->pluck('album_id')->all();
-
 		// A photo is content of its albums: the delete grant is checked on them.
-		return $this->album_policy->canDeleteContentById($user, $parent_ids);
+		return $this->album_policy->canDeleteContentById($user, $this->parentAlbumIds($chunks));
+	}
+
+	/**
+	 * Number of the photos owned by the user, summed across the chunks.
+	 *
+	 * @param array<int,array<int,string>> $chunks
+	 */
+	private function countOwnedById(User $user, array $chunks): int
+	{
+		return array_sum(array_map(
+			fn (array $chunk) => Photo::query()->whereIn('id', $chunk)->where('owner_id', $user->id)->count(),
+			$chunks
+		));
+	}
+
+	/**
+	 * Whether one of the photos is in no album. Stops at the first chunk that has one.
+	 *
+	 * @param array<int,array<int,string>> $chunks
+	 */
+	private function hasPhotoWithoutAlbum(array $chunks): bool
+	{
+		foreach ($chunks as $chunk) {
+			$found = Photo::query()
+				->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)
+				->whereNull('album_id')
+				->whereIn('photos.id', $chunk)
+				->count() > 0;
+			if ($found) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Albums containing the photos, without duplicates.
+	 *
+	 * @param array<int,array<int,string>> $chunks
+	 *
+	 * @return array<int,string>
+	 */
+	private function parentAlbumIds(array $chunks): array
+	{
+		$parent_ids = [];
+		foreach ($chunks as $chunk) {
+			$parent_ids = array_merge($parent_ids, DB::table(PA::PHOTO_ALBUM)
+				->select(PA::ALBUM_ID)
+				->whereIn(PA::PHOTO_ID, $chunk)
+				->groupBy(PA::ALBUM_ID)
+				->pluck('album_id')->all());
+		}
+
+		return array_values(array_unique($parent_ids));
 	}
 
 	/**

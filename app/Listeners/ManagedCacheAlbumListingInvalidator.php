@@ -8,6 +8,7 @@
 
 namespace App\Listeners;
 
+use App\Constants\QueryLimits;
 use App\Events\AccessPermissionChanged;
 use App\Events\AlbumChildrenChanged;
 use App\Events\AlbumComputedDataUpdated;
@@ -20,7 +21,6 @@ use App\Events\PersonAlbumSaved;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoSaved;
-use App\Events\PhotoWillBeDeleted;
 use App\Events\TagAlbumSaved;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
@@ -194,17 +194,6 @@ class ManagedCacheAlbumListingInvalidator
 	}
 
 	/**
-	 * A photo is about to be removed from an album (detach) or hard-deleted;
-	 * dispatched before the `faces` rows are gone, so they can still be
-	 * resolved here.
-	 */
-	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
-	{
-		$this->evictPersonTagsForPhotos([$event->photo_id]);
-		$this->cache->forgetTag($this->cache_key_provider->albumListingV3Tag());
-	}
-
-	/**
 	 * Evicts the PersonAlbum "matching albums" cache for every person
 	 * currently associated (via a non-dismissed face) with any of the given photos.
 	 *
@@ -216,13 +205,18 @@ class ManagedCacheAlbumListingInvalidator
 			return;
 		}
 
-		$person_ids = DB::table('faces')
-			->whereIn('photo_id', $photo_ids)
-			->whereNotNull('person_id')
-			->where('is_dismissed', '=', false)
-			->distinct()
-			->pluck('person_id')
-			->all();
+		// At most one chunk of photo ids per query (FR-112-09).
+		$person_ids = [];
+		foreach (array_chunk(array_values(array_unique($photo_ids)), QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$person_ids = array_merge($person_ids, DB::table('faces')
+				->whereIn('photo_id', $chunk)
+				->whereNotNull('person_id')
+				->where('is_dismissed', '=', false)
+				->distinct()
+				->pluck('person_id')
+				->all());
+		}
+		$person_ids = array_values(array_unique($person_ids));
 
 		if ($person_ids !== []) {
 			$this->cache->forgetTags($this->cache_key_provider->albumPersonTags($person_ids));

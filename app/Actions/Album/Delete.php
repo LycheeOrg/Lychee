@@ -8,10 +8,12 @@
 
 namespace App\Actions\Album;
 
+use App\Actions\Shared\DispatchAfterDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PersonAlbumPersons;
 use App\Constants\PhotoAlbum as PA;
+use App\Constants\QueryLimits;
 use App\DTO\Delete\AlbumsToBeDeletedDTO;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\StorageDiskType;
@@ -71,17 +73,20 @@ class Delete
 	 */
 	public function do(array $album_ids): void
 	{
-		$person_albums_ids = DB::table('person_albums')->whereIn('id', $album_ids)->select('id')->pluck('id')->all();
+		// De-duplicated, then every query binds at most one chunk (FR-112-09).
+		$album_ids = array_values(array_unique($album_ids));
+
+		$person_albums_ids = $this->idsIn('person_albums', $album_ids);
 
 		$this->deletePersonAlbums($person_albums_ids);
 
-		$album_ids = array_diff($album_ids, $person_albums_ids);
+		$album_ids = array_values(array_diff($album_ids, $person_albums_ids));
 
-		$tag_albums_ids = DB::table('tag_albums')->whereIn('id', $album_ids)->select('id')->pluck('id')->all();
+		$tag_albums_ids = $this->idsIn('tag_albums', $album_ids);
 
 		$this->deleteTagAlbums($tag_albums_ids);
 
-		$album_ids = array_diff($album_ids, $tag_albums_ids, $person_albums_ids);
+		$album_ids = array_values(array_diff($album_ids, $tag_albums_ids));
 		// Nothing else to do. Woop woop.
 		if (count($album_ids) === 0) {
 			return;
@@ -93,10 +98,11 @@ class Delete
 		// Now can handle the regular albums
 		$albums_to_delete = $this->findAllAlbumsToDelete($album_ids);
 
+		// Track files of one disk are split into bounded jobs (FR-112-03).
 		$albums_to_delete->tracks
 			->groupBy(fn (object $track) => $track->disk)
 			->each(function (Collection $group, string $disk): void {
-				$this->jobs[] = new FileDeleterJob(StorageDiskType::from($disk), $group->pluck('file_name')->all());
+				array_push($this->jobs, ...FileDeleterJob::batches(StorageDiskType::from($disk), $group->pluck('file_name')->all()));
 			});
 
 		$photos_to_be_deleted = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
@@ -116,10 +122,8 @@ class Delete
 			AlbumDeleted::dispatch($parent_id);
 		}
 
-		// Dispatch the file deletion jobs
-		foreach ($this->jobs as $job) {
-			dispatch($job);
-		}
+		// File, person-stats and face-embedding jobs: after the response on `sync` (FR-112-04).
+		DispatchAfterDelete::dispatch($this->jobs);
 	}
 
 	/**
@@ -137,13 +141,15 @@ class Delete
 
 		$purchasable_service = resolve(PurchasableService::class);
 		$purchasable_service->deleteMultipleAlbumPurchasables($tag_album_ids);
-		DB::table('live_metrics')->whereIn('album_id', $tag_album_ids)->delete();
-		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $tag_album_ids)->delete();
-		DB::table('statistics')->whereIn('album_id', $tag_album_ids)->delete();
-		DB::table('tag_albums_tags')->whereIn('album_id', $tag_album_ids)->delete();
-		DB::table('album_user_thumbs')->whereIn('album_id', $tag_album_ids)->delete();
-		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
-		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
+		foreach (array_chunk($tag_album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			DB::table('live_metrics')->whereIn('album_id', $chunk)->delete();
+			DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $chunk)->delete();
+			DB::table('statistics')->whereIn('album_id', $chunk)->delete();
+			DB::table('tag_albums_tags')->whereIn('album_id', $chunk)->delete();
+			DB::table('album_user_thumbs')->whereIn('album_id', $chunk)->delete();
+			DB::table('tag_albums')->whereIn('id', $chunk)->delete();
+			DB::table('base_albums')->whereIn('id', $chunk)->delete();
+		}
 
 		BaseAlbumRemoved::dispatch($tag_album_ids);
 	}
@@ -163,15 +169,34 @@ class Delete
 
 		$purchasable_service = resolve(PurchasableService::class);
 		$purchasable_service->deleteMultipleAlbumPurchasables($person_album_ids);
-		DB::table('live_metrics')->whereIn('album_id', $person_album_ids)->delete();
-		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $person_album_ids)->delete();
-		DB::table('statistics')->whereIn('album_id', $person_album_ids)->delete();
-		DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->whereIn(PersonAlbumPersons::ALBUM_ID, $person_album_ids)->delete();
-		DB::table('album_user_thumbs')->whereIn('album_id', $person_album_ids)->delete();
-		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
-		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
+		foreach (array_chunk($person_album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			DB::table('live_metrics')->whereIn('album_id', $chunk)->delete();
+			DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $chunk)->delete();
+			DB::table('statistics')->whereIn('album_id', $chunk)->delete();
+			DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->whereIn(PersonAlbumPersons::ALBUM_ID, $chunk)->delete();
+			DB::table('album_user_thumbs')->whereIn('album_id', $chunk)->delete();
+			DB::table('person_albums')->whereIn('id', $chunk)->delete();
+			DB::table('base_albums')->whereIn('id', $chunk)->delete();
+		}
 
 		BaseAlbumRemoved::dispatch($person_album_ids);
+	}
+
+	/**
+	 * Ids of $table among $ids, queried in chunks.
+	 *
+	 * @param string[] $ids
+	 *
+	 * @return string[]
+	 */
+	private function idsIn(string $table, array $ids): array
+	{
+		$found = [];
+		foreach (array_chunk($ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			$found = array_merge($found, DB::table($table)->whereIn('id', $chunk)->pluck('id')->all());
+		}
+
+		return $found;
 	}
 
 	/**
@@ -183,61 +208,52 @@ class Delete
 	 */
 	public function findAllPhotosToDelete(array $album_ids): PhotosToBeDeletedDTO
 	{
-		// First collect which pictures needs to be potentially deleted.
+		$album_ids = array_values(array_unique($album_ids));
+
+		// photo id => number of its links into the deleted albums, summed over
+		// the album chunks (the chunks do not overlap), and photo id => number
+		// of all its links. Both are keyed by photo id (FR-112-09).
 		// ! RISK OF MEMOY EXHAUSTION !
-		/** @var Collection<int,object{photo_id:string,album_count:int}> $photos_ids_occurances_in_album */
-		$photos_ids_occurances_in_album = DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::ALBUM_ID, $album_ids)
-			->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
-			->groupBy(PA::PHOTO_ID)
-			->orderBy(PA::PHOTO_ID, 'asc')
-			->get();
+		$links_in_deleted_albums = [];
+		$links_total = [];
+		foreach (array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			/** @var Collection<int,object{photo_id:string,album_count:int}> $in_chunk */
+			$in_chunk = DB::table(PA::PHOTO_ALBUM)
+				->whereIn(PA::ALBUM_ID, $chunk)
+				->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
+				->groupBy(PA::PHOTO_ID)
+				->get();
+			foreach ($in_chunk as $row) {
+				$links_in_deleted_albums[$row->photo_id] = ($links_in_deleted_albums[$row->photo_id] ?? 0) + intval($row->album_count);
+			}
 
-		// We select all the photos which are impacted: we want to know if they are only occuring in those albums or not.
-		// Note that photos which are only in the deleted albums can be deleted fully.
-		// We use a subquery instead of whereIn($photos_ids) to avoid hitting the database
-		// placeholder limit (MySQL error 1390) when there are many photos to delete.
-		/** @var Collection<int,object{photo_id:string,album_count:int}> $photos_ids_occurances */
-		$photos_ids_occurances = DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, function ($query) use ($album_ids): void {
-				$query->select(PA::PHOTO_ID)
-					->from(PA::PHOTO_ALBUM)
-					->whereIn(PA::ALBUM_ID, $album_ids);
-			})
-			->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
-			->groupBy(PA::PHOTO_ID)
-			->orderBy(PA::PHOTO_ID, 'asc')
-			->get();
+			// Total links of the photos of this chunk. A subquery instead of
+			// whereIn($photo_ids) keeps the bindings to the album chunk.
+			/** @var Collection<int,object{photo_id:string,album_count:int}> $totals */
+			$totals = DB::table(PA::PHOTO_ALBUM)
+				->whereIn(PA::PHOTO_ID, function ($query) use ($chunk): void {
+					$query->select(PA::PHOTO_ID)
+						->from(PA::PHOTO_ALBUM)
+						->whereIn(PA::ALBUM_ID, $chunk);
+				})
+				->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
+				->groupBy(PA::PHOTO_ID)
+				->get();
+			foreach ($totals as $row) {
+				$links_total[$row->photo_id] = intval($row->album_count);
+			}
+		}
 
-		// Now we need to zip those two collections to determine which photos can be deleted fully.
+		// Photos which are only in the deleted albums can be deleted fully,
+		// the others are only detached from them.
 		$photos_to_delete_fully = [];
 		$photos_to_detach = [];
-		$idx_in_album = 0;
-		$idx_total = 0;
-		$count_in_album = $photos_ids_occurances_in_album->count();
-		$count_total = $photos_ids_occurances->count();
-		while ($idx_in_album < $count_in_album && $idx_total < $count_total) {
-			$photo_in_album = $photos_ids_occurances_in_album[$idx_in_album];
-			$photo_total = $photos_ids_occurances[$idx_total];
-			if ($photo_in_album->photo_id !== $photo_total->photo_id) {
-				// This should never happen
-				if ($photo_in_album->photo_id < $photo_total->photo_id) {
-					$idx_in_album++;
-				} else {
-					$idx_total++;
-				}
-				continue;
-			}
-
-			$occ_in_deleting_albums = intval($photo_in_album->album_count);
-			$photo_total_count = intval($photo_total->album_count);
-			if ($photo_total_count === $occ_in_deleting_albums) {
-				$photos_to_delete_fully[] = $photo_in_album->photo_id;
+		foreach ($links_in_deleted_albums as $photo_id => $count) {
+			if (($links_total[$photo_id] ?? 0) === $count) {
+				$photos_to_delete_fully[] = strval($photo_id);
 			} else {
-				$photos_to_detach[] = $photo_in_album->photo_id;
+				$photos_to_detach[] = strval($photo_id);
 			}
-			$idx_in_album++;
-			$idx_total++;
 		}
 
 		return new PhotosToBeDeletedDTO(
@@ -263,10 +279,12 @@ class Delete
 		// find all photos in those and their descendants
 		// Only load necessary attributes for tree.
 		/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int}> $albums */
-		$albums = DB::table('albums')
-			->select(['id', 'parent_id', '_lft', '_rgt'])
-			->whereIn('id', $album_ids)
-			->get();
+		$albums = collect(array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE))->flatMap(
+			fn (array $chunk) => DB::table('albums')
+				->select(['id', 'parent_id', '_lft', '_rgt'])
+				->whereIn('id', $chunk)
+				->get()
+		);
 
 		// Collect unique parent IDs BEFORE deletion for event dispatching
 		$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
@@ -283,11 +301,14 @@ class Delete
 				->get();
 			$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 		}
+		// A sub-album selected together with an ancestor is listed once, so
+		// that its photo links are counted once (FR-112-09).
+		$recursive_album_ids = array_values(array_unique($recursive_album_ids));
 
 		// All tracks (across every disk) belonging to the recursive album set (FR-055-12).
 		// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
 		/** @var Collection<int,object{disk:string,file_name:string}> $recursive_album_tracks */
-		$recursive_album_tracks = collect($recursive_album_ids)->chunk(AlbumsToBeDeletedDTO::CHUNK_SIZE)->reduce(
+		$recursive_album_tracks = collect($recursive_album_ids)->chunk(QueryLimits::ID_CHUNK_SIZE)->reduce(
 			function (Collection $carry, Collection $chunk): Collection {
 				return $carry->concat(
 					DB::table('tracks')->select(['disk', 'file_name'])->whereIn('album_id', $chunk->all())->get()
@@ -334,13 +355,15 @@ class Delete
 	public function getGaps(array $album_ids): array
 	{
 		$gaps = [];
-		/** @var Collection<int,object{_lft:int,_rgt:int}> $albums */
-		$albums = DB::table('albums')->whereIn('id', $album_ids)->select(['_lft', '_rgt'])->get();
-		foreach ($albums as $album) {
-			$gaps[] = [
-				'lft' => $album->_lft,
-				'rgt' => $album->_rgt,
-			];
+		foreach (array_chunk($album_ids, QueryLimits::ID_CHUNK_SIZE) as $chunk) {
+			/** @var Collection<int,object{_lft:int,_rgt:int}> $albums */
+			$albums = DB::table('albums')->whereIn('id', $chunk)->select(['_lft', '_rgt'])->get();
+			foreach ($albums as $album) {
+				$gaps[] = [
+					'lft' => $album->_lft,
+					'rgt' => $album->_rgt,
+				];
+			}
 		}
 
 		return $gaps;

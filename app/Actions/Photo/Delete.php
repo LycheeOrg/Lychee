@@ -8,16 +8,21 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Album\AlbumUserThumbTargets;
+use App\Actions\Shared\DispatchAfterDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Assets\Features;
 use App\Constants\PhotoAlbum as PA;
+use App\Constants\QueryLimits;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
+use App\Enum\PhotoWebhookEvent;
 use App\Enum\SizeVariantType;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoWillBeDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\ModelDBException;
 use App\Models\SizeVariant;
+use App\Models\Webhook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,10 +51,12 @@ use Illuminate\Support\Facades\Storage;
 readonly class Delete
 {
 	private PurchasableService $purchasable_service;
+	private AlbumUserThumbTargets $thumb_targets;
 
 	public function __construct(
 	) {
 		$this->purchasable_service = resolve(PurchasableService::class);
+		$this->thumb_targets = resolve(AlbumUserThumbTargets::class);
 	}
 
 	/**
@@ -86,39 +93,46 @@ readonly class Delete
 			return;
 		}
 
+		// Every query below binds at most one chunk of ids (FR-112-09).
+		$chunks = array_chunk(array_values(array_unique($photo_ids)), QueryLimits::ID_CHUNK_SIZE);
+
 		// First find out which photos do not have an album.
 		// Those will be deleted.
-		$unsorted_photo_ids = DB::table('photos')
+		$unsorted_photo_ids = $this->collect($chunks, fn (array $chunk) => DB::table('photos')
 			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->whereIn('photos.id', $photo_ids)
+			->whereIn('photos.id', $chunk)
 			->whereNull(PA::ALBUM_ID)
-			->select(['photos.id'])->pluck('id')->all();
+			->select(['photos.id'])->pluck('id')->all());
 
 		// Next we find all photos which are in albums.
-		$photo_ids = DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->select([PA::PHOTO_ID])->pluck('photo_id')->all();
+		$photo_ids = $this->collect($chunks, fn (array $chunk) => DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $chunk)
+			->distinct()
+			->select([PA::PHOTO_ID])->pluck('photo_id')->all());
 
 		// Now we need to figure out those who are in other albums.
-		$photo_ids_in_other_albums = DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, $photo_ids)
+		$photo_ids_in_other_albums = $this->collect(array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE), fn (array $chunk) => DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $chunk)
 			->where(PA::ALBUM_ID, '!=', $from_id)
 			->distinct()
-			->select([PA::PHOTO_ID])->pluck('photo_id')->all();
+			->select([PA::PHOTO_ID])->pluck('photo_id')->all());
 
 		// Substract those from the list of photos to be deleted the photos which
 		// are still in other albums.
 		$delete_photo_ids = array_diff($photo_ids, $photo_ids_in_other_albums);
 
 		// Finally, add the unsorted photos to be deleted.
-		$delete_photo_ids = array_merge($delete_photo_ids, $unsorted_photo_ids);
+		$delete_photo_ids = array_values(array_merge($delete_photo_ids, $unsorted_photo_ids));
 
 		$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, [$from_id]);
 
+		// Resolve the cached album thumbs to refresh once for the whole request,
+		// while the tags, faces and cached thumbs of the photos still exist (FR-112-07).
+		$thumb_targets = $this->thumb_targets->resolve($delete_photo_ids);
+
 		// Fire PhotoWillBeDeleted for each photo that will be hard-deleted,
 		// BEFORE executeDelete() removes the records from the database.
-		// Load a lean snapshot of photo data (id, title) and their size variants.
-		if (count($delete_photo_ids) > 0) {
-			$this->dispatchWillBeDeletedEvents($delete_photo_ids, $from_id);
-		}
+		$this->dispatchWillBeDeletedEvents($delete_photo_ids, $from_id);
 
 		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
 			force_delete_photo_ids: $delete_photo_ids,
@@ -130,9 +144,8 @@ readonly class Delete
 		// Dispatch events for affected albums to trigger recomputation
 		PhotoDeleted::dispatch($from_id);
 
-		foreach ($jobs as $job) {
-			dispatch($job);
-		}
+		// File, person-stats, face-embedding and thumb jobs: after the response on `sync` (FR-112-04).
+		DispatchAfterDelete::dispatch([...$jobs, ...$this->thumb_targets->jobs($thumb_targets)]);
 	}
 
 	/**
@@ -152,9 +165,9 @@ readonly class Delete
 
 		$this->purchasable_service->deleteMulitplePhotoPurchasables([$photo_id], $album_ids);
 
-		if (Features::active('webhook')) {
-			$this->dispatchWillBeDeletedEvents([$photo_id], $album_ids[0] ?? '');
-		}
+		$thumb_targets = $this->thumb_targets->resolve([$photo_id]);
+
+		$this->dispatchWillBeDeletedEvents([$photo_id], $album_ids[0] ?? '');
 
 		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
 			force_delete_photo_ids: [$photo_id],
@@ -167,13 +180,14 @@ readonly class Delete
 			PhotoDeleted::dispatch($album_id);
 		}
 
-		foreach ($jobs as $job) {
-			dispatch($job);
-		}
+		DispatchAfterDelete::dispatch([...$jobs, ...$this->thumb_targets->jobs($thumb_targets)]);
 	}
 
 	/**
 	 * Fire PhotoWillBeDeleted for each photo scheduled for hard deletion.
+	 *
+	 * The event only feeds `photo.delete` webhooks: without an enabled one,
+	 * nothing is loaded and no event is fired (FR-112-06).
 	 *
 	 * Uses a lean DB query (no full Eloquent hydration) to load photo title
 	 * and size variant URLs before the records are removed.
@@ -183,26 +197,24 @@ readonly class Delete
 	 */
 	private function dispatchWillBeDeletedEvents(array $photo_ids, string $album_id): void
 	{
-		// Skip this
-		if (Features::inactive('webhook')) {
+		if ($photo_ids === [] || !$this->hasDeleteWebhook()) {
 			return;
 		}
 
-		// Load minimal photo data.
-		$photos_data = DB::table('photos')
-			->whereIn('id', $photo_ids)
-			->select(['id', 'title'])
-			->get();
+		foreach (array_chunk($photo_ids, QueryLimits::ID_CHUNK_SIZE) as $photo_ids_chunked) {
+			// Load minimal photo data.
+			$photos_data = DB::table('photos')
+				->whereIn('id', $photo_ids_chunked)
+				->select(['id', 'title'])
+				->get();
 
-		$photos_data->chunk(500)->each(function ($chunk) use ($album_id): void {
-			$photo_ids_chunked = $chunk->pluck('id')->all();
-			// Load size variant data for all photos in one query.
+			// Load size variant data for all photos of the chunk in one query.
 			$size_variants = SizeVariant::whereIn('photo_id', $photo_ids_chunked)
 				->select(['photo_id', 'type', 'short_path', 'storage_disk'])
 				->get()
 				->groupBy('photo_id');
 
-			foreach ($chunk as $photo) {
+			foreach ($photos_data as $photo) {
 				$variants = [];
 				$raw_variants = $size_variants->get($photo->id, collect());
 				/** @var SizeVariant $sv */
@@ -221,6 +233,34 @@ readonly class Delete
 					$variants,
 				);
 			}
-		});
+		}
+	}
+
+	/**
+	 * Run $query on each chunk and merge the results, without duplicates.
+	 *
+	 * @param array<int,array<int,string>>                  $chunks
+	 * @param \Closure(array<int,string>):array<int,string> $query
+	 *
+	 * @return array<int,string>
+	 */
+	private function collect(array $chunks, \Closure $query): array
+	{
+		$ids = [];
+		foreach ($chunks as $chunk) {
+			$ids = array_merge($ids, $query($chunk));
+		}
+
+		return array_values(array_unique($ids));
+	}
+
+	/**
+	 * Whether a `photo.delete` webhook can consume {@link PhotoWillBeDeleted}:
+	 * the webhook feature is on and one such webhook is enabled.
+	 */
+	private function hasDeleteWebhook(): bool
+	{
+		return Features::active('webhook') &&
+			Webhook::query()->enabled()->forEvent(PhotoWebhookEvent::DELETE)->exists();
 	}
 }

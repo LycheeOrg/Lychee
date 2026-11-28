@@ -9,6 +9,7 @@
 namespace App\Actions\Shop;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Constants\QueryLimits;
 use App\DTO\PixelSizeAssignment;
 use App\DTO\PrintSizeAssignment;
 use App\DTO\PurchasableOption;
@@ -270,16 +271,21 @@ class PurchasableService
 	 */
 	public function deleteMulitplePhotoPurchasables(array $photo_ids, array $album_ids): void
 	{
-		PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($photo_ids, $album_ids): void {
-			$query->select('id')->from('purchasables')
-				->whereIn('photo_id', $photo_ids)
-				->whereIn('album_id', $album_ids);
-		})->delete();
+		// At most one chunk of each list per query (FR-112-09).
+		foreach (array_chunk(array_values(array_unique($photo_ids)), QueryLimits::ID_CHUNK_SIZE) as $photo_chunk) {
+			foreach (array_chunk(array_values(array_unique($album_ids)), QueryLimits::ID_CHUNK_SIZE) as $album_chunk) {
+				PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($photo_chunk, $album_chunk): void {
+					$query->select('id')->from('purchasables')
+						->whereIn('photo_id', $photo_chunk)
+						->whereIn('album_id', $album_chunk);
+				})->delete();
 
-		Purchasable::query()
-			->whereIn('photo_id', $photo_ids)
-			->whereIn('album_id', $album_ids)
-			->delete();
+				Purchasable::query()
+					->whereIn('photo_id', $photo_chunk)
+					->whereIn('album_id', $album_chunk)
+					->delete();
+			}
+		}
 	}
 
 	/**
@@ -291,14 +297,17 @@ class PurchasableService
 	 */
 	public function deleteMultipleAlbumPurchasables(array $album_ids): void
 	{
-		PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($album_ids): void {
-			$query->select('id')->from('purchasables')
-				->whereIn('album_id', $album_ids);
-		})->delete();
+		// At most one chunk of ids per query (FR-112-09).
+		foreach (array_chunk(array_values(array_unique($album_ids)), QueryLimits::ID_CHUNK_SIZE) as $album_chunk) {
+			PurchasablePrice::query()->whereIn('purchasable_id', function ($query) use ($album_chunk): void {
+				$query->select('id')->from('purchasables')
+					->whereIn('album_id', $album_chunk);
+			})->delete();
 
-		Purchasable::query()
-			->whereIn('album_id', $album_ids)
-			->delete();
+			Purchasable::query()
+				->whereIn('album_id', $album_chunk)
+				->delete();
+		}
 	}
 
 	/**
